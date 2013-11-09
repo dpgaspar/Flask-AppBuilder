@@ -1,0 +1,54 @@
+<!-- extend base layout -->
+{% extends "init.html" %}
+
+{% block body %}
+<script type="text/javascript">
+function set_openid(openid, pr)
+{
+    u = openid.search('<username>');
+    if (u != -1) {
+        // openid requires username
+        user = prompt('Enter your ' + pr + ' username:');
+        openid = openid.substr(0, u) + user;
+    }
+    form = document.forms['login'];
+    form.elements['openid'].value = openid;
+}
+</script>
+
+
+{% include 'flash.html' %}
+<div class="container">
+<div class="col-md-3">
+</div>
+<div class="well col-md-6">
+    <h3>{{title}}</h3>
+    <form class="form" action="" method="post" name="login">
+        {{form.hidden_tag()}}
+        <div class="help-block">Click on your OpenID provider below:</div>
+        <div class="control-group">
+            {% for pr in providers %}
+            <a href="javascript:set_openid('{{pr.url}}', '{{pr.name}}');"><img src="/static/img/{{pr.name.lower()}}.png" class="img-polaroid" style="margin:2px;" /></a>
+            {% endfor %}
+        </div>
+        <div class="control-group{% if form.errors.openid %} error{% endif %}">
+            <label class="control-label" for="openid">Or enter your OpenID here:</label>
+            <div class="controls">
+                {{ form.openid(size = 80, class = "form-control") }}
+                {% for error in form.errors.openid %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label class="checkbox" for="remember_me">
+                    {{ form.remember_me }} Remember Me
+                </label>
+            </div>
+        </div>
+                <input class="btn btn-primary btn-block" type="submit" value="Sign In">
+    </form>
+</div>
+</div>
+{% endblock %}

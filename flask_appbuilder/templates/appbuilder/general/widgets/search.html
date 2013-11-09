@@ -1,0 +1,15 @@
+{% import 'general/lib.html' as lib %}
+
+<form class="form-search" action="" method="post">
+<div class="table-responsive">
+<table class="table table-condensed"><tr>
+	{% for field in form %}
+		{% if field.name not in exclude_cols %}
+			<tr>{{ lib.render_field_simple(field) }}</tr>
+		{% endif %}		
+	{% endfor %}
+    <tr><td> {{ lib.btn_search() }} </td></tr>
+	
+</table>
+</div>
+</form>

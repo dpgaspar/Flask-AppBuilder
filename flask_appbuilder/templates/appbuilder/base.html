@@ -1,0 +1,17 @@
+{% extends 'init.html' %}
+{% import 'baselib.html' as baselib %}
+
+{% block body %}
+
+<div class="container">
+  <div class="row">
+    <div class="span12">
+	  {% include 'flash.html' %}
+          {% block content %}{% endblock %}
+	
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+

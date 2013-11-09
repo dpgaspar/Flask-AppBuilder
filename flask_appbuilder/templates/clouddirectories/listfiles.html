@@ -1,0 +1,30 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<h2><center>{{title}}<center></h2>
+
+{% include 'flash.html' %}
+<div class="well">
+<table class="table table-bordered">
+<thead><th>Name</th><th>Size</th><th>Modified</th></thead>
+{% for item in lst %}
+    <tr>
+    {% if item.isdir %}
+	    <td><a href="/{{subapp}}/listfiles{{item.path}}{{item.filename}}/" class="btn btn-block btn-info">{{item.filename}}</a></td>
+    {% else %}
+	    <td><a href="/{{subapp}}/downloadfile{{item.path}}{{item.filename}}/">{{item.filename}}</a></td>
+    {% endif %}
+    <td>{{item.size}}</td>
+    <td>{{item.modified}}</td>
+    </tr>
+{% endfor %}
+</table>
+<form action="/{{subapp}}/uploadfile/{{path}}" method=post enctype=multipart/form-data>
+<p><input type=file name=file>
+<input type=submit value=Upload>
+</form
+</div>
+{% endblock %}
+
+
