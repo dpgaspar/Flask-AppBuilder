@@ -1,7 +1,7 @@
 from flask.ext.babel import lazy_gettext
 from flask.ext.babel import gettext as _gettext
-from app.general.security.views import AuthView, ResetPasswordView, UserGeneralView, RoleGeneralView, PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, IndexView, PermissionView
-from app.general.babel.views import LocaleView
+from flask.ext.appbuilder.security.views import AuthView, ResetPasswordView, UserGeneralView, RoleGeneralView, PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, IndexView, PermissionView
+from flask.ext.appbuilder.babel.views import LocaleView
 from config import APP_NAME, APP_THEME, LANGUAGES
 
 

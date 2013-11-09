@@ -3,9 +3,9 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from flask.ext.wtf import Required, Length, validators, EqualTo, PasswordField
 from flask.ext.babel import gettext, lazy_gettext
 
-from app.general.views import *
+from flask.ext.appbuilder.views import *
 from models import *
-from app.general.forms import BS3PasswordFieldWidget
+from flask.ext.appbuilder.forms import BS3PasswordFieldWidget
 from forms import *
 
 

@@ -5,8 +5,8 @@ from flask.ext.classy import FlaskView, route
 from sqlalchemy.ext.serializer import loads, dumps
 
 from widgets import ChartWidget
-from app.general.security.decorators import has_access
-from app.general.views import BaseView, expose
+from flask.ext.appbuilder.security.decorators import has_access
+from flask.ext.appbuilder.views import BaseView, expose
 
 
 class ChartView(BaseView):

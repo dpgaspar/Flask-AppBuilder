@@ -3,8 +3,6 @@ from flask.ext.wtf import Required, Length, validators, EqualTo
 from wtforms.widgets import HTMLString, html_params
 import sqlalchemy as sa
 from app import db
-from config import IMG_UPLOAD_URL , UPLOAD_FOLDER, IMG_UPLOAD_FOLDER
-from filemanager import ImageManager, uuid_namegen
 from upload import *
 
 

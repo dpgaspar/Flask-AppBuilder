@@ -1,6 +1,6 @@
 from app import app, db
-from app.general.security.models import is_menu_public, is_item_public
-from app.general.models.datamodel import SQLAModel
+from flask.ext.appbuilder.security.models import is_menu_public, is_item_public
+from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask import g, request
 from flask.ext.login import current_user
 
