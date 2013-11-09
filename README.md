@@ -1,7 +1,7 @@
 Flask App Builder
 ==============
 
-Simple and rapid Application builder, includer detailed security, auto form generation, google charts and much more.
+Simple and rapid Application builder, includes detailed security, auto form generation, google charts and much more.
 
 
 ## Includes:

@@ -14,14 +14,14 @@ def read(fname):
 
 
 def desc():
-    info = read('README.rst')
+    info = read('README.md')
     try:
         return info + '\n\n' + read('doc/changelog.rst')
     except IOError:
         return info
 
 # grep flask_admin/__init__.py since python 3.x cannot import it before using 2to3
-file_text = read(fpath('flask_admin/__init__.py'))
+file_text = read(fpath('flask_appbuilder/__init__.py'))
 def grep(attrname):
     pattern = r"{0}\W*=\W*'([^']+)'".format(attrname)
     strval, = re.findall(pattern, file_text)
@@ -29,13 +29,13 @@ def grep(attrname):
 
 
 setup(
-    name='Flask-General',
+    name='Flask-AppBuilder',
     version=grep('__version__'),
-    url='https://github.com/dpgaspar/flask-general/',
+    url='https://github.com/dpgaspar/flask-appbuilder/',
     license='BSD',
     author=grep('__author__'),
     author_email=grep('__email__'),
-    description='Simple and extensible RAD framework for Flask',
+    description='Simple and rapid Application builder, includer detailed security, auto form generation, google charts and much more.',
     long_description=desc(),
     packages=find_packages(),
     include_package_data=True,
@@ -43,10 +43,14 @@ setup(
     platforms='any',
     install_requires=[
         'Flask>=0.7',
-        'wtforms'
+        'Flask-Babel==0.8',
+        'Flask-Login>=0.1.2',
+        'Flask-OpenID>=1.1.0',
+        'Flask-SQLAlchemy==0.16',
+        'Flask-WTF==0.8.3',
     ],
     classifiers=[
-        'Development Status :: 1 - Beta',
+        'Development Status :: 2 - Pre-Alpha',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
