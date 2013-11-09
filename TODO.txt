@@ -1,0 +1,5 @@
+
+ - Add easy wizard flow generation
+ - Add actions on lists with checkboxes (Django style).
+
+

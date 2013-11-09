@@ -1,0 +1,3 @@
+*.pyc
+app.db
+./tmp
