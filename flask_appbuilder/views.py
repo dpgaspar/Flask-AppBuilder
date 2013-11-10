@@ -28,6 +28,7 @@ class BaseView(object):
     """
 
     blueprint = None
+    template_folder = 'templates'
     name = None
     baseapp = None
     route_base = None
@@ -66,7 +67,8 @@ class BaseView(object):
 
         # Create blueprint and register rules
         self.blueprint = Blueprint(self.endpoint, __name__,
-                                   url_prefix=self.route_base)
+                                   url_prefix=self.route_base,
+                                   template_folder=self.template_folder)
 
         self.register_urls()
         return self.blueprint
