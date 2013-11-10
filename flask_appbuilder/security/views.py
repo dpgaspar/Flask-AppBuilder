@@ -192,8 +192,8 @@ class RoleGeneralView(GeneralView):
 class AuthView(BaseView):
 
     route_base = ''
-    login_db_template = '/general/security/login_db.html'
-    login_oid_template = '/general/security/login_oid.html'
+    login_db_template = 'appbuilder/general/security/login_db.html'
+    login_oid_template = 'appbuilder/general/security/login_oid.html'
     
     invalid_login_message = lazy_gettext('Invalid login. Please try again.')
     
@@ -249,11 +249,11 @@ class AuthView(BaseView):
 def _after_login_oid(resp):
     if resp.email is None or resp.email == "":
         flash(gettext('Invalid login. Please try again.'),'warning')
-        return redirect('/general/security/login_oid.html')
+        return redirect('appbuilder/general/security/login_oid.html')
     user = User.query.filter_by(email = resp.email).first()
     if user is None:
         flash(gettext('Invalid login. Please try again.'),'warning')
-        return redirect('/general/security/login_oid.html')
+        return redirect('appbuilder/general/security/login_oid.html')
     remember_me = False
     if 'remember_me' in session:
         remember_me = session['remember_me']
