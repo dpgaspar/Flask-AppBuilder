@@ -10,8 +10,7 @@ from forms import *
 
 
 from app import app, db, lm, oid
-from app.general.models.datamodel import *
-from app.menu import menu
+from flask.ext.appbuilder.models.datamodel import SQLAModel
 from config import AUTH_TYPE, APP_NAME, APP_THEME
 
 

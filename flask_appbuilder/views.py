@@ -129,7 +129,7 @@ class IndexView(BaseView):
 
     route_base = '/'
 
-    index_template = 'index.html'
+    index_template = 'appbuilder/index.html'
 
     @expose('/')
     @expose('/index/')
@@ -237,10 +237,10 @@ class BaseCRUDView(BaseView):
     validators_columns = {}
 
     """ Template Layouts """
-    list_template = 'general/model/list.html'
-    edit_template = 'general/model/edit.html'
-    add_template = 'general/model/add.html'
-    show_template = 'general/model/show.html'
+    list_template = 'appbuilder/general/model/list.html'
+    edit_template = 'appbuilder/general/model/edit.html'
+    add_template = 'appbuilder/general/model/add.html'
+    show_template = 'appbuilder/general/model/show.html'
 
     """ Widgets """
     list_widget = ListWidget
