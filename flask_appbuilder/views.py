@@ -154,7 +154,7 @@ class SimpleFormView(BaseView):
     override form_get and form_post
     """
 
-    form_template = 'general/model/edit.html'
+    form_template = 'appbuilder/general/model/edit.html'
     """ Widgets """
     edit_widget = FormWidget
 
