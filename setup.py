@@ -7,14 +7,14 @@ from setuptools import setup, find_packages
 
 setup(
     name='Flask-AppBuilder',
-    version='0.0.4',
+    version='0.0.5',
     url='https://github.com/dpgaspar/flask-appbuilder/',
     license='BSD',
     author='Daniel Vaz Gaspar',
     author_email='danielvazgaspar@gmail.com',
     description='Simple and rapid Application builder, includer detailed security, auto form generation, google charts and much more.',
     long_description=__doc__,
-    packages=['flask_appbuilder'],
+    packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
     platforms='any',
