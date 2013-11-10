@@ -1,0 +1,5 @@
+include LICENSE
+include README.rst
+recursive-include flask_appbuilder/static *
+recursive-include flask_appbuilder/templates *
+recursive-include flask_appbuilder/translations *

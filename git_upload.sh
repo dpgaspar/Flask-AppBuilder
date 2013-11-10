@@ -1,4 +1,5 @@
 git add *.py -A
+git add *.in -A
 git add *.cfg -A
 git add *.sh -A
 git add *.mo -A
