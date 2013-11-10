@@ -3,9 +3,9 @@ from flask import Blueprint, render_template, flash, redirect, url_for, request,
 from flask.ext.login import login_required
 from flask.ext.babel import gettext, ngettext, lazy_gettext
 from forms import GeneralModelConverter
-from flask.ext.appbuilder.security.decorators import has_access
-from flask.ext.appbuilder.filemanager import uuid_originalname
-from flask.ext.appbuilder.widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
+from .security.decorators import has_access
+from .filemanager import uuid_originalname
+from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
 
 
 

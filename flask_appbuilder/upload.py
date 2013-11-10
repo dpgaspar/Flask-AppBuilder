@@ -8,7 +8,7 @@ from wtforms import ValidationError, fields
 from wtforms.widgets import HTMLString, html_params
 from wtforms.fields.core import _unset_value
 from flask.ext.babel import gettext
-from filemanager import ImageManager, FileManager
+from .filemanager import ImageManager, FileManager
 
 
 

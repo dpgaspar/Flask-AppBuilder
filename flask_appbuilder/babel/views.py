@@ -2,7 +2,7 @@ from flask import redirect, request, session
 from flask.ext.babel import refresh
 from app import babel
 from config import BABEL_DEFAULT_LOCALE
-from flask.ext.appbuilder.views import BaseView, expose
+from ..views import BaseView, expose
 
 
 class LocaleView(BaseView):

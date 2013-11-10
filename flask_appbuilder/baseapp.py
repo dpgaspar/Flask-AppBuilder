@@ -1,8 +1,7 @@
 from flask.ext.babel import lazy_gettext
 from flask.ext.babel import gettext as _gettext
-from flask.ext.appbuilder.security.views import AuthView, ResetPasswordView, UserGeneralView, RoleGeneralView, PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, IndexView, PermissionView
-from flask.ext.appbuilder.babel.views import LocaleView
-from config import APP_NAME, APP_THEME, LANGUAGES
+from .security.views import AuthView, ResetPasswordView, UserGeneralView, RoleGeneralView, PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, IndexView, PermissionView
+from .babel.views import LocaleView
 
 
 class BaseApp():
@@ -21,12 +20,12 @@ class BaseApp():
      Add menu with categories inserted
     #-----------------------------------
     """
-    def __init__(self, app, menu, app_name=APP_NAME, app_theme=APP_THEME):
+    def __init__(self, app, menu):
         self.menu = menu
         self.app = app
-        self.app_name = app_name
-        self.app_theme = app_theme
-        self.languages = LANGUAGES
+        self.app_name = app.config['APP_NAME']
+        self.app_theme = app.config['APP_THEME']
+        self.languages = app.config['LANGUAGES']
 
         self._add_admin_views()
 

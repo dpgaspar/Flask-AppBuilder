@@ -1,4 +1,4 @@
-from flask.ext.appbuilder.security.models import PermissionView
+from .security.models import PermissionView
 
 class MenuItem(object):
 

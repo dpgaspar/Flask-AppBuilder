@@ -5,7 +5,7 @@ from flask.ext.babel import gettext, lazy_gettext
 
 from flask.ext.appbuilder.views import *
 from models import *
-from flask.ext.appbuilder.forms import BS3PasswordFieldWidget
+from ..forms import BS3PasswordFieldWidget
 from forms import *
 
 

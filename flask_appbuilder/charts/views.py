@@ -1,12 +1,11 @@
 from flask import render_template
 from sqlalchemy.ext.serializer import loads, dumps
 
-from flask.ext.classy import FlaskView, route
 from sqlalchemy.ext.serializer import loads, dumps
 
 from widgets import ChartWidget
-from flask.ext.appbuilder.security.decorators import has_access
-from flask.ext.appbuilder.views import BaseView, expose
+from ..security.decorators import has_access
+from ..views import BaseView, expose
 
 
 class ChartView(BaseView):

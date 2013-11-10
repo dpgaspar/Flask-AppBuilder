@@ -3,7 +3,7 @@ from hashlib import md5
 from app import db
 from config import AUTH_ROLE_ADMIN, AUTH_ROLE_PUBLIC
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask.ext.appbuilder.models.mixins import BaseMixin
+from ..models.mixins import BaseMixin
 
 def is_menu_public(item):
     role = Role.query.filter_by(name = AUTH_ROLE_PUBLIC).first()
