@@ -10,7 +10,7 @@ from ..views import BaseView, expose
 
 class ChartView(BaseView):
     
-    chart_template = 'general/charts/chart.html'
+    chart_template = 'appbuilder/general/charts/chart.html'
     chart_widget = ChartWidget
     chart_title = 'Chart'
     chart_type = 'PieChart'

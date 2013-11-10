@@ -2,7 +2,7 @@ from flask.ext.appbuilder.widgets import RenderTemplateWidget
 
 class ChartWidget(RenderTemplateWidget):
 
-    template = 'general/widgets/chart.html'
+    template = 'appbuilder/general/widgets/chart.html'
 
     route_base = ''
     chart_title = ''

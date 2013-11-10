@@ -9,7 +9,7 @@ from flask.globals import _request_ctx_stack
 
 class RenderTemplateWidget(object):
 
-    template = 'general/widgets/render.html'
+    template = 'appbuilder/general/widgets/render.html'
 
     def __call__(self, **kwargs):
         ctx = _request_ctx_stack.top
@@ -21,7 +21,7 @@ class RenderTemplateWidget(object):
 
 class FormWidget(RenderTemplateWidget):
 
-    template = 'general/widgets/form.html'
+    template = 'appbuilder/general/widgets/form.html'
 
     route_base = ''
     form = None
@@ -43,13 +43,13 @@ class FormWidget(RenderTemplateWidget):
         return super(FormWidget, self).__call__(**kwargs)
 
 class SearchWidget(FormWidget):
-    template = 'general/widgets/search.html'
+    template = 'appbuilder/general/widgets/search.html'
     def __init__(self, **kwargs):
         return super(SearchWidget, self).__init__(**kwargs)
 
 class ShowWidget(RenderTemplateWidget):
 
-    template = 'general/widgets/show.html'
+    template = 'appbuilder/general/widgets/show.html'
 
     route_base = ''
     label_columns = []
@@ -83,7 +83,7 @@ class ShowWidget(RenderTemplateWidget):
 
 class ListWidget(RenderTemplateWidget):
 
-    template = 'general/widgets/list.html'
+    template = 'appbuilder/general/widgets/list.html'
 
     route_base = ''
     label_columns = []
@@ -123,4 +123,4 @@ class ListWidget(RenderTemplateWidget):
         return super(ListWidget, self).__call__(**kwargs)
         
 class ListThumbnail(ListWidget):
-    template = 'general/widgets/list_thumbnail.html'
+    template = 'appbuilder/general/widgets/list_thumbnail.html'
