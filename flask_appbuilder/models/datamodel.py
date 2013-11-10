@@ -11,7 +11,7 @@ from app import db
 import sqlalchemy as sa
 import sys
 from mixins import FileColumn, ImageColumn
-from app.general.filemanager import FileManager, ImageManager
+from flask.ext.appbuilder.filemanager import FileManager, ImageManager
 
 
 class DataModel():
