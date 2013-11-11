@@ -1,3 +1,4 @@
+from flask import Blueprint
 from flask.ext.babel import lazy_gettext
 from flask.ext.babel import gettext as _gettext
 from .security.views import AuthView, ResetPasswordView, UserGeneralView, RoleGeneralView, PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, IndexView, PermissionView

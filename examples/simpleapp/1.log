@@ -350,4 +350,70 @@ EP: usergeneralview.edit METH: HEAD,POST,OPTIONS,GET
 /users/edit/<int:pk> set(['pk'])
 --------------------------------------------
 --------------------------------------------
-EP: usergeneralview.show 
+EP: usergeneralview.show METH: HEAD,OPTIONS,GET
+/users/show/<int:id> set(['id'])
+--------------------------------------------
+--------------------------------------------
+EP: rolegeneralview.edit METH: HEAD,POST,OPTIONS,GET
+/roles/edit/<int:pk> set(['pk'])
+--------------------------------------------
+--------------------------------------------
+EP: rolegeneralview.show METH: HEAD,OPTIONS,GET
+/roles/show/<int:id> set(['id'])
+--------------------------------------------
+--------------------------------------------
+EP: localeview.static METH: HEAD,OPTIONS,GET
+/lang/static/<path:filename> set(['filename'])
+--------------------------------------------
+--------------------------------------------
+EP: static METH: HEAD,OPTIONS,GET
+/static/<path:filename> set(['filename'])
+--------------------------------------------
+--------------------------------------------
+EP: indexview.static METH: HEAD,OPTIONS,GET
+/static/<path:filename> set(['filename'])
+--------------------------------------------
+--------------------------------------------
+EP: authview.static METH: HEAD,OPTIONS,GET
+/static/<path:filename> set(['filename'])
+--------------------------------------------
+--------------------------------------------
+EP: localeview.index METH: HEAD,OPTIONS,GET
+/lang/<string:locale> set(['locale'])
+--------------------------------------------
+Registering: Security . List Users at /users/list
+Registering: Security . List Roles at /roles/list
+Registering: Security . Base Permissions at /permissions/list
+Registering: Security . Views/Menus at /viewmenus/list
+Registering: Security . Permission on Views/Menus at /permissionviews/list
+METH: HEAD,OPTIONS,GET
+/users/show/<int:id> set(['id'])
+--------------------------------------------
+--------------------------------------------
+EP: rolegeneralview.edit METH: HEAD,POST,OPTIONS,GET
+/roles/edit/<int:pk> set(['pk'])
+--------------------------------------------
+--------------------------------------------
+EP: rolegeneralview.show METH: HEAD,OPTIONS,GET
+/roles/show/<int:id> set(['id'])
+--------------------------------------------
+--------------------------------------------
+EP: localeview.static METH: HEAD,OPTIONS,GET
+/lang/static/<path:filename> set(['filename'])
+--------------------------------------------
+--------------------------------------------
+EP: static METH: HEAD,OPTIONS,GET
+/static/<path:filename> set(['filename'])
+--------------------------------------------
+--------------------------------------------
+EP: indexview.static METH: HEAD,OPTIONS,GET
+/static/<path:filename> set(['filename'])
+--------------------------------------------
+--------------------------------------------
+EP: authview.static METH: HEAD,OPTIONS,GET
+/static/<path:filename> set(['filename'])
+--------------------------------------------
+--------------------------------------------
+EP: localeview.index METH: HEAD,OPTIONS,GET
+/lang/<string:locale> set(['locale'])
+--------------------------------------------
