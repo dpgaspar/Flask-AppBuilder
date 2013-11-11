@@ -8,9 +8,10 @@ class BaseApp():
 
     lst_baseview = []
     app = None
-    static_url_path = '/static/'
     menu = None
     app_name = ""
+    indexview = None
+    
     languages = None
     _gettext = _gettext
 
@@ -20,17 +21,17 @@ class BaseApp():
      Add menu with categories inserted
     #-----------------------------------
     """
-    def __init__(self, app, menu):
+    def __init__(self, app, menu, indexview = None):
         self.menu = menu
         self.app = app
         self.app_name = app.config['APP_NAME']
         self.app_theme = app.config['APP_THEME']
         self.languages = app.config['LANGUAGES']
-
+        self.indexview = indexview or IndexView
         self._add_admin_views()
 
     def _add_admin_views(self):
-        self.add_view_no_menu(IndexView)
+        self.add_view_no_menu(self.indexview, endpoint = '', static_folder='static')
         self.add_view_no_menu(LocaleView)
         self.add_view_no_menu(AuthView)
         self.add_view_no_menu(ResetPasswordView)
@@ -53,7 +54,7 @@ class BaseApp():
             self.register_blueprint(baseview)
             self._add_permission(baseview)
 
-    def add_view_no_menu(self, baseview):
+    def add_view_no_menu(self, baseview, endpoint = None, static_folder = None):
         if baseview not in self.lst_baseview:
             baseview.baseapp = self
             self.lst_baseview.append(baseview)
@@ -70,5 +71,5 @@ class BaseApp():
         bv = None
         pvm = None
 
-    def register_blueprint(self, baseview):
-        self.app.register_blueprint(baseview().create_blueprint(self))
+    def register_blueprint(self, baseview, endpoint = None, static_folder = None):
+        self.app.register_blueprint(baseview().create_blueprint(self, endpoint, static_folder))
