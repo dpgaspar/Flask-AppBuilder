@@ -61,15 +61,12 @@ class BaseView(object):
             self.endpoint = self.__class__.__name__.lower()
 
         self.static_folder = static_folder
-	print "---- BLUE PRINT EP:%s ROUTE:%s STATIC:%s" % (self.endpoint, self.route_base, self.static_folder)
         if not static_folder:
         # Create blueprint and register rules
             self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.route_base,
-                                   template_folder=self.template_folder
-				   static_folder = 'static')
+                                   template_folder=self.template_folder)
         else:
-	    print "---- BLUE STATIC EP:%s ROUTE:%s STATIC:%s" % (self.endpoint, self.route_base, self.static_folder)
             self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.route_base,
                                    template_folder=self.template_folder,

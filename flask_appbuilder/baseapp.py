@@ -13,6 +13,7 @@ class BaseApp():
     indexview = None
     
     languages = None
+    admin = None
     _gettext = _gettext
 
     """
@@ -31,7 +32,7 @@ class BaseApp():
         self._add_admin_views()
 
     def _add_admin_views(self):
-        self.add_view_no_menu(self.indexview, endpoint = '', static_folder='static')
+        self.add_view_no_menu(self.indexview)
         self.add_view_no_menu(LocaleView)
         self.add_view_no_menu(AuthView)
         self.add_view_no_menu(ResetPasswordView)
@@ -44,6 +45,8 @@ class BaseApp():
         self.add_view(PermissionViewGeneralView, "Base Permissions","/permissions/list","lock","Security")
         self.add_view(ViewMenuGeneralView, "Views/Menus","/viewmenus/list","list-alt","Security")
         self.add_view(PermissionGeneralView, "Permission on Views/Menus","/permissionviews/list","lock","Security")
+	self.admin = Blueprint('admin', __name__, static_folder='static')
+
 
     def add_view(self, baseview, name, href, icon, category):
         print "Registering:", category,".", name, "at", href
