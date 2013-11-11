@@ -1,4 +1,6 @@
 *.pyc
 app.db
 ./tmp
-./examples/*env*
+env
+venv
+
