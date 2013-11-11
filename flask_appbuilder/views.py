@@ -71,8 +71,7 @@ class BaseView(object):
             self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.route_base,
                                    template_folder=self.template_folder,
-                                   static_folder = static_folder,
-				   static_url_path = '/static')
+                                   static_folder = static_folder)
 
         self.register_urls()
         return self.blueprint
