@@ -58,7 +58,7 @@ class BaseApp():
         if baseview not in self.lst_baseview:
             baseview.baseapp = self
             self.lst_baseview.append(baseview)
-            self.register_blueprint(baseview)
+            self.register_blueprint(baseview, endpoint = endpoint, static_folder = static_folder)
             self._add_permission(baseview)
 
     def _add_permission(self, baseview):
@@ -72,4 +72,4 @@ class BaseApp():
         pvm = None
 
     def register_blueprint(self, baseview, endpoint = None, static_folder = None):
-        self.app.register_blueprint(baseview().create_blueprint(self, endpoint, static_folder))
+        self.app.register_blueprint(baseview().create_blueprint(self,  endpoint = endpoint, static_folder = static_folder))
