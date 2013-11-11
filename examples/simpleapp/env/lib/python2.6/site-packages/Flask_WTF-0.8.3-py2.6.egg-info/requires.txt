@@ -1,2 +1,0 @@
-Flask
-WTForms>=1.0
