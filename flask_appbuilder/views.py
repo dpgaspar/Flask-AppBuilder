@@ -27,15 +27,14 @@ class BaseView(object):
     includes permission, app info
     """
 
+    baseapp = None
     blueprint = None
+    endpoint = None
+    
+    route_base = None
     template_folder = 'templates'
     static_folder='static'
-    static_url_path='static'
-    name = None
-    baseapp = None
-    route_base = None
-    endpoint = None
-    static_url_path = None
+    
     base_permissions = None
     redirect_url = '/'
 
@@ -48,7 +47,9 @@ class BaseView(object):
                 ]
 
 
-    def create_blueprint(self, baseapp):
+    def create_blueprint(self, baseapp, 
+                        endpoint = None, 
+                        static_folder = None):
         """
             Create Flask blueprint.
         """
@@ -59,20 +60,17 @@ class BaseView(object):
         if not self.endpoint:
             self.endpoint = self.__class__.__name__.lower()
 
-        # If the static_url_path is not provided, use the admin's
-        if not self.static_url_path:
-            self.static_url_path = baseapp.static_url_path
-
-        # If name is not povided, use pretty class name
-        if not self.name:
-            self.name = self._prettify_name(self.__class__.__name__)
-
+        self.static_folder = static_folder
+        if not static_folder:
         # Create blueprint and register rules
-        self.blueprint = Blueprint(self.endpoint, __name__,
+            self.blueprint = Blueprint(self.endpoint, __name__,
+                                   url_prefix=self.route_base,
+                                   template_folder=self.template_folder)
+        else:
+            self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.route_base,
                                    template_folder=self.template_folder,
-                                   static_folder=self.static_folder,
-                                   static_url_path=self.static_url_path)
+                                   static_folder = static_folder)
 
         self.register_urls()
         return self.blueprint
