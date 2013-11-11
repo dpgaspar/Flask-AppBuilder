@@ -1,0 +1,17 @@
+{% extends 'appbuilder/init.html' %}
+{% import 'appbuilder/baselib.html' as baselib %}
+
+{% block body %}
+
+<div class="container">
+  <div class="row">
+    <div class="span12">
+	  {% include 'appbuilder/flash.html' %}
+          {% block content %}{% endblock %}
+	
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+

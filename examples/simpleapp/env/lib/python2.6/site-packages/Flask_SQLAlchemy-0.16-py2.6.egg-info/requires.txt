@@ -1,0 +1,3 @@
+setuptools
+Flask
+SQLAlchemy

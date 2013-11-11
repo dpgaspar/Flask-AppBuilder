@@ -1,0 +1,21 @@
+<!-- extend base layout -->
+{% extends "appbuilder/base.html" %}
+{% import 'appbuilder/general/lib.html' as lib %}
+
+{% block content %}
+{{ lib.panel_begin(title) }}
+
+	{{ widgets.get('show')()|safe }}
+
+{% if related_views %}
+        {% for view in related_views %}
+        	{% call lib.accordion_tag(view.__class__.__name__,view.list_title, False) %}
+				{{ widgets.get('related_lists')[loop.index - 1]()|safe }}
+	    	{% endcall %} 
+	{% endfor %}
+{% endif %}
+
+
+{{ lib.panel_end() }}
+
+{% endblock %}

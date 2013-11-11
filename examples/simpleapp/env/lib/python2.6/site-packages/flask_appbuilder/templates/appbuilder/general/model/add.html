@@ -1,0 +1,11 @@
+<!-- extend base layout -->
+{% extends "appbuilder/base.html" %}
+{% import 'appbuilder/general/lib.html' as lib %}
+
+{% block content %}
+{{ lib.panel_begin(title) }}
+
+{{ widgets.get('add')()|safe }}
+
+{{ lib.panel_end() }}
+{% endblock %}

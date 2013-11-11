@@ -1,0 +1,178 @@
+# Translations template for WTForms.
+# Copyright (C) 2013 WTForms Team
+# This file is distributed under the same license as the WTForms project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: WTForms 1.0.4\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2013-04-28 15:30-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 0.9.6\n"
+
+#: wtforms/validators.py:55
+#, python-format
+msgid "Invalid field name '%s'."
+msgstr ""
+
+#: wtforms/validators.py:62
+#, python-format
+msgid "Field must be equal to %(other_name)s."
+msgstr ""
+
+#: wtforms/validators.py:94
+#, python-format
+msgid "Field must be at least %(min)d character long."
+msgid_plural "Field must be at least %(min)d characters long."
+msgstr[0] ""
+msgstr[1] ""
+
+#: wtforms/validators.py:97
+#, python-format
+msgid "Field cannot be longer than %(max)d character."
+msgid_plural "Field cannot be longer than %(max)d characters."
+msgstr[0] ""
+msgstr[1] ""
+
+#: wtforms/validators.py:100
+#, python-format
+msgid "Field must be between %(min)d and %(max)d characters long."
+msgstr ""
+
+#: wtforms/validators.py:135
+#, python-format
+msgid "Number must be at least %(min)s."
+msgstr ""
+
+#: wtforms/validators.py:137
+#, python-format
+msgid "Number must be at most %(max)s."
+msgstr ""
+
+#: wtforms/validators.py:139
+#, python-format
+msgid "Number must be between %(min)s and %(max)s."
+msgstr ""
+
+#: wtforms/validators.py:188 wtforms/validators.py:221
+msgid "This field is required."
+msgstr ""
+
+#: wtforms/validators.py:249
+msgid "Invalid input."
+msgstr ""
+
+#: wtforms/validators.py:268
+msgid "Invalid email address."
+msgstr ""
+
+#: wtforms/validators.py:298
+msgid "Invalid IP address."
+msgstr ""
+
+#: wtforms/validators.py:346
+msgid "Invalid Mac address."
+msgstr ""
+
+#: wtforms/validators.py:371
+msgid "Invalid URL."
+msgstr ""
+
+#: wtforms/validators.py:389
+msgid "Invalid UUID."
+msgstr ""
+
+#: wtforms/validators.py:416
+#, python-format
+msgid "Invalid value, must be one of: %(values)s."
+msgstr ""
+
+#: wtforms/validators.py:443
+#, python-format
+msgid "Invalid value, can't be any of: %(values)s."
+msgstr ""
+
+#: wtforms/ext/appengine/fields.py:91 wtforms/ext/appengine/fields.py:173
+#: wtforms/ext/appengine/fields.py:175 wtforms/ext/django/fields.py:89
+#: wtforms/ext/sqlalchemy/fields.py:126 wtforms/ext/sqlalchemy/fields.py:128
+#: wtforms/ext/sqlalchemy/fields.py:178 wtforms/ext/sqlalchemy/fields.py:183
+#: wtforms/fields/core.py:436
+msgid "Not a valid choice"
+msgstr ""
+
+#: wtforms/ext/appengine/fields.py:194
+msgid "Not a valid list"
+msgstr ""
+
+#: wtforms/ext/appengine/fields.py:213
+msgid "Not a valid integer list"
+msgstr ""
+
+#: wtforms/ext/csrf/form.py:47
+msgid "Invalid CSRF Token"
+msgstr ""
+
+#: wtforms/ext/csrf/session.py:57
+msgid "CSRF token missing"
+msgstr ""
+
+#: wtforms/ext/csrf/session.py:65
+msgid "CSRF failed"
+msgstr ""
+
+#: wtforms/ext/csrf/session.py:70
+msgid "CSRF token expired"
+msgstr ""
+
+#: wtforms/ext/dateutil/fields.py:50
+msgid "Please input a date/time value"
+msgstr ""
+
+#: wtforms/ext/dateutil/fields.py:62
+msgid "Invalid date/time input"
+msgstr ""
+
+#: wtforms/ext/sqlalchemy/validators.py:33
+msgid "Already exists."
+msgstr ""
+
+#: wtforms/fields/core.py:429
+msgid "Invalid Choice: could not coerce"
+msgstr ""
+
+#: wtforms/fields/core.py:462
+msgid "Invalid choice(s): one or more data inputs could not be coerced"
+msgstr ""
+
+#: wtforms/fields/core.py:469
+#, python-format
+msgid "'%(value)s' is not a valid choice for this field"
+msgstr ""
+
+#: wtforms/fields/core.py:524
+msgid "Not a valid integer value"
+msgstr ""
+
+#: wtforms/fields/core.py:574
+msgid "Not a valid decimal value"
+msgstr ""
+
+#: wtforms/fields/core.py:601
+msgid "Not a valid float value"
+msgstr ""
+
+#: wtforms/fields/core.py:652
+msgid "Not a valid datetime value"
+msgstr ""
+
+#: wtforms/fields/core.py:669
+msgid "Not a valid date value"
+msgstr ""
+

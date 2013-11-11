@@ -1,0 +1,73 @@
+{% import 'appbuilder/general/lib.html' as lib %}
+
+{# macro list(route_base, label_columns, include_columns, value_columns, order_columns, pks, filters, generalview_name) #}
+
+	{% set can_add = "can_add" | is_item_visible(generalview_name) %}
+	{% set can_show = "can_show" | is_item_visible(generalview_name) %}
+    	{% set can_edit = "can_edit" | is_item_visible(generalview_name) %}
+	{% set can_delete = "can_delete" | is_item_visible(generalview_name) %}
+	<div class="well well-sm">
+		{% if can_add %}
+			{% set path = route_base + '/add?next=' + request.path %}
+			{% set path = path | set_link_filters(filters) %}
+			{{ lib.lnk_add(path) }}
+		{% endif %}
+		{{ lib.lnk_back() }}
+	</div>
+		
+	{% if value_columns %}
+	<div class="table-responsive">
+	<table class="table table-bordered table-hover">
+	<thead>
+	<tr>
+	<th class="col-md-1 col-lg-1 col-sm-1" ></th>
+	{% for item in include_columns %}
+		{% if item in order_columns %}
+			{% set res = item | get_link_order %}
+			{% if res == 2 %}
+				<th><a href={{ item | link_order }}>{{label_columns.get(item)}}
+				<span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></a></th>
+			{% elif res == 1 %}
+	                        <th><a href={{ item | link_order }}>{{label_columns.get(item)}}
+				<span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></a>
+			{% else %}
+				<th><a href={{ item | link_order }}>{{label_columns.get(item)}}
+				<span class="glyphicon glyphicon-sort pull-right"></span></a>
+			{% endif %}
+		{% else %}
+			<th>{{label_columns.get(item)}}</th>
+		{% endif %}
+	{% endfor %}
+	</tr>
+	</thead>
+	
+	{% for item in value_columns %}
+	    <tr>
+		{% set outer_loop = loop %}
+		<td><center>
+			<div class="btn-group btn-group-xs">
+			{% if can_show %}
+				{% set path = route_base ~ '/show/' ~ pks[loop.index-1] ~ '?next=' ~ request.path %}
+				{% set path = path | set_link_filters(filters) %}
+				{{ lib.lnk_show(path) }}
+			{% endif %}
+			{% if can_edit %}
+				{% set path = route_base ~ '/edit/' ~ pks[loop.index-1] ~ '?next=' ~ request.path %}
+				{% set path = path | set_link_filters(filters) %}
+				{{ lib.lnk_edit(path) }}
+			{% endif %}
+			{% if can_delete %}
+				{{ lib.lnk_delete(route_base ~ '/delete/' ~ pks[loop.index-1] ~ '?next=' + request.path) }}
+			{% endif %}
+			</div>
+		</center></td>
+		{% for value in include_columns %}
+			<td> {{ item[value]|safe }}</td>
+		{% endfor %}
+	    </tr>
+	{% endfor %}
+	</table>
+	</div>
+	{% else %}
+	<b> {{_("No records found")}}</b>
+	{% endif %}
