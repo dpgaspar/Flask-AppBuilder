@@ -1,4 +1,5 @@
----- BLUE PRINT EP:indexview ROUTE:/ STATIC:static
+---- BLUE PRINT EP:indexview ROUTE: STATIC:static
+---- BLUE STATIC EP:indexview ROUTE: STATIC:static
 ---- BLUE PRINT EP:localeview ROUTE:/lang STATIC:None
 ---- BLUE PRINT EP:authview ROUTE: STATIC:None
 ---- BLUE PRINT EP:resetpasswordview ROUTE:/resetpassword STATIC:None
@@ -70,7 +71,7 @@ EP: authview.logout METH: HEAD,OPTIONS,GET
 --------------------------------------------
 --------------------------------------------
 EP: indexview.index METH: HEAD,OPTIONS,GET
-//index/ set([])
+/index/ set([])
 --------------------------------------------
 --------------------------------------------
 EP: authview.login METH: HEAD,POST,OPTIONS,GET
@@ -78,7 +79,7 @@ EP: authview.login METH: HEAD,POST,OPTIONS,GET
 --------------------------------------------
 --------------------------------------------
 EP: indexview.index METH: HEAD,OPTIONS,GET
-// set([])
+/ set([])
 --------------------------------------------
 --------------------------------------------
 EP: permissionviewgeneralview.download METH: HEAD,OPTIONS,GET
@@ -87,8 +88,8 @@ EP: permissionviewgeneralview.download METH: HEAD,OPTIONS,GET
 --------------------------------------------
 EP: permissionviewgeneralview.delete METH: HEAD,OPTIONS,GET
 /permissionviews/delete/<int:id> set(['id'])
---------------------------------------------
------------------ BLUE PRINT EP:indexview ROUTE:/ STATIC:static
+-------------- BLUE PRINT EP:indexview ROUTE: STATIC:static
+---- BLUE STATIC EP:indexview ROUTE: STATIC:static
 ---- BLUE PRINT EP:localeview ROUTE:/lang STATIC:None
 ---- BLUE PRINT EP:authview ROUTE: STATIC:None
 ---- BLUE PRINT EP:resetpasswordview ROUTE:/resetpassword STATIC:None
@@ -160,7 +161,7 @@ EP: authview.logout METH: HEAD,OPTIONS,GET
 --------------------------------------------
 --------------------------------------------
 EP: indexview.index METH: HEAD,OPTIONS,GET
-//index/ set([])
+/index/ set([])
 --------------------------------------------
 --------------------------------------------
 EP: authview.login METH: HEAD,POST,OPTIONS,GET
@@ -168,181 +169,7 @@ EP: authview.login METH: HEAD,POST,OPTIONS,GET
 --------------------------------------------
 --------------------------------------------
 EP: indexview.index METH: HEAD,OPTIONS,GET
-// set([])
---------------------------------------------
---------------------------------------------
-EP: permissionviewgeneralview.download METH: HEAD,OPTIONS,GET
-/permissionviews/download/<string:filename> set(['filename'])
---------------------------------------------
---------------------------------------------
-EP: permissionviewgeneralview.delete METH: HEAD,OPTIONS,GET
-/permissionviews/delete/<int:id> set(['id'])
---------------------------------------------
---------------------------------------------
-EP: permissionviewgeneralview.edit METH: HEAD,POST,OPTIONS,GET
-/permissionviews/edit/<int:pk> set(['pk'])
---------------------------------------------
---------------------------------------------
-EP: permissionviewgeneralview.show METH: HEAD,OPTIONS,GET
-/permissionviews/show/<int:id> set(['id'])
---------------------------------------------
---------------------------------------------
-EP: permissiongeneralview.download METH: HEAD,OPTIONS,GET
-/permissions/download/<string:filename> set(['filename'])
---------------------------------------------
---------------------------------------------
-EP: permissiongeneralview.delete METH: HEAD,OPTIONS,GET
-/permissions/delete/<int:id> set(['id'])
---------------------------------------------
---------------------------------------------
-EP: permissiongeneralview.edit METH: HEAD,POST,OPTIONS,GET
-/permissions/edit/<int:pk> set(['pk'])
---------------------------------------------
---------------------------------------------
-EP: permissiongeneralview.show METH: HEAD,OPTIONS,GET
-/permissions/show/<int:id> set(['id'])
---------------------------------------------
---------------------------------------------
-EP: viewmenugeneralview.download METH: HEAD,OPTIONS,GET
-/viewmenus/download/<string:filename> set(['filename'])
---------------------------------------------
---------------------------------------------
-EP: viewmenugeneralview.delete METH: HEAD,OPTIONS,GET
-/viewmenus/delete/<int:id> set(['id'])
---------------------------------------------
---------------------------------------------
-EP: viewmenugeneralview.edit METH: HEAD,POST,OPTIONS,GET
-/viewmenus/edit/<int:pk> set(['pk'])
---------------------------------------------
---------------------------------------------
-EP: viewmenugeneralview.show METH: HEAD,OPTIONS,GET
-/viewmenus/show/<int:id> set(['id'])
---------------------------------------------
---------------------------------------------
-EP: usergeneralview.download METH: HEAD,OPTIONS,GET
-/users/download/<string:filename> set(['filename'])
---------------------------------------------
---------------------------------------------
-EP: rolegeneralview.download METH: HEAD,OPTIONS,GET
-/roles/download/<string:filename> set(['filename'])
---------------------------------------------
---------------------------------------------
-EP: usergeneralview.delete METH: HEAD,OPTIONS,GET
-/users/delete/<int:id> set(['id'])
---------------------------------------------
---------------------------------------------
-EP: rolegeneralview.delete METH: HEAD,OPTIONS,GET
-/roles/delete/<int:id> set(['id'])
---------------------------------------------
---------------------------------------------
-EP: usergeneralview.edit METH: HEAD,POST,OPTIONS,GET
-/users/edit/<int:pk> set(['pk'])
---------------------------------------------
---------------------------------------------
-EP: usergeneralview.show METH: HEAD,OPTIONS,GET
-/users/show/<int:id> set(['id'])
---------------------------------------------
---------------------------------------------
-EP: rolegeneralview.edit METH: HEAD,POST,OPTIONS,GET
-/roles/edit/<int:pk> set(['pk'])
---------------------------------------------
---------------------------------------------
-EP: rolegeneralview.show METH: HEAD,OPTIONS,GET
-/roles/show/<int:id> set(['id'])
---------------------------------------------
---------------------------------------------
-EP: static METH: HEAD,OPTIONS,GET
-/static/<path:filename> set(['filename'])
---------------------------------------------
---------------------------------------------
-EP: indexview.static METH: HEAD,OPTIONS,GET
-//static/<path:filename> set(['filename'])
---------------------------------------------
---------------------------------------------
-EP: localeview.index METH: HEAD,OPTIONS,GET
-/lang/<string:locale> set(['locale'])
---------------------------------------------
----- BLUE PRINT EP:indexview ROUTE:/ STATIC:static
----- BLUE PRINT EP:localeview ROUTE:/lang STATIC:None
----- BLUE PRINT EP:authview ROUTE: STATIC:None
----- BLUE PRINT EP:resetpasswordview ROUTE:/resetpassword STATIC:None
-Registering: Security . List Users at /users/list
----- BLUE PRINT EP:usergeneralview ROUTE:/users STATIC:None
-Registering: Security . List Roles at /roles/list
----- BLUE PRINT EP:rolegeneralview ROUTE:/roles STATIC:None
-Registering: Security . Base Permissions at /permissions/list
----- BLUE PRINT EP:permissionviewgeneralview ROUTE:/permissionviews STATIC:None
-Registering: Security . Views/Menus at /viewmenus/list
----- BLUE PRINT EP:viewmenugeneralview ROUTE:/viewmenus STATIC:None
-Registering: Security . Permission on Views/Menus at /permissionviews/list
----- BLUE PRINT EP:permissiongeneralview ROUTE:/permissions STATIC:None
---------------------------------------------
-EP: permissionviewgeneralview.list METH: HEAD,POST,OPTIONS,GET
-/permissionviews/list/ set([])
---------------------------------------------
---------------------------------------------
-EP: permissionviewgeneralview.add METH: HEAD,POST,OPTIONS,GET
-/permissionviews/add set([])
---------------------------------------------
---------------------------------------------
-EP: resetpasswordview.this_form_get METH: HEAD,OPTIONS,GET
-/resetpassword/form set([])
---------------------------------------------
---------------------------------------------
-EP: resetpasswordview.this_form_post METH: POST,OPTIONS
-/resetpassword/form set([])
---------------------------------------------
---------------------------------------------
-EP: permissiongeneralview.list METH: HEAD,POST,OPTIONS,GET
-/permissions/list/ set([])
---------------------------------------------
---------------------------------------------
-EP: permissiongeneralview.add METH: HEAD,POST,OPTIONS,GET
-/permissions/add set([])
---------------------------------------------
---------------------------------------------
-EP: viewmenugeneralview.list METH: HEAD,POST,OPTIONS,GET
-/viewmenus/list/ set([])
---------------------------------------------
---------------------------------------------
-EP: viewmenugeneralview.add METH: HEAD,POST,OPTIONS,GET
-/viewmenus/add set([])
---------------------------------------------
---------------------------------------------
-EP: usergeneralview.userinfo METH: HEAD,OPTIONS,GET
-/users/userinfo/ set([])
---------------------------------------------
---------------------------------------------
-EP: usergeneralview.list METH: HEAD,POST,OPTIONS,GET
-/users/list/ set([])
---------------------------------------------
---------------------------------------------
-EP: rolegeneralview.list METH: HEAD,POST,OPTIONS,GET
-/roles/list/ set([])
---------------------------------------------
---------------------------------------------
-EP: usergeneralview.add METH: HEAD,POST,OPTIONS,GET
-/users/add set([])
---------------------------------------------
---------------------------------------------
-EP: rolegeneralview.add METH: HEAD,POST,OPTIONS,GET
-/roles/add set([])
---------------------------------------------
---------------------------------------------
-EP: authview.logout METH: HEAD,OPTIONS,GET
-/logout/ set([])
---------------------------------------------
---------------------------------------------
-EP: indexview.index METH: HEAD,OPTIONS,GET
-//index/ set([])
---------------------------------------------
---------------------------------------------
-EP: authview.login METH: HEAD,POST,OPTIONS,GET
-/login/ set([])
---------------------------------------------
---------------------------------------------
-EP: indexview.index METH: HEAD,OPTIONS,GET
-// set([])
+/ set([])
 --------------------------------------------
 --------------------------------------------
 EP: permissionviewgeneralview.download METH: HEAD,OPTIONS,GET
@@ -430,7 +257,7 @@ EP: static METH: HEAD,OPTIONS,GET
 --------------------------------------------
 --------------------------------------------
 EP: indexview.static METH: HEAD,OPTIONS,GET
-//static/<path:filename> set(['filename'])
+/static/<path:filename> set(['filename'])
 --------------------------------------------
 --------------------------------------------
 EP: localeview.index METH: HEAD,OPTIONS,GET
