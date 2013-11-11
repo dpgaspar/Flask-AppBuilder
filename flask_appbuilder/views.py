@@ -67,10 +67,12 @@ class BaseView(object):
                                    url_prefix=self.route_base,
                                    template_folder=self.template_folder)
         else:
+	    print "BP", self.endpoint, self.static_folder
             self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.route_base,
                                    template_folder=self.template_folder,
-                                   static_folder = static_folder)
+                                   static_folder = static_folder,
+				   static_url_path = '/static')
 
         self.register_urls()
         return self.blueprint
