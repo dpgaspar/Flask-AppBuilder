@@ -68,6 +68,7 @@ class BaseView(object):
                                    url_prefix=self.route_base,
                                    template_folder=self.template_folder)
         else:
+	    print "---- BLUE STATIC EP:%s ROUTE:%s STATIC:%s" % (self.endpoint, self.route_base, self.static_folder)
             self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.route_base,
                                    template_folder=self.template_folder,
@@ -132,7 +133,7 @@ class IndexView(BaseView):
     A simple view that implements the index for the site
     """
 
-    route_base = '/'
+    route_base = ''
 
     index_template = 'appbuilder/index.html'
 
