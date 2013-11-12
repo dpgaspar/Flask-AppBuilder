@@ -46,8 +46,8 @@ class BaseApp():
         self.add_view(PermissionViewGeneralView, "Base Permissions","/permissions/list","lock","Security")
         self.add_view(ViewMenuGeneralView, "Views/Menus","/viewmenus/list","list-alt","Security")
         self.add_view(PermissionGeneralView, "Permission on Views/Menus","/permissionviews/list","lock","Security")
-	#self.admin = Blueprint('admin', __name__, static_folder='static', static_url_path = '/static')
-	#self.app.register_blueprint(self.admin)
+	self.admin = Blueprint('admin', __name__, static_folder='static', static_url_path = '/static')
+	self.app.register_blueprint(self.admin)
 
     def add_view(self, baseview, name, href, icon, category):
         print "Registering:", category,".", name, "at", href
