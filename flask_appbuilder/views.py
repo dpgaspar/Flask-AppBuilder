@@ -131,7 +131,7 @@ class IndexView(BaseView):
     A simple view that implements the index for the site
     """
 
-    route_base = ''
+    route_base = '/'
 
     index_template = 'appbuilder/index.html'
 
