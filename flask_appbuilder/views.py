@@ -438,7 +438,7 @@ class GeneralView(BaseCRUDView):
     @expose('/list/', methods=['GET', 'POST'])
     @has_access
     def list(self):
-	print 'URL STATIC', url_for('static'), url_for('admin.static')
+	print 'URL STATIC', url_for('admin.static')
         form = self.search_form.refresh()
         search_form = self.search_form(request.form)
 
