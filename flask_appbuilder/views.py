@@ -439,7 +439,6 @@ class GeneralView(BaseCRUDView):
     @has_access
     def list(self):
 
-	print url_for('admin.static',filename='img/aol.png')
         form = self.search_form.refresh()
         search_form = self.search_form(request.form)
 
