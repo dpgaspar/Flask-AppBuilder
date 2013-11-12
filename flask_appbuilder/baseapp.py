@@ -33,7 +33,7 @@ class BaseApp():
         self._add_admin_views()
 
     def _add_admin_views(self):
-        self.add_view_no_menu(self.indexview)
+        #self.add_view_no_menu(self.indexview)
         self.add_view_no_menu(LocaleView)
         #self.add_view_no_menu(AuthView)
         self.add_view_no_menu(ResetPasswordView)
