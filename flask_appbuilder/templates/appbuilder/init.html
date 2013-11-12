@@ -23,7 +23,7 @@
     {% endblock %}
     {% block head_css %}
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
-        <link href="/static/css/themes/{{baseapp.app_theme}}"  rel="stylesheet">
+        <link href="{{url_for('baseapp.static',filename='css/themes/'+ baseapp.app_theme )}}"  rel="stylesheet">
 	<link href="{{url_for('baseapp.static',filename='datepicker/bootstrap-datepicker.css')}}" rel="stylesheet">
 	<link href="{{url_for('baseapp.static',filename='select2/select2.css')}}" rel="stylesheet">
         <link href="{{url_for('baseapp.static',filename='css/flags/flags16.css')}}" rel="stylesheet">
