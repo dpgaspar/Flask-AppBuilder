@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Flask-AppBuilder',
-    version='0.0.43',
+    version='0.0.45',
     url='https://github.com/dpgaspar/flask-appbuilder/',
     license='BSD',
     author='Daniel Vaz Gaspar',
