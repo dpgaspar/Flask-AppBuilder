@@ -438,6 +438,8 @@ class GeneralView(BaseCRUDView):
     @expose('/list/', methods=['GET', 'POST'])
     @has_access
     def list(self):
+
+	print url_for('admin.static','/img/aol.png')
         form = self.search_form.refresh()
         search_form = self.search_form(request.form)
 
