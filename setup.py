@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Flask-AppBuilder',
-    version='0.1.5',
+    version='0.1.6',
     url='https://github.com/dpgaspar/flask-appbuilder/',
     license='BSD',
     author='Daniel Vaz Gaspar',
@@ -10,6 +10,7 @@ setup(
     description='Simple and rapid Application builder, includes detailed security, auto form generation, google charts and much more.',
     long_description=__doc__,
     packages=find_packages(),
+    scripts=['bin/init_app.py'],
     include_package_data=True,
     zip_safe=False,
     platforms='any',
