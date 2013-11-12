@@ -35,7 +35,7 @@ class BaseApp():
     def _add_admin_views(self):
         self.add_view_no_menu(self.indexview)
         self.add_view_no_menu(LocaleView)
-        #self.add_view_no_menu(AuthView)
+        self.add_view_no_menu(AuthView)
         self.add_view_no_menu(ResetPasswordView)
 
         self.add_view(UserGeneralView, "List Users"
@@ -46,6 +46,10 @@ class BaseApp():
         self.add_view(PermissionViewGeneralView, "Base Permissions","/permissions/list","lock","Security")
         self.add_view(ViewMenuGeneralView, "Views/Menus","/viewmenus/list","list-alt","Security")
         self.add_view(PermissionGeneralView, "Permission on Views/Menus","/permissionviews/list","lock","Security")
+
+        bp = Blueprint(endpoint='admin', __name__, template_folder='templates',
+               static_folder='static', static_url_path='./static'_)
+	self.app.register_blueprint(bp)	
 
     def add_view(self, baseview, name, href, icon, category):
         print "Registering:", category,".", name, "at", href
