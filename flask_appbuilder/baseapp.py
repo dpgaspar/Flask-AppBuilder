@@ -13,6 +13,9 @@ class BaseApp():
     app_name = ""
     indexview = None
     
+    static_folder = None
+    static_url_path = None
+    
     languages = None
     admin = None
     _gettext = _gettext
@@ -23,16 +26,19 @@ class BaseApp():
      Add menu with categories inserted
     #-----------------------------------
     """
-    def __init__(self, app, menu, indexview = None):
+    def __init__(self, app, menu, indexview = None, static_folder='static/appbuilder', static_url_path='/appbuilder'):
         self.menu = menu
         self.app = app
         self.app_name = app.config['APP_NAME']
         self.app_theme = app.config['APP_THEME']
         self.languages = app.config['LANGUAGES']
         self.indexview = indexview or IndexView
+        self.static_folder = static_folder
+        self.static_url_path = static_url_path
         self._add_admin_views()
+        
 
-    def _add_admin_views(self):
+    def _add_admin_views(self, ):
         self.add_view_no_menu(self.indexview)
         self.add_view_no_menu(LocaleView)
         self.add_view_no_menu(AuthView)
@@ -47,9 +53,9 @@ class BaseApp():
         self.add_view(ViewMenuGeneralView, "Views/Menus","/viewmenus/list","list-alt","Security")
         self.add_view(PermissionGeneralView, "Permission on Views/Menus","/permissionviews/list","lock","Security")
 
-	bp = Blueprint('baseapp', __name__, url_prefix='/static',
-                template_folder='templates', static_folder='static/appbuilder', static_url_path='/appbuilder')
-	self.app.register_blueprint(bp)
+        bp = Blueprint('baseapp', __name__, url_prefix='/static',
+                template_folder='templates', static_folder = self.static_folder, static_url_path = self.static_url_path)
+        self.app.register_blueprint(bp)
 
     def add_view(self, baseview, name, href, icon, category):
         print "Registering:", category,".", name, "at", href
