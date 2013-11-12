@@ -1,3 +1,8 @@
+import os
+import flask.ext.appbuilder.views import BaseView
+path = os.path.dirname(amodule.__file__)
+
+
 from app import app, db
 from flask.ext.appbuilder.security.models import User, Role
 

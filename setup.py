@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Flask-AppBuilder',
-    version='0.1.1',
+    version='0.1.2',
     url='https://github.com/dpgaspar/flask-appbuilder/',
     license='BSD',
     author='Daniel Vaz Gaspar',
@@ -27,7 +27,7 @@ setup(
         'Flask-WTF==0.8.3',
     ],
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',

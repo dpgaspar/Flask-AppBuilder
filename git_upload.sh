@@ -14,5 +14,6 @@ git add ./scripts -A
 git add ./babel -A
 git add ./doc -A
 git add ./examples -A
+git add ./skeleton -A
 git commit -m "$1"
 git push origin master
