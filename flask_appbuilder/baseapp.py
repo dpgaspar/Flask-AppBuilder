@@ -35,7 +35,7 @@ class BaseApp():
     def _add_admin_views(self):
         self.add_view_no_menu(self.indexview)
         self.add_view_no_menu(LocaleView)
-        self.add_view_no_menu(AuthView)
+        #self.add_view_no_menu(AuthView)
         self.add_view_no_menu(ResetPasswordView)
 
         self.add_view(UserGeneralView, "List Users"
