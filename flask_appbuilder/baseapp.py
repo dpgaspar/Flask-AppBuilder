@@ -48,7 +48,7 @@ class BaseApp():
         self.add_view(PermissionGeneralView, "Permission on Views/Menus","/permissionviews/list","lock","Security")
 
         bp = Blueprint('baseapp', __name__, url_prefix='/appbuilder', 
-                template_folder='templates', static_folder='static', static_url_path='/static')
+                template_folder='templates', static_folder='static', static_url_path='/static/appbuilder')
 	self.app.register_blueprint(bp)	
 
     def add_view(self, baseview, name, href, icon, category):
