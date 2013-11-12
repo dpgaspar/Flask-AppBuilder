@@ -65,7 +65,7 @@ class BaseView(object):
         # Create blueprint and register rules
             self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.route_base,
-                                   template_folder=self.template_folder, static_folder='static')
+                                   template_folder=self.template_folder)
         else:
             self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.route_base,
@@ -439,7 +439,7 @@ class GeneralView(BaseCRUDView):
     @has_access
     def list(self):
 
-	print url_for('admin.static',filename='img/aol.pgn')
+	print url_for('admin.static',filename='img/aol.png')
         form = self.search_form.refresh()
         search_form = self.search_form(request.form)
 
