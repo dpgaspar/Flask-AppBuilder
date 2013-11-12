@@ -2,10 +2,10 @@ import os
 import shutil
 from flask.ext import appbuilder
 
-projectname = raw_input('Enter you project name: ')
-os.mkdir(projectname)
-path = os.path.dirname(appbuilder.__file__)
-shutil.copytree(str(path).join('/skeleton') , './'.join(projectname))
+#projectname = raw_input('Enter you project name: ')
+#os.mkdir(projectname)
+#path = os.path.dirname(appbuilder.__file__)
+#shutil.copytree(str(path).join('/skeleton') , './'.join(projectname))
 
 
 from app import app, db

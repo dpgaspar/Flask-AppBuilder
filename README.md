@@ -22,19 +22,19 @@ Simple and rapid Application builder, includes detailed security, auto form gene
 
 ## Instalation
 
-This is not on PyPi so it's not ready (yet...) for you to 'pip install'.
-So use git-clone or:
+This is finally on PyPi. So for easy instalation:
 
 ``` sh
- wget https://github.com/dpgaspar/flask-general/archive/master.zip
- unzip master.zip
- cd master-flask-general
- pip install -r requirements.txt
- python init_app.py
+ pip install flask-appbuilder
 ```
 
+for your first application you can use "skeleton" ou "examples/simpleapp" 
 
-The init_app.py will create fresh new database, and add an 'admin' user with all permissions.
+### Initial configuration
+
+After having the initial skeleton of you app, initialize the database.
+
+Use init_app.py (folder scripts on git) will create a fresh new database, and add an 'admin' user with all permissions.
 The 'admin' password will be 'general' change it on your first access using the application.
 (Click the username on the navigation bar, then choose 'Reset Password')
 
@@ -69,8 +69,6 @@ class Group(db.Model):
     def __repr__(self):
         return self.name
 
-    def link_contacts(self):
-        return Markup('<a href="/persons/list/?_flt_group=' + str(self.id) + '"/>Contacts</a>')
 ```
 
 Notice: link_contacts is a function, but it's included as a model column
@@ -90,13 +88,13 @@ class GroupGeneralView(GeneralView):
 
         label_columns = { 'name':'Name','address':'Address','phone1':'Phone (1)','phone2':'Phone (2)','taxid':'Tax ID','notes':'Notes'}
         description_columns = {'name':'Write this group name'}
-        list_columns = ['name','notes','link_contacts']
+        list_columns = ['name','notes']
         show_columns = ['name','address','phone1','phone2','taxid','notes']
         order_columns = ['name','notes']
         search_columns = ['name']
 
-
-	genapp = General(app, menu)
+	
+	genapp = General(app, Menu())
 	genapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
 ```
 

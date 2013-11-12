@@ -1,13 +1,8 @@
-# Fix for older setuptools
-import re
-import os
-
 from setuptools import setup, find_packages
-
 
 setup(
     name='Flask-AppBuilder',
-    version='0.1.3',
+    version='0.1.4',
     url='https://github.com/dpgaspar/flask-appbuilder/',
     license='BSD',
     author='Daniel Vaz Gaspar',
