@@ -5,7 +5,6 @@ from setuptools import setup, find_packages
 def fpath(name):
     return os.path.join(os.path.dirname(__file__), name)
 
-
 def read(fname):
     return open(fpath(fname)).read()
 
@@ -15,7 +14,7 @@ def desc():
 
 setup(
     name='Flask-AppBuilder',
-    version='0.1.27',
+    version='0.1.28',
     url='https://github.com/dpgaspar/flask-appbuilder/',
     license='BSD',
     author='Daniel Vaz Gaspar',

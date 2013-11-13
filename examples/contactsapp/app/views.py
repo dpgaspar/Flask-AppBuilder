@@ -67,8 +67,15 @@ class GroupGeneralView(GeneralView):
     order_columns = ['name','notes']
     search_columns = ['name']
 
+class PersonChartView(ChartView):
+    
+    route_base = '/persons'
+    chart_title = 'Grouped Persons'
+    label_columns = PersonGeneralView.label_columns
+    group_by_columns = ['group']
+    datamodel = SQLAModel(Person)
 
 baseapp = BaseApp(app, Menu())
 baseapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
 baseapp.add_view(PersonGeneralView, "List Contacts","/persons/list","earphone","Contacts")
-
+baseapp.add_view(PersonChartView, "Contacts Chart","/persons/chart","earphone","Contacts")

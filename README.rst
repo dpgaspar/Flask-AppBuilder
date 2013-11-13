@@ -55,7 +55,12 @@ Use config.py to configure the following parameters, by default it will use SQLL
 How to do it?
 -------------
 
-It's very easy and fast to create an application out of the box, with detailed security:
+It's very easy and fast to create an application out of the box, with detailed security
+
+Please take a look at github examples on: 
+
+https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples
+
 
 Define your models (models.py)
 ..............................
@@ -107,11 +112,19 @@ Some pictures
 
 Master Detail view with related lists:
 
-https://raw.github.com/dpgaspar/homeapp/master/master_detail_list.png "List"
+https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/master_detail_list.png "List"
 
 Login page (with AUTH_DB):
 
-https://raw.github.com/dpgaspar/homeapp/master/login.png "Login"
+https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login.png "Login"
+
+Charts:
+
+https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login.png "Charts"
+
+Pictures in List Thumbnail:
+
+https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/ListThumbnail.png
 
 Depends on:
 -----------
