@@ -59,7 +59,9 @@ It's very easy and fast to create an application out of the box, with detailed s
 
 Define your models (models.py)
 ..............................
+
 ::
+
         class Group(db.Model):
             id = db.Column(db.Integer, primary_key = True)
             name =  db.Column(db.String(264), unique = True, nullable=False)
@@ -75,7 +77,9 @@ Define your models (models.py)
 
 Define your Views (views.py)
 ............................
+
 ::
+
         class GroupGeneralView(GeneralView):
                 route_base = '/groups'
                 datamodel = SQLAModel(Group)
