@@ -1,4 +1,4 @@
-
+from models import Person, Group
 from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.views import GeneralView, BaseView
 from flask.ext.appbuilder.charts.views import ChartView
@@ -11,7 +11,6 @@ from flask.ext.appbuilder.filters import *
 class PersonGeneralView(GeneralView):
     route_base = '/persons'
     datamodel = SQLAModel(Person)
-    decorators = [login_required]
 
     list_title = 'List Contacts'
     show_title = 'Show Contact'
@@ -55,7 +54,6 @@ class PersonGeneralView(GeneralView):
 class GroupGeneralView(GeneralView):
     route_base = '/groups'
     datamodel = SQLAModel(Group)
-    decorators = [login_required]
     related_views = [PersonGeneralView()]
 
     list_title = 'List Groups'
