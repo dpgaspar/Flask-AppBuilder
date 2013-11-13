@@ -90,7 +90,7 @@ class ImageManager(FileManager):
                                         **kwargs)
 
     def get_url(self, filename):
-        return self.relative_path + filename.filename
+        return self.relative_path + filename
     
     # Deletion
     def delete_file(self, filename):
