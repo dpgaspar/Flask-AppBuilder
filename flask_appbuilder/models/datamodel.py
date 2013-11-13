@@ -34,7 +34,10 @@ class SQLAModel(DataModel):
     SQLAModel
     Implements SQLA support methods for views
     """
-    def __init__(self, obj):
+    db_session = None
+    
+    def __init__(self, obj, db_session = None):
+        self.db_session = db_session
         DataModel.__init__(self, obj)
 
     
@@ -140,19 +143,19 @@ class SQLAModel(DataModel):
     -----------------------------------------
     """
     def add(self, item):
-        #try:
+        try:
             db.session.add(item)
             db.session.commit()
             flash(unicode(self.add_row_message),'success')
             return True
-        #except IntegrityError as e:
-        #    flash(unicode(self.add_integrity_error_message),'warning')
-        #    db.session.rollback()
-        #    return False
-        #except:
-        #    flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
-        #    db.session.rollback()
-        #    return False
+        except IntegrityError as e:
+            flash(unicode(self.add_integrity_error_message),'warning')
+            db.session.rollback()
+            return False
+        except:
+            flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
+            db.session.rollback()
+            return False
 
     def edit(self, item):
         try:
@@ -171,20 +174,20 @@ class SQLAModel(DataModel):
                 
     
     def delete(self, item):
-        #try:
+        try:
             self._delete_files(item)
             db.session.delete(item)
             db.session.commit()
             flash(unicode(self.delete_row_message),'success')
             return True
-        #except IntegrityError as e:
-        #    flash(unicode(self.delete_integrity_error_message),'warning')
-        #    db.session.rollback()
-        #    return False
-        #except:
-        #    flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
-        #    db.session.rollback()
-        #    return False
+        except IntegrityError as e:
+            flash(unicode(self.delete_integrity_error_message),'warning')
+            db.session.rollback()
+            return False
+        except:
+            flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
+            db.session.rollback()
+            return False
         
         
     """
