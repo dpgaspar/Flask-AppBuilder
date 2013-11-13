@@ -23,7 +23,7 @@ POSTS_PER_PAGE = 3
 MAX_SEARCH_RESULTS = 50
 
 BABEL_DEFAULT_LOCALE = 'en'
-
+BABEL_DEFAULT_FOLDER = 'translations'
 LANGUAGES = {
     'en': {'flag':'gb', 'name':'English'},
     'pt': {'flag':'pt', 'name':'Portugal'}
@@ -41,11 +41,11 @@ AUTH_TYPE = 1
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
 APP_NAME = "My App 0.2"
-APP_THEME = ""                  # default
+#APP_THEME = ""                  # default
 #APP_THEME = "cerulean.css"      # COOL
 #APP_THEME = "amelia.css"
 #APP_THEME = "cosmo.css"
-#APP_THEME = "cyborg.css"       # COOL
+APP_THEME = "cyborg.css"       # COOL
 #APP_THEME = "flatly.css"
 #APP_THEME = "journal.css"
 #APP_THEME = "readable.css"
