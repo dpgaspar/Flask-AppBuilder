@@ -74,13 +74,13 @@ class SQLAModel(DataModel):
     def query_simple_group(self, group_by = '', filters = {}, order_column = '', order_direction = ''):
         try:
             rel_model, rel_direction = self._get_related_model(group_by)
-            query = db.session.query(rel_model,func.count(self.obj.id))
+            query = self.db_session.query(rel_model,func.count(self.obj.id))
             query = query.join(rel_model, getattr(self.obj,group_by))
             query = self._get_base_query(query = query, filters = filters, order_column = order_column, order_direction = order_direction)
             query = query.group_by(rel_model)
             return query.all()
         except:
-            query = db.session.query(rel_model,func.count(self.obj.id))
+            query = self.db_session.query(rel_model,func.count(self.obj.id))
             query = self._get_base_query(query = query, filters = filters, order_column = order_column, order_direction = order_direction)
             query = query.group_by(group_by)
             return query.all()
@@ -144,49 +144,49 @@ class SQLAModel(DataModel):
     """
     def add(self, item):
         try:
-            db.session.add(item)
-            db.session.commit()
+            self.db_session.add(item)
+            self.db_session.commit()
             flash(unicode(self.add_row_message),'success')
             return True
         except IntegrityError as e:
             flash(unicode(self.add_integrity_error_message),'warning')
-            db.session.rollback()
+            self.db_session.rollback()
             return False
         except:
             flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
-            db.session.rollback()
+            self.db_session.rollback()
             return False
 
     def edit(self, item):
         try:
-            db.session.merge(item)
-            db.session.commit()
+            self.db_session.merge(item)
+            self.db_session.commit()
             flash(unicode(self.edit_row_message),'success')
             return True
         except IntegrityError as e:
             flash(unicode(self.edit_integrity_error_message),'warning')
-            db.session.rollback()
+            self.db_session.rollback()
             return False
         except:
             flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
-            db.session.rollback()
+            self.db_session.rollback()
             return False
                 
     
     def delete(self, item):
         try:
             self._delete_files(item)
-            db.session.delete(item)
-            db.session.commit()
+            self.db_session.delete(item)
+            self.db_session.commit()
             flash(unicode(self.delete_row_message),'success')
             return True
         except IntegrityError as e:
             flash(unicode(self.delete_integrity_error_message),'warning')
-            db.session.rollback()
+            self.db_session.rollback()
             return False
         except:
             flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
-            db.session.rollback()
+            self.db_session.rollback()
             return False
         
         
