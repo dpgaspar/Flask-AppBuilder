@@ -31,8 +31,7 @@ This is finally on PyPi. So for easy instalation::
 for your first application you can use "skeleton" ou "examples/simpleapp" 
 
 Initial configuration
----------------------
----------------------
+.....................
 
 After having the initial skeleton of you app, initialize the database.
 
