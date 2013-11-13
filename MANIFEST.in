@@ -2,6 +2,7 @@ include LICENSE
 include README.md
 recursive-include ./bin *
 recursive-include ./skeleton *
+prune *.pyc
 recursive-include flask_appbuilder/static *
 recursive-include flask_appbuilder/templates *
 recursive-include flask_appbuilder/translations *
