@@ -62,7 +62,7 @@ class GroupGeneralView(GeneralView):
     edit_title = 'Edit Group'
 
     label_columns = { 'name':'Name','address':'Address','phone1':'Phone (1)','phone2':'Phone (2)','taxid':'Tax ID','notes':'Notes'}
-    list_columns = ['name','notes','link_contacts']
+    list_columns = ['name','notes']
     show_columns = ['name','address','phone1','phone2','taxid','notes']
     order_columns = ['name','notes']
     search_columns = ['name']
