@@ -1,10 +1,11 @@
 Flask App Builder
-==============
+=================
 
 Simple and rapid Application builder, includes detailed security, auto form generation, google charts and much more.
 
 
-## Includes:
+Includes:
+---------
 
   - Auto Create, Remove, Add, Edit and Show from Database Models
   - Support for multi-language via Babel
@@ -20,17 +21,19 @@ Simple and rapid Application builder, includes detailed security, auto form gene
   - Public and private permissions
   - Bootstrap 3.0.0 CSS and js, with Select2 and DatePicker
 
-## Instalation
+Instalation
+-----------
 
-This is finally on PyPi. So for easy instalation:
+This is finally on PyPi. So for easy instalation::
 
-``` sh
+ sh
  pip install flask-appbuilder
-```
+
 
 for your first application you can use "skeleton" ou "examples/simpleapp" 
 
-### Initial configuration
+Initial configuration
+---------------------
 
 After having the initial skeleton of you app, initialize the database.
 
@@ -38,7 +41,8 @@ Use init_app.py (folder scripts on git) will create a fresh new database, and ad
 The 'admin' password will be 'general' change it on your first access using the application.
 (Click the username on the navigation bar, then choose 'Reset Password')
 
-## Base Configuration
+Base Configuration
+------------------
 
 Use config.py to configure the following parameters, by default it will use SQLLITE DB, and bootstrap 3.0.0 base theme:
 
@@ -50,13 +54,16 @@ Use config.py to configure the following parameters, by default it will use SQLL
   - APP_NAME: The name of your application
   - APP_THEME: Various themes for you to choose from (bootwatch).
 
-## How to do it?
+How to do it?
+-------------
 
 It's very easy and fast to create an application out of the box, with detailed security:
 
-### Define your models (models.py):
+Define your models (models.py):
+-------------------------------
 
-```python
+models.py::
+
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name =  db.Column(db.String(264), unique = True, nullable=False)
@@ -69,13 +76,11 @@ class Group(db.Model):
     def __repr__(self):
         return self.name
 
-```
 
-Notice: link_contacts is a function, but it's included as a model column
+Define your Views (views.py):
+---------------------------------
 
-### Define your Views (views.py):
-
-```python
+::
 class GroupGeneralView(GeneralView):
         route_base = '/groups'
         datamodel = SQLAModel(Group)
@@ -96,9 +101,10 @@ class GroupGeneralView(GeneralView):
 	
 	genapp = General(app, Menu())
 	genapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
-```
 
-### Some pictures
+
+Some pictures
+-------------
 
 Master Detail view with related lists:
 ![Homeapp](https://raw.github.com/dpgaspar/homeapp/master/master_detail_list.png "List")
@@ -106,7 +112,8 @@ Master Detail view with related lists:
 Login page (with AUTH_DB):
 ![Homeapp](https://raw.github.com/dpgaspar/homeapp/master/login.png "Login")
 
-### Depends on:
+Depends on:
+-----------
 
 - flask
 - flask-sqlalchemy
@@ -115,14 +122,11 @@ Login page (with AUTH_DB):
 - flask-wtform
 - flask-Babel
 
-### Planning to include:
+Planning to include:
+--------------------
  
  - Security for ldap auth.
  - Easy page flow definition (wizard style).
  
-This code includes a simple contacts app, and file browser for download and upload.
-
-Currently using it on a Raspberry PI, :)
-
 This is not production ready.
 
