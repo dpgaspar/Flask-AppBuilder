@@ -2,15 +2,26 @@ import os
 import sys
 from setuptools import setup, find_packages
 
+def fpath(name):
+    return os.path.join(os.path.dirname(__file__), name)
+
+
+def read(fname):
+    return open(fpath(fname)).read()
+
+
+def desc():
+    return read('README.md')
+
 setup(
     name='Flask-AppBuilder',
-    version='0.1.11',
+    version='0.1.12',
     url='https://github.com/dpgaspar/flask-appbuilder/',
     license='BSD',
     author='Daniel Vaz Gaspar',
     author_email='danielvazgaspar@gmail.com',
     description='Simple and rapid Application builder, includes detailed security, auto form generation, google charts and much more.',
-    long_description=open("README.md").read(),
+    long_description=desc(),
     packages=find_packages(),
     package_data={'': ['LICENSE']},
     scripts=['bin/init_app.py'],
