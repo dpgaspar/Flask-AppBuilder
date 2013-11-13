@@ -120,7 +120,7 @@ https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login.png "Login"
 
 Charts:
 
-https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login.png "Charts"
+https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/Charts.png "Charts"
 
 Pictures in List Thumbnail:
 
