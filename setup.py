@@ -1,16 +1,17 @@
+import os
 from setuptools import setup, find_packages
 
 setup(
     name='Flask-AppBuilder',
-    version='0.1.8',
+    version='0.1.10',
     url='https://github.com/dpgaspar/flask-appbuilder/',
     license='BSD',
     author='Daniel Vaz Gaspar',
     author_email='danielvazgaspar@gmail.com',
     description='Simple and rapid Application builder, includes detailed security, auto form generation, google charts and much more.',
-    long_description=__doc__,
+    long_description=open("README.md").read(),
     packages=find_packages(),
-    package_data={'': ['LICENSE','skeleton/*']},
+    package_data={'': ['LICENSE']},
     scripts=['bin/init_app.py'],
     include_package_data=True,
     zip_safe=False,
