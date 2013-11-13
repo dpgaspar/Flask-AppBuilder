@@ -32,6 +32,7 @@ for your first application you can use "skeleton" ou "examples/simpleapp"
 
 Initial configuration
 ---------------------
+---------------------
 
 After having the initial skeleton of you app, initialize the database.
 
