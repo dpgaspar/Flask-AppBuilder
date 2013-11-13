@@ -26,9 +26,7 @@ Instalation
 
 This is finally on PyPi. So for easy instalation::
 
- sh
- pip install flask-appbuilder
-
+    pip install flask-appbuilder
 
 for your first application you can use "skeleton" ou "examples/simpleapp" 
 
@@ -48,8 +46,8 @@ Use config.py to configure the following parameters, by default it will use SQLL
 
   - Database connection string (SQLALCHEMY_DATABASE_URI)
   - AUTH_TYPE: This is the authentication type
-	-- 0 = Open ID
-	-- 1 = Database style (user/password)
+	- 0 = Open ID
+	- 1 = Database style (user/password)
   - AUTH_ROLE_ADMIN: Configure the name of the admin role. All you new models and view will have automatic full access on this role
   - APP_NAME: The name of your application
   - APP_THEME: Various themes for you to choose from (bootwatch).
@@ -61,8 +59,6 @@ It's very easy and fast to create an application out of the box, with detailed s
 
 Define your models (models.py):
 -------------------------------
-
-models.py::
 
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -80,7 +76,6 @@ class Group(db.Model):
 Define your Views (views.py):
 ---------------------------------
 
-::
 class GroupGeneralView(GeneralView):
         route_base = '/groups'
         datamodel = SQLAModel(Group)
@@ -107,10 +102,12 @@ Some pictures
 -------------
 
 Master Detail view with related lists:
-![Homeapp](https://raw.github.com/dpgaspar/homeapp/master/master_detail_list.png "List")
+
+https://raw.github.com/dpgaspar/homeapp/master/master_detail_list.png "List"
 
 Login page (with AUTH_DB):
-![Homeapp](https://raw.github.com/dpgaspar/homeapp/master/login.png "Login")
+
+https://raw.github.com/dpgaspar/homeapp/master/login.png "Login"
 
 Depends on:
 -----------

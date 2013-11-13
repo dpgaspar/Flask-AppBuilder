@@ -11,11 +11,11 @@ def read(fname):
 
 
 def desc():
-    return read('README.md')
+    return read('README.rst')
 
 setup(
     name='Flask-AppBuilder',
-    version='0.1.15',
+    version='0.1.17',
     url='https://github.com/dpgaspar/flask-appbuilder/',
     license='BSD',
     author='Daniel Vaz Gaspar',
