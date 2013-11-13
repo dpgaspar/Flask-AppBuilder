@@ -1,3 +1,4 @@
+git add LICENSE
 git add *.py -A
 git add *.in -A
 git add *.cfg -A
