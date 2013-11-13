@@ -61,43 +61,43 @@ Define your models (models.py):
 -------------------------------
 
 .. code-block:: python
-class Group(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    name =  db.Column(db.String(264), unique = True, nullable=False)
-    address =  db.Column(db.String(564))
-    phone1 = db.Column(db.String(50))
-    phone2 = db.Column(db.String(50))
-    taxid = db.Column(db.Integer)
-    notes = db.Column(db.String(550))
+        class Group(db.Model):
+            id = db.Column(db.Integer, primary_key = True)
+            name =  db.Column(db.String(264), unique = True, nullable=False)
+            address =  db.Column(db.String(564))
+            phone1 = db.Column(db.String(50))
+            phone2 = db.Column(db.String(50))
+            taxid = db.Column(db.Integer)
+            notes = db.Column(db.String(550))
 
-    def __repr__(self):
-        return self.name
+            def __repr__(self):
+                return self.name
 
 
 Define your Views (views.py):
 ---------------------------------
 
 .. code-block:: python
-class GroupGeneralView(GeneralView):
-        route_base = '/groups'
-        datamodel = SQLAModel(Group)
-        decorators = [login_required]
+        class GroupGeneralView(GeneralView):
+                route_base = '/groups'
+                datamodel = SQLAModel(Group)
+                decorators = [login_required]
 
-        list_title = 'List Groups'
-        show_title = 'Show Group'
-        add_title = 'Add Group'
-        edit_title = 'Edit Group'
+                list_title = 'List Groups'
+                show_title = 'Show Group'
+                add_title = 'Add Group'
+                edit_title = 'Edit Group'
 
-        label_columns = { 'name':'Name','address':'Address','phone1':'Phone (1)','phone2':'Phone (2)','taxid':'Tax ID','notes':'Notes'}
-        description_columns = {'name':'Write this group name'}
-        list_columns = ['name','notes']
-        show_columns = ['name','address','phone1','phone2','taxid','notes']
-        order_columns = ['name','notes']
-        search_columns = ['name']
+                label_columns = { 'name':'Name','address':'Address','phone1':'Phone (1)','phone2':'Phone (2)','taxid':'Tax ID','notes':'Notes'}
+                description_columns = {'name':'Write this group name'}
+                list_columns = ['name','notes']
+                show_columns = ['name','address','phone1','phone2','taxid','notes']
+                order_columns = ['name','notes']
+                search_columns = ['name']
 
 	
-	genapp = General(app, Menu())
-	genapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
+        genapp = General(app, Menu())
+        genapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
 
 
 Some pictures
