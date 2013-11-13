@@ -40,7 +40,7 @@ The 'admin' password will be 'general' change it on your first access using the 
 (Click the username on the navigation bar, then choose 'Reset Password')
 
 Base Configuration
-------------------
+..................
 
 Use config.py to configure the following parameters, by default it will use SQLLITE DB, and bootstrap 3.0.0 base theme:
 
@@ -57,8 +57,8 @@ How to do it?
 
 It's very easy and fast to create an application out of the box, with detailed security:
 
-Define your models (models.py):
--------------------------------
+Define your models (models.py)
+..............................
 
 .. code-block:: python
         class Group(db.Model):
@@ -74,8 +74,8 @@ Define your models (models.py):
                 return self.name
 
 
-Define your Views (views.py):
----------------------------------
+Define your Views (views.py)
+............................
 
 .. code-block:: python
         class GroupGeneralView(GeneralView):
