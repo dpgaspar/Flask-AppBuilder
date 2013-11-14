@@ -4,7 +4,7 @@ from flask.ext.appbuilder.views import GeneralView, BaseView
 from flask.ext.appbuilder.charts.views import ChartView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.widgets import ListThumbnail
-from flask.ext.appbuilder.filters import *
+
 
 
 class PersonGeneralView(GeneralView):
