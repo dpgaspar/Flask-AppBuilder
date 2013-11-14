@@ -204,15 +204,15 @@ class SQLAModel(DataModel):
                 
         
     def _delete_files(self, item):
-        fm = FileManager()
-        im = ImageManager()
         for file_col in self.get_file_column_list():
             if self.is_file(file_col):
                 if getattr(item,file_col):
+                    fm = FileManager()
                     fm.delete_file(getattr(item, file_col))
         for file_col in self.get_image_column_list():
             if self.is_image(file_col):
                 if getattr(item,file_col):
+                    im = ImageManager()
                     im.delete_file(getattr(item,file_col))
 
     """
