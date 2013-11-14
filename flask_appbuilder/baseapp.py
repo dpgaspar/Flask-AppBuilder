@@ -44,8 +44,7 @@ class BaseApp():
     
     def add_global_filters(self):
         self.template_filters = TemplateFilters(self.app)
-	print self.app.jinja_env.filters
-
+	
     def add_global_static(self):
         bp = Blueprint('baseapp', __name__, url_prefix='/static',
                 template_folder='templates', static_folder = self.static_folder, static_url_path = self.static_url_path)
