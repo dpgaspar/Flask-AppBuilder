@@ -4,7 +4,6 @@ from flask.ext.appbuilder.views import GeneralView, BaseView
 from flask.ext.appbuilder.charts.views import ChartView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.widgets import ListThumbnail
-from flask.ext.appbuilder.menu import Menu
 from flask.ext.appbuilder.filters import *
 
 
@@ -75,7 +74,7 @@ class PersonChartView(ChartView):
     group_by_columns = ['group']
     datamodel = SQLAModel(Person, db.session)
 
-baseapp = BaseApp(app, Menu())
+baseapp = BaseApp(app)
 baseapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
 baseapp.add_view(PersonGeneralView, "List Contacts","/persons/list","earphone","Contacts")
 baseapp.add_view(PersonChartView, "Contacts Chart","/persons/chart","earphone","Contacts")
