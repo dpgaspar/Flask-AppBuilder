@@ -1,4 +1,4 @@
-from app import app, db
+from app import app
 from flask.ext.appbuilder.security.models import is_menu_public, is_item_public
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask import g, request
