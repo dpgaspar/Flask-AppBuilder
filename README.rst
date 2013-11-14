@@ -7,18 +7,20 @@ Simple and rapid Application builder, includes detailed security, auto form gene
 Includes:
 ---------
 
+  - Security
+    - Auto permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.
+      Inserts on the Database all the detailed permissions possible on you application.
+    - Public (no authentication needed) and Private permissions.
+    - Role based permissions.
+    - Authentication base on OpenID and Database (Planning LDAP).
+  - Auto menu generator.
+  - Various view widgets like, lists, master-detail, list of thumbnails.
+  - Image and File support for upload and database field association. It will handle everything for you.
   - Auto Create, Remove, Add, Edit and Show from Database Models
   - Support for multi-language via Babel
-  - Auto File and Image with extended SQLA types, and auto upload form field creation.
-  - Filter lists with configurable search form, including related fields (Select box).
-  - Auto WTForm generator, with select (single and multiple) and DatePicker.
   - Field set's for Form's (Django style).
   - Google charts with automatic group by's.
   - Easy to extend via big widget's like charts, master-detail lists, etc...
-  - Auto menu generator.
-  - Security (OID, DB), detailed permissions on menus, create, edit, remove, show.
-  - User's, Role, and detail permission automaticaly created on the DB.
-  - Public and private permissions
   - Bootstrap 3.0.0 CSS and js, with Select2 and DatePicker
 
 Instalation
@@ -102,7 +104,7 @@ Define your Views (views.py)
                 search_columns = ['name']
 
 	
-        genapp = General(app, Menu())
+        genapp = General(app)
         genapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
 
 
