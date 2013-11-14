@@ -10,7 +10,7 @@ from flask.ext.appbuilder.filters import *
 
 class PersonGeneralView(GeneralView):
     route_base = '/persons'
-    datamodel = SQLAModel(Person)
+    datamodel = SQLAModel(Person, db.session)
 
     list_title = 'List Contacts'
     show_title = 'Show Contact'
@@ -53,7 +53,7 @@ class PersonGeneralView(GeneralView):
 
 class GroupGeneralView(GeneralView):
     route_base = '/groups'
-    datamodel = SQLAModel(Group)
+    datamodel = SQLAModel(Group, db.session)
     related_views = [PersonGeneralView()]
 
     list_title = 'List Groups'
