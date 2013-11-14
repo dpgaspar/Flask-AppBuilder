@@ -25,8 +25,8 @@ AUTH_LDAP = 2
 
 class PermissionGeneralView(GeneralView):
     route_base = '/permissions'
-    decorators = [login_required]
-    datamodel = SQLAModel(Permission)
+    
+    datamodel = SQLAModel(Permission, db.session)
 
     list_title = lazy_gettext('List Base Permissions')
     show_title = lazy_gettext('Show Base Permission')
@@ -41,8 +41,8 @@ class PermissionGeneralView(GeneralView):
 
 class ViewMenuGeneralView(GeneralView):
     route_base = '/viewmenus'
-    decorators = [login_required]
-    datamodel = SQLAModel(ViewMenu)
+    
+    datamodel = SQLAModel(ViewMenu, db.session)
 
     list_title = lazy_gettext('List View Menus')
     show_title = lazy_gettext('Show View Menu')
@@ -57,8 +57,8 @@ class ViewMenuGeneralView(GeneralView):
 
 class PermissionViewGeneralView(GeneralView):
     route_base = '/permissionviews'
-    decorators = [login_required]
-    datamodel = SQLAModel(PermissionView)
+    
+    datamodel = SQLAModel(PermissionView , db.session)
 
     list_title = lazy_gettext('List Permissions on Views/Menus')
     show_title = lazy_gettext('Show Permission on Views/Menus')
@@ -75,7 +75,7 @@ class PermissionViewGeneralView(GeneralView):
 class ResetPasswordView(SimpleFormView):
 
     route_base = '/resetpassword'
-    decorators = [login_required]
+    
 
     form = ResetPasswordForm
     form_title = lazy_gettext('Reset Password Form')
@@ -93,8 +93,8 @@ class ResetPasswordView(SimpleFormView):
 
 class UserGeneralView(GeneralView):
     route_base = '/users'
-    datamodel = SQLAModel(User)
-    decorators = [login_required]
+    datamodel = SQLAModel(User, db.session)
+    
 
     list_title = lazy_gettext('List Users')
     show_title = lazy_gettext('Show User')
@@ -171,8 +171,8 @@ class UserGeneralView(GeneralView):
 
 class RoleGeneralView(GeneralView):
     route_base = '/roles'
-    decorators = [login_required]
-    datamodel = SQLAModel(Role)
+    
+    datamodel = SQLAModel(Role, db.session)
 
     related_views = [PermissionViewGeneralView(), UserGeneralView()]
 
