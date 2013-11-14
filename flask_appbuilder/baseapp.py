@@ -36,9 +36,18 @@ class BaseApp():
         self.static_folder = static_folder
         self.static_url_path = static_url_path
         self._add_admin_views()
-        
+        self.add_global_static()
 
-    def _add_admin_views(self, ):
+    
+    def register_global_filters(self):
+        pass
+
+    def add_global_static(self):
+        bp = Blueprint('baseapp', __name__, url_prefix='/static',
+                template_folder='templates', static_folder = self.static_folder, static_url_path = self.static_url_path)
+        self.app.register_blueprint(bp)
+
+    def _add_admin_views(self):
         self.add_view_no_menu(self.indexview)
         self.add_view_no_menu(LocaleView)
         self.add_view_no_menu(AuthView)
@@ -53,10 +62,7 @@ class BaseApp():
         self.add_view(ViewMenuGeneralView, "Views/Menus","/viewmenus/list","list-alt","Security")
         self.add_view(PermissionGeneralView, "Permission on Views/Menus","/permissionviews/list","lock","Security")
 
-        bp = Blueprint('baseapp', __name__, url_prefix='/static',
-                template_folder='templates', static_folder = self.static_folder, static_url_path = self.static_url_path)
-        self.app.register_blueprint(bp)
-
+        
     def add_view(self, baseview, name, href, icon, category):
         print "Registering:", category,".", name, "at", href
         self.menu.add_link(name, href, icon, category)
