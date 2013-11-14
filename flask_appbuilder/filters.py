@@ -25,7 +25,7 @@ class TemplateFilters(object):
                 app.jinja_env.filters[attr._filter] = attr
 
     @app_template_filter('link_order')
-    def link_order_filter(s):
+    def link_order_filter(self, s):
 
         if (request.args.get('order_column') == s):
             lststr = request.path.split('?')
