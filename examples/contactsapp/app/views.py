@@ -5,6 +5,7 @@ from flask.ext.appbuilder.charts.views import ChartView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.widgets import ListThumbnail
 
+from app import app
 
 
 class PersonGeneralView(GeneralView):
