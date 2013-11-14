@@ -2,7 +2,6 @@ from flask.ext.wtf import Form, fields, widgets, TextField, BooleanField, TextAr
 from flask.ext.wtf import Required, Length, validators, EqualTo
 from wtforms.widgets import HTMLString, html_params
 import sqlalchemy as sa
-from app import db
 from upload import *
 
 
