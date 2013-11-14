@@ -38,65 +38,64 @@ class TemplateFilters(object):
 
 
 
-@app.template_filter('get_link_next')
-def get_link_next_filter(s):
-    print "NEXT = ", request.args.get('next')
-    return request.args.get('next')
+    @app_template_filter('get_link_next')
+    def get_link_next_filter(self, s):
+        return request.args.get('next')
 
 
-@app.template_filter('set_link_filters')
-def add_link_filters_filter(path, filters):
-    lnkstr = path
-    for _filter in filters:
-        try:
-            datamodel = SQLAModel(filters.get(_filter))
-            pk_name = datamodel.get_pk_name()
-            pk_value = getattr(filters.get(_filter), pk_name)
-            lnkstr = lnkstr + '&_flt_' + _filter + '=' + str(pk_value)
-        except:
-            pass
-    return lnkstr
+    @app_template_filter('set_link_filters')
+    def add_link_filters_filter(self, path, filters):
+        lnkstr = path
+        for _filter in filters:
+            try:
+                datamodel = SQLAModel(filters.get(_filter))
+                pk_name = datamodel.get_pk_name()
+                pk_value = getattr(filters.get(_filter), pk_name)
+                lnkstr = lnkstr + '&_flt_' + _filter + '=' + str(pk_value)
+            except:
+                pass
+        return lnkstr
 
 
-@app.template_filter('get_link_order')
-def get_link_order_filter(s):
-    if request.args.get('order_column') == s:
-        order_direction = request.args.get('order_direction')
-        if (order_direction):
-            if (order_direction == 'asc'):
-                return 2
+    @app_template_filter('get_link_order')
+    def get_link_order_filter(self, s):
+        if request.args.get('order_column') == s:
+            order_direction = request.args.get('order_direction')
+            if (order_direction):
+                if (order_direction == 'asc'):
+                    return 2
+                else:
+                    return 1
+        else:
+            return 0
+
+    @app_template_filter('get_attr')
+    def get_attr_filter(self, obj, item):
+        return getattr(obj, item)
+
+
+    @app_template_filter('is_menu_visible')
+    def is_menu_visible(self, item):
+        if current_user.is_authenticated():
+            if is_menu_public(item) or g.user.has_menu_access(item.name):
+                return True
             else:
-                return 1
-    else:
-        return 0
-
-@app.template_filter('get_attr')
-def get_attr_filter(obj, item):
-    return getattr(obj, item)
-
-
-@app.template_filter('is_menu_visible')
-def is_menu_visible(item):
-    if current_user.is_authenticated():
-        if is_menu_public(item) or g.user.has_menu_access(item.name):
-            return True
+                return False
         else:
-            return False
-    else:
-        if is_menu_public(item.name):
-            return True
-        else:
-            return False
+            if is_menu_public(item.name):
+                return True
+            else:
+                return False
 
-@app.template_filter('is_item_visible')
-def is_item_visible(permission, item):
-    if current_user.is_authenticated():
-        if g.user.has_permission_on_view(permission, item):
-            return True
+    @app_template_filter('is_item_visible')
+    def is_item_visible(self, permission, item):
+        if current_user.is_authenticated():
+            if g.user.has_permission_on_view(permission, item):
+                return True
+            else:
+                return False
         else:
-            return False
-    else:
-        if is_item_public(permission, item):
-            return True
-        else:
-            return False
+            if is_item_public(permission, item):
+                return True
+            else:
+                return False
