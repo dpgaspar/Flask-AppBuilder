@@ -33,7 +33,7 @@ class GeneralModelConverter(object):
         rel_model = self.datamodel.get_model_relation(prop)
         form_props[self.datamodel.get_property_col(prop)] = QuerySelectField(label,
                                                 description=description,
-                                                query_factory = lambda: db.session.query(rel_model),
+                                                query_factory = lambda: self.datamodel.session.query(rel_model),
                                                 allow_blank = True,
                                                 widget=Select2Widget())
         return form_props
@@ -42,7 +42,7 @@ class GeneralModelConverter(object):
         rel_model = self.datamodel.get_model_relation(prop)
         form_props[self.datamodel.get_property_col(prop)] = QuerySelectMultipleField(label,
                 description=description,
-                query_factory = lambda: db.session.query(rel_model),
+                query_factory = lambda: self.datamodel.session.query(rel_model),
                 allow_blank=True,
                 widget=Select2ManyWidget())
         return form_props
