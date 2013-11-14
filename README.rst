@@ -88,7 +88,6 @@ Define your Views (views.py)
         class GroupGeneralView(GeneralView):
                 route_base = '/groups'
                 datamodel = SQLAModel(Group, db.session)
-                decorators = [login_required]
 
                 list_title = 'List Groups'
                 show_title = 'Show Group'
