@@ -68,7 +68,6 @@ class PermissionViewGeneralView(GeneralView):
     label_columns = {'permission':lazy_gettext('Permission'), 'view_menu': lazy_gettext('View/Menu')}
     list_columns = ['permission', 'view_menu']
     show_columns = ['permission', 'view_menu']
-    order_columns = ['permission', 'view_menu']
     search_columns = ['permission', 'view_menu']
 
 
