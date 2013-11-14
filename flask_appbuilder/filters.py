@@ -4,6 +4,40 @@ from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask import g, request
 from flask.ext.login import current_user
 
+
+def app_template_filter(filter_name=''):
+    """
+        Use this decorator to expose views in your view classes.
+    """
+    def wrap(f):
+        if not hasattr(f, '_filter'):
+            f._filter = filter_name
+        return f
+    return wrap
+
+
+class TemplateFilters(object):
+    
+    def __init__(self, app):
+        for attr_name in dir(self):
+            if hasattr(getattr(self, attr_name),'_filter'):
+                attr = getattr(self, attr_name)
+                app.jinja_env.filters[attr._filter] = attr
+
+    @app_template_filter('link_order_2')
+    def link_order_filter(s):
+
+        if (request.args.get('order_column') == s):
+            lststr = request.path.split('?')
+            if (request.args.get('order_direction') == 'asc'):
+                return lststr[0] + '?order_column=' + s + '&order_direction=desc'
+            else:
+                return  request.path + '?order_column=' + s + '&order_direction=asc'
+        else:
+            return  request.path + '?order_column=' + s + '&order_direction=asc'
+
+
+
 @app.template_filter('link_order')
 def link_order_filter(s):
 
