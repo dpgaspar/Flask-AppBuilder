@@ -4,6 +4,7 @@ from flask.ext.babel import gettext as _gettext
 from .security.views import AuthView, ResetPasswordView, UserGeneralView, RoleGeneralView, PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, IndexView, PermissionView
 from .babel.views import LocaleView
 from menu import Menu
+from filters import TemplateFilters
 
 class BaseApp():
 
@@ -15,6 +16,8 @@ class BaseApp():
     
     static_folder = None
     static_url_path = None
+    
+    template_filters = None
     
     languages = None
     admin = None
@@ -37,10 +40,10 @@ class BaseApp():
         self.static_url_path = static_url_path
         self._add_admin_views()
         self.add_global_static()
-
+        self.add_global_filters()
     
-    def register_global_filters(self):
-        pass
+    def add_global_filters(self):
+        self.template_filters = TemplateFilters(self.app)
 
     def add_global_static(self):
         bp = Blueprint('baseapp', __name__, url_prefix='/static',
