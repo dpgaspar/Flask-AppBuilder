@@ -28,28 +28,38 @@ Includes:
 	- Support for multi-language via Babel (still not working in package form)
   - Bootstrap 3.0.0 CSS and js, with Select2 and DatePicker
 
-Instalation
------------
+4 Steps to get Started
+----------------------
 
-This is finally on PyPi. So for easy instalation::
+- Install it::
 
-    pip install flask-appbuilder
+	pip install flask-appbuilder
+	git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
 
-for your first application you can use "skeleton" or "examples/simpleapp" 
+
+- Configure it::
+
+	python init_app.py
+
+- Run it::
+
+	python run.py
+
+
+That's it!!
+
 
 Initial configuration
 .....................
 
-After having the initial skeleton of your app, initialize the database::
+After having the initial skeleton of your app, and initialize the database
 
-    python init_app.py
-
-Use init_app.py (folder 'bin' on git) to create a fresh new database.
-This will:
-	- Create the security tables and all your application tables too.
-	- Add an 'admin' user associated with role "Admin".
-	- Initialize all your applications detailed permissions.
-	- Add all permission to Role "Admin" (AUTH_ROLE_ADMIN).
+init_app.py has created:
+- A fresh new database.
+- The security tables and all your application tables too.
+- 'admin' user associated with role "Admin".
+- Initialize all your applications detailed permissions.
+- All permission to Role "Admin" (AUTH_ROLE_ADMIN).
 
 The 'admin' password will be 'general'. Change it on your first access using the application.
 (Click the username on the navigation bar, then choose 'Reset Password')
@@ -59,7 +69,7 @@ Base Configuration
 
 Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap 3.0.0 base theme:
 
-  - Database connection string (SQLALCHEMY_DATABASE_URI)
+  - SQLALCHEMY_DATABASE_URI: Database connection string
   - AUTH_TYPE: This is the authentication type
 	- 0 = Open ID
 	- 1 = Database style (user/password)
@@ -86,7 +96,7 @@ Define your models (models.py)
         class Group(db.Model):
             id = db.Column(db.Integer, primary_key = True)
             name =  db.Column(db.String(264), 
-							unique = True, nullable=False)
+		unique = True, nullable=False)
             address =  db.Column(db.String(564))
             phone1 = db.Column(db.String(50))
             phone2 = db.Column(db.String(50))
