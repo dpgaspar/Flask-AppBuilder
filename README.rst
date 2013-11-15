@@ -14,18 +14,18 @@ Includes:
         - Role based permissions.
         - Authentication based on OpenID and Database (Planning LDAP).
   - Views and Widgets
-		- Auto menu generator.
-		- Various view widgets like, lists, master-detail, list of thumbnails.
-		- Select2, Datepicker, DateTimePicker
-		- Menu with icons
-		- Google charts with automatic group by's.
+	- Auto menu generator.
+	- Various view widgets: lists, master-detail, list of thumbnails etc
+	- Select2, Datepicker, DateTimePicker
+	- Menu with icons
+	- Google charts with automatic group by.
   - Forms
-		- Auto Create, Remove, Add, Edit and Show from Database Models
-		- Labels and descriptions for each field
-		- Image and File support for upload and database field association. It will handle everything for you.
-		- Field set's for Form's (Django style).
+	- Auto Create, Remove, Add, Edit and Show from Database Models
+	- Labels and descriptions for each field
+	- Image and File support for upload and database field association. It will handle everything for you.
+	- Field sets for Form's (Django style).
   - i18n
-		- Support for multi-language via Babel (still not working in package form)
+	- Support for multi-language via Babel (still not working in package form)
   - Bootstrap 3.0.0 CSS and js, with Select2 and DatePicker
 
 Instalation
@@ -35,7 +35,7 @@ This is finally on PyPi. So for easy instalation::
 
     pip install flask-appbuilder
 
-for your first application you can use "skeleton" ou "examples/simpleapp" 
+for your first application you can use "skeleton" or "examples/simpleapp" 
 
 Initial configuration
 .....................
