@@ -42,7 +42,7 @@ Initial configuration
 
 After having the initial skeleton of your app, initialize the database::
 
-python init_app.py
+    python init_app.py
 
 Use init_app.py (folder scripts on git) will create a fresh new database.
 Add an 'admin' associated with role "Admin" with all permissions.
