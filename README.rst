@@ -44,21 +44,26 @@ After having the initial skeleton of your app, initialize the database::
 
     python init_app.py
 
-Use init_app.py (folder 'bin' on git) will create a fresh new database.
-Add an 'admin' associated with role "Admin" with all permissions.
-The 'admin' password will be 'general' change it on your first access using the application.
+Use init_app.py (folder 'bin' on git) to create a fresh new database.
+This will:
+	- Create the security tables and all your application tables too.
+	- Add an 'admin' user associated with role "Admin".
+	- Initialize all your applications detailed permissions.
+	- Add all permission to Role "Admin" (AUTH_ROLE_ADMIN).
+
+The 'admin' password will be 'general'. Change it on your first access using the application.
 (Click the username on the navigation bar, then choose 'Reset Password')
 
 Base Configuration
 ..................
 
-Use config.py to configure the following parameters, by default it will use SQLLITE DB, and bootstrap 3.0.0 base theme:
+Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap 3.0.0 base theme:
 
   - Database connection string (SQLALCHEMY_DATABASE_URI)
   - AUTH_TYPE: This is the authentication type
 	- 0 = Open ID
 	- 1 = Database style (user/password)
-  - AUTH_ROLE_ADMIN: Configure the name of the admin role. All you new models and view will have automatic full access on this role
+  - AUTH_ROLE_ADMIN: Configure the name of the admin role. 
   - AUTH_ROLE_PUBLIC: Special Role that holds the public permissions, no authentication needed
   - APP_NAME: The name of your application
   - APP_THEME: Various themes for you to choose from (bootwatch).
@@ -66,9 +71,9 @@ Use config.py to configure the following parameters, by default it will use SQLL
 How to do it?
 -------------
 
-It's very easy and fast to create an application out of the box, with detailed security
+It's very easy and fast to create an application out of the box, with detailed security.
 
-Please take a look at github examples on: 
+Please take a look at github examples on:
 
 https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples
 
