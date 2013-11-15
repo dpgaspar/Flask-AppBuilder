@@ -594,10 +594,6 @@ class GeneralView(BaseCRUDView):
                     as_attachment = True)
         
 
-class FileCRUDView(BaseCRUDView):
-    pass
-
-    
 
 
 class AdditionalLinkItem():

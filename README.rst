@@ -9,18 +9,23 @@ Includes:
 
   - Security
         - Auto permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.
-        - Inserts on the Database all the detailed permissions possible on you application.
+        - Inserts on the Database all the detailed permissions possible on your application.
         - Public (no authentication needed) and Private permissions.
         - Role based permissions.
-        - Authentication base on OpenID and Database (Planning LDAP).
-  - Auto menu generator.
-  - Various view widgets like, lists, master-detail, list of thumbnails.
-  - Image and File support for upload and database field association. It will handle everything for you.
-  - Auto Create, Remove, Add, Edit and Show from Database Models
-  - Support for multi-language via Babel
-  - Field set's for Form's (Django style).
-  - Google charts with automatic group by's.
-  - Easy to extend via big widget's like charts, master-detail lists, etc...
+        - Authentication based on OpenID and Database (Planning LDAP).
+  - Views and Widgets
+		- Auto menu generator.
+		- Various view widgets like, lists, master-detail, list of thumbnails.
+		- Select2, Datepicker, DateTimePicker
+		- Menu with icons
+		- Google charts with automatic group by's.
+  - Forms
+		- Auto Create, Remove, Add, Edit and Show from Database Models
+		- Labels and descriptions for each field
+		- Image and File support for upload and database field association. It will handle everything for you.
+		- Field set's for Form's (Django style).
+  - i18n
+		- Support for multi-language via Babel (still not working in package form)
   - Bootstrap 3.0.0 CSS and js, with Select2 and DatePicker
 
 Instalation
@@ -35,9 +40,12 @@ for your first application you can use "skeleton" ou "examples/simpleapp"
 Initial configuration
 .....................
 
-After having the initial skeleton of you app, initialize the database.
+After having the initial skeleton of your app, initialize the database::
 
-Use init_app.py (folder scripts on git) will create a fresh new database, and add an 'admin' user with all permissions.
+python init_app.py
+
+Use init_app.py (folder scripts on git) will create a fresh new database.
+Add an 'admin' associated with role "Admin" with all permissions.
 The 'admin' password will be 'general' change it on your first access using the application.
 (Click the username on the navigation bar, then choose 'Reset Password')
 
@@ -51,6 +59,7 @@ Use config.py to configure the following parameters, by default it will use SQLL
 	- 0 = Open ID
 	- 1 = Database style (user/password)
   - AUTH_ROLE_ADMIN: Configure the name of the admin role. All you new models and view will have automatic full access on this role
+  - AUTH_ROLE_PUBLIC: Special Role that holds the public permissions, no authentication needed
   - APP_NAME: The name of your application
   - APP_THEME: Various themes for you to choose from (bootwatch).
 
@@ -71,7 +80,8 @@ Define your models (models.py)
 
         class Group(db.Model):
             id = db.Column(db.Integer, primary_key = True)
-            name =  db.Column(db.String(264), unique = True, nullable=False)
+            name =  db.Column(db.String(264), 
+							unique = True, nullable=False)
             address =  db.Column(db.String(564))
             phone1 = db.Column(db.String(50))
             phone2 = db.Column(db.String(50))
@@ -96,7 +106,11 @@ Define your Views (views.py)
                 add_title = 'Add Group'
                 edit_title = 'Edit Group'
 
-                label_columns = { 'name':'Name','address':'Address','phone1':'Phone (1)','phone2':'Phone (2)','taxid':'Tax ID','notes':'Notes'}
+                label_columns = { 'name':'Name','address':'Address',
+					'phone1':'Phone (1)',
+					'phone2':'Phone (2)',
+					'taxid':'Tax ID',
+					'notes':'Notes'}
                 description_columns = {'name':'Write this group name'}
                 list_columns = ['name','notes']
                 show_columns = ['name','address','phone1','phone2','taxid','notes']

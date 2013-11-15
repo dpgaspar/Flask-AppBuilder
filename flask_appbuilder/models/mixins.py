@@ -2,7 +2,6 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, DateTime
 import sqlalchemy.types as types
 from sqlalchemy.types import String
-# from app import db
 from flask import g
 import uuid
 import datetime
