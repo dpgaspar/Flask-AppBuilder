@@ -3,8 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Flask-AppBuilder's documentation!
+Flask-AppBuilder's documentation!
 ============================================
+
+Simple and rapid Application builder, built on top of flask.
+includes detailed security, auto form generation, google charts and much more.
 
 Contents:
 
