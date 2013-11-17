@@ -1,7 +1,7 @@
-{% macro render_additional_links(additional_links) %}
+{% macro render_additional_links(additional_links, pk) %}
 	{% if additional_links %}
 		{% for item in additional_links %}
-			<a href="{{item.href}}" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon"></span>
+			<a href="{{item.href}}?pk={{pk}}" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon"></span>
 			{{_(item.label)}}</a>
 		{% endfor %}
 	{% endif %}

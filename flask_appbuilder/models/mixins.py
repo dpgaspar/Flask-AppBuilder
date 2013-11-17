@@ -18,7 +18,7 @@ class FileColumn(types.TypeDecorator):
 class ImageColumn(types.TypeDecorator):
     impl = types.Text
 
-        
+
 
 class BaseMixin(object):
     __table_args__ = {'extend_existing': True}

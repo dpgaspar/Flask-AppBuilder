@@ -35,17 +35,29 @@ class BaseView(object):
     template_folder = 'templates'
     static_folder='static'
     
-    base_permissions = None
+    base_permissions = []
     redirect_url = '/'
 
+    actions = []
+
     def __init__(self):
+        """
+        Initialization of base permissions
+        based on exposed methods and actions
+        """
         if not self.base_permissions:
             self.base_permissions = [
-                ('can_' + attr_name) 
-                for attr_name in dir(self) 
+                ('can_' + attr_name)
+                for attr_name in dir(self)
                 if hasattr(getattr(self, attr_name),'_urls')
                 ]
-
+            for attr_name in dir(self):
+                if hasattr(getattr(self, attr_name),'_action'):
+                    action = ActionItem(*attr_name._action, func = getattr(self, attr_name))
+                    self.base_permissions.append(action.name)
+                    self.actions.append(action)
+            
+            
 
     def create_blueprint(self, baseapp, 
                         endpoint = None, 
@@ -167,14 +179,16 @@ class SimpleFormView(BaseView):
         form = self.form.refresh()
         self.form_get(form)
         widgets = self._get_edit_widget(form = form)
-        return render_template(
-                                                self.form_template,
-                                                title = self.form_title,
-                                                widgets = widgets,
-                                                baseapp = self.baseapp
-                    )
+        return render_template(self.form_template,
+            title = self.form_title,
+            widgets = widgets,
+            baseapp = self.baseapp
+            )
 
     def form_get(self, form):
+        """
+        Override this method to implement your form processing
+        """
         pass
 
     @expose("/form", methods=['POST'])
@@ -348,13 +362,18 @@ class BaseCRUDView(BaseView):
         return widgets
 
 
-    def _get_show_widget(self, id, widgets = {}):
+    def _get_show_widget(self, id, widgets = {}, show_additional_links = []):
+        if show_additional_links:
+            additional_links = show_additional_links
+        else: additional_links = self.show_additional_links
+        print "ADDLINKS", additional_links
         item = self.datamodel.get(id)
         widgets['show'] = self.show_widget(route_base = self.route_base,
+                                                pk = id,
                                                 label_columns = self.label_columns,
                                                 include_columns = self.show_columns,
                                                 value_columns = self.datamodel.get_values_item(item, self.show_columns),
-                                                additional_links = self.show_additional_links,
+                                                additional_links = additional_links,
                                                 fieldsets = self.show_fieldsets
                                                 )
         return widgets
@@ -597,11 +616,13 @@ class GeneralView(BaseCRUDView):
 
 
 class AdditionalLinkItem():
+    name = ""
     label = ""
     href = ""
     icon = ""
 
-    def __init__(self, label="", href="", icon=""):
+    def __init__(self, name, label, href, icon=""):
+        self.name = name
         self.label = label
         self.href = href
         self.icon = icon

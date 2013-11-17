@@ -1,4 +1,5 @@
 from flask import Markup
+
 from hashlib import md5
 from app import db
 from config import AUTH_ROLE_ADMIN, AUTH_ROLE_PUBLIC
@@ -6,6 +7,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from ..models.mixins import BaseMixin
 
 def is_menu_public(item):
+    """
+    Check if menu item has public permissions
+    
+    param item:
+        menu item
+    """
     role = Role.query.filter_by(name = AUTH_ROLE_PUBLIC).first()
     lst = role.permissions
     if lst:
@@ -16,6 +23,15 @@ def is_menu_public(item):
     else: return False
 
 def is_item_public(permission_name, generalview_name):
+    """
+    Check if view has public permissions
+    
+    param permission_name:
+        the permission: can_show, can_edit...
+    param generalview_name:
+        the name of the class view (child of BaseView)
+    """
+
     role = Role.query.filter_by(name = AUTH_ROLE_PUBLIC).first()
     lst = role.permissions
     if lst:
@@ -27,7 +43,7 @@ def is_item_public(permission_name, generalview_name):
 
 
 
-class Permission(BaseMixin, db.Model):
+class Permission(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique = True, nullable=False)
 
@@ -44,7 +60,7 @@ class Permission(BaseMixin, db.Model):
     def __repr__(self):
         return self.name
 
-class ViewMenu(BaseMixin, db.Model):
+class ViewMenu(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique = True, nullable=False)
 
@@ -70,7 +86,7 @@ class ViewMenu(BaseMixin, db.Model):
 
 
 
-class PermissionView(BaseMixin, db.Model):
+class PermissionView(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     permission_id = db.Column(db.Integer, db.ForeignKey('permission.id'))
     permission = db.relationship("Permission")
@@ -139,7 +155,7 @@ assoc_permissionview_role = db.Table('permission_view_role', db.Model.metadata,
         )
 
 
-class Role(BaseMixin, db.Model):
+class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique = True, nullable=False)
     permissions = db.relationship('PermissionView', secondary = assoc_permissionview_role, backref='role')
@@ -155,7 +171,7 @@ class Role(BaseMixin, db.Model):
     def __repr__(self):
         return self.name
 
-class User(BaseMixin, db.Model):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(64), nullable = False)
     last_name = db.Column(db.String(64), nullable = False)
@@ -165,7 +181,6 @@ class User(BaseMixin, db.Model):
     email = db.Column(db.String(64))
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
     role = db.relationship("Role")
-
 
     def has_menu_access(self, menu_name):
         lst = self.role.permissions
@@ -217,3 +232,4 @@ class User(BaseMixin, db.Model):
 
     def __repr__(self):
         return (self.get_full_name())
+

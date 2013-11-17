@@ -71,11 +71,12 @@ class PermissionViewGeneralView(GeneralView):
     search_columns = ['permission', 'view_menu']
 
 
-class ResetPasswordView(SimpleFormView):
-
-    route_base = '/resetpassword'
+class ResetMyPasswordView(SimpleFormView):
+    """
+    View for reseting own user password
+    """
+    route_base = '/resetmypassword'
     
-
     form = ResetPasswordForm
     form_title = lazy_gettext('Reset Password Form')
     form_columns = ['password','conf_password']
@@ -84,7 +85,30 @@ class ResetPasswordView(SimpleFormView):
     message = lazy_gettext('Password Changed')
 
     def form_post(self, form):
-        user = db.session.query(User).get(g.user.id)
+        pk = request.args.get('pk')
+        user = db.session.query(User).get(pk)
+        user.password = form.password.data
+        db.session.commit()
+        flash(unicode(self.message),'info')
+
+
+class ResetPasswordView(SimpleFormView):
+    """
+    View for reseting all users password
+    """
+    
+    route_base = '/resetpassword'
+    
+    form = ResetPasswordForm
+    form_title = lazy_gettext('Reset Password Form')
+    form_columns = ['password','conf_password']
+    redirect_url = '/'
+
+    message = lazy_gettext('Password Changed')
+
+    def form_post(self, form):
+        pk = request.args.get('pk')
+        user = db.session.query(User).get(pk)
         user.password = form.password.data
         db.session.commit()
         flash(unicode(self.message),'info')
@@ -129,18 +153,21 @@ class UserGeneralView(GeneralView):
 
     show_additional_links = []
 
+    def __init__(self, **kwargs):
+        self.show_additional_links = [(AdditionalLinkItem('resetpassword', self.lnk_reset_password,"/resetpassword/form","lock"))]
+        super(UserGeneralView, self).__init__(**kwargs)
+
     @expose('/userinfo/')
     def userinfo(self):
         item = g.user
 
         additional_links = None
 
-
         if AUTH_TYPE == AUTH_DB:
-            if not self.show_additional_links:
-                self.show_additional_links.append(AdditionalLinkItem(self.lnk_reset_password,"/resetpassword/form","lock"))
-
-        widgets = self._get_show_widget(item.id)
+                show_additional_links = [AdditionalLinkItem('resetmypassword', self.lnk_reset_password,"/resetmypassword/form","lock")]
+                widgets = self._get_show_widget(item.id, show_additional_links = show_additional_links)
+        else:
+            widgets = self._get_show_widget(item.id)
 
         return render_template(self.show_template,
                            title = self.user_info_title,
@@ -165,7 +192,6 @@ class UserGeneralView(GeneralView):
                 self.add_columns = self.add_columns + ['password', 'conf_password']
         else:
             self.add_form.password = None
-
 
 
 class RoleGeneralView(GeneralView):

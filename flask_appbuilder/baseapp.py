@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask.ext.babel import lazy_gettext
 from flask.ext.babel import gettext as _gettext
-from .security.views import AuthView, ResetPasswordView, UserGeneralView, RoleGeneralView, PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, IndexView, PermissionView
+from .security.views import AuthView, ResetMyPasswordView, ResetPasswordView, UserGeneralView, RoleGeneralView, PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, IndexView, PermissionView
 from .babel.views import LocaleView
 from menu import Menu
 from filters import TemplateFilters
@@ -55,6 +55,7 @@ class BaseApp():
         self.add_view_no_menu(LocaleView)
         self.add_view_no_menu(AuthView)
         self.add_view_no_menu(ResetPasswordView)
+        self.add_view_no_menu(ResetMyPasswordView)
 
         self.add_view(UserGeneralView, "List Users"
                                         ,"/users/list","user",

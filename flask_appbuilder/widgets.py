@@ -52,6 +52,7 @@ class ShowWidget(RenderTemplateWidget):
     template = 'appbuilder/general/widgets/show.html'
 
     route_base = ''
+    pk = None
     label_columns = []
     include_columns = []
     value_columns = []
@@ -59,12 +60,14 @@ class ShowWidget(RenderTemplateWidget):
     fieldsets = []
 
     def __init__(self, route_base = '',
+                pk = None,
                 label_columns = [],
                 include_columns = [],
                 value_columns = [],
                 additional_links = [],
                 fieldsets = []):
         self.route_base = route_base
+        self.pk = pk
         self.label_columns = label_columns
         self.include_columns = include_columns
         self.value_columns = value_columns
@@ -73,6 +76,7 @@ class ShowWidget(RenderTemplateWidget):
 
     def __call__(self, **kwargs):
         kwargs['route_base'] = self.route_base
+        kwargs['pk'] = self.pk
         kwargs['label_columns'] = self.label_columns
         kwargs['include_columns'] = self.include_columns
         kwargs['value_columns'] = self.value_columns

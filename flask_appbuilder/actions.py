@@ -2,17 +2,19 @@
 class ActionItem():
     name = ""
     text = ""
+    confirmation = ""
+    href = ""
     func = None
 
-    def __init__(self, name, text, func):
+    def __init__(self, name, text, confirmation, func):
         self.name = name
         self.text = text
+        self.confirmation = confirmation
         self.func = func
 
 def action(name, text, confirmation=None):
     """
-        Use this decorator to expose actions that span more than one
-        entity (model, file, etc)
+        Use this decorator to expose actions
 
         :param name:
             Action name
@@ -27,3 +29,4 @@ def action(name, text, confirmation=None):
         return f
 
     return wrap
+

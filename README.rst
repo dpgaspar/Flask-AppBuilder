@@ -93,48 +93,81 @@ Define your models (models.py)
 
 ::
 
-        class Group(db.Model):
-            id = db.Column(db.Integer, primary_key = True)
-            name =  db.Column(db.String(264), 
-		unique = True, nullable=False)
-            address =  db.Column(db.String(564))
-            phone1 = db.Column(db.String(50))
-            phone2 = db.Column(db.String(50))
-            taxid = db.Column(db.Integer)
-            notes = db.Column(db.String(550))
+        class Group(BaseMixin, db.Model):
+            id = db.Column(db.Integer, primary_key=True)
+            name = db.Column(db.String(50), unique = True, nullable=False)
 
             def __repr__(self):
                 return self.name
+
+        class Contact(AuditMixin, db.Model):
+            id = db.Column(db.Integer, primary_key=True)
+            name = db.Column(db.String(150), unique = True, nullable=False)
+            address = db.Column(db.String(564))
+            birthday = db.Column(db.Date)
+            photo = db.Column(ImageColumn, nullable=False )
+            group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
+            group = db.relationship("Group")
+            
+            def __repr__(self):
+                return self.name
+
 
 
 Define your Views (views.py)
 ............................
 
+Notice the 'fieldset' that is only defined on the show view.
+You can define them to add or edit also, in any diferent way.
+
+Notice also the 'related_views', will show a master/detail on
+the 'group show view' and 'edit show view' listing the related contacts
+
 ::
-
+  
         class GroupGeneralView(GeneralView):
-                route_base = '/groups'
-                datamodel = SQLAModel(Group, db.session)
+            route_base = '/groups'
+            datamodel = SQLAModel(Group)
+            related_views = [ContactGeneralView()]
 
-                list_title = 'List Groups'
-                show_title = 'Show Group'
-                add_title = 'Add Group'
-                edit_title = 'Edit Group'
+            list_title = 'List Groups'
+            show_title = 'Show Group'
+            add_title = 'Add Group'
+            edit_title = 'Edit Group'
 
-                label_columns = { 'name':'Name','address':'Address',
-					'phone1':'Phone (1)',
-					'phone2':'Phone (2)',
-					'taxid':'Tax ID',
-					'notes':'Notes'}
-                description_columns = {'name':'Write this group name'}
-                list_columns = ['name','notes']
-                show_columns = ['name','address','phone1','phone2','taxid','notes']
-                order_columns = ['name','notes']
-                search_columns = ['name']
+            label_columns = { 'name':'Name'}
+            list_columns = ['name']
+            show_columns = ['name']
+            order_columns = ['name']
+            search_columns = ['name']
+    
+        class ContactGeneralView(GeneralView):
+            route_base = '/contacts'
+            datamodel = SQLAModel(Contact, db.session)
 
-	
+            list_title = 'List Contacts'
+            show_title = 'Show Contacts'
+            add_title = 'Add Contact'
+            edit_title = 'Edit Contact'
+
+            label_columns = {'name':'Name',
+                        'photo':'Photo',
+                        'photo_img':'Photo',
+                        'address':'Address',
+                        'birthday':'Birthday',
+                        'group':'belongs to group'}                
+            description_columns = {'name':'The Contacts Name'}
+            list_columns = ['name','group']
+            show_fieldsets = [
+                 ('Summary',{'fields':['photo_img','name','address','group']}),
+                 ('Personal Info',{'fields':['birthday'],'expanded':False}),
+                 ]
+            order_columns = ['name']
+            search_columns = ['name']
+
         genapp = General(app)
         genapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
+        genapp.add_view(ContactGeneralView, "List Contacts","/contacts/list","earphone","Contacts")
 
 
 Some pictures
