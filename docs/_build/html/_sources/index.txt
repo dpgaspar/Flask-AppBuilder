@@ -14,8 +14,13 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   intro
    instalation
-    
+   quickhowto
+   views
+   security
+   forms
+   i18n
 
 
 Indices and tables
