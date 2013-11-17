@@ -17,6 +17,7 @@ Contents:
    intro
    instalation
    quickhowto
+   config
    views
    security
    forms

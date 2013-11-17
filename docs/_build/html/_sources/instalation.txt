@@ -41,3 +41,17 @@ If you plan to use Image on database, you will need to install PIL::
 or::
 
     pip install PIL
+
+Initial Config Explanation
+--------------------------
+
+init_app.py has created:
+
+    - A fresh new database.
+    - The security tables and all your application tables too.
+    - 'admin' user associated with role "Admin".
+    - all your applications detailed permissions.
+    - All permission to Role "Admin" (AUTH_ROLE_ADMIN).
+
+The 'admin' password will be 'general'. Change it on your first access using the application.
+(Click the username on the navigation bar, then choose 'Reset Password')
