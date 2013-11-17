@@ -14,8 +14,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-    Instalation
-    Quick tutorial
+   instalation
+    
 
 
 Indices and tables
