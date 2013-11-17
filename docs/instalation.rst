@@ -1,7 +1,7 @@
 Instalation
 ===========
 
-The 3 Step instalation
+3 Step instalation
 ----------------------
 
 - Install it::
@@ -39,4 +39,5 @@ If you plan to use Image on database, you will need to install PIL::
     pip install pillow
     
 or::
+
     pip install PIL

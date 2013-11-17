@@ -15,7 +15,7 @@ Contents:
    :maxdepth: 2
 
    instalation
-    
+   
 
 
 Indices and tables
