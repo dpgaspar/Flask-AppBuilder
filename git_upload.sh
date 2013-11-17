@@ -13,7 +13,7 @@ git add *.png -A
 git add ./flask_appbuilder -A
 git add ./bin -A
 git add ./babel -A
-git add ./doc -A
+git add ./docs -A
 git add ./examples -A
 git add ./skeleton -A
 git commit -m "$1"
