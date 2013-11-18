@@ -52,17 +52,29 @@
   <div class="section" id="quick-charts">
 <h1>Quick Charts<a class="headerlink" href="#quick-charts" title="Permalink to this headline">¶</a></h1>
 <p>To implement views with google charts derive from ChartsViews like this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PersonChartView</span><span class="p">(</span><span class="n">ChartView</span><span class="p">):</span>
-    <span class="n">route_base</span> <span class="o">=</span> <span class="s">&#39;/persons&#39;</span>
-    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped Persons&#39;</span>
-    <span class="n">label_columns</span> <span class="o">=</span> <span class="n">PersonGeneralView</span><span class="o">.</span><span class="n">label_columns</span>
-    <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+<div class="section" id="define-your-chart-views-views-py">
+<h2>Define your Chart Views (views.py)<a class="headerlink" href="#define-your-chart-views-views-py" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="docutils">
+<dt>class PersonChartView(ChartView):</dt>
+<dd>route_base = &#8216;/persons&#8217;
+chart_title = &#8216;Grouped Persons&#8217;
+label_columns = PersonGeneralView.label_columns
+group_by_columns = [&#8216;group&#8217;]
+datamodel = SQLAModel(Person, db.session)</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="register-views-py">
+<h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
+<p>Register everything, to present your charts and create the menu:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactChartView</span><span class="p">,</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span><span class="s">&quot;/contacts/chart&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>
 <p>Some images:</p>
 <a class="reference internal image-reference" href="_images/chart.png"><img alt="_images/chart.png" src="_images/chart.png" style="width: 100%;" /></a>
+</div>
 </div>
 
 
@@ -71,6 +83,15 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Quick Charts</a><ul>
+<li><a class="reference internal" href="#define-your-chart-views-views-py">Define your Chart Views (views.py)</a></li>
+<li><a class="reference internal" href="#register-views-py">Register (views.py)</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="quickhowto.html"
                         title="previous chapter">Quick How to</a></p>
