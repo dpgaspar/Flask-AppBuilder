@@ -100,19 +100,24 @@ form your database tables, derive your views from this class.</p>
 <li>list_columns: The columns to show on list (this is mandatory)</li>
 <li>show_columns: The columns to show on show view</li>
 <li>add_columns: The columns to show on add form, and also what will be added</li>
-<li>edit_columns: The columns to show on edit form, and also what will be added</li>
+<li>edit_columns: The columns to show on edit form, and also what will be edited</li>
 <li>order_columns: The columns allowed to order on lists</li>
 <li>search_columns: The search form to filter the list</li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><p class="first">label_columns: The labels to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL LABEL&gt;&#8217;, ....} (this is mandatory)</p>
-</li>
-<li><p class="first">description_columns: The description to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL DESCRIPTION&gt;&#8217;, ....}</p>
+<li><dl class="first docutils">
+<dt>Properties for Labels and descriptions</dt>
+<dd><ul class="first last simple">
+<li>label_columns: The labels to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL LABEL&gt;&#8217;, ....} (this is mandatory)</li>
+<li>description_columns: The description to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL DESCRIPTION&gt;&#8217;, ....}</li>
+</ul>
+</dd>
+</dl>
 </li>
 <li><dl class="first docutils">
-<dt>Optional Field set&#8217;s, inspired on DJANGO field sets: fieldsets [(&lt;&#8217;TITLE&#8217;<a href="#id1"><span class="problematic" id="id2">|</span></a>None&gt;, {&#8216;fields&#8217;:[&lt;F1&gt;,&lt;F2&gt;,...]}),....] &#8220;&#8221;&#8220;</dt>
+<dt>Optional Field set&#8217;s, inspired on DJANGO field sets: fieldsets [(&lt;&#8217;TITLE&#8217;<a href="#id1"><span class="problematic" id="id2">|</span></a>None&gt;, {&#8216;fields&#8217;:[&lt;F1&gt;,&lt;F2&gt;,...]}),....]</dt>
 <dd><ul class="first last simple">
 <li>show_fieldsets = []</li>
 <li>add_fieldsets = []</li>
@@ -121,23 +126,46 @@ form your database tables, derive your views from this class.</p>
 </dd>
 </dl>
 </li>
+<li><dl class="first docutils">
+<dt>Properties for overriding auto form creation with your own defined forms (WTFORM)</dt>
+<dd><ul class="first last simple">
+<li>add_form: Override this to override the add form auto creation</li>
+<li>edit_form: Override this to override the edit form auto creation</li>
+<li>search_form: : Override this to override the search form auto creation</li>
 </ul>
-<p>&#8220;&#8221;&#8221; Forms &#8220;&#8221;&#8221;
-add_form = None
-edit_form = None
-search_form = None</p>
-<p>validators_columns = {}</p>
-<p>&#8220;&#8221;&#8221; Template Layouts &#8220;&#8221;&#8221;
-list_template = &#8216;appbuilder/general/model/list.html&#8217;
-edit_template = &#8216;appbuilder/general/model/edit.html&#8217;
-add_template = &#8216;appbuilder/general/model/add.html&#8217;
-show_template = &#8216;appbuilder/general/model/show.html&#8217;</p>
-<p>&#8220;&#8221;&#8221; Widgets &#8220;&#8221;&#8221;
-list_widget = ListWidget
-edit_widget = FormWidget
-add_widget = FormWidget
-show_widget = ShowWidget
-search_widget = SearchWidget</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>validators_columns: Override this to implement your special validations for form columns</dt>
+<dd><p class="first last">{&#8216;&lt;COL NAME&gt;&#8217;: &lt;WTForm Validator&gt; }</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Templates: override these to implement your own templates</dt>
+<dd><ul class="first last simple">
+<li>list_template = &#8216;appbuilder/general/model/list.html&#8217;</li>
+<li>edit_template = &#8216;appbuilder/general/model/edit.html&#8217;</li>
+<li>add_template = &#8216;appbuilder/general/model/add.html&#8217;</li>
+<li>show_template = &#8216;appbuilder/general/model/show.html&#8217;</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Widgets: override these to change the default display for the views implemented on this class. AppBuilder has some variations on these.</dt>
+<dd><ul class="first last simple">
+<li>list_widget = ListWidget</li>
+<li>edit_widget = FormWidget</li>
+<li>add_widget = FormWidget</li>
+<li>show_widget = ShowWidget</li>
+<li>search_widget = SearchWidget</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
 </div></blockquote>
 </div>
 <div class="section" id="chartview">
