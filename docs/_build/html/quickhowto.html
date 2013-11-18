@@ -84,22 +84,18 @@
 </pre></div>
 </div>
 <p>A simple Contacts table.</p>
-<dl class="docutils">
-<dt>::</dt>
-<dd><dl class="first last docutils">
-<dt>class Contact(db.Model):</dt>
-<dd>id = db.Column(db.Integer, primary_key=True)
-name =  db.Column(db.String(150), unique = True, nullable=False)
-address =  db.Column(db.String(564))
-birthday = db.Column(db.Date)
-photo = db.Column(ImageColumn, nullable=False )
-personal_phone = db.Column(db.String(20))
-personal_celphone = db.Column(db.String(20))
-group_id = db.Column(db.Integer, db.ForeignKey(&#8216;group.id&#8217;))
-group = db.relationship(&#8220;Group&#8221;)</dd>
-</dl>
-</dd>
-</dl>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Contact</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span>  <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">address</span> <span class="o">=</span>  <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">564</span><span class="p">))</span>
+    <span class="n">birthday</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Date</span><span class="p">)</span>
+    <span class="n">photo</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">ImageColumn</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
+    <span class="n">personal_phone</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+    <span class="n">personal_celphone</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+    <span class="n">group_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;group.id&#39;</span><span class="p">))</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">relationship</span><span class="p">(</span><span class="s">&quot;Group&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
@@ -126,27 +122,28 @@ group = db.relationship(&#8220;Group&#8221;)</dd>
 datamodel: is the db abstraction layer
 related_views: if you want a master/detail view on the show and edit. But where is ContactGeneralView ?</p>
 <p>Let&#8217;s define it:</p>
-<div class="highlight-python"><pre>class ContactGeneralView(GeneralView):
-    route_base = '/contacts'
-    datamodel = SQLAModel(Contact, db.session)
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s">&#39;/contacts&#39;</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 
-    list_title = 'List Contacts'
-    show_title = 'Show Contact'
-    add_title = 'Add Contact'
-    edit_title = 'Edit Contact'
+    <span class="n">list_title</span> <span class="o">=</span> <span class="s">&#39;List Contacts&#39;</span>
+    <span class="n">show_title</span> <span class="o">=</span> <span class="s">&#39;Show Contact&#39;</span>
+    <span class="n">add_title</span> <span class="o">=</span> <span class="s">&#39;Add Contact&#39;</span>
+    <span class="n">edit_title</span> <span class="o">=</span> <span class="s">&#39;Edit Contact&#39;</span>
 
-    label_columns = {'name':'Name','photo':'Photo','address':'Address','birthday':'Birthday',
-                'personal_phone':'Personal Phone',
-                'personal_celphone':'Personal CelPhone',
-    list_columns = ['name','personal_celphone','birthday','group']
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;Name&#39;</span><span class="p">,</span><span class="s">&#39;photo&#39;</span><span class="p">:</span><span class="s">&#39;Photo&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">:</span><span class="s">&#39;Address&#39;</span><span class="p">,</span><span class="s">&#39;birthday&#39;</span><span class="p">:</span><span class="s">&#39;Birthday&#39;</span><span class="p">,</span>
+                <span class="s">&#39;personal_phone&#39;</span><span class="p">:</span><span class="s">&#39;Personal Phone&#39;</span><span class="p">,</span>
+                <span class="s">&#39;personal_celphone&#39;</span><span class="p">:</span><span class="s">&#39;Personal CelPhone&#39;</span><span class="p">}</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s">&#39;birthday&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
 
-    order_columns = ['name','personal_celphone','birthday']
-    search_columns = ['name','personal_celphone','group']
+    <span class="n">order_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s">&#39;birthday&#39;</span><span class="p">]</span>
+    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
 
-    show_fieldsets = [
-         ('Summary',{'fields':['name','address','group']}),
-         ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
-         ]</pre>
+    <span class="n">show_fieldsets</span> <span class="o">=</span> <span class="p">[</span>
+         <span class="p">(</span><span class="s">&#39;Summary&#39;</span><span class="p">,{</span><span class="s">&#39;fields&#39;</span><span class="p">:[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]}),</span>
+         <span class="p">(</span><span class="s">&#39;Personal Info&#39;</span><span class="p">,{</span><span class="s">&#39;fields&#39;</span><span class="p">:[</span><span class="s">&#39;birthday&#39;</span><span class="p">,</span><span class="s">&#39;personal_phone&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">],</span><span class="s">&#39;expanded&#39;</span><span class="p">:</span><span class="bp">False</span><span class="p">}),</span>
+         <span class="p">]</span>
+</pre></div>
 </div>
 </div>
 <div class="section" id="register-views-py">
