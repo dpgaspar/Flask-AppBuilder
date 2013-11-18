@@ -1,5 +1,5 @@
 Application's Base Configuration
-..................
+================================
 
 Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap 3.0.0 base theme:
 
@@ -8,7 +8,9 @@ Use config.py to configure the following parameters. By default it will use SQLL
 	- 0 = Open ID
 	- 1 = Database style (user/password)
   - AUTH_ROLE_ADMIN: Configure the name of the admin role. 
-  - AUTH_ROLE_PUBLIC: Special Role that holds the public permissions, no authentication needed
-  - APP_NAME: The name of your application
+  - AUTH_ROLE_PUBLIC: Special Role that holds the public permissions, no authentication needed.
+  - APP_NAME: The name of your application.
   - APP_THEME: Various themes for you to choose from (bootwatch).
-  
+  - UPLOAD_FOLDER = Files upload folder.
+  - IMG_UPLOAD_FOLDER = Image upload folder.
+  - IMG_UPLOAD_URL = Image relative URL.

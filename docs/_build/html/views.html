@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Application’s Base Configuration &mdash; Flask-AppBuilder 0.1.46 documentation</title>
+    <title>Views &mdash; Flask-AppBuilder 0.1.46 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask-AppBuilder 0.1.46 documentation" href="index.html" />
-    <link rel="next" title="Views" href="views.html" />
-    <link rel="prev" title="Quick How to" href="quickhowto.html" /> 
+    <link rel="next" title="flask.ext.appbuilder.baseapp" href="api.html" />
+    <link rel="prev" title="Application’s Base Configuration" href="config.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,10 +35,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="views.html" title="Views"
+          <a href="api.html" title="flask.ext.appbuilder.baseapp"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="quickhowto.html" title="Quick How to"
+          <a href="config.html" title="Application’s Base Configuration"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask-AppBuilder 0.1.46 documentation</a> &raquo;</li> 
       </ul>
@@ -49,38 +49,25 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="application-s-base-configuration">
-<h1>Application&#8217;s Base Configuration<a class="headerlink" href="#application-s-base-configuration" title="Permalink to this headline">¶</a></h1>
-<p>Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap 3.0.0 base theme:</p>
-<blockquote>
-<div><ul>
-<li><p class="first">SQLALCHEMY_DATABASE_URI: Database connection string</p>
-</li>
-<li><dl class="first docutils">
-<dt>AUTH_TYPE: This is the authentication type</dt>
-<dd><ul class="first last simple">
-<li>0 = Open ID</li>
-<li>1 = Database style (user/password)</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><p class="first">AUTH_ROLE_ADMIN: Configure the name of the admin role.</p>
-</li>
-<li><p class="first">AUTH_ROLE_PUBLIC: Special Role that holds the public permissions, no authentication needed.</p>
-</li>
-<li><p class="first">APP_NAME: The name of your application.</p>
-</li>
-<li><p class="first">APP_THEME: Various themes for you to choose from (bootwatch).</p>
-</li>
-<li><p class="first">UPLOAD_FOLDER = Files upload folder.</p>
-</li>
-<li><p class="first">IMG_UPLOAD_FOLDER = Image upload folder.</p>
-</li>
-<li><p class="first">IMG_UPLOAD_URL = Image relative URL.</p>
-</li>
-</ul>
-</div></blockquote>
+  <div class="section" id="views">
+<h1>Views<a class="headerlink" href="#views" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="baseview">
+<h2>BaseView<a class="headerlink" href="#baseview" title="Permalink to this headline">¶</a></h2>
+<p>All views derive from this class. it&#8217;s constructor will register your exposed urls on flask as a Blueprint.</p>
+<p>Generally you will not implement your views deriving from this class, unless your implementing a new base appbuilder view.</p>
+</div>
+<div class="section" id="simpleformview">
+<h2>SimpleFormView<a class="headerlink" href="#simpleformview" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="generalview">
+<h2>GeneralView<a class="headerlink" href="#generalview" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="chartview">
+<h2>ChartView<a class="headerlink" href="#chartview" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="widgets">
+<h2>Widgets<a class="headerlink" href="#widgets" title="Permalink to this headline">¶</a></h2>
+</div>
 </div>
 
 
@@ -89,15 +76,27 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Views</a><ul>
+<li><a class="reference internal" href="#baseview">BaseView</a></li>
+<li><a class="reference internal" href="#simpleformview">SimpleFormView</a></li>
+<li><a class="reference internal" href="#generalview">GeneralView</a></li>
+<li><a class="reference internal" href="#chartview">ChartView</a></li>
+<li><a class="reference internal" href="#widgets">Widgets</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
-  <p class="topless"><a href="quickhowto.html"
-                        title="previous chapter">Quick How to</a></p>
+  <p class="topless"><a href="config.html"
+                        title="previous chapter">Application&#8217;s Base Configuration</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="views.html"
-                        title="next chapter">Views</a></p>
+  <p class="topless"><a href="api.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">flask.ext.appbuilder.baseapp</span></tt></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/config.txt"
+    <li><a href="_sources/views.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -124,10 +123,10 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="views.html" title="Views"
+          <a href="api.html" title="flask.ext.appbuilder.baseapp"
              >next</a> |</li>
         <li class="right" >
-          <a href="quickhowto.html" title="Quick How to"
+          <a href="config.html" title="Application’s Base Configuration"
              >previous</a> |</li>
         <li><a href="index.html">Flask-AppBuilder 0.1.46 documentation</a> &raquo;</li> 
       </ul>

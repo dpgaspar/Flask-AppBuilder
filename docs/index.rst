@@ -22,6 +22,7 @@ Contents:
    security
    forms
    i18n
+   api
 
 
 Indices and tables
