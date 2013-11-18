@@ -127,7 +127,7 @@ the 'group show view' and 'edit show view' listing the related contacts
   
         class GroupGeneralView(GeneralView):
             route_base = '/groups'
-            datamodel = SQLAModel(Group)
+            datamodel = SQLAModel(Group, db.session)
             related_views = [ContactGeneralView()]
 
             list_title = 'List Groups'
@@ -165,9 +165,9 @@ the 'group show view' and 'edit show view' listing the related contacts
             order_columns = ['name']
             search_columns = ['name']
 
-        genapp = General(app)
-        genapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
-        genapp.add_view(ContactGeneralView, "List Contacts","/contacts/list","earphone","Contacts")
+        baseapp = BaseApp(app)
+        baseapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
+        baseapp.add_view(ContactGeneralView, "List Contacts","/contacts/list","earphone","Contacts")
 
 
 Some pictures
