@@ -54,16 +54,14 @@
 <p>To implement views with google charts derive from ChartsViews like this:</p>
 <div class="section" id="define-your-chart-views-views-py">
 <h2>Define your Chart Views (views.py)<a class="headerlink" href="#define-your-chart-views-views-py" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><dl class="docutils">
-<dt>class PersonChartView(ChartView):</dt>
-<dd>route_base = &#8216;/persons&#8217;
-chart_title = &#8216;Grouped Persons&#8217;
-label_columns = PersonGeneralView.label_columns
-group_by_columns = [&#8216;group&#8217;]
-datamodel = SQLAModel(Person, db.session)</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PersonChartView</span><span class="p">(</span><span class="n">ChartView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s">&#39;/persons&#39;</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped Persons&#39;</span>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="n">PersonGeneralView</span><span class="o">.</span><span class="n">label_columns</span>
+    <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>

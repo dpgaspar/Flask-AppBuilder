@@ -4,7 +4,9 @@ Quick Charts
 To implement views with google charts derive from ChartsViews like this::
 
 Define your Chart Views (views.py)
-----------------------------
+----------------------------------
+
+::
 
     class PersonChartView(ChartView):
         route_base = '/persons'
