@@ -17,6 +17,7 @@ Contents:
    intro
    instalation
    quickhowto
+   quickcharts
    config
    views
    security

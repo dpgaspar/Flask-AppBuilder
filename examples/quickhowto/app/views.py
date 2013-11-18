@@ -46,9 +46,17 @@ class GroupGeneralView(GeneralView):
     order_columns = ['name']
     search_columns = ['name']
 
+class ContactChartView(ChartView):
+    
+    route_base = '/contacts'
+    chart_title = 'Grouped contacts'
+    label_columns = ContactGeneralView.label_columns
+    group_by_columns = ['group']
+    datamodel = SQLAModel(Contact, db.session)
+
 
 
 genapp = BaseApp(app)
 genapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
 genapp.add_view(ContactGeneralView, "List Contacts","/contacts/list","earphone","Contacts")
-
+genapp.add_view(ContactChartView, "Contacts Chart","/contacts/chart","earphone","Contacts")

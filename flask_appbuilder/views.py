@@ -366,7 +366,6 @@ class BaseCRUDView(BaseView):
         if show_additional_links:
             additional_links = show_additional_links
         else: additional_links = self.show_additional_links
-        print "ADDLINKS", additional_links
         item = self.datamodel.get(id)
         widgets['show'] = self.show_widget(route_base = self.route_base,
                                                 pk = id,
