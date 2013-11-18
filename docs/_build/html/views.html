@@ -83,6 +83,8 @@ form your database tables, derive your views from this class.</p>
 <p>Most importante Base Properties:</p>
 <blockquote>
 <div><ul>
+<li><p class="first">datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)</p>
+</li>
 <li><dl class="first docutils">
 <dt>Titles (these are all mandatory)</dt>
 <dd><ul class="first last simple">
@@ -170,6 +172,20 @@ form your database tables, derive your views from this class.</p>
 </div>
 <div class="section" id="chartview">
 <h2>ChartView<a class="headerlink" href="#chartview" title="Permalink to this headline">¶</a></h2>
+<p>This a newly implemented, and provides a simple (and hopefully nice) way to draw some charts for you application.</p>
+<p>This will show Google Charts based on group by of your tables.</p>
+<p>Most importante Base Properties:</p>
+<blockquote>
+<div><ul class="simple">
+<li>chart_title: Your Chart Title</li>
+<li>chart_type: &#8216;PieChart&#8217; or &#8216;ColumnChart&#8217;</li>
+<li>chart_3d: &#8216;true&#8217; or &#8216;false&#8217;</li>
+<li>height: The height for you chart default is: &#8216;400px&#8217;</li>
+<li>label_columns: : The labels to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL LABEL&gt;&#8217;, ....} (this is mandatory)</li>
+<li>group_by_columns: A list for your possible group by&#8217;s for your table (select * from &lt;TABLE&gt; group by [...])</li>
+<li>datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)</li>
+</ul>
+</div></blockquote>
 </div>
 <div class="section" id="widgets">
 <h2>Widgets<a class="headerlink" href="#widgets" title="Permalink to this headline">¶</a></h2>

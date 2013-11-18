@@ -41,6 +41,8 @@ Notice that this class derives from *BaseView* so all properties from the parent
 
 Most importante Base Properties:
 
+    - datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)
+
     - Titles (these are all mandatory)
         - list_title: Title for list view 
         - show_title: Title for show view
@@ -89,6 +91,20 @@ Most importante Base Properties:
 
 ChartView
 ---------
+
+This a newly implemented, and provides a simple (and hopefully nice) way to draw some charts for you application.
+
+This will show Google Charts based on group by of your tables.
+
+Most importante Base Properties:
+
+    - chart_title: Your Chart Title
+    - chart_type: 'PieChart' or 'ColumnChart'
+    - chart_3d: 'true' or 'false'
+    - height: The height for you chart default is: '400px'
+    - label_columns: : The labels to be shown for columns {'<COL NAME>': '<COL LABEL>', ....} (this is mandatory)
+    - group_by_columns: A list for your possible group by's for your table (select * from <TABLE> group by [...])
+    - datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)
 
 Widgets
 -------
