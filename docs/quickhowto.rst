@@ -102,7 +102,7 @@ Let's define it::
     
 	    label_columns = {'name':'Name','photo':'Photo','address':'Address','birthday':'Birthday',
 			'personal_phone':'Personal Phone',
-			'personal_celphone':'Personal CelPhone'}
+			'personal_celphone':'Personal CelPhone','group':'Contacts Group'}
 	    list_columns = ['name','personal_celphone','birthday','group']
 
 	    order_columns = ['name','personal_celphone','birthday']
