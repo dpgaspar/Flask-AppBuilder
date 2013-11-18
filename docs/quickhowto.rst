@@ -123,7 +123,7 @@ Register everything, to present the models and create the menu::
         genapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
         genapp.add_view(ContactGeneralView, "List Contacts","/contacts/list","earphone","Contacts")
 
-You can find this example at: 
+You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto
 
 Some images:
 
