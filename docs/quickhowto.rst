@@ -128,10 +128,10 @@ You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/
 Some images:
 
 .. image:: ./images/login.png
-    :width: 200pt
+    :width: 100%
 
 .. image:: ./images/groups.png
-    :width: 200pt
+    :width: 100%
 
 .. image:: ./images/contacts.png
-    :width: 200pt
+    :width: 100%
