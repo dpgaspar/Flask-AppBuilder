@@ -70,7 +70,7 @@
 <div class="section" id="simple-contacts-application">
 <h2>Simple contacts application<a class="headerlink" href="#simple-contacts-application" title="Permalink to this headline">¶</a></h2>
 <p>Lets create a very simple contacts application.</p>
-<p>First let&#8217;s create a very simple <em>Group</em> table to group our contacts</p>
+<p>First let&#8217;s create a <em>Group</em> table to group our contacts</p>
 </div>
 <div class="section" id="define-your-models-models-py">
 <h2>Define your models (models.py)<a class="headerlink" href="#define-your-models-models-py" title="Permalink to this headline">¶</a></h2>
@@ -83,7 +83,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </pre></div>
 </div>
-<p>A simple Contacts table.</p>
+<p>An <em>Contacts</em> table.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Contact</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span>  <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
@@ -156,6 +156,11 @@
 <span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactGeneralView</span><span class="p">,</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="s">&quot;/contacts/list&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>You can find this example at:</p>
+<p>Some images:</p>
+<a class="reference internal image-reference" href="_images/login.png"><img alt="_images/login.png" src="_images/login.png" style="width: 200pt;" /></a>
+<a class="reference internal image-reference" href="_images/groups.png"><img alt="_images/groups.png" src="_images/groups.png" style="width: 200pt;" /></a>
+<a class="reference internal image-reference" href="_images/contacts.png"><img alt="_images/contacts.png" src="_images/contacts.png" style="width: 200pt;" /></a>
 </div>
 </div>
 

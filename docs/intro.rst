@@ -5,8 +5,8 @@ The main goal for this project is to provide a simple development framework that
 
 This will lower errors, bugs, project's time to deliver. It's intended to be a rapid application development tool.
 
-Includes:
----------
+Includes
+--------
 
   - Security
         - Auto permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.

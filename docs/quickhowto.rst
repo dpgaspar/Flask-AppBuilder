@@ -28,7 +28,7 @@ Simple contacts application
 
 Lets create a very simple contacts application.
 
-First let's create a very simple *Group* table to group our contacts
+First let's create a *Group* table to group our contacts
 
 Define your models (models.py)
 ------------------------------
@@ -44,7 +44,7 @@ The group table.
             def __repr__(self):
                 return self.name
 
-A simple Contacts table.
+An *Contacts* table.
 
 ::
 
@@ -123,3 +123,15 @@ Register everything, to present the models and create the menu::
         genapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
         genapp.add_view(ContactGeneralView, "List Contacts","/contacts/list","earphone","Contacts")
 
+You can find this example at: 
+
+Some images:
+
+.. image:: ./images/login.png
+    :width: 200pt
+
+.. image:: ./images/groups.png
+    :width: 200pt
+
+.. image:: ./images/contacts.png
+    :width: 200pt
