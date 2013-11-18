@@ -92,7 +92,7 @@ Most importante Base Properties:
 ChartView
 ---------
 
-This a newly implemented, and provides a simple (and hopefully nice) way to draw some charts for you application.
+This a newly implemented, and provides a simple (and hopefully nice) way to draw some charts for your application.
 
 This will show Google Charts based on group by of your tables.
 
