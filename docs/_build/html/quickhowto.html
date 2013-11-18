@@ -74,7 +74,8 @@
 </div>
 <div class="section" id="define-your-models-models-py">
 <h2>Define your models (models.py)<a class="headerlink" href="#define-your-models-models-py" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<p>The group table.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
@@ -82,6 +83,23 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </pre></div>
 </div>
+<p>A simple Contacts table.</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd><dl class="first last docutils">
+<dt>class Contact(db.Model):</dt>
+<dd>id = db.Column(db.Integer, primary_key=True)
+name =  db.Column(db.String(150), unique = True, nullable=False)
+address =  db.Column(db.String(564))
+birthday = db.Column(db.Date)
+photo = db.Column(ImageColumn, nullable=False )
+personal_phone = db.Column(db.String(20))
+personal_celphone = db.Column(db.String(20))
+group_id = db.Column(db.Integer, db.ForeignKey(&#8216;group.id&#8217;))
+group = db.relationship(&#8220;Group&#8221;)</dd>
+</dl>
+</dd>
+</dl>
 </div>
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
@@ -103,7 +121,33 @@
     <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>I hope this was easy enough! Some questions may arrise.</p>
+<p>I hope this was easy enough! Some questions may arrise...</p>
+<p>route_base: is the url where your view will <em>live</em> in this case: <a class="reference external" href="http:/">http:/</a>/&lt;servername&gt;/groups/
+datamodel: is the db abstraction layer
+related_views: if you want a master/detail view on the show and edit. But where is ContactGeneralView ?</p>
+<p>Let&#8217;s define it:</p>
+<div class="highlight-python"><pre>class ContactGeneralView(GeneralView):
+    route_base = '/contacts'
+    datamodel = SQLAModel(Contact, db.session)
+
+    list_title = 'List Contacts'
+    show_title = 'Show Contact'
+    add_title = 'Add Contact'
+    edit_title = 'Edit Contact'
+
+    label_columns = {'name':'Name','photo':'Photo','address':'Address','birthday':'Birthday',
+                'personal_phone':'Personal Phone',
+                'personal_celphone':'Personal CelPhone',
+    list_columns = ['name','personal_celphone','birthday','group']
+
+    order_columns = ['name','personal_celphone','birthday']
+    search_columns = ['name','personal_celphone','group']
+
+    show_fieldsets = [
+         ('Summary',{'fields':['name','address','group']}),
+         ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
+         ]</pre>
+</div>
 </div>
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
