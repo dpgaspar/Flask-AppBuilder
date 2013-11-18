@@ -57,7 +57,7 @@ class BaseView(object):
                     self.base_permissions.append(action.name)
                     self.actions.append(action)
             
-            
+
 
     def create_blueprint(self, baseapp, 
                         endpoint = None, 
