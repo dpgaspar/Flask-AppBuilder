@@ -85,9 +85,9 @@ Now we are going to define our view to *Group* table
 
 I hope this was easy enough! Some questions may arrise...
 
-route_base: is the url where your view will *live* in this case: http://<servername>/groups/
-datamodel: is the db abstraction layer
-related_views: if you want a master/detail view on the show and edit. But where is ContactGeneralView ?
+- route_base: is the url where your view will *live* in this case: http://<servername>/groups/
+- datamodel: is the db abstraction layer
+- related_views: if you want a master/detail view on the show and edit. But where is ContactGeneralView ?
 
 Let's define it::
 
