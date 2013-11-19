@@ -114,6 +114,11 @@ class BaseView(object):
         if not group_by: group_by = ''
         return group_by
 
+    def _get_page_args(self):
+        page = request.args.get('page')
+        if not page: page = None
+        return page
+
     def _get_order_args(self):
         order_column = request.args.get('order_column')
         order_direction = request.args.get('order_direction')
@@ -241,6 +246,8 @@ class BaseCRUDView(BaseView):
 
     label_columns = {}
     description_columns = {}
+    
+    page_size = 10
 
     """ fieldsets [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....] """
     show_fieldsets = []
