@@ -83,8 +83,8 @@ class SQLAModel(DataModel):
                         filters = filters, 
                         order_column = order_column, 
                         order_direction = order_direction)
-        print "COUNT", query_count.scalar()
-        return query.all()
+        
+        return query_count.scalar(), query.all()
 
 
     def query_simple_group(self, group_by = '', filters = {}, order_column = '', order_direction = ''):
