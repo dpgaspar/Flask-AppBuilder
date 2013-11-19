@@ -346,15 +346,21 @@ class BaseCRUDView(BaseView):
             widgets['related_lists'].append(self._get_related_list_widget(item, view, filters, order_column, order_direction).get('list'))
         return widgets
     
-    def _get_list_widget(self, filters={}, order_column='', order_direction='', widgets = {}, **args):
+    def _get_list_widget(self, filters = {}, 
+                        order_column = '', 
+                        order_direction = '',
+                        page = None,
+                        page_size = None,
+                        widgets = {}, **args):
 
-        lst = self.datamodel.query(filters, order_column, order_direction)
+        count, lst = self.datamodel.query(filters, order_column, order_direction)
         pks = self.datamodel.get_keys(lst)
         widgets['list'] = self.list_widget(route_base = self.route_base,
                                                 label_columns = self.label_columns,
                                                 include_columns = self.list_columns,
                                                 value_columns = self.datamodel.get_values(lst, self.list_columns),
                                                 order_columns = self.order_columns,
+                                                count = count,
                                                 pks = pks,
                                                 filters = filters,
                                                 generalview_name = self.__class__.__name__
