@@ -360,6 +360,8 @@ class BaseCRUDView(BaseView):
                                                 include_columns = self.list_columns,
                                                 value_columns = self.datamodel.get_values(lst, self.list_columns),
                                                 order_columns = self.order_columns,
+                                                page = page,
+                                                page_size = page_size,
                                                 count = count,
                                                 pks = pks,
                                                 filters = filters,
@@ -474,6 +476,7 @@ class GeneralView(BaseCRUDView):
         search_form = self.search_form(request.form)
 
         order_column, order_direction = self._get_order_args()
+        page = self._get_page_args()
 
         filters = {}
         filters = self._get_filter_args(filters)
@@ -490,7 +493,7 @@ class GeneralView(BaseCRUDView):
                     setattr(item, filter_key, filters.get(filter_key))
                     search_form = self.search_form(obj = item)
 
-        widgets = self._get_list_widget(filters, order_column, order_direction)
+        widgets = self._get_list_widget(filters, order_column, order_direction, page, self.page_size)
         widgets = self._get_search_widget(form = search_form, widgets = widgets)
 
         return render_template(self.list_template,
