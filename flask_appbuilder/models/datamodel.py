@@ -65,7 +65,7 @@ class SQLAModel(DataModel):
         return query
 
     def get_count_query(self, query):
-        return query.(func.count('*')).scalar()
+        return query(func.count('*')).scalar()
         
     """
     QUERY
