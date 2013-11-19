@@ -40,7 +40,8 @@ class SQLAModel(DataModel):
         DataModel.__init__(self, obj)
 
     
-    def _get_base_query(self, query = None, filters = {}, order_column = '', order_direction = ''):
+    def _get_base_query(self, query = None, filters = {}, order_column = '', order_direction = '',
+                        page = None, page_size = None):
         for filter_key in filters:
             try:
                 rel_model, rel_direction = self._get_related_model(filter_key)
@@ -56,6 +57,10 @@ class SQLAModel(DataModel):
                     query = query.filter(getattr(self.obj,filter_key).like(filters.get(filter_key) + '%%'))
         if (order_column != ''):
             query = query.order_by(order_column + ' ' + order_direction)
+        if page_size:
+            query = query.limit(page_size)
+        if page: 
+            query = query.offset(page*page_size)
         return query
     
     """
@@ -64,9 +69,14 @@ class SQLAModel(DataModel):
     order_column
     order_direction: <'asc'|'desc'>
     """
-    def query(self, filters = {}, order_column = '', order_direction = ''):
+    def query(self, filters = {}, order_column = '', order_direction = '',
+                page = 0, page_size = 10):
         query = self.obj.query
-        query = self._get_base_query(query = query, filters = filters, order_column = order_column, order_direction = order_direction)
+        query = self._get_base_query(query = query, 
+                        filters = filters, 
+                        order_column = order_column, 
+                        order_direction = order_direction,
+                        page = page, page_size = page_size)
         return query.all()
 
 
