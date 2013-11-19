@@ -73,6 +73,7 @@ class SQLAModel(DataModel):
     def query(self, filters = {}, order_column = '', order_direction = '',
                 page = None, page_size = None):
         query = self.session.query(self.obj)
+        query_count = self.session.query(func.count(self.obj))
         query = self._get_base_query(query = query, 
                         filters = filters, 
                         order_column = order_column, 
