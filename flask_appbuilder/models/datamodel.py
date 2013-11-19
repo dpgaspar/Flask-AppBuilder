@@ -70,7 +70,7 @@ class SQLAModel(DataModel):
     order_direction: <'asc'|'desc'>
     """
     def query(self, filters = {}, order_column = '', order_direction = '',
-                page = 0, page_size = 10):
+                page = None, page_size = None):
         query = self.obj.query
         query = self._get_base_query(query = query, 
                         filters = filters, 
