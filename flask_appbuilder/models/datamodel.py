@@ -57,12 +57,15 @@ class SQLAModel(DataModel):
                     query = query.filter(getattr(self.obj,filter_key).like(filters.get(filter_key) + '%%'))
         if (order_column != ''):
             query = query.order_by(order_column + ' ' + order_direction)
+        print "QUERY COUNT", self.get_count_query(query)
         if page_size:
             query = query.limit(page_size)
         if page: 
             query = query.offset(page*page_size)
         return query
 
+    def get_count_query(self, query):
+        return query.(func.count('*')).scalar()
         
     """
     QUERY
