@@ -94,6 +94,9 @@ class ListWidget(RenderTemplateWidget):
     include_columns = []
     value_columns = []
     order_columns = []
+    page = None
+    page_size = None
+    count = 0
     pks = []
     filters = {}
     generalview_name = ''
@@ -103,6 +106,9 @@ class ListWidget(RenderTemplateWidget):
                  include_columns = [],
                  value_columns = [],
                  order_columns = [],
+                 page = None,
+                 page_size = None,
+                 count = 0,
                  pks = [],
                  filters = {},
                  generalview_name = ''):
@@ -111,6 +117,9 @@ class ListWidget(RenderTemplateWidget):
         self.include_columns = include_columns
         self.value_columns = value_columns
         self.order_columns = order_columns
+        self.page = page
+        self.page_size = page_size
+        self.count = count
         self.pks = pks
         self.filters = filters
         self.generalview_name = generalview_name
