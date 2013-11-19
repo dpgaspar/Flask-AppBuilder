@@ -79,6 +79,11 @@ class SQLAModel(DataModel):
                         order_column = order_column, 
                         order_direction = order_direction,
                         page = page, page_size = page_size)
+        query_count = self._get_base_query(query = query_count, 
+                        filters = filters, 
+                        order_column = order_column, 
+                        order_direction = order_direction)
+        print "COUNT", query_count.scalar()
         return query.all()
 
 
