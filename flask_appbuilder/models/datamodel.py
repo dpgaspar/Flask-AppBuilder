@@ -62,7 +62,8 @@ class SQLAModel(DataModel):
         if page: 
             query = query.offset(page*page_size)
         return query
-    
+
+        
     """
     QUERY
     filters: dict with filters {<col_name>:<value,...}
