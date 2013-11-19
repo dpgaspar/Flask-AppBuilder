@@ -7,6 +7,7 @@
     	{% set can_edit = "can_edit" | is_item_visible(generalview_name) %}
 	{% set can_delete = "can_delete" | is_item_visible(generalview_name) %}
 	<div class="well well-sm">
+	<div class="control-group">
 		{% if can_add %}
 			{% set path = route_base + '/add?next=' + request.path %}
 			{% set path = path | set_link_filters(filters) %}
@@ -14,6 +15,7 @@
 		{% endif %}
 		{{ lib.lnk_back() }}
 		{{ lib.render_pagination() }}
+	</div>
 	</div>
 		
 	{% if value_columns %}
