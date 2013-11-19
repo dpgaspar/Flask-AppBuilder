@@ -137,7 +137,7 @@ class DatePickerWidget(object):
     Date Time picker from Eonasdan GitHub
 
     """
-    data_template = ('<div class="input-group date" id="datepicker">'
+    data_template = ('<div class="input-group date appbuilder_date" id="datepicker">'
                     '<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>'
                     '</span>'
                     '<input class="form-control" data-format="yyyy-MM-dd" %(text)s/>'
@@ -160,7 +160,7 @@ class DateTimePickerWidget(object):
     Date Time picker from Eonasdan GitHub
 
     """
-    data_template = ('<div class="input-group date" id="datetimepicker">'
+    data_template = ('<div class="input-group date appbuilder_datetime" id="datetimepicker">'
                     '<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>'
                     '</span>'
                     '<input class="form-control" data-format="yyyy-MM-dd hh:mm:ss" %(text)s/>'
