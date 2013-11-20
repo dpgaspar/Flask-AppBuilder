@@ -185,6 +185,8 @@ class BS3TextFieldWidget(widgets.TextInput):
         kwargs['class'] = u'form-control'
         if field.label:
             kwargs['placeholder'] = field.label.text
+        if 'name_' in kwargs:
+            field.name = kwargs['name_']
         return super(BS3TextFieldWidget, self).__call__(field, **kwargs)
 
 class BS3TextAreaFieldWidget(widgets.TextArea):
@@ -208,6 +210,8 @@ class Select2Widget(widgets.Select):
         kwargs['class'] = u'my_select2'
         kwargs['style'] = u'width:250px'
         kwargs['data-placeholder'] = u'Select Value'
+        if 'name_' in kwargs:
+            field.name = kwargs['name_']
         return super(Select2Widget, self).__call__(field, **kwargs)
 
 class Select2ManyWidget(widgets.Select):
@@ -216,4 +220,6 @@ class Select2ManyWidget(widgets.Select):
         kwargs['style'] = u'width:250px'
         kwargs['data-placeholder'] = u'Select Value'
         kwargs['multiple'] = u'true'
+        if 'name_' in kwargs:
+            field.name = kwargs['name_']
         return super(Select2ManyWidget, self).__call__(field, **kwargs)

@@ -127,10 +127,12 @@ class BaseView(object):
         return order_column, order_direction
 
     def _get_filter_args(self, filters={}):
-        for n in request.args:
-            re_match = re.findall('_flt_(.*)', n)
+        for arg in request.args:
+            re_match = re.findall('_flt_(.*)', arg)
             if re_match:
-                filters[re_match[0]] = request.args.get(n)
+                # ignore select2 __None value
+                if request.args.get(arg) not in ('__None',''):
+                    filters[re_match[0]] = request.args.get(arg)
         return filters
 
 
@@ -471,37 +473,36 @@ class GeneralView(BaseCRUDView):
     --------------------------------
     """
     
-    @expose('/list/', methods=['GET', 'POST'])
+    @expose('/list/')
     @has_access
     def list(self):
 
         form = self.search_form.refresh()
-        search_form = self.search_form(request.form)
-
+        
         order_column, order_direction = self._get_order_args()
         page = self._get_page_args()
 
         filters = {}
         filters = self._get_filter_args(filters)
-        filters = self._get_dict_from_form(search_form, filters)
         if (filters != {}):
             item = self.datamodel.obj()
             for filter_key in filters:
+                # on related models translate id to model obj
                 try:
                     rel_obj = self.datamodel.get_related_obj(filter_key, filters.get(filter_key))
                     setattr(item, filter_key, rel_obj)
-                    search_form = self.search_form(obj = item)
+                    form = self.search_form(obj = item)
                     filters[filter_key] = rel_obj
                 except:
                     setattr(item, filter_key, filters.get(filter_key))
-                    search_form = self.search_form(obj = item)
+                    form = self.search_form(obj = item)
 
         widgets = self._get_list_widget(filters = filters, 
                     order_column = order_column, 
                     order_direction = order_direction, 
                     page = page, 
                     page_size = self.page_size)
-        widgets = self._get_search_widget(form = search_form, widgets = widgets)
+        widgets = self._get_search_widget(form = form, widgets = widgets)
 
         return render_template(self.list_template,
                                         title = self.list_title,

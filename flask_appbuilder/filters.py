@@ -28,25 +28,42 @@ class TemplateFilters(object):
     @app_template_filter('link_order')
     def link_order_filter(self, s):
 
-        if (request.args.get('order_column') == s):
-            lststr = request.path.split('?')
+        order_column = request.args.get('order_column')
+        if order_column:
+            lststr = request.url.split('order_column')
             if (request.args.get('order_direction') == 'asc'):
-                return lststr[0] + '?order_column=' + s + '&order_direction=desc'
+                if len(request.args) > 0:
+                    return lststr[0] + 'order_column=' + s + '&order_direction=desc'
+                else:
+                    return lststr[0] + '&order_column=' + s + '&order_direction=desc'
             else:
-                return  request.path + '?order_column=' + s + '&order_direction=asc'
+                if len(request.args) > 0:
+                    return  lststr[0] + 'order_column=' + s + '&order_direction=asc'
+                else:
+                    return  lststr[0] + '&order_column=' + s + '&order_direction=asc'
         else:
-            return  request.path + '?order_column=' + s + '&order_direction=asc'
+            if len(request.args) > 0:
+                return  request.url + '&order_column=' + s + '&order_direction=asc'
+            else:
+                return  request.url + '?order_column=' + s + '&order_direction=asc'
+
 
     @app_template_filter('link_page')
     def link_page_filter(self, s):
 
         page = request.args.get('page')
         if page:
-            lststr = request.path.split('page')
-            return  lststr[0] + '?page=' + str(s)
+            lststr = request.url.split('page')
+            if len(request.args) > 0:
+                return  lststr[0] + 'page=' + str(s)
+            else:
+                return  lststr[0] + '?page=' + str(s)
         else:
-            return  request.path + '?page=' + str(s)
-
+            if len(request.args) > 0:
+                return  request.url + '&page=' + str(s)
+            else:
+                return  request.url + '?page=' + str(s)
+                
 
     @app_template_filter('get_link_next')
     def get_link_next_filter(self, s):

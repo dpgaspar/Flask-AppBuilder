@@ -58,13 +58,13 @@
 </div>
 {% endmacro %}
 
-{% macro render_field_simple(field) %}
+{% macro render_field_search(field) %}
 {% if field.id != 'csrf_token' %}
 	<div class="control-label">
         	<th class="col-lg-2">{{ field.label.text }}</th>
         </div>
         <div class="controls">
-                <td>{{ field(**kwargs)|safe }}</td>
+                <td>{{ field(name_='_flt_' + field.name)|safe }}</td>
 	</div>
 {% endif %}
 {% endmacro %}
