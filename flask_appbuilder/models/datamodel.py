@@ -83,10 +83,10 @@ class SQLAModel(DataModel):
         
         count = query_count.scalar() 
         
-        if page_size:
-            query = query.limit(page_size)
         if page: 
             query = query.offset(page*page_size)
+        if page_size:
+            query = query.limit(page_size)
         
         return count, query.all()
 
