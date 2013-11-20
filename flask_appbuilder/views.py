@@ -116,7 +116,7 @@ class BaseView(object):
 
     def _get_page_args(self):
         page = request.args.get('page')
-        if not page: page = None
+        if not page: return None
         return int(page)
 
     def _get_order_args(self):
