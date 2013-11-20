@@ -14,7 +14,7 @@
   {{ _('Record Count:') }} {{ count }} {{':'}} {{ page }} {{':'}} {{ page_size }}
   
   {% set num_pages = (count / page_size)|round|int %}
-  {% if page %} {% set page = 1 %} {% endif %}
+  {% if not page %} {% set page = 1 %} {% endif %}
   
   {% if page == 1 %}
   	<li class="disabled"><a href="#">&laquo;</a></li>
