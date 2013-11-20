@@ -13,7 +13,7 @@
 <ul class="pagination pagination-sm" style="margin:10px; display:inline;">
   {{ _('Record Count:') }} {{ count }} {{':'}} {{ page }} {{':'}} {{ page_size }}
   
-  {% set num_pages = (count / page_size)|round('ceil')|int %}
+  {% set num_pages = (count / page_size)|round(0,'ceil')|int %}
   {% if not page %} {% set page = 1 %} {% endif %}
   
   {% if page == 1 %}
