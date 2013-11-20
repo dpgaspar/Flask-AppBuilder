@@ -12,20 +12,7 @@
 
 <ul class="pagination pagination-sm" style="margin:10px; display:inline;">
   {{ _('Record Count:') }} {{ count }} {{':'}} {{ page }} {{':'}} {{ page_size }}
-  {% if page == 1 %}
-  	<li class="disabled"><a href="#">&laquo;</a></li>
-  {% else %}
-  	<li><a href="#">&laquo;</a></li>
-  {% endif %}
-  {% set num_pages = (count / page_size)|round|int %}
-  {% for i in num_pages %}
-  	{% if page == i %}
-  		<li class="active"><a href="#">{{i}} <span class="sr-only">(current)</span></a></li>
-  	{% else %}
-  		<li><a href="#">{{i}}</a></li>	
-  	{% endif %}
-  {% endfor %}  
-  <li><a href="#">&raquo;</a></li>
+  
 </ul>
 {% endmacro %}
 
