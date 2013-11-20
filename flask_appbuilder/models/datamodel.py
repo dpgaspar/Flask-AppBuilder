@@ -60,6 +60,7 @@ class SQLAModel(DataModel):
         if page_size:
             query = query.limit(page_size)
         if page: 
+            print "PAGE %d, PAGE_SIZE %d" % (page, page_size)
             query = query.offset(page*page_size)
         return query
 
