@@ -130,6 +130,11 @@ class ListWidget(RenderTemplateWidget):
         kwargs['include_columns'] = self.include_columns
         kwargs['value_columns'] = self.value_columns
         kwargs['order_columns'] = self.order_columns
+        
+        kwargs['page'] = self.page
+        kwargs['page_size'] = self.page
+        kwargs['count'] = self.count
+        
         kwargs['pks'] = self.pks
         kwargs['filters'] = self.filters
         kwargs['generalview_name'] = self.generalview_name
