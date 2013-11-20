@@ -132,7 +132,7 @@ class ListWidget(RenderTemplateWidget):
         kwargs['order_columns'] = self.order_columns
         
         kwargs['page'] = self.page
-        kwargs['page_size'] = self.page
+        kwargs['page_size'] = self.page_size
         kwargs['count'] = self.count
         
         kwargs['pks'] = self.pks
