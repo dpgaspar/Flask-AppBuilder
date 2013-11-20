@@ -17,7 +17,7 @@
   {% else %}
   	<li><a href="#">&laquo;</a></li>
   {% endif %}
-  {% num_pages = (count / page_size)|round|int %}
+  {% set num_pages = (count / page_size)|round|int %}
   {% for i in num_pages %}
   	{% if page == i %}
   		<li class="active"><a href="#">{{i}} <span class="sr-only">(current)</span></a></li>
