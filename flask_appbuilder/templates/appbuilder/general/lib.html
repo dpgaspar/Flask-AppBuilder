@@ -7,19 +7,28 @@
 	{% endif %}
 {% endmacro %}
 
+
 {% macro render_pagination(page, page_size, count) %}
 
 <ul class="pagination pagination-sm" style="margin:10px; display:inline;">
-  {{ _('Record Count') }} {{ count }}
-  <li class="disabled"><a href="#">&laquo;</a></li>
-  <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
-  <li><a href="#">2</a></li>
-  <li><a href="#">3</a></li>
-  <li><a href="#">4</a></li>
-  <li><a href="#">5</a></li>
+  {{ _('Record Count:') }} {{ count }} {{':'}} {{ page }} {{':'}} {{ page_size }}
+  {% if page == 1 %}
+  	<li class="disabled"><a href="#">&laquo;</a></li>
+  {% else %}
+  	<li><a href="#">&laquo;</a></li>
+  {% endif %}
+  {% num_pages = (count / page_size)|round|int %}
+  {% for i in num_pages %}
+  	{% if page == i %}
+  		<li class="active"><a href="#">{{i}} <span class="sr-only">(current)</span></a></li>
+  	{% else %}
+  		<li><a href="#">{{i}}</a></li>	
+  	{% endif %}
+  {% endfor %}  
   <li><a href="#">&raquo;</a></li>
 </ul>
 {% endmacro %}
+
 
 {% macro render_field(field) %}
 <div class="control-group">
