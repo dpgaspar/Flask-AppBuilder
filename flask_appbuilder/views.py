@@ -493,7 +493,11 @@ class GeneralView(BaseCRUDView):
                     setattr(item, filter_key, filters.get(filter_key))
                     search_form = self.search_form(obj = item)
 
-        widgets = self._get_list_widget(filters, order_column, order_direction, page, self.page_size)
+        widgets = self._get_list_widget(filters = filters, 
+                    order_column = order_column, 
+                    order_direction = order_direction, 
+                    page = page, 
+                    page_size = self.page_size)
         widgets = self._get_search_widget(form = search_form, widgets = widgets)
 
         return render_template(self.list_template,
