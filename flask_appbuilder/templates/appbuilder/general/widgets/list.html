@@ -1,6 +1,5 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 
-{# macro list(route_base, label_columns, include_columns, value_columns, order_columns, pks, filters, generalview_name) #}
 
 	{% set can_add = "can_add" | is_item_visible(generalview_name) %}
 	{% set can_show = "can_show" | is_item_visible(generalview_name) %}
