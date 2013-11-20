@@ -43,9 +43,9 @@ class TemplateFilters(object):
         page = request.args.get('page')
         if page:
             lststr = request.path.split('page')
-            return  lststr[0] + '&page=' + str(s)
+            return  lststr[0] + '?page=' + str(s)
         else:
-            return  request.path + '&page=' + str(s)
+            return  request.path + '?page=' + str(s)
 
 
     @app_template_filter('get_link_next')
