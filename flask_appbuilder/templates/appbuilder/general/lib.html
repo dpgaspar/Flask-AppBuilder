@@ -8,6 +8,7 @@
 {% endmacro %}
 
 {% macro render_pagination(page, page_size, count) %}
+<div class="text-right">
 {{ _('Record Count') }} {{ count }}
 <ul class="pagination pagination-sm" style="margin:10px; display:inline;">
   <li class="disabled"><a href="#">&laquo;</a></li>
@@ -18,6 +19,7 @@
   <li><a href="#">5</a></li>
   <li><a href="#">&raquo;</a></li>
 </ul>
+</div>
 {% endmacro %}
 
 {% macro render_field(field) %}
