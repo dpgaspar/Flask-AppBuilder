@@ -13,7 +13,7 @@
 <ul class="pagination pagination-sm" style="margin:10px; display:inline;">
   {{ _('Record Count:') }} {{ count }} {{':'}} {{ page }} {{':'}} {{ page_size }}
   
-  {% set num_pages = ((count / page_size)|round(0,'ceil')|int) + 1%}
+  {% set num_pages = ((count / page_size)|round(0,'ceil')|int)%}
   {% if not page %} {% set page = 1 %} {% endif %}
   
   {% if page == 1 %}
@@ -21,11 +21,11 @@
   {% else %}
   	<li><a href="#">&laquo;</a></li>
   {% endif %}
-  {% for i in range(1,num_pages) %}
+  {% for i in range(num_pages) %}
   	{% if page == i %}
-  		<li class="active"><a href={{ i-1 | link_page }}>{{i}} <span class="sr-only">(current)</span></a></li>
+  		<li class="active"><a href={{ i | link_page }}>{{i}} <span class="sr-only">(current)</span></a></li>
   	{% else %}
-  		<li><a href={{ i-1 | link_page }}>{{i}}</a></li>	
+  		<li><a href={{ i | link_page }}>{{i}}</a></li>	
   	{% endif %}
   {% endfor %}  
   <li><a href="#">&raquo;</a></li>
