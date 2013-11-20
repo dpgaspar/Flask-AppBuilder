@@ -84,6 +84,7 @@ class SQLAModel(DataModel):
         count = query_count.scalar() 
         
         if page: 
+            print "OFFSET", page*page_size
             query = query.offset(page*page_size)
         if page_size:
             query = query.limit(page_size)
