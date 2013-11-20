@@ -353,7 +353,7 @@ class BaseCRUDView(BaseView):
                         page_size = None,
                         widgets = {}, **args):
 
-        count, lst = self.datamodel.query(filters, order_column, order_direction)
+        count, lst = self.datamodel.query(filters, order_column, order_direction, page=page, page_size=page_size)
         pks = self.datamodel.get_keys(lst)
         widgets['list'] = self.list_widget(route_base = self.route_base,
                                                 label_columns = self.label_columns,
