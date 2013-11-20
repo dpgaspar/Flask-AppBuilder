@@ -333,7 +333,7 @@ class BaseCRUDView(BaseView):
     """
     def _get_related_list_widget(self, item, related_view, 
                                 filters={}, order_column='', order_direction='',
-                                page=page, page_size=page_size):
+                                page=None, page_size=None):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
         filters[fk] = item
@@ -341,7 +341,7 @@ class BaseCRUDView(BaseView):
                     order_column = order_column, order_direction = order_direction, page=page, page_size=page_size)
         
     def _get_related_list_widgets(self, item, filters = {}, order_column='', order_direction='', 
-                                page=page, page_size=page_size,
+                                page=None, page_size=None,
                                 widgets = {}, **args):
         widgets['related_lists'] = []
         for view in self.related_views:
