@@ -75,15 +75,17 @@ class SQLAModel(DataModel):
                 page = None, page_size = None):
         query = self.session.query(self.obj)
         query_count = self.session.query(func.count('*')).select_from(self.obj)
+        
+        query_count = self._get_base_query(query = query_count, 
+                        filters = filters, 
+                        order_column = order_column, 
+                        order_direction = order_direction)
+        
         query = self._get_base_query(query = query, 
                         filters = filters, 
                         order_column = order_column, 
                         order_direction = order_direction,
                         page = page, page_size = page_size)
-        query_count = self._get_base_query(query = query_count, 
-                        filters = filters, 
-                        order_column = order_column, 
-                        order_direction = order_direction)
         
         return query_count.scalar(), query.all()
 
