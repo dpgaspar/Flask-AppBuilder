@@ -247,7 +247,7 @@ class BaseCRUDView(BaseView):
     label_columns = {}
     description_columns = {}
     
-    page_size = 10
+    page_size = 30
 
     """ fieldsets [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....] """
     show_fieldsets = []
