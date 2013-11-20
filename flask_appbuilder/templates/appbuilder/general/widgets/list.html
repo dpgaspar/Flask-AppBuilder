@@ -8,7 +8,7 @@
 	{% set can_delete = "can_delete" | is_item_visible(generalview_name) %}
     
 	<div class="well well-sm">
-        <div class="span12 pagination-centered">
+        <div style="display:inline;">
         {% if can_add %}
 			{% set path = route_base + '/add?next=' + request.path %}
 			{% set path = path | set_link_filters(filters) %}
