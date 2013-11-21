@@ -7,6 +7,9 @@
 	{% set can_delete = "can_delete" | is_item_visible(generalview_name) %}
     
 	<div class="well well-sm">
+		<div class="clearfix">
+		{{ lib.render_pagination(page, page_size, count) }}
+		</div>
 		{% if can_add %}
 			{% set path = route_base + '/add?next=' + request.path %}
 			{% set path = path | set_link_filters(filters) %}
@@ -15,9 +18,6 @@
 		{{ lib.lnk_back() }}
 		<div class="pull-right">
 		<strong>{{ _('Record Count') }}:</strong> {{ count }}
-		</div>
-		<div class="clearfix">
-		{{ lib.render_pagination(page, page_size, count) }}
 		</div>
     	</div>
 		
