@@ -14,11 +14,11 @@
 			{{ lib.lnk_add(path) }}
 		{% endif %}
 		{{ lib.lnk_back() }}
-		{{ lib.render_pagination(page, page_size, count) }}
+		
 		<div class="pull-right">
 		<strong>{{ _('Record Count') }}:</strong> {{ count }}
 		</div>
-		
+		{{ lib.render_pagination(page, page_size, count) }}
 		
     	</div>
 		
