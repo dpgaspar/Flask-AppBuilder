@@ -14,7 +14,9 @@
 			{{ lib.lnk_add(path) }}
 		{% endif %}
 		{{ lib.lnk_back() }}
-		<strong>{{ _('Record Count') }}:</strong> {{ count }}
+		<div class="text-right">
+			<strong>{{ _('Record Count') }}:</strong> {{ count }}
+		</div>
     	</div>
 		
 	{% if value_columns %}
