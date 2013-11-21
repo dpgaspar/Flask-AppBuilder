@@ -43,7 +43,7 @@
     {% endif %}
     {% if page > 0 %}
     <li>
-        <a href="{{ page | link_page }}">&lt;</a>
+        <a href="{{ (page - 1) | link_page }}">&lt;</a>
     </li>
     {% else %}
     <li class="disabled">
@@ -74,7 +74,7 @@
     {% endif %}
     {% if max < pages %}
     <li>
-        <a href="{{ pages | link_page }}">&raquo;</a>
+        <a href="{{ (pages - 1) | link_page }}">&raquo;</a>
     </li>
     {% else %}
     <li class="disabled">
