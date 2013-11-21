@@ -34,10 +34,6 @@ Includes:
 Some pictures
 -------------
 
-Master Detail view with related lists:
-
-https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/master_detail_list.png "List"
-
 Login page (with AUTH_DB):
 
 https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login.png "Login"
