@@ -13,9 +13,8 @@
 			{{ lib.lnk_add(path) }}
 		{% endif %}
 		{{ lib.lnk_back() }}
-		<div class="text-right">
-			<strong>{{ _('Record Count') }}:</strong> {{ count }}
-		</div>
+		<strong class"pull-right">{{ _('Record Count') }}:</strong> {{ count }}
+		{{ lib.render_pagination(page, page_size, count) }}
     	</div>
 		
 	{% if value_columns %}
@@ -70,7 +69,6 @@
 	    </tr>
 	{% endfor %}
 	</table>
-	{{ lib.render_pagination(page, page_size, count) }}
 	</div>
 	{% else %}
 	<b> {{_("No records found")}}</b>
