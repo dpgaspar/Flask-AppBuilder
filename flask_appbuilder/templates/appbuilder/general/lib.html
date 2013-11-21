@@ -19,10 +19,10 @@
     {% set max = page + 3 + 1 %}
 
     {% if min < 0 %}
-        {% set max = max - min %}
+	{% set max = max - min %}
     {% endif %}
     {% if max >= pages %}
-        {% set min = min - max + pages %}
+	{% set min = min - max + pages %}
     {% endif %}
 
     {% if min < 0 %}
@@ -34,7 +34,7 @@
 
     {% if min > 0 %}
     <li>
-        <a href="{{ (0| int) | link_page }}">&laquo;</a>
+        <a href="{{ page | link_page }}">&laquo;</a>
     </li>
     {% else %}
     <li class="disabled">
