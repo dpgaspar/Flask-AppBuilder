@@ -11,7 +11,6 @@
 {% macro render_pagination(page, page_size, count) %}
 
 <ul class="pagination pagination-sm" style="margin:10px; display:inline;">
-  {{ _('Record Count:') }} {{ count }} {{':'}} {{ page }} {{':'}} {{ page_size }}
   
   {% if not page %} {% set page = 0 %} {% endif %}
   {% set pages = ((count / page_size)|round(0,'ceil')|int)%}
