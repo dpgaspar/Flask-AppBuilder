@@ -16,7 +16,7 @@
 		<div class="pull-right">.
 		<strong>{{ _('Record Count') }}:</strong> {{ count }}
 		</div>
-		{{ lib.render_pagination(page, page_size, count) }}
+		
     	</div>
 		
 	{% if value_columns %}
@@ -71,6 +71,7 @@
 	    </tr>
 	{% endfor %}
 	</table>
+	{{ lib.render_pagination(page, page_size, count) }}
 	</div>
 	{% else %}
 	<b> {{_("No records found")}}</b>
