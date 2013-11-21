@@ -9,12 +9,11 @@
 
 
 {% macro render_pagination(page, page_size, count) %}
-
-{% if not page %} {% set page = 0 %} {% endif %}
+<ul class="pagination pagination-sm" style="display:inherit;">
+  
+  {% if not page %} {% set page = 0 %} {% endif %}
   {% set pages = ((count / page_size)|round(0,'ceil')|int)%}
   {% if pages > 1 %}
-  
-<ul class="pagination pagination-sm" style="display:inherit;">
   
   {% set min = page - 3 %}
     {% set max = page + 3 + 1 %}
@@ -82,9 +81,9 @@
         <a href="javascript:void(0)">&raquo;</a>
     </li>
     {% endif %}
-  
+{% endif %}  
 </ul>
-{% endif %}
+
 {% endmacro %}
 
 
