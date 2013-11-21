@@ -10,11 +10,13 @@
 
 {% macro render_pagination(page, page_size, count) %}
 
+
 {% if not page %} {% set page = 0 %} {% endif %}
   {% set pages = ((count / page_size)|round(0,'ceil')|int)%}
   {% if pages > 1 %}
 <ul class="pagination pagination-sm" style="display:inherit;">
-  
+
+  {% set init_page = 0 %}  
   {% set min = page - 3 %}
     {% set max = page + 3 + 1 %}
 
@@ -34,7 +36,7 @@
 
     {% if min > 0 %}
     <li>
-        <a href="{{ page | link_page }}">&laquo;</a>
+        <a href="{{ init_page | link_page }}">&laquo;</a>
     </li>
     {% else %}
     <li class="disabled">
