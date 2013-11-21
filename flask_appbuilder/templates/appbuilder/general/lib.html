@@ -13,22 +13,75 @@
 <ul class="pagination pagination-sm" style="margin:10px; display:inline;">
   {{ _('Record Count:') }} {{ count }} {{':'}} {{ page }} {{':'}} {{ page_size }}
   
-  {% set num_pages = ((count / page_size)|round(0,'ceil')|int)%}
-  {% if not page %} {% set page = 0 %} {% endif %}
+  {% set pages = ((count / page_size)|round(0,'ceil')|int)%}
   
-  {% if page == 0 %}
-  	<li class="disabled"><a href="#">&laquo;</a></li>
-  {% else %}
-  	<li><a href="#">&laquo;</a></li>
-  {% endif %}
-  {% for i in range(num_pages) %}
-  	{% if page == i %}
-  		<li class="active"><a href={{ i | link_page }}>{{i}} <span class="sr-only">(current)</span></a></li>
-  	{% else %}
-  		<li><a href={{ i | link_page }}>{{i}}</a></li>	
-  	{% endif %}
-  {% endfor %}  
-  <li><a href="#">&raquo;</a></li>
+  {% set min = page - 3 %}
+    {% set max = page + 3 + 1 %}
+
+    {% if min < 0 %}
+        {% set max = max - min %}
+    {% endif %}
+    {% if max >= pages %}
+        {% set min = min - max + pages %}
+    {% endif %}
+
+    {% if min < 0 %}
+        {% set min = 0 %}
+    {% endif %}
+    {% if max >= pages %}
+        {% set max = pages %}
+    {% endif %}
+
+    {% if min > 0 %}
+    <li>
+        <a href="{{ {{ 0 | link_page }} }}">&laquo;</a>
+    </li>
+    {% else %}
+    <li class="disabled">
+        <a href="javascript:void(0)">&laquo;</a>
+    </li>
+    {% endif %}
+    {% if page > 0 %}
+    <li>
+        <a href="{{ {{ page | link_page }} }}">&lt;</a>
+    </li>
+    {% else %}
+    <li class="disabled">
+        <a href="javascript:void(0)">&lt;</a>
+    </li>
+    {% endif %}
+
+    {% for p in range(min, max) %}
+    {% if page == p %}
+    <li class="active">
+        <a href="javascript:void(0)">{{ p }}</a>
+    </li>
+    {% else %}
+    <li>
+        <a href="{{ {{ p | link_page }} }}">{{ p }}</a>
+    </li>
+    {% endif %}
+    {% endfor %}
+
+    {% if page + 1 < pages %}
+    <li>
+        <a href="{{ {{ i+1 | link_page }} }}">&gt;</a>
+    </li>
+    {% else %}
+    <li class="disabled">
+        <a href="javascript:void(0)">&gt;</a>
+    </li>
+    {% endif %}
+    {% if max < pages %}
+    <li>
+        <a href="{{ {{ pages | link_page }} }}">&raquo;</a>
+    </li>
+    {% else %}
+    <li class="disabled">
+        <a href="javascript:void(0)">&raquo;</a>
+    </li>
+    {% endif %}
+  
 </ul>
 {% endmacro %}
 
