@@ -34,7 +34,7 @@
 
     {% if min > 0 %}
     <li>
-        <a href="{{ 0 | link_page }}">&laquo;</a>
+        <a href="{{ (0| int) | link_page }}">&laquo;</a>
     </li>
     {% else %}
     <li class="disabled">
