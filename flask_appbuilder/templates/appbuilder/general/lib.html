@@ -10,7 +10,7 @@
 
 {% macro render_pagination(page, page_size, count) %}
 
-<ul class="pagination pagination-sm" style="display: inline-table;">
+<ul class="pagination pagination-sm" style="display: inherit;">
   
   {% if not page %} {% set page = 0 %} {% endif %}
   {% set pages = ((count / page_size)|round(0,'ceil')|int)%}
