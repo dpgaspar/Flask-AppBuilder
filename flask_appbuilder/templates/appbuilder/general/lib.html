@@ -34,7 +34,7 @@
 
     {% if min > 0 %}
     <li>
-        <a href="{{ {{ 0 | link_page }} }}">&laquo;</a>
+        <a href="{{ 0 | link_page }}">&laquo;</a>
     </li>
     {% else %}
     <li class="disabled">
@@ -43,7 +43,7 @@
     {% endif %}
     {% if page > 0 %}
     <li>
-        <a href="{{ {{ page | link_page }} }}">&lt;</a>
+        <a href="{{ page | link_page }}">&lt;</a>
     </li>
     {% else %}
     <li class="disabled">
@@ -58,14 +58,14 @@
     </li>
     {% else %}
     <li>
-        <a href="{{ {{ p | link_page }} }}">{{ p }}</a>
+        <a href="{{ p | link_page }}">{{ p }}</a>
     </li>
     {% endif %}
     {% endfor %}
 
     {% if page + 1 < pages %}
     <li>
-        <a href="{{ {{ i+1 | link_page }} }}">&gt;</a>
+        <a href="{{ i+1 | link_page }}">&gt;</a>
     </li>
     {% else %}
     <li class="disabled">
@@ -74,7 +74,7 @@
     {% endif %}
     {% if max < pages %}
     <li>
-        <a href="{{ {{ pages | link_page }} }}">&raquo;</a>
+        <a href="{{ pages | link_page }}">&raquo;</a>
     </li>
     {% else %}
     <li class="disabled">
