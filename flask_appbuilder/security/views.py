@@ -271,29 +271,25 @@ class AuthView(BaseView):
                 )
 
 
-    @oid.after_login
+def _after_login_oid(self, resp):
+    if resp.email is None or resp.email == "":
+        flash(gettext('Invalid login. Please try again.'),'warning')
+        return redirect('appbuilder/general/security/login_oid.html')
+    user = User.query.filter_by(email = resp.email).first()
+    if user is None:
+        flash(gettext('Invalid login. Please try again.'),'warning')
+        return redirect('appbuilder/general/security/login_oid.html')
+    remember_me = False
+    if 'remember_me' in session:
+        remember_me = session['remember_me']
+        session.pop('remember_me', None)
+
+    login_user(user, remember = remember_me)
+    return redirect('/')
+
+@oid.after_login
     def _after_login(self, resp):
         if AUTH_TYPE == AUTH_OID: return self._after_login_oid(resp)
-
-
-    
-
-
-    def _after_login_oid(self, resp):
-        if resp.email is None or resp.email == "":
-            flash(gettext('Invalid login. Please try again.'),'warning')
-            return redirect('appbuilder/general/security/login_oid.html')
-        user = User.query.filter_by(email = resp.email).first()
-        if user is None:
-            flash(gettext('Invalid login. Please try again.'),'warning')
-            return redirect('appbuilder/general/security/login_oid.html')
-        remember_me = False
-        if 'remember_me' in session:
-            remember_me = session['remember_me']
-            session.pop('remember_me', None)
-
-        login_user(user, remember = remember_me)
-        return redirect('/')
 
 
 @app.before_request
