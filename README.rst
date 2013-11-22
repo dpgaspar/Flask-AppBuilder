@@ -26,6 +26,7 @@ Bug Fixes
 ---------
 
 - OpenID pictures not showing
+- Security reset password corrections
 
 
 Includes:
