@@ -288,8 +288,8 @@ def _after_login_oid(self, resp):
     return redirect('/')
 
 @oid.after_login
-    def _after_login(self, resp):
-        if AUTH_TYPE == AUTH_OID: return self._after_login_oid(resp)
+def _after_login(self, resp):
+    if AUTH_TYPE == AUTH_OID: return self._after_login_oid(resp)
 
 
 @app.before_request
