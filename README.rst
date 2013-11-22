@@ -6,6 +6,23 @@ New documentation at: http://flask-appbuilder.readthedocs.org/en/latest/
 Simple and rapid Application builder, includes detailed security, auto form generation, google charts and much more.
 
 
+Package Version
+---------------
+
+Current Pypi package version is 0.1.47:
+
+Next version WILL be 0.2.0, here is a list of bug fixes and new features:
+
+BUG FIXES
+---------
+---------
+
+- 
+
+Improvements
+------------
+------------
+
 Includes:
 ---------
 
