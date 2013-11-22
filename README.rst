@@ -18,15 +18,16 @@ Next version WILL be 0.2.0, here is a list of bug fixes and new features:
 Improvements
 ------------
 
-- Pagination on lists
-- Inline (panels) will reload/return to the same panel (via cookie)
-- templates with url_for
+- Pagination on lists.
+- Inline (panels) will reload/return to the same panel (via cookie).
+- Templates with url_for.
 
 Bug Fixes
 ---------
 
-- OpenID pictures not showing
-- Security reset password corrections
+- OpenID pictures not showing.
+- Security reset password corrections.
+- Date null Widget correction.
 
 
 Includes:
