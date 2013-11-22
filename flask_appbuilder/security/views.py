@@ -271,7 +271,7 @@ class AuthView(BaseView):
                 )
 
 
-def _after_login_oid(self, resp):
+def _after_login_oid(resp):
     if resp.email is None or resp.email == "":
         flash(gettext('Invalid login. Please try again.'),'warning')
         return redirect('appbuilder/general/security/login_oid.html')
