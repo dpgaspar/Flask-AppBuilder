@@ -30,3 +30,7 @@
 
 {{ lib.panel_end() }}
 {% endblock %}
+
+{% block add_tail_js %}
+<script src="{{url_for('baseapp.static',filename='js/ab_keep_tab.js')}}"></script>
+{% endblock %}

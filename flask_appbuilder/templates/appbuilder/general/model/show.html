@@ -26,9 +26,11 @@
 	{{ widgets.get('show')()|safe }}
 </div>
 
-{% if related_views %} </div> {% endif %}
+{% if related_views %}</div>{% endif %}
 {{ lib.panel_end() }}
 
 {% endblock %}
 
-
+{% block add_tail_js %}
+<script src="{{url_for('baseapp.static',filename='js/ab_keep_tab.js')}}"></script>
+{% endblock %}

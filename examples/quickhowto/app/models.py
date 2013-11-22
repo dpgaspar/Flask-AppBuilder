@@ -18,7 +18,7 @@ class Contact(BaseMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name =  db.Column(db.String(150), unique = True, nullable=False)
     address =  db.Column(db.String(564))
-    birthday = db.Column(db.Date)
+    birthday = db.Column(db.Date, nullable=True)
     personal_phone = db.Column(db.String(20))
     personal_celphone = db.Column(db.String(20))
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
