@@ -1,5 +1,6 @@
 Flask App Builder
 =================
+-----------------
 
 New documentation at: http://flask-appbuilder.readthedocs.org/en/latest/
 
@@ -15,13 +16,15 @@ Next version WILL be 0.2.0, here is a list of bug fixes and new features:
 
 BUG FIXES
 ---------
----------
 
-- 
+- OpenID pictures not showing
+
 
 Improvements
 ------------
-------------
+
+- Pagination on lists
+- Inline (panels) will reload/return to the same panel (via cookie)
 
 Includes:
 ---------
