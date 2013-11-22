@@ -289,7 +289,7 @@ def _after_login_oid(resp):
 
 @oid.after_login
 def _after_login(resp):
-    if AUTH_TYPE == AUTH_OID: return self._after_login_oid(resp)
+    if AUTH_TYPE == AUTH_OID: return _after_login_oid(resp)
 
 
 @app.before_request
