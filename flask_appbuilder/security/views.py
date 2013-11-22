@@ -297,8 +297,8 @@ class AuthView(BaseView):
 
 
 @app.before_request
-    def before_request(self):
-        g.user = current_user
+def before_request(self):
+    g.user = current_user
 
 @lm.user_loader
 def load_user(id):
