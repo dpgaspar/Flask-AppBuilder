@@ -148,7 +148,6 @@ class DatePickerWidget(object):
         kwargs.setdefault('id', field.id)
         kwargs.setdefault('name', field.name)
         if not field.data:
-            print "DATE NULL"
             field.data = ""
         template = self.data_template
 
@@ -173,6 +172,8 @@ class DateTimePickerWidget(object):
     def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
         kwargs.setdefault('name', field.name)
+        if not field.data:
+            field.data = ""
         template = self.data_template
 
         return HTMLString(template % {'text': html_params(type='text',
