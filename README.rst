@@ -14,17 +14,19 @@ Current Pypi package version is 0.1.47:
 
 Next version WILL be 0.2.0, here is a list of bug fixes and new features:
 
-BUG FIXES
----------
-
-- OpenID pictures not showing
-
 
 Improvements
 ------------
 
 - Pagination on lists
 - Inline (panels) will reload/return to the same panel (via cookie)
+- templates with url_for
+
+Bug Fixes
+---------
+
+- OpenID pictures not showing
+
 
 Includes:
 ---------
