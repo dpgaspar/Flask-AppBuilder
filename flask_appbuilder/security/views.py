@@ -276,9 +276,7 @@ class AuthView(BaseView):
         if AUTH_TYPE == AUTH_OID: return self._after_login_oid(resp)
 
 
-    @app.before_request
-    def before_request(self):
-        g.user = current_user
+    
 
 
     def _after_login_oid(self, resp):
@@ -297,6 +295,10 @@ class AuthView(BaseView):
         login_user(user, remember = remember_me)
         return redirect('/')
 
+
+@app.before_request
+    def before_request(self):
+        g.user = current_user
 
 @lm.user_loader
 def load_user(id):
