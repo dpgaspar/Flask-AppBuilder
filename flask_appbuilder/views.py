@@ -70,7 +70,7 @@ class BaseView(object):
 
         # If endpoint name is not provided, get it from the class name
         if not self.endpoint:
-            self.endpoint = self.__class__.__name__.lower()
+            self.endpoint = self.__class__.__name__
 
         self.static_folder = static_folder
         if not static_folder:
