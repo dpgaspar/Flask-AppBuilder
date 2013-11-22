@@ -28,7 +28,7 @@ function set_openid(openid, pr)
         <div class="help-block">Click on your OpenID provider below:</div>
         <div class="control-group">
             {% for pr in providers %}
-            <a href="javascript:set_openid('{{pr.url}}', '{{pr.name}}');"><img src="/static/img/{{pr.name.lower()}}.png" class="img-polaroid" style="margin:2px;" /></a>
+            <a href="javascript:set_openid('{{pr.url}}', '{{pr.name}}');"><img src="{{url_for('baseapp.static',filename='img/' + pr.name.lower() + '.png')}}" class="img-polaroid" style="margin:2px;" /></a>
             {% endfor %}
         </div>
         <div class="control-group{% if form.errors.openid %} error{% endif %}">
