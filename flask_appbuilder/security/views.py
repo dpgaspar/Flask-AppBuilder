@@ -288,7 +288,7 @@ def _after_login_oid(resp):
     return redirect('/')
 
 @oid.after_login
-def _after_login(self, resp):
+def _after_login(resp):
     if AUTH_TYPE == AUTH_OID: return self._after_login_oid(resp)
 
 
