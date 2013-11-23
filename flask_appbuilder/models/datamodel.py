@@ -52,8 +52,8 @@ class SQLAModel(DataModel):
                 else:
                     pass
             except:
-                if isinstance(self.obj.__mapper__.columns[filter_key].type, sa.types.String):
-                    query = query.filter(getattr(self.obj,filter_key).like(filters.get(filter_key) + '%%'))
+                if self.is_string(filter_key) or self.is_text(filter_key):
+                    query = query.filter(getattr(self.obj,filter_key).like(filters.get(filter_key) + '%'))
         if (order_column != ''):
             query = query.order_by(order_column + ' ' + order_direction)
         

@@ -6,7 +6,7 @@ from forms import GeneralModelConverter
 from .security.decorators import has_access
 from .filemanager import uuid_originalname
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
-
+from .actions import ActionItem
 
 
 def expose(url='/', methods=('GET',)):
@@ -215,6 +215,9 @@ class SimpleFormView(BaseView):
                     )
 
     def form_post(self, form):
+        """
+        Override this method to implement your form processing
+        """
         pass
 
     def _get_edit_widget(self, form = None, exclude_cols = [], widgets = {}):
@@ -484,6 +487,7 @@ class GeneralView(BaseCRUDView):
 
         filters = {}
         filters = self._get_filter_args(filters)
+        print "FILTERS", filters
         if (filters != {}):
             item = self.datamodel.obj()
             for filter_key in filters:

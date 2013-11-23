@@ -24,3 +24,5 @@ class Contact(BaseMixin, db.Model):
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     group = db.relationship("Group")
 
+    def __repr__(self):
+        return self.name
