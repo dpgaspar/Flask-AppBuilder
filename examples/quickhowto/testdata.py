@@ -4,12 +4,10 @@ import random
 from datetime import datetime
 import sys
 
-def get_random_name(names_list, size = 1):
-    name = ""
-    for i in range(0, size):
-        name = name + ' ' + names_list[random.randrange(0,len(names_list))].capitalize()
-    return name
-
+def get_random_name(names_list, size = 1):    
+    name_lst =  [names_list[random.randrange(0,len(names_list))].capitalize() for i in range(0, size)]
+    return " ".join(name_lst)
+         
 
 g1 = Group()
 g1.name = 'Friends'
@@ -17,13 +15,13 @@ g2 = Group()
 g2.name = 'Family'
 g3 = Group()
 g3.name = 'Work'
-db.session.add(g1)
-db.session.add(g2)
-db.session.add(g3)
 try:
+    db.session.add(g1)
+    db.session.add(g2)
+    db.session.add(g3)
     db.session.commit()
 except:
-    pass
+    db.session.rollback()
 
 f = open('NAMES.DIC', "rb")
 names_list = [x.strip() for x in f.readlines()]
@@ -32,7 +30,7 @@ f.close()
 
 
 
-for i in range(1,1000):
+for i in range(1,100000):
     c = Contact()
     c.name = get_random_name(names_list, random.randrange(2,6)) 
     c.address = 'Street ' + names_list[random.randrange(0,len(names_list))]
@@ -48,6 +46,6 @@ for i in range(1,1000):
         db.session.commit()
         print "inserted", c
     except:
-        pass
+        db.session.rollback()
     
     
