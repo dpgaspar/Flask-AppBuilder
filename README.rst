@@ -30,6 +30,7 @@ Bug Fixes
 - Security reset password corrections.
 - Date null Widget correction.
 - list filter with text
+- Removed unnecessary keys from config.py on skeleton and examples.
 
 
 Includes:
