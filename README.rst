@@ -21,6 +21,7 @@ Improvements
 - Pagination on lists.
 - Inline (panels) will reload/return to the same panel (via cookie).
 - Templates with url_for.
+- BaseApp injects all necessary filter in jinja2, no need to import
 
 Bug Fixes
 ---------
@@ -28,6 +29,7 @@ Bug Fixes
 - OpenID pictures not showing.
 - Security reset password corrections.
 - Date null Widget correction.
+- list filter with text
 
 
 Includes:
