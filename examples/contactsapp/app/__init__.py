@@ -6,7 +6,7 @@ from sqlalchemy import event
 from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
 from flask.ext.babel import Babel
-from config import basedir, ADMINS
+from config import basedir
 
 
 app = Flask(__name__)
