@@ -9,7 +9,7 @@
 	<div class="well well-sm">
 		{{ lib.render_pagination(page, page_size, count) }}
 		{% if can_add %}
-			{% set path = url_for(generalview_name + '.add') + '?next=' + request.path %}
+			{% set path = url_for(generalview_name + '.add',next=request.path) %}
 			{% set path = path | set_link_filters(filters) %}
 			{{ lib.lnk_add(path) }}
 		{% endif %}
@@ -28,9 +28,11 @@
 	<thead>
 	<tr>
 	<th class="col-md-1 col-lg-1 col-sm-1" ></th>
+    
 	{% for item in include_columns %}
 		{% if item in order_columns %}
 			{% set res = item | get_link_order %}
+            {{request}}
 			{% if res == 2 %}
 				<th><a href={{ item | link_order }}>{{label_columns.get(item)}}
 				<span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></a></th>
@@ -38,7 +40,7 @@
 	                        <th><a href={{ item | link_order }}>{{label_columns.get(item)}}
 				<span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></a>
 			{% else %}
-				<th><a href={{ item | link_order }}>{{label_columns.get(item)}}
+                <th><a href={{ item | link_order }}>{{label_columns.get(item)}}
 				<span class="glyphicon glyphicon-sort pull-right"></span></a>
 			{% endif %}
 		{% else %}

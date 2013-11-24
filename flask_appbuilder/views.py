@@ -524,8 +524,8 @@ class GeneralView(BaseCRUDView):
     @has_access
     def show(self, pk):
 
-        widgets = self._get_show_widget(id)
-        item = self.datamodel.get(id)
+        widgets = self._get_show_widget(pk)
+        item = self.datamodel.get(pk)
         page = self._get_page_args()
         
         widgets = self._get_related_list_widgets(item, filters = {}, order_column='', order_direction='', 
@@ -634,7 +634,7 @@ class GeneralView(BaseCRUDView):
     @expose('/delete/<int:pk>')
     @has_access
     def delete(self, pk):
-        item = self.datamodel.get(id)
+        item = self.datamodel.get(pk)
         
         self.pre_delete(item)
         self.datamodel.delete(item)

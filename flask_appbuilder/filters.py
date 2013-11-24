@@ -1,7 +1,7 @@
 from app import app
 from flask.ext.appbuilder.security.models import is_menu_public, is_item_public
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask import g, request
+from flask import g, request, url_for
 from flask.ext.login import current_user
 
 
@@ -26,7 +26,24 @@ class TemplateFilters(object):
 
 
     @app_template_filter('link_order')
-    def link_order_filter(self, s):
+    def link_order_filter(self, item):
+        new_args = request.view_args.copy()
+        args = request.args.copy()
+        if ('order_column') in args:
+            if request.view_args.get('order_direction') == 'asc':
+                args['order_direction'] = 'desc'
+            else:
+                args['order_direction'] = 'asc'
+        else:
+            print new_args, args
+            args['order_column'] = item
+            args['order_direction'] = 'asc'
+        return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
+
+
+
+    @app_template_filter('link_order2')
+    def link_order_filter2(self, s):
 
         order_column = request.args.get('order_column')
         if order_column:
