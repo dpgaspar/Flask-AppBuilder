@@ -3,7 +3,7 @@
 
 	{% set can_add = "can_add" | is_item_visible(generalview_name) %}
 	{% set can_show = "can_show" | is_item_visible(generalview_name) %}
-    	{% set can_edit = "can_edit" | is_item_visible(generalview_name) %}
+    {% set can_edit = "can_edit" | is_item_visible(generalview_name) %}
 	{% set can_delete = "can_delete" | is_item_visible(generalview_name) %}
     
 	<div class="well well-sm">
@@ -54,17 +54,17 @@
 		<td><center>
 			<div class="btn-group btn-group-xs">
 			{% if can_show %}
-				{% set path = route_base ~ '/show/' ~ pks[loop.index-1] ~ '?next=' ~ request.path %}
+				{% set path = url_for(generalview_name + '.show',pk=pks[loop.index-1],next=request.path) %}
 				{% set path = path | set_link_filters(filters) %}
 				{{ lib.lnk_show(path) }}
 			{% endif %}
 			{% if can_edit %}
-				{% set path = route_base ~ '/edit/' ~ pks[loop.index-1] ~ '?next=' ~ request.path %}
+				{% set path = url_for(generalview_name + '.edit',pk=pks[loop.index-1],next=request.path) %}
 				{% set path = path | set_link_filters(filters) %}
 				{{ lib.lnk_edit(path) }}
 			{% endif %}
 			{% if can_delete %}
-				{{ lib.lnk_delete(route_base ~ '/delete/' ~ pks[loop.index-1] ~ '?next=' + request.path) }}
+				{{ lib.lnk_delete(url_for(generalview_name + '.delete',pk=pks[loop.index-1],next=request.path)) }}
 			{% endif %}
 			</div>
 		</center></td>

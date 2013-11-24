@@ -520,9 +520,9 @@ class GeneralView(BaseCRUDView):
             SHOW
     --------------------------------
     """
-    @expose('/show/<int:id>', methods=['GET'])
+    @expose('/show/<int:pk>', methods=['GET'])
     @has_access
-    def show(self, id):
+    def show(self, pk):
 
         widgets = self._get_show_widget(id)
         item = self.datamodel.get(id)
@@ -631,9 +631,9 @@ class GeneralView(BaseCRUDView):
             DELETE
     ---------------------------
     """
-    @expose('/delete/<int:id>')
+    @expose('/delete/<int:pk>')
     @has_access
-    def delete(self, id):
+    def delete(self, pk):
         item = self.datamodel.get(id)
         
         self.pre_delete(item)
