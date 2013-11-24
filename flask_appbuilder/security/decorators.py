@@ -19,6 +19,6 @@ def has_access(f):
                 return f(self, *args, **kwargs)
             else:
                 flash("Access is Denied %s %s" % (f.__name__, self.__class__.__name__),"danger")
-        return redirect(url_for("authview.login"))
+        return redirect(url_for("AuthView.login"))
     return wrap
 

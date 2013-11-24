@@ -487,7 +487,6 @@ class GeneralView(BaseCRUDView):
 
         filters = {}
         filters = self._get_filter_args(filters)
-        print "FILTERS", filters
         if (filters != {}):
             item = self.datamodel.obj()
             for filter_key in filters:

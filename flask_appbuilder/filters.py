@@ -30,7 +30,7 @@ class TemplateFilters(object):
         new_args = request.view_args.copy()
         args = request.args.copy()
         if ('order_column') in args:
-            if request.view_args.get('order_direction') == 'asc':
+            if args.get('order_direction') == 'asc':
                 args['order_direction'] = 'desc'
             else:
                 args['order_direction'] = 'asc'
@@ -41,45 +41,13 @@ class TemplateFilters(object):
         return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
 
 
-
-    @app_template_filter('link_order2')
-    def link_order_filter2(self, s):
-
-        order_column = request.args.get('order_column')
-        if order_column:
-            lststr = request.url.split('order_column')
-            if (request.args.get('order_direction') == 'asc'):
-                if len(request.args) > 0:
-                    return lststr[0] + 'order_column=' + s + '&order_direction=desc'
-                else:
-                    return lststr[0] + '&order_column=' + s + '&order_direction=desc'
-            else:
-                if len(request.args) > 0:
-                    return  lststr[0] + 'order_column=' + s + '&order_direction=asc'
-                else:
-                    return  lststr[0] + '&order_column=' + s + '&order_direction=asc'
-        else:
-            if len(request.args) > 0:
-                return  request.url + '&order_column=' + s + '&order_direction=asc'
-            else:
-                return  request.url + '?order_column=' + s + '&order_direction=asc'
-
-
     @app_template_filter('link_page')
     def link_page_filter(self, s):
 
-        page = request.args.get('page')
-        if page:
-            lststr = request.url.split('page')
-            if len(request.args) > 0:
-                return  lststr[0] + 'page=' + str(s)
-            else:
-                return  lststr[0] + '?page=' + str(s)
-        else:
-            if len(request.args) > 0:
-                return  request.url + '&page=' + str(s)
-            else:
-                return  request.url + '?page=' + str(s)
+        new_args = request.view_args.copy()
+        args = request.args.copy()
+        args['page'] = s
+        return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
                 
 
     @app_template_filter('get_link_next')
@@ -88,7 +56,23 @@ class TemplateFilters(object):
 
 
     @app_template_filter('set_link_filters')
-    def add_link_filters_filter(self, path, filters):
+    def set_link_filters_filter(self, path, filters, pk):
+        new_args = request.view_args.copy()
+        args = request.args.copy()
+        
+        lnkstr = path
+        
+        for _filter in filters:
+            args['_flt_' + _filter] = str(pk)
+        return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
+        
+    
+
+
+
+    # hackish
+    @app_template_filter('set_link_filters2')
+    def add_link_filters_filter2(self, path, filters):
         lnkstr = path
         for _filter in filters:
             try:
@@ -99,6 +83,7 @@ class TemplateFilters(object):
             except:
                 pass
         return lnkstr
+    
 
     @app_template_filter('get_link_order')
     def get_link_order_filter(self, s):

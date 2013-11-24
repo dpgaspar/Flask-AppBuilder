@@ -32,8 +32,7 @@
 	{% for item in include_columns %}
 		{% if item in order_columns %}
 			{% set res = item | get_link_order %}
-            {{request}}
-			{% if res == 2 %}
+        	{% if res == 2 %}
 				<th><a href={{ item | link_order }}>{{label_columns.get(item)}}
 				<span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></a></th>
 			{% elif res == 1 %}
@@ -57,12 +56,12 @@
 			<div class="btn-group btn-group-xs">
 			{% if can_show %}
 				{% set path = url_for(generalview_name + '.show',pk=pks[loop.index-1],next=request.path) %}
-				{% set path = path | set_link_filters(filters) %}
+				{% set path = path | set_link_filters(filters, pk) %}
 				{{ lib.lnk_show(path) }}
 			{% endif %}
 			{% if can_edit %}
 				{% set path = url_for(generalview_name + '.edit',pk=pks[loop.index-1],next=request.path) %}
-				{% set path = path | set_link_filters(filters) %}
+				{% set path = path | set_link_filters(filters, pk) %}
 				{{ lib.lnk_edit(path) }}
 			{% endif %}
 			{% if can_delete %}
