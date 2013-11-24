@@ -54,36 +54,14 @@ class TemplateFilters(object):
     def get_link_next_filter(self, s):
         return request.args.get('next')
 
-
+    # to improve
     @app_template_filter('set_link_filters')
     def set_link_filters_filter(self, path, filters, pk):
-        new_args = request.view_args.copy()
-        args = request.args.copy()
-        
         lnkstr = path
         
         for _filter in filters:
-            args['_flt_' + _filter] = str(pk)
-        return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
-        
-    
-
-
-
-    # hackish
-    @app_template_filter('set_link_filters2')
-    def add_link_filters_filter2(self, path, filters):
-        lnkstr = path
-        for _filter in filters:
-            try:
-                datamodel = SQLAModel(filters.get(_filter))
-                pk_name = datamodel.get_pk_name()
-                pk_value = getattr(filters.get(_filter), pk_name)
-                lnkstr = lnkstr + '&_flt_' + _filter + '=' + str(pk_value)
-            except:
-                pass
-        return lnkstr
-    
+            lnkstr = lnkstr + '&_flt_' + _filter + '=' + str(pk)
+        return lnkstr        
 
     @app_template_filter('get_link_order')
     def get_link_order_filter(self, s):

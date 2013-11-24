@@ -530,6 +530,7 @@ class GeneralView(BaseCRUDView):
         widgets = self._get_related_list_widgets(item, filters = {}, order_column='', order_direction='', 
                 page = page, page_size = self.page_size, widgets = widgets)
         return render_template(self.show_template,
+                           pk = pk,
                            title = self.show_title,
                            widgets = widgets,
                            baseapp = self.baseapp,

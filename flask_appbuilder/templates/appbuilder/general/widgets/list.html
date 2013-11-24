@@ -10,7 +10,7 @@
 		{{ lib.render_pagination(page, page_size, count) }}
 		{% if can_add %}
 			{% set path = url_for(generalview_name + '.add',next=request.path) %}
-			{% set path = path | set_link_filters(filters) %}
+			{% set path = path | set_link_filters(filters, pk) %}
 			{{ lib.lnk_add(path) }}
 		{% endif %}
 		{{ lib.lnk_back() }}
