@@ -20,8 +20,7 @@
 		</div>
 		
 		
-    	</div>
-		
+    </div>	
 	{% if value_columns %}
 	<div class="table-responsive">
 	<table class="table table-bordered table-hover">
@@ -29,21 +28,21 @@
 	<tr>
 	<th class="col-md-1 col-lg-1 col-sm-1" ></th>
     
-	{% for column in include_columns %}
-		{% if column in order_columns %}
-			{% set res = column | get_link_order %}
+	{% for item in include_columns %}
+		{% if item in order_columns %}
+			{% set res = item | get_link_order %}
         	{% if res == 2 %}
-				<th><a href={{ item | link_order }}>{{label_columns.get(column)}}
+				<th><a href={{ item | link_order }}>{{label_columns.get(item)}}
 				<span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></a></th>
 			{% elif res == 1 %}
-	                        <th><a href={{ item | link_order }}>{{label_columns.get(column)}}
+                <th><a href={{ item | link_order }}>{{label_columns.get(item)}}
 				<span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></a>
 			{% else %}
-                <th><a href={{ item | link_order }}>{{label_columns.get(column)}}
+                <th><a href={{ item | link_order }}>{{label_columns.get(item)}}
 				<span class="glyphicon glyphicon-sort pull-right"></span></a>
 			{% endif %}
 		{% else %}
-			<th>{{label_columns.get(column)}}</th>
+			<th>{{label_columns.get(item)}}</th>
 		{% endif %}
 	{% endfor %}
 	</tr>

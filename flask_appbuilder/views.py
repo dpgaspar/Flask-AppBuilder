@@ -120,8 +120,8 @@ class BaseView(object):
         return int(page)
 
     def _get_order_args(self):
-        order_column = request.args.get('order_column')
-        order_direction = request.args.get('order_direction')
+        order_column = request.args.get('_oc_')
+        order_direction = request.args.get('_od_')
         if not order_column: order_column = ''
         if not order_direction: order_direction = ''
         return order_column, order_direction

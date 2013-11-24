@@ -55,6 +55,7 @@ class ViewMenuGeneralView(GeneralView):
     order_columns = ['name']
     search_columns = ['name']
 
+
 class PermissionViewGeneralView(GeneralView):
     route_base = '/permissionviews'
     
@@ -176,7 +177,6 @@ class UserGeneralView(GeneralView):
                            )
 
 
-
     def _init_forms(self):
         super(UserGeneralView, self)._init_forms()
         if AUTH_TYPE == AUTH_DB:
@@ -199,7 +199,7 @@ class RoleGeneralView(GeneralView):
     
     datamodel = SQLAModel(Role, db.session)
 
-    related_views = [PermissionViewGeneralView(), UserGeneralView()]
+    related_views = [UserGeneralView()]
 
     list_title = lazy_gettext('List Roles')
     show_title = lazy_gettext('Show Role')
@@ -234,7 +234,6 @@ class AuthView(BaseView):
     def logout(self):
         logout_user()
         return redirect('/')
-
 
     def _login_db(self):
         if g.user is not None and g.user.is_authenticated():

@@ -29,15 +29,15 @@ class TemplateFilters(object):
     def link_order_filter(self, column):
         new_args = request.view_args.copy()
         args = request.args.copy()
-        if ('order_column') in args:
-            if args.get('order_direction') == 'asc':
-                args['order_direction'] = 'desc'
+        if ('_oc_') in args:
+            args['_oc_'] = column
+            if args.get('_od_') == 'asc':
+                args['_od_'] = 'desc'
             else:
-                args['order_direction'] = 'asc'
+                args['_od_'] = 'asc'
         else:
-            print new_args, args
-            args['order_column'] = column
-            args['order_direction'] = 'asc'
+            args['_oc_'] = column
+            args['_od_'] = 'asc'
         return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
 
 
@@ -65,8 +65,8 @@ class TemplateFilters(object):
 
     @app_template_filter('get_link_order')
     def get_link_order_filter(self, s):
-        if request.args.get('order_column') == s:
-            order_direction = request.args.get('order_direction')
+        if request.args.get('_oc_') == s:
+            order_direction = request.args.get('_od_')
             if (order_direction):
                 if (order_direction == 'asc'):
                     return 2

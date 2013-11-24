@@ -102,7 +102,7 @@ class PermissionView(db.Model):
         pv.view_menu_id, pv.permission_id = vm.id, perm.id
         db.session.add(pv)
         db.session.commit()
-        print "Added Permission View " , str(pv)
+        print "Added Permission View" , str(pv)
         return pv
 
 
@@ -166,7 +166,7 @@ class Role(db.Model):
             self.permissions.append(perm_view)
             db.session.merge(self)
             db.session.commit()
-            print "Added Role " , str(perm_view) , " to Role " , self.name
+            print "Added Role" , str(perm_view) , " to Role " , self.name
 
     def __repr__(self):
         return self.name
