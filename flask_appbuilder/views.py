@@ -118,6 +118,9 @@ class BaseView(object):
         """
         Get page arguments, return a dictionary
         { <VIEW_NAME>: PAGE_NUMBER }
+        
+        Arguments are passed: page_<VIEW_NAME>=<PAGE_NUMBER>
+        
         """
         for arg in request.args:
             re_match = re.findall('page_(.*)', arg)
@@ -354,12 +357,11 @@ class BaseCRUDView(BaseView):
                     order_column = order_column, order_direction = order_direction, page=page, page_size=page_size)
         
     def _get_related_list_widgets(self, item, filters = {}, order_column='', order_direction='', 
-                                page=None, page_size=None,
-                                widgets = {}, **args):
+                                pages=None, widgets = {}, **args):
         widgets['related_lists'] = []
         for view in self.related_views:
             widgets['related_lists'].append(self._get_related_list_widget(item, view, filters, 
-                    order_column, order_direction, page=page, page_size=page_size).get('list'))
+                    order_column, order_direction, page=pages.get(view.__class__.__name__), page_size=view.page_size).get('list'))
         return widgets
     
     def _get_list_widget(self, filters = {}, 
@@ -533,10 +535,10 @@ class GeneralView(BaseCRUDView):
 
         widgets = self._get_show_widget(pk)
         item = self.datamodel.get(pk)
-        page = self._get_page_args()
+        pages = self._get_page_args()
         
         widgets = self._get_related_list_widgets(item, filters = {}, order_column='', order_direction='', 
-                page = page, page_size = self.page_size, widgets = widgets)
+                pages = pages, widgets = widgets)
         return render_template(self.show_template,
                            pk = pk,
                            title = self.show_title,
