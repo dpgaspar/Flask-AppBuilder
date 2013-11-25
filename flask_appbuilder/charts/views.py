@@ -52,6 +52,8 @@ class ChartView(BaseChartView):
     
 class TimeChartView(BaseChartView):
     
+    chart_type = 'ColumnChart'
+    
     @expose('/chart/')
     @has_access
     def show(self):
