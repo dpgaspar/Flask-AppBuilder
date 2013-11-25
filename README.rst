@@ -31,6 +31,7 @@ Bug Fixes
 - Date null Widget correction.
 - list filter with text
 - Removed unnecessary keys from config.py on skeleton and examples.
+- Simple group by correction, when query does not use joined models.
 
 
 Includes:
