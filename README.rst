@@ -21,7 +21,8 @@ Improvements
 - Pagination on lists.
 - Inline (panels) will reload/return to the same panel (via cookie).
 - Templates with url_for.
-- BaseApp injects all necessary filter in jinja2, no need to import
+- BaseApp injects all necessary filter in jinja2, no need to import.
+- New Chart type, group by month and year.
 
 Bug Fixes
 ---------
