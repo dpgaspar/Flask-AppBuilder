@@ -69,9 +69,9 @@ class TemplateFilters(object):
         return lnkstr        
 
     @app_template_filter('get_link_order')
-    def get_link_order_filter(self, s):
-        if request.args.get('_oc_') == s:
-            order_direction = request.args.get('_od_')
+    def get_link_order_filter(self, column, generalview_name):
+        if request.args.get('_oc_' + generalview_name) == s:
+            order_direction = request.args.get('_od_' + generalview_name)
             if (order_direction):
                 if (order_direction == 'asc'):
                     return 2
