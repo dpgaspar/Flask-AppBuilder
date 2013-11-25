@@ -36,7 +36,7 @@ class ChartView(BaseChartView):
     
     @expose('/chart/')
     @has_access
-    def show(self):
+    def chart(self):
         group_by = self._get_group_by_args()
         if group_by == '':
             group_by = self.group_by_columns[0]
@@ -56,7 +56,7 @@ class TimeChartView(BaseChartView):
     
     @expose('/chartmonth/')
     @has_access
-    def show(self):
+    def chartmonth(self):
         group_by = self._get_group_by_args()
         if group_by == '':
             group_by = self.group_by_columns[0]
@@ -72,7 +72,7 @@ class TimeChartView(BaseChartView):
 
     @expose('/chartyear/')
     @has_access
-    def show(self):
+    def chartyear(self):
         group_by = self._get_group_by_args()
         if group_by == '':
             group_by = self.group_by_columns[0]
