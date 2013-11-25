@@ -63,7 +63,7 @@ class TimeChartView(BaseChartView):
         
         if period == 'month':
             value_columns = self.datamodel.query_month_group(group_by)
-        elif period == 'year'
+        elif period == 'year':
             value_columns = self.datamodel.query_year_group(group_by)
         widgets = self._get_chart_widget(value_columns = value_columns)
         return render_template(self.chart_template, route_base = self.route_base, 
