@@ -54,13 +54,17 @@ class TimeChartView(BaseChartView):
     
     chart_type = 'ColumnChart'
     
-    @expose('/chartmonth/')
+    @expose('/chart/<str:period>')
     @has_access
-    def chartmonth(self):
+    def chartmonth(self,period):
         group_by = self._get_group_by_args()
         if group_by == '':
             group_by = self.group_by_columns[0]
-        value_columns = self.datamodel.query_month_group(group_by)
+        
+        if period == 'month':
+            value_columns = self.datamodel.query_month_group(group_by)
+        elif period == 'year'
+            value_columns = self.datamodel.query_year_group(group_by)
         widgets = self._get_chart_widget(value_columns = value_columns)
         return render_template(self.chart_template, route_base = self.route_base, 
                                                 title = self.chart_title,
@@ -70,18 +74,4 @@ class TimeChartView(BaseChartView):
                                                 widgets = widgets, 
                                                 baseapp = self.baseapp)
 
-    @expose('/chartyear/')
-    @has_access
-    def chartyear(self):
-        group_by = self._get_group_by_args()
-        if group_by == '':
-            group_by = self.group_by_columns[0]
-        value_columns = self.datamodel.query_year_group(group_by)
-        widgets = self._get_chart_widget(value_columns = value_columns)
-        return render_template(self.chart_template, route_base = self.route_base, 
-                                                title = self.chart_title,
-                                                label_columns = self.label_columns, 
-                                                group_by_columns = self.group_by_columns,
-                                                height = self.height,
-                                                widgets = widgets, 
-                                                baseapp = self.baseapp)
+    
