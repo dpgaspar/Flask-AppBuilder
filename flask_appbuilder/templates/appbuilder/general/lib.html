@@ -8,7 +8,7 @@
 {% endmacro %}
 
 
-{% macro render_pagination(page, page_size, count) %}
+{% macro render_pagination(page, page_size, count, generalview_name) %}
 
     {% if not page %} {% set page = 0 %} {% endif %}
     {% set pages = ((count / page_size)|round(0,'ceil')|int)%}
@@ -35,7 +35,7 @@
 
     {% if min > 0 %}
     <li>
-        <a href="{{ init_page | link_page }}">&laquo;</a>
+        <a href="{{ init_page | link_page(generalview_name) }}">&laquo;</a>
     </li>
     {% else %}
     <li class="disabled">
@@ -44,7 +44,7 @@
     {% endif %}
     {% if page > 0 %}
     <li>
-        <a href="{{ (page - 1) | link_page }}">&lt;</a>
+        <a href="{{ (page - 1) | link_page(generalview_name) }}">&lt;</a>
     </li>
     {% else %}
     <li class="disabled">
@@ -59,14 +59,14 @@
         </li>
         {% else %}
         <li>
-            <a href="{{ p | link_page }}">{{ p }}</a>
+            <a href="{{ p | link_page(generalview_name) }}">{{ p }}</a>
         </li>
         {% endif %}
     {% endfor %}
 
     {% if page + 1 < pages %}
         <li>
-            <a href="{{ (page + 1) | link_page }}">&gt;</a>
+            <a href="{{ (page + 1) | link_page(generalview_name) }}">&gt;</a>
         </li>
     {% else %}
         <li class="disabled">
@@ -75,7 +75,7 @@
     {% endif %}
     {% if max < pages %}
         <li>
-            <a href="{{ (pages - 1) | link_page }}">&raquo;</a>
+            <a href="{{ (pages - 1) | link_page(generalview_name) }}">&raquo;</a>
         </li>
     {% else %}
         <li class="disabled">
