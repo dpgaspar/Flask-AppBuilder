@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from itertools import groupby
 from flask import flash
 from flask.ext.babel import gettext, ngettext, lazy_gettext
 from sqlalchemy.orm import class_mapper, joinedload
@@ -107,9 +107,12 @@ class SQLAModel(DataModel):
             return query.all()
 
     def query_month_group(self, group_by = '', filters = {}, order_column = '', order_direction = ''):
-        query = self.session.query(func.month(getattr(self.obj,group_by)), func.count(self.obj.id))
+        query = self.session.query(self.obj)
         query = self._get_base_query(query = query, filters = filters, order_column = order_column, order_direction = order_direction)
-        query = query.group_by(func.month(getattr(self.obj,group_by)))
+        
+        for ( grouped, items ) in groupby( query_result, getattr(self.obj, group_by) ):
+            for item in items:
+                print item
         return query.all()
         
 
