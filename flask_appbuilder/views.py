@@ -364,10 +364,13 @@ class BaseCRUDView(BaseView):
         return related_view._get_list_widget(filters = filters, 
                     order_column = order_column, order_direction = order_direction, page=page, page_size=page_size)
         
-    def _get_related_list_widgets(self, item, filters = {}, order_column='', order_direction='', 
+    def _get_related_list_widgets(self, item, filters = {}, orders = {}, 
                                 pages=None, widgets = {}, **args):
         widgets['related_lists'] = []
         for view in self.related_views:
+            if orders.get(view.__class__.__name__):
+                order_column, order_direction = orders.get(view.__class__.__name__)
+            else: order_column, order_direction = '',''
             widgets['related_lists'].append(self._get_related_list_widget(item, view, filters, 
                     order_column, order_direction, page=pages.get(view.__class__.__name__), page_size=view.page_size).get('list'))
         return widgets
@@ -546,8 +549,9 @@ class GeneralView(BaseCRUDView):
         widgets = self._get_show_widget(pk)
         item = self.datamodel.get(pk)
         pages = self._get_page_args()
+        orders = self._get_order_args()
         
-        widgets = self._get_related_list_widgets(item, filters = {}, order_column='', order_direction='', 
+        widgets = self._get_related_list_widgets(item, filters = {}, orders = orders, 
                 pages = pages, widgets = widgets)
         return render_template(self.show_template,
                            pk = pk,
@@ -601,7 +605,8 @@ class GeneralView(BaseCRUDView):
     @has_access
     def edit(self, pk = 0):
 
-        page = self._get_page_args()
+        pages = self._get_page_args()
+        orders = self._get_order_args()
         
         item = self.datamodel.get(pk)
         filters = self._get_filter_args(filters={})
@@ -624,8 +629,7 @@ class GeneralView(BaseCRUDView):
             else:
                 widgets = self._get_edit_widget(form = form, exclude_cols = exclude_cols)
                 widgets = self._get_related_list_widgets(item, filters = {}, 
-                        order_column='', order_direction='', 
-                        page = page, page_size = self.page_size, widgets = widgets)
+                        orders = orders, pages = pages, widgets = widgets)
                 return render_template(self.edit_template,
                         title = self.edit_title,
                         widgets = widgets,
@@ -636,9 +640,7 @@ class GeneralView(BaseCRUDView):
             form = form.refresh(obj=item)
             widgets = self._get_edit_widget(form = form, exclude_cols = exclude_cols)
             widgets = self._get_related_list_widgets(item, filters = {}, 
-                        order_column='', order_direction='', 
-                        page = page, page_size = self.page_size,
-                        widgets = widgets)
+                        orders = orders, pages = pages, widgets = widgets)                
             return render_template(self.edit_template,
                             title = self.edit_title,
                             widgets = widgets,

@@ -32,9 +32,9 @@ class TemplateFilters(object):
         """
         new_args = request.view_args.copy()
         args = request.args.copy()
-        if ('_oc_') in args:
-            args['_oc_'] = column
-            if args.get('_od_') == 'asc':
+        if ('_oc_' + generalview_name) in args:
+            args['_oc_' + generalview_name] = column
+            if args.get('_od_' + generalview_name) == 'asc':
                 args['_od_' + generalview_name] = 'desc'
             else:
                 args['_od_' + generalview_name] = 'asc'
@@ -71,7 +71,6 @@ class TemplateFilters(object):
     @app_template_filter('get_link_order')
     def get_link_order_filter(self, column, generalview_name):
         if request.args.get('_oc_' + generalview_name) == column:
-            print "FOUND ORDER", request.args.get('_od_' + generalview_name), request.args.get('_oc_' + generalview_name)
             if (request.args.get('_od_' + generalview_name) == 'asc'):
                 return 2
             else:

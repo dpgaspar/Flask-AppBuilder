@@ -76,6 +76,10 @@ class BaseApp():
             self.register_blueprint(baseview)
             self._add_permission(baseview)
 
+    def add_separator(self, category):
+        self.menu.add_separator(category)
+        
+
     def add_view_no_menu(self, baseview, endpoint = None, static_folder = None):
         if baseview not in self.lst_baseview:
             baseview.baseapp = self

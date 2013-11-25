@@ -2,7 +2,7 @@ from flask.ext.appbuilder.menu import Menu
 from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.views import GeneralView
-from flask.ext.appbuilder.charts.views import ChartView
+from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
 
 from app import app, db
 from models import Group, Contact
@@ -55,9 +55,19 @@ class ContactChartView(ChartView):
     group_by_columns = ['group']
     datamodel = SQLAModel(Contact, db.session)
 
+class ContactTimeChartView(TimeChartView):
+    
+    route_base = '/chart'
+    chart_title = 'Grouped Birth contacts'
+    label_columns = ContactGeneralView.label_columns
+    group_by_columns = ['birthday']
+    datamodel = SQLAModel(Contact, db.session)
 
 
 genapp = BaseApp(app)
 genapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
 genapp.add_view(ContactGeneralView, "List Contacts","/contacts/list","earphone","Contacts")
-genapp.add_view(ContactChartView, "Contacts Chart","/contacts/chart","earphone","Contacts")
+genapp.add_separator("Contacts")
+genapp.add_view(ContactChartView, "Contacts Chart","/contacts/chart","signal","Contacts")
+genapp.add_view(ContactChartView, "Contacts Birth Chart by Month","/chart/chart/month","signal","Contacts")
+genapp.add_view(ContactTimeChartView, "Contacts Birth Chart by Year","/chart/chart/year","signal","Contacts")
