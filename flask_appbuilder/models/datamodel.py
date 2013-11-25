@@ -115,7 +115,7 @@ class SQLAModel(DataModel):
         query_result = query.all()
         retlst = []
         for ( grouped, items ) in groupby( query_result, lambda x: getattr(x,group_by).month):
-            retlst.append([grouped, len(items)])
+            retlst.append([grouped, len(list(items))])
         print retlst
         return retlst
 
