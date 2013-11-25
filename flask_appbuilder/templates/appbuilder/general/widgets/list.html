@@ -30,7 +30,7 @@
     
 	{% for item in include_columns %}
 		{% if item in order_columns %}
-			{% set res = item | get_link_order %}
+			{% set res = item | get_link_order(generalview_name) %}
         		{% if res == 2 %}
 				<th><a href={{ item | link_order(generalview_name) }}>{{label_columns.get(item)}}
 				<span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></a></th>
