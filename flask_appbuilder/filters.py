@@ -26,22 +26,28 @@ class TemplateFilters(object):
 
 
     @app_template_filter('link_order')
-    def link_order_filter(self, column):
+    """
+    Arguments are passed like: _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
+    """
+    def link_order_filter(self, column, , generalview_name):
         new_args = request.view_args.copy()
         args = request.args.copy()
         if ('_oc_') in args:
             args['_oc_'] = column
             if args.get('_od_') == 'asc':
-                args['_od_'] = 'desc'
+                args['_od_' + generalview_name] = 'desc'
             else:
-                args['_od_'] = 'asc'
+                args['_od_' + generalview_name] = 'asc'
         else:
-            args['_oc_'] = column
-            args['_od_'] = 'asc'
+            args['_oc_' + generalview_name] = column
+            args['_od_' + generalview_name] = 'asc'
         return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
 
 
     @app_template_filter('link_page')
+    """
+    Arguments are passed like: page_<VIEW_NAME>=<PAGE_NUMBER>
+    """
     def link_page_filter(self, page, generalview_name):
 
         new_args = request.view_args.copy()
