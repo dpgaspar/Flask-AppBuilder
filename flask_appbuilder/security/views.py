@@ -200,7 +200,7 @@ class RoleGeneralView(GeneralView):
     
     datamodel = SQLAModel(Role, db.session)
 
-    related_views = [UserGeneralView()]
+    related_views = [PermissionViewGeneralView(), UserGeneralView()]
 
     list_title = lazy_gettext('List Roles')
     show_title = lazy_gettext('Show Role')
