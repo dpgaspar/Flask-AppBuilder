@@ -114,10 +114,18 @@ class BaseView(object):
         if not group_by: group_by = ''
         return group_by
 
-    def _get_page_args(self):
-        page = request.args.get('page')
-        if not page: return None
-        return int(page)
+    def _get_page_args(self, pages = {}):
+        """
+        Get page arguments, return a dictionary
+        { <VIEW_NAME>: PAGE_NUMBER }
+        """
+        for arg in request.args:
+            re_match = re.findall('page_(.*)', arg)
+            if re_match:
+                pages[re_match[0]] = request.args.get(arg)
+        return pages
+
+
 
     def _get_order_args(self):
         order_column = request.args.get('_oc_')
@@ -483,7 +491,7 @@ class GeneralView(BaseCRUDView):
         form = self.search_form.refresh()
         
         order_column, order_direction = self._get_order_args()
-        page = self._get_page_args()
+        page = self._get_page_args().get(self.__class__.__name__)
 
         filters = {}
         filters = self._get_filter_args(filters)
