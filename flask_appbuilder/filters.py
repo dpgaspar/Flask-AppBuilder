@@ -73,11 +73,10 @@ class TemplateFilters(object):
         if request.args.get('_oc_' + generalview_name) == column:
             print "FOUND ORDER", request.args.get('_od_' + generalview_name), request.args.get('_oc_' + generalview_name)
             order_direction = request.args.get('_od_' + generalview_name)
-            if (order_direction):
-                if (order_direction == 'asc'):
-                    return 2
-                else:
-                    return 1
+            if (order_direction == 'asc'):
+                return 2
+            else:
+                return 1
         else:
             return 0
 
