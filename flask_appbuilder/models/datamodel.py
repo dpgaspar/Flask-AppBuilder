@@ -113,12 +113,8 @@ class SQLAModel(DataModel):
         query = self.session.query(self.obj)
         query = self._get_base_query(query = query, filters = filters, order_column = order_column, order_direction = order_direction)
         query_result = query.all()
-        for ( grouped, items ) in groupby( query_result, lambda x: getattr(x,group_by).month):
-            for item in items:
-                print grouped, item.requester
-                
-        return query_result
-        
+        return [grouped, len(items) for ( grouped, items ) in groupby( query_result, lambda x: getattr(x,group_by).month)]
+            
 
 
     """
