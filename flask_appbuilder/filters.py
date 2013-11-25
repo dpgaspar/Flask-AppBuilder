@@ -26,7 +26,7 @@ class TemplateFilters(object):
 
 
     @app_template_filter('link_order')
-    def link_order_filter(self, column, , generalview_name):
+    def link_order_filter(self, column, generalview_name):
     """
     Arguments are passed like: _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
     """
