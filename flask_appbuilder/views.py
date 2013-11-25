@@ -130,12 +130,20 @@ class BaseView(object):
 
 
 
-    def _get_order_args(self):
-        order_column = request.args.get('_oc_')
-        order_direction = request.args.get('_od_')
-        if not order_column: order_column = ''
-        if not order_direction: order_direction = ''
-        return order_column, order_direction
+    def _get_order_args(self, orders = {}):
+        """
+        Get order arguments, return a dictionary
+        { <VIEW_NAME>: (ORDER_COL, ORDER_DIRECTION) }
+        
+        Arguments are passed like: _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
+        
+        """
+        for arg in request.args:
+            re_match = re.findall('_oc_(.*)', arg)
+            if re_match:
+                orders[re_match[0]] = (request.args.get(arg),request.args.get('_od_'+re_match[0]))
+            return orders
+                
 
     def _get_filter_args(self, filters={}):
         for arg in request.args:
@@ -492,7 +500,7 @@ class GeneralView(BaseCRUDView):
 
         form = self.search_form.refresh()
         
-        order_column, order_direction = self._get_order_args()
+        order_column, order_direction = self._get_order_args().get(self.__class__.__name__)
         page = self._get_page_args().get(self.__class__.__name__)
 
         filters = {}
