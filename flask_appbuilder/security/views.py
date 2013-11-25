@@ -156,8 +156,7 @@ class UserGeneralView(GeneralView):
 
     def __init__(self, **kwargs):
         if AUTH_TYPE == AUTH_DB:
-            self.show_additional_links = 
-                [(AdditionalLinkItem('resetpassword', self.lnk_reset_password,"/resetpassword/form","lock"))]
+            self.show_additional_links = [(AdditionalLinkItem('resetpassword', self.lnk_reset_password,"/resetpassword/form","lock"))]
         super(UserGeneralView, self).__init__(**kwargs)
 
     @expose('/userinfo/')
