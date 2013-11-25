@@ -101,7 +101,7 @@ class SQLAModel(DataModel):
             query = query.group_by(rel_model)
             return query.all()
         except:
-            query = self.session.query(rel_model,func.count(self.obj.id))
+            query = self.session.query(group_by,func.count(self.obj.id))
             query = self._get_base_query(query = query, filters = filters, order_column = order_column, order_direction = order_direction)
             query = query.group_by(group_by)
             return query.all()
