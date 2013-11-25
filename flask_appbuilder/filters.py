@@ -70,7 +70,7 @@ class TemplateFilters(object):
 
     @app_template_filter('get_link_order')
     def get_link_order_filter(self, column, generalview_name):
-        if request.args.get('_oc_' + generalview_name) == s:
+        if request.args.get('_oc_' + generalview_name) == column:
             order_direction = request.args.get('_od_' + generalview_name)
             if (order_direction):
                 if (order_direction == 'asc'):
