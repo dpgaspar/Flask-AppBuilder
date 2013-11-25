@@ -42,11 +42,11 @@ class TemplateFilters(object):
 
 
     @app_template_filter('link_page')
-    def link_page_filter(self, s):
+    def link_page_filter(self, page, generalview_name):
 
         new_args = request.view_args.copy()
         args = request.args.copy()
-        args['page'] = s
+        args['page_' + generalview_name] = page
         return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
                 
 
