@@ -54,7 +54,7 @@ class TimeChartView(BaseChartView):
     
     chart_type = 'ColumnChart'
     
-    @expose('/chart/<str:period>')
+    @expose('/chart/<string:period>')
     @has_access
     def chartmonth(self,period):
         group_by = self._get_group_by_args()
