@@ -142,7 +142,7 @@ class BaseView(object):
             re_match = re.findall('_oc_(.*)', arg)
             if re_match:
                 orders[re_match[0]] = (request.args.get(arg),request.args.get('_od_'+re_match[0]))
-            return orders
+        return orders
                 
 
     def _get_filter_args(self, filters={}):
