@@ -116,7 +116,15 @@ class SQLAModel(DataModel):
         retlst = []
         for ( grouped, items ) in groupby( query_result, lambda x: (getattr(x,group_by).month,getattr(x,group_by).year) ):
             retlst.append([grouped, len(list(items))])
-        print retlst
+        return retlst
+        
+    def query_year_group(self, group_by = '', filters = {}, order_column = '', order_direction = ''):
+        query = self.session.query(self.obj)
+        query = self._get_base_query(query = query, filters = filters, order_column = group_by, order_direction = 'asc')
+        query_result = query.all()
+        retlst = []
+        for ( grouped, items ) in groupby( query_result, lambda x: (getattr(x,group_by).year)):
+            retlst.append([grouped, len(list(items))])
         return retlst
 
     """
