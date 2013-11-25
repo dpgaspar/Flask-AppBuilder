@@ -141,7 +141,7 @@ class BaseView(object):
         for arg in request.args:
             re_match = re.findall('_oc_(.*)', arg)
             if re_match:
-                orders[re_match[0]] = (request.args.get(arg),request.args.get('_od_'+re_match[0]))
+                orders[re_match[0]] = (request.args.get(arg),request.args.get('_od_' + re_match[0]))
         return orders
                 
 
@@ -500,7 +500,9 @@ class GeneralView(BaseCRUDView):
 
         form = self.search_form.refresh()
         
-        order_column, order_direction = self._get_order_args().get(self.__class__.__name__)
+        if self._get_order_args().get(self.__class__.__name__):
+            order_column, order_direction = self._get_order_args().get(self.__class__.__name__)
+        else: order_column, order_direction = '',''
         page = self._get_page_args().get(self.__class__.__name__)
 
         filters = {}
