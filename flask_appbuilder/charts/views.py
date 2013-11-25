@@ -8,8 +8,7 @@ from ..security.decorators import has_access
 from ..views import BaseView, expose
 
 
-class ChartView(BaseView):
-    
+class BaseChartView(BaseView):
     chart_template = 'appbuilder/general/charts/chart.html'
     chart_widget = ChartWidget
     chart_title = 'Chart'
@@ -22,6 +21,7 @@ class ChartView(BaseView):
     group_by_columns = []
     datamodel = None
     
+
     def _get_chart_widget(self, value_columns = [], widgets = {}):        
         widgets['chart'] = self.chart_widget(route_base = self.route_base,
                                              chart_title = self.chart_title, 
@@ -29,6 +29,10 @@ class ChartView(BaseView):
                                              chart_3d = self.chart_3d, 
                                                 value_columns = value_columns)
         return widgets
+    
+
+class ChartView(BaseChartView):
+    
     
     @expose('/chart/')
     @has_access
@@ -46,4 +50,20 @@ class ChartView(BaseView):
                                                 widgets = widgets, 
                                                 baseapp = self.baseapp)
     
+class TimeChartView(BaseChartView):
     
+    @expose('/chart/')
+    @has_access
+    def show(self):
+        group_by = self._get_group_by_args()
+        if group_by == '':
+            group_by = self.group_by_columns[0]
+        value_columns = self.datamodel.query_month_group(group_by)
+        widgets = self._get_chart_widget(value_columns = value_columns)
+        return render_template(self.chart_template, route_base = self.route_base, 
+                                                title = self.chart_title,
+                                                label_columns = self.label_columns, 
+                                                group_by_columns = self.group_by_columns,
+                                                height = self.height,
+                                                widgets = widgets, 
+                                                baseapp = self.baseapp)
