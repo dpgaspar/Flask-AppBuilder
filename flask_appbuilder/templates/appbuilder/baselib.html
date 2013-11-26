@@ -8,7 +8,7 @@
 			{% for item2 in item1.childs %}
 				{% if item2.childs %}
 					<li class="dropdown">
-                        	        <a tabindex="-1" href="{{item2.href}}">
+                        	        <a tabindex="-1" href="{{item2.get_url()}}">
                         	        <span class="glyphicon glyphicon-{{item2.icon}}"></span> - {{_(item2.name)}}</a>
 					</li>
 				{% else %}
@@ -16,7 +16,7 @@
                                         	<li class="divider"></li>
                                 	{% else %}
 						{% if item2 | is_menu_visible %}
-						<li><a tabindex="-1" href="{{item2.href}}">
+						<li><a tabindex="-1" href="{{item2.get_url()}}">
 						<span class="glyphicon glyphicon-{{item2.icon}}"></span> - {{_(item2.name)}}</a></li>
 						{% endif %}
 					{% endif %}
