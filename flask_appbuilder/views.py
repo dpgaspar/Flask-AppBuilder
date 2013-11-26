@@ -347,9 +347,9 @@ class BaseCRUDView(BaseView):
 
 
     def _init_vars(self):
-        if not self.label_columns:
-            list_cols = self.datamodel.get_columns_list()
-            for col in list_cols:
+        list_cols = self.datamodel.get_columns_list()
+        for col in list_cols:
+            if not self.label_columns.get(col):
                 self.label_columns[col] = self._prettify_column(col)
         if self.show_fieldsets:
             self.show_columns = []
@@ -361,14 +361,14 @@ class BaseCRUDView(BaseView):
                 self.add_columns = self.add_columns + list(fieldset_item[1].get('fields'))
         else:
             if not self.add_columns:
-                self.add_columns = self.datamodel.get_columns_list()
+                self.add_columns = list_cols
         if self.edit_fieldsets:
             self.edit_columns = []
             for fieldset_item in self.edit_fieldsets:
                 self.edit_columns = self.edit_columns + list(fieldset_item[1].get('fields'))
         else:
             if not self.edit_columns:
-                self.edit_columns = self.datamodel.get_columns_list()
+                self.edit_columns = list_cols
                         
         
     def __init__(self, **kwargs):
