@@ -67,7 +67,7 @@ class BaseApp():
         self.add_view(PermissionGeneralView, "Permission on Views/Menus","/permissionviews/list","lock","Security")
 
         
-    def add_view(self, baseview, name, href, icon, category):
+    def add_view(self, baseview, name, href = "", icon = "", category = ""):
         print "Registering:", category,".", name
         self.menu.add_link(name = name, href = href, icon = icon, parent_category = category, baseview = baseview)
         if baseview not in self.lst_baseview:
