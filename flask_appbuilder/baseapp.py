@@ -69,7 +69,7 @@ class BaseApp():
         
     def add_view(self, baseview, name, href, icon, category):
         print "Registering:", category,".", name
-        self.menu.add_link(name = name, href = href, icon = icon, category = category, view = baseview)
+        self.menu.add_link(name = name, href = href, icon = icon, category = category, baseview = baseview)
         if baseview not in self.lst_baseview:
             baseview.baseapp = self
             self.lst_baseview.append(baseview)
