@@ -103,7 +103,26 @@ class BaseView(object):
         
 
     def _prettify_name(self, name):
+        """
+        Prettify pythonic variable name.
+
+        For example, 'hello_world' will be converted to 'Hello World'
+
+        :param name:
+            Name to prettify
+        """
         return re.sub(r'(?<=.)([A-Z])', r' \1', name)
+
+    def _prettify_column(name):
+        """
+        Prettify pythonic variable name.
+
+        For example, 'hello_world' will be converted to 'Hello World'
+
+        :param name:
+            Name to prettify
+        """
+        return name.replace('_', ' ').title()
 
 
     def _get_redirect(self):
@@ -329,6 +348,10 @@ class BaseCRUDView(BaseView):
 
 
     def _init_vars(self):
+        if not self.label_columns:
+            list_cols = self.datamodel.get_columns_list()
+            for col in list_cols:
+                self.label_columns[col] = self._prettify_column(col)
         if self.show_fieldsets:
             self.show_columns = []
             for fieldset_item in self.show_fieldsets:                
