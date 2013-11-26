@@ -253,7 +253,7 @@ class SimpleFormView(BaseView):
 
 
 class BaseCRUDView(BaseView):
-    route_base = '/general'
+    
     datamodel = None
     related_views = []
     redirect_url = route_base + '/list'
