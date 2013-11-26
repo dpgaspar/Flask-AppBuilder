@@ -345,8 +345,19 @@ class BaseCRUDView(BaseView):
                     self.validators_columns,
                     self.search_columns)
 
+    def _init_titles(self):
+        if not self.list_title:
+            self.list_title = 'List ' + self._prettify_name(self.datamodel.obj.__name__)
+        if not self.add_title:
+            self.add_title = 'Add ' + self._prettify_name(self.datamodel.obj.__name__)
+        if not self.edit_title:
+            self.edit_title = 'Edit ' + self._prettify_name(self.datamodel.obj.__name__)
+        if not self.show_title:
+            self.show_title = 'Show ' + self._prettify_name(self.datamodel.obj.__name__)
 
     def _init_vars(self):
+        self._init_titles()
+            
         list_cols = self.datamodel.get_columns_list()
         for col in list_cols:
             if not self.label_columns.get(col):
