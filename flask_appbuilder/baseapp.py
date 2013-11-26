@@ -69,12 +69,13 @@ class BaseApp():
         
     def add_view(self, baseview, name, href = "", icon = "", category = ""):
         print "Registering:", category,".", name
-        self.menu.add_link(name = name, href = href, icon = icon, parent_category = category, baseview = baseview())
         if baseview not in self.lst_baseview:
             baseview.baseapp = self
             self.lst_baseview.append(baseview)
             self.register_blueprint(baseview)
             self._add_permission(baseview)
+	self.menu.add_link(name = name, href = href, icon = icon, parent_category = category, baseview = baseview)
+        
 
     def add_separator(self, category):
         self.menu.add_separator(category)
