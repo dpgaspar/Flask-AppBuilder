@@ -23,6 +23,7 @@ Improvements
 - Templates with url_for.
 - BaseApp injects all necessary filter in jinja2, no need to import.
 - New Chart type, group by month and year.
+- No need to define route_base on View Classes, will assume class name in lower case.
 
 Bug Fixes
 ---------
