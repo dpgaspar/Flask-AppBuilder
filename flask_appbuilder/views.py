@@ -36,8 +36,7 @@ class BaseView(object):
     static_folder='static'
     
     base_permissions = []
-    redirect_url = '/'
-
+    
     actions = []
 
     def __init__(self):
@@ -111,7 +110,11 @@ class BaseView(object):
         if (request.args.get('next')):
             return request.args.get('next')
         else:
-            return self.redirect_url
+            try:
+                return url_for(self.__class__.__name__ + '.list')
+            except:
+                return '/'
+            
 
     def _get_group_by_args(self):
         group_by = request.args.get('group_by')
@@ -201,8 +204,7 @@ class SimpleFormView(BaseView):
     form_title = 'Form Title'
     form_columns = []
     form = None
-    redirect_url = '/'
-
+    
     @expose("/form", methods=['GET'])
     @has_access
     def this_form_get(self):
@@ -256,8 +258,7 @@ class BaseCRUDView(BaseView):
     
     datamodel = None
     related_views = []
-    redirect_url = route_base + '/list'
-
+    
     """ Titles """
     list_title = ""
     show_title = ""
