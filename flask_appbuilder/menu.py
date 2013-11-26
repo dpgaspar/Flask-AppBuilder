@@ -1,3 +1,4 @@
+from flask import url_for
 from .security.models import PermissionView
 
 class MenuItem(object):
