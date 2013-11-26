@@ -19,7 +19,7 @@ class MenuItem(object):
         self.baseview = baseview
 
     def get_url(self):
-        print name
+        print self.name
         if not self.href:
             return url_for('%s.%s' % (self.baseview.endpoint, self.baseview.default_view))
         else:
