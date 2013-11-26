@@ -3,20 +3,28 @@ from .security.models import PermissionView
 class MenuItem(object):
 
     name = ""
-    href = "#"
+    _view = None
+    href = ""
     icon = ""
     childs = []
 
-    def __init__(self, name, href="#", icon="", childs=[]):
+    def __init__(self, name, href="#", icon="", childs=[], view = None):
         self.name = name
         self.href = href
         self.icon = icon
         if (self.childs):
             self.childs = childs
         else: self.childs = []
+        self._view = view
+
+    def get_url(self):
+        if not self.href:
+            return url_for('%s.%s' % (self._view.endpoint, self._view.default_view))
+        else:
+            return self.href
 
     def __repr__(self):
-        return self.name + ' href=' + self.href
+        return self.name + ' href=' + self.get_url()
 
 class Menu(object):
 
