@@ -72,6 +72,9 @@ class BaseView(object):
         if not self.endpoint:
             self.endpoint = self.__class__.__name__
 
+        if not self.route_base:
+            self.route_base = self.__class__.__name__.lower()
+
         self.static_folder = static_folder
         if not static_folder:
         # Create blueprint and register rules
