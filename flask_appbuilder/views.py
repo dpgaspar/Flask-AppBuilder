@@ -36,8 +36,9 @@ class BaseView(object):
     static_folder='static'
     
     base_permissions = []
-    
     actions = []
+    
+    default_view = 'list'
 
     def __init__(self):
         """
@@ -129,7 +130,7 @@ class BaseView(object):
             return request.args.get('next')
         else:
             try:
-                return url_for(self.__class__.__name__ + '.list')
+                return url_for('%s.%s' % (self.__class__.__name__ , self.default_view))
             except:
                 return '/'
             
