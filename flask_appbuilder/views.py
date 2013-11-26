@@ -112,7 +112,7 @@ class BaseView(object):
         """
         return re.sub(r'(?<=.)([A-Z])', r' \1', name)
 
-    def _prettify_column(name):
+    def _prettify_column(self, name):
         """
         Prettify pythonic variable name.
 
