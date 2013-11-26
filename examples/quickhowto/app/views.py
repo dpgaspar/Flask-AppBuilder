@@ -12,11 +12,6 @@ from models import Group, Contact
 class ContactGeneralView(GeneralView):
     datamodel = SQLAModel(Contact, db.session)
 
-    list_title = 'List Contacts'
-    show_title = 'Show Contact'
-    add_title = 'Add Contact'
-    edit_title = 'Edit Contact'
-
     label_columns = {'group':'Contacts Group'}
     list_columns = ['name','personal_celphone','birthday','group']
 
@@ -32,11 +27,6 @@ class ContactGeneralView(GeneralView):
 class GroupGeneralView(GeneralView):
     datamodel = SQLAModel(Group, db.session)
     related_views = [ContactGeneralView()]
-
-    list_title = 'List Groups'
-    show_title = 'Show Group'
-    add_title = 'Add Group'
-    edit_title = 'Edit Group'
 
     list_columns = ['name']
     show_columns = ['name']
