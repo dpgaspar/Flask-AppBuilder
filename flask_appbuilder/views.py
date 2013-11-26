@@ -365,7 +365,10 @@ class BaseCRUDView(BaseView):
         if self.show_fieldsets:
             self.show_columns = []
             for fieldset_item in self.show_fieldsets:                
-                self.show_columns = self.show_columns + list(fieldset_item[1].get('fields'))                
+                self.show_columns = self.show_columns + list(fieldset_item[1].get('fields'))
+        else:
+            if not self.show_columns:
+                self.show_columns = list_cols
         if self.add_fieldsets:
             self.add_columns = []
             for fieldset_item in self.add_fieldsets:
