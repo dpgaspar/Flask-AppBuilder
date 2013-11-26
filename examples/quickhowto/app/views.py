@@ -17,9 +17,9 @@ class ContactGeneralView(GeneralView):
     add_title = 'Add Contact'
     edit_title = 'Edit Contact'
 
-    label_columns = {'name':'Name','photo':'Photo','address':'Address','birthday':'Birthday',
-                'personal_phone':'Personal Phone',
-                'personal_celphone':'Personal CelPhone', 'group':'Contacts Group'}
+    #label_columns = {'name':'Name','photo':'Photo','address':'Address','birthday':'Birthday',
+    #            'personal_phone':'Personal Phone',
+    #            'personal_celphone':'Personal CelPhone', 'group':'Contacts Group'}
     list_columns = ['name','personal_celphone','birthday','group']
 
     order_columns = ['name','personal_celphone','birthday']
@@ -40,7 +40,6 @@ class GroupGeneralView(GeneralView):
     add_title = 'Add Group'
     edit_title = 'Edit Group'
 
-    label_columns = { 'name':'Name'}
     list_columns = ['name']
     show_columns = ['name']
     order_columns = ['name']
