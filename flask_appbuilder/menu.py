@@ -56,7 +56,7 @@ class Menu(object):
             print "Menu add_category Erro: Maybe db not created"
 
 
-    def add_link(self, name, href="#", icon="", parent_category="", baseview = None):
+    def add_link(self, name, href="", icon="", parent_category="", baseview = None):
         menu_item = self.find_category(parent_category)
         if menu_item:
             menu_item.childs.append(MenuItem(name=name, href=href, icon = icon, baseview = baseview))
