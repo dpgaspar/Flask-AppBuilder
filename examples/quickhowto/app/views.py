@@ -8,6 +8,18 @@ from app import app, db
 from models import Group, Contact
 
 
+def debug_rules():
+    for rule in app.url_map.iter_rules():
+
+        options = {}
+
+        methods = ','.join(rule.methods)
+        print "--------------------------------------------"
+        print "EP: %s METH: %s" % (rule.endpoint, methods)
+        print rule, rule.arguments
+        print "--------------------------------------------"
+
+
 class ContactGeneralView(GeneralView):
     datamodel = SQLAModel(Contact, db.session)
 
@@ -67,3 +79,5 @@ genapp.add_separator("Contacts")
 genapp.add_view(ContactChartView, "Contacts Chart","/contactchartview/chart","signal","Contacts")
 genapp.add_view(ContactTimeChartView, "Contacts Birth Chart by Month","/chart/contacttimechartview/month","signal","Contacts")
 genapp.add_view(ContactTimeChartView, "Contacts Birth Chart by Year","/chart/contacttimechartview/year","signal","Contacts")
+
+debug_rules()
