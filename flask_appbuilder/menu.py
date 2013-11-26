@@ -9,7 +9,7 @@ class MenuItem(object):
     icon = ""
     childs = []
 
-    def __init__(self, name, href="#", icon="", childs=[], baseview = None):
+    def __init__(self, name, href="", icon="", childs=[], baseview = None):
         self.name = name
         self.href = href
         self.icon = icon
