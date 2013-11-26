@@ -17,6 +17,7 @@ class ContactGeneralView(GeneralView):
     add_title = 'Add Contact'
     edit_title = 'Edit Contact'
 
+    label_columns = {'group':'Contacts Group'}
     list_columns = ['name','personal_celphone','birthday','group']
 
     order_columns = ['name','personal_celphone','birthday']
