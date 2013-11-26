@@ -69,6 +69,7 @@ class BaseView(object):
         self.baseapp = baseapp
 
         # If endpoint name is not provided, get it from the class name
+        print "INIT ", self.__class__.__name__
         if not self.endpoint:
             self.endpoint = self.__class__.__name__
 
