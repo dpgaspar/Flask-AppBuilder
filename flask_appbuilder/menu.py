@@ -3,23 +3,23 @@ from .security.models import PermissionView
 class MenuItem(object):
 
     name = ""
-    _view = None
+    baseview = None
     href = ""
     icon = ""
     childs = []
 
-    def __init__(self, name, href="#", icon="", childs=[], view = None):
+    def __init__(self, name, href="#", icon="", childs=[], baseview = None):
         self.name = name
         self.href = href
         self.icon = icon
         if (self.childs):
             self.childs = childs
         else: self.childs = []
-        self._view = view
+        self.baseview = baseview
 
     def get_url(self):
         if not self.href:
-            return url_for('%s.%s' % (self._view.endpoint, self._view.default_view))
+            return url_for('%s.%s' % (self.baseview.endpoint, self._view.default_view))
         else:
             return self.href
 
@@ -56,13 +56,14 @@ class Menu(object):
             print "Menu add_category Erro: Maybe db not created"
 
 
-    def add_link(self, name, href="#", icon="", parent_category=""):
+    def add_link(self, name, href="#", icon="", parent_category="", baseview = None):
         menu_item = self.find_category(parent_category)
         if menu_item:
-            menu_item.childs.append(MenuItem(name=name, href=href, icon = icon))
+            menu_item.childs.append(MenuItem(name=name, href=href, icon = icon, baseview = baseview))
         else:
             self.add_category(category=parent_category)
-            self.find_category(parent_category).childs.append(MenuItem(name=name, href=href, icon = icon))
+            self.find_category(parent_category).childs.append(MenuItem(name=name, 
+                                        href=href, icon = icon, baseview = baseview))
         pvm = PermissionView()
         try:
             pvm = pvm.add_menu_permissions(name)
