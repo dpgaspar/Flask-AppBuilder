@@ -48,8 +48,8 @@ class ContactTimeChartView(TimeChartView):
 
 
 genapp = BaseApp(app)
-genapp.add_view(GroupGeneralView, "List Groups","/groupgeneralview/list","th-large","Contacts")
-genapp.add_view(ContactGeneralView, "List Contacts","/contactgeneralview/list","earphone","Contacts")
+genapp.add_view(GroupGeneralView, "List Groups",icon = "th-large",category = "Contacts")
+genapp.add_view(ContactGeneralView, "List Contacts",icon = "earphone",category = "Contacts")
 genapp.add_separator("Contacts")
 genapp.add_view(ContactChartView, "Contacts Chart","/contactchartview/chart","signal","Contacts")
 genapp.add_view(ContactTimeChartView, "Contacts Birth Chart by Month","/contacttimechartview/chart/month","signal","Contacts")
