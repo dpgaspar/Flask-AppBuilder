@@ -20,7 +20,7 @@ class MenuItem(object):
 
     def get_url(self):
         if not self.href:
-            return url_for('%s.%s' % (self.baseview.endpoint, self._view.default_view))
+            return url_for('%s.%s' % (self.baseview.endpoint, self.baseview.default_view))
         else:
             return self.href
 
