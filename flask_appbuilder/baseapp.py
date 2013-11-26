@@ -69,7 +69,7 @@ class BaseApp():
         
     def add_view(self, baseview, name, href = "", icon = "", category = ""):
         print "Registering:", category,".", name
-        self.menu.add_link(name = name, href = href, icon = icon, parent_category = category, baseview = baseview)
+        self.menu.add_link(name = name, href = href, icon = icon, parent_category = category, baseview = baseview())
         if baseview not in self.lst_baseview:
             baseview.baseapp = self
             self.lst_baseview.append(baseview)
@@ -78,7 +78,6 @@ class BaseApp():
 
     def add_separator(self, category):
         self.menu.add_separator(category)
-        
 
     def add_view_no_menu(self, baseview, endpoint = None, static_folder = None):
         if baseview not in self.lst_baseview:
