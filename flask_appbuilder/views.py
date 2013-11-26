@@ -130,7 +130,7 @@ class BaseView(object):
             return request.args.get('next')
         else:
             try:
-                return url_for('%s.%s' % (self.__class__.__name__ , self.default_view))
+                return url_for('%s.%s' % (self.endpoint, self.default_view))
             except:
                 return '/'
             
