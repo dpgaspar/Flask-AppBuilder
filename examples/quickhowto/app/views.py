@@ -9,7 +9,6 @@ from models import Group, Contact
 
 
 class ContactGeneralView(GeneralView):
-    route_base = '/contacts'
     datamodel = SQLAModel(Contact, db.session)
 
     list_title = 'List Contacts'
@@ -32,7 +31,6 @@ class ContactGeneralView(GeneralView):
 
 
 class GroupGeneralView(GeneralView):
-    route_base = '/groups'
     datamodel = SQLAModel(Group, db.session)
     related_views = [ContactGeneralView()]
 
@@ -49,7 +47,6 @@ class GroupGeneralView(GeneralView):
 
 class ContactChartView(ChartView):
     
-    route_base = '/contacts'
     chart_title = 'Grouped contacts'
     label_columns = ContactGeneralView.label_columns
     group_by_columns = ['group']
@@ -57,7 +54,6 @@ class ContactChartView(ChartView):
 
 class ContactTimeChartView(TimeChartView):
     
-    route_base = '/chart'
     chart_title = 'Grouped Birth contacts'
     label_columns = ContactGeneralView.label_columns
     group_by_columns = ['birthday']
@@ -65,9 +61,9 @@ class ContactTimeChartView(TimeChartView):
 
 
 genapp = BaseApp(app)
-genapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
-genapp.add_view(ContactGeneralView, "List Contacts","/contacts/list","earphone","Contacts")
+genapp.add_view(GroupGeneralView, "List Groups","/groupgeneralview/list","th-large","Contacts")
+genapp.add_view(ContactGeneralView, "List Contacts","/contactgeneralview/list","earphone","Contacts")
 genapp.add_separator("Contacts")
-genapp.add_view(ContactChartView, "Contacts Chart","/contacts/chart","signal","Contacts")
-genapp.add_view(ContactChartView, "Contacts Birth Chart by Month","/chart/chart/month","signal","Contacts")
-genapp.add_view(ContactTimeChartView, "Contacts Birth Chart by Year","/chart/chart/year","signal","Contacts")
+genapp.add_view(ContactChartView, "Contacts Chart","/contactchartview/chart","signal","Contacts")
+genapp.add_view(ContactTimeChartView, "Contacts Birth Chart by Month","/chart/contacttimechartview/month","signal","Contacts")
+genapp.add_view(ContactTimeChartView, "Contacts Birth Chart by Year","/chart/contacttimechartview/year","signal","Contacts")
