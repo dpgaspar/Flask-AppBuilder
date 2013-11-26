@@ -25,6 +25,7 @@ Improvements
 - New Chart type, group by month and year.
 - No need to define route_base on View Classes, will assume class name in lower case.
 - No need to define labels for model's columns, they will be prettified.
+- No need to define titles for list,add,edit and show views, they will be generated from the model's name.
 
 Bug Fixes
 ---------
