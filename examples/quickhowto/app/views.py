@@ -29,7 +29,6 @@ class GroupGeneralView(GeneralView):
     related_views = [ContactGeneralView()]
 
     list_columns = ['name']
-    show_columns = ['name']
     order_columns = ['name']
     search_columns = ['name']
 
