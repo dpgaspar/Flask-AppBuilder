@@ -32,5 +32,4 @@ class ChartWidget(RenderTemplateWidget):
         
         return super(ChartWidget, self).__call__(**kwargs)
 
-class ChartTimeWidget(ChartWidget):
-    template = 'appbuilder/general/widgets/chart_time.html'
+
