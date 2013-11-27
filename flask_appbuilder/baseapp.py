@@ -51,20 +51,20 @@ class BaseApp():
         self.app.register_blueprint(bp)
 
     def _add_admin_views(self):
-        self.add_view_no_menu(self.indexview)
-        self.add_view_no_menu(LocaleView)
-        self.add_view_no_menu(AuthView)
-        self.add_view_no_menu(ResetPasswordView)
-        self.add_view_no_menu(ResetMyPasswordView)
+        self.add_view_no_menu(self.indexview())
+        self.add_view_no_menu(LocaleView())
+        self.add_view_no_menu(AuthView())
+        self.add_view_no_menu(ResetPasswordView())
+        self.add_view_no_menu(ResetMyPasswordView())
 
-        self.add_view(UserGeneralView, "List Users"
+        self.add_view(UserGeneralView(), "List Users"
                                         ,"/users/list","user",
                                         "Security")
-        self.add_view(RoleGeneralView, "List Roles","/roles/list","tags","Security")
+        self.add_view(RoleGeneralView(), "List Roles","/roles/list","tags","Security")
         self.menu.add_separator("Security")
-        self.add_view(PermissionViewGeneralView, "Base Permissions","/permissions/list","lock","Security")
-        self.add_view(ViewMenuGeneralView, "Views/Menus","/viewmenus/list","list-alt","Security")
-        self.add_view(PermissionGeneralView, "Permission on Views/Menus","/permissionviews/list","lock","Security")
+        self.add_view(PermissionViewGeneralView(), "Base Permissions","/permissions/list","lock","Security")
+        self.add_view(ViewMenuGeneralView(), "Views/Menus","/viewmenus/list","list-alt","Security")
+        self.add_view(PermissionGeneralView(), "Permission on Views/Menus","/permissionviews/list","lock","Security")
 
         
     def add_view(self, baseview, name, href = "", icon = "", category = ""):
@@ -89,7 +89,7 @@ class BaseApp():
 
     def _add_permission(self, baseview):
         pvm = PermissionView()
-        bv = baseview()
+        bv = baseview
         try:
             pvm.add_view_permissions(bv.base_permissions, bv.__class__.__name__)
         except:
@@ -98,4 +98,4 @@ class BaseApp():
         pvm = None
 
     def register_blueprint(self, baseview, endpoint = None, static_folder = None):
-        self.app.register_blueprint(baseview().create_blueprint(self,  endpoint = endpoint, static_folder = static_folder))
+        self.app.register_blueprint(baseview.create_blueprint(self,  endpoint = endpoint, static_folder = static_folder))
