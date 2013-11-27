@@ -3,7 +3,7 @@ from sqlalchemy.ext.serializer import loads, dumps
 
 from sqlalchemy.ext.serializer import loads, dumps
 
-from widgets import ChartWidget
+from widgets import ChartWidget, ChartTimeWidget
 from ..security.decorators import has_access
 from ..views import BaseView, expose
 
