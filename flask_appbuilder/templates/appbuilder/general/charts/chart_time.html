@@ -9,7 +9,7 @@
         <a href="{{route_base ~ '/chart/?group_by=' ~ group_by}}" class="btn btn-sm btn-primary">
         {{label_columns[group_by]}}
         </a>
-        <a href="{{url_for(.chart,'month')}}" class="btn btn-sm btn-primary">
+        <a href="{{url_for('.chart','month')}}" class="btn btn-sm btn-primary">
         Group by Month
         </a>
 {% endfor %}
