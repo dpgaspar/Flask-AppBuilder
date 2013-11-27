@@ -76,6 +76,8 @@ class BaseApp():
             self._add_permission(baseview)
 	self.menu.add_link(name = name, href = href, icon = icon, parent_category = category, baseview = baseview)
         
+    def add_link(self, name, href, icon = "", category = "")
+    	self.menu.add_link(name = name, href = href, icon = icon, parent_category = category)
 
     def add_separator(self, category):
         self.menu.add_separator(category)
