@@ -53,6 +53,7 @@ class ChartView(BaseChartView):
 class TimeChartView(BaseChartView):
     
     chart_type = 'ColumnChart'
+    chart_widget = ChartTimeWidget
     
     @expose('/chart/<string:period>')
     @has_access
