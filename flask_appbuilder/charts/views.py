@@ -51,7 +51,7 @@ class ChartView(BaseChartView):
                                                 baseapp = self.baseapp)
     
 class TimeChartView(BaseChartView):
-    
+    chart_template = 'appbuilder/general/charts/chart_time.html'
     chart_type = 'ColumnChart'
     chart_widget = ChartTimeWidget
     
