@@ -6,7 +6,7 @@
 
 <label>{{_('Group by fields') }}:</label>
 {% for group_by in group_by_columns %}
-	<a href="{{route_base ~ '/chart/?group_by=' ~ group_by}}" class="btn btn-sm btn-primary">
+	<a href="{{url_for('.chart',group_by=group_by)}}" class="btn btn-sm btn-primary">
 	{{label_columns[group_by]}}
 	</a>
 {% endfor %}
