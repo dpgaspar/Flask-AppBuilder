@@ -16,6 +16,7 @@ Define your Chart Views (views.py)
         group_by_columns = ['group']
     	
 Notice that:
+
 - label_columns: were the ones used on ContactGeneralView
 - group_by_columns: is a list of columns that you want to group
 
