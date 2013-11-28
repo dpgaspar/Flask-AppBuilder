@@ -9,16 +9,16 @@ Define your Product model (models.py)
 ::
 
 	class Product(db.Model):
-    	id = db.Column(db.Integer, primary_key=True)
-    	name = db.Column(db.String(150), unique = True, nullable=False)    	
-    	photo = db.Column(ImageColumn, nullable=False )
+        id = db.Column(db.Integer, primary_key=True)
+        name = db.Column(db.String(150), unique = True, nullable=False)    	
+        photo = db.Column(ImageColumn, nullable=False )
     
-	    def photo_img(self):
+        def photo_img(self):
     	    im = ImageManager()
-        	if self.photo:
-            	return Markup('<a href="/productgeneralview/show/' + str(self.id) + '" class="thumbnail"><img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"></a>')
-        	else:
-            	return Markup('<a href="/productgeneralview/show/' + str(self.id) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
+            if self.photo:
+                return Markup('<a href="/productgeneralview/show/' + str(self.id) + '" class="thumbnail"><img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"></a>')
+            else:
+                return Markup('<a href="/productgeneralview/show/' + str(self.id) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
         
 Notice:
 
@@ -29,14 +29,14 @@ Define your Views (views.py)
 
 ::
 
-	class PersonGeneralView(GeneralView):
-    	datamodel = SQLAModel(Product, db.session)
+    class PersonGeneralView(GeneralView):
+        datamodel = SQLAModel(Product, db.session)
 
-    	list_widget = ListThumbnail
+        list_widget = ListThumbnail
 
-    	label_columns = {'name':'Name','photo':'Photo','photo_img':'Photo'}
-    	list_columns = ['photo_img', 'name']
-    	show_columns = ['photo_img','name']
+        label_columns = {'name':'Name','photo':'Photo','photo_img':'Photo'}
+        list_columns = ['photo_img', 'name']
+        show_columns = ['photo_img','name']
 
 Notice:
 

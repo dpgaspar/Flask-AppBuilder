@@ -61,11 +61,11 @@ id = db.Column(db.Integer, primary_key=True)
 name = db.Column(db.String(150), unique = True, nullable=False)
 photo = db.Column(ImageColumn, nullable=False )
 
-    def photo_img(self):
+def photo_img(self):
     im = ImageManager()
-        if self.photo:
+    if self.photo:
         return Markup('&lt;a href="/productgeneralview/show/' + str(self.id) + '" class="thumbnail"&gt;&lt;img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"&gt;&lt;/a&gt;')
-        else:
+    else:
         return Markup('&lt;a href="/productgeneralview/show/' + str(self.id) + '" class="thumbnail"&gt;&lt;img src="//:0" alt="Photo" class="img-responsive"&gt;&lt;/a&gt;')</pre>
 </div>
 <p>Notice:</p>
@@ -73,14 +73,15 @@ photo = db.Column(ImageColumn, nullable=False )
 </div>
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><pre>class PersonGeneralView(GeneralView):
-datamodel = SQLAModel(Product, db.session)
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PersonGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Product</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 
-list_widget = ListThumbnail
+    <span class="n">list_widget</span> <span class="o">=</span> <span class="n">ListThumbnail</span>
 
-label_columns = {'name':'Name','photo':'Photo','photo_img':'Photo'}
-list_columns = ['photo_img', 'name']
-show_columns = ['photo_img','name']</pre>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;Name&#39;</span><span class="p">,</span><span class="s">&#39;photo&#39;</span><span class="p">:</span><span class="s">&#39;Photo&#39;</span><span class="p">,</span><span class="s">&#39;photo_img&#39;</span><span class="p">:</span><span class="s">&#39;Photo&#39;</span><span class="p">}</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;photo_img&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">]</span>
+    <span class="n">show_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;photo_img&#39;</span><span class="p">,</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+</pre></div>
 </div>
 <p>Notice:</p>
 <p>We are overriding the list_widget, the widget that is normally used by GeneralView. This will display a thumbnail list excelent for displaying images.</p>
