@@ -44,18 +44,18 @@ Most importante Base Properties:
     - datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)
 
     - Titles
-        :list_title: Title for list view 
-        :show_title: Title for show view
-        :add_title: Title for add view
-        :edit_title: Title for edit view
+    :list_title: Title for list view 
+    :show_title: Title for show view
+    :add_title: Title for add view
+    :edit_title: Title for edit view
 
     - Include Columns: lists of column names for the views 
-        - list_columns: The columns to show on list (this is mandatory)
-        - show_columns: The columns to show on show view
-        - add_columns: The columns to show on add form, and also what will be added
-        - edit_columns: The columns to show on edit form, and also what will be edited
-        - order_columns: The columns allowed to order on lists
-        - search_columns: The search form to filter the list
+    :list_columns: The columns to show on list (this is mandatory)
+    :show_columns: The columns to show on show view
+    :add_columns: The columns to show on add form, and also what will be added
+    :edit_columns: The columns to show on edit form, and also what will be edited
+    :order_columns: The columns allowed to order on lists
+    :search_columns: The search form to filter the list
 
     - Properties for Labels and descriptions
         - label_columns: The labels to be shown for columns {'<COL NAME>': '<COL LABEL>', ....}
