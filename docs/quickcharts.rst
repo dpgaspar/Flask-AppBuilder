@@ -8,7 +8,7 @@ Define your Chart Views (views.py)
 
 ::
 
-	class ContactChartView(ChartView):
+    class ContactChartView(ChartView):
     	
         datamodel = SQLAModel(Contact, db.session)
         chart_title = 'Grouped contacts'
@@ -28,7 +28,7 @@ If you want a column chart just override this::
 
 How about a chart grouped by a time frame? This is new on 0.2.0::
 
-	class ContactTimeChartView(TimeChartView):
+    class ContactTimeChartView(TimeChartView):
     
         chart_title = 'Grouped Birth contacts'
         label_columns = ContactGeneralView.label_columns

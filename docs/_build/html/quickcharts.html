@@ -56,12 +56,13 @@
 <p>To implement views with google charts derive from ChartsViews like this:</p>
 <div class="section" id="define-your-chart-views-views-py">
 <h2>Define your Chart Views (views.py)<a class="headerlink" href="#define-your-chart-views-views-py" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><pre>class ContactChartView(ChartView):
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactChartView</span><span class="p">(</span><span class="n">ChartView</span><span class="p">):</span>
 
-datamodel = SQLAModel(Contact, db.session)
-chart_title = 'Grouped contacts'
-label_columns = ContactGeneralView.label_columns
-group_by_columns = ['group']</pre>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped contacts&#39;</span>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactGeneralView</span><span class="o">.</span><span class="n">label_columns</span>
+    <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
+</pre></div>
 </div>
 <p>Notice that:
 - label_columns: were the ones used on ContactGeneralView
@@ -73,12 +74,13 @@ If you want a column chart just override this:</p>
 </pre></div>
 </div>
 <p>How about a chart grouped by a time frame? This is new on 0.2.0:</p>
-<div class="highlight-python"><pre>class ContactTimeChartView(TimeChartView):
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactTimeChartView</span><span class="p">(</span><span class="n">TimeChartView</span><span class="p">):</span>
 
-chart_title = 'Grouped Birth contacts'
-label_columns = ContactGeneralView.label_columns
-group_by_columns = ['birthday']
-datamodel = SQLAModel(Contact, db.session)</pre>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped Birth contacts&#39;</span>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactGeneralView</span><span class="o">.</span><span class="n">label_columns</span>
+    <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;birthday&#39;</span><span class="p">]</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+</pre></div>
 </div>
 <p>this will produce a column chart, with the number of contacts that have borned on a particular month or year.</p>
 </div>
