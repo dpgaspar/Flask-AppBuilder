@@ -115,7 +115,7 @@ Let's define it::
 
 Some explanation:
 
-- label_columns: defines your labels for columns (dha!). The framework will define the missing ones for you with a pretty version of you column names.
+- label_columns: defines your labels for columns (dha!). The framework will define the missing ones for you, with a pretty version of your column names.
 - show_fieldsets: A fieldset (Django style).
 
 
