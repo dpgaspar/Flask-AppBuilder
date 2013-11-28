@@ -17,8 +17,8 @@ Define your Chart Views (views.py)
     	
 Notice that:
 
-- label_columns: were the ones used on ContactGeneralView
-- group_by_columns: is a list of columns that you want to group
+:label_columns: were the ones used on ContactGeneralView
+:group_by_columns: is a list of columns that you want to group
 
 this will produce a Pie chart, with the percentage of contacts by group.
 If you want a column chart just override this::
