@@ -10,31 +10,31 @@ Simple and rapid Application builder, includes detailed security, auto form gene
 Package Version
 ---------------
 
-Finally 0.2.0 is out, please read the docs!
+Finally 0.2.0 is out!!  please read the docs.
 
 Improvements
 ------------
 
-- Pagination on lists.
-- Inline (panels) will reload/return to the same panel (via cookie).
-- Templates with url_for.
-- BaseApp injects all necessary filter in jinja2, no need to import.
-- New Chart type, group by month and year.
-- No need to define route_base on View Classes, will assume class name in lower case.
-- No need to define labels for model's columns, they will be prettified.
-- No need to define titles for list,add,edit and show views, they will be generated from the model's name.
-- No need to define menu url when registering a BaseView will be infered from BaseView.defaultview.
+  - Pagination on lists.
+  - Inline (panels) will reload/return to the same panel (via cookie).
+  - Templates with url_for.
+  - BaseApp injects all necessary filter in jinja2, no need to import.
+  - New Chart type, group by month and year.
+  - No need to define route_base on View Classes, will assume class name in lower case.
+  - No need to define labels for model's columns, they will be prettified.
+  - No need to define titles for list,add,edit and show views, they will be generated from the model's name.
+  - No need to define menu url when registering a BaseView will be infered from BaseView.defaultview.
 
 Bug Fixes
 ---------
 
-- OpenID pictures not showing.
-- Security reset password corrections.
-- Date null Widget correction.
-- list filter with text
-- Removed unnecessary keys from config.py on skeleton and examples.
-- Simple group by correction, when query does not use joined models.
-- Authentication with OpenID does not need reset password option.
+  - OpenID pictures not showing.
+  - Security reset password corrections.
+  - Date null Widget correction.
+  - list filter with text
+  - Removed unnecessary keys from config.py on skeleton and examples.
+  - Simple group by correction, when query does not use joined models.
+  - Authentication with OpenID does not need reset password option.
 
 Includes:
 ---------
@@ -74,11 +74,11 @@ https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/contact_list.png
 
 Charts:
 
-https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart.png "Charts"
+https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart.png
 
-https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time1.png "Charts"
+https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time1.png
 
-https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time2.png "Charts"
+https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time2.png
 
 Depends on:
 -----------
