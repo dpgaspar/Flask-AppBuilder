@@ -28,6 +28,7 @@ Define your Views (views.py)
 ----------------------------
 
 ::
+
 	class PersonGeneralView(GeneralView):
     	datamodel = SQLAModel(Product, db.session)
 

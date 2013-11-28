@@ -73,16 +73,15 @@ photo = db.Column(ImageColumn, nullable=False )
 </div>
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>::</dt>
-<dd><p class="first">class PersonGeneralView(GeneralView):
-datamodel = SQLAModel(Product, db.session)</p>
-<p>list_widget = ListThumbnail</p>
-<p class="last">label_columns = {&#8216;name&#8217;:&#8217;Name&#8217;,&#8217;photo&#8217;:&#8217;Photo&#8217;,&#8217;photo_img&#8217;:&#8217;Photo&#8217;}
-list_columns = [&#8216;photo_img&#8217;, &#8216;name&#8217;]
-show_columns = [&#8216;photo_img&#8217;,&#8217;name&#8217;]</p>
-</dd>
-</dl>
+<div class="highlight-python"><pre>class PersonGeneralView(GeneralView):
+datamodel = SQLAModel(Product, db.session)
+
+list_widget = ListThumbnail
+
+label_columns = {'name':'Name','photo':'Photo','photo_img':'Photo'}
+list_columns = ['photo_img', 'name']
+show_columns = ['photo_img','name']</pre>
+</div>
 <p>Notice:</p>
 <p>We are overriding the list_widget, the widget that is normally used by GeneralView. This will display a thumbnail list excelent for displaying images.</p>
 <p>And thats it! images will be saved on the server has UUID&#8217;s and will be resized for optimization.</p>
