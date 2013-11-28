@@ -81,14 +81,14 @@ I hope this was easy enough! Some questions may arrise...
 
 Must have properties:
 
-- datamodel: is the db abstraction layer. Initialize it with your model and sqlalchemy session
-- list_columns: The columns that will be displayed on the list view.
-- order_columns: The columns allowed to be ordered (to not define relations on this)
-- search_columns: The columns that will display on the search form.
+:datamodel: is the db abstraction layer. Initialize it with your model and sqlalchemy session
+:list_columns: The columns that will be displayed on the list view.
+:order_columns: The columns allowed to be ordered (to not define relations on this)
+:search_columns: The columns that will display on the search form.
 
 Optional properties:
 
-- related_views: if you want a master/detail view on the show and edit.
+:related_views: if you want a master/detail view on the show and edit.
 
 There are many more properties you can override to customize your views. you can define descriptions for columns, validators for forms, and many more
 
