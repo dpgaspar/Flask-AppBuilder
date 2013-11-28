@@ -1,6 +1,5 @@
 Flask App Builder
 =================
------------------
 
 New documentation at: http://flask-appbuilder.readthedocs.org/en/latest/
 
