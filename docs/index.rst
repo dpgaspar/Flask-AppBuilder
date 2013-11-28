@@ -16,7 +16,7 @@ Version 0.2.0 had some changes look at chapter Versions
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    intro
    instalation
