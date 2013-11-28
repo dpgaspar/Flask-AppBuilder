@@ -71,9 +71,17 @@ Login page (with AUTH_DB):
 
 https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login.png "Login"
 
+Lists:
+
+https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/contact_list.png
+
 Charts:
 
-https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/Charts.png "Charts"
+https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/charts.png "Charts"
+
+https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time1.png "Charts"
+
+https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time2.png "Charts"
 
 Depends on:
 -----------

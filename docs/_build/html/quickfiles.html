@@ -1,0 +1,161 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Quick Files and Images &mdash; Flask-AppBuilder 0.1.46 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.46',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Flask-AppBuilder 0.1.46 documentation" href="index.html" />
+    <link rel="next" title="Application’s Base Configuration" href="config.html" />
+    <link rel="prev" title="Quick Charts" href="quickcharts.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="config.html" title="Application’s Base Configuration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="quickcharts.html" title="Quick Charts"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Flask-AppBuilder 0.1.46 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="quick-files-and-images">
+<h1>Quick Files and Images<a class="headerlink" href="#quick-files-and-images" title="Permalink to this headline">¶</a></h1>
+<p>You can implement views with images or files associated</p>
+<div class="section" id="define-your-product-model-models-py">
+<h2>Define your Product model (models.py)<a class="headerlink" href="#define-your-product-model-models-py" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><pre>class Product(db.Model):
+id = db.Column(db.Integer, primary_key=True)
+name = db.Column(db.String(150), unique = True, nullable=False)
+photo = db.Column(ImageColumn, nullable=False )
+
+    def photo_img(self):
+    im = ImageManager()
+        if self.photo:
+        return Markup('&lt;a href="/productgeneralview/show/' + str(self.id) + '" class="thumbnail"&gt;&lt;img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"&gt;&lt;/a&gt;')
+        else:
+        return Markup('&lt;a href="/productgeneralview/show/' + str(self.id) + '" class="thumbnail"&gt;&lt;img src="//:0" alt="Photo" class="img-responsive"&gt;&lt;/a&gt;')</pre>
+</div>
+<p>Notice:</p>
+<p>The &#8220;ImageColumn&#8221; type, this is an extended type from Flask-AppBuilder.</p>
+</div>
+<div class="section" id="define-your-views-views-py">
+<h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>::</dt>
+<dd><p class="first">class PersonGeneralView(GeneralView):
+datamodel = SQLAModel(Product, db.session)</p>
+<p>list_widget = ListThumbnail</p>
+<p class="last">label_columns = {&#8216;name&#8217;:&#8217;Name&#8217;,&#8217;photo&#8217;:&#8217;Photo&#8217;,&#8217;photo_img&#8217;:&#8217;Photo&#8217;}
+list_columns = [&#8216;photo_img&#8217;, &#8216;name&#8217;]
+show_columns = [&#8216;photo_img&#8217;,&#8217;name&#8217;]</p>
+</dd>
+</dl>
+<p>Notice:</p>
+<p>We are overriding the list_widget, the widget that is normally used by GeneralView. This will display a thumbnail list excelent for displaying images.</p>
+<p>And thats it! images will be saved on the server has UUID&#8217;s and will be resized for optimization.</p>
+</div>
+<div class="section" id="next-step">
+<h2>Next step<a class="headerlink" href="#next-step" title="Permalink to this headline">¶</a></h2>
+<p>Take a look at the example:</p>
+<p><a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/contactsapp">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/contactsapp</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Quick Files and Images</a><ul>
+<li><a class="reference internal" href="#define-your-product-model-models-py">Define your Product model (models.py)</a></li>
+<li><a class="reference internal" href="#define-your-views-views-py">Define your Views (views.py)</a></li>
+<li><a class="reference internal" href="#next-step">Next step</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="quickcharts.html"
+                        title="previous chapter">Quick Charts</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="config.html"
+                        title="next chapter">Application&#8217;s Base Configuration</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/quickfiles.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="config.html" title="Application’s Base Configuration"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="quickcharts.html" title="Quick Charts"
+             >previous</a> |</li>
+        <li><a href="index.html">Flask-AppBuilder 0.1.46 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Daniel Vaz Gaspar.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

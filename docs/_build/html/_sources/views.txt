@@ -43,7 +43,7 @@ Most importante Base Properties:
 
     - datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)
 
-    - Titles (these are all mandatory)
+    - Titles
         - list_title: Title for list view 
         - show_title: Title for show view
         - add_title: Title for add view
@@ -58,7 +58,7 @@ Most importante Base Properties:
         - search_columns: The search form to filter the list
 
     - Properties for Labels and descriptions
-        - label_columns: The labels to be shown for columns {'<COL NAME>': '<COL LABEL>', ....} (this is mandatory) 
+        - label_columns: The labels to be shown for columns {'<COL NAME>': '<COL LABEL>', ....}
         - description_columns: The description to be shown for columns {'<COL NAME>': '<COL DESCRIPTION>', ....}
 
     - Optional Field set's, inspired on DJANGO field sets: fieldsets [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....]

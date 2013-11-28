@@ -1,0 +1,157 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Versions &mdash; Flask-AppBuilder 0.1.46 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.46',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Flask-AppBuilder 0.1.46 documentation" href="index.html" />
+    <link rel="prev" title="Views" href="views.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="views.html" title="Views"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Flask-AppBuilder 0.1.46 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="versions">
+<h1>Versions<a class="headerlink" href="#versions" title="Permalink to this headline">¶</a></h1>
+<p>Finally 0.2.0 is out, and if you are using 0.1.47 or bellow, you must CHANGE the way you register you views.</p>
+<p>It&#8217;s very simple, change this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">,</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="s">&quot;/groups/list&quot;</span><span class="p">,</span><span class="s">&quot;th-large&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonGeneralView</span><span class="p">,</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="s">&quot;/persons/list&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonChartView</span><span class="p">,</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span><span class="s">&quot;/persons/chart&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="s">&quot;/groups/list&quot;</span><span class="p">,</span><span class="s">&quot;th-large&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="s">&quot;/persons/list&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonChartView</span><span class="p">(),</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span><span class="s">&quot;/persons/chart&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Small change you just have to instantiate your classes.</p>
+<div class="section" id="improvements-and-bug-fixes-on-0-2-0">
+<h2>Improvements and Bug fixes on 0.2.0<a class="headerlink" href="#improvements-and-bug-fixes-on-0-2-0" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="improvements">
+<h2>Improvements<a class="headerlink" href="#improvements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Pagination on lists.</li>
+<li>Inline (panels) will reload/return to the same panel (via cookie).</li>
+<li>Templates with url_for.</li>
+<li>BaseApp injects all necessary filter in jinja2, no need to import.</li>
+<li>New Chart type, group by month and year.</li>
+<li>No need to define route_base on View Classes, will assume class name in lower case.</li>
+<li>No need to define labels for model&#8217;s columns, they will be prettified.</li>
+<li>No need to define titles for list,add,edit and show views, they will be generated from the model&#8217;s name.</li>
+<li>No need to define menu url when registering a BaseView will be infered from BaseView.defaultview.</li>
+</ul>
+</div>
+<div class="section" id="bug-fixes">
+<h2>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>OpenID pictures not showing.</li>
+<li>Security reset password corrections.</li>
+<li>Date null Widget correction.</li>
+<li>list filter with text</li>
+<li>Removed unnecessary keys from config.py on skeleton and examples.</li>
+<li>Simple group by correction, when query does not use joined models.</li>
+<li>Authentication with OpenID does not need reset password option.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Versions</a><ul>
+<li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-2-0">Improvements and Bug fixes on 0.2.0</a></li>
+<li><a class="reference internal" href="#improvements">Improvements</a></li>
+<li><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="views.html"
+                        title="previous chapter">Views</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/versions.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="views.html" title="Views"
+             >previous</a> |</li>
+        <li><a href="index.html">Flask-AppBuilder 0.1.46 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Daniel Vaz Gaspar.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

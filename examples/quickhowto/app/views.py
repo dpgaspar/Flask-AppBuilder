@@ -52,5 +52,5 @@ genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "
 genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")
 genapp.add_separator("Contacts")
 genapp.add_view(ContactChartView(), "Contacts Chart","/contactchartview/chart","signal","Contacts")
-genapp.add_view(ContactTimeChartView(), "Contacts Birth Chart by Month","/contacttimechartview/chart/month","signal","Contacts")
+genapp.add_view(ContactTimeChartView(), "Contacts Birth Chart","/contacttimechartview/chart/month","signal","Contacts")
 

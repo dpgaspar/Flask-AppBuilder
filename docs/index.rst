@@ -9,6 +9,10 @@ Flask-AppBuilder's documentation!
 Simple and rapid Application builder, built on top of flask.
 includes detailed security, auto form generation, google charts and much more.
 
+Important Note:
+
+Version 0.2.0 had some changes look at chapter Versions
+  
 Contents:
 
 .. toctree::
@@ -18,12 +22,14 @@ Contents:
    instalation
    quickhowto
    quickcharts
+   quickfiles
    config
    views
    security
    forms
    i18n
    api
+   versions
 
 
 Indices and tables

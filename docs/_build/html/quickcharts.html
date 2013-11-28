@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -13,7 +15,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
+        URL_ROOT:    '',
         VERSION:     '0.1.46',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -24,7 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask-AppBuilder 0.1.46 documentation" href="index.html" />
-    <link rel="next" title="Application’s Base Configuration" href="config.html" />
+    <link rel="next" title="Quick Files and Images" href="quickfiles.html" />
     <link rel="prev" title="Quick How to" href="quickhowto.html" /> 
   </head>
   <body>
@@ -35,7 +37,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="config.html" title="Application’s Base Configuration"
+          <a href="quickfiles.html" title="Quick Files and Images"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="quickhowto.html" title="Quick How to"
@@ -54,24 +56,43 @@
 <p>To implement views with google charts derive from ChartsViews like this:</p>
 <div class="section" id="define-your-chart-views-views-py">
 <h2>Define your Chart Views (views.py)<a class="headerlink" href="#define-your-chart-views-views-py" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PersonChartView</span><span class="p">(</span><span class="n">ChartView</span><span class="p">):</span>
-    <span class="n">route_base</span> <span class="o">=</span> <span class="s">&#39;/persons&#39;</span>
-    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped Persons&#39;</span>
-    <span class="n">label_columns</span> <span class="o">=</span> <span class="n">PersonGeneralView</span><span class="o">.</span><span class="n">label_columns</span>
-    <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+<div class="highlight-python"><pre>class ContactChartView(ChartView):
+
+datamodel = SQLAModel(Contact, db.session)
+chart_title = 'Grouped contacts'
+label_columns = ContactGeneralView.label_columns
+group_by_columns = ['group']</pre>
+</div>
+<p>Notice that:
+- label_columns: were the ones used on ContactGeneralView
+- group_by_columns: is a list of columns that you want to group</p>
+<p>this will produce a Pie chart, with the percentage of contacts by group.
+If you want a column chart just override this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">chart_type</span> <span class="o">=</span> <span class="s">&#39;PieChart&#39;</span> <span class="c"># default</span>
+<span class="n">chart_type</span> <span class="o">=</span> <span class="s">&#39;ColumnsChart&#39;</span>
 </pre></div>
 </div>
+<p>How about a chart grouped by a time frame? This is new on 0.2.0:</p>
+<div class="highlight-python"><pre>class ContactTimeChartView(TimeChartView):
+
+chart_title = 'Grouped Birth contacts'
+label_columns = ContactGeneralView.label_columns
+group_by_columns = ['birthday']
+datamodel = SQLAModel(Contact, db.session)</pre>
+</div>
+<p>this will produce a column chart, with the number of contacts that have borned on a particular month or year.</p>
 </div>
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
 <p>Register everything, to present your charts and create the menu:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactChartView</span><span class="p">,</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span><span class="s">&quot;/contacts/chart&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-</pre></div>
+<div class="highlight-python"><pre>genapp.add_view(ContactChartView(), "Contacts Chart","/contactchartview/chart","signal","Contacts")
+    genapp.add_view(ContactTimeChartView(), "Contacts Birth Chart","/contacttimechartview/chart/month","signal","Contacts")</pre>
 </div>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>
 <p>Some images:</p>
-<a class="reference internal image-reference" href="_images/chart.png"><img alt="_images/chart.png" src="_images/chart.png" style="width: 100%;" /></a>
+<img alt="_images/chart.png" src="_images/chart.png" style="width: 100%;" />
+<img alt="_images/chart_time1.png" src="_images/chart_time1.png" style="width: 100%;" />
+<img alt="_images/chart_time2.png" src="_images/chart_time2.png" style="width: 100%;" />
 </div>
 </div>
 
@@ -94,8 +115,8 @@
   <p class="topless"><a href="quickhowto.html"
                         title="previous chapter">Quick How to</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="config.html"
-                        title="next chapter">Application&#8217;s Base Configuration</a></p>
+  <p class="topless"><a href="quickfiles.html"
+                        title="next chapter">Quick Files and Images</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/quickcharts.txt"
@@ -125,7 +146,7 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="config.html" title="Application’s Base Configuration"
+          <a href="quickfiles.html" title="Quick Files and Images"
              >next</a> |</li>
         <li class="right" >
           <a href="quickhowto.html" title="Quick How to"
@@ -135,7 +156,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2013, Daniel Vaz Gaspar.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b3.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

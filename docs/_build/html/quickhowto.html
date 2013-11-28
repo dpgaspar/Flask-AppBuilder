@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -13,7 +15,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
+        URL_ROOT:    '',
         VERSION:     '0.1.46',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -84,83 +86,74 @@
 </pre></div>
 </div>
 <p>An <em>Contacts</em> table.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Contact</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span>  <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">address</span> <span class="o">=</span>  <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">564</span><span class="p">))</span>
-    <span class="n">birthday</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Date</span><span class="p">)</span>
-    <span class="n">photo</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">ImageColumn</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
-    <span class="n">personal_phone</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
-    <span class="n">personal_celphone</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
-    <span class="n">group_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;group.id&#39;</span><span class="p">))</span>
-    <span class="n">group</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">relationship</span><span class="p">(</span><span class="s">&quot;Group&quot;</span><span class="p">)</span>
-</pre></div>
+<div class="highlight-python"><pre>class Contact(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name =  db.Column(db.String(150), unique = True, nullable=False)
+    address =  db.Column(db.String(564))
+    birthday = db.Column(db.Date)
+    personal_phone = db.Column(db.String(20))
+    personal_celphone = db.Column(db.String(20))
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
+    group = db.relationship("Group")
+
+    def __repr__(self):
+    return self.name</pre>
 </div>
 </div>
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
 <p>Now we are going to define our view to <em>Group</em> table</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">route_base</span> <span class="o">=</span> <span class="s">&#39;/groups&#39;</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
-    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">()]</span>
+        <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+        <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">()]</span>
 
-    <span class="n">list_title</span> <span class="o">=</span> <span class="s">&#39;List Groups&#39;</span>
-    <span class="n">show_title</span> <span class="o">=</span> <span class="s">&#39;Show Group&#39;</span>
-    <span class="n">add_title</span> <span class="o">=</span> <span class="s">&#39;Add Group&#39;</span>
-    <span class="n">edit_title</span> <span class="o">=</span> <span class="s">&#39;Edit Group&#39;</span>
-
-    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;Name&#39;</span><span class="p">}</span>
-    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
-    <span class="n">show_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
-    <span class="n">order_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
-    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">order_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>I hope this was easy enough! Some questions may arrise...</p>
-<ul class="simple">
-<li>route_base: is the url where your view will <em>live</em> in this case: <a class="reference external" href="http:/">http:/</a>/&lt;servername&gt;/groups/</li>
-<li>datamodel: is the db abstraction layer</li>
-<li>related_views: if you want a master/detail view on the show and edit. But where is ContactGeneralView ?</li>
-</ul>
+<p>Must have properties:
+- datamodel: is the db abstraction layer. Initialize it with your model and sqlalchemy session
+- list_columns: The columns that will be displayed on the list view.
+- order_columns: The columns allowed to be ordered (to not define relations on this)
+- search_columns: The columns that will display on the search form.</p>
+<p>Optional properties:
+- related_views: if you want a master/detail view on the show and edit.</p>
+<p>There are many more properties you can override to customize your views. you can define descriptions for columns, validators for forms, and many more</p>
+<p>Take a look at the Views chapter.</p>
+<p>But where is ContactGeneralView ?</p>
 <p>Let&#8217;s define it:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">route_base</span> <span class="o">=</span> <span class="s">&#39;/contacts&#39;</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+<div class="highlight-python"><pre>class ContactGeneralView(GeneralView):
+datamodel = SQLAModel(Contact, db.session)
 
-    <span class="n">list_title</span> <span class="o">=</span> <span class="s">&#39;List Contacts&#39;</span>
-    <span class="n">show_title</span> <span class="o">=</span> <span class="s">&#39;Show Contact&#39;</span>
-    <span class="n">add_title</span> <span class="o">=</span> <span class="s">&#39;Add Contact&#39;</span>
-    <span class="n">edit_title</span> <span class="o">=</span> <span class="s">&#39;Edit Contact&#39;</span>
+label_columns = {'group':'Contacts Group'}
+list_columns = ['name','personal_celphone','birthday','group']
 
-    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;Name&#39;</span><span class="p">,</span><span class="s">&#39;photo&#39;</span><span class="p">:</span><span class="s">&#39;Photo&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">:</span><span class="s">&#39;Address&#39;</span><span class="p">,</span><span class="s">&#39;birthday&#39;</span><span class="p">:</span><span class="s">&#39;Birthday&#39;</span><span class="p">,</span>
-                <span class="s">&#39;personal_phone&#39;</span><span class="p">:</span><span class="s">&#39;Personal Phone&#39;</span><span class="p">,</span>
-                <span class="s">&#39;personal_celphone&#39;</span><span class="p">:</span><span class="s">&#39;Personal CelPhone&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">:</span><span class="s">&#39;Contacts Group&#39;</span><span class="p">}</span>
-    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s">&#39;birthday&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
+order_columns = ['name','personal_celphone','birthday']
+search_columns = ['name','personal_celphone','group']
 
-    <span class="n">order_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s">&#39;birthday&#39;</span><span class="p">]</span>
-    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
-
-    <span class="n">show_fieldsets</span> <span class="o">=</span> <span class="p">[</span>
-         <span class="p">(</span><span class="s">&#39;Summary&#39;</span><span class="p">,{</span><span class="s">&#39;fields&#39;</span><span class="p">:[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]}),</span>
-         <span class="p">(</span><span class="s">&#39;Personal Info&#39;</span><span class="p">,{</span><span class="s">&#39;fields&#39;</span><span class="p">:[</span><span class="s">&#39;birthday&#39;</span><span class="p">,</span><span class="s">&#39;personal_phone&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">],</span><span class="s">&#39;expanded&#39;</span><span class="p">:</span><span class="bp">False</span><span class="p">}),</span>
-         <span class="p">]</span>
-</pre></div>
+show_fieldsets = [
+         ('Summary',{'fields':['name','address','group']}),
+        ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
+        ]</pre>
 </div>
+<p>Some explanation:</p>
+<p>label_columns: defines your labels for columns (dha!). The framework will define the missing ones for you with a pretty version of you column names.
+show_fieldsets: A fieldset (Django style).</p>
 </div>
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
 <p>Register everything, to present the models and create the menu:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">genapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">,</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="s">&quot;/groups/list&quot;</span><span class="p">,</span><span class="s">&quot;th-large&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactGeneralView</span><span class="p">,</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="s">&quot;/contacts/list&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-</pre></div>
+<div class="highlight-python"><pre>genapp = BaseApp(app)
+        genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "Contacts")
+        genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")</pre>
 </div>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>
 <p>Some images:</p>
-<a class="reference internal image-reference" href="_images/login.png"><img alt="_images/login.png" src="_images/login.png" style="width: 100%;" /></a>
-<a class="reference internal image-reference" href="_images/groups.png"><img alt="_images/groups.png" src="_images/groups.png" style="width: 100%;" /></a>
-<a class="reference internal image-reference" href="_images/contacts.png"><img alt="_images/contacts.png" src="_images/contacts.png" style="width: 100%;" /></a>
+<img alt="_images/login.png" src="_images/login.png" style="width: 100%;" />
+<img alt="_images/group_list.png" src="_images/group_list.png" style="width: 100%;" />
+<img alt="_images/contact_list.png" src="_images/contact_list.png" style="width: 100%;" />
 </div>
 </div>
 
@@ -227,7 +220,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2013, Daniel Vaz Gaspar.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b3.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>
