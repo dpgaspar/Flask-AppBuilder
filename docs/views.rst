@@ -12,9 +12,9 @@ This class does not expose any url's, but provides a common base for all views.
 
 Most importante Base Properties:
 
-    - route_base: The root base of your view
-    - template_folder: The base template folder
-    - base_permissions: The forced base permissions for your views, if not provided it will infer the permissions from the exposed methods and actions
+:route_base: The root base of your view
+:template_folder: The base template folder
+:base_permissions: The forced base permissions for your views, if not provided it will infer the permissions from the exposed methods and actions
     
 SimpleFormView
 --------------
@@ -27,9 +27,9 @@ Implement *form_get* and *form_post* to implement your form pre-processing and p
 
 Most importante Base Properties:
 
-    - form_title: The title to be presented (this is mandatory)
-    - form_columns: The form column names to include
-    - form: Your form class (WTFORM) (this is mandatory) 
+:form_title: The title to be presented (this is mandatory)
+:form_columns: The form column names to include
+:form: Your form class (WTFORM) (this is mandatory) 
     
 GeneralView
 -----------
@@ -44,10 +44,10 @@ Most importante Base Properties:
     - datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)
 
     - Titles
-        - list_title: Title for list view 
-        - show_title: Title for show view
-        - add_title: Title for add view
-        - edit_title: Title for edit view
+        :list_title: Title for list view 
+        :show_title: Title for show view
+        :add_title: Title for add view
+        :edit_title: Title for edit view
 
     - Include Columns: lists of column names for the views 
         - list_columns: The columns to show on list (this is mandatory)
