@@ -41,7 +41,7 @@ Notice that this class derives from *BaseView* so all properties from the parent
 
 Most importante Base Properties:
 
-    - datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)
+    :datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)
 
     - Titles
     :list_title: Title for list view 
@@ -63,7 +63,7 @@ Most importante Base Properties:
 
     - Optional Field set's, inspired on DJANGO field sets: 
     
-    fieldsets [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....]
+    fieldsets """ [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....] """
     
     :show_fieldsets = []
     :add_fieldsets = []
@@ -101,13 +101,13 @@ This will show Google Charts based on group by of your tables.
 
 Most importante Base Properties:
 
-    - chart_title: Your Chart Title
-    - chart_type: 'PieChart' or 'ColumnChart'
-    - chart_3d: 'true' or 'false'
-    - height: The height for you chart default is: '400px'
-    - label_columns: : The labels to be shown for columns {'<COL NAME>': '<COL LABEL>', ....} (this is mandatory)
-    - group_by_columns: A list for your possible group by's for your table (select * from <TABLE> group by [...])
-    - datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)
+:chart_title: Your Chart Title
+:chart_type: 'PieChart' or 'ColumnChart'
+:chart_3d: 'true' or 'false'
+:height: The height for you chart default is: '400px'
+:label_columns: : The labels to be shown for columns {'<COL NAME>': '<COL LABEL>', ....} (this is mandatory)
+:group_by_columns: A list for your possible group by's for your table (select * from <TABLE> group by [...])
+:datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)
 
 Widgets
 -------
