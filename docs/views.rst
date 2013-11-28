@@ -63,11 +63,11 @@ Most importante Base Properties:
 
     - Optional Field set's, inspired on DJANGO field sets: 
     
-    fieldsets """ [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....] """
+    fieldsets  [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....] 
     
-    :show_fieldsets = []
-    :add_fieldsets = []
-    :edit_fieldsets = []
+    :show_fieldsets: A list
+    :add_fieldsets: A list
+    :edit_fieldsets: A list
 
     - Properties for overriding auto form creation with your own defined forms (WTFORM)
     :add_form: Override this to override the add form auto creation
