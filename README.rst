@@ -74,7 +74,7 @@ https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/contact_list.png
 
 Charts:
 
-https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/charts.png "Charts"
+https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart.png "Charts"
 
 https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time1.png "Charts"
 
