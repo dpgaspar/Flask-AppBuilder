@@ -59,13 +59,20 @@
 <p>Generally you will not implement your views deriving from this class, unless your implementing a new base appbuilder view.</p>
 <p>This class does not expose any url&#8217;s, but provides a common base for all views.</p>
 <p>Most importante Base Properties:</p>
-<blockquote>
-<div><ul class="simple">
-<li>route_base: The root base of your view</li>
-<li>template_folder: The base template folder</li>
-<li>base_permissions: The forced base permissions for your views, if not provided it will infer the permissions from the exposed methods and actions</li>
-</ul>
-</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">route_base:</th><td class="field-body">The root base of your view</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">template_folder:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">The base template folder</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">base_permissions:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">The forced base permissions for your views, if not provided it will infer the permissions from the exposed methods and actions</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="simpleformview">
 <h2>SimpleFormView<a class="headerlink" href="#simpleformview" title="Permalink to this headline">¶</a></h2>
@@ -73,13 +80,18 @@
 <p>Notice that this class derives from <em>BaseView</em> so all properties from the parent class can be overrided also.</p>
 <p>Implement <em>form_get</em> and <em>form_post</em> to implement your form pre-processing and post-processing</p>
 <p>Most importante Base Properties:</p>
-<blockquote>
-<div><ul class="simple">
-<li>form_title: The title to be presented (this is mandatory)</li>
-<li>form_columns: The form column names to include</li>
-<li>form: Your form class (WTFORM) (this is mandatory)</li>
-</ul>
-</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">form_title:</th><td class="field-body">The title to be presented (this is mandatory)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">form_columns:</th><td class="field-body">The form column names to include</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">form:</th><td class="field-body">Your form class (WTFORM) (this is mandatory)</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="generalview">
 <h2>GeneralView<a class="headerlink" href="#generalview" title="Permalink to this headline">¶</a></h2>
@@ -88,92 +100,116 @@ form your database tables, derive your views from this class.</p>
 <p>Notice that this class derives from <em>BaseView</em> so all properties from the parent class can be overrided also.</p>
 <p>Most importante Base Properties:</p>
 <blockquote>
-<div><ul>
-<li><p class="first">datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)</p>
-</li>
-<li><dl class="first docutils">
-<dt>Titles</dt>
-<dd><ul class="first last simple">
-<li>list_title: Title for list view</li>
-<li>show_title: Title for show view</li>
-<li>add_title: Title for add view</li>
-<li>edit_title: Title for edit view</li>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">datamodel:</th><td class="field-body">SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li>Titles</li>
 </ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Include Columns: lists of column names for the views</dt>
-<dd><ul class="first last simple">
-<li>list_columns: The columns to show on list (this is mandatory)</li>
-<li>show_columns: The columns to show on show view</li>
-<li>add_columns: The columns to show on add form, and also what will be added</li>
-<li>edit_columns: The columns to show on edit form, and also what will be edited</li>
-<li>order_columns: The columns allowed to order on lists</li>
-<li>search_columns: The search form to filter the list</li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">list_title:</th><td class="field-body">Title for list view</td>
+</tr>
+<tr class="field-even field"><th class="field-name">show_title:</th><td class="field-body">Title for show view</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">add_title:</th><td class="field-body">Title for add view</td>
+</tr>
+<tr class="field-even field"><th class="field-name">edit_title:</th><td class="field-body">Title for edit view</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li>Include Columns: lists of column names for the views</li>
 </ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Properties for Labels and descriptions</dt>
-<dd><ul class="first last simple">
-<li>label_columns: The labels to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL LABEL&gt;&#8217;, ....}</li>
-<li>description_columns: The description to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL DESCRIPTION&gt;&#8217;, ....}</li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">list_columns:</th><td class="field-body">The columns to show on list (this is mandatory)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">show_columns:</th><td class="field-body">The columns to show on show view</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">add_columns:</th><td class="field-body">The columns to show on add form, and also what will be added</td>
+</tr>
+<tr class="field-even field"><th class="field-name">edit_columns:</th><td class="field-body">The columns to show on edit form, and also what will be edited</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">order_columns:</th><td class="field-body">The columns allowed to order on lists</td>
+</tr>
+<tr class="field-even field"><th class="field-name">search_columns:</th><td class="field-body">The search form to filter the list</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li>Properties for Labels and descriptions</li>
 </ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Optional Field set&#8217;s, inspired on DJANGO field sets: fieldsets [(&lt;&#8217;TITLE&#8217;<a href="#id1"><span class="problematic" id="id2">|</span></a>None&gt;, {&#8216;fields&#8217;:[&lt;F1&gt;,&lt;F2&gt;,...]}),....]</dt>
-<dd><ul class="first last simple">
-<li>show_fieldsets = []</li>
-<li>add_fieldsets = []</li>
-<li>edit_fieldsets = []</li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">label_columns:</th><td class="field-body">The labels to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL LABEL&gt;&#8217;, ....}</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">description_columns:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">The description to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL DESCRIPTION&gt;&#8217;, ....}</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li>Optional Field set&#8217;s, inspired on DJANGO field sets:</li>
 </ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Properties for overriding auto form creation with your own defined forms (WTFORM)</dt>
-<dd><ul class="first last simple">
-<li>add_form: Override this to override the add form auto creation</li>
-<li>edit_form: Override this to override the edit form auto creation</li>
-<li>search_form: : Override this to override the search form auto creation</li>
+<p>fieldsets  [(&lt;&#8217;TITLE&#8217;<a href="#id1"><span class="problematic" id="id2">|</span></a>None&gt;, {&#8216;fields&#8217;:[&lt;F1&gt;,&lt;F2&gt;,...]}),....]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">show_fieldsets:</th><td class="field-body">A list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">add_fieldsets:</th><td class="field-body">A list</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">edit_fieldsets:</th><td class="field-body">A list</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li>Properties for overriding auto form creation with your own defined forms (WTFORM)</li>
 </ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>validators_columns: Override this to implement your special validations for form columns</dt>
-<dd><p class="first last">{&#8216;&lt;COL NAME&gt;&#8217;: &lt;WTForm Validator&gt; }</p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Templates: override these to implement your own templates</dt>
-<dd><ul class="first last simple">
-<li>list_template = &#8216;appbuilder/general/model/list.html&#8217;</li>
-<li>edit_template = &#8216;appbuilder/general/model/edit.html&#8217;</li>
-<li>add_template = &#8216;appbuilder/general/model/add.html&#8217;</li>
-<li>show_template = &#8216;appbuilder/general/model/show.html&#8217;</li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">add_form:</th><td class="field-body">Override this to override the add form auto creation</td>
+</tr>
+<tr class="field-even field"><th class="field-name">edit_form:</th><td class="field-body">Override this to override the edit form auto creation</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">search_form:</th><td class="field-body">: Override this to override the search form auto creation</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">validators_columns:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Override this to implement your special validations for form columns
+{&#8216;&lt;COL NAME&gt;&#8217;: &lt;WTForm Validator&gt; }</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li>Templates: override these to implement your own templates</li>
 </ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Widgets: override these to change the default display for the views implemented on this class. AppBuilder has some variations on these.</dt>
-<dd><ul class="first last simple">
-<li>list_widget = ListWidget</li>
-<li>edit_widget = FormWidget</li>
-<li>add_widget = FormWidget</li>
-<li>show_widget = ShowWidget</li>
-<li>search_widget = SearchWidget</li>
+<p>:list_template = &#8216;appbuilder/general/model/list.html&#8217;
+:edit_template = &#8216;appbuilder/general/model/edit.html&#8217;
+:add_template = &#8216;appbuilder/general/model/add.html&#8217;
+:show_template = &#8216;appbuilder/general/model/show.html&#8217;</p>
+<ul class="simple">
+<li>Widgets: override these to change the default display for the views implemented on this class. AppBuilder has some variations on these.</li>
 </ul>
-</dd>
-</dl>
-</li>
-</ul>
+<p>:list_widget = ListWidget
+:edit_widget = FormWidget
+:add_widget = FormWidget
+:show_widget = ShowWidget
+:search_widget = SearchWidget</p>
 </div></blockquote>
 </div>
 <div class="section" id="chartview">
@@ -181,17 +217,27 @@ form your database tables, derive your views from this class.</p>
 <p>This a newly implemented, and provides a simple (and hopefully nice) way to draw some charts for your application.</p>
 <p>This will show Google Charts based on group by of your tables.</p>
 <p>Most importante Base Properties:</p>
-<blockquote>
-<div><ul class="simple">
-<li>chart_title: Your Chart Title</li>
-<li>chart_type: &#8216;PieChart&#8217; or &#8216;ColumnChart&#8217;</li>
-<li>chart_3d: &#8216;true&#8217; or &#8216;false&#8217;</li>
-<li>height: The height for you chart default is: &#8216;400px&#8217;</li>
-<li>label_columns: : The labels to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL LABEL&gt;&#8217;, ....} (this is mandatory)</li>
-<li>group_by_columns: A list for your possible group by&#8217;s for your table (select * from &lt;TABLE&gt; group by [...])</li>
-<li>datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)</li>
-</ul>
-</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">chart_title:</th><td class="field-body">Your Chart Title</td>
+</tr>
+<tr class="field-even field"><th class="field-name">chart_type:</th><td class="field-body">&#8216;PieChart&#8217; or &#8216;ColumnChart&#8217;</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">chart_3d:</th><td class="field-body">&#8216;true&#8217; or &#8216;false&#8217;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">height:</th><td class="field-body">The height for you chart default is: &#8216;400px&#8217;</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">label_columns:</th><td class="field-body">: The labels to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL LABEL&gt;&#8217;, ....} (this is mandatory)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">group_by_columns:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">A list for your possible group by&#8217;s for your table (select * from &lt;TABLE&gt; group by [...])</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">datamodel:</th><td class="field-body">SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="widgets">
 <h2>Widgets<a class="headerlink" href="#widgets" title="Permalink to this headline">¶</a></h2>

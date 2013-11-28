@@ -64,9 +64,18 @@
     <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Notice that:
-- label_columns: were the ones used on ContactGeneralView
-- group_by_columns: is a list of columns that you want to group</p>
+<p>Notice that:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">label_columns:</th><td class="field-body">The same label&#8217;s from ContactGeneralView.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">group_by_columns:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Is a list of columns that you want to group.</td>
+</tr>
+</tbody>
+</table>
 <p>this will produce a Pie chart, with the percentage of contacts by group.
 If you want a column chart just override this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">chart_type</span> <span class="o">=</span> <span class="s">&#39;PieChart&#39;</span> <span class="c"># default</span>
