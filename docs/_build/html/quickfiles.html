@@ -56,17 +56,18 @@
 <p>You can implement views with images or files associated</p>
 <div class="section" id="define-your-product-model-models-py">
 <h2>Define your Product model (models.py)<a class="headerlink" href="#define-your-product-model-models-py" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><pre>class Product(db.Model):
-id = db.Column(db.Integer, primary_key=True)
-name = db.Column(db.String(150), unique = True, nullable=False)
-photo = db.Column(ImageColumn, nullable=False )
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">photo</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">ImageColumn</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
 
-def photo_img(self):
-    im = ImageManager()
-    if self.photo:
-        return Markup('&lt;a href="/productgeneralview/show/' + str(self.id) + '" class="thumbnail"&gt;&lt;img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"&gt;&lt;/a&gt;')
-    else:
-        return Markup('&lt;a href="/productgeneralview/show/' + str(self.id) + '" class="thumbnail"&gt;&lt;img src="//:0" alt="Photo" class="img-responsive"&gt;&lt;/a&gt;')</pre>
+    <span class="k">def</span> <span class="nf">photo_img</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">ImageManager</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;/productgeneralview/show/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;&#39;</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; alt=&quot;Photo&quot; class=&quot;img-rounded img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;/productgeneralview/show/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+</pre></div>
 </div>
 <p>Notice:</p>
 <p>The &#8220;ImageColumn&#8221; type, this is an extended type from Flask-AppBuilder.</p>

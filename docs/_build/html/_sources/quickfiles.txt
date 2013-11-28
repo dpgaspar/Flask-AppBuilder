@@ -8,7 +8,7 @@ Define your Product model (models.py)
 
 ::
 
-	class Product(db.Model):
+    class Product(db.Model):
         id = db.Column(db.Integer, primary_key=True)
         name = db.Column(db.String(150), unique = True, nullable=False)    	
         photo = db.Column(ImageColumn, nullable=False )
