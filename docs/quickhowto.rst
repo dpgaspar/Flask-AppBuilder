@@ -59,7 +59,7 @@ An *Contacts* table.
 	    group = db.relationship("Group")	
 	    
 	    def __repr__(self):
-            return self.name	
+                return self.name	
 
 
 Define your Views (views.py)
