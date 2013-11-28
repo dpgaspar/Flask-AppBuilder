@@ -58,35 +58,38 @@ Most importante Base Properties:
     :search_columns: The search form to filter the list
 
     - Properties for Labels and descriptions
-        - label_columns: The labels to be shown for columns {'<COL NAME>': '<COL LABEL>', ....}
-        - description_columns: The description to be shown for columns {'<COL NAME>': '<COL DESCRIPTION>', ....}
+    :label_columns: The labels to be shown for columns {'<COL NAME>': '<COL LABEL>', ....}
+    :description_columns: The description to be shown for columns {'<COL NAME>': '<COL DESCRIPTION>', ....}
 
-    - Optional Field set's, inspired on DJANGO field sets: fieldsets [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....]
-        - show_fieldsets = []
-        - add_fieldsets = []
-        - edit_fieldsets = []
+    - Optional Field set's, inspired on DJANGO field sets: 
+    
+    fieldsets [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....]
+    
+    :show_fieldsets = []
+    :add_fieldsets = []
+    :edit_fieldsets = []
 
     - Properties for overriding auto form creation with your own defined forms (WTFORM)
-        - add_form: Override this to override the add form auto creation
-        - edit_form: Override this to override the edit form auto creation
-        - search_form: : Override this to override the search form auto creation
+    :add_form: Override this to override the add form auto creation
+    :edit_form: Override this to override the edit form auto creation
+    :search_form: : Override this to override the search form auto creation
 
-    - validators_columns: Override this to implement your special validations for form columns
+    :validators_columns: Override this to implement your special validations for form columns
                         {'<COL NAME>': <WTForm Validator> }
 
     
     - Templates: override these to implement your own templates 
-        - list_template = 'appbuilder/general/model/list.html'
-        - edit_template = 'appbuilder/general/model/edit.html'
-        - add_template = 'appbuilder/general/model/add.html'
-        - show_template = 'appbuilder/general/model/show.html'
+    :list_template = 'appbuilder/general/model/list.html'
+    :edit_template = 'appbuilder/general/model/edit.html'
+    :add_template = 'appbuilder/general/model/add.html'
+    :show_template = 'appbuilder/general/model/show.html'
 
     - Widgets: override these to change the default display for the views implemented on this class. AppBuilder has some variations on these.
-        - list_widget = ListWidget
-        - edit_widget = FormWidget
-        - add_widget = FormWidget
-        - show_widget = ShowWidget
-        - search_widget = SearchWidget
+    :list_widget = ListWidget
+    :edit_widget = FormWidget
+    :add_widget = FormWidget
+    :show_widget = ShowWidget
+    :search_widget = SearchWidget
 
 
 ChartView
