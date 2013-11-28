@@ -85,8 +85,9 @@ datamodel = SQLAModel(Contact, db.session)</pre>
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
 <p>Register everything, to present your charts and create the menu:</p>
-<div class="highlight-python"><pre>genapp.add_view(ContactChartView(), "Contacts Chart","/contactchartview/chart","signal","Contacts")
-    genapp.add_view(ContactTimeChartView(), "Contacts Birth Chart","/contacttimechartview/chart/month","signal","Contacts")</pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactChartView</span><span class="p">(),</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span><span class="s">&quot;/contactchartview/chart&quot;</span><span class="p">,</span><span class="s">&quot;signal&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactTimeChartView</span><span class="p">(),</span> <span class="s">&quot;Contacts Birth Chart&quot;</span><span class="p">,</span><span class="s">&quot;/contacttimechartview/chart/month&quot;</span><span class="p">,</span><span class="s">&quot;signal&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+</pre></div>
 </div>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>
 <p>Some images:</p>

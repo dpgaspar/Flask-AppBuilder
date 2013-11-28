@@ -98,18 +98,18 @@ But where is ContactGeneralView ?
 Let's define it::
 
 	class ContactGeneralView(GeneralView):
-    	datamodel = SQLAModel(Contact, db.session)
+        datamodel = SQLAModel(Contact, db.session)
 
-    	label_columns = {'group':'Contacts Group'}
-    	list_columns = ['name','personal_celphone','birthday','group']
+        label_columns = {'group':'Contacts Group'}
+        list_columns = ['name','personal_celphone','birthday','group']
 
-    	order_columns = ['name','personal_celphone','birthday']
-    	search_columns = ['name','personal_celphone','group']
+        order_columns = ['name','personal_celphone','birthday']
+        search_columns = ['name','personal_celphone','group']
 
-    	show_fieldsets = [
-        	 ('Summary',{'fields':['name','address','group']}),
-         	('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
-         	]
+        show_fieldsets = [
+            ('Summary',{'fields':['name','address','group']}),
+            ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
+            ]
 
 Some explanation:
 
@@ -123,8 +123,8 @@ Register (views.py)
 Register everything, to present the models and create the menu::
 
         genapp = BaseApp(app)
-		genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "Contacts")
-		genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")
+        genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "Contacts")
+        genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")
 
 You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto
 

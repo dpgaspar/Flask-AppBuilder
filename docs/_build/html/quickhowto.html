@@ -134,9 +134,9 @@ order_columns = ['name','personal_celphone','birthday']
 search_columns = ['name','personal_celphone','group']
 
 show_fieldsets = [
-         ('Summary',{'fields':['name','address','group']}),
-        ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
-        ]</pre>
+    ('Summary',{'fields':['name','address','group']}),
+    ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
+    ]</pre>
 </div>
 <p>Some explanation:</p>
 <p>label_columns: defines your labels for columns (dha!). The framework will define the missing ones for you with a pretty version of you column names.
@@ -145,9 +145,10 @@ show_fieldsets: A fieldset (Django style).</p>
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
 <p>Register everything, to present the models and create the menu:</p>
-<div class="highlight-python"><pre>genapp = BaseApp(app)
-        genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "Contacts")
-        genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")</pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">genapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;th-large&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+</pre></div>
 </div>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>
 <p>Some images:</p>
