@@ -78,36 +78,56 @@ Most importante Base Properties:
                         {'<COL NAME>': <WTForm Validator> }
 
     
-    - Templates: override these to implement your own templates 
-    :list_template = 'appbuilder/general/model/list.html'
-    :edit_template = 'appbuilder/general/model/edit.html'
-    :add_template = 'appbuilder/general/model/add.html'
-    :show_template = 'appbuilder/general/model/show.html'
+    - Templates: override these to implement your own templates, AppBuilder has some variations
+     
+    :list_template: (default) 'appbuilder/general/model/list.html'
+    :edit_template: (default) 'appbuilder/general/model/edit.html'
+    :add_template: (default) 'appbuilder/general/model/add.html'
+    :show_template: (default) 'appbuilder/general/model/show.html'
 
     - Widgets: override these to change the default display for the views implemented on this class. AppBuilder has some variations on these.
-    :list_widget = ListWidget
-    :edit_widget = FormWidget
-    :add_widget = FormWidget
-    :show_widget = ShowWidget
-    :search_widget = SearchWidget
+    
+    :list_widget: (default) ListWidget
+    :edit_widget: (default) FormWidget
+    :add_widget: (default) FormWidget
+    :show_widget: (default) ShowWidget
+    :search_widget: (default) SearchWidget
 
 
 ChartView
 ---------
 
-This a newly implemented, and provides a simple (and hopefully nice) way to draw some charts for your application.
+Provides a simple (and hopefully nice) way to draw charts on your application.
 
 This will show Google Charts based on group by of your tables.
 
 Most importante Base Properties:
 
+:datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)
 :chart_title: Your Chart Title
 :chart_type: 'PieChart' or 'ColumnChart'
 :chart_3d: 'true' or 'false'
 :height: The height for you chart default is: '400px'
 :label_columns: : The labels to be shown for columns {'<COL NAME>': '<COL LABEL>', ....} (this is mandatory)
 :group_by_columns: A list for your possible group by's for your table (select * from <TABLE> group by [...])
+
+TimeChartView
+-------------
+
+Provides a simple way to draw some time charts on your application.
+
+This will show Google Charts based on count and group by month and year for your tables.
+
+Most importante Base Properties:
+
 :datamodel: SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)
+:chart_title: Your Chart Title
+:chart_type: 'PieChart' or 'ColumnChart'
+:chart_3d: 'true' or 'false'
+:height: The height for you chart default is: '400px'
+:label_columns: : The labels to be shown for columns {'<COL NAME>': '<COL LABEL>', ....} (this is mandatory).
+:group_by_columns: A list for your possible group by's for your table, only select date columns.
+
 
 Widgets
 -------

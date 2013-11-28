@@ -196,45 +196,93 @@ form your database tables, derive your views from this class.</p>
 </tbody>
 </table>
 <ul class="simple">
-<li>Templates: override these to implement your own templates</li>
+<li>Templates: override these to implement your own templates, AppBuilder has some variations</li>
 </ul>
-<p>:list_template = &#8216;appbuilder/general/model/list.html&#8217;
-:edit_template = &#8216;appbuilder/general/model/edit.html&#8217;
-:add_template = &#8216;appbuilder/general/model/add.html&#8217;
-:show_template = &#8216;appbuilder/general/model/show.html&#8217;</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">list_template:</th><td class="field-body">(default) &#8216;appbuilder/general/model/list.html&#8217;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">edit_template:</th><td class="field-body">(default) &#8216;appbuilder/general/model/edit.html&#8217;</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">add_template:</th><td class="field-body">(default) &#8216;appbuilder/general/model/add.html&#8217;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">show_template:</th><td class="field-body">(default) &#8216;appbuilder/general/model/show.html&#8217;</td>
+</tr>
+</tbody>
+</table>
 <ul class="simple">
 <li>Widgets: override these to change the default display for the views implemented on this class. AppBuilder has some variations on these.</li>
 </ul>
-<p>:list_widget = ListWidget
-:edit_widget = FormWidget
-:add_widget = FormWidget
-:show_widget = ShowWidget
-:search_widget = SearchWidget</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">list_widget:</th><td class="field-body">(default) ListWidget</td>
+</tr>
+<tr class="field-even field"><th class="field-name">edit_widget:</th><td class="field-body">(default) FormWidget</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">add_widget:</th><td class="field-body">(default) FormWidget</td>
+</tr>
+<tr class="field-even field"><th class="field-name">show_widget:</th><td class="field-body">(default) ShowWidget</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">search_widget:</th><td class="field-body">(default) SearchWidget</td>
+</tr>
+</tbody>
+</table>
 </div></blockquote>
 </div>
 <div class="section" id="chartview">
 <h2>ChartView<a class="headerlink" href="#chartview" title="Permalink to this headline">¶</a></h2>
-<p>This a newly implemented, and provides a simple (and hopefully nice) way to draw some charts for your application.</p>
+<p>Provides a simple (and hopefully nice) way to draw charts on your application.</p>
 <p>This will show Google Charts based on group by of your tables.</p>
 <p>Most importante Base Properties:</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">chart_title:</th><td class="field-body">Your Chart Title</td>
-</tr>
-<tr class="field-even field"><th class="field-name">chart_type:</th><td class="field-body">&#8216;PieChart&#8217; or &#8216;ColumnChart&#8217;</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">chart_3d:</th><td class="field-body">&#8216;true&#8217; or &#8216;false&#8217;</td>
-</tr>
-<tr class="field-even field"><th class="field-name">height:</th><td class="field-body">The height for you chart default is: &#8216;400px&#8217;</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">label_columns:</th><td class="field-body">: The labels to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL LABEL&gt;&#8217;, ....} (this is mandatory)</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">group_by_columns:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body">A list for your possible group by&#8217;s for your table (select * from &lt;TABLE&gt; group by [...])</td>
-</tr>
 <tr class="field-odd field"><th class="field-name">datamodel:</th><td class="field-body">SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">chart_title:</th><td class="field-body">Your Chart Title</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">chart_type:</th><td class="field-body">&#8216;PieChart&#8217; or &#8216;ColumnChart&#8217;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">chart_3d:</th><td class="field-body">&#8216;true&#8217; or &#8216;false&#8217;</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">height:</th><td class="field-body">The height for you chart default is: &#8216;400px&#8217;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">label_columns:</th><td class="field-body">: The labels to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL LABEL&gt;&#8217;, ....} (this is mandatory)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">group_by_columns:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">A list for your possible group by&#8217;s for your table (select * from &lt;TABLE&gt; group by [...])</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="timechartview">
+<h2>TimeChartView<a class="headerlink" href="#timechartview" title="Permalink to this headline">¶</a></h2>
+<p>Provides a simple way to draw some time charts on your application.</p>
+<p>This will show Google Charts based on count and group by month and year for your tables.</p>
+<p>Most importante Base Properties:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">datamodel:</th><td class="field-body">SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">chart_title:</th><td class="field-body">Your Chart Title</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">chart_type:</th><td class="field-body">&#8216;PieChart&#8217; or &#8216;ColumnChart&#8217;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">chart_3d:</th><td class="field-body">&#8216;true&#8217; or &#8216;false&#8217;</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">height:</th><td class="field-body">The height for you chart default is: &#8216;400px&#8217;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">label_columns:</th><td class="field-body">: The labels to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL LABEL&gt;&#8217;, ....} (this is mandatory).</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">group_by_columns:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">A list for your possible group by&#8217;s for your table, only select date columns.</td>
 </tr>
 </tbody>
 </table>
@@ -257,6 +305,7 @@ form your database tables, derive your views from this class.</p>
 <li><a class="reference internal" href="#simpleformview">SimpleFormView</a></li>
 <li><a class="reference internal" href="#generalview">GeneralView</a></li>
 <li><a class="reference internal" href="#chartview">ChartView</a></li>
+<li><a class="reference internal" href="#timechartview">TimeChartView</a></li>
 <li><a class="reference internal" href="#widgets">Widgets</a></li>
 </ul>
 </li>
