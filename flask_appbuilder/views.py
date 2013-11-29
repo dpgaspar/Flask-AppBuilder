@@ -12,6 +12,11 @@ from .actions import ActionItem
 def expose(url='/', methods=('GET',)):
     """
         Use this decorator to expose views in your view classes.
+       
+        :param url:
+            Relative URL for the view
+        :param methods:
+            Allowed HTTP methods. By default only GET is allowed.
     """
     def wrap(f):
         if not hasattr(f, '_urls'):
@@ -64,6 +69,13 @@ class BaseView(object):
                         static_folder = None):
         """
             Create Flask blueprint.
+            
+            param baseapp:
+               the BaseApp application
+            param endpoint:
+               endpoint override for this blueprint, will assume class name if not provided
+            param static_folder:
+               the relative override for static forder, if omited application will use the baseapp static
         """
         # Store BaseApp instance
         self.baseapp = baseapp
@@ -87,10 +99,10 @@ class BaseView(object):
                                    template_folder=self.template_folder,
                                    static_folder = static_folder)
 
-        self.register_urls()
+        self._register_urls()
         return self.blueprint
 
-    def register_urls(self):
+    def _register_urls(self):
         for attr_name in dir(self):
             attr = getattr(self, attr_name)
 
