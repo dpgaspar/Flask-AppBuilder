@@ -6,6 +6,12 @@ from flask import g
 import uuid
 import datetime
 
+try:
+    from app import db
+except ImportError:
+    raise Exception('db not found please use required skeleton application see documentation')
+
+
 class FileColumn(types.TypeDecorator):
     """
     Extends SQLA to support a File Column
@@ -30,27 +36,27 @@ class AuditMixin(BaseMixin):
     Mixin for models, add 4 cols to stamp, time and user on
     creation and modification
     """
-    created_on = Column(DateTime, default=datetime.datetime.now,nullable=False)
-    changed_on = Column(DateTime, default=datetime.datetime.now,
+    created_on = db.Column(db.DateTime, default=datetime.datetime.now,nullable=False)
+    changed_on = db.Column(db.DateTime, default=datetime.datetime.now,
                             onupdate=datetime.datetime.now,nullable=False)
 
     @declared_attr
     def created_by_fk(cls):
-        return Column(Integer, ForeignKey('user.id'),
+        return db.Column(db.Integer, db.ForeignKey('user.id'),
                 default=cls.get_user_id,nullable=False)
 
     @declared_attr
     def created_by(cls):
-        return relationship("User", primaryjoin='%s.created_by_fk == User.id'%cls.__name__)
+        return db.relationship("User", primaryjoin='%s.created_by_fk == User.id'%cls.__name__)
 
     @declared_attr
     def changed_by_fk(cls):
-        return Column(Integer, ForeignKey('user.id'),
+        return db.Column(db.Integer, db.ForeignKey('user.id'),
                 default=cls.get_user_id,onupdate=cls.get_user_id,nullable=False)
 
     @declared_attr
     def changed_by(cls):
-        return relationship("User", primaryjoin='%s.changed_by_fk == User.id'%cls.__name__)
+        return db.relationship("User", primaryjoin='%s.changed_by_fk == User.id'%cls.__name__)
 
 
     @classmethod

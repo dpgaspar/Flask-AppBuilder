@@ -3,15 +3,22 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from flask.ext.wtf import Required, Length, validators, EqualTo, PasswordField
 from flask.ext.babel import gettext, lazy_gettext
 
-from flask.ext.appbuilder.views import *
 from models import *
-from ..forms import BS3PasswordFieldWidget
 from forms import *
-
-
-from app import app, db, lm, oid
+from flask.ext.appbuilder.views import BaseView, GeneralView, SimpleFormView, AdditionalLinkItem, expose
+from ..forms import BS3PasswordFieldWidget
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from config import AUTH_TYPE, APP_NAME, APP_THEME
+
+try:
+    from config import AUTH_TYPE
+except  ImportError:
+    print "AUTH_TYPE not found. Using default"
+    AUTH_TYPE = 1
+
+try:
+    from app import app, db, lm, oid
+except ImportError:
+    raise Exception('app,db,lm,oid not found please use required skeleton application see documentation')
 
 
 AUTH_OID = 0
@@ -297,5 +304,5 @@ def before_request():
     g.user = current_user
 
 @lm.user_loader
-def load_user(id):
-    return User.query.get(int(id))
+def load_user(pk):
+    return User.query.get(int(pk))

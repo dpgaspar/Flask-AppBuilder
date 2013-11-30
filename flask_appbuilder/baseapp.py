@@ -1,7 +1,8 @@
 from flask import Blueprint
 from flask.ext.babel import lazy_gettext
 from flask.ext.babel import gettext as _gettext
-from .security.views import AuthView, ResetMyPasswordView, ResetPasswordView, UserGeneralView, RoleGeneralView, PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, IndexView, PermissionView
+from .security.views import AuthView, ResetMyPasswordView, ResetPasswordView, UserGeneralView, RoleGeneralView, PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, PermissionView
+from .views import IndexView
 from .babel.views import LocaleView
 from menu import Menu
 from filters import TemplateFilters
@@ -44,7 +45,7 @@ class BaseApp():
     
     def add_global_filters(self):
         self.template_filters = TemplateFilters(self.app)
-	
+
     def add_global_static(self):
         bp = Blueprint('baseapp', __name__, url_prefix='/static',
                 template_folder='templates', static_folder = self.static_folder, static_url_path = self.static_url_path)
@@ -74,10 +75,10 @@ class BaseApp():
             self.lst_baseview.append(baseview)
             self.register_blueprint(baseview)
             self._add_permission(baseview)
-	self.menu.add_link(name = name, href = href, icon = icon, parent_category = category, baseview = baseview)
+        self.menu.add_link(name = name, href = href, icon = icon, parent_category = category, baseview = baseview)
         
     def add_link(self, name, href, icon = "", category = ""):
-    	self.menu.add_link(name = name, href = href, icon = icon, parent_category = category)
+        self.menu.add_link(name = name, href = href, icon = icon, parent_category = category)
 
     def add_separator(self, category):
         self.menu.add_separator(category)

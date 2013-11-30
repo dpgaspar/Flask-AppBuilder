@@ -3,8 +3,16 @@ import os.path as op
 
 from werkzeug import secure_filename
 from werkzeug.datastructures import FileStorage
-from config import UPLOAD_FOLDER, IMG_UPLOAD_FOLDER, IMG_UPLOAD_URL
 import uuid
+
+try:
+    from config import UPLOAD_FOLDER, IMG_UPLOAD_FOLDER, IMG_UPLOAD_URL
+except  ImportError:    
+    print "UPLOAD_FOLDER, IMG_UPLOAD_FOLDER, IMG_UPLOAD_URL not found. Using default"
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    UPLOAD_FOLDER = basedir + '/app/static/uploads/' 
+    IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
+    IMG_UPLOAD_URL = '/static/uploads/'
 
 try:
     from PIL import Image, ImageOps
@@ -119,7 +127,6 @@ class ImageManager(FileManager):
 
         # Figure out format
         filename, format = self.get_save_format(filename, self.image)
-        print "IMG SAVE: ", filename,":", format, ":", self.max_size
         if self.image and (self.image.format != format or self.max_size):
             if self.max_size:
                 image = self.resize(self.image, self.max_size)
@@ -142,7 +149,6 @@ class ImageManager(FileManager):
                              format)
 
     def resize(self, image, size):
-        print "RESIZE"
         (width, height, force) = size
 
         if image.size[0] > width or image.size[1] > height:

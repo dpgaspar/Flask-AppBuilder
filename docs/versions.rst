@@ -20,6 +20,24 @@ To this::
 Small change you just have to instantiate your classes.
 
 
+Improvements and Bug fixes on 0.3.0
+-----------------------------------
+
+Improvements
+------------
+
+- AUTH_ROLE_ADMIN, AUTH_ROLE_PUBLIC not required to be defined.
+- UPLOAD_FOLDER, IMG_UPLOAD_FOLDER, IMG_UPLOAD_URL not required to be defined.
+- AUTH_TYPE not required to be defined, will use default database auth
+
+
+Bug Fixes
+---------
+
+- import db will raise a controlled error with explanation if not found.
+- general import corrections
+
+
 Improvements and Bug fixes on 0.2.0
 -----------------------------------
 

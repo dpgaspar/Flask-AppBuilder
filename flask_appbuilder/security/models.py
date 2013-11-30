@@ -1,10 +1,21 @@
 from flask import Markup
 
 from hashlib import md5
-from app import db
-from config import AUTH_ROLE_ADMIN, AUTH_ROLE_PUBLIC
 from werkzeug.security import generate_password_hash, check_password_hash
 from ..models.mixins import BaseMixin
+
+try:
+    from config import AUTH_ROLE_ADMIN, AUTH_ROLE_PUBLIC
+except  ImportError:
+    print "AUTH_ROLE_ADMIN and AUTH_ROLE_PUBLIC not found. Using default Admin, Public"
+    AUTH_ROLE_ADMIN = 'Admin'
+    AUTH_ROLE_PUBLIC = 'Public'
+
+try:
+    from app import db
+except ImportError:
+    raise Exception('db not found please use required skeleton application see documentation')
+
 
 def is_menu_public(item):
     """
