@@ -6,9 +6,6 @@ from flask.ext.login import current_user
 
 
 def app_template_filter(filter_name=''):
-    """
-        Use this decorator to expose views in your view classes.
-    """
     def wrap(f):
         if not hasattr(f, '_filter'):
             f._filter = filter_name
