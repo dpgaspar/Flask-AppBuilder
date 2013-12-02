@@ -101,13 +101,13 @@ class SecProxy(object)
             for perm_str in base_permissions:
                 pv = self.add_permission_view(perm_str, view_menu)
                 role_admin = self.session.query(Role).filter_by(name = AUTH_ROLE_ADMIN).first()
-                ########   role_admin.add_unique_permission(pv)
+                self.add_permission_role(role_admin, pv)
         else:
             for item in base_permissions:
                 if not self._find_permission(lst, item):
                     pv = self._add_permission_view(item, view_menu)
                     role_admin = self.session.query(Role).filter_by(name = AUTH_ROLE_ADMIN).first()
-                    #####    role_admin.add_unique_permission(pv)
+                    self.add_permission_role(role_admin, pv)
             for item in lst:
                 if item.permission.name not in base_permissions:
                     # perm to delete
@@ -121,4 +121,12 @@ class SecProxy(object)
         if lst == []:
             pv = self.add_permission_view('menu_access', view_menu)
             role_admin = self.session.query(Role).filter_by(name = AUTH_ROLE_ADMIN).first()
-            role_admin.add_unique_permission(pv)
+            self.add_permission_role(role_admin, pv)
+            
+            
+    def add_permission_role(self, role, perm_view):
+        if perm_view not in role.permissions:
+            self.permissions.append(perm_view)
+            self.session.merge(role)
+            self.session.commit()
+            print "Added Permission" , str(perm_view) , " to Role " , role.name
