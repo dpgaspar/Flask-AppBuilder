@@ -113,4 +113,13 @@ class SecProxy(object)
                     # perm to delete
                     pass
 
-    
+    def add_menu_permissions(self, view_menu):
+        view_menu_db = ViewMenu.query.filter_by(name = view_menu).first()
+        if view_menu_db == None:
+            view_menu_db = ViewMenu()
+            view_menu_db = view_menu_db.add_unique(view_menu)
+        lst = PermissionView.query.filter_by(view_menu_id = view_menu_db.id).all()
+        if lst == []:
+            pv = self.add_unique('menu_access', view_menu)
+            role_admin = Role.query.filter_by(name = AUTH_ROLE_ADMIN).first()
+            role_admin.add_unique_permission(pv)
