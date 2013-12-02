@@ -42,7 +42,7 @@ class SecProxy(object)
             return False
         else: return False
     
-    def add_permission(self, name):
+    def _add_permission(self, name):
         """
             Adds a permission to the backend
             param name:
@@ -58,7 +58,7 @@ class SecProxy(object)
         return perm
         
         
-    def add_view_menu(self, name):
+    def _add_view_menu(self, name):
         """
             Adds a view menu to the backend
             param name:
@@ -81,12 +81,36 @@ class SecProxy(object)
             param view_menu_name:
                 name of the view menu to add
         """
-        vm = self.add_view_menu(view_menu_name)
-        perm = self.add_permission(permission_name)
+        vm = self._add_view_menu(view_menu_name)
+        perm = self._add_permission(permission_name)
         pv.view_menu_id, pv.permission_id = vm.id, perm.id
         self.session.add(pv)
         self.session.commit()
         print "Added Permission View" , str(pv)
         return pv
     
+    
+    def add_view_permissions(self, base_permissions, view_menu):
+        view_menu_db = self.session.query(ViewMenu).filter_by(name = view_menu).first()
+        if view_menu_db == None:
+            view_menu_db = ViewMenu()
+            view_menu_db = view_menu_db.add_unique(view_menu)
+        lst = self.session.query(PermissionView).filter_by(view_menu_id = view_menu_db.id).all()
+        # No permissions for this view
+        if lst == []:
+            for perm_str in base_permissions:
+                pv = self.add_permission_view(perm_str, view_menu)
+                role_admin = self.session.query(Role).filter_by(name = AUTH_ROLE_ADMIN).first()
+                ########   role_admin.add_unique_permission(pv)
+        else:
+            for item in base_permissions:
+                if not self._find_permission(lst, item):
+                    pv = self._add_permission_view(item, view_menu)
+                    role_admin = self.session.query(Role).filter_by(name = AUTH_ROLE_ADMIN).first()
+                    #####    role_admin.add_unique_permission(pv)
+            for item in lst:
+                if item.permission.name not in base_permissions:
+                    # perm to delete
+                    pass
+
     
