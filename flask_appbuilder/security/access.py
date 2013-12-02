@@ -41,6 +41,25 @@ class SecProxy(object)
                     return True
             return False
         else: return False
+        
+    def has_menu_access(self, user, menu_name):
+        
+        lst = role.role.permissions
+        if lst:
+            for i in lst:
+                if menu_name == i.view_menu.name:
+                    return  True
+            return False
+        else: return False
+
+    def has_permission_on_view(self, user, permission_name, view_name):
+        lst = user.role.permissions
+        if lst:
+            for i in lst:
+                if (view_name == i.view_menu.name) and (permission_name == i.permission.name):
+                    return True
+            return False
+        else: return False
     
     def _add_permission(self, name):
         """
