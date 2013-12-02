@@ -32,8 +32,8 @@ class SecProxy(object)
             param generalview_name:
                 the name of the class view (child of BaseView)
         """
-
-        role = self.session.query(Role).filter_by(name = AUTH_ROLE_PUBLIC).first()
+        role_public = current_app.config['AUTH_ROLE_PUBLIC']
+        role = self.session.query(Role).filter_by(name = role_public).first()
         lst = role.permissions
         if lst:
             for i in lst:
