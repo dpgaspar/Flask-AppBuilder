@@ -15,7 +15,10 @@ def app_template_filter(filter_name=''):
 
 class TemplateFilters(object):
     
-    def __init__(self, app):
+    secproxy = None
+    
+    def __init__(self, app, secproxy):
+        self.secproxy = secproxy
         for attr_name in dir(self):
             if hasattr(getattr(self, attr_name),'_filter'):
                 attr = getattr(self, attr_name)
