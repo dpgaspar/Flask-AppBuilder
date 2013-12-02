@@ -59,6 +59,11 @@ class SecProxy(object)
         
         
     def add_view_menu(self, name):
+        """
+            Adds a view menu to the backend
+            param name:
+                name of the view menu to add
+        """
         view_menu = self.session.query(ViewMenu).filter_by(name = name).first()
         if view_menu == None:
             view_menu = ViewMenu()
@@ -67,3 +72,21 @@ class SecProxy(object)
             self.session.commit()
             return view_menu
         return view_menu
+
+    def add_permission_view_menu(self, permission_name, view_menu_name):
+        """
+            Adds a permission on a view menu to the backend
+            param permission_name:
+                name of the permission to add: 'can_add','can_edit' etc...
+            param view_menu_name:
+                name of the view menu to add
+        """
+        vm = self.add_view_menu(view_menu_name)
+        perm = self.add_permission(permission_name)
+        pv.view_menu_id, pv.permission_id = vm.id, perm.id
+        self.session.add(pv)
+        self.session.commit()
+        print "Added Permission View" , str(pv)
+        return pv
+    
+    
