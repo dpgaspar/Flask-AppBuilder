@@ -42,3 +42,12 @@ class SecProxy(object)
             return False
         else: return False
     
+    def add_permission(self, name):
+        perm = self.session.query(Permission).filter_by(name = name).first()
+        if perm == None:
+            perm = Permission()
+            perm.name = name
+            db.session.add(perm)
+            db.session.commit()
+            return perm
+        return perm
