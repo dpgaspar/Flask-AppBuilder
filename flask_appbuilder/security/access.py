@@ -90,7 +90,7 @@ class SecProxy(object)
         return pv
     
     
-    def add_view_permissions(self, base_permissions, view_menu):
+    def add_permissions_view(self, base_permissions, view_menu):
         view_menu_db = self.session.query(ViewMenu).filter_by(name = view_menu).first()
         if view_menu_db == None:
             view_menu_db = ViewMenu()
@@ -113,13 +113,12 @@ class SecProxy(object)
                     # perm to delete
                     pass
 
-    def add_menu_permissions(self, view_menu):
-        view_menu_db = ViewMenu.query.filter_by(name = view_menu).first()
+    def add_permissions_menu(self, view_menu):
+        view_menu_db = self.session.query(ViewMenu).filter_by(name = view_menu).first()
         if view_menu_db == None:
-            view_menu_db = ViewMenu()
-            view_menu_db = view_menu_db.add_unique(view_menu)
-        lst = PermissionView.query.filter_by(view_menu_id = view_menu_db.id).all()
+            view_menu_db = self._add_view_menu(view_menu)
+        lst = self.session.query(PermissionView).filter_by(view_menu_id = view_menu_db.id).all()
         if lst == []:
-            pv = self.add_unique('menu_access', view_menu)
-            role_admin = Role.query.filter_by(name = AUTH_ROLE_ADMIN).first()
+            pv = self.add_permission_view('menu_access', view_menu)
+            role_admin = self.session.query(Role).filter_by(name = AUTH_ROLE_ADMIN).first()
             role_admin.add_unique_permission(pv)
