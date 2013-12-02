@@ -1,9 +1,44 @@
 
 class SecProxy(object)
 
-  session = None
+    session = None
 
-  def __init__(self, session):
-    self.session = session
+    def __init__(self, session):
+        self.session = session
     
   
+    def is_menu_public(item):
+        """
+            Check if menu item has public permissions
+    
+            param item:
+                menu item
+        """
+        role = self.session.query(Role).filter_by(name = AUTH_ROLE_PUBLIC).first()
+        lst = role.permissions
+        if lst:
+            for i in lst:
+                if item == i.view_menu.name:
+                    return  True
+            return False
+        else: return False
+
+    def is_item_public(permission_name, generalview_name):
+        """
+            Check if view has public permissions
+    
+            param permission_name:
+                the permission: can_show, can_edit...
+            param generalview_name:
+                the name of the class view (child of BaseView)
+        """
+
+        role = self.session.query(Role).filter_by(name = AUTH_ROLE_PUBLIC).first()
+        lst = role.permissions
+        if lst:
+            for i in lst:
+                if (generalview_name == i.view_menu.name) and (permission_name == i.permission.name):
+                    return True
+            return False
+        else: return False
+    
