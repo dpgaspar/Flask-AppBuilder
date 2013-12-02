@@ -1,4 +1,3 @@
-
 class SecProxy(object)
 
     session = None
@@ -14,7 +13,8 @@ class SecProxy(object)
             param item:
                 menu item
         """
-        role = self.session.query(Role).filter_by(name = AUTH_ROLE_PUBLIC).first()
+        role_public = current_app.config['AUTH_ROLE_PUBLIC']
+        role = self.session.query(Role).filter_by(name = role_public).first()
         lst = role.permissions
         if lst:
             for i in lst:
