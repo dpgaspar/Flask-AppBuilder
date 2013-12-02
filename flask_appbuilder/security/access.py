@@ -23,13 +23,13 @@ class SecProxy(object)
             return False
         else: return False
 
-    def is_item_public(permission_name, generalview_name):
+    def is_item_public(permission_name, view_name):
         """
             Check if view has public permissions
     
             param permission_name:
                 the permission: can_show, can_edit...
-            param generalview_name:
+            param view_name:
                 the name of the class view (child of BaseView)
         """
         role_public = current_app.config['AUTH_ROLE_PUBLIC']
@@ -37,17 +37,22 @@ class SecProxy(object)
         lst = role.permissions
         if lst:
             for i in lst:
-                if (generalview_name == i.view_menu.name) and (permission_name == i.permission.name):
+                if (view_name == i.view_menu.name) and (permission_name == i.permission.name):
                     return True
             return False
         else: return False
     
     def add_permission(self, name):
+        """
+            Adds a permission to the backend
+            param name:
+                name of the permission to add: 'can_add','can_edit' etc...
+        """
         perm = self.session.query(Permission).filter_by(name = name).first()
         if perm == None:
             perm = Permission()
             perm.name = name
-            db.session.add(perm)
-            db.session.commit()
+            self.session.add(perm)
+            self.session.commit()
             return perm
         return perm
