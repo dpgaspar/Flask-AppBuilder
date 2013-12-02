@@ -56,3 +56,14 @@ class SecProxy(object)
             self.session.commit()
             return perm
         return perm
+        
+        
+    def add_view_menu(self, name):
+        view_menu = self.session.query(ViewMenu).filter_by(name = name).first()
+        if view_menu == None:
+            view_menu = ViewMenu()
+            view_menu.name = name
+            self.session.add(view_menu)
+            self.session.commit()
+            return view_menu
+        return view_menu
