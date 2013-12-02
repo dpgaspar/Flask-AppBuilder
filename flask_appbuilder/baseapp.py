@@ -4,7 +4,7 @@ from flask.ext.babel import gettext as _gettext
 from .security.views import (AuthView, ResetMyPasswordView, ResetPasswordView, 
                         UserGeneralView, RoleGeneralView, PermissionViewGeneralView, 
                         ViewMenuGeneralView, PermissionGeneralView, PermissionView)
-from .security.access import SecProxy
+from .security.access import SecurityManager
 from .views import IndexView
 from .babel.views import LocaleView
 from menu import Menu
@@ -14,8 +14,11 @@ class BaseApp():
 
     lst_baseview = []
     app = None
-    menu = None
+    db = None
+    security_manager = None
+    
     app_name = ""
+    menu = None
     indexview = None
     
     static_folder = None
@@ -27,15 +30,27 @@ class BaseApp():
     admin = None
     _gettext = _gettext
 
-    """
-    ------------------------------------
-                 INIT
-     Add menu with categories inserted
-    #-----------------------------------
-    """
-    def __init__(self, app, menu = None, indexview = None, static_folder='static/appbuilder', static_url_path='/appbuilder'):
+    def __init__(self, app, db, menu = None, indexview = None, static_folder='static/appbuilder', static_url_path='/appbuilder'):
+        """
+            BaseApp constructor
+            param app:
+                The flask app object
+            param db:
+                The SQLAlchemy db object
+            param menu:
+                optional, a previous contructed menu
+            param indexview:
+                optional, your customized indexview
+            param static_folder:
+                optional, your override for the global static folder
+            param static_url_path:
+                optional, your override for the global static url path
+        """
         self.menu = menu or Menu()
         self.app = app
+        self.db = db
+        self.security_manager = SecurityManager(db.session, app.config['AUTH_ROLE_ADMIN'])
+        
         self.app_name = app.config['APP_NAME']
         self.app_theme = app.config['APP_THEME']
         self.languages = app.config['LANGUAGES']
@@ -47,7 +62,7 @@ class BaseApp():
         self.add_global_filters()
     
     def add_global_filters(self):
-        self.template_filters = TemplateFilters(self.app, SecProxy(self.session))
+        self.template_filters = TemplateFilters(self.app, self.security_manager)
 
     def add_global_static(self):
         bp = Blueprint('baseapp', __name__, url_prefix='/static',
@@ -78,10 +93,17 @@ class BaseApp():
             self.lst_baseview.append(baseview)
             self.register_blueprint(baseview)
             self._add_permission(baseview)
-        self.menu.add_link(name = name, href = href, icon = icon, parent_category = category, baseview = baseview)
+        self.add_link(name = name, href = href, icon = icon, category = category, baseview = baseview)
         
-    def add_link(self, name, href, icon = "", category = ""):
-        self.menu.add_link(name = name, href = href, icon = icon, parent_category = category)
+    def add_link(self, name, href, icon = "", category = "", baseview = None):
+        self.menu.add_link(name = name, href = href, icon = icon, 
+                        category = category, baseview = baseview)
+        #try:
+        self.security_manager.add_permissions_menu(name)
+        self.security_manager.add_permissions_menu(category)            
+        #except:
+        #    print "Add Permission on Menu Error: DB not created"
+    
 
     def add_separator(self, category):
         self.menu.add_separator(category)
@@ -94,14 +116,10 @@ class BaseApp():
             self._add_permission(baseview)
 
     def _add_permission(self, baseview):
-        pvm = PermissionView()
-        bv = baseview
-        try:
-            pvm.add_view_permissions(bv.base_permissions, bv.__class__.__name__)
-        except:
-            print "General _add_permission Error: DB not created?"
-        bv = None
-        pvm = None
-
+        #try:
+            self.security_manager.add_permissions_view(baseview.base_permissions, baseview.__class__.__name__)
+        #except:
+        #    print "Add Permission on View Error: DB not created?"
+        
     def register_blueprint(self, baseview, endpoint = None, static_folder = None):
         self.app.register_blueprint(baseview.create_blueprint(self,  endpoint = endpoint, static_folder = static_folder))

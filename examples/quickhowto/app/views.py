@@ -47,7 +47,7 @@ class ContactTimeChartView(TimeChartView):
     datamodel = SQLAModel(Contact, db.session)
 
 
-genapp = BaseApp(app)
+genapp = BaseApp(app, db)
 genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "Contacts")
 genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")
 genapp.add_separator("Contacts")

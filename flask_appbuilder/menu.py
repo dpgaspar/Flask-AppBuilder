@@ -1,5 +1,4 @@
 from flask import url_for
-from .security.models import PermissionView
 
 class MenuItem(object):
 
@@ -49,28 +48,18 @@ class Menu(object):
         if parent_category == "":
             self.menu.append(MenuItem(name=category, icon = icon))
         else:
-            self.find_category(parent_category).childs.append(MenuItem(name=category, icon = icon))
-        pvm = PermissionView()
-        try:
-            pvm = pvm.add_menu_permissions(category)
-        except:
-            print "Menu add_category Erro: Maybe db not created"
+            self.find_category(category).childs.append(MenuItem(name=category, icon = icon))
+        
 
-
-    def add_link(self, name, href="", icon="", parent_category="", baseview = None):
-        menu_item = self.find_category(parent_category)
+    def add_link(self, name, href="", icon="", category="", baseview = None):
+        menu_item = self.find_category(category)
         if menu_item:
             menu_item.childs.append(MenuItem(name=name, href=href, icon = icon, baseview = baseview))
         else:
-            self.add_category(category=parent_category)
-            self.find_category(parent_category).childs.append(MenuItem(name=name, 
+            self.add_category(category=category)
+            self.find_category(category).childs.append(MenuItem(name=name, 
                                         href=href, icon = icon, baseview = baseview))
-        pvm = PermissionView()
-        try:
-            pvm = pvm.add_menu_permissions(name)
-        except:
-            print "Menu add_category Erro: Maybe db not created"
+        
 
-
-    def add_separator(self, parent_category=""):
-        self.find_category(parent_category).childs.append(MenuItem("-"))
+    def add_separator(self, category=""):
+        self.find_category(category).childs.append(MenuItem("-"))

@@ -15,10 +15,10 @@ def app_template_filter(filter_name=''):
 
 class TemplateFilters(object):
     
-    secproxy = None
+    security_manager = None
     
-    def __init__(self, app, secproxy):
-        self.secproxy = secproxy
+    def __init__(self, app, security_manager):
+        self.security_manager = security_manager
         for attr_name in dir(self):
             if hasattr(getattr(self, attr_name),'_filter'):
                 attr = getattr(self, attr_name)
@@ -86,12 +86,12 @@ class TemplateFilters(object):
     @app_template_filter('is_menu_visible')
     def is_menu_visible(self, item):
         if current_user.is_authenticated():
-            if is_menu_public(item) or g.user.has_menu_access(item.name):
+            if self.security_manager.is_menu_public(item) or self.security_manager.has_menu_access(g.user, item.name):
                 return True
             else:
                 return False
         else:
-            if is_menu_public(item.name):
+            if self.security_manager.is_menu_public(item.name):
                 return True
             else:
                 return False
@@ -99,12 +99,12 @@ class TemplateFilters(object):
     @app_template_filter('is_item_visible')
     def is_item_visible(self, permission, item):
         if current_user.is_authenticated():
-            if g.user.has_permission_on_view(permission, item):
+            if self.security_manager.has_permission_on_view(g.user, permission, item):
                 return True
             else:
                 return False
         else:
-            if is_item_public(permission, item):
+            if self.security_manager.is_item_public(permission, item):
                 return True
             else:
                 return False
