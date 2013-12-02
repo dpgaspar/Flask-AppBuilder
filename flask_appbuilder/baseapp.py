@@ -1,7 +1,10 @@
 from flask import Blueprint
 from flask.ext.babel import lazy_gettext
 from flask.ext.babel import gettext as _gettext
-from .security.views import AuthView, ResetMyPasswordView, ResetPasswordView, UserGeneralView, RoleGeneralView, PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, PermissionView
+from .security.views import (AuthView, ResetMyPasswordView, ResetPasswordView, 
+                        UserGeneralView, RoleGeneralView, PermissionViewGeneralView, 
+                        ViewMenuGeneralView, PermissionGeneralView, PermissionView)
+from .security.access import SecProxy
 from .views import IndexView
 from .babel.views import LocaleView
 from menu import Menu
