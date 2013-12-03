@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, session, url_for, request, g
+from flask import render_template, flash, redirect, session, url_for, request, g, current_app
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.wtf import Required, Length, validators, EqualTo, PasswordField
 from flask.ext.babel import gettext, lazy_gettext
@@ -8,12 +8,6 @@ from forms import *
 from flask.ext.appbuilder.views import BaseView, GeneralView, SimpleFormView, AdditionalLinkItem, expose
 from ..forms import BS3PasswordFieldWidget
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-
-try:
-    from config import AUTH_TYPE
-except  ImportError:
-    print "AUTH_TYPE not found. Using default"
-    AUTH_TYPE = 1
 
 try:
     from app import app, db, lm, oid
@@ -235,8 +229,8 @@ class AuthView(BaseView):
     @expose('/login/', methods = ['GET', 'POST'])
     @oid.loginhandler
     def login(self):
-        if AUTH_TYPE == AUTH_OID: return self._login_oid()
-        if AUTH_TYPE == AUTH_DB: return self._login_db()
+        if current_app.config['AUTH_TYPE'] == AUTH_OID: return self._login_oid()
+        if current_app.config['AUTH_TYPE'] == AUTH_DB: return self._login_db()
 
     @expose('/logout/')
     def logout(self):
@@ -296,7 +290,7 @@ def _after_login_oid(resp):
 
 @oid.after_login
 def _after_login(resp):
-    if AUTH_TYPE == AUTH_OID: return _after_login_oid(resp)
+    if current_app.config['AUTH_TYPE'] == AUTH_OID: return _after_login_oid(resp)
 
 
 @app.before_request
