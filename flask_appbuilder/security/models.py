@@ -13,6 +13,7 @@ except ImportError:
 
 
 class Permission(db.Model):
+    __tablename__ = 'ab_permission'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique = True, nullable=False)
 
@@ -20,6 +21,7 @@ class Permission(db.Model):
         return self.name
 
 class ViewMenu(db.Model):
+    __tablename__ = 'ab_view_menu'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique = True, nullable=False)
 
@@ -33,31 +35,34 @@ class ViewMenu(db.Model):
         return self.name
 
 class PermissionView(db.Model):
+    __tablename__ = 'ab_permission_view'
     id = db.Column(db.Integer, primary_key=True)
-    permission_id = db.Column(db.Integer, db.ForeignKey('permission.id'))
+    permission_id = db.Column(db.Integer, db.ForeignKey('ab_permission.id'))
     permission = db.relationship("Permission")
-    view_menu_id = db.Column(db.Integer, db.ForeignKey('view_menu.id'))
+    view_menu_id = db.Column(db.Integer, db.ForeignKey('ab_view_menu.id'))
     view_menu = db.relationship("ViewMenu")
 
     def __repr__(self):
         return str(self.permission).replace('_',' ') + ' on ' + str(self.view_menu)
 
-assoc_permissionview_role = db.Table('permission_view_role', db.Model.metadata,
-        db.Column('permission_view_id', db.Integer, db.ForeignKey('permission_view.id')),
-        db.Column('role_id', db.Integer, db.ForeignKey('role.id'))
+assoc_permissionview_role = db.Table('ab_permission_view_role', db.Model.metadata,
+        db.Column('permission_view_id', db.Integer, db.ForeignKey('ab_permission_view.id')),
+        db.Column('role_id', db.Integer, db.ForeignKey('ab_role.id'))
         )
 
 
 class Role(db.Model):
+    __tablename__ = 'ab_role'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique = True, nullable=False)
-    permissions = db.relationship('PermissionView', secondary = assoc_permissionview_role, backref='role')
+    permissions = db.relationship('PermissionView', secondary = assoc_permissionview_role, backref='ab_role')
 
     def __repr__(self):
         return self.name
 
 
 class User(db.Model):
+    __tablename__ = 'ab_user'
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(64), nullable = False)
     last_name = db.Column(db.String(64), nullable = False)
@@ -65,7 +70,7 @@ class User(db.Model):
     password = db.Column(db.String(32))
     active = db.Column(db.Boolean)
     email = db.Column(db.String(64))
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
+    role_id = db.Column(db.Integer, db.ForeignKey('ab_role.id'))
     role = db.relationship("Role")
 
     @staticmethod
