@@ -236,7 +236,7 @@ class SimpleFormView(BaseView):
     form = None
     
     @expose("/form", methods=['GET'])
-    @self.baseapp.sm.has_access
+    @has_access
     def this_form_get(self):
         form = self.form.refresh()
         self.form_get(form)
@@ -254,7 +254,7 @@ class SimpleFormView(BaseView):
         pass
 
     @expose("/form", methods=['POST'])
-    @self.baseapp.sm.has_access
+    @has_access
     def this_form_post(self):
         form = self.form.refresh()
         if form.validate_on_submit():
@@ -551,7 +551,7 @@ class GeneralView(BaseCRUDView):
     """
     
     @expose('/list/')
-    @self.baseapp.sm.has_access
+    @has_access
     def list(self):
 
         form = self.search_form.refresh()
@@ -596,7 +596,7 @@ class GeneralView(BaseCRUDView):
     --------------------------------
     """
     @expose('/show/<int:pk>', methods=['GET'])
-    @self.baseapp.sm.has_access
+    @has_access
     def show(self, pk):
 
         widgets = self._get_show_widget(pk)
@@ -621,7 +621,7 @@ class GeneralView(BaseCRUDView):
     ---------------------------
     """
     @expose('/add', methods=['GET', 'POST'])
-    @self.baseapp.sm.has_access
+    @has_access
     def add(self):
 
         filters = self._get_filter_args(filters={})
@@ -655,7 +655,7 @@ class GeneralView(BaseCRUDView):
     ---------------------------
     """
     @expose('/edit/<int:pk>', methods=['GET', 'POST'])
-    @self.baseapp.sm.has_access
+    @has_access
     def edit(self, pk = 0):
 
         pages = self._get_page_args()
@@ -707,7 +707,7 @@ class GeneralView(BaseCRUDView):
     ---------------------------
     """
     @expose('/delete/<int:pk>')
-    @self.baseapp.sm.has_access
+    @has_access
     def delete(self, pk):
         item = self.datamodel.get(pk)
         
@@ -718,7 +718,7 @@ class GeneralView(BaseCRUDView):
 
 
     @expose('/download/<string:filename>')
-    @self.baseapp.sm.has_access
+    @has_access
     def download(self, filename):
         return send_file(self.baseapp.app.config['UPLOAD_FOLDER'] + filename, 
                     attachment_filename = uuid_originalname(filename), 
