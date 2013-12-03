@@ -71,7 +71,7 @@ class User(db.Model):
     active = db.Column(db.Boolean)
     email = db.Column(db.String(64))
     role_id = db.Column(db.Integer, db.ForeignKey('ab_role.id'))
-    role = db.relationship("Role")
+    role = db.relationship("Role", backref='ab_role')
 
     @staticmethod
     def make_unique_nickname(nickname):
