@@ -14,23 +14,24 @@ class SecurityManager(object):
   
   
     def has_access(f):
-    """
-        Use this decorator to allow access only to security 
-        defined permissions
-    """
-    def wrap(self, *args, **kwargs):
-        if current_user.is_authenticated():
-            if g.user.has_permission_on_view("can_" + f.__name__, self.__class__.__name__):
-                return f(self, *args, **kwargs)
+        """
+            Use this decorator to allow access only to security 
+            defined permissions
+        """
+        @wraps(f)
+        def wraps(self, *args, **kwargs):
+            if current_user.is_authenticated():
+                if g.user.has_permission_on_view("can_" + f.__name__, self.__class__.__name__):
+                    return f(self, *args, **kwargs)
+                else:
+                    flash("Access is Denied %s %s" % (f.__name__, self.__class__.__name__),"danger")
             else:
-                flash("Access is Denied %s %s" % (f.__name__, self.__class__.__name__),"danger")
-        else:
-            if is_item_public("can_" + f.__name__, self.__class__.__name__):
-                return f(self, *args, **kwargs)
-            else:
-                flash("Access is Denied %s %s" % (f.__name__, self.__class__.__name__),"danger")
-        return redirect(url_for("AuthView.login"))
-    return wrap
+                if is_item_public("can_" + f.__name__, self.__class__.__name__):
+                    return f(self, *args, **kwargs)
+                else:
+                    flash("Access is Denied %s %s" % (f.__name__, self.__class__.__name__),"danger")
+            return redirect(url_for("AuthView.login"))
+        return wraps
     
   
     def is_menu_public(self, item):
