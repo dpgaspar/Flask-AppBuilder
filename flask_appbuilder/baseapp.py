@@ -15,7 +15,7 @@ class BaseApp():
     lst_baseview = []
     app = None
     db = None
-    security_manager = None
+    sm = None
     
     app_name = ""
     menu = None
@@ -49,7 +49,7 @@ class BaseApp():
         self.menu = menu or Menu()
         self.app = app
         self.db = db
-        self.security_manager = SecurityManager(db.session, app.config['AUTH_ROLE_ADMIN'])
+        self.sm = SecurityManager(db.session, app.config['AUTH_ROLE_ADMIN'])
         
         self.app_name = app.config['APP_NAME']
         self.app_theme = app.config['APP_THEME']
@@ -62,7 +62,7 @@ class BaseApp():
         self.add_global_filters()
     
     def add_global_filters(self):
-        self.template_filters = TemplateFilters(self.app, self.security_manager)
+        self.template_filters = TemplateFilters(self.app, self.sm)
 
     def add_global_static(self):
         bp = Blueprint('baseapp', __name__, url_prefix='/static',
@@ -99,8 +99,8 @@ class BaseApp():
         self.menu.add_link(name = name, href = href, icon = icon, 
                         category = category, baseview = baseview)
         #try:
-        self.security_manager.add_permissions_menu(name)
-        self.security_manager.add_permissions_menu(category)            
+        self.sm.add_permissions_menu(name)
+        self.sm.add_permissions_menu(category)            
         #except:
         #    print "Add Permission on Menu Error: DB not created"
     
@@ -117,7 +117,7 @@ class BaseApp():
 
     def _add_permission(self, baseview):
         #try:
-            self.security_manager.add_permissions_view(baseview.base_permissions, baseview.__class__.__name__)
+            self.sm.add_permissions_view(baseview.base_permissions, baseview.__class__.__name__)
         #except:
         #    print "Add Permission on View Error: DB not created?"
         
