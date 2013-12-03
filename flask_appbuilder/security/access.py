@@ -1,4 +1,6 @@
-from flask import current_app
+from flask import current_app, g, request, current_app
+from flask.ext.login import current_user
+from flask import flash, redirect,url_for
 from models import (User, Role, PermissionView, Permission, ViewMenu)
 
 
@@ -10,7 +12,7 @@ def has_access(f):
  
         def wraps(self, *args, **kwargs):
             if current_user.is_authenticated():
-                if self.baseapp.sm.has_permission_on_view("can_" + f.__name__, self.__class__.__name__):
+                if self.baseapp.sm.has_permission_on_view(g.user, "can_" + f.__name__, self.__class__.__name__):
                     return f(self, *args, **kwargs)
                 else:
                     flash("Access is Denied %s %s" % (f.__name__, self.__class__.__name__),"danger")
