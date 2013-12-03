@@ -1,5 +1,6 @@
 from flask import current_app
 from models import (User, Role, PermissionView, Permission, ViewMenu)
+from functools import wraps
 
 
 class SecurityManager(object):
