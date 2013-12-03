@@ -29,7 +29,7 @@ Improvements
 - AUTH_ROLE_ADMIN, AUTH_ROLE_PUBLIC not required to be defined.
 - UPLOAD_FOLDER, IMG_UPLOAD_FOLDER, IMG_UPLOAD_URL not required to be defined.
 - AUTH_TYPE not required to be defined, will use default database auth
-
+- Internal security changed, new internal class SecurityManager
 
 Bug Fixes
 ---------
