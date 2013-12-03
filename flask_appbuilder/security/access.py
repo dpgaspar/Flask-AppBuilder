@@ -35,6 +35,15 @@ class SecurityManager(object):
         self.auth_role_admin = auth_role_admin
   
   
+    def _get_role_public(self):
+        """
+            To retrive the name of the public role
+            used in a transaction
+        """
+        if 'AUTH_ROLE_PUBLIC' in current_app.config:
+            return current_app.config['AUTH_ROLE_PUBLIC']
+        else:
+            return 'Public'
   
     def is_menu_public(self, item):
         """
@@ -43,8 +52,7 @@ class SecurityManager(object):
             param item:
                 menu item
         """
-        role_public = current_app.config['AUTH_ROLE_PUBLIC']
-        role = self.session.query(Role).filter_by(name = role_public).first()
+        role = self.session.query(Role).filter_by(name = self._get_role_public()).first()
         lst = role.permissions
         if lst:
             for i in lst:
