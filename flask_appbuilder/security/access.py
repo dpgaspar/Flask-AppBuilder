@@ -70,8 +70,8 @@ class SecurityManager(object):
             param view_name:
                 the name of the class view (child of BaseView)
         """
-        role_public = current_app.config['AUTH_ROLE_PUBLIC']
-        role = self.session.query(Role).filter_by(name = role_public).first()
+
+        role = self.session.query(Role).filter_by(name = self._get_role_public()).first()
         lst = role.permissions
         if lst:
             for i in lst:
