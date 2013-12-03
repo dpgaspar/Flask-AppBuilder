@@ -70,7 +70,7 @@ class User(db.Model):
     password = db.Column(db.String(32))
     active = db.Column(db.Boolean)
     email = db.Column(db.String(64))
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
+    role_id = db.Column(db.Integer, db.ForeignKey('ab_role.id'))
     role = db.relationship("Role")
 
     @staticmethod
