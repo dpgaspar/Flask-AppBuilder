@@ -184,19 +184,19 @@ class SQLAModel(DataModel):
     -----------------------------------------
     """
     def add(self, item):
-        try:
+        #try:
             self.session.add(item)
             self.session.commit()
             flash(unicode(self.add_row_message),'success')
             return True
-        except IntegrityError as e:
-            flash(unicode(self.add_integrity_error_message),'warning')
-            self.session.rollback()
-            return False
-        except:
-            flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
-            self.session.rollback()
-            return False
+        #except IntegrityError as e:
+        #    flash(unicode(self.add_integrity_error_message),'warning')
+        #    self.session.rollback()
+        #    return False
+        #except:
+        #    flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
+        #    self.session.rollback()
+        #    return False
 
     def edit(self, item):
         try:
