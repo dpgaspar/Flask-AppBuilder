@@ -179,11 +179,11 @@ class BaseApp():
     def add_link(self, name, href, icon = "", category = "", baseview = None):
         self.menu.add_link(name = name, href = href, icon = icon, 
                         category = category, baseview = baseview)
-        #try:
-        self.sm.add_permissions_menu(name)
-        self.sm.add_permissions_menu(category)            
-        #except:
-        #    print "Add Permission on Menu Error: DB not created"
+        try:
+            self.sm.add_permissions_menu(name)
+            self.sm.add_permissions_menu(category)            
+        except:
+            print "Add Permission on Menu Error: DB not created"
     
 
     def add_separator(self, category):
