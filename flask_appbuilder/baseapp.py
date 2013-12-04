@@ -16,9 +16,11 @@ class BaseApp():
     lst_baseview = []
     app = None
     db = None
+    # Security Manager
     sm = None
     
     app_name = ""
+    app_theme = ''
     menu = None
     indexview = None
     
