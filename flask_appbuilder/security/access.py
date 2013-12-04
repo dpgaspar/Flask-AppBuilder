@@ -28,12 +28,54 @@ def has_access(f):
 class SecurityManager(object):
 
     session = None
+    auth_type = 1
     auth_role_admin = ""
+    auth_role_public = ""
+    lm = None
+    oid = None
 
-    def __init__(self, session, auth_role_admin):
+    def __init__(self, session, auth_type, auth_role_admin, auth_role_public, lm, oid = None):
+        """
+            SecurityManager contructor
+            param session:
+                the database session for security tables, passed to BaseApp
+            param auth_type:
+                the type of authentication to be used
+            param auth_role_admin:
+                the name of the Admin role: default 'Admin'
+            param auth_role_public:
+                the name of the Public role: default 'Public', this is the role for non
+                authenticated users
+            param lm:
+                The LoginManager initialized flask-Login
+            param oid:
+                optional, The flask-openId
+        """
         self.session = session
+        self.auth_type = auth_type
         self.auth_role_admin = auth_role_admin
+        self.auth_role_public = auth_role_public
+        self.lm = lm
+        self.oid = oid
+
   
+    def auth_user_db(self, username, password):
+        if username is None or username == "":
+            return None
+        user = self.session.query(User).filter_by(username = username, password = password).first()
+        if user is None or (not user.is_active()):
+            return None
+        else:
+            return user
+    
+    def auth_user_oid(self, email):
+        user = self.session.query(User).filter_by(email = email).first()
+        if user is None or (not user.is_active()):
+            return None
+        else:
+            return user
+    
+    
   
     def _get_role_public(self):
         """
@@ -164,8 +206,7 @@ class SecurityManager(object):
         """
         view_menu_db = self.session.query(ViewMenu).filter_by(name = view_menu).first()
         if view_menu_db == None:
-            view_menu_db = ViewMenu()
-            view_menu_db = view_menu_db.add_unique(view_menu)
+            view_menu_db = self._add_view_menu(view_menu)
         lst = self.session.query(PermissionView).filter_by(view_menu_id = view_menu_db.id).all()
         # No permissions for this view
         if lst == []:

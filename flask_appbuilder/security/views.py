@@ -155,23 +155,33 @@ class UserGeneralView(GeneralView):
 
     show_additional_links = []
 
+
+class UserOIDGeneralView(UserGeneralView):
+    @expose('/userinfo/')
+    def userinfo(self):
+        widgets = self._get_show_widget(g.user.id)
+
+        return render_template(self.show_template,
+                           title = self.user_info_title,
+                           widgets = widgets,
+                           baseapp = self.baseapp,
+                           )
+
+    def _init_forms(self):
+        super(UserGeneralView, self)._init_forms()
+        self.add_form.password = None
+
+class UserDBGeneralView(UserGeneralView):
     def __init__(self, **kwargs):
-        if AUTH_TYPE == AUTH_DB:
-            self.show_additional_links = [(AdditionalLinkItem('resetpassword', self.lnk_reset_password,"/resetpassword/form","lock"))]
-        super(UserGeneralView, self).__init__(**kwargs)
+        self.show_additional_links = [(AdditionalLinkItem('resetpassword', self.lnk_reset_password,"/resetpassword/form","lock"))]
+        super(UserDBGeneralView, self).__init__(**kwargs)
 
     @expose('/userinfo/')
     def userinfo(self):
-        item = g.user
-
         additional_links = None
 
-        if AUTH_TYPE == AUTH_DB:
-                show_additional_links = [AdditionalLinkItem('resetmypassword', self.lnk_reset_password,"/resetmypassword/form","lock")]
-                widgets = self._get_show_widget(item.id, show_additional_links = show_additional_links)
-        else:
-            widgets = self._get_show_widget(item.id)
-
+        show_additional_links = [AdditionalLinkItem('resetmypassword', self.lnk_reset_password,"/resetmypassword/form","lock")]
+        widgets = self._get_show_widget(g.user.id, show_additional_links = show_additional_links)
         return render_template(self.show_template,
                            title = self.user_info_title,
                            widgets = widgets,
@@ -181,20 +191,17 @@ class UserGeneralView(GeneralView):
 
     def _init_forms(self):
         super(UserGeneralView, self)._init_forms()
-        if AUTH_TYPE == AUTH_DB:
-            self.add_form.password = PasswordField('Password', 
-                                                   description=self.description_columns['password'],
-                                                   widget=BS3PasswordFieldWidget())
-            self.add_form.conf_password = PasswordField('Confirm Password',
-                                            default=self.add_form.password,
-                                            description=self.description_columns['conf_password'],
-                                            validators=[EqualTo('password',message=u'Passwords must match')],
-                                            widget=BS3PasswordFieldWidget())
-            if 'password' not in self.add_columns:
-                self.add_columns = self.add_columns + ['password', 'conf_password']
-        else:
-            self.add_form.password = None
-
+        self.add_form.password = PasswordField('Password', 
+                                 description=self.description_columns['password'],
+                                 widget=BS3PasswordFieldWidget())
+        self.add_form.conf_password = PasswordField('Confirm Password',
+                                 default=self.add_form.password,
+                                 description=self.description_columns['conf_password'],
+                                 validators=[EqualTo('password',message=u'Passwords must match')],
+                                 widget=BS3PasswordFieldWidget())
+        if 'password' not in self.add_columns:
+            self.add_columns = self.add_columns + ['password', 'conf_password']
+        
 
 class RoleGeneralView(GeneralView):
     route_base = '/roles'
@@ -242,11 +249,8 @@ class AuthView(BaseView):
             return redirect('/')
         form = LoginForm_db()
         if form.validate_on_submit():
-            if form.username.data is None or form.username.data == "":
-                flash(unicode(self.invalid_login_message),'warning')
-                return redirect('/login')
-            user = User.query.filter_by(username = form.username.data, password = form.password.data).first()
-            if user is None or (not user.is_active()):
+            user = self.baseapp.sm.auth_user_db(form.username.data, form.password.data)
+            if not user:
                 flash(unicode(self.invalid_login_message),'warning')
                 return redirect('/login')
             login_user(user, remember = False)

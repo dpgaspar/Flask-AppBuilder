@@ -2,8 +2,9 @@ from flask import Blueprint
 from flask.ext.babel import lazy_gettext
 from flask.ext.babel import gettext as _gettext
 from .security.views import (AuthView, ResetMyPasswordView, ResetPasswordView, 
-                        UserGeneralView, RoleGeneralView, PermissionViewGeneralView, 
+                        UserDBGeneralView, UserOIDGeneralView, RoleGeneralView, PermissionViewGeneralView, 
                         ViewMenuGeneralView, PermissionGeneralView, PermissionView)
+from .security.models import User, Role
 from .security.access import SecurityManager
 from .views import IndexView
 from .babel.views import LocaleView
@@ -30,13 +31,22 @@ class BaseApp():
     admin = None
     _gettext = _gettext
 
-    def __init__(self, app, db, menu = None, indexview = None, static_folder='static/appbuilder', static_url_path='/appbuilder'):
+    def __init__(self, app, db, lm, 
+                    oid = None, 
+                    menu = None, 
+                    indexview = None, 
+                    static_folder='static/appbuilder', 
+                    static_url_path='/appbuilder'):
         """
             BaseApp constructor
             param app:
                 The flask app object
             param db:
                 The SQLAlchemy db object
+            param lm:
+                The LoginManager initialized flask-Login
+            param oid:
+                optional, The flask-openId
             param menu:
                 optional, a previous contructed menu
             param indexview:
@@ -49,22 +59,87 @@ class BaseApp():
         self.menu = menu or Menu()
         self.app = app
         self.db = db
-        self.sm = SecurityManager(db.session, app.config['AUTH_ROLE_ADMIN'])
+        self.init_db()
+        self.sm = SecurityManager(db.session, 
+                            self._get_auth_type(), 
+                            self._get_role_admin(), 
+                            self._get_role_public(), 
+                            lm, 
+                            oid = None)
         
-        self.app_name = app.config['APP_NAME']
-        self.app_theme = app.config['APP_THEME']
-        self.languages = app.config['LANGUAGES']
+        
+        self._init_config_parameters()
         self.indexview = indexview or IndexView
         self.static_folder = static_folder
         self.static_url_path = static_url_path
         self._add_admin_views()
-        self.add_global_static()
-        self.add_global_filters()
+        self._add_global_static()
+        self._add_global_filters()
     
-    def add_global_filters(self):
+    def init_db(self):
+        from sqlalchemy.engine.reflection import Inspector
+
+        inspector = Inspector.from_engine(self.db.engine)
+        if 'ab_user' not in inspector.get_table_names():
+            self.db.create_all()
+            role_admin = Role()
+            role_admin.name = self._get_role_admin()
+            role_public = Role()
+            role_public.name = self._get_role_public()
+            user = User()
+            user.first_name = 'Admin'
+            user.last_name = ''
+            user.username = 'admin'
+            user.password = 'general'
+            user.active = True
+            user.role = role_admin
+
+            self.db.session.add(role_admin)
+            self.db.session.add(role_public)
+            self.db.session.add(user)
+            self.db.session.commit()
+    
+    def _init_config_parameters(self):
+        if 'APP_NAME' in self.app.config:
+            self.app_name = self.app.config['APP_NAME']
+        else:
+            self.app_name = 'AppBuilder'
+        if 'APP_THEME' in self.app.config:
+            self.app_theme = self.app.config['APP_THEME']
+        else:
+            self.app_theme = ''
+        if 'LANGUAGES' in self.app.config:
+            self.languages = self.app.config['LANGUAGES']
+        else:
+            self.languages = {
+                'en': {'flag':'gb', 'name':'English'},
+                'pt': {'flag':'pt', 'name':'Portugal'}
+                }
+    
+    def _get_auth_type(self):
+        if 'AUTH_TYPE' in self.app.config:
+            return self.app.config['AUTH_TYPE']
+        else:
+            return 1
+      
+    
+    def _get_role_admin(self):
+        if 'AUTH_ROLE_ADMIN' in self.app.config:
+            return self.app.config['AUTH_ROLE_ADMIN']
+        else:
+            return 'Admin'
+      
+    def _get_role_public(self):
+        if 'AUTH_ROLE_PUBLIC' in self.app.config:
+            return self.app.config['AUTH_ROLE_PUBLIC']
+        else:
+            return 'Public'
+      
+    
+    def _add_global_filters(self):
         self.template_filters = TemplateFilters(self.app, self.sm)
 
-    def add_global_static(self):
+    def _add_global_static(self):
         bp = Blueprint('baseapp', __name__, url_prefix='/static',
                 template_folder='templates', static_folder = self.static_folder, static_url_path = self.static_url_path)
         self.app.register_blueprint(bp)
@@ -76,7 +151,11 @@ class BaseApp():
         self.add_view_no_menu(ResetPasswordView())
         self.add_view_no_menu(ResetMyPasswordView())
 
-        self.add_view(UserGeneralView(), "List Users"
+        if self._get_auth_type() == 1:
+            user_view = UserDBGeneralView()
+        else:
+            user_view = UserOIDGeneralView()
+        self.add_view(user_view, "List Users"
                                         ,"/users/list","user",
                                         "Security")
         self.add_view(RoleGeneralView(), "List Roles","/roles/list","tags","Security")
