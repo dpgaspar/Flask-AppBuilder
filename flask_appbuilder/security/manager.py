@@ -1,29 +1,10 @@
 from flask import current_app, g, request, current_app
-from flask.ext.login import current_user
-from flask import flash, redirect,url_for
 from models import (User, Role, PermissionView, Permission, ViewMenu)
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
-def has_access(f):
-        """
-            Use this decorator to allow access only to security 
-            defined permissions, use it only on BaseView classes.
-        """
- 
-        def wraps(self, *args, **kwargs):
-            if current_user.is_authenticated():
-                if self.baseapp.sm.has_permission_on_view(g.user, "can_" + f.__name__, self.__class__.__name__):
-                    return f(self, *args, **kwargs)
-                else:
-                    flash("Access is Denied %s %s" % (f.__name__, self.__class__.__name__),"danger")
-            else:
-                if self.baseapp.sm.is_item_public("can_" + f.__name__, self.__class__.__name__):
-                    return f(self, *args, **kwargs)
-                else:
-                    flash("Access is Denied %s %s" % (f.__name__, self.__class__.__name__),"danger")
-            return redirect(url_for("AuthView.login"))
-        return wraps
-        
+
+
 
 class SecurityManager(object):
 
@@ -57,6 +38,30 @@ class SecurityManager(object):
         self.auth_role_public = auth_role_public
         self.lm = lm
         self.oid = oid
+
+    @classmethod
+    def init_db(self, db):
+        from sqlalchemy.engine.reflection import Inspector
+
+        inspector = Inspector.from_engine(db.engine)
+        if 'ab_user' not in inspector.get_table_names():
+            db.create_all()
+            role_admin = Role()
+            role_admin.name = self._get_role_admin()
+            role_public = Role()
+            role_public.name = self._get_role_public()
+            user = User()
+            user.first_name = 'Admin'
+            user.last_name = ''
+            user.username = 'admin'
+            user.password = 'general'
+            user.active = True
+            user.role = role_admin
+
+            db.session.add(role_admin)
+            db.session.add(role_public)
+            db.session.add(user)
+            db.session.commit()
 
   
     def auth_user_db(self, username, password):

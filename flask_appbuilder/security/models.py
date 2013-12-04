@@ -1,9 +1,10 @@
 from flask import Markup
 
 from hashlib import md5
-from werkzeug.security import generate_password_hash, check_password_hash
-from ..models.mixins import BaseMixin
 
+from sqlalchemy import Table, Column, Integer, String, Boolean, MetaData, ForeignKey
+from ..models.mixins import BaseMixin
+from flask.ext.appbuilder import Base
 
 try:
     from app import db
@@ -12,18 +13,18 @@ except ImportError:
 
 
 
-class Permission(db.Model):
+class Permission(Base):
     __tablename__ = 'ab_permission'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique = True, nullable=False)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), unique = True, nullable=False)
 
     def __repr__(self):
         return self.name
 
-class ViewMenu(db.Model):
+class ViewMenu(Base):
     __tablename__ = 'ab_view_menu'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique = True, nullable=False)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), unique = True, nullable=False)
 
     def __eq__(self, other):
         return (isinstance(other, self.__class__)) and (self.name == other.name)
@@ -34,45 +35,45 @@ class ViewMenu(db.Model):
     def __repr__(self):
         return self.name
 
-class PermissionView(db.Model):
+class PermissionView(Base):
     __tablename__ = 'ab_permission_view'
-    id = db.Column(db.Integer, primary_key=True)
-    permission_id = db.Column(db.Integer, db.ForeignKey('ab_permission.id'))
-    permission = db.relationship("Permission")
-    view_menu_id = db.Column(db.Integer, db.ForeignKey('ab_view_menu.id'))
-    view_menu = db.relationship("ViewMenu")
+    id = Column(Integer, primary_key=True)
+    permission_id = Column(Integer, ForeignKey('ab_permission.id'))
+    permission = relationship("Permission")
+    view_menu_id = Column(Integer, ForeignKey('ab_view_menu.id'))
+    view_menu = relationship("ViewMenu")
 
     def __repr__(self):
         return str(self.permission).replace('_',' ') + ' on ' + str(self.view_menu)
 
-assoc_permissionview_role = db.Table('ab_permission_view_role', db.Model.metadata,
-        db.Column('permission_view_id', db.Integer, db.ForeignKey('ab_permission_view.id')),
-        db.Column('role_id', db.Integer, db.ForeignKey('ab_role.id'))
+assoc_permissionview_role = Table('ab_permission_view_role', Base.metadata,
+        Column('permission_view_id', Integer, ForeignKey('ab_permission_view.id')),
+        Column('role_id', Integer, ForeignKey('ab_role.id'))
         )
 
 
-class Role(db.Model):
+class Role(Base):
     __tablename__ = 'ab_role'
     
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique = True, nullable=False)
-    permissions = db.relationship('PermissionView', secondary = assoc_permissionview_role, backref='role')
+    id = Column(Integer, primary_key=True)
+    name = Column(String(64), unique = True, nullable=False)
+    permissions = relationship('PermissionView', secondary = assoc_permissionview_role, backref='role')
 
     def __repr__(self):
         return self.name
 
 
-class User(db.Model):
+class User(Base):
     __tablename__ = 'ab_user'
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(64), nullable = False)
-    last_name = db.Column(db.String(64), nullable = False)
-    username = db.Column(db.String(32), unique=True, nullable = False)
-    password = db.Column(db.String(32))
-    active = db.Column(db.Boolean)
-    email = db.Column(db.String(64))
-    role_id = db.Column(db.Integer, db.ForeignKey('ab_role.id'))
-    role = db.relationship("Role")
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String(64), nullable = False)
+    last_name = Column(String(64), nullable = False)
+    username = Column(String(32), unique=True, nullable = False)
+    password = Column(String(32))
+    active = Column(Boolean)
+    email = Column(String(64))
+    role_id = Column(Integer, ForeignKey('ab_role.id'))
+    role = relationship("Role")
 
     @staticmethod
     def make_unique_nickname(nickname):

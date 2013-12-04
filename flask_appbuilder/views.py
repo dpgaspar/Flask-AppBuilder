@@ -4,7 +4,7 @@ from flask.ext.login import login_required
 from flask.ext.babel import gettext, ngettext, lazy_gettext
 from forms import GeneralModelConverter
 from .filemanager import uuid_originalname
-from .security.access import has_access
+from .security.decorators import has_access
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
 from .actions import ActionItem
 

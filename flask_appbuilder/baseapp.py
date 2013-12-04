@@ -5,7 +5,7 @@ from .security.views import (AuthView, ResetMyPasswordView, ResetPasswordView,
                         UserDBGeneralView, UserOIDGeneralView, RoleGeneralView, PermissionViewGeneralView, 
                         ViewMenuGeneralView, PermissionGeneralView, PermissionView)
 from .security.models import User, Role
-from .security.access import SecurityManager
+from .security.manager import SecurityManager
 from .views import IndexView
 from .babel.views import LocaleView
 from menu import Menu
@@ -61,7 +61,8 @@ class BaseApp():
         self.menu = menu or Menu()
         self.app = app
         self.db = db
-        self.init_db()
+        
+        self.SecurityManager.init_db()
         self.sm = SecurityManager(db.session, 
                             self._get_auth_type(), 
                             self._get_role_admin(), 
@@ -78,28 +79,7 @@ class BaseApp():
         self._add_global_static()
         self._add_global_filters()
     
-    def init_db(self):
-        from sqlalchemy.engine.reflection import Inspector
-
-        inspector = Inspector.from_engine(self.db.engine)
-        if 'ab_user' not in inspector.get_table_names():
-            self.db.create_all()
-            role_admin = Role()
-            role_admin.name = self._get_role_admin()
-            role_public = Role()
-            role_public.name = self._get_role_public()
-            user = User()
-            user.first_name = 'Admin'
-            user.last_name = ''
-            user.username = 'admin'
-            user.password = 'general'
-            user.active = True
-            user.role = role_admin
-
-            self.db.session.add(role_admin)
-            self.db.session.add(role_public)
-            self.db.session.add(user)
-            self.db.session.commit()
+    
     
     def _init_config_parameters(self):
         if 'APP_NAME' in self.app.config:
@@ -197,10 +177,10 @@ class BaseApp():
             self._add_permission(baseview)
 
     def _add_permission(self, baseview):
-        #try:
+        try:
             self.sm.add_permissions_view(baseview.base_permissions, baseview.__class__.__name__)
-        #except:
-        #    print "Add Permission on View Error: DB not created?"
+        except:
+            print "Add Permission on View Error: DB not created?"
         
     def register_blueprint(self, baseview, endpoint = None, static_folder = None):
         self.app.register_blueprint(baseview.create_blueprint(self,  endpoint = endpoint, static_folder = static_folder))
