@@ -325,7 +325,7 @@ class SQLAModel(DataModel):
                 return prop
 
     def get(self, id):
-        return self.obj.query.get(id)
+        return self.session.query(self.obj).get(id)
 
     def get_col_byname(self, name):
         return getattr(self.obj, name)

@@ -1,5 +1,5 @@
 from flask.ext.login import current_user
-from flask import flash, redirect,url_for
+from flask import flash, redirect,url_for,g
 
 def has_access(f):
         """

@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask.ext.babel import lazy_gettext
 from flask.ext.babel import gettext as _gettext
-from .security.views import (AuthView, ResetMyPasswordView, ResetPasswordView, 
+from .security.views import (AuthDBView, AuthOIDView, ResetMyPasswordView, ResetPasswordView, 
                         UserDBGeneralView, UserOIDGeneralView, RoleGeneralView, PermissionViewGeneralView, 
                         ViewMenuGeneralView, PermissionGeneralView, PermissionView)
 from .security.models import User, Role
@@ -10,6 +10,13 @@ from .views import IndexView
 from .babel.views import LocaleView
 from menu import Menu
 from filters import TemplateFilters
+
+
+
+AUTH_OID = 0
+AUTH_DB = 1
+AUTH_LDAP = 2
+
 
 class BaseApp():
 
@@ -61,15 +68,16 @@ class BaseApp():
         self.menu = menu or Menu()
         self.app = app
         self.db = db
+        self.db.create_all()
         
-        self.SecurityManager.init_db()
         self.sm = SecurityManager(db.session, 
                             self._get_auth_type(), 
                             self._get_role_admin(), 
                             self._get_role_public(), 
                             lm, 
-                            oid = None)
+                            oid)
         
+        self.app.before_request(self.sm.before_request)
         
         self._init_config_parameters()
         self.indexview = indexview or IndexView
@@ -77,8 +85,7 @@ class BaseApp():
         self.static_url_path = static_url_path
         self._add_admin_views()
         self._add_global_static()
-        self._add_global_filters()
-    
+        self._add_global_filters()        
     
     
     def _init_config_parameters(self):
@@ -102,7 +109,7 @@ class BaseApp():
         if 'AUTH_TYPE' in self.app.config:
             return self.app.config['AUTH_TYPE']
         else:
-            return 1
+            return AUTH_DB
       
     
     def _get_role_admin(self):
@@ -129,23 +136,31 @@ class BaseApp():
     def _add_admin_views(self):
         self.add_view_no_menu(self.indexview())
         self.add_view_no_menu(LocaleView())
-        self.add_view_no_menu(AuthView())
+            
         self.add_view_no_menu(ResetPasswordView())
         self.add_view_no_menu(ResetMyPasswordView())
 
-        if self._get_auth_type() == 1:
+        if self._get_auth_type() == AUTH_DB:
             user_view = UserDBGeneralView()
+            auth_view = AuthDBView()
         else:
             user_view = UserOIDGeneralView()
+            auth_view = AuthOIDView()
+            #self.sm.oid.after_login_func = auth_view.after_login
+            #self.sm.oid.loginhandler(auth_view.login)
+
+        self.add_view_no_menu(auth_view)
         self.add_view(user_view, "List Users"
                                         ,"/users/list","user",
                                         "Security")
+                                        
         self.add_view(RoleGeneralView(), "List Roles","/roles/list","tags","Security")
         self.menu.add_separator("Security")
         self.add_view(PermissionViewGeneralView(), "Base Permissions","/permissions/list","lock","Security")
         self.add_view(ViewMenuGeneralView(), "Views/Menus","/viewmenus/list","list-alt","Security")
         self.add_view(PermissionGeneralView(), "Permission on Views/Menus","/permissionviews/list","lock","Security")
 
+        
         
     def add_view(self, baseview, name, href = "", icon = "", category = ""):
         print "Registering:", category,".", name

@@ -1,9 +1,8 @@
 from flask import current_app, g, request, current_app
+from flask.ext.login import current_user
 from models import (User, Role, PermissionView, Permission, ViewMenu)
 from werkzeug.security import generate_password_hash, check_password_hash
-
-
-
+from flask.ext.appbuilder import Base
 
 
 class SecurityManager(object):
@@ -38,31 +37,49 @@ class SecurityManager(object):
         self.auth_role_public = auth_role_public
         self.lm = lm
         self.oid = oid
+        self.lm.user_loader(self.load_user)
+        self.init_db()
+        
+    def load_user(self, pk):
+        return self.get_user_by_id(int(pk))
 
-    @classmethod
-    def init_db(self, db):
+    def before_request(self):
+        g.user = current_user
+
+    def init_db(self):
+        engine = self.session.get_bind(mapper=None, clause=None)
         from sqlalchemy.engine.reflection import Inspector
-
-        inspector = Inspector.from_engine(db.engine)
+        
+        inspector = Inspector.from_engine(engine)
         if 'ab_user' not in inspector.get_table_names():
-            db.create_all()
-            role_admin = Role()
-            role_admin.name = self._get_role_admin()
-            role_public = Role()
-            role_public.name = self._get_role_public()
+            print "Security DB not found Creating..."
+            Base.metadata.create_all(engine)
+            print "Security DB Created"
+        if self.session.query(Role).filter_by(name = self.auth_role_admin).first() is None:
+            role = Role()
+            role.name = self.auth_role_admin
+            self.session.add(role)
+            self.session.commit()
+            print "Inserted Role for public access", self.auth_role_admin            
+        if not self.session.query(Role).filter_by(name = self.auth_role_public).first():
+            role = Role()
+            role.name = self.auth_role_public
+            self.session.add(role)
+            self.session.commit()
+            print "Inserted Role for public access", self.auth_role_public
+        if not self.session.query(User).all():
             user = User()
             user.first_name = 'Admin'
-            user.last_name = ''
+            user.last_name = 'User'
             user.username = 'admin'
             user.password = 'general'
             user.active = True
-            user.role = role_admin
-
-            db.session.add(role_admin)
-            db.session.add(role_public)
-            db.session.add(user)
-            db.session.commit()
-
+            user.role = self.session.query(Role).filter_by(name = self.auth_role_admin).first()
+            self.session.add(user)
+            self.session.commit()
+            print "Inserted initial Admin user"
+            print "Login using Admin/general"
+  
   
     def auth_user_db(self, username, password):
         if username is None or username == "":
@@ -80,7 +97,8 @@ class SecurityManager(object):
         else:
             return user
     
-    
+    def get_user_by_id(self, id):
+        return self.session.query(User).get(id)
   
     def _get_role_public(self):
         """

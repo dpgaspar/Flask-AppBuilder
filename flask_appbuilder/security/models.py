@@ -1,8 +1,6 @@
-from flask import Markup
-
-from hashlib import md5
 
 from sqlalchemy import Table, Column, Integer, String, Boolean, MetaData, ForeignKey
+from sqlalchemy.orm import relationship
 from ..models.mixins import BaseMixin
 from flask.ext.appbuilder import Base
 

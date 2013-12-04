@@ -9,15 +9,12 @@ from flask.ext.appbuilder.views import BaseView, GeneralView, SimpleFormView, Ad
 from ..forms import BS3PasswordFieldWidget
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 
-try:
-    from app import app, db, lm, oid
-except ImportError:
-    raise Exception('app,db,lm,oid not found please use required skeleton application see documentation')
+#try:
+#    from app import app, db, lm, oid
+#except ImportError:
+#    raise Exception('app,db,lm,oid not found please use required skeleton application see documentation')
 
 
-AUTH_OID = 0
-AUTH_DB = 1
-AUTH_LDAP = 2
 
 
 
@@ -208,8 +205,6 @@ class RoleGeneralView(GeneralView):
     
     datamodel = SQLAModel(Role, db.session)
 
-    related_views = [PermissionViewGeneralView(), UserGeneralView()]
-
     list_title = lazy_gettext('List Roles')
     show_title = lazy_gettext('Show Role')
     add_title = lazy_gettext('Add Role')
@@ -233,18 +228,16 @@ class AuthView(BaseView):
     
     title = lazy_gettext('Sign In')
 
-    @expose('/login/', methods = ['GET', 'POST'])
-    @oid.loginhandler
-    def login(self):
-        if current_app.config['AUTH_TYPE'] == AUTH_OID: return self._login_oid()
-        if current_app.config['AUTH_TYPE'] == AUTH_DB: return self._login_db()
-
     @expose('/logout/')
     def logout(self):
         logout_user()
         return redirect('/')
 
-    def _login_db(self):
+
+class AuthDBView(AuthView):        
+
+    @expose('/login/', methods = ['GET', 'POST'])
+    def login(self):
         if g.user is not None and g.user.is_authenticated():
             return redirect('/')
         form = LoginForm_db()
@@ -261,7 +254,12 @@ class AuthView(BaseView):
                                                 baseapp = self.baseapp
                                                 )
 
-    def _login_oid(self):
+class AuthOIDView(AuthView):
+    
+
+    @expose('/login/', methods = ['GET', 'POST'])
+    def login(self):
+        print "LOGIN.----------------------"
         if g.user is not None and g.user.is_authenticated():
             return redirect('/')
         form = LoginForm_oid()
@@ -275,32 +273,23 @@ class AuthView(BaseView):
                 baseapp = self.baseapp
                 )
 
+    def after_login(self, resp):
+        print "AFTERRRRR---------------------------------------"
+        if resp.email is None or resp.email == "":
+            flash(gettext('Invalid login. Please try again.'),'warning')
+            return redirect('appbuilder/general/security/login_oid.html')
+        user = User.query.filter_by(email = resp.email).first()
+        if user is None:
+            flash(gettext('Invalid login. Please try again.'),'warning')
+            return redirect('appbuilder/general/security/login_oid.html')
+        remember_me = False
+        if 'remember_me' in session:
+            remember_me = session['remember_me']
+            session.pop('remember_me', None)
 
-def _after_login_oid(resp):
-    if resp.email is None or resp.email == "":
-        flash(gettext('Invalid login. Please try again.'),'warning')
-        return redirect('appbuilder/general/security/login_oid.html')
-    user = User.query.filter_by(email = resp.email).first()
-    if user is None:
-        flash(gettext('Invalid login. Please try again.'),'warning')
-        return redirect('appbuilder/general/security/login_oid.html')
-    remember_me = False
-    if 'remember_me' in session:
-        remember_me = session['remember_me']
-        session.pop('remember_me', None)
-
-    login_user(user, remember = remember_me)
-    return redirect('/')
-
-@oid.after_login
-def _after_login(resp):
-    if current_app.config['AUTH_TYPE'] == AUTH_OID: return _after_login_oid(resp)
+        login_user(user, remember = remember_me)
+        return redirect('/')
 
 
-@app.before_request
-def before_request():
-    g.user = current_user
 
-@lm.user_loader
-def load_user(pk):
-    return User.query.get(int(pk))
+
