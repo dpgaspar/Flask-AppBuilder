@@ -9,11 +9,16 @@ from flask.ext.appbuilder.views import BaseView, GeneralView, SimpleFormView, Ad
 from ..forms import BS3PasswordFieldWidget
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 
+from openid.extensions import ax
+from openid.extensions.sreg import SRegRequest, SRegResponse
+from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
+from openid.consumer import discover
+from flask.ext.openid import SessionWrapper, OpenIDResponse
+
 #try:
 #    from app import app, db, lm, oid
 #except ImportError:
 #    raise Exception('app,db,lm,oid not found please use required skeleton application see documentation')
-
 
 
 
@@ -258,27 +263,43 @@ class AuthOIDView(AuthView):
     
 
     @expose('/login/', methods = ['GET', 'POST'])
-    def login(self):
+    def login(self, flag = True):
+        if flag:
+            self.oid_login_handler(self.login, self.baseapp.sm.oid)
         print "LOGIN.----------------------"
         if g.user is not None and g.user.is_authenticated():
             return redirect('/')
         form = LoginForm_oid()
         if form.validate_on_submit():
             session['remember_me'] = form.remember_me.data
-            return oid.try_login(form.openid.data, ask_for = ['email'])
+            return self.baseapp.sm.oid.try_login(form.openid.data, ask_for = ['email'])
         return render_template(self.login_oid_template,
                 title = self.title,
                 form = form,
-                providers = app.config['OPENID_PROVIDERS'],
+                providers = self.baseapp.app.config['OPENID_PROVIDERS'],
                 baseapp = self.baseapp
                 )
+
+    def oid_login_handler(self, f, oid):
+        if request.args.get('openid_complete') != u'yes':
+            return f(False)
+        consumer = Consumer(SessionWrapper(self), oid.store_factory())
+        openid_response = consumer.complete(request.args.to_dict(),
+                                                oid.get_current_url())
+        if openid_response.status == SUCCESS:
+            return oid.after_login_func(OpenIDResponse(openid_response))
+        elif openid_response.status == CANCEL:
+            oid.signal_error(u'The request was cancelled')
+            return redirect(oid.get_current_url())
+        oid.signal_error(u'OpenID authentication error')
+        return redirect(oid.get_current_url())
 
     def after_login(self, resp):
         print "AFTERRRRR---------------------------------------"
         if resp.email is None or resp.email == "":
             flash(gettext('Invalid login. Please try again.'),'warning')
             return redirect('appbuilder/general/security/login_oid.html')
-        user = User.query.filter_by(email = resp.email).first()
+        user = self.baseapp.sm.auth_user_oid(resp.email)
         if user is None:
             flash(gettext('Invalid login. Please try again.'),'warning')
             return redirect('appbuilder/general/security/login_oid.html')

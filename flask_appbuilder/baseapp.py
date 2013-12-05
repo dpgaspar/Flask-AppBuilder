@@ -1,6 +1,11 @@
+import os
 from flask import Blueprint
 from flask.ext.babel import lazy_gettext
 from flask.ext.babel import gettext as _gettext
+from flask.ext.login import LoginManager
+from flask.ext.openid import OpenID
+from flask.ext.babel import Babel
+
 from .security.views import (AuthDBView, AuthOIDView, ResetMyPasswordView, ResetPasswordView, 
                         UserDBGeneralView, UserOIDGeneralView, RoleGeneralView, PermissionViewGeneralView, 
                         ViewMenuGeneralView, PermissionGeneralView, PermissionView)
@@ -40,8 +45,7 @@ class BaseApp():
     admin = None
     _gettext = _gettext
 
-    def __init__(self, app, db, lm, 
-                    oid = None, 
+    def __init__(self, app, db, 
                     menu = None, 
                     indexview = None, 
                     static_folder='static/appbuilder', 
@@ -68,14 +72,22 @@ class BaseApp():
         self.menu = menu or Menu()
         self.app = app
         self.db = db
+        
+        # Creating Developer's models
         self.db.create_all()
         
+        lm = LoginManager()
+        lm.init_app(app)
+        lm.login_view = 'login'
+        oid = OpenID(app)
+
         self.sm = SecurityManager(db.session, 
                             self._get_auth_type(), 
                             self._get_role_admin(), 
                             self._get_role_public(), 
                             lm, 
                             oid)
+        
         
         self.app.before_request(self.sm.before_request)
         
@@ -146,9 +158,8 @@ class BaseApp():
         else:
             user_view = UserOIDGeneralView()
             auth_view = AuthOIDView()
-            #self.sm.oid.after_login_func = auth_view.after_login
-            #self.sm.oid.loginhandler(auth_view.login)
-
+            self.sm.oid.after_login_func = auth_view.after_login
+        
         self.add_view_no_menu(auth_view)
         self.add_view(user_view, "List Users"
                                         ,"/users/list","user",
