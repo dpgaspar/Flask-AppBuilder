@@ -11,11 +11,11 @@ https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open
 
 All direct imports from you 'app' directory were removed, so there is no need to use the base AppBuilder-Skeleton.
 
-Change you BaseApp initialization (views.py) ::
+1 - Change you BaseApp initialization (views.py) ::
 
 	baseapp = BaseApp(app, db)
 	
-Remove from your OpenID and Login initialization (__init__.py)
+2 - Remove from OpenID and Login initialization (__init__.py)
 
 From this::
 
