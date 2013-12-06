@@ -9,11 +9,10 @@ Migrating from 0.2.X to 0.3.X
 This new version (0.3.X) has many internal changes, if you feel lost please post an issue on github
 https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open
 
-All direct imports from you 'app' directory were removed, so there is no need to use the base AppBuilder-Skeleton.
+All direct imports from your 'app' directory were removed, so there is no need to use the base AppBuilder-Skeleton.
 
 
-
-1 - Change you BaseApp initialization (views.py)
+1 - Change your BaseApp initialization (views.py)
 
 From this::
 
@@ -46,7 +45,6 @@ Change to this::
 	babel = Babel(app)
 	
 	from app import models, views
-
 
 
 
