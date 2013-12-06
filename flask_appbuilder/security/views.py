@@ -266,7 +266,6 @@ class AuthOIDView(AuthView):
     def login(self, flag = True):
         if flag:
             self.oid_login_handler(self.login, self.baseapp.sm.oid)
-        print "LOGIN.----------------------"
         if g.user is not None and g.user.is_authenticated():
             return redirect('/')
         form = LoginForm_oid()
@@ -295,7 +294,6 @@ class AuthOIDView(AuthView):
         return redirect(oid.get_current_url())
 
     def after_login(self, resp):
-        print "AFTERRRRR---------------------------------------"
         if resp.email is None or resp.email == "":
             flash(gettext('Invalid login. Please try again.'),'warning')
             return redirect('appbuilder/general/security/login_oid.html')
