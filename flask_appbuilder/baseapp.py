@@ -172,7 +172,7 @@ class BaseApp():
         self.add_view(self._init_view_session(ViewMenuGeneralView), "Views/Menus","/viewmenus/list","list-alt","Security")
         self.add_view(self._init_view_session(PermissionGeneralView), "Permission on Views/Menus","/permissionviews/list","lock","Security")
 
-    def _init_view_session(self, baseview_class)
+    def _init_view_session(self, baseview_class):
         if baseview_class.datamodel.session == None:
             baseview_class.datamodel.session = self.db.session
         return baseview_class()
