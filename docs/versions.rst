@@ -6,6 +6,40 @@ Finally 0.2.0 is out, and if you are using 0.1.47 or bellow, you must CHANGE the
 Migrating from 0.2.X to 0.3.X
 -----------------------------
 
+This new version (0.3.X) has many internal changes, if you feel lost please post an issue on github
+https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open
+
+All direct imports from you 'app' directory were removed, so there is no need to use the base AppBuilder-Skeleton.
+
+Change you BaseApp initialization (views.py) ::
+
+	baseapp = BaseApp(app, db)
+	
+Remove from your OpenID and Login initialization (__init__.py)
+
+From this::
+
+	app = Flask(__name__)
+	app.config.from_object('config')
+	db = SQLAlchemy(app)
+	babel = Babel(app)
+	lm = LoginManager()
+	lm.init_app(app)
+	lm.login_view = 'login'
+	oid = OpenID(app, os.path.join(basedir, 'tmp'))
+	
+	from app import models, views
+	
+Change to this::
+
+	app = Flask(__name__)
+	app.config.from_object('config')
+	db = SQLAlchemy(app)
+	babel = Babel(app)
+	
+	from app import models, views
+
+
 
 
 Migrating from 0.1.X to 0.2.X
@@ -38,12 +72,13 @@ Improvements
 - UPLOAD_FOLDER, IMG_UPLOAD_FOLDER, IMG_UPLOAD_URL not required to be defined.
 - AUTH_TYPE not required to be defined, will use default database auth
 - Internal security changed, new internal class SecurityManager
+- No need to use the base AppBuilder-Skeleton, removed direct import from app directory
 
 Bug Fixes
 ---------
 
-- import db will raise a controlled error with explanation if not found.
-- general import corrections
+- General import corrections
+- Support for Postgres
 
 
 Improvements and Bug fixes on 0.2.0
