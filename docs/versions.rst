@@ -3,6 +3,14 @@ Versions
 
 Finally 0.2.0 is out, and if you are using 0.1.47 or bellow, you must CHANGE the way you register you views.
 
+Migrating from 0.2.X to 0.3.X
+-----------------------------
+
+
+
+Migrating from 0.1.X to 0.2.X
+-----------------------------
+
 It's very simple, change this::
 
 	baseapp = BaseApp(app)
