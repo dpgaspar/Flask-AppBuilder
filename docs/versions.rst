@@ -11,7 +11,15 @@ https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open
 
 All direct imports from you 'app' directory were removed, so there is no need to use the base AppBuilder-Skeleton.
 
-1 - Change you BaseApp initialization (views.py) ::
+
+
+1 - Change you BaseApp initialization (views.py)
+
+From this::
+
+	baseapp = BaseApp(app)
+
+Change to this::
 
 	baseapp = BaseApp(app, db)
 	
@@ -72,7 +80,8 @@ Improvements
 - UPLOAD_FOLDER, IMG_UPLOAD_FOLDER, IMG_UPLOAD_URL not required to be defined.
 - AUTH_TYPE not required to be defined, will use default database auth
 - Internal security changed, new internal class SecurityManager
-- No need to use the base AppBuilder-Skeleton, removed direct import from app directory
+- No need to use the base AppBuilder-Skeleton, removed direct import from app directory.
+- No need to use init_app.py first run will create all tables and insert all necessary permissions.
 
 Bug Fixes
 ---------
