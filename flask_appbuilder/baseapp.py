@@ -153,26 +153,30 @@ class BaseApp():
         self.add_view_no_menu(ResetMyPasswordView())
 
         if self._get_auth_type() == AUTH_DB:
-            user_view = UserDBGeneralView()
+            user_view = self._init_view_session(UserDBGeneralView)
             auth_view = AuthDBView()
         else:
-            user_view = UserOIDGeneralView()
+            user_view = self._init_view_session(UserOIDGeneralView)
             auth_view = AuthOIDView()
             self.sm.oid.after_login_func = auth_view.after_login
         
         self.add_view_no_menu(auth_view)
+        
         self.add_view(user_view, "List Users"
                                         ,"/users/list","user",
                                         "Security")
                                         
-        self.add_view(RoleGeneralView(), "List Roles","/roles/list","tags","Security")
+        self.add_view(self._init_view_session(RoleGeneralView), "List Roles","/roles/list","tags","Security")
         self.menu.add_separator("Security")
-        self.add_view(PermissionViewGeneralView(), "Base Permissions","/permissions/list","lock","Security")
-        self.add_view(ViewMenuGeneralView(), "Views/Menus","/viewmenus/list","list-alt","Security")
-        self.add_view(PermissionGeneralView(), "Permission on Views/Menus","/permissionviews/list","lock","Security")
+        self.add_view(self._init_view_session(PermissionViewGeneralView), "Base Permissions","/permissions/list","lock","Security")
+        self.add_view(self._init_view_session(ViewMenuGeneralView), "Views/Menus","/viewmenus/list","list-alt","Security")
+        self.add_view(self._init_view_session(PermissionGeneralView), "Permission on Views/Menus","/permissionviews/list","lock","Security")
 
-        
-        
+    def _init_view_session(self, baseview_class)
+        if baseview_class.datamodel.session == None:
+            baseview_class.datamodel.session = self.db.session
+        return baseview_class()
+    
     def add_view(self, baseview, name, href = "", icon = "", category = ""):
         print "Registering:", category,".", name
         if baseview not in self.lst_baseview:
