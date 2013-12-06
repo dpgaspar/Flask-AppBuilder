@@ -56,10 +56,6 @@ class BaseApp():
                 The flask app object
             param db:
                 The SQLAlchemy db object
-            param lm:
-                The LoginManager initialized flask-Login
-            param oid:
-                optional, The flask-openId
             param menu:
                 optional, a previous contructed menu
             param indexview:
