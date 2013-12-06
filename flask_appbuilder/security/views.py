@@ -29,7 +29,7 @@ from flask.ext.openid import SessionWrapper, OpenIDResponse
 class PermissionGeneralView(GeneralView):
     route_base = '/permissions'
     
-    datamodel = SQLAModel(Permission, db.session)
+    datamodel = SQLAModel(Permission)
 
     list_title = lazy_gettext('List Base Permissions')
     show_title = lazy_gettext('Show Base Permission')
@@ -45,7 +45,7 @@ class PermissionGeneralView(GeneralView):
 class ViewMenuGeneralView(GeneralView):
     route_base = '/viewmenus'
     
-    datamodel = SQLAModel(ViewMenu, db.session)
+    datamodel = SQLAModel(ViewMenu)
 
     list_title = lazy_gettext('List View Menus')
     show_title = lazy_gettext('Show View Menu')
@@ -62,7 +62,7 @@ class ViewMenuGeneralView(GeneralView):
 class PermissionViewGeneralView(GeneralView):
     route_base = '/permissionviews'
     
-    datamodel = SQLAModel(PermissionView , db.session)
+    datamodel = SQLAModel(PermissionView )
 
     list_title = lazy_gettext('List Permissions on Views/Menus')
     show_title = lazy_gettext('Show Permission on Views/Menus')
@@ -120,7 +120,7 @@ class ResetPasswordView(SimpleFormView):
 
 class UserGeneralView(GeneralView):
     route_base = '/users'
-    datamodel = SQLAModel(User, db.session)
+    datamodel = SQLAModel(User)
     
 
     list_title = lazy_gettext('List Users')
@@ -208,7 +208,7 @@ class UserDBGeneralView(UserGeneralView):
 class RoleGeneralView(GeneralView):
     route_base = '/roles'
     
-    datamodel = SQLAModel(Role, db.session)
+    datamodel = SQLAModel(Role)
 
     list_title = lazy_gettext('List Roles')
     show_title = lazy_gettext('Show Role')
