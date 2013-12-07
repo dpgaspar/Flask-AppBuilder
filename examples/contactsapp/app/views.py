@@ -75,7 +75,7 @@ class PersonChartView(ChartView):
     group_by_columns = ['group']
     datamodel = SQLAModel(Person, db.session)
 
-baseapp = BaseApp(app)
+baseapp = BaseApp(app, db)
 baseapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "Contacts")
 baseapp.add_view(PersonGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")
 baseapp.add_view(PersonChartView(), "Contacts Chart","/persons/chart","earphone","Contacts")

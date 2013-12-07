@@ -8,13 +8,12 @@ def fpath(name):
 def read(fname):
     return open(fpath(fname)).read()
 
-
 def desc():
     return read('README.rst')
 
 setup(
     name='Flask-AppBuilder',
-    version='0.2.2',
+    version='0.3.0',
     url='https://github.com/dpgaspar/flask-appbuilder/',
     license='BSD',
     author='Daniel Vaz Gaspar',

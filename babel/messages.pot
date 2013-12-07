@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-10-31 00:03+0000\n"
+"POT-Creation-Date: 2013-12-07 19:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,301 +17,315 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: app/general/messages.py:9
+#: messages.py:9
 msgid "Security"
 msgstr ""
 
-#: app/general/messages.py:10 app/general/security/views.py:101
+#: messages.py:10 security/views.py:126
 msgid "List Users"
 msgstr ""
 
-#: app/general/messages.py:11
+#: messages.py:11
 msgid "Base Permissions"
 msgstr ""
 
-#: app/general/messages.py:12
+#: messages.py:12
 msgid "Views/Menus"
 msgstr ""
 
-#: app/general/messages.py:13
+#: messages.py:13
 msgid "Permission on Views/Menus"
 msgstr ""
 
-#: app/general/messages.py:14 app/templates/general/lib.html:88
-#: app/templates/general/model/list.html:9
+#: messages.py:14 templates/appbuilder/general/lib.html:167
+#: templates/appbuilder/general/model/list.html:9
 msgid "Search"
 msgstr ""
 
-#: app/general/messages.py:15 app/templates/general/lib.html:83
-#: app/templates/general/lib.html:94
+#: messages.py:15 templates/appbuilder/general/lib.html:162
+#: templates/appbuilder/general/lib.html:173
 msgid "Back"
 msgstr ""
 
-#: app/general/messages.py:16 app/templates/general/lib.html:81
+#: messages.py:16 templates/appbuilder/general/lib.html:160
 msgid "Save"
 msgstr ""
 
-#: app/general/messages.py:17
+#: messages.py:17
 msgid "This field is required."
 msgstr ""
 
-#: app/general/messages.py:18
+#: messages.py:18
 msgid "Not a valid date value"
 msgstr ""
 
-#: app/general/messages.py:19 app/templates/general/widgets/list.html:72
-#: app/templates/general/widgets/list_no_table.html:55
+#: messages.py:19 templates/appbuilder/general/widgets/list.html:80
+#: templates/appbuilder/general/widgets/list_thumbnail.html:55
 msgid "No records found"
 msgstr ""
 
-#: app/general/models/datamodel.py:20
+#: upload.py:136 upload.py:184
+msgid "Invalid file extension"
+msgstr ""
+
+#: validators.py:33
+msgid "Already exists."
+msgstr ""
+
+#: models/datamodel.py:20
 msgid "Added Row"
 msgstr ""
 
-#: app/general/models/datamodel.py:21
+#: models/datamodel.py:21
 msgid "Changed Row"
 msgstr ""
 
-#: app/general/models/datamodel.py:22
+#: models/datamodel.py:22
 msgid "Deleted Row"
 msgstr ""
 
-#: app/general/models/datamodel.py:23
+#: models/datamodel.py:23
 msgid "Associated data exists, please delete them first"
 msgstr ""
 
-#: app/general/models/datamodel.py:24 app/general/models/datamodel.py:25
+#: models/datamodel.py:24 models/datamodel.py:25
 msgid "Integrity error, probably unique constraint"
 msgstr ""
 
-#: app/general/models/datamodel.py:26
+#: models/datamodel.py:26
 msgid "General Error"
 msgstr ""
 
-#: app/general/security/forms.py:8
+#: security/forms.py:8
 msgid "openid"
 msgstr ""
 
-#: app/general/security/forms.py:9
+#: security/forms.py:9
 msgid "remember_me"
 msgstr ""
 
-#: app/general/security/forms.py:12 app/general/security/views.py:109
+#: security/forms.py:12 security/views.py:134
 msgid "User Name"
 msgstr ""
 
-#: app/general/security/forms.py:13 app/general/security/forms.py:17
-#: app/general/security/views.py:110
+#: security/forms.py:13 security/forms.py:17 security/views.py:135
 msgid "Password"
 msgstr ""
 
-#: app/general/security/forms.py:18 app/general/security/views.py:117
+#: security/forms.py:18 security/views.py:142
 msgid ""
 "Please use a good password policy, this application does not check this "
 "for you"
 msgstr ""
 
-#: app/general/security/forms.py:21
+#: security/forms.py:21
 msgid "Confirm Password"
 msgstr ""
 
-#: app/general/security/forms.py:22
+#: security/forms.py:22
 msgid "Please rewrite the password to confirm"
 msgstr ""
 
-#: app/general/security/forms.py:23
+#: security/forms.py:23
 msgid "Passwords must match"
 msgstr ""
 
-#: app/general/security/views.py:32
+#: security/views.py:34
 msgid "List Base Permissions"
 msgstr ""
 
-#: app/general/security/views.py:33
+#: security/views.py:35
 msgid "Show Base Permission"
 msgstr ""
 
-#: app/general/security/views.py:34
+#: security/views.py:36
 msgid "Add Base Permission"
 msgstr ""
 
-#: app/general/security/views.py:35
+#: security/views.py:37
 msgid "Edit Base Permission"
 msgstr ""
 
-#: app/general/security/views.py:37 app/general/security/views.py:53
-#: app/general/security/views.py:185
+#: security/views.py:39 security/views.py:55 security/views.py:218
 msgid "Name"
 msgstr ""
 
-#: app/general/security/views.py:48
+#: security/views.py:50
 msgid "List View Menus"
 msgstr ""
 
-#: app/general/security/views.py:49
+#: security/views.py:51
 msgid "Show View Menu"
 msgstr ""
 
-#: app/general/security/views.py:50
+#: security/views.py:52
 msgid "Add View Menu"
 msgstr ""
 
-#: app/general/security/views.py:51
+#: security/views.py:53
 msgid "Edit View Menu"
 msgstr ""
 
-#: app/general/security/views.py:64
+#: security/views.py:67
 msgid "List Permissions on Views/Menus"
 msgstr ""
 
-#: app/general/security/views.py:65
+#: security/views.py:68
 msgid "Show Permission on Views/Menus"
 msgstr ""
 
-#: app/general/security/views.py:66
+#: security/views.py:69
 msgid "Add Permission on Views/Menus"
 msgstr ""
 
-#: app/general/security/views.py:67
+#: security/views.py:70
 msgid "Edit Permission on Views/Menus"
 msgstr ""
 
-#: app/general/security/views.py:69
+#: security/views.py:72
 msgid "Permission"
 msgstr ""
 
-#: app/general/security/views.py:69
+#: security/views.py:72
 msgid "View/Menu"
 msgstr ""
 
-#: app/general/security/views.py:82
+#: security/views.py:85 security/views.py:107
 msgid "Reset Password Form"
 msgstr ""
 
-#: app/general/security/views.py:86
+#: security/views.py:89 security/views.py:111
 msgid "Password Changed"
 msgstr ""
 
-#: app/general/security/views.py:102
+#: security/views.py:127
 msgid "Show User"
 msgstr ""
 
-#: app/general/security/views.py:103
+#: security/views.py:128
 msgid "Add User"
 msgstr ""
 
-#: app/general/security/views.py:104
+#: security/views.py:129
 msgid "Edit User"
 msgstr ""
 
-#: app/general/security/views.py:106
+#: security/views.py:131
 msgid "Full Name"
 msgstr ""
 
-#: app/general/security/views.py:107
+#: security/views.py:132
 msgid "First Name"
 msgstr ""
 
-#: app/general/security/views.py:108
+#: security/views.py:133
 msgid "Last Name"
 msgstr ""
 
-#: app/general/security/views.py:111
+#: security/views.py:136
 msgid "Is Active?"
 msgstr ""
 
-#: app/general/security/views.py:112
+#: security/views.py:137
 msgid "EMail"
 msgstr ""
 
-#: app/general/security/views.py:113
+#: security/views.py:138
 msgid "Role"
 msgstr ""
 
-#: app/general/security/views.py:114
+#: security/views.py:139
 msgid "Write the user first name or names"
 msgstr ""
 
-#: app/general/security/views.py:115
+#: security/views.py:140
 msgid "Write the user last name"
 msgstr ""
 
-#: app/general/security/views.py:116
+#: security/views.py:141
 msgid "Username valid for authentication on DB or LDAP, unused for OID auth"
 msgstr ""
 
-#: app/general/security/views.py:118
+#: security/views.py:143
 msgid "Its not a good policy to remove a user, just make it inactive"
 msgstr ""
 
-#: app/general/security/views.py:119
+#: security/views.py:144
 msgid "The users email, this will also be used for OID auth"
 msgstr ""
 
-#: app/general/security/views.py:120
+#: security/views.py:145
 msgid ""
 "The user role on the application, this will associate with a list of "
 "permissions"
 msgstr ""
 
-#: app/general/security/views.py:121
+#: security/views.py:146
 msgid "Please rewrite the users password to confirm"
 msgstr ""
 
-#: app/general/security/views.py:130
+#: security/views.py:155
 msgid "Your user information"
 msgstr ""
 
-#: app/general/security/views.py:131
+#: security/views.py:156
 msgid "Reset Password"
 msgstr ""
 
-#: app/general/security/views.py:180
+#: security/views.py:213
 msgid "List Roles"
 msgstr ""
 
-#: app/general/security/views.py:181
+#: security/views.py:214
 msgid "Show Role"
 msgstr ""
 
-#: app/general/security/views.py:182
+#: security/views.py:215
 msgid "Add Role"
 msgstr ""
 
-#: app/general/security/views.py:183
+#: security/views.py:216
 msgid "Edit Role"
 msgstr ""
 
-#: app/general/security/views.py:185
+#: security/views.py:218
 msgid "Permissions"
 msgstr ""
 
-#: app/general/security/views.py:199 app/general/security/views.py:252
-#: app/general/security/views.py:256
+#: security/views.py:232 security/views.py:298 security/views.py:302
 msgid "Invalid login. Please try again."
 msgstr ""
 
-#: app/general/security/views.py:201
+#: security/views.py:234
 msgid "Sign In"
 msgstr ""
 
-#: app/templates/general/lib.html:98
+#: templates/appbuilder/general/lib.html:177
 msgid "Add a new record"
 msgstr ""
 
-#: app/templates/general/lib.html:104
+#: templates/appbuilder/general/lib.html:183
 msgid "Edit record"
 msgstr ""
 
-#: app/templates/general/lib.html:110
+#: templates/appbuilder/general/lib.html:189
 msgid "Show record"
 msgstr ""
 
-#: app/templates/general/lib.html:116
+#: templates/appbuilder/general/lib.html:195
 msgid "Delete record"
 msgstr ""
 
-#: app/templates/general/lib.html:116
+#: templates/appbuilder/general/lib.html:195
 msgid "You sure you want to delete this item?"
+msgstr ""
+
+#: templates/appbuilder/general/charts/chart.html:7
+#: templates/appbuilder/general/charts/chart_time.html:7
+msgid "Group by fields"
+msgstr ""
+
+#: templates/appbuilder/general/widgets/list.html:19
+msgid "Record Count"
 msgstr ""
 

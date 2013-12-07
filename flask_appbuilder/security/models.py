@@ -39,6 +39,7 @@ class PermissionView(Base):
         return str(self.permission).replace('_',' ') + ' on ' + str(self.view_menu)
 
 assoc_permissionview_role = Table('ab_permission_view_role', Base.metadata,
+        Column('id', Integer, primary_key=True),
         Column('permission_view_id', Integer, ForeignKey('ab_permission_view.id')),
         Column('role_id', Integer, ForeignKey('ab_role.id'))
         )

@@ -1,7 +1,11 @@
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask import current_app, g, request, current_app
 from flask.ext.login import current_user
-from models import (User, Role, PermissionView, Permission, ViewMenu)
-from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy import MetaData, Table
+from sqlalchemy.ext.declarative import declarative_base
+
+from models import (User, Role, PermissionView, Permission, ViewMenu, assoc_permissionview_role)
 from flask.ext.appbuilder import Base
 
 
@@ -35,9 +39,10 @@ class SecurityManager(object):
         self.auth_type = auth_type
         self.auth_role_admin = auth_role_admin
         self.auth_role_public = auth_role_public
+                    
         self.lm = lm
         self.oid = oid
-        self.lm.user_loader(self.load_user)
+        self.lm.user_loader(self.load_user)        
         self.init_db()
         
     def load_user(self, pk):
@@ -46,15 +51,72 @@ class SecurityManager(object):
     def before_request(self):
         g.user = current_user
 
-    def init_db(self):
+    def migrate_get_new_obj(self, old_obj, new_obj):
+        for col in old_obj.keys():
+            setattr(new_obj,col,getattr(old_obj,col))
+        return new_obj
+        
+    def migrate_obj(self, old_table, new_class):
+        old_objs = self.session.query(old_table).all()
+        for old_obj in old_objs:
+            new_obj = self.migrate_get_new_obj(old_obj, new_class())
+            self.session.add(new_obj)
+            self.session.commit()
+       
+    def quick_mapper(self, table):
+        Base = declarative_base()
+        class GenericMapper(Base):
+            __table__ = table
+        return GenericMapper
+            
+       
+    def migrate_db(self):
+        """
+            Migrate security tables from Flask-AppBuilder 0.2.X to 0.3.X
+        """
         engine = self.session.get_bind(mapper=None, clause=None)
-        from sqlalchemy.engine.reflection import Inspector
+        inspector = Inspector.from_engine(engine)
+        if 'user' in inspector.get_table_names() and 'role' in inspector.get_table_names() and 'permission' in inspector.get_table_names():
+            
+            print "Found previous security tables, migrating..."
+            
+            metadata = MetaData(engine)
+
+            old_user = Table('user', metadata, autoload=True) 
+            old_role = Table('role', metadata, autoload=True)
+            old_permission = Table('permission', metadata, autoload=True)
+            old_permission_view = Table('permission_view', metadata, autoload=True)
+            old_view_menu = Table('view_menu', metadata, autoload=True)
+            old_permission_view_role = Table('permission_view_role', metadata, autoload=True)
+                        
+            print "Migrating Views and Menus"
+            self.migrate_obj(old_view_menu, ViewMenu)            
+                        
+            print "Migrating Permissions"
+            self.migrate_obj(old_permission, Permission)
+                
+            print "Migrating Permissions on Views"
+            self.migrate_obj(old_permission_view, PermissionView)
+                                    
+            print "Migrating Roles"
+            self.migrate_obj(old_role, Role)
+            
+            print "Migrating Roles to Permissions on Views"
+            self.migrate_obj(old_permission_view_role, self.quick_mapper(assoc_permissionview_role))            
+            
+            print "Migrating Users"
+            self.migrate_obj(old_user, User)
+            
+                        
+    def init_db(self):
+        engine = self.session.get_bind(mapper=None, clause=None)        
         
         inspector = Inspector.from_engine(engine)
         if 'ab_user' not in inspector.get_table_names():
             print "Security DB not found Creating..."
             Base.metadata.create_all(engine)
             print "Security DB Created"
+            self.migrate_db()
         if self.session.query(Role).filter_by(name = self.auth_role_admin).first() is None:
             role = Role()
             role.name = self.auth_role_admin
@@ -79,7 +141,8 @@ class SecurityManager(object):
             self.session.commit()
             print "Inserted initial Admin user"
             print "Login using Admin/general"
-  
+        
+        
   
     def auth_user_db(self, username, password):
         if username is None or username == "":
