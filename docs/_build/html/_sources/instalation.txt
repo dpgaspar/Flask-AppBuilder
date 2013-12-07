@@ -28,7 +28,7 @@ pip instalations installs all the requirements for you.
 Flask App Builder dependes on
 
     - flask : The web framework, this is what were extending
-    - flask-sqlalchemy : DB access see SQLAlchemy
+    - flask-sqlalchemy : DB access see SQLAlchemy, This requirement is optional
     - flask-login : Login, session on flask.
     - flask-openid : Open ID authentication
     - flask-wtform
@@ -42,16 +42,11 @@ or::
 
     pip install PIL
 
-Initial Config Explanation
---------------------------
+Initialization
+--------------
 
-init_app.py has created:
-
-    - A fresh new database.
-    - The security tables and all your application tables too.
-    - 'admin' user associated with role "Admin".
-    - all your applications detailed permissions.
-    - All permission to Role "Admin" (AUTH_ROLE_ADMIN).
-
+When starting your application for the first time, all your models and AppBuilder security tables will be created for you.
+Version 0.3.X does not need you to run "init_app.py". AppBuilder will create all available permissions associated with your views and menus, and these will be automaticaly associated with your defined role AUTH_ROLE_ADMIN
+ 
 The 'admin' password will be 'general'. Change it on your first access using the application.
 (Click the username on the navigation bar, then choose 'Reset Password')

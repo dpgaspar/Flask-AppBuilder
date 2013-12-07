@@ -9,7 +9,7 @@ Simple and rapid Application builder, includes detailed security, auto form gene
 Package Version
 ---------------
 
-Finally 0.2.0 is out!!  please read the docs.
+New 0.3.0 is out!!  please read the :docs: `http://flask-appbuilder.readthedocs.org/en/latest/`
 
 Improvements
 ------------

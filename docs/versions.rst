@@ -11,6 +11,7 @@ https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open
 
 All direct imports from your 'app' directory were removed, so there is no need to use the base AppBuilder-Skeleton.
 
+Security tables have changed their names, AppBuilder will automaticaly migrate all your data to the new tables.
 
 1 - Change your BaseApp initialization (views.py)
 
@@ -80,6 +81,8 @@ Improvements
 - Internal security changed, new internal class SecurityManager
 - No need to use the base AppBuilder-Skeleton, removed direct import from app directory.
 - No need to use init_app.py first run will create all tables and insert all necessary permissions.
+- Auto migration from version 0.2.X to 0.3.X, because of security table names change.
+- Babel translations for Spanish
 
 Bug Fixes
 ---------

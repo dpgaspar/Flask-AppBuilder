@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -15,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '0.1.46',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -79,7 +77,7 @@ git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git</pre>
 <blockquote>
 <div><ul class="simple">
 <li>flask : The web framework, this is what were extending</li>
-<li>flask-sqlalchemy : DB access see SQLAlchemy</li>
+<li>flask-sqlalchemy : DB access see SQLAlchemy, This requirement is optional</li>
 <li>flask-login : Login, session on flask.</li>
 <li>flask-openid : Open ID authentication</li>
 <li>flask-wtform</li>
@@ -93,18 +91,10 @@ git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git</pre>
 <div class="highlight-python"><pre>pip install PIL</pre>
 </div>
 </div>
-<div class="section" id="initial-config-explanation">
-<h2>Initial Config Explanation<a class="headerlink" href="#initial-config-explanation" title="Permalink to this headline">¶</a></h2>
-<p>init_app.py has created:</p>
-<blockquote>
-<div><ul class="simple">
-<li>A fresh new database.</li>
-<li>The security tables and all your application tables too.</li>
-<li>&#8216;admin&#8217; user associated with role &#8220;Admin&#8221;.</li>
-<li>all your applications detailed permissions.</li>
-<li>All permission to Role &#8220;Admin&#8221; (AUTH_ROLE_ADMIN).</li>
-</ul>
-</div></blockquote>
+<div class="section" id="initialization">
+<h2>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h2>
+<p>When starting your application for the first time, all your models and AppBuilder security tables will be created for you.
+Version 0.3.X does not need you to run &#8220;init_app.py&#8221;. AppBuilder will create all available permissions associated with your views and menus, and these will be automaticaly associated with your defined role AUTH_ROLE_ADMIN</p>
 <p>The &#8216;admin&#8217; password will be &#8216;general&#8217;. Change it on your first access using the application.
 (Click the username on the navigation bar, then choose &#8216;Reset Password&#8217;)</p>
 </div>
@@ -121,7 +111,7 @@ git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git</pre>
 <li><a class="reference internal" href="#">Instalation</a><ul>
 <li><a class="reference internal" href="#step-instalation">3 Step instalation</a></li>
 <li><a class="reference internal" href="#what-requirements-were-instaled">What requirements were instaled</a></li>
-<li><a class="reference internal" href="#initial-config-explanation">Initial Config Explanation</a></li>
+<li><a class="reference internal" href="#initialization">Initialization</a></li>
 </ul>
 </li>
 </ul>
@@ -171,7 +161,7 @@ git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git</pre>
     </div>
     <div class="footer">
         &copy; Copyright 2013, Daniel Vaz Gaspar.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b3.
     </div>
   </body>
 </html>

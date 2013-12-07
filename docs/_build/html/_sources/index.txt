@@ -11,8 +11,8 @@ includes detailed security, auto form generation, google charts and much more.
 
 Important Note:
 
-Version 0.2.0 had some changes look at chapter Versions
-  
+Version 0.3.0 had some changes look at chapter :doc:`versions`
+
 Contents:
 
 .. toctree::
