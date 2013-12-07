@@ -1,39 +1,15 @@
 Flask App Builder
 =================
 
-New documentation at: http://flask-appbuilder.readthedocs.org/en/latest/
-
 Simple and rapid Application builder, includes detailed security, auto form generation, google charts and much more.
 
+Documentation at: http://flask-appbuilder.readthedocs.org/en/latest/
 
 Package Version
 ---------------
 
 New 0.3.0 is out!!  please read the :docs: `http://flask-appbuilder.readthedocs.org/en/latest/`
 
-Improvements
-------------
-
-  - Pagination on lists.
-  - Inline (panels) will reload/return to the same panel (via cookie).
-  - Templates with url_for.
-  - BaseApp injects all necessary filter in jinja2, no need to import.
-  - New Chart type, group by month and year.
-  - No need to define route_base on View Classes, will assume class name in lower case.
-  - No need to define labels for model's columns, they will be prettified.
-  - No need to define titles for list,add,edit and show views, they will be generated from the model's name.
-  - No need to define menu url when registering a BaseView will be infered from BaseView.defaultview.
-
-Bug Fixes
----------
-
-  - OpenID pictures not showing.
-  - Security reset password corrections.
-  - Date null Widget correction.
-  - list filter with text
-  - Removed unnecessary keys from config.py on skeleton and examples.
-  - Simple group by correction, when query does not use joined models.
-  - Authentication with OpenID does not need reset password option.
 
 Includes:
 ---------
