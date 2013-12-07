@@ -1,7 +1,8 @@
 Versions
 ========
 
-Finally 0.2.0 is out, and if you are using 0.1.47 or bellow, you must CHANGE the way you register you views.
+New 0.3.0 is out, and if you are using 0.2.X or bellow, take a close look at the following chapters.
+
 
 Migrating from 0.2.X to 0.3.X
 -----------------------------
