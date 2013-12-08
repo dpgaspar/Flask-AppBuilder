@@ -29,7 +29,7 @@ you now have the following directory structure::
 Take a close look at the 'babel' directory and the 'translations' directory, these will hold all your messages.                         
 This is a tipical babel configuration, take a look at Flask-Babel project.
 
-You can add your own translations!  
+You can add your own translations, and your own language support.  
 
 Quick How to
 ------------
@@ -76,3 +76,6 @@ Let's work with the contacts application example, so you want to add translation
 4 - Run the babel extraction shell script provided::
 
     ./babel_extract.sh
+
+And thats it!
+

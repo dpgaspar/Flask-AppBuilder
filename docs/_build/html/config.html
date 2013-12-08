@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Application’s Base Configuration &mdash; Flask-AppBuilder 0.1.46 documentation</title>
+    <title>Base Configuration &mdash; Flask-AppBuilder 0.1.46 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask-AppBuilder 0.1.46 documentation" href="index.html" />
     <link rel="next" title="Views" href="views.html" />
-    <link rel="prev" title="Quick Files and Images" href="quickfiles.html" /> 
+    <link rel="prev" title="i18n Translations" href="i18n.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,7 +38,7 @@
           <a href="views.html" title="Views"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="quickfiles.html" title="Quick Files and Images"
+          <a href="i18n.html" title="i18n Translations"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask-AppBuilder 0.1.46 documentation</a> &raquo;</li> 
       </ul>
@@ -49,38 +49,54 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="application-s-base-configuration">
-<h1>Application&#8217;s Base Configuration<a class="headerlink" href="#application-s-base-configuration" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="base-configuration">
+<h1>Base Configuration<a class="headerlink" href="#base-configuration" title="Permalink to this headline">¶</a></h1>
 <p>Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap 3.0.0 base theme:</p>
 <blockquote>
-<div><ul>
-<li><p class="first">SQLALCHEMY_DATABASE_URI: Database connection string</p>
-</li>
-<li><dl class="first docutils">
-<dt>AUTH_TYPE: This is the authentication type</dt>
-<dd><ul class="first last simple">
-<li>0 = Open ID</li>
-<li>1 = Database style (user/password)</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><p class="first">AUTH_ROLE_ADMIN: Configure the name of the admin role.</p>
-</li>
-<li><p class="first">AUTH_ROLE_PUBLIC: Special Role that holds the public permissions, no authentication needed.</p>
-</li>
-<li><p class="first">APP_NAME: The name of your application.</p>
-</li>
-<li><p class="first">APP_THEME: Various themes for you to choose from (bootwatch).</p>
-</li>
-<li><p class="first">UPLOAD_FOLDER: Files upload folder.</p>
-</li>
-<li><p class="first">IMG_UPLOAD_FOLDER: Image upload folder.</p>
-</li>
-<li><p class="first">IMG_UPLOAD_URL: Image relative URL.</p>
-</li>
-</ul>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">SQLALCHEMY_DATABASE_URI:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Database connection string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">AUTH_TYPE:</th><td class="field-body">This is the authentication type
+- 0 = Open ID
+- 1 = Database style (user/password)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">AUTH_ROLE_ADMIN:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Configure the name of the admin role.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">AUTH_ROLE_PUBLIC:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Special Role that holds the public permissions, no authentication needed.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">APP_NAME:</th><td class="field-body">The name of your application.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">APP_THEME:</th><td class="field-body">Various themes for you to choose from (bootwatch).</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">UPLOAD_FOLDER:</th><td class="field-body">Files upload folder.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">IMG_UPLOAD_FOLDER:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Image upload folder.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">IMG_UPLOAD_URL:</th><td class="field-body">Image relative URL.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">BABEL_DEFAULT_LOCALE:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Babel&#8217;s default language.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">LANGUAGES:</th><td class="field-body">A dictionary mapping the existing languages with the countrys name and flag</td>
+</tr>
+</tbody>
+</table>
 </div></blockquote>
+<p>Languages example:</p>
+<dl class="docutils">
+<dt>LANGUAGES = {</dt>
+<dd>&#8216;en&#8217;: {&#8216;flag&#8217;:&#8217;gb&#8217;, &#8216;name&#8217;:&#8217;English&#8217;},
+&#8216;pt&#8217;: {&#8216;flag&#8217;:&#8217;pt&#8217;, &#8216;name&#8217;:&#8217;Portugal&#8217;},
+&#8216;es&#8217;: {&#8216;flag&#8217;:&#8217;es&#8217;, &#8216;name&#8217;:&#8217;Spain&#8217;}</dd>
+</dl>
+<p>}</p>
 </div>
 
 
@@ -90,8 +106,8 @@
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="quickfiles.html"
-                        title="previous chapter">Quick Files and Images</a></p>
+  <p class="topless"><a href="i18n.html"
+                        title="previous chapter">i18n Translations</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="views.html"
                         title="next chapter">Views</a></p>
@@ -127,7 +143,7 @@
           <a href="views.html" title="Views"
              >next</a> |</li>
         <li class="right" >
-          <a href="quickfiles.html" title="Quick Files and Images"
+          <a href="i18n.html" title="i18n Translations"
              >previous</a> |</li>
         <li><a href="index.html">Flask-AppBuilder 0.1.46 documentation</a> &raquo;</li> 
       </ul>

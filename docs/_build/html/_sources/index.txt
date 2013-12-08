@@ -23,11 +23,11 @@ Contents:
    quickhowto
    quickcharts
    quickfiles
+   i18n
    config
    views
    security
    forms
-   i18n
    api
    versions
 
