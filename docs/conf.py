@@ -103,6 +103,7 @@ pygments_style = 'sphinx'
 sys.path.append(os.path.abspath('_themes'))
 html_theme_path = ['_themes']
 html_theme = 'flask'
+github_fork = 'https://github.com/dpgaspar/Flask-AppBuilder/fork'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
