@@ -24,7 +24,18 @@ AUTH_LDAP = 2
 
 
 class BaseApp():
-
+    """
+        This is the base class for the all framework.
+        Will hold your flask app object, all your views, and security classes.
+        
+        initialize your application like this::
+            
+            app = Flask(__name__)
+            app.config.from_object('config')
+            db = SQLAlchemy(app)
+            baseapp = BaseApp(app, db)
+        
+    """
     lst_baseview = []
     app = None
     db = None
@@ -76,7 +87,7 @@ class BaseApp():
         lm.init_app(app)
         lm.login_view = 'login'
         oid = OpenID(app)
-
+        
         self.sm = SecurityManager(db.session, 
                             self._get_auth_type(), 
                             self._get_role_admin(), 
