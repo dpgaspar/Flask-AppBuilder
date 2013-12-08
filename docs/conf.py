@@ -113,6 +113,7 @@ html_theme = 'flask'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #html_theme_options = {}
+html_theme_options = {'github_fork': 'dpgaspar/Flask-AppBuilder', 'index_logo': False}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []

@@ -163,12 +163,6 @@ div.body h6 {
 }
 
 
-div.indexwrapper h1 {
-    text-indent: -999999px;
-    background: url('Flask-AppBuilder.png') no-repeat center center;
-    height: 120px;
-}
-
 div.body h1 { margin-top: 0; padding-top: 0; font-size: 240%; }
 div.body h2 { font-size: 180%; }
 div.body h3 { font-size: 150%; }
