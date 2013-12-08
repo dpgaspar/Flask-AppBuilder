@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>i18n Translations &mdash; Flask-AppBuilder 0.1.46 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.46',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Flask-AppBuilder 0.1.46 documentation" href="index.html" />
+    <link rel="next" title="Versions" href="versions.html" />
+    <link rel="prev" title="Views" href="views.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="versions.html" title="Versions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="views.html" title="Views"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Flask-AppBuilder 0.1.46 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="i18n-translations">
+<h1>i18n Translations<a class="headerlink" href="#i18n-translations" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>If your working with the base skeleton application <a class="reference internal" href="instalation.html"><em>Instalation</em></a></p>
+<p>you now have the following directory structure:</p>
+<div class="highlight-python"><pre>&lt;your project name&gt;/
+    babel/
+        babel.cfg : Babel configuration
+        messages.pot : All your applications messages
+    config.py : All the applications configuration
+    run.py    : A runner mainly for debug
+    app/
+        __init__.py : Application's initialization
+        models.py : Declare your database models here
+        views.py  : Implement your views here
+        translations/
+            pt/
+                LC_MESSAGES/
+                    messages.po
+            es/
+                LC_MESSAGES/
+                    messages.po</pre>
+</div>
+<p>Take a close look at the &#8216;babel&#8217; directory and the &#8216;translations&#8217; directory, these will hold all your messages.
+This is a tipical babel configuration, take a look at Flask-Babel project.</p>
+<p>You can add your own translations!</p>
+</div>
+<div class="section" id="quick-how-to">
+<h2>Quick How to<a class="headerlink" href="#quick-how-to" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s work with the contacts application example, so you want to add translations for the menus &#8220;List Groups&#8221; and &#8220;List Contacts&#8221;.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;th-large&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>1 - Add the messages to the main messages file</p>
+<blockquote>
+<div><ul>
+<li><p class="first">On babel/messages.pot add:</p>
+<div class="highlight-python"><pre>msgid "List Groups"
+msgstr ""
+
+msgid "List Contacts"
+msgstr ""</pre>
+</div>
+</li>
+</ul>
+</div></blockquote>
+<p>2 - Run the babel extraction shell script provided:</p>
+<div class="highlight-python"><pre>./babel_extract.sh</pre>
+</div>
+<p>3 - Make your translations</p>
+<blockquote>
+<div><ul>
+<li><p class="first">On app/translations/pt/LC_MESSAGES/messages.po you will find the messages you added to translate:</p>
+<div class="highlight-python"><pre>msgid "List Groups"
+msgstr ""
+
+msgid "List Contacts"
+msgstr ""</pre>
+</div>
+</li>
+<li><p class="first">Translate them:</p>
+<div class="highlight-python"><pre>msgid "List Groups"
+msgstr "Lista de Grupos"
+
+msgid "List Contacts"
+msgstr "Lista de Contactos"</pre>
+</div>
+</li>
+</ul>
+</div></blockquote>
+<p>4 - Run the babel extraction shell script provided:</p>
+<div class="highlight-python"><pre>./babel_extract.sh</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">i18n Translations</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#quick-how-to">Quick How to</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="views.html"
+                        title="previous chapter">Views</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="versions.html"
+                        title="next chapter">Versions</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/i18n.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="versions.html" title="Versions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="views.html" title="Views"
+             >previous</a> |</li>
+        <li><a href="index.html">Flask-AppBuilder 0.1.46 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Daniel Vaz Gaspar.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b3.
+    </div>
+  </body>
+</html>

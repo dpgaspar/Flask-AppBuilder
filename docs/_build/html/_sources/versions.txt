@@ -10,7 +10,7 @@ Migrating from 0.2.X to 0.3.X
 This new version (0.3.X) has many internal changes, if you feel lost please post an issue on github
 https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open
 
-All direct imports from your 'app' directory were removed, so there is no need to use the base AppBuilder-Skeleton.
+All direct imports from your 'app' directory were removed, so there is no obligation in using the base AppBuilder-Skeleton.
 
 Security tables have changed their names, AppBuilder will automaticaly migrate all your data to the new tables.
 

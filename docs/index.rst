@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Flask-AppBuilder's documentation!
-============================================
+=================================
 
 Simple and rapid Application builder, built on top of flask.
 includes detailed security, auto form generation, google charts and much more.

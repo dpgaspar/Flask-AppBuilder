@@ -1,0 +1,78 @@
+i18n Translations
+=================
+
+Introduction
+------------
+
+If your working with the base skeleton application :doc:`instalation`
+
+you now have the following directory structure::
+
+    <your project name>/
+        babel/
+            babel.cfg : Babel configuration
+            messages.pot : All your applications messages
+        config.py : All the applications configuration
+        run.py    : A runner mainly for debug
+        app/
+            __init__.py : Application's initialization
+            models.py : Declare your database models here
+            views.py  : Implement your views here
+            translations/
+                pt/
+                    LC_MESSAGES/
+                        messages.po
+                es/
+                    LC_MESSAGES/
+                        messages.po
+
+Take a close look at the 'babel' directory and the 'translations' directory, these will hold all your messages.                         
+This is a tipical babel configuration, take a look at Flask-Babel project.
+
+You can add your own translations!  
+
+Quick How to
+------------
+
+Let's work with the contacts application example, so you want to add translations for the menus "List Groups" and "List Contacts".
+
+::
+
+        genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "Contacts")
+        genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")
+
+1 - Add the messages to the main messages file
+
+    - On babel/messages.pot add::
+    
+        msgid "List Groups"
+        msgstr ""
+
+        msgid "List Contacts"
+        msgstr ""
+
+2 - Run the babel extraction shell script provided::
+
+    ./babel_extract.sh
+
+3 - Make your translations
+
+    - On app/translations/pt/LC_MESSAGES/messages.po you will find the messages you added to translate::
+    
+        msgid "List Groups"
+        msgstr ""
+
+        msgid "List Contacts"
+        msgstr ""
+
+    - Translate them::
+    
+        msgid "List Groups"
+        msgstr "Lista de Grupos"
+
+        msgid "List Contacts"
+        msgstr "Lista de Contactos"
+
+4 - Run the babel extraction shell script provided::
+
+    ./babel_extract.sh
