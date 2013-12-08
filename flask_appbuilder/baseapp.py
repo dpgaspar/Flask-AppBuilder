@@ -1,20 +1,18 @@
-import os
+from .babel.views import LocaleView
+from .security.manager import SecurityManager
+from .security.views import AuthDBView, AuthOIDView, ResetMyPasswordView, \
+    ResetPasswordView, UserDBGeneralView, UserOIDGeneralView, RoleGeneralView, \
+    PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView
+    
+from .views import IndexView
+from filters import TemplateFilters
 from flask import Blueprint
-from flask.ext.babel import lazy_gettext
-from flask.ext.babel import gettext as _gettext
+from flask.ext.babel import Babel, gettext as _gettext, lazy_gettext
 from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
-from flask.ext.babel import Babel
-
-from .security.views import (AuthDBView, AuthOIDView, ResetMyPasswordView, ResetPasswordView, 
-                        UserDBGeneralView, UserOIDGeneralView, RoleGeneralView, PermissionViewGeneralView, 
-                        ViewMenuGeneralView, PermissionGeneralView, PermissionView)
-from .security.models import User, Role
-from .security.manager import SecurityManager
-from .views import IndexView
-from .babel.views import LocaleView
 from menu import Menu
-from filters import TemplateFilters
+import os
+
 
 
 
@@ -184,7 +182,10 @@ class BaseApp():
             baseview_class.datamodel.session = self.db.session
         return baseview_class()
     
+    
+    
     def add_view(self, baseview, name, href = "", icon = "", category = ""):
+        
         print "Registering:", category,".", name
         if baseview not in self.lst_baseview:
             baseview.baseapp = self

@@ -1,12 +1,13 @@
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask import current_app, g, request, current_app
-from flask.ext.login import current_user
-from sqlalchemy.engine.reflection import Inspector
-from sqlalchemy import MetaData, Table
-from sqlalchemy.ext.declarative import declarative_base
-
-from models import (User, Role, PermissionView, Permission, ViewMenu, assoc_permissionview_role)
 from flask.ext.appbuilder import Base
+from flask.ext.login import current_user
+from models import User, Role, PermissionView, Permission, ViewMenu, \
+    assoc_permissionview_role
+from sqlalchemy import MetaData, Table
+from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy.ext.declarative import declarative_base
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 
 class SecurityManager(object):
@@ -159,9 +160,14 @@ class SecurityManager(object):
             return None
         else:
             return user
+  
+    def reset_password(self, userid, password):
+        user = self.get_user_by_id(userid)
+        user.password = password
+        self.session.commit()
     
-    def get_user_by_id(self, id):
-        return self.session.query(User).get(id)
+    def get_user_by_id(self, pk):
+        return self.session.query(User).get(pk)
   
     def _get_role_public(self):
         """

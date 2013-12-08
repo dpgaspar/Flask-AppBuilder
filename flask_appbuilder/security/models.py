@@ -1,6 +1,5 @@
-from sqlalchemy import Table, Column, Integer, String, Boolean, MetaData, ForeignKey
+from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
-from ..models.mixins import BaseMixin
 from flask.ext.appbuilder import Base
 
 

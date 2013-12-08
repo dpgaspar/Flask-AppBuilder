@@ -1,19 +1,22 @@
-from flask import render_template, flash, redirect, session, url_for, request, g, current_app
-from flask.ext.login import login_user, logout_user, current_user, login_required
-from flask.ext.wtf import Required, Length, validators, EqualTo, PasswordField
-from flask.ext.babel import gettext, lazy_gettext
-
-from models import *
-from forms import *
-from flask.ext.appbuilder.views import BaseView, GeneralView, SimpleFormView, AdditionalLinkItem, expose
 from ..forms import BS3PasswordFieldWidget
+from flask import render_template, flash, redirect, session, url_for, request, g, \
+    current_app
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-
+from flask.ext.appbuilder.views import BaseView, GeneralView, SimpleFormView, \
+    AdditionalLinkItem, expose
+from flask.ext.babel import gettext, lazy_gettext
+from flask.ext.login import login_user, logout_user, current_user, \
+    login_required
+from flask.ext.openid import SessionWrapper, OpenIDResponse
+from flask.ext.wtf import Required, Length, validators, EqualTo, PasswordField
+from forms import *
+from models import *
+from openid.consumer import discover
+from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
 from openid.extensions import ax
 from openid.extensions.sreg import SRegRequest, SRegResponse
-from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
-from openid.consumer import discover
-from flask.ext.openid import SessionWrapper, OpenIDResponse
+
+
 
 #try:
 #    from app import app, db, lm, oid
@@ -90,9 +93,7 @@ class ResetMyPasswordView(SimpleFormView):
 
     def form_post(self, form):
         pk = request.args.get('pk')
-        user = db.session.query(User).get(pk)
-        user.password = form.password.data
-        db.session.commit()
+        self.baseapp.sm.reset_password(pk, form.password.data)
         flash(unicode(self.message),'info')
 
 
@@ -112,9 +113,7 @@ class ResetPasswordView(SimpleFormView):
 
     def form_post(self, form):
         pk = request.args.get('pk')
-        user = db.session.query(User).get(pk)
-        user.password = form.password.data
-        db.session.commit()
+        self.baseapp.sm.reset_password(pk, form.password.data)
         flash(unicode(self.message),'info')
 
 
