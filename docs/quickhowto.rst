@@ -4,7 +4,7 @@ Quick How to
 The Base Skeleton Application
 -----------------------------
 
-If your working with the base skeleton application (see 3 step instalation)
+If your working with the base skeleton application :doc:`instalation`
 
 you now have the following directory structure::
 
