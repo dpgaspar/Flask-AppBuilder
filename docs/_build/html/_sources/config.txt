@@ -1,5 +1,5 @@
 Base Configuration
-================================
+==================
 
 Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap 3.0.0 base theme:
 
@@ -16,14 +16,8 @@ Use config.py to configure the following parameters. By default it will use SQLL
     :IMG_UPLOAD_URL: Image relative URL.
     :BABEL_DEFAULT_LOCALE: Babel's default language.
     :LANGUAGES: A dictionary mapping the existing languages with the countrys name and flag
-        
-Languages example::
-        
-LANGUAGES = {
-    'en': {'flag':'gb', 'name':'English'},
-    'pt': {'flag':'pt', 'name':'Portugal'},
-    'es': {'flag':'es', 'name':'Spain'}
-}
-
+ 
+ Take a look at the skeleton :config.py:`https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py`
+ 
 
 
