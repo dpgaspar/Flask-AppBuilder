@@ -434,3 +434,6 @@ msgstr ""
 msgid "Record Count"
 msgstr ""
 
+msgid "Welcome"
+msgstr ""
+

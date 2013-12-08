@@ -437,3 +437,6 @@ msgstr "Agrupar por campo"
 msgid "Record Count"
 msgstr "Número de registos"
 
+msgid "Welcome"
+msgstr "Bem-vindo"
+

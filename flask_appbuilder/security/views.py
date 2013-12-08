@@ -9,12 +9,13 @@ from flask.ext.login import login_user, logout_user, current_user, \
     login_required
 from flask.ext.openid import SessionWrapper, OpenIDResponse
 from flask.ext.wtf import Required, Length, validators, EqualTo, PasswordField
-from forms import *
-from models import *
+from forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
+from models import User, Permission, PermissionView, Role, ViewMenu
 from openid.consumer import discover
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
 from openid.extensions import ax
 from openid.extensions.sreg import SRegRequest, SRegResponse
+
 
 
 
@@ -179,8 +180,6 @@ class UserDBGeneralView(UserGeneralView):
 
     @expose('/userinfo/')
     def userinfo(self):
-        additional_links = None
-
         show_additional_links = [AdditionalLinkItem('resetmypassword', self.lnk_reset_password,"/resetmypassword/form","lock")]
         widgets = self._get_show_widget(g.user.id, show_additional_links = show_additional_links)
         return render_template(self.show_template,
@@ -189,17 +188,18 @@ class UserDBGeneralView(UserGeneralView):
                            baseapp = self.baseapp,
                            )
 
-
     def _init_forms(self):
         super(UserGeneralView, self)._init_forms()
-        self.add_form.password = PasswordField('Password', 
+                
+        self.add_form.password = PasswordField(gettext('Password'), 
                                  description=self.description_columns['password'],
                                  widget=BS3PasswordFieldWidget())
-        self.add_form.conf_password = PasswordField('Confirm Password',
+        self.add_form.conf_password = PasswordField(gettext('Confirm Password'),
                                  default=self.add_form.password,
                                  description=self.description_columns['conf_password'],
-                                 validators=[EqualTo('password',message=u'Passwords must match')],
+                                 validators=[EqualTo('password',message=gettext('Passwords must match'))],
                                  widget=BS3PasswordFieldWidget())
+        
         if 'password' not in self.add_columns:
             self.add_columns = self.add_columns + ['password', 'conf_password']
         
@@ -294,11 +294,11 @@ class AuthOIDView(AuthView):
 
     def after_login(self, resp):
         if resp.email is None or resp.email == "":
-            flash(gettext('Invalid login. Please try again.'),'warning')
+            flash(unicode(self.invalid_login_message),'warning')
             return redirect('appbuilder/general/security/login_oid.html')
         user = self.baseapp.sm.auth_user_oid(resp.email)
         if user is None:
-            flash(gettext('Invalid login. Please try again.'),'warning')
+            flash(unicode(self.invalid_login_message),'warning')
             return redirect('appbuilder/general/security/login_oid.html')
         remember_me = False
         if 'remember_me' in session:
