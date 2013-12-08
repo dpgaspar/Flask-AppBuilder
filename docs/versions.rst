@@ -89,7 +89,7 @@ Bug Fixes
 ---------
 
 - General import corrections
-- Support for Postgres
+- Support for PostgreSQL
 
 
 Improvements and Bug fixes on 0.2.0
