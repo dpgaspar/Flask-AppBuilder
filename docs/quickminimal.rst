@@ -14,23 +14,31 @@ How to setup a minimal Application
 
     basedir = os.path.abspath(os.path.dirname(__file__))
     
-    # The Flask initialization
+    """
+        The Flask initialization
+    """
     app = Flask(__name__)
     
-    # You database connection String
+    """
+        Your database connection String
+    """
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'a$
     app.config['CSRF_ENABLED'] = True
-    
-    # Secret key for authentication cookies
+    """
+        Secret key for authentication cookies
+    """
     app.config['SECRET_KEY'] = 'thisismyscretkey'
-    
-    # The Flask-SQLAlchemy object initialization with the SQLALCHEMY_DATABASE_URI string you have setup 
+    """
+        The Flask-SQLAlchemy object initialization with the SQLALCHEMY_DATABASE_URI string you have setup 
+    """
     db = SQLAlchemy(app)
-
-    # The Base Flask-AppBuilder object initialization
+    """
+        The Base Flask-AppBuilder object initialization
+    """
     genapp = BaseApp(app, db)
-
-    # Run the application has a developement web server
+    """
+        Run the application has a developement web server
+    """
     app.run(host='0.0.0.0', port=8080, debug=True)
     
 If you run this notice that your database will be created, with two roles 'Admin' and 'Public', as well has all the security detailed permissions.
