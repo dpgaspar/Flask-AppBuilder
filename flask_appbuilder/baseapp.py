@@ -88,9 +88,6 @@ class BaseApp():
         lm.login_view = 'login'
         oid = OpenID(app)
         
-        babel = Babel(app)
-        
-        
         self.sm = SecurityManager(db.session, 
                             self._get_auth_type(), 
                             self._get_role_admin(), 
@@ -98,7 +95,7 @@ class BaseApp():
                             lm, 
                             oid)
         
-        self.babelmanager = BabelMamanager(babel)
+        self.babelmanager = BabelMamanager(app)
         
         self.app.before_request(self.sm.before_request)
         
