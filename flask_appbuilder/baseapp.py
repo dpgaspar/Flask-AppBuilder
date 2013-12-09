@@ -7,7 +7,7 @@ from .security.views import AuthDBView, AuthOIDView, ResetMyPasswordView, \
 from .views import IndexView
 from filters import TemplateFilters
 from flask import Blueprint
-from flask.ext.babel import Babel, gettext as _gettext, lazy_gettext
+from flask.ext.babel import BabelManager, Babel, gettext as _gettext, lazy_gettext
 from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
 from menu import Menu
@@ -39,6 +39,7 @@ class BaseApp():
     db = None
     # Security Manager
     sm = None
+    
     
     app_name = ""
     app_theme = ''
@@ -80,11 +81,15 @@ class BaseApp():
         
         # Creating Developer's models
         self.db.create_all()
-        
+    
+        # 
         lm = LoginManager()
         lm.init_app(app)
         lm.login_view = 'login'
         oid = OpenID(app)
+        
+        babel = Babel(app)
+        
         
         self.sm = SecurityManager(db.session, 
                             self._get_auth_type(), 
@@ -93,6 +98,7 @@ class BaseApp():
                             lm, 
                             oid)
         
+        self.babelmanager = BabelMamanager(babel)
         
         self.app.before_request(self.sm.before_request)
         

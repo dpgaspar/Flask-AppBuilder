@@ -1,8 +1,9 @@
 from flask import redirect, request, session
 from flask.ext.babel import refresh
-from app import babel
 from config import BABEL_DEFAULT_LOCALE
 from ..views import BaseView, expose
+
+from app import babel
 
 
 class LocaleView(BaseView):
