@@ -19,30 +19,22 @@ class SecurityManager(object):
     lm = None
     oid = None
 
-    def __init__(self, session, auth_type, auth_role_admin, auth_role_public, lm, oid = None):
+    def __init__(self, app, session):
         """
             SecurityManager contructor
+            param app:
+                The Flask app object
             param session:
                 the database session for security tables, passed to BaseApp
-            param auth_type:
-                the type of authentication to be used
-            param auth_role_admin:
-                the name of the Admin role: default 'Admin'
-            param auth_role_public:
-                the name of the Public role: default 'Public', this is the role for non
-                authenticated users
-            param lm:
-                The LoginManager initialized flask-Login
-            param oid:
-                optional, The flask-openId
         """
         self.session = session
-        self.auth_type = auth_type
-        self.auth_role_admin = auth_role_admin
-        self.auth_role_public = auth_role_public
+        self.auth_type = self._get_auth_type(app)
+        self.auth_role_admin = self._get_auth_role_admin(app)
+        self.auth_role_public = self._get_auth_role_public(app)
                     
-        self.lm = lm
-        self.oid = oid
+        self.lm = LoginManager(app)
+        self.lm.login_view = 'login'
+        self.oid = OpenID(app)
         self.lm.user_loader(self.load_user)        
         self.init_db()
         
@@ -176,13 +168,13 @@ class SecurityManager(object):
         else:
             return AUTH_DB
       
-    def _get_role_admin(self, app):
+    def _get_auth_role_admin(self, app):
         if 'AUTH_ROLE_ADMIN' in self.app.config:
             return app.config['AUTH_ROLE_ADMIN']
         else:
             return 'Admin'
       
-    def _get_role_public(self, app):
+    def _get_auth_role_public(self, app):
         """
             To retrive the name of the public role
         """
