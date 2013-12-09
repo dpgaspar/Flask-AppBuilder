@@ -1,9 +1,6 @@
 from flask import redirect, request, session
 from flask.ext.babel import refresh
-from config import BABEL_DEFAULT_LOCALE
 from ..views import BaseView, expose
-
-from app import babel
 
 
 class LocaleView(BaseView):
@@ -16,10 +13,3 @@ class LocaleView(BaseView):
         return redirect(self._get_redirect())
 
 
-@babel.localeselector
-def get_locale():
-    locale = session.get('locale')
-    if locale:
-        return locale
-    session['locale'] = BABEL_DEFAULT_LOCALE
-    return session['locale']
