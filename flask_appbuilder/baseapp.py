@@ -40,7 +40,7 @@ class BaseApp():
     db = None
     # Security Manager
     sm = None
-    
+    babelmanager = None
     
     app_name = ""
     app_theme = ''
