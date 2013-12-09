@@ -83,19 +83,7 @@ class BaseApp():
         # Creating Developer's models
         self.db.create_all()
     
-        # 
-        lm = LoginManager()
-        lm.init_app(app)
-        lm.login_view = 'login'
-        oid = OpenID(app)
-        
-        self.sm = SecurityManager(db.session, 
-                            self._get_auth_type(), 
-                            self._get_role_admin(), 
-                            self._get_role_public(), 
-                            lm, 
-                            oid)
-        
+        self.sm = SecurityManager(app, db.session)
         self.babelmanager = BabelManager(app)
         
         self.app.before_request(self.sm.before_request)
@@ -125,26 +113,6 @@ class BaseApp():
                 'en': {'flag':'gb', 'name':'English'},
                 'pt': {'flag':'pt', 'name':'Portugal'}
                 }
-    
-    def _get_auth_type(self):
-        if 'AUTH_TYPE' in self.app.config:
-            return self.app.config['AUTH_TYPE']
-        else:
-            return AUTH_DB
-      
-    
-    def _get_role_admin(self):
-        if 'AUTH_ROLE_ADMIN' in self.app.config:
-            return self.app.config['AUTH_ROLE_ADMIN']
-        else:
-            return 'Admin'
-      
-    def _get_role_public(self):
-        if 'AUTH_ROLE_PUBLIC' in self.app.config:
-            return self.app.config['AUTH_ROLE_PUBLIC']
-        else:
-            return 'Public'
-      
     
     def _add_global_filters(self):
         self.template_filters = TemplateFilters(self.app, self.sm)
