@@ -1,16 +1,11 @@
 from .babel.views import LocaleView
 from .security.manager import SecurityManager
-from .security.views import AuthDBView, AuthOIDView, ResetMyPasswordView, \
-    ResetPasswordView, UserDBGeneralView, UserOIDGeneralView, RoleGeneralView, \
-    PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView
     
 from .views import IndexView
 from filters import TemplateFilters
 from flask import Blueprint
 from flask.ext.babel import Babel, gettext as _gettext, lazy_gettext
 from flask.ext.appbuilder.babel.manager import BabelManager
-from flask.ext.login import LoginManager
-from flask.ext.openid import OpenID
 from menu import Menu
 import os
 
@@ -111,7 +106,6 @@ class BaseApp():
         else:
             self.languages = {
                 'en': {'flag':'gb', 'name':'English'},
-                'pt': {'flag':'pt', 'name':'Portugal'}
                 }
     
     def _add_global_filters(self):
@@ -125,29 +119,7 @@ class BaseApp():
     def _add_admin_views(self):
         self.add_view_no_menu(self.indexview())
         self.add_view_no_menu(LocaleView())
-            
-        self.add_view_no_menu(ResetPasswordView())
-        self.add_view_no_menu(ResetMyPasswordView())
-
-        if self._get_auth_type() == AUTH_DB:
-            user_view = self._init_view_session(UserDBGeneralView)
-            auth_view = AuthDBView()
-        else:
-            user_view = self._init_view_session(UserOIDGeneralView)
-            auth_view = AuthOIDView()
-            self.sm.oid.after_login_func = auth_view.after_login
-        
-        self.add_view_no_menu(auth_view)
-        
-        self.add_view(user_view, "List Users"
-                                        ,"/users/list","user",
-                                        "Security")
-                                        
-        self.add_view(self._init_view_session(RoleGeneralView), "List Roles","/roles/list","tags","Security")
-        self.menu.add_separator("Security")
-        self.add_view(self._init_view_session(PermissionViewGeneralView), "Base Permissions","/permissions/list","lock","Security")
-        self.add_view(self._init_view_session(ViewMenuGeneralView), "Views/Menus","/viewmenus/list","list-alt","Security")
-        self.add_view(self._init_view_session(PermissionGeneralView), "Permission on Views/Menus","/permissionviews/list","lock","Security")
+        self.sm.register_views(self)
 
     def _init_view_session(self, baseview_class):
         if baseview_class.datamodel.session == None:

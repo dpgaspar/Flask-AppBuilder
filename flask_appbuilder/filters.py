@@ -1,4 +1,3 @@
-from app import app
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask import g, request, url_for
 from flask.ext.login import current_user

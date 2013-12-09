@@ -1,13 +1,25 @@
 from flask import current_app, g, request, current_app
 from flask.ext.appbuilder import Base
 from flask.ext.login import current_user
-from models import User, Role, PermissionView, Permission, ViewMenu, \
-    assoc_permissionview_role
 from sqlalchemy import MetaData, Table
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.ext.declarative import declarative_base
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask.ext.login import LoginManager
+from flask.ext.openid import OpenID
 
+from models import User, Role, PermissionView, Permission, ViewMenu, \
+    assoc_permissionview_role
+from views import AuthDBView, AuthOIDView, ResetMyPasswordView, \
+    ResetPasswordView, UserDBGeneralView, UserOIDGeneralView, RoleGeneralView, \
+    PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView
+
+
+
+
+AUTH_OID = 0
+AUTH_DB = 1
+AUTH_LDAP = 2
 
 
 class SecurityManager(object):
@@ -37,6 +49,31 @@ class SecurityManager(object):
         self.oid = OpenID(app)
         self.lm.user_loader(self.load_user)        
         self.init_db()
+
+    def register_views(self, baseapp):
+        baseapp.add_view_no_menu(ResetPasswordView())
+        baseapp.add_view_no_menu(ResetMyPasswordView())
+
+        if self._get_auth_type(baseapp.app) == AUTH_DB:
+            user_view = baseapp._init_view_session(UserDBGeneralView)
+            auth_view = AuthDBView()
+        else:
+            user_view = baseapp._init_view_session(UserOIDGeneralView)
+            auth_view = AuthOIDView()
+            self.oid.after_login_func = auth_view.after_login
+        
+        baseapp.add_view_no_menu(auth_view)
+        
+        baseapp.add_view(user_view, "List Users"
+                                        ,"/users/list","user",
+                                        "Security")
+                                        
+        baseapp.add_view(baseapp._init_view_session(RoleGeneralView), "List Roles","/roles/list","tags","Security")
+        baseapp.menu.add_separator("Security")
+        baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView), "Base Permissions","/permissions/list","lock","Security")
+        baseapp.add_view(baseapp._init_view_session(ViewMenuGeneralView), "Views/Menus","/viewmenus/list","list-alt","Security")
+        baseapp.add_view(baseapp._init_view_session(PermissionGeneralView), "Permission on Views/Menus","/permissionviews/list","lock","Security")
+
         
     def load_user(self, pk):
         return self.get_user_by_id(int(pk))
@@ -163,13 +200,13 @@ class SecurityManager(object):
   
   
     def _get_auth_type(self, app):
-        if 'AUTH_TYPE' in self.app.config:
+        if 'AUTH_TYPE' in app.config:
             return app.config['AUTH_TYPE']
         else:
             return AUTH_DB
       
     def _get_auth_role_admin(self, app):
-        if 'AUTH_ROLE_ADMIN' in self.app.config:
+        if 'AUTH_ROLE_ADMIN' in app.config:
             return app.config['AUTH_ROLE_ADMIN']
         else:
             return 'Admin'
@@ -178,7 +215,7 @@ class SecurityManager(object):
         """
             To retrive the name of the public role
         """
-        if 'AUTH_ROLE_PUBLIC' in self.app.config:
+        if 'AUTH_ROLE_PUBLIC' in app.config:
             return app.config['AUTH_ROLE_PUBLIC']
         else:
             return 'Public'

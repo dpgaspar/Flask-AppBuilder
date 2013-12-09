@@ -18,6 +18,7 @@ Contents:
    intro
    instalation
    quickhowto
+   quickminimal
    quickcharts
    quickfiles
    i18n
