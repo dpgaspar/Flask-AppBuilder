@@ -96,7 +96,7 @@ class BaseApp():
                             lm, 
                             oid)
         
-        self.babelmanager = BabelMamanager(app)
+        self.babelmanager = BabelManager(app)
         
         self.app.before_request(self.sm.before_request)
         
