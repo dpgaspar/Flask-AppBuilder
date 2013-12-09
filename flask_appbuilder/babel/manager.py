@@ -8,7 +8,7 @@ class  BabelManager(object):
     def __init__(self, app):
         self.babel = Babel(app)
         self.basel_default_locale = self._get_default_locale(app)
-        babel.locale_selector_func = self.get_locale
+        self.babel.locale_selector_func = self.get_locale
         
     def _get_default_locale(self, app):
         if 'BABEL_DEFAULT_LOCALE' in app.config:
