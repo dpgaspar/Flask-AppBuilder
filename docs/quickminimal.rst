@@ -21,11 +21,16 @@ The code it self::
     """
     app = Flask(__name__)
     
+more::
+
     """
         Your database connection String
     """
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'a$
     app.config['CSRF_ENABLED'] = True
+
+more::
+
     """
         Secret key for authentication cookies
     """
@@ -34,10 +39,16 @@ The code it self::
         The Flask-SQLAlchemy object initialization with the SQLALCHEMY_DATABASE_URI string you have setup 
     """
     db = SQLAlchemy(app)
+    
+more::
+    
     """
         The Base Flask-AppBuilder object initialization
     """
     genapp = BaseApp(app, db)
+    
+more::
+    
     """
         Run the application has a developement web server
     """
