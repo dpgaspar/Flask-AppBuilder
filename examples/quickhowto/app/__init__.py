@@ -17,7 +17,12 @@ from flask.ext.openid import OpenID
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
+
+"""
+# Include Babel init if prior 0.3.5
+
 babel = Babel(app)
+"""
 
 """
 # Include this for Flask-AppBuilder 0.2.X
