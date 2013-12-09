@@ -7,7 +7,8 @@ from .security.views import AuthDBView, AuthOIDView, ResetMyPasswordView, \
 from .views import IndexView
 from filters import TemplateFilters
 from flask import Blueprint
-from flask.ext.babel import BabelManager, Babel, gettext as _gettext, lazy_gettext
+from flask.ext.babel import Babel, gettext as _gettext, lazy_gettext
+from flask.ext.babel.manager import BabelManager
 from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
 from menu import Menu
