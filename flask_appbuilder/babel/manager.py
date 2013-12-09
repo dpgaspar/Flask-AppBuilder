@@ -1,6 +1,6 @@
 from flask.ext.babel import Babel
 
-class  BabelManager(object)
+class  BabelManager(object):
 
     babel = None
     basel_default_locale = ''
