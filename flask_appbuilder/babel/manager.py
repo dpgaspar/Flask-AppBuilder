@@ -11,10 +11,10 @@ class  BabelManager(object):
         babel.locale_selector_func = self.get_locale()
         
     def _get_default_locale(self, app):
-        if 'BABEL_DEFAULT_LOCALE' in self.app.config:
-            self.app_name = self.app.config['BABEL_DEFAULT_LOCALE']
+        if 'BABEL_DEFAULT_LOCALE' in app.config:
+            self.basel_default_locale = app.config['BABEL_DEFAULT_LOCALE']
         else:
-            self.app_name = 'en'
+            self.basel_default_locale = 'en'
         
     def get_locale():
         locale = session.get('locale')
