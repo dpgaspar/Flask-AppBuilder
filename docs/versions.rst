@@ -83,6 +83,8 @@ Improvements
 - No need to use init_app.py first run will create all tables and insert all necessary permissions.
 - Auto migration from version 0.2.X to 0.3.X, because of security table names change.
 - Babel translations for Spanish
+- No need to initialize LoginManager, OID.
+- No need to initialize Babel (Flask-Babel) (since 0.3.5).
 
 Bug Fixes
 ---------
