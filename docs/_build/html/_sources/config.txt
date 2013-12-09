@@ -17,7 +17,8 @@ Use config.py to configure the following parameters. By default it will use SQLL
     :BABEL_DEFAULT_LOCALE: Babel's default language.
     :LANGUAGES: A dictionary mapping the existing languages with the countrys name and flag
  
- Take a look at the skeleton :config.py:`https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py`
+ Take a look at the skeleton `config.py <https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py>`_
+ 
  
 
 

@@ -19,9 +19,9 @@ you now have the following directory structure::
     
 It's very easy and fast to create an application out of the box, with detailed security.
 
-Please take a look at github examples on:
+Please take a look at github `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples>`_
 
-https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples
+
 
 Simple contacts application
 ---------------------------

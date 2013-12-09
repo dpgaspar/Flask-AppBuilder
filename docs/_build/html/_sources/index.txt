@@ -3,7 +3,7 @@ Flask-AppBuilder
 
 .. module:: flask.ext.appbuilder
 
-Simple and rapid Application builder, built on top of flask.
+Simple and rapid Application builder, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto form generation, google charts and much more.
 
 Important Note:
