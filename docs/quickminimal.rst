@@ -4,13 +4,15 @@ Quick Minimal Application
 How to setup a minimal Application
 ----------------------------------
 
-::
+The module imports::
 
     import os
     from flask import Flask
     from flask.ext.sqlalchemy import SQLAlchemy
     from sqlalchemy.engine import Engine
     from flask.ext.appbuilder.baseapp import BaseApp
+
+The code it self::
 
     basedir = os.path.abspath(os.path.dirname(__file__))
     
@@ -41,7 +43,7 @@ How to setup a minimal Application
     """
     app.run(host='0.0.0.0', port=8080, debug=True)
     
-If you run this notice that your database will be created, with two roles 'Admin' and 'Public', as well has all the security detailed permissions.
+If you run this, notice that your database will be created with two roles 'Admin' and 'Public', as well has all the security detailed permissions.
 
 The default authentication method will be database, you can take a look of all your application options on :doc:`config`
 
