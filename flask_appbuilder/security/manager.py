@@ -169,16 +169,29 @@ class SecurityManager(object):
     def get_user_by_id(self, pk):
         return self.session.query(User).get(pk)
   
-    def _get_role_public(self):
+  
+    def _get_auth_type(self, app):
+        if 'AUTH_TYPE' in self.app.config:
+            return app.config['AUTH_TYPE']
+        else:
+            return AUTH_DB
+      
+    def _get_role_admin(self, app):
+        if 'AUTH_ROLE_ADMIN' in self.app.config:
+            return app.config['AUTH_ROLE_ADMIN']
+        else:
+            return 'Admin'
+      
+    def _get_role_public(self, app):
         """
             To retrive the name of the public role
-            used in a transaction
         """
-        if 'AUTH_ROLE_PUBLIC' in current_app.config:
-            return current_app.config['AUTH_ROLE_PUBLIC']
+        if 'AUTH_ROLE_PUBLIC' in self.app.config:
+            return app.config['AUTH_ROLE_PUBLIC']
         else:
             return 'Public'
   
+    
     def is_menu_public(self, item):
         """
             Check if menu item has public permissions
@@ -186,7 +199,7 @@ class SecurityManager(object):
             param item:
                 menu item
         """
-        role = self.session.query(Role).filter_by(name = self._get_role_public()).first()
+        role = self.session.query(Role).filter_by(name = self.auth_role_public).first()
         lst = role.permissions
         if lst:
             for i in lst:
@@ -205,7 +218,7 @@ class SecurityManager(object):
                 the name of the class view (child of BaseView)
         """
 
-        role = self.session.query(Role).filter_by(name = self._get_role_public()).first()
+        role = self.session.query(Role).filter_by(name = self.auth_role_public).first()
         lst = role.permissions
         if lst:
             for i in lst:
