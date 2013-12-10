@@ -71,7 +71,12 @@ class BaseApp():
             param static_url_path:
                 optional, your override for the global static url path
         """
-        self.menu = menu or Menu()
+        if menu:
+            self.menu = menu
+            self._add_menu_permissions()
+        else:
+            self.menu = Menu()
+        
         self.app = app
         self.db = db
         
@@ -126,7 +131,16 @@ class BaseApp():
             baseview_class.datamodel.session = self.db.session
         return baseview_class()
     
+    def _add_permissions_menu(self, name):
+        try:
+            self.sm.add_permissions_menu(name)
+        except:
+            print "Add Permission on Menu Error: DB not created"
     
+    
+    def _add_menu_permissions(self):
+        for item in self.menu.get_list():
+            self._add_permissions_menu(item.name)
     
     def add_view(self, baseview, name, href = "", icon = "", category = ""):
         
@@ -141,12 +155,8 @@ class BaseApp():
     def add_link(self, name, href, icon = "", category = "", baseview = None):
         self.menu.add_link(name = name, href = href, icon = icon, 
                         category = category, baseview = baseview)
-        try:
-            self.sm.add_permissions_menu(name)
-            self.sm.add_permissions_menu(category)            
-        except:
-            print "Add Permission on Menu Error: DB not created"
-    
+        self._add_permissions_menu(name)
+        self._add_permissions_menu(category)
 
     def add_separator(self, category):
         self.menu.add_separator(category)
