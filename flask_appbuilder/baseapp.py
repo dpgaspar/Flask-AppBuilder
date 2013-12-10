@@ -141,8 +141,10 @@ class BaseApp():
     
     
     def _add_menu_permissions(self):
-        for item in self.menu.get_list():
-            self._add_permissions_menu(item.name)
+        for category in self.menu.get_list():
+            self._add_permissions_menu(category.name)
+            for item in category.childs:
+                self._add_permissions_menu(category.name)
     
     def add_view(self, baseview, name, href = "", icon = "", category = ""):
         
