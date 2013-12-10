@@ -1,5 +1,5 @@
 from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
-from sqlalchemy.orm import relationship, column_property
+from sqlalchemy.orm import relationship, column_property, backref
 from flask.ext.appbuilder import Base
 
 
