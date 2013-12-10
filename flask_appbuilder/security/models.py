@@ -1,5 +1,5 @@
 from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, column_property
 from flask.ext.appbuilder import Base
 
 
@@ -60,6 +60,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String(64), nullable = False)
     last_name = Column(String(64), nullable = False)
+    full_name = column_property(first_name + " " + last_name)
     username = Column(String(32), unique=True, nullable = False)
     password = Column(String(32))
     active = Column(Boolean)
