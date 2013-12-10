@@ -42,21 +42,22 @@ class SQLAModel(DataModel):
     
     def _get_base_query(self, query = None, filters = {}, order_column = '', order_direction = ''):
         for filter_key in filters:
-            #try:
-            rel_model, rel_direction = self._get_related_model(filter_key)
-            print "REL OK", rel_model
-            item = (filters.get(filter_key))
-            if rel_direction == 'MANYTOONE':
-                print "MANY TO ONE 1"
-                query = query.filter(getattr(self.obj,filter_key) == item)
-                print "MANY TO ONE 2"
-            elif rel_direction == 'MANYTOMANY':
-                query = query.filter(getattr(self.obj,filter_key).contains(item))
-            else:
-                pass
-            #except:
-            if self.is_string(filter_key) or self.is_text(filter_key):
-                query = query.filter(getattr(self.obj,filter_key).like(filters.get(filter_key) + '%'))
+            try:
+                rel_model, rel_direction = self._get_related_model(filter_key)
+                print "REL OK", rel_model
+                item_pk = (filters.get(filter_key))
+                item = self.session.query(rel_model).get(item_pk)
+                if rel_direction == 'MANYTOONE':
+                    print "MANY TO ONE 1"
+                    query = query.filter(getattr(self.obj,filter_key) == item)
+                    print "MANY TO ONE 2"
+                elif rel_direction == 'MANYTOMANY':
+                    query = query.filter(getattr(self.obj,filter_key).contains(item))
+                else:
+                    pass
+            except:
+                if self.is_string(filter_key) or self.is_text(filter_key):
+                    query = query.filter(getattr(self.obj,filter_key).like(filters.get(filter_key) + '%'))
         if (order_column != ''):
             query = query.order_by(order_column + ' ' + order_direction)
         
@@ -187,19 +188,19 @@ class SQLAModel(DataModel):
     -----------------------------------------
     """
     def add(self, item):
-        #try:
+        try:
             self.session.add(item)
             self.session.commit()
             flash(unicode(self.add_row_message),'success')
             return True
-        #except IntegrityError as e:
-        #    flash(unicode(self.add_integrity_error_message),'warning')
-        #    self.session.rollback()
-        #    return False
-        #except:
-        #    flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
-        #    self.session.rollback()
-        #    return False
+        except IntegrityError as e:
+            flash(unicode(self.add_integrity_error_message),'warning')
+            self.session.rollback()
+            return False
+        except:
+            flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
+            self.session.rollback()
+            return False
 
     def edit(self, item):
         try:
