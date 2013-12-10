@@ -47,7 +47,9 @@ class SQLAModel(DataModel):
                 print "REL OK", rel_model
                 item = (filters.get(filter_key))
                 if rel_direction == 'MANYTOONE':
+                    print "MANY TO ONE 1"
                     query = query.filter(getattr(self.obj,filter_key) == item)
+                    print "MANY TO ONE 2"
                 elif rel_direction == 'MANYTOMANY':
                     query = query.filter(getattr(self.obj,filter_key).contains(item))
                 else:
