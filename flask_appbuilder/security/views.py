@@ -144,7 +144,7 @@ class UserGeneralView(GeneralView):
                     'email':lazy_gettext('The users email, this will also be used for OID auth'),
                     'role':lazy_gettext('The user role on the application, this will associate with a list of permissions'),
                     'conf_password':lazy_gettext('Please rewrite the users password to confirm')}
-    list_columns = ['get_full_name', 'username', 'email','active', 'role']
+    list_columns = ['full_name', 'username', 'email','active', 'role']
     show_columns = ['first_name','last_name','username', 'active', 'email','role']
     order_columns = ['username', 'email']
     search_columns = ['first_name','last_name', 'username', 'email']
