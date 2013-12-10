@@ -44,6 +44,7 @@ class SQLAModel(DataModel):
         for filter_key in filters:
             try:
                 rel_model, rel_direction = self._get_related_model(filter_key)
+                print "REL OK", rel_model
                 item = (filters.get(filter_key))
                 if rel_direction == 'MANYTOONE':
                     query = query.filter(getattr(self.obj,filter_key) == item)
@@ -270,8 +271,10 @@ class SQLAModel(DataModel):
 
     def _get_related_model(self, col_name):
         for i in self.get_properties_iterator():
+            print "REL_MODEL", i
             if self.is_relation(i):
                 if (i.key == col_name):
+                    print "BEFORE"
                     return self.get_model_relation(i), i.direction.name
         return None
 
