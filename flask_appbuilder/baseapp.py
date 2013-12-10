@@ -71,12 +71,6 @@ class BaseApp():
             param static_url_path:
                 optional, your override for the global static url path
         """
-        if menu:
-            self.menu = menu
-            self._add_menu_permissions()
-        else:
-            self.menu = Menu()
-        
         self.app = app
         self.db = db
         
@@ -85,6 +79,12 @@ class BaseApp():
     
         self.sm = SecurityManager(app, db.session)
         self.babelmanager = BabelManager(app)
+        
+        if menu:
+            self.menu = menu
+            self._add_menu_permissions()
+        else:
+            self.menu = Menu()
         
         self.app.before_request(self.sm.before_request)
         
@@ -96,6 +96,8 @@ class BaseApp():
         self._add_global_static()
         self._add_global_filters()        
     
+        
+        
     
     def _init_config_parameters(self):
         if 'APP_NAME' in self.app.config:
