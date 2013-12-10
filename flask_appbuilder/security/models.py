@@ -30,7 +30,7 @@ class PermissionView(Base):
     __tablename__ = 'ab_permission_view'
     id = Column(Integer, primary_key=True)
     permission_id = Column(Integer, ForeignKey('ab_permission.id'))
-    permission = relationship("Permission", backref='permission')
+    permission = relationship("Permission", backref=backref('permissionview'))
     view_menu_id = Column(Integer, ForeignKey('ab_view_menu.id'))
     view_menu = relationship("ViewMenu")
 
