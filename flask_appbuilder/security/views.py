@@ -146,7 +146,7 @@ class UserGeneralView(GeneralView):
                     'conf_password':lazy_gettext('Please rewrite the users password to confirm')}
     list_columns = ['full_name', 'username', 'email','active', 'role']
     show_columns = ['first_name','last_name','username', 'active', 'email','role']
-    order_columns = ['username', 'email']
+    order_columns = ['full_name', 'username', 'email']
     search_columns = ['first_name','last_name', 'username', 'email']
 
     add_columns = ['first_name','last_name','username', 'active', 'email','role']
