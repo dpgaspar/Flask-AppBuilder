@@ -43,6 +43,7 @@ class SQLAModel(DataModel):
     def _get_base_query(self, query = None, filters = {}, order_column = '', order_direction = ''):
         for filter_key in filters:
             #try:
+                print "BASE QUERY", filter_key, (filters.get(filter_key))
                 item = self.get_related_obj(filter_key, (filters.get(filter_key)))
                 print "ITEM" , item
                 if rel_direction == 'MANYTOONE':
