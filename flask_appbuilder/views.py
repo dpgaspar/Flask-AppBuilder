@@ -215,11 +215,7 @@ class IndexView(BaseView):
     def index(self):
         return render_template(self.index_template, baseapp = self.baseapp)
 
-"""
-----------------------------------
-     SIMPLE FORM VIEW
-----------------------------------
-"""
+
 class SimpleFormView(BaseView):
     """
         View for presenting you own forms
@@ -227,12 +223,14 @@ class SimpleFormView(BaseView):
     """
 
     form_template = 'appbuilder/general/model/edit.html'
-    """ Widgets """
+    
     edit_widget = FormWidget
-
     form_title = 'Form Title'
+    """ The form title to be displayed """
     form_columns = []
+    """ The form columns to include """
     form = None
+    """ The WTF form to render """
     
     @expose("/form", methods=['GET'])
     @has_access
@@ -287,53 +285,76 @@ class BaseCRUDView(BaseView):
     
     datamodel = None
     related_views = []
+    """ Views that will be displayed related with this one, must be instantiated """
     
-    """ Titles """
     list_title = ""
+    """ List Title """
     show_title = ""
+    """ Show Title """
     add_title = ""
+    """ Add Title """
     edit_title = ""
+    """ Edit Title """
 
-    """ Include Columns """
+    
     list_columns = []
+    """ Include Columns for lists view """
     show_columns = []
+    """ Include Columns for show view """
     add_columns = []
+    """ Include Columns for add view """
     edit_columns = []
+    """ Include Columns for edit view """
     order_columns = []
+    """ Allowed order columns """
     search_columns = []
+    """ Allowed search columns """
 
     label_columns = {}
     description_columns = {}
     
     page_size = 30
 
-    """ fieldsets [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....] """
+    
     show_fieldsets = []
+    """ show fieldsets [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....] """
     add_fieldsets = []
+    """ add fieldsets [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....] """
     edit_fieldsets = []
+    """ edit fieldsets [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....] """
 
-    """ Forms """
+    
     add_form = None
+    """ Your own add WTF form for Add """
     edit_form = None
+    """ Your own add WTF form for Edit """
     search_form = None
+    """ Your own add WTF form for Search """
 
     validators_columns = {}
 
-    """ Template Layouts """
+    
     list_template = 'appbuilder/general/model/list.html'
+    """ Your own add jinja2 template for list """
     edit_template = 'appbuilder/general/model/edit.html'
+    """ Your own add jinja2 template for edit """
     add_template = 'appbuilder/general/model/add.html'
+    """ Your own add jinja2 template for add """
     show_template = 'appbuilder/general/model/show.html'
-
-    """ Widgets """
-    list_widget = ListWidget
-    edit_widget = FormWidget
-    add_widget = FormWidget
-    show_widget = ShowWidget
-    search_widget = SearchWidget
+    """ Your own add jinja2 template for show """
 
     
-    """ Additional Widgets """
+    list_widget = ListWidget
+    """ List widget override """
+    edit_widget = FormWidget
+    """ Edit widget override """
+    add_widget = FormWidget
+    """ Add widget override """
+    show_widget = ShowWidget
+    """ Show widget override """
+    search_widget = SearchWidget
+    """ Search widget override """
+        
     show_additional_links = []
 
     
@@ -402,11 +423,6 @@ class BaseCRUDView(BaseView):
         super(BaseCRUDView, self).__init__(**kwargs)
     
 
-    """
-    --------------------------
-            WIDGET METHODS
-    --------------------------
-    """
     def _get_related_list_widget(self, item, related_view, 
                                 filters={}, order_column='', order_direction='',
                                 page=None, page_size=None):
@@ -502,33 +518,47 @@ class BaseCRUDView(BaseView):
         print self.__class__.__name__, "EDIT COL", self.edit_columns
         print self.__class__.__name__, "LIST COL", self.list_columns
 
-    """
-    -----------------------------------
-     Methods to override
-    -----------------------------------
-    """
+    
     @classmethod
     def pre_update(self, item):
+        """
+            Override this, will be called before update
+        """
         pass
 
     @classmethod
     def post_update(self, item):
+        """
+            Override this, will be called after update
+        """        
         pass
 
     @classmethod
     def pre_add(self, item):
+        """
+            Override this, will be called before add
+        """        
         pass
 
     @classmethod
     def post_add(self, item):
+        """
+            Override this, will be called after update
+        """        
         pass
 
     @classmethod
     def pre_delete(self, item):
+        """
+            Override this, will be called before delete
+        """        
         pass
 
     @classmethod
     def post_delete(self, item):
+        """
+            Override this, will be called after delete
+        """        
         pass
 
 
