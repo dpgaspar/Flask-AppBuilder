@@ -42,8 +42,9 @@ class SQLAModel(DataModel):
     
     def _get_base_query(self, query = None, filters = {}, order_column = '', order_direction = ''):
         for filter_key in filters:
-            try:
+            #try:
                 item = self.get_related_obj(filter_key, (filters.get(filter_key)))
+                print "ITEM" , item
                 if rel_direction == 'MANYTOONE':
                     print "MANY TO ONE 1"
                     query = query.filter(getattr(self.obj,filter_key) == item)
@@ -52,7 +53,7 @@ class SQLAModel(DataModel):
                     query = query.filter(getattr(self.obj,filter_key).contains(item))
                 else:
                     pass
-            except:
+            #except:
                 if self.is_string(filter_key) or self.is_text(filter_key):
                     query = query.filter(getattr(self.obj,filter_key).like(filters.get(filter_key) + '%'))
         if (order_column != ''):
