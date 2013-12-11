@@ -1,11 +1,22 @@
-``flask.ext.appbuilder.baseapp``
-========================
+API Reference
+=============
+
+flask.ext.appbuilder.baseapp
+----------------------------
 
 .. automodule:: flask.ext.appbuilder.baseapp
 
-    Base App
-    --------
-    
     .. autoclass:: BaseApp
+        :members:
+
+Views
+-----
+
+.. automodule:: flask.ext.appbuilder.views
+
+    .. autoclass:: BaseView
+        :members:
+        
+    .. autoclass:: GeneralView
         :members:
         
