@@ -17,12 +17,14 @@ Views
     .. autoclass:: BaseView
         :members:
         
-    .. autoclass:: IndexView
+	.. autoclass:: IndexView
         :members:
         
     .. autoclass:: SimpleFormView
         :members:
 
-	.. autoclass:: GeneralView
+	.. autoclass:: BaseCRUDView
         :members:
-	
+
+    .. autoclass:: GeneralView
+        :members:

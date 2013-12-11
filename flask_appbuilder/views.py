@@ -282,6 +282,10 @@ class SimpleFormView(BaseView):
 
 
 class BaseCRUDView(BaseView):
+    """
+        The base class of GeneralView, all properties are inherited
+    """
+    
     
     datamodel = None
     related_views = []

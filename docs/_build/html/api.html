@@ -155,9 +155,23 @@ Will hold your flask app object, all your views, and security classes.</p>
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">BaseView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.BaseView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base View for all Views
 Extend this class if you want to expose methods for your own templates</p>
+<dl class="class">
+<dt id="flask.ext.appbuilder.views.BaseView.IndexView">
+<em class="property">class </em><tt class="descname">IndexView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.BaseView.IndexView" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple view that implements the index for the site</p>
+</dd></dl>
+
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Members :</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="flask.ext.appbuilder.views.BaseView.create_blueprint">
-<tt class="descname">create_blueprint</tt><big>(</big><em>baseapp</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseView.create_blueprint" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">BaseView.</tt><tt class="descname">create_blueprint</tt><big>(</big><em>baseapp</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseView.create_blueprint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create Flask blueprint.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -177,22 +191,14 @@ Extend this class if you want to expose methods for your own templates</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="flask.ext.appbuilder.views.IndexView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">IndexView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.IndexView" title="Permalink to this definition">¶</a></dt>
-<dd><p>A simple view that implements the index for the site</p>
-</dd></dl>
-
-<dl class="class">
 <dt id="flask.ext.appbuilder.views.SimpleFormView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">SimpleFormView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView" title="Permalink to this definition">¶</a></dt>
 <dd><p>View for presenting you own forms
 override form_get and form_post</p>
 <dl class="class">
-<dt id="flask.ext.appbuilder.views.SimpleFormView.GeneralView">
-<em class="property">class </em><tt class="descname">GeneralView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.GeneralView" title="Permalink to this definition">¶</a></dt>
-<dd><p>General View Class
-Responsible to handle all CRUD events
-List, Edit, Add, Show based on models</p>
+<dt id="flask.ext.appbuilder.views.SimpleFormView.BaseCRUDView">
+<em class="property">class </em><tt class="descname">BaseCRUDView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.BaseCRUDView" title="Permalink to this definition">¶</a></dt>
+<dd><p>The base class of GeneralView, all properties are inherited</p>
 </dd></dl>
 
 <table class="docutils field-list" frame="void" rules="none">
@@ -233,6 +239,14 @@ List, Edit, Add, Show based on models</p>
 <dd><p>The form title to be displayed</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="class">
+<dt id="flask.ext.appbuilder.views.GeneralView">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">GeneralView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.GeneralView" title="Permalink to this definition">¶</a></dt>
+<dd><p>General View Class
+Responsible to handle all CRUD events
+List, Edit, Add, Show based on models</p>
 </dd></dl>
 
 </div>
