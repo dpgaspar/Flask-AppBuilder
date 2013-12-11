@@ -54,14 +54,9 @@ class PersonGeneralView(GeneralView):
 class GroupGeneralView(GeneralView):
     route_base = '/groups'
     datamodel = SQLAModel(Group, db.session)
-    related_views = [PersonGeneralView()]
+    related_views = [PersonGeneralView()]    
 
-    list_title = 'List Groups'
-    show_title = 'Show Group'
-    add_title = 'Add Group'
-    edit_title = 'Edit Group'
-
-    label_columns = { 'name':'Name','address':'Address','phone1':'Phone (1)','phone2':'Phone (2)','taxid':'Tax ID','notes':'Notes'}
+    label_columns = { 'phone1':'Phone (1)','phone2':'Phone (2)','taxid':'Tax ID'}
     list_columns = ['name','notes']
     show_columns = ['name','address','phone1','phone2','taxid','notes']
     order_columns = ['name','notes']

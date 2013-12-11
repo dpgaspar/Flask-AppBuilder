@@ -17,7 +17,7 @@ Role based
 
 Each user belong's to a role, and a role holds permissions on views and menus, so a user has permissions on views and menus.
 
-There are two special roles, that you can define it's names on the :doc:`config`
+There are two special roles, you can define their names on the :doc:`config`
 
 	- Admin Role: The framework will assign all the existing permission on views and menus to this role, automatically, this role is for authenticated users only.	 
 
@@ -50,10 +50,19 @@ These base permission will be associated with your view, so if you create a view
 	
 If you extend your view with some exposed method via the @expose decorator::
 
-	@expose('/mymethod/')
-	@has_access
-	def mymethod(self):
-    	# do something
+	class MyGeneralView(GeneralView):
+    	datamodel = SQLAModel(Group, db.session)
+    	
+    	list_columns = ['name']
+    	show_columns = ['name']
+    	order_columns = ['name']
+    	search_columns = ['name']
+    	
+    	@expose('/mymethod/')
+		@has_access
+		def mymethod(self):
+			# do something
+			pass
     	
 The framework will create the following access:
 

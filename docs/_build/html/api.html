@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -6,15 +7,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>flask.ext.appbuilder.views &mdash; Flask-AppBuilder 0.1.46 documentation</title>
+    <title>flask.ext.appbuilder.baseapp &mdash; Flask AppBuilder</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.1.46',
+        URL_ROOT:    '',
+        VERSION:     '0.3.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,10 +24,18 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Flask-AppBuilder 0.1.46 documentation" href="index.html" />
-    <link rel="prev" title="Views" href="views.html" /> 
+    <link rel="top" title="Flask AppBuilder" href="index.html" />
+    <link rel="next" title="Versions" href="versions.html" />
+    <link rel="prev" title="Security" href="security.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
   </head>
   <body>
+  
+  
+
     <div class="related">
       <h3>Navigation</h3>
       <ul>
@@ -34,9 +43,15 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="views.html" title="Views"
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="versions.html" title="Versions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="security.html" title="Security"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Flask-AppBuilder 0.1.46 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -45,8 +60,25 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="flask-ext-appbuilder-views">
-<h1><tt class="docutils literal"><span class="pre">flask.ext.appbuilder.views</span></tt><a class="headerlink" href="#flask-ext-appbuilder-views" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="flask-ext-appbuilder-baseapp">
+<h1><tt class="docutils literal"><span class="pre">flask.ext.appbuilder.baseapp</span></tt><a class="headerlink" href="#flask-ext-appbuilder-baseapp" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-flask.ext.appbuilder.baseapp"></span><div class="section" id="base-app">
+<h2>Base App<a class="headerlink" href="#base-app" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="flask.ext.appbuilder.baseapp.BaseApp">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.baseapp.</tt><tt class="descname">BaseApp</tt><big>(</big><em>app</em>, <em>db</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the base class for the all framework.
+Will hold your flask app object, all your views, and security classes.</p>
+<p>initialize your application like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">SQLAlchemy</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -55,9 +87,20 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="views.html"
-                        title="previous chapter">Views</a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">flask.ext.appbuilder.baseapp</span></tt></a><ul>
+<li><a class="reference internal" href="#base-app">Base App</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="security.html" title="previous chapter">Security</a></li>
+      <li>Next: <a href="versions.html" title="next chapter">Versions</a></li>
+  </ul></li>
+</ul>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/api.txt"
@@ -80,21 +123,16 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="views.html" title="Views"
-             >previous</a> |</li>
-        <li><a href="index.html">Flask-AppBuilder 0.1.46 documentation</a> &raquo;</li> 
-      </ul>
-    </div>
-    <div class="footer">
-        &copy; Copyright 2013, Daniel Vaz Gaspar.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b3.
-    </div>
+
+
+<a href="http://github.com/dpgaspar/Flask-AppBuilder"><img style="position: fixed; top: 0; right: 0; border: 0;"
+src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+
+  <div class="footer">
+    &copy; Copyright 2013, Daniel Vaz Gaspar.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
   </body>
 </html>
