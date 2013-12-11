@@ -1,5 +1,5 @@
-Introdution
-===========
+Introduction
+============
 
 The main goal for this project is to provide a simple development framework that handles the main problems any web application or site encounters.
 
