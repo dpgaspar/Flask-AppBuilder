@@ -281,6 +281,7 @@ class SQLAModel(DataModel):
         return None
 
     def get_related_obj(self, col_name, value):
+        print "GET RELATED OBJ", col_name, value
         rel_model, rel_direction = self._get_related_model(col_name)
         return self.session.query(rel_model).get(value)
 
