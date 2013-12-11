@@ -23,9 +23,7 @@ Contents:
    quickfiles
    i18n
    config
-   views
    security
-   forms
    api
    versions
 

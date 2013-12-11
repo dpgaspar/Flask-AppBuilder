@@ -30,3 +30,17 @@ Views
 
     .. autoclass:: GeneralView
         :members:
+
+Chart Views
+-----------
+
+.. automodule:: flask.ext.appbuilder.charts.views
+
+    .. autoclass:: BaseChartView
+        :members:
+
+    .. autoclass:: ChartView
+        :members:
+
+    .. autoclass:: TimeChartView
+        :members:

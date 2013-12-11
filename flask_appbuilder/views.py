@@ -28,8 +28,11 @@ def expose(url='/', methods=('GET',)):
     
 class BaseView(object):
     """
-        Base View for all Views
-        Extend this class if you want to expose methods for your own templates
+        All views derive from this class. it's constructor will register your exposed urls on flask as a Blueprint.
+
+        This class does not expose any urls, but provides a common base for all views.
+        
+        Extend this class if you want to expose methods for your own templates        
     """
 
     baseapp = None
@@ -37,6 +40,8 @@ class BaseView(object):
     endpoint = None
     
     route_base = None
+    """ Override this if you want to define your own relative url """
+    
     template_folder = 'templates'
     static_folder='static'
     
@@ -68,7 +73,7 @@ class BaseView(object):
                         endpoint = None, 
                         static_folder = None):
         """
-            Create Flask blueprint.
+            Create Flask blueprint. You will generally not use it
             
             :param baseapp:
                the BaseApp application
@@ -219,7 +224,11 @@ class IndexView(BaseView):
 class SimpleFormView(BaseView):
     """
         View for presenting you own forms
-        override form_get and form_post
+        Derive from this view to provide some base processing for your costumized form views.
+
+        Notice that this class derives from BaseView so all properties from the parent class can be overrided also.
+
+        Implement form_get and form_post to implement your form pre-processing and post-processing
     """
 
     form_template = 'appbuilder/general/model/edit.html'
@@ -284,10 +293,12 @@ class SimpleFormView(BaseView):
 class BaseCRUDView(BaseView):
     """
         The base class of GeneralView, all properties are inherited
+        Customize GeneralView overriding this properties
     """
     
     
     datamodel = None
+    """ Your sqla model you must initialize it like datamodel = SQLAModel(Permission, session) """
     related_views = []
     """ Views that will be displayed related with this one, must be instantiated """
     
@@ -569,9 +580,9 @@ class BaseCRUDView(BaseView):
 
 class GeneralView(BaseCRUDView):
     """
-    General View Class
-    Responsible to handle all CRUD events
-    List, Edit, Add, Show based on models
+        This is the most important view. If you want to automatically implement create, edit, delete, show, and search form your database tables, derive your views from this class.
+
+        Notice that this class derives from BaseView so all properties from the parent class can be overrided also.
     """
 
     def __init__(self, **kwargs):
