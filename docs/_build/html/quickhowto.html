@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -13,7 +14,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
+        URL_ROOT:    '',
         VERSION:     '0.3.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -24,7 +25,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
-    <link rel="next" title="Quick Charts" href="quickcharts.html" />
+    <link rel="next" title="Quick Minimal Application" href="quickminimal.html" />
     <link rel="prev" title="Instalation" href="instalation.html" />
    
   
@@ -45,7 +46,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="quickcharts.html" title="Quick Charts"
+          <a href="quickminimal.html" title="Quick Minimal Application"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="instalation.html" title="Instalation"
@@ -79,7 +80,7 @@
 <div class="section" id="simple-contacts-application">
 <h2>Simple contacts application<a class="headerlink" href="#simple-contacts-application" title="Permalink to this headline">¶</a></h2>
 <p>Lets create a very simple contacts application.</p>
-<p>First let&#8217;s create a <em>Group</em> table to group our contacts</p>
+<p>First we are going to create a <em>Group</em> table, to group our contacts</p>
 </div>
 <div class="section" id="define-your-models-models-py">
 <h2>Define your models (models.py)<a class="headerlink" href="#define-your-models-models-py" title="Permalink to this headline">¶</a></h2>
@@ -146,8 +147,8 @@
 </tbody>
 </table>
 <p>There are many more properties you can override to customize your views. you can define descriptions for columns, validators for forms, and many more</p>
-<p>Take a look at the Views chapter.</p>
-<p>But where is ContactGeneralView ?</p>
+<p>Take a look at the <a class="reference internal" href="views.html"><em>Views</em></a>.</p>
+<p>But where is ContactGeneralView ? (that was a reference has a related_views)</p>
 <p>Let&#8217;s define it:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
@@ -169,7 +170,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">label_columns:</th><td class="field-body">defines your labels for columns (dha!). The framework will define the missing ones for you, with a pretty version of your column names.</td>
+<tr class="field-odd field"><th class="field-name">label_columns:</th><td class="field-body">defines the labels for your columns. The framework will define the missing ones for you, with a pretty version of your column names.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">show_fieldsets:</th><td class="field-body">A fieldset (Django style).</td>
 </tr>
@@ -186,9 +187,9 @@
 </div>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>
 <p>Some images:</p>
-<a class="reference internal image-reference" href="_images/login.png"><img alt="_images/login.png" src="_images/login.png" style="width: 100%;" /></a>
-<a class="reference internal image-reference" href="_images/group_list.png"><img alt="_images/group_list.png" src="_images/group_list.png" style="width: 100%;" /></a>
-<a class="reference internal image-reference" href="_images/contact_list.png"><img alt="_images/contact_list.png" src="_images/contact_list.png" style="width: 100%;" /></a>
+<img alt="_images/login.png" src="_images/login.png" style="width: 100%;" />
+<img alt="_images/group_list.png" src="_images/group_list.png" style="width: 100%;" />
+<img alt="_images/contact_list.png" src="_images/contact_list.png" style="width: 100%;" />
 </div>
 </div>
 
@@ -213,7 +214,7 @@
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="instalation.html" title="previous chapter">Instalation</a></li>
-      <li>Next: <a href="quickcharts.html" title="next chapter">Quick Charts</a></li>
+      <li>Next: <a href="quickminimal.html" title="next chapter">Quick Minimal Application</a></li>
   </ul></li>
 </ul>
   <h3>This Page</h3>

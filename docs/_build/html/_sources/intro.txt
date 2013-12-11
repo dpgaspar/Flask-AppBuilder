@@ -3,17 +3,19 @@ Introdution
 
 The main goal for this project is to provide a simple development framework that handles the main problems any web application or site encounters.
 
+It's half way between a scafolding package on Bootstrap 3 and a full development framework, it has some goodies built in like image and file handling on forms, and google charts
+
 This will lower errors, bugs, project's time to deliver. It's intended to be a rapid application development tool.
 
 Includes
 --------
 
   - Security
-        - Auto permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.
-        - Inserts on the Database all the detailed permissions possible on your application.
-        - Public (no authentication needed) and Private permissions.
-        - Role based permissions.
-        - Authentication based on OpenID and Database (Planning LDAP).
+    - Auto permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.
+    - Inserts on the Database all the detailed permissions possible on your application.
+    - Public (no authentication needed) and Private permissions.
+    - Role based permissions.
+    - Authentication based on OpenID and Database (Planning LDAP).
   - Views and Widgets
 	- Auto menu generator.
 	- Various view widgets: lists, master-detail, list of thumbnails etc

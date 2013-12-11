@@ -1,13 +1,14 @@
 import os
 import os.path as op
 
+from wtforms import ValidationError
 from werkzeug import secure_filename
 from werkzeug.datastructures import FileStorage
 import uuid
 
 try:
     from config import UPLOAD_FOLDER, IMG_UPLOAD_FOLDER, IMG_UPLOAD_URL
-except  ImportError:    
+except  ImportError:
     print "UPLOAD_FOLDER, IMG_UPLOAD_FOLDER, IMG_UPLOAD_URL not found. Using default"
     basedir = os.path.abspath(os.path.dirname(__file__))
     UPLOAD_FOLDER = basedir + '/app/static/uploads/' 
@@ -19,7 +20,7 @@ try:
 except ImportError:
     Image = None
     ImageOps = None
-    
+
 
 class FileManager(object):
     
@@ -98,6 +99,8 @@ class ImageManager(FileManager):
                                         **kwargs)
 
     def get_url(self, filename):
+        if isinstance(filename, FileStorage):
+            return filename.filename
         return self.relative_path + filename
     
     # Deletion
@@ -165,7 +168,6 @@ class ImageManager(FileManager):
     def save_image(self, image, path, format='JPEG'):
         if image.mode not in ('RGB', 'RGBA'):
             image = image.convert('RGBA')
-
         with open(path, 'wb') as fp:
             image.save(fp, format)
 

@@ -1,9 +1,14 @@
-from flask.ext.wtf import Form, fields, widgets, TextField, BooleanField, TextAreaField,IntegerField, DateField,SelectFieldBase, SelectField, QuerySelectField, QuerySelectMultipleField, HiddenField
-from flask.ext.wtf import Required, Length, validators, EqualTo
 from wtforms.widgets import HTMLString, html_params
 import sqlalchemy as sa
-from upload import *
 
+from flask.ext.wtf import (Form, fields, widgets, TextField, BooleanField, 
+                           TextAreaField,IntegerField, DateField,
+                           SelectFieldBase, SelectField, QuerySelectField, 
+                           QuerySelectMultipleField, HiddenField)
+
+from flask.ext.wtf import Required, Length, validators, EqualTo
+from upload import BS3FileUploadFieldWidget, BS3ImageUploadFieldWidget, FileUploadField,ImageUploadField
+from validators import Unique
 
 class GeneralModelConverter(object):
 
@@ -51,6 +56,8 @@ class GeneralModelConverter(object):
             lst_validators.append(validators.Required())
         else:
             lst_validators.append(validators.Optional())
+        if col.unique:
+            lst_validators.append(Unique(self.datamodel.session, self.datamodel.obj, col))
         if self.datamodel.is_image(col.name):
             form_props[col.name] = ImageUploadField(label,
                                     description=description,

@@ -42,19 +42,16 @@ class SQLAModel(DataModel):
     
     def _get_base_query(self, query = None, filters = {}, order_column = '', order_direction = ''):
         for filter_key in filters:
-            #try:
-                print "BASE QUERY", filter_key, (filters.get(filter_key))
-                item = self.get_related_obj(filter_key, (filters.get(filter_key)))
-                print "ITEM" , item
+            if self.is_relation_col(filter_key):
+                item = filters.get(filter_key)
+                rel_direction = self._get_relation_direction(filter_key)
                 if rel_direction == 'MANYTOONE':
-                    print "MANY TO ONE 1"
                     query = query.filter(getattr(self.obj,filter_key) == item)
-                    print "MANY TO ONE 2"
                 elif rel_direction == 'MANYTOMANY':
                     query = query.filter(getattr(self.obj,filter_key).contains(item))
                 else:
                     pass
-            #except:
+            else:
                 if self.is_string(filter_key) or self.is_text(filter_key):
                     query = query.filter(getattr(self.obj,filter_key).like(filters.get(filter_key) + '%'))
         if (order_column != ''):
@@ -273,15 +270,18 @@ class SQLAModel(DataModel):
 
     def _get_related_model(self, col_name):
         for i in self.get_properties_iterator():
-            print "REL_MODEL", i
             if self.is_relation(i):
                 if (i.key == col_name):
-                    print "BEFORE"
                     return self.get_model_relation(i), i.direction.name
         return None
 
+    def _get_relation_direction(self, col_name):
+        for i in self.get_properties_iterator():
+            if self.is_relation(i):
+                if (i.key == col_name):
+                    return i.direction.name
+
     def get_related_obj(self, col_name, value):
-        print "GET RELATED OBJ", col_name, value
         rel_model, rel_direction = self._get_related_model(col_name)
         return self.session.query(rel_model).get(value)
 

@@ -49,7 +49,10 @@ Next step
 
 Take a look at the example:
 
-https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/contactsapp
+https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickimages
 
- 
+Some images:
+
+.. image:: ./images/images_list.png
+    :width: 100%
 

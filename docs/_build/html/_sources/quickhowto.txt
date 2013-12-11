@@ -22,13 +22,12 @@ It's very easy and fast to create an application out of the box, with detailed s
 Please take a look at github `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples>`_
 
 
-
 Simple contacts application
 ---------------------------
 
 Lets create a very simple contacts application.
 
-First let's create a *Group* table to group our contacts
+First we are going to create a *Group* table, to group our contacts
 
 Define your models (models.py)
 ------------------------------
@@ -92,10 +91,10 @@ Optional properties:
 
 There are many more properties you can override to customize your views. you can define descriptions for columns, validators for forms, and many more
 
-Take a look at the Views chapter.
+Take a look at the :doc:`views`.
 
 
-But where is ContactGeneralView ?
+But where is ContactGeneralView ? (that was a reference has a related_views) 
 
 Let's define it::
 
@@ -115,7 +114,7 @@ Let's define it::
 
 Some explanation:
 
-:label_columns: defines your labels for columns (dha!). The framework will define the missing ones for you, with a pretty version of your column names.
+:label_columns: defines the labels for your columns. The framework will define the missing ones for you, with a pretty version of your column names.
 :show_fieldsets: A fieldset (Django style).
 
 

@@ -11,9 +11,12 @@ Instalation
 
 - Run it::
 
+    cd Flask-AppBuilder-Skeleton
 	python run.py
 
 That's it!!
+
+The git clone is not actually needed for you to run AppBuilder. but it's a good way to start, also comes with all the translations from the framework see :doc:`i18n`
 
 What requirements were instaled
 -------------------------------

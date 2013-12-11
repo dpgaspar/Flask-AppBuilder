@@ -56,10 +56,10 @@ class SecurityManager(object):
 
         if self._get_auth_type(baseapp.app) == AUTH_DB:
             user_view = baseapp._init_view_session(UserDBGeneralView)
-            auth_view = AuthDBView()
+            auth_view = AuthDBView()            
         else:
             user_view = baseapp._init_view_session(UserOIDGeneralView)
-            auth_view = AuthOIDView()
+            auth_view = AuthOIDView()            
             self.oid.after_login_func = auth_view.after_login
         
         baseapp.add_view_no_menu(auth_view)
@@ -67,8 +67,10 @@ class SecurityManager(object):
         baseapp.add_view(user_view, "List Users"
                                         ,"/users/list","user",
                                         "Security")
-                                        
-        baseapp.add_view(baseapp._init_view_session(RoleGeneralView), "List Roles","/roles/list","tags","Security")
+                 
+        role_view = baseapp._init_view_session(RoleGeneralView)                       
+        baseapp.add_view(role_view, "List Roles","/roles/list","tags","Security")
+        role_view.related_views = [user_view]
         baseapp.menu.add_separator("Security")
         baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView), "Base Permissions","/permissions/list","lock","Security")
         baseapp.add_view(baseapp._init_view_session(ViewMenuGeneralView), "Views/Menus","/viewmenus/list","list-alt","Security")

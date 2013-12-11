@@ -1,7 +1,4 @@
-import os
-import os.path as op
 
-from werkzeug import secure_filename
 from werkzeug.datastructures import FileStorage
 
 from wtforms import ValidationError, fields
@@ -160,7 +157,7 @@ class FileUploadField(fields.TextField):
 
             setattr(obj, name, filename)
 
-    
+
 
 class ImageUploadField(fields.TextField):
     """
