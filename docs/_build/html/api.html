@@ -150,28 +150,32 @@ Will hold your flask app object, all your views, and security classes.</p>
 </div>
 <div class="section" id="module-flask.ext.appbuilder.views">
 <span id="views"></span><h2>Views<a class="headerlink" href="#module-flask.ext.appbuilder.views" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="flask.ext.appbuilder.views.expose">
+<tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">expose</tt><big>(</big><em>url='/'</em>, <em>methods=('GET'</em>, <em>)</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.expose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this decorator to expose views in your view classes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>url</strong> &#8211; Relative URL for the view</li>
+<li><strong>methods</strong> &#8211; Allowed HTTP methods. By default only GET is allowed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="class">
 <dt id="flask.ext.appbuilder.views.BaseView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">BaseView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.BaseView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base View for all Views
 Extend this class if you want to expose methods for your own templates</p>
-<dl class="class">
-<dt id="flask.ext.appbuilder.views.BaseView.IndexView">
-<em class="property">class </em><tt class="descname">IndexView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.BaseView.IndexView" title="Permalink to this definition">¶</a></dt>
-<dd><p>A simple view that implements the index for the site</p>
-</dd></dl>
-
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Members :</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
 <dl class="method">
 <dt id="flask.ext.appbuilder.views.BaseView.create_blueprint">
-<tt class="descclassname">BaseView.</tt><tt class="descname">create_blueprint</tt><big>(</big><em>baseapp</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseView.create_blueprint" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">create_blueprint</tt><big>(</big><em>baseapp</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseView.create_blueprint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create Flask blueprint.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -191,52 +195,247 @@ Extend this class if you want to expose methods for your own templates</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="flask.ext.appbuilder.views.IndexView">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">IndexView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.IndexView" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple view that implements the index for the site</p>
+</dd></dl>
+
+<dl class="class">
 <dt id="flask.ext.appbuilder.views.SimpleFormView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">SimpleFormView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView" title="Permalink to this definition">¶</a></dt>
 <dd><p>View for presenting you own forms
 override form_get and form_post</p>
-<dl class="class">
-<dt id="flask.ext.appbuilder.views.SimpleFormView.BaseCRUDView">
-<em class="property">class </em><tt class="descname">BaseCRUDView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.BaseCRUDView" title="Permalink to this definition">¶</a></dt>
-<dd><p>The base class of GeneralView, all properties are inherited</p>
-</dd></dl>
-
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Members :</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.SimpleFormView.form">
-<tt class="descclassname">SimpleFormView.</tt><tt class="descname">form</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">form</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form" title="Permalink to this definition">¶</a></dt>
 <dd><p>The WTF form to render</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.SimpleFormView.form_columns">
-<tt class="descclassname">SimpleFormView.</tt><tt class="descname">form_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_columns" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">form_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>The form columns to include</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.views.SimpleFormView.form_get">
-<tt class="descclassname">SimpleFormView.</tt><tt class="descname">form_get</tt><big>(</big><em>form</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_get" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">form_get</tt><big>(</big><em>form</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this method to implement your form processing</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.views.SimpleFormView.form_post">
-<tt class="descclassname">SimpleFormView.</tt><tt class="descname">form_post</tt><big>(</big><em>form</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_post" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">form_post</tt><big>(</big><em>form</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_post" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this method to implement your form processing</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.SimpleFormView.form_title">
-<tt class="descclassname">SimpleFormView.</tt><tt class="descname">form_title</tt><em class="property"> = 'Form Title'</em><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_title" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">form_title</tt><em class="property"> = 'Form Title'</em><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_title" title="Permalink to this definition">¶</a></dt>
 <dd><p>The form title to be displayed</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">BaseCRUDView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView" title="Permalink to this definition">¶</a></dt>
+<dd><p>The base class of GeneralView, all properties are inherited</p>
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.add_columns">
+<tt class="descname">add_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.add_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Include Columns for add view</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.add_fieldsets">
+<tt class="descname">add_fieldsets</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.add_fieldsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>add fieldsets [(&lt;&#8217;TITLE&#8217;<a href="#id1"><span class="problematic" id="id2">|</span></a>None&gt;, {&#8216;fields&#8217;:[&lt;F1&gt;,&lt;F2&gt;,...]}),....]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.add_form">
+<tt class="descname">add_form</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.add_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Your own add WTF form for Add</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.add_template">
+<tt class="descname">add_template</tt><em class="property"> = 'appbuilder/general/model/add.html'</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.add_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Your own add jinja2 template for add</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.add_title">
+<tt class="descname">add_title</tt><em class="property"> = ''</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.add_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add Title</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.add_widget">
+<tt class="descname">add_widget</tt><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.add_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add widget override</p>
+<p>alias of <tt class="xref py py-class docutils literal"><span class="pre">FormWidget</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.edit_columns">
+<tt class="descname">edit_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.edit_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Include Columns for edit view</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.edit_fieldsets">
+<tt class="descname">edit_fieldsets</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.edit_fieldsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>edit fieldsets [(&lt;&#8217;TITLE&#8217;<a href="#id3"><span class="problematic" id="id4">|</span></a>None&gt;, {&#8216;fields&#8217;:[&lt;F1&gt;,&lt;F2&gt;,...]}),....]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.edit_form">
+<tt class="descname">edit_form</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.edit_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Your own add WTF form for Edit</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.edit_template">
+<tt class="descname">edit_template</tt><em class="property"> = 'appbuilder/general/model/edit.html'</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.edit_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Your own add jinja2 template for edit</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.edit_title">
+<tt class="descname">edit_title</tt><em class="property"> = ''</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.edit_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edit Title</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.edit_widget">
+<tt class="descname">edit_widget</tt><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.edit_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edit widget override</p>
+<p>alias of <tt class="xref py py-class docutils literal"><span class="pre">FormWidget</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.list_columns">
+<tt class="descname">list_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.list_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Include Columns for lists view</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.list_template">
+<tt class="descname">list_template</tt><em class="property"> = 'appbuilder/general/model/list.html'</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.list_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Your own add jinja2 template for list</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.list_title">
+<tt class="descname">list_title</tt><em class="property"> = ''</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.list_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>List Title</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.list_widget">
+<tt class="descname">list_widget</tt><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.list_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>List widget override</p>
+<p>alias of <tt class="xref py py-class docutils literal"><span class="pre">ListWidget</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.order_columns">
+<tt class="descname">order_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.order_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allowed order columns</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.post_add">
+<em class="property">classmethod </em><tt class="descname">post_add</tt><big>(</big><em>item</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.post_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this, will be called after update</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.post_delete">
+<em class="property">classmethod </em><tt class="descname">post_delete</tt><big>(</big><em>item</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.post_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this, will be called after delete</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.post_update">
+<em class="property">classmethod </em><tt class="descname">post_update</tt><big>(</big><em>item</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.post_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this, will be called after update</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.pre_add">
+<em class="property">classmethod </em><tt class="descname">pre_add</tt><big>(</big><em>item</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.pre_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this, will be called before add</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.pre_delete">
+<em class="property">classmethod </em><tt class="descname">pre_delete</tt><big>(</big><em>item</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.pre_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this, will be called before delete</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.pre_update">
+<em class="property">classmethod </em><tt class="descname">pre_update</tt><big>(</big><em>item</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.pre_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this, will be called before update</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.related_views">
+<tt class="descname">related_views</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.related_views" title="Permalink to this definition">¶</a></dt>
+<dd><p>Views that will be displayed related with this one, must be instantiated</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.search_columns">
+<tt class="descname">search_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.search_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allowed search columns</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.search_form">
+<tt class="descname">search_form</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.search_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Your own add WTF form for Search</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.search_widget">
+<tt class="descname">search_widget</tt><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.search_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search widget override</p>
+<p>alias of <tt class="xref py py-class docutils literal"><span class="pre">SearchWidget</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.show_columns">
+<tt class="descname">show_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.show_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Include Columns for show view</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.show_fieldsets">
+<tt class="descname">show_fieldsets</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.show_fieldsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>show fieldsets [(&lt;&#8217;TITLE&#8217;<a href="#id5"><span class="problematic" id="id6">|</span></a>None&gt;, {&#8216;fields&#8217;:[&lt;F1&gt;,&lt;F2&gt;,...]}),....]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.show_template">
+<tt class="descname">show_template</tt><em class="property"> = 'appbuilder/general/model/show.html'</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.show_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Your own add jinja2 template for show</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.show_title">
+<tt class="descname">show_title</tt><em class="property"> = ''</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.show_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show Title</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.show_widget">
+<tt class="descname">show_widget</tt><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.show_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show widget override</p>
+<p>alias of <tt class="xref py py-class docutils literal"><span class="pre">ShowWidget</span></tt></p>
 </dd></dl>
 
 </dd></dl>

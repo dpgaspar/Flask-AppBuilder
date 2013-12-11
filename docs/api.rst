@@ -14,16 +14,18 @@ Views
 
 .. automodule:: flask.ext.appbuilder.views
 
+    .. autofunction:: expose
+
     .. autoclass:: BaseView
         :members:
-        
-	.. autoclass:: IndexView
+
+    .. autoclass:: IndexView
         :members:
-        
+
     .. autoclass:: SimpleFormView
         :members:
 
-	.. autoclass:: BaseCRUDView
+    .. autoclass:: BaseCRUDView
         :members:
 
     .. autoclass:: GeneralView
