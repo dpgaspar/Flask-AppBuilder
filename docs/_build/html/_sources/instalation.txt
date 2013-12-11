@@ -2,7 +2,7 @@ Instalation
 ===========
 
 2 Step instalation
-----------------------
+------------------
 
 - Install it::
 

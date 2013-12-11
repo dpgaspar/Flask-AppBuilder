@@ -1,0 +1,185 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Security &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.3.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="index.html" />
+    <link rel="next" title="Versions" href="versions.html" />
+    <link rel="prev" title="Views" href="views.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="versions.html" title="Versions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="views.html" title="Views"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="security">
+<h1>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-authentication-methods">
+<h2>The Authentication methods<a class="headerlink" href="#the-authentication-methods" title="Permalink to this headline">¶</a></h2>
+<p>You have two types of authentication methods</p>
+<blockquote>
+<div><ul class="simple">
+<li>Database type authentications: username and password style that is queried from the database to match, atention this framework does not encrypt (yet...) the passwords.</li>
+<li>Open ID: Uses the user&#8217;s email field to authenticate on Gmail, Yahoo etc...</li>
+</ul>
+</div></blockquote>
+<p>The session is preserved and encrypted using Flask-Login, OpenID required Flask-OpenID.</p>
+</div>
+<div class="section" id="role-based">
+<h2>Role based<a class="headerlink" href="#role-based" title="Permalink to this headline">¶</a></h2>
+<p>Each user belong&#8217;s to a role, and a role holds permissions on views and menus, so a user has permissions on views and menus.</p>
+<p>There is two special roles, that you can define it&#8217;s names on the <a class="reference internal" href="config.html"><em>Base Configuration</em></a></p>
+<blockquote>
+<div><ul class="simple">
+<li>Admin Role: The framework will assign all the existing permission on views and menus to this role, automatically, this role is for authenticated users only.</li>
+<li>Public Role: This is a special role for non authenticated users, you can assign all the permissions on views and menus to this role, and everyone will access specific parts of you application.</li>
+</ul>
+</div></blockquote>
+<p>Of course you can create any aditional role you want and configure them as you like.</p>
+</div>
+<div class="section" id="permissions">
+<h2>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h2>
+<p>The framework you automatically create all the possible existing permissions on your views or menus, by &#8220;inspection&#8221; your code.</p>
+<p>Each time you create a new view based on a model (derived from GeneralView) it will create the following permissions:</p>
+<blockquote>
+<div><ul class="simple">
+<li>can list</li>
+<li>can show</li>
+<li>can add</li>
+<li>can edit</li>
+<li>can delete</li>
+<li>can download</li>
+</ul>
+</div></blockquote>
+<p>These base permission will be associated with your view, so if you create a view named &#8220;MyGeneralView&#8221; you can assign to any role these permissions:</p>
+<blockquote>
+<div><ul class="simple">
+<li>can list on MyGeneralView</li>
+<li>can show on MyGeneralView</li>
+<li>can add on MyGeneralView</li>
+<li>can edit on MyGeneralView</li>
+<li>can delete on MyGeneralView</li>
+<li>can doanload on MyGeneralView</li>
+</ul>
+</div></blockquote>
+<p>If you extend your view with some exposed method via the &#64;expose decorator:</p>
+<div class="highlight-python"><pre>    @expose('/mymethod/')
+    @has_access
+def mymethod(self):
+    # do something</pre>
+</div>
+<p>The framework will create the following access:</p>
+<blockquote>
+<div><ul class="simple">
+<li>can mymethod on MyGeneralView</li>
+</ul>
+</div></blockquote>
+<p>And the decorator &#64;has_access will prevent any unwanted access</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Security</a><ul>
+<li><a class="reference internal" href="#the-authentication-methods">The Authentication methods</a></li>
+<li><a class="reference internal" href="#role-based">Role based</a></li>
+<li><a class="reference internal" href="#permissions">Permissions</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="views.html" title="previous chapter">Views</a></li>
+      <li>Next: <a href="versions.html" title="next chapter">Versions</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/security.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+<a href="http://github.com/dpgaspar/Flask-AppBuilder"><img style="position: fixed; top: 0; right: 0; border: 0;"
+src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+
+  <div class="footer">
+    &copy; Copyright 2013, Daniel Vaz Gaspar.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>
