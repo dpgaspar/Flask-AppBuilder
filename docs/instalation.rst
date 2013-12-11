@@ -12,7 +12,7 @@ Instalation
 - Run it::
 
     cd Flask-AppBuilder-Skeleton
-	python run.py
+    python run.py
 
 That's it!!
 
