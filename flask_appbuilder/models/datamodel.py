@@ -43,10 +43,7 @@ class SQLAModel(DataModel):
     def _get_base_query(self, query = None, filters = {}, order_column = '', order_direction = ''):
         for filter_key in filters:
             try:
-                rel_model, rel_direction = self._get_related_model(filter_key)
-                print "REL OK", rel_model
-                item_pk = (filters.get(filter_key))
-                item = self.session.query(rel_model).get(item_pk)
+                item = self.get_related_obj(filter_key, (filters.get(filter_key)))
                 if rel_direction == 'MANYTOONE':
                     print "MANY TO ONE 1"
                     query = query.filter(getattr(self.obj,filter_key) == item)
@@ -283,7 +280,7 @@ class SQLAModel(DataModel):
 
     def get_related_obj(self, col_name, value):
         rel_model, rel_direction = self._get_related_model(col_name)
-        return rel_model.query.get(value)
+        return self.session.query(rel_model).get(value)
 
     def get_related_fks(self, related_views):
         return [view.datamodel.get_related_fk(self.obj) for view in related_views]
