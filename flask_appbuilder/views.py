@@ -28,8 +28,8 @@ def expose(url='/', methods=('GET',)):
     
 class BaseView(object):
     """
-    Base View for all Views
-    includes permission, app info
+        Base View for all Views
+        Extend this class if you want to expose methods for your own templates
     """
 
     baseapp = None
@@ -47,8 +47,8 @@ class BaseView(object):
 
     def __init__(self):
         """
-        Initialization of base permissions
-        based on exposed methods and actions
+            Initialization of base permissions
+            based on exposed methods and actions
         """
         if not self.base_permissions:
             self.base_permissions = [
@@ -70,12 +70,12 @@ class BaseView(object):
         """
             Create Flask blueprint.
             
-            param baseapp:
+            :param baseapp:
                the BaseApp application
-            param endpoint:
+            :param endpoint:
                endpoint override for this blueprint, will assume class name if not provided
-            param static_folder:
-               the relative override for static forder, if omited application will use the baseapp static
+            :param static_folder:
+               the relative override for static folder, if ommited application will use the baseapp static
         """
         # Store BaseApp instance
         self.baseapp = baseapp
@@ -116,23 +116,23 @@ class BaseView(object):
 
     def _prettify_name(self, name):
         """
-        Prettify pythonic variable name.
+            Prettify pythonic variable name.
 
-        For example, 'hello_world' will be converted to 'Hello World'
+            For example, 'hello_world' will be converted to 'Hello World'
 
-        :param name:
-            Name to prettify
+            :param name:
+                Name to prettify.
         """
         return re.sub(r'(?<=.)([A-Z])', r' \1', name)
 
     def _prettify_column(self, name):
         """
-        Prettify pythonic variable name.
+            Prettify pythonic variable name.
 
-        For example, 'hello_world' will be converted to 'Hello World'
+            For example, 'hello_world' will be converted to 'Hello World'
 
-        :param name:
-            Name to prettify
+            :param name:
+                Name to prettify.
         """
         return name.replace('_', ' ').title()
 
@@ -154,10 +154,10 @@ class BaseView(object):
 
     def _get_page_args(self, pages = {}):
         """
-        Get page arguments, return a dictionary
-        { <VIEW_NAME>: PAGE_NUMBER }
+            Get page arguments, return a dictionary
+            { <VIEW_NAME>: PAGE_NUMBER }
         
-        Arguments are passed: page_<VIEW_NAME>=<PAGE_NUMBER>
+            Arguments are passed: page_<VIEW_NAME>=<PAGE_NUMBER>
         
         """
         for arg in request.args:
@@ -170,10 +170,10 @@ class BaseView(object):
 
     def _get_order_args(self, orders = {}):
         """
-        Get order arguments, return a dictionary
-        { <VIEW_NAME>: (ORDER_COL, ORDER_DIRECTION) }
+            Get order arguments, return a dictionary
+            { <VIEW_NAME>: (ORDER_COL, ORDER_DIRECTION) }
         
-        Arguments are passed like: _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
+            Arguments are passed like: _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
         
         """
         for arg in request.args:
@@ -203,8 +203,7 @@ class BaseView(object):
 
 class IndexView(BaseView):
     """
-    Index View
-    A simple view that implements the index for the site
+        A simple view that implements the index for the site
     """
 
     route_base = ''
@@ -223,9 +222,8 @@ class IndexView(BaseView):
 """
 class SimpleFormView(BaseView):
     """
-    Simple Form View
-    Basic functions used on forms:
-    override form_get and form_post
+        View for presenting you own forms
+        override form_get and form_post
     """
 
     form_template = 'appbuilder/general/model/edit.html'

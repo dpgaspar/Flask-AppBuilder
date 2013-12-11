@@ -76,6 +76,75 @@ Will hold your flask app object, all your views, and security classes.</p>
 <span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="method">
+<dt id="flask.ext.appbuilder.baseapp.BaseApp.add_link">
+<tt class="descname">add_link</tt><big>(</big><em>name</em>, <em>href</em>, <em>icon=''</em>, <em>category=''</em>, <em>baseview=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.add_link" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add your own links to menu using this method</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; The string name that will be displayed on the menu.</li>
+<li><strong>href</strong> &#8211; Override the generated href for the menu.</li>
+<li><strong>icon</strong> &#8211; Bootstrap included icon name</li>
+<li><strong>category</strong> &#8211; The menu category where the menu will be included</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.baseapp.BaseApp.add_separator">
+<tt class="descname">add_separator</tt><big>(</big><em>category</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.add_separator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a separator to the menu, you will sequentially create the menu</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>category</strong> &#8211; The menu category where the separator will be included.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.baseapp.BaseApp.add_view">
+<tt class="descname">add_view</tt><big>(</big><em>baseview</em>, <em>name</em>, <em>href=''</em>, <em>icon=''</em>, <em>category=''</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.add_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add your views associated with menus using this method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>baseview</strong> &#8211; A BaseView type class instantiated.</li>
+<li><strong>name</strong> &#8211; The string name that will be displayed on the menu.</li>
+<li><strong>href</strong> &#8211; Override the generated href for the menu.</li>
+<li><strong>icon</strong> &#8211; Bootstrap included icon name</li>
+<li><strong>category</strong> &#8211; The menu category where the menu will be included</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.baseapp.BaseApp.add_view_no_menu">
+<tt class="descname">add_view_no_menu</tt><big>(</big><em>baseview</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.add_view_no_menu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add your views without creating a menu.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>baseview</strong> &#8211; A BaseView type class instantiated.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -85,29 +154,73 @@ Will hold your flask app object, all your views, and security classes.</p>
 <dt id="flask.ext.appbuilder.views.BaseView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">BaseView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.BaseView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base View for all Views
-includes permission, app info</p>
+Extend this class if you want to expose methods for your own templates</p>
 <dl class="method">
 <dt id="flask.ext.appbuilder.views.BaseView.create_blueprint">
 <tt class="descname">create_blueprint</tt><big>(</big><em>baseapp</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseView.create_blueprint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create Flask blueprint.</p>
-<dl class="docutils">
-<dt>param baseapp:</dt>
-<dd>the BaseApp application</dd>
-<dt>param endpoint:</dt>
-<dd>endpoint override for this blueprint, will assume class name if not provided</dd>
-<dt>param static_folder:</dt>
-<dd>the relative override for static forder, if omited application will use the baseapp static</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>baseapp</strong> &#8211; the BaseApp application</li>
+<li><strong>endpoint</strong> &#8211; endpoint override for this blueprint, will assume class name if not provided</li>
+<li><strong>static_folder</strong> &#8211; the relative override for static folder, if ommited application will use the baseapp static</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="flask.ext.appbuilder.views.GeneralView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">GeneralView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.GeneralView" title="Permalink to this definition">¶</a></dt>
+<dt id="flask.ext.appbuilder.views.IndexView">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">IndexView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.IndexView" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple view that implements the index for the site</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="flask.ext.appbuilder.views.SimpleFormView">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">SimpleFormView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView" title="Permalink to this definition">¶</a></dt>
+<dd><p>View for presenting you own forms
+override form_get and form_post</p>
+<dl class="class">
+<dt id="flask.ext.appbuilder.views.SimpleFormView.GeneralView">
+<em class="property">class </em><tt class="descname">GeneralView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.GeneralView" title="Permalink to this definition">¶</a></dt>
 <dd><p>General View Class
 Responsible to handle all CRUD events
 List, Edit, Add, Show based on models</p>
+</dd></dl>
+
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Members :</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="flask.ext.appbuilder.views.SimpleFormView.form_get">
+<tt class="descclassname">SimpleFormView.</tt><tt class="descname">form_get</tt><big>(</big><em>form</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this method to implement your form processing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.views.SimpleFormView.form_post">
+<tt class="descclassname">SimpleFormView.</tt><tt class="descname">form_post</tt><big>(</big><em>form</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_post" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this method to implement your form processing</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.SimpleFormView.form_template">
+<tt class="descclassname">SimpleFormView.</tt><tt class="descname">form_template</tt><em class="property"> = 'appbuilder/general/model/edit.html'</em><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Widgets</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>

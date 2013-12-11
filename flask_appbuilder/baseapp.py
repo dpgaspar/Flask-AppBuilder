@@ -50,17 +50,17 @@ class BaseApp():
                     static_url_path='/appbuilder'):
         """
             BaseApp constructor
-            param app:
+            :param app:
                 The flask app object
-            param db:
+            :param db:
                 The SQLAlchemy db object
-            param menu:
+            :param menu:
                 optional, a previous contructed menu
-            param indexview:
+            :param indexview:
                 optional, your customized indexview
-            param static_folder:
+            :param static_folder:
                 optional, your override for the global static folder
-            param static_url_path:
+            :param static_url_path:
                 optional, your override for the global static url path
         """
         self.app = app
@@ -139,7 +139,20 @@ class BaseApp():
                 self._add_permissions_menu(item.name)
     
     def add_view(self, baseview, name, href = "", icon = "", category = ""):
-        
+        """
+            Add your views associated with menus using this method.
+            
+            :param baseview:
+                A BaseView type class instantiated.
+            :param name:
+                The string name that will be displayed on the menu.
+            :param href:
+                Override the generated href for the menu.
+            :param icon:
+                Bootstrap included icon name
+            :param category:
+                The menu category where the menu will be included        
+        """
         print "Registering:", category,".", name
         if baseview not in self.lst_baseview:
             baseview.baseapp = self
@@ -149,15 +162,40 @@ class BaseApp():
         self.add_link(name = name, href = href, icon = icon, category = category, baseview = baseview)
         
     def add_link(self, name, href, icon = "", category = "", baseview = None):
+        """
+            Add your own links to menu using this method
+            
+            :param name:
+                The string name that will be displayed on the menu.
+            :param href:
+                Override the generated href for the menu.
+            :param icon:
+                Bootstrap included icon name
+            :param category:
+                The menu category where the menu will be included        
+        """
         self.menu.add_link(name = name, href = href, icon = icon, 
                         category = category, baseview = baseview)
         self._add_permissions_menu(name)
         self._add_permissions_menu(category)
 
     def add_separator(self, category):
+        """
+            Add a separator to the menu, you will sequentially create the menu
+            
+            :param category:
+                The menu category where the separator will be included.                    
+        """
         self.menu.add_separator(category)
 
     def add_view_no_menu(self, baseview, endpoint = None, static_folder = None):
+        """
+            Add your views without creating a menu.
+            
+            :param baseview:
+                A BaseView type class instantiated.
+                    
+        """
         if baseview not in self.lst_baseview:
             baseview.baseapp = self
             self.lst_baseview.append(baseview)
