@@ -11,11 +11,11 @@ Includes
 --------
 
   - Security
-    - Auto permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.
-    - Inserts on the Database all the detailed permissions possible on your application.
-    - Public (no authentication needed) and Private permissions.
-    - Role based permissions.
-    - Authentication based on OpenID and Database (Planning LDAP).
+  	- Auto permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.
+	- Inserts on the Database all the detailed permissions possible on your application.
+	- Public (no authentication needed) and Private permissions.
+	- Role based permissions.
+	- Authentication based on OpenID and Database (Planning LDAP).
   - Views and Widgets
 	- Auto menu generator.
 	- Various view widgets: lists, master-detail, list of thumbnails etc

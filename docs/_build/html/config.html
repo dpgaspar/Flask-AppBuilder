@@ -62,6 +62,8 @@
             
   <div class="section" id="base-configuration">
 <h1>Base Configuration<a class="headerlink" href="#base-configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="configuration-keys">
+<h2>Configuration keys<a class="headerlink" href="#configuration-keys" title="Permalink to this headline">¶</a></h2>
 <p>Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap 3.0.0 base theme:</p>
 <blockquote>
 <div><blockquote>
@@ -96,13 +98,20 @@
 <tr class="field-even field"><th class="field-name" colspan="2">BABEL_DEFAULT_LOCALE:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body">Babel&#8217;s default language.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">LANGUAGES:</th><td class="field-body">A dictionary mapping the existing languages with the countrys name and flag</td>
+<tr class="field-odd field"><th class="field-name">LANGUAGES:</th><td class="field-body">A dictionary mapping the existing languages with the countries name and flag</td>
 </tr>
 </tbody>
 </table>
 </div></blockquote>
+<p>My favorite way, and the one i advise if you are building a medium to large size application is to place all you configuration key on a config.py file</p>
+<p>next you only have to import them to the Flask app object, like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Take a look at the skeleton <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py">config.py</a></p>
 </div></blockquote>
+</div>
 </div>
 
 
@@ -110,7 +119,15 @@
         </div>
       </div>
       <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Base Configuration</a><ul>
+<li><a class="reference internal" href="#configuration-keys">Configuration keys</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="i18n.html" title="previous chapter">i18n Translations</a></li>
