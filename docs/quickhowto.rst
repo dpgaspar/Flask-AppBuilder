@@ -91,7 +91,7 @@ Optional properties:
 
 There are many more properties you can override to customize your views. you can define descriptions for columns, validators for forms, and many more
 
-Take a look at the :doc:`views`.
+Take a look at the :doc:`api`.
 
 
 But where is ContactGeneralView ? (that was a reference has a related_views) 
