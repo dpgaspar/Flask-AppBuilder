@@ -149,7 +149,7 @@ class BaseView(object):
             try:
                 return url_for('%s.%s' % (self.endpoint, self.default_view))
             except:
-                return '/'
+                return url_for('%s.%s' % (self.baseapp.indexview.endpoint, self.default_view))
             
 
     def _get_group_by_args(self):
@@ -212,7 +212,7 @@ class IndexView(BaseView):
     """
 
     route_base = ''
-
+    default_view = ''
     index_template = 'appbuilder/index.html'
 
     @expose('/')
