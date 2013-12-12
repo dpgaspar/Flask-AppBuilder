@@ -150,7 +150,7 @@ class BaseView(object):
                 return url_for('%s.%s' % (self.endpoint, self.default_view))
             except:
                 print "INDEX:", self.baseapp.indexview.__class__.__name__
-                return url_for('%s.%s' % (self.baseapp.indexview.endpoint, self..baseapp.indexview.default_view))
+                return url_for('%s.%s' % (self.baseapp.indexview.endpoint, self.baseapp.indexview.default_view))
             
 
     def _get_group_by_args(self):
