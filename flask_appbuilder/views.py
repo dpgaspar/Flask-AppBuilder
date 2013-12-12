@@ -213,11 +213,10 @@ class IndexView(BaseView):
     """
 
     route_base = ''
-    default_view = ''
+    default_view = 'index'
     index_template = 'appbuilder/index.html'
 
     @expose('/')
-    @expose('/index/')
     def index(self):
         return render_template(self.index_template, baseapp = self.baseapp)
 
