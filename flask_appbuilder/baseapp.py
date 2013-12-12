@@ -81,7 +81,7 @@ class BaseApp():
         self.app.before_request(self.sm.before_request)
         
         self._init_config_parameters()
-        self.indexview = indexview or IndexView
+        self.indexview = indexview() or IndexView()
         self.static_folder = static_folder
         self.static_url_path = static_url_path
         self._add_admin_views()
@@ -116,7 +116,7 @@ class BaseApp():
         self.app.register_blueprint(bp)
 
     def _add_admin_views(self):
-        self.add_view_no_menu(self.indexview())
+        self.add_view_no_menu(self.indexview)
         self.add_view_no_menu(LocaleView())
         self.sm.register_views(self)
 
