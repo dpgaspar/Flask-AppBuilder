@@ -17,7 +17,7 @@ from flask.ext.openid import OpenID
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
-Base = db.make_declarative_base()
+
 """ Include Babel initialization if version equal or previous 0.3.4
 babel = Babel(app)
 """
