@@ -1,5 +1,6 @@
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, DateTime
+from sqlalchemy.orm import relationship
 import sqlalchemy.types as types
 from sqlalchemy.types import String
 from flask import g
