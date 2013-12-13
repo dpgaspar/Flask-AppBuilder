@@ -7,6 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
+from flask.ext.appbuilder import Base
 
 from models import User, Role, PermissionView, Permission, ViewMenu, \
     assoc_permissionview_role
