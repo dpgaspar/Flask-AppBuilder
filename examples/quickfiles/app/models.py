@@ -3,7 +3,7 @@ from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from flask_appbuilder import Base
 from flask_appbuilder.security.models import User
-from flask_appbuilde import Base
+from flask_appbuilder import Base
 
 """
 
