@@ -30,7 +30,7 @@ class Unique(object):
                    .filter(self.column == field.data)
                    .one())
 
-            print "VALIDATE", getattr(form, field)
+            print "VALIDATE", getattr(form, self.column)
             if self.message is None:
                 self.message = field.gettext(u'Already exists.')
             raise ValidationError(self.message)
