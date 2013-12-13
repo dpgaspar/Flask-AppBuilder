@@ -15,10 +15,12 @@ AuditMixin will add automatic timestamp of created and modified by who
 """
 
 class Project(AuditMixin, Base):
+    __tablename__ = "project"
     id = Column(Integer, primary_key=True)
     name =  Column(String(150), unique = True, nullable=False)
     
 class ProjectFiles(Base):
+    __tablename__ = "project_files"
     id = Column(Integer, primary_key=True)
     project_id = Column(Integer, ForeignKey('project.id'))
     project = relationship("Project")
