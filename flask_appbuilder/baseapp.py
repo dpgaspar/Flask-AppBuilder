@@ -65,10 +65,7 @@ class BaseApp():
         """
         self.app = app
         self.db = db
-        
-        # Creating Developer's models
-        self.db.create_all()
-    
+                    
         self.sm = SecurityManager(app, db.session)
         self.babelmanager = BabelManager(app)
         
@@ -88,7 +85,8 @@ class BaseApp():
         self._add_global_static()
         self._add_global_filters()        
     
-        
+        # Creating Developer's models
+        self.db.create_all()
         
     
     def _init_config_parameters(self):

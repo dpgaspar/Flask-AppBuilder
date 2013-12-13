@@ -1,8 +1,9 @@
-from app import db
-from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
-from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
-from flask.ext.appbuilder import Base
 
+from flask_appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
+from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
+from flask_appbuilder import Base
+from flask_appbuilder.security.models import User
+from app import db
 """
 
 You can use the extra Flask-AppBuilder fields and Mixin's

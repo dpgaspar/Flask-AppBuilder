@@ -14,8 +14,5 @@ class ProjectGeneralView(GeneralView):
     order_columns = ['name']
     search_columns = ['name', 'created_by']
 
-
-
 baseapp = BaseApp(app, db)
-Base = db.make_declarative_base()
 baseapp.add_view(ProjectGeneralView(), "List Projects",icon = "th-large",category = "Projects")
