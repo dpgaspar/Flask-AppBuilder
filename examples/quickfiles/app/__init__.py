@@ -5,7 +5,6 @@ from sqlalchemy.engine import Engine
 from sqlalchemy import event
 from flask.ext.babel import Babel
 from config import basedir
-from flask_appbuilder.baseapp import BaseApp
 
 """
 # Include this for Flask-AppBuilder 0.2.X
@@ -18,7 +17,7 @@ from flask.ext.openid import OpenID
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
-baseapp = BaseApp(app, db)
+
 """ Include Babel initialization if version equal or previous 0.3.4
 babel = Babel(app)
 """
