@@ -2,6 +2,7 @@ from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.views import GeneralView
 from app.models import Project, ProjectFiles
+from flask.ext.appbuilder import Base
 from app import app, db
 
 
@@ -16,3 +17,4 @@ class ProjectGeneralView(GeneralView):
 
 baseapp = BaseApp(app, db)
 baseapp.add_view(ProjectGeneralView(), "List Projects",icon = "th-large",category = "Projects")
+print Base.metadata.tables.keys()
