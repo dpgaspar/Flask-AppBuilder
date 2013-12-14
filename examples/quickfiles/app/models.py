@@ -28,5 +28,5 @@ class ProjectFiles(Base):
     file = Column(FileColumn, nullable=False)
     
     def download(self):
-        return Markup('<a href="/projectfilesgeneralview/download/' + str(self.file) + '"</a>')
+        return Markup('<a href="/projectfilesgeneralview/download/' + str(self.file) + '"Download</a>')
         
