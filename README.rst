@@ -1,6 +1,3 @@
-.. image:: https://pypip.in/d/flask-appbuilder/badge.png
-        :target: https://crate.io/packages/flask-appbuilder
-
 Flask App Builder
 =================
 
