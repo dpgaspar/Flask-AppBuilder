@@ -711,6 +711,8 @@ class GeneralView(BaseCRUDView):
         if request.method == 'POST':
             form = self.edit_form(request.form)
             form = form.refresh(obj=item)
+            # trick to pass unique validation
+            form._id = pk
             if form.validate():
                 form.populate_obj(item)
 
