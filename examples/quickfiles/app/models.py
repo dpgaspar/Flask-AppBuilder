@@ -30,6 +30,6 @@ class ProjectFiles(Base):
     
     @hybrid_property
     def download(self):
-        print "HOIHEEE"
+        print "HOIHEEE", '<a href="/projectfilesgeneralview/download/' + str(self.file) + '"Download</a>'
         return '<a href="/projectfilesgeneralview/download/' + str(self.file) + '"Download</a>'
         
