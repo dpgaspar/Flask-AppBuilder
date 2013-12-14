@@ -8,12 +8,11 @@ from app import app, db
 
 class ProjectGeneralView(GeneralView):
     datamodel = SQLAModel(Project, db.session)
-    related_views = []    
+    related_views = [ProjectFilesGeneralView]    
 
     add_columns = ['name']
     edit_columns = ['name']
     list_columns = ['name','created_by', 'created_on', 'changed_by','changed_on']
-    show_columns = ['name','created_by', 'created_on', 'changed_by','changed_on']
     order_columns = ['name']
     search_columns = ['name', 'created_by']
     show_fieldsets = [
@@ -21,6 +20,18 @@ class ProjectGeneralView(GeneralView):
                  ('Audit',{'fields':['created_by', 'created_on', 'changed_by','changed_on'],'expanded':False})
                  ]
 
+
+class ProjectFilesGeneralView(GeneralView):
+    datamodel = SQLAModel(ProjectFiles, db.session)
+    
+    add_columns = ['file']
+    edit_columns = ['file']
+    list_columns = ['file']
+    show_columns = ['file']
+    
+
+
 baseapp = BaseApp(app, db)
 baseapp.add_view(ProjectGeneralView(), "List Projects",icon = "th-large",category = "Projects")
-print Base.metadata.tables.keys()
+baseapp.add_view_no_menu(ProjectFilesGeneralView())
+
