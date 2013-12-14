@@ -57,7 +57,7 @@ class GeneralModelConverter(object):
         else:
             lst_validators.append(validators.Optional())
         if col.unique:
-            lst_validators.append(Unique(self.datamodel.session, self.datamodel.obj, col))
+            lst_validators.append(Unique(self.datamodel, self.datamodel.obj, col))
         if self.datamodel.is_image(col.name):
             form_props[col.name] = ImageUploadField(label,
                                     description=description,
