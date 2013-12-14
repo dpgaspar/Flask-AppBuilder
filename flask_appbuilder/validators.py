@@ -18,21 +18,18 @@ class Unique(object):
     """
     field_flags = ('unique', )
 
-    def __init__(self, db_session, model, column, message=None):
-        self.db_session = db_session
-        self.model = model
+    def __init__(self, datamodel, column, message=None):
+        self.datamodel = datamodel
         self.column = column
         self.message = message
 
     def __call__(self, form, field):
-        try:
-            obj = (self.db_session.query(self.model)
-                   .filter(self.column == field.data)
-                   .one())
-
-            print "VALIDATE", dir(form)
+        filters = {}
+        filters[self.column.name] = field.data
+        count, obj = self.datamodel.query(filters)
+        if (count > 0):           
+            if hasattr(form,'_id') and form._id == self.datamodel.get_pk_value(obj)
             if self.message is None:
                 self.message = field.gettext(u'Already exists.')
             raise ValidationError(self.message)
-        except NoResultFound:
-            pass
+        
