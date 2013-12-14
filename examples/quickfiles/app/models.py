@@ -26,3 +26,6 @@ class ProjectFiles(Base):
     project = relationship("Project")
     file = Column(FileColumn, nullable=False)
     
+    def download(self):
+        return Markup('<a href="/projectfilesgeneralview/download/' + str(self.file) + '"</a>')
+        
