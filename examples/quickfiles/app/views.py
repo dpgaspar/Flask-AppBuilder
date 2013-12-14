@@ -9,6 +9,7 @@ from app import app, db
 class ProjectFilesGeneralView(GeneralView):
     datamodel = SQLAModel(ProjectFiles, db.session)
     
+    label_columns = {'download':'Download'}
     add_columns = ['file']
     edit_columns = ['file']
     list_columns = ['file','download']
