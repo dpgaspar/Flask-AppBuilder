@@ -28,8 +28,7 @@ class ProjectFiles(Base):
     project = relationship("Project")
     file = Column(FileColumn, nullable=False)
     
-    @hybrid_property
     def download(self):
         print "HOIHEEE", '<a href="/projectfilesgeneralview/download/' + str(self.file) + '"Download</a>'
-        return '<a href="/projectfilesgeneralview/download/' + str(self.file) + '"Download</a>'
+        return Markup('<a href="/projectfilesgeneralview/download/' + str(self.file) + '"Download</a>')
         
