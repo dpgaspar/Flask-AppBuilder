@@ -2,6 +2,7 @@ from flask import Markup
 from flask_appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
 from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 from flask_appbuilder import Base
 from flask_appbuilder.security.models import User
 from flask_appbuilder import Base
@@ -27,6 +28,7 @@ class ProjectFiles(Base):
     project = relationship("Project")
     file = Column(FileColumn, nullable=False)
     
+    @hybrid_property
     def download(self):
         return Markup('<a href="/projectfilesgeneralview/download/' + str(self.file) + '"Download</a>')
         
