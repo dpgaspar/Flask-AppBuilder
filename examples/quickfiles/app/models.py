@@ -1,3 +1,4 @@
+from flask import Markup
 from flask_appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
 from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
