@@ -1,3 +1,4 @@
+from flask import Markup
 from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.views import GeneralView
@@ -11,7 +12,7 @@ class ProjectFilesGeneralView(GeneralView):
     
     add_columns = ['file']
     edit_columns = ['file']
-    list_columns = ['file']
+    list_columns = ['file','download']
     show_columns = ['file','download']
     
 
