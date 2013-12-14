@@ -26,7 +26,7 @@ class Unique(object):
         filters[self.column.name] = field.data
         count, obj = self.datamodel.query(filters)
         if (count > 0):           
-            if hasattr(form,'_id') and form._id == self.datamodel.get_keys(obj)[0]:
+            if not (hasattr(form,'_id') and form._id == self.datamodel.get_keys(obj)[0]):
                 if self.message is None:
                     self.message = field.gettext(u'Already exists.')
                 raise ValidationError(self.message)
