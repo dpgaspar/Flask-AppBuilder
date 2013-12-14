@@ -1,5 +1,3 @@
-https://pypip.in/v/flask-appbuilder/badge.png
-
 Flask App Builder
 =================
 
