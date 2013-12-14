@@ -7,10 +7,8 @@ class Unique(object):
     """
         Checks field value unicity against specified table field.
 
-        :param get_session:
-            A function that return a SQAlchemy Session.
-        :param model:
-            The model to check unicity against.
+        :param datamodel:
+            The datamodel class, abstract layer for backend
         :param column:
             The unique column.
         :param message:
@@ -28,7 +26,7 @@ class Unique(object):
         filters[self.column.name] = field.data
         count, obj = self.datamodel.query(filters)
         if (count > 0):           
-            if hasattr(form,'_id') and form._id == self.datamodel.get_pk_value(obj):
+            if hasattr(form,'_id') and form._id == self.datamodel.get_keys(obj)[0]:
                 if self.message is None:
                     self.message = field.gettext(u'Already exists.')
                 raise ValidationError(self.message)
