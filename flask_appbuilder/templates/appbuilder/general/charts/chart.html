@@ -3,16 +3,26 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 
 {% block content %}
+{{ lib.panel_begin(title) }}
 
-<label>{{_('Group by fields') }}:</label>
-{% for group_by in group_by_columns %}
-	<a href="{{url_for('.chart',group_by=group_by)}}" class="btn btn-sm btn-primary">
-	{{label_columns[group_by]}}
-	</a>
-{% endfor %}
-<div id="chart" class="col-sm-12 col-lg-12" style="height: {{height}};">
-</div>
-{{ widgets.get('chart')()|safe }}
+	{% block list_search scoped %}
+		{% call lib.accordion_tag("accordion1",_("Search"), False) %}
+			{{ widgets.get('search')()|safe }} 
+		{% endcall %}
+	{% endblock %}
 
+    <div class="well well-sm">
+    <label>{{_('Group by fields') }}:</label>
+    {% for group_by in group_by_columns %}
+        <a href="{{url_for('.chart',group_by=group_by)}}" class="btn btn-sm btn-primary">
+        {{label_columns[group_by]}}
+        </a>
+    {% endfor %}
+    </div>
+    
+    <div id="chart" class="col-sm-12 col-lg-12" style="height: {{height}};">
+    {{ widgets.get('chart')()|safe }}
+    </div>
 
+{{ lib.panel_end() }}
 {% endblock %}

@@ -60,14 +60,17 @@ class SQLAModel(DataModel):
         return query
 
    
-    """
-    QUERY
-    filters: dict with filters {<col_name>:<value,...}
-    order_column
-    order_direction: <'asc'|'desc'>
-    """
     def query(self, filters = {}, order_column = '', order_direction = '',
                 page = None, page_size = None):
+        """
+            QUERY
+            :param filters: 
+                dict with filters {<col_name>:<value,...}
+            :param order_column:
+                name of the column to order
+            :param order_direction: 
+                the direction to order <'asc'|'desc'>
+        """
         query = self.session.query(self.obj)
         query_count = self.session.query(func.count('*')).select_from(self.obj)
         
@@ -93,14 +96,14 @@ class SQLAModel(DataModel):
 
 
     def query_simple_group(self, group_by = '', filters = {}, order_column = '', order_direction = ''):
-        try:
+        if self.is_relation_col(group_by):
             rel_model, rel_direction = self._get_related_model(group_by)
-            query = self.session.query(rel_model,func.count(self.obj.id))
+            query = self.session.query(rel_model, func.count(self.obj.id))
             query = query.join(rel_model, getattr(self.obj,group_by))
             query = self._get_base_query(query = query, filters = filters, order_column = order_column, order_direction = order_direction)
             query = query.group_by(rel_model)
             return query.all()
-        except:
+        else:
             query = self.session.query(group_by,func.count(self.obj.id))
             query = self._get_base_query(query = query, filters = filters, order_column = order_column, order_direction = order_direction)
             query = query.group_by(group_by)

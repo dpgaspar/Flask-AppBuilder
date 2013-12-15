@@ -24,8 +24,8 @@ def expose(url='/', methods=('GET',)):
         f._urls.append((url, methods))
         return f
     return wrap
-    
-    
+
+
 class BaseView(object):
     """
         All views derive from this class. it's constructor will register your exposed urls on flask as a Blueprint.
@@ -339,11 +339,11 @@ class BaseCRUDView(BaseView):
 
     
     add_form = None
-    """ Your own add WTF form for Add """
+    """ To implement your own add WTF form for Add """
     edit_form = None
-    """ Your own add WTF form for Edit """
+    """ To implement your own add WTF form for Edit """
     search_form = None
-    """ Your own add WTF form for Search """
+    """ To implement your own add WTF form for Search """
 
     validators_columns = {}
 
@@ -533,48 +533,41 @@ class BaseCRUDView(BaseView):
         print self.__class__.__name__, "LIST COL", self.list_columns
 
     
-    @classmethod
     def pre_update(self, item):
         """
             Override this, will be called before update
         """
         pass
 
-    @classmethod
     def post_update(self, item):
         """
             Override this, will be called after update
         """        
         pass
 
-    @classmethod
     def pre_add(self, item):
         """
             Override this, will be called before add
         """        
         pass
 
-    @classmethod
     def post_add(self, item):
         """
             Override this, will be called after update
         """        
         pass
 
-    @classmethod
     def pre_delete(self, item):
         """
             Override this, will be called before delete
         """        
         pass
 
-    @classmethod
     def post_delete(self, item):
         """
             Override this, will be called after delete
         """        
         pass
-
 
 
 class GeneralView(BaseCRUDView):

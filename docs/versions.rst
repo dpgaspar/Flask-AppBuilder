@@ -68,6 +68,18 @@ To this::
 
 Small change you just have to instantiate your classes.
 
+Improvements and Bug fixes on 0.3.9
+-----------------------------------
+
+Improvements
+------------
+- Chart views with diferent equal presentation has list views.
+- Chart views with search included like on lists
+
+Bug Fixes
+---------
+- Pre, Post methods to override, removes decorator classmethod
+
 
 Improvements and Bug fixes on 0.3.0
 -----------------------------------
