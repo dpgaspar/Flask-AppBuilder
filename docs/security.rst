@@ -30,7 +30,7 @@ Permissions
 
 The framework you automatically create all the possible existing permissions on your views or menus, by "inspection" your code. 
 
-Each time you create a new view based on a model (derived from GeneralView) it will create the following permissions:
+Each time you create a new view based on a model (inherit from GeneralView) it will create the following permissions:
 
 	- can list
 	- can show

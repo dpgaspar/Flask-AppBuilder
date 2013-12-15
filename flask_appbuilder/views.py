@@ -5,7 +5,7 @@ from flask.ext.babel import gettext, ngettext, lazy_gettext
 from forms import GeneralModelConverter
 from .filemanager import uuid_originalname
 from .security.decorators import has_access
-from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
+from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget, ListCarousel
 from .actions import ActionItem
 
 
@@ -28,7 +28,7 @@ def expose(url='/', methods=('GET',)):
 
 class BaseView(object):
     """
-        All views derive from this class. it's constructor will register your exposed urls on flask as a Blueprint.
+        All views inherit from this class. it's constructor will register your exposed urls on flask as a Blueprint.
 
         This class does not expose any urls, but provides a common base for all views.
         
@@ -222,10 +222,10 @@ class IndexView(BaseView):
 
 class SimpleFormView(BaseView):
     """
-        View for presenting you own forms
-        Derive from this view to provide some base processing for your costumized form views.
+        View for presenting your own forms
+        Inherit from this view to provide some base processing for your costumized form views.
 
-        Notice that this class derives from BaseView so all properties from the parent class can be overrided also.
+        Notice that this class inherits from BaseView so all properties from the parent class can be overrided also.
 
         Implement form_get and form_post to implement your form pre-processing and post-processing
     """
@@ -572,9 +572,9 @@ class BaseCRUDView(BaseView):
 
 class GeneralView(BaseCRUDView):
     """
-        This is the most important view. If you want to automatically implement create, edit, delete, show, and search form your database tables, derive your views from this class.
+        This is the most important view. If you want to automatically implement create, edit, delete, show, and search form your database tables, inherit your views from this class.
 
-        Notice that this class derives from BaseView so all properties from the parent class can be overrided also.
+        Notice that this class inherits from BaseView so all properties from the parent class can be overrided also.
     """
 
     def __init__(self, **kwargs):
