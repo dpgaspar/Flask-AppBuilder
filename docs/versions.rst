@@ -74,7 +74,7 @@ Improvements and Bug fixes on 0.3.9
 Improvements
 ------------
 - Chart views with diferent equal presentation has list views.
-- Chart views with search included like on lists
+- Chart views with search possibility
 
 Bug Fixes
 ---------

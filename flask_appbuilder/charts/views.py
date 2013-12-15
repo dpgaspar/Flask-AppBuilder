@@ -134,15 +134,33 @@ class TimeChartView(BaseChartView):
     @expose('/chart/<string:period>')
     @has_access
     def chart(self,period):
+        form = self.search_form.refresh()
+        filters = {}
+        filters = self._get_filter_args(filters)
+        
+        if (filters != {}):
+            item = self.datamodel.obj()
+            for filter_key in filters:
+                # on related models translate id to model obj
+                try:
+                    rel_obj = self.datamodel.get_related_obj(filter_key, filters.get(filter_key))
+                    setattr(item, filter_key, rel_obj)
+                    form = self.search_form(obj = item)
+                    filters[filter_key] = rel_obj
+                except:
+                    setattr(item, filter_key, filters.get(filter_key))
+                    form = self.search_form(obj = item)
+
         group_by = self._get_group_by_args()
         if group_by == '':
             group_by = self.group_by_columns[0]
         
         if period == 'month':
-            value_columns = self.datamodel.query_month_group(group_by)
+            value_columns = self.datamodel.query_month_group(group_by, filters = filters)
         elif period == 'year':
-            value_columns = self.datamodel.query_year_group(group_by)
+            value_columns = self.datamodel.query_year_group(group_by, filters = filters)
         widgets = self._get_chart_widget(value_columns = value_columns)
+        widgets = self._get_search_widget(form = form, widgets = widgets)
         return render_template(self.chart_template, route_base = self.route_base, 
                                                 title = self.chart_title,
                                                 label_columns = self.label_columns, 

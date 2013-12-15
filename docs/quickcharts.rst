@@ -9,7 +9,7 @@ Define your Chart Views (views.py)
 ::
 
     class ContactChartView(ChartView):
-    	
+        search_columns = ['name','group']
         datamodel = SQLAModel(Contact, db.session)
         chart_title = 'Grouped contacts'
         label_columns = ContactGeneralView.label_columns
@@ -30,7 +30,7 @@ If you want a column chart just override this::
 How about a chart grouped by a time frame? This is new on 0.2.0::
 
     class ContactTimeChartView(TimeChartView):
-    
+        search_columns = ['name','group']
         chart_title = 'Grouped Birth contacts'
         label_columns = ContactGeneralView.label_columns
         group_by_columns = ['birthday']
@@ -47,6 +47,9 @@ Register everything, to present your charts and create the menu::
     genapp.add_view(ContactTimeChartView(), "Contacts Birth Chart","/contacttimechartview/chart/month","signal","Contacts")
 
 You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto
+
+Take a look at the :doc:`api`. For aditional costumization
+
 
 Some images:
 
