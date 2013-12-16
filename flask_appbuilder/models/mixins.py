@@ -27,6 +27,20 @@ class ImageColumn(types.TypeDecorator):
 
 
 class BaseMixin(object):
+    """
+        Use this class has a mixin for your models, it will define your tablenames automatically
+        MyModel will be called my_model on the database.
+        
+        ::
+        
+            from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey, Date
+            from flask.ext.appbuilder import Base
+
+            class MyModel(BaseMixin, Base):
+                id = Column(Integer, primary_key=True)
+                name = Column(String(50), unique = True, nullable=False)
+
+    """
     __table_args__ = {'extend_existing': True}
 
     @declared_attr
@@ -42,9 +56,13 @@ class BaseMixin(object):
 
 class AuditMixin(BaseMixin):
     """
-    AuditMixin
-    Mixin for models, add 4 cols to stamp, time and user on
-    creation and modification
+        AuditMixin
+        Mixin for models, adds 4 columns to stamp, time and user on creation and modification
+        will create the following columns:
+            :created on:
+            :changed on:
+            :created by:
+            :changed by:
     """
     created_on = Column(DateTime, default=datetime.datetime.now,nullable=False)
     changed_on = Column(DateTime, default=datetime.datetime.now,
