@@ -51,6 +51,8 @@ Take a look at the example:
 
 https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickimages
 
+https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickfiles
+
 Some images:
 
 .. image:: ./images/images_list.png
