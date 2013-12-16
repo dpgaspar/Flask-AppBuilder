@@ -29,6 +29,14 @@ Lets create a very simple contacts application.
 
 First we are going to create a *Group* table, to group our contacts
 
+.. note::
+	Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a diferent declarative model of the security tables of AppBuilder.
+
+	Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, that you import::
+
+		flask.ext.appbuilder import Base
+	
+
 Define your models (models.py)
 ------------------------------
 
@@ -36,9 +44,9 @@ The group table.
 
 ::
 
-        class Group(db.Model):
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String(50), unique = True, nullable=False)
+        class Group(BaseMixin, Base):
+            id = Column(Integer, primary_key=True)
+            name = Column(String(50), unique = True, nullable=False)
 
             def __repr__(self):
                 return self.name
@@ -47,15 +55,15 @@ An *Contacts* table.
 
 ::
 
-	class Contact(db.Model):
-	    id = db.Column(db.Integer, primary_key=True)
-	    name =  db.Column(db.String(150), unique = True, nullable=False)
-	    address =  db.Column(db.String(564))
-	    birthday = db.Column(db.Date)
-	    personal_phone = db.Column(db.String(20))
-	    personal_celphone = db.Column(db.String(20))
-	    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
-	    group = db.relationship("Group")	
+	class Contact(BaseMixin, Base):
+	    id = Column(Integer, primary_key=True)
+	    name =  Column(String(150), unique = True, nullable=False)
+	    address =  Column(String(564))
+	    birthday = Column(Date)
+	    personal_phone = Column(String(20))
+	    personal_celphone = Column(String(20))
+	    group_id = Column(Integer, ForeignKey('group.id'))
+	    group = relationship("Group")	
 	    
 	    def __repr__(self):
                 return self.name	
