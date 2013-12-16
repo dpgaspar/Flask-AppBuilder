@@ -1,11 +1,13 @@
+import re
+import uuid
+import datetime
+
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 import sqlalchemy.types as types
 from sqlalchemy.types import String
 from flask import g
-import uuid
-import datetime
 
 
 _camelcase_re = re.compile(r'([A-Z]+)(?=[a-z0-9])')
