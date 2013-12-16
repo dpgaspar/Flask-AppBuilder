@@ -29,4 +29,3 @@ def action(name, text, confirmation=None):
         return f
 
     return wrap
-

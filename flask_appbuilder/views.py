@@ -47,7 +47,7 @@ class BaseView(object):
     
     base_permissions = []
     actions = []
-    
+
     default_view = 'list'
 
     def __init__(self):
@@ -66,8 +66,6 @@ class BaseView(object):
                     action = ActionItem(*attr_name._action, func = getattr(self, attr_name))
                     self.base_permissions.append(action.name)
                     self.actions.append(action)
-
-
 
     def create_blueprint(self, baseapp, 
                         endpoint = None, 
