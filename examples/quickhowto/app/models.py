@@ -2,27 +2,30 @@ import datetime
 from flask import Markup
 from hashlib import md5
 from app import db
+from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy.orm import relationship
 from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
 from flask.ext.appbuilder.filemanager import ImageManager
+from flask.ext.appbuilder import Base
 
-
-class Group(BaseMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name =  db.Column(db.String(50), unique = True, nullable=False)
-
-    def __repr__(self):
-        return self.name
-
-
-class Contact(BaseMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name =  db.Column(db.String(150), unique = True, nullable=False)
-    address =  db.Column(db.String(564))
-    birthday = db.Column(db.Date, nullable=True)
-    personal_phone = db.Column(db.String(20))
-    personal_celphone = db.Column(db.String(20))
-    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
-    group = db.relationship("Group")
+class Group(Base):
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), unique = True, nullable=False)
 
     def __repr__(self):
         return self.name
+
+
+class Contact(Base):
+    id = Column(Integer, primary_key=True)
+    name =  Column(String(150), unique = True, nullable=False)
+    address = Column(String(564))
+    birthday = Column(Date, nullable=True)
+    personal_phone = Column(String(20))
+    personal_celphone = Column(String(20))
+    group_id = Column(Integer, ForeignKey('group.id'))
+    group = relationship("Group")
+
+    def __repr__(self):
+        return self.name
+        
