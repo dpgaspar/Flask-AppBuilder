@@ -33,14 +33,14 @@ class GroupGeneralView(GeneralView):
     search_columns = ['name']
 
 class ContactChartView(ChartView):
-    
+    search_columns = ['name','group']
     chart_title = 'Grouped contacts'
     label_columns = ContactGeneralView.label_columns
     group_by_columns = ['group']
     datamodel = SQLAModel(Contact, db.session)
 
 class ContactTimeChartView(TimeChartView):
-    
+    search_columns = ['name','group']
     chart_title = 'Grouped Birth contacts'
     label_columns = ContactGeneralView.label_columns
     group_by_columns = ['birthday']
