@@ -29,11 +29,16 @@ class ImageColumn(types.TypeDecorator):
 class BaseMixin(object):
     __table_args__ = {'extend_existing': True}
 
-    def __new__(self):
-        if not self.__tablename__:
+    @declared_attr
+    def __tablename__(cls):
+        def _join(match):
+            word = match.group()
+            if len(word) > 1:
+                return ('_%s_%s' % (word[:-1], word[-1])).lower()
+            return '_' + word.lower()
+        print "NEW", _camelcase_re.sub(_join, cls.__name__).lstrip('_')
+        return _camelcase_re.sub(_join, cls.__name__).lstrip('_')
             
-            self.__tablename__ = _camelcase_re.sub(_join, self.__class__.__name__).lstrip('_')
-            print "NEW", self.__tablename__
 
 class AuditMixin(BaseMixin):
     """
