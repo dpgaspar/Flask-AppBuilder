@@ -1,6 +1,6 @@
 import datetime
 from flask import Markup
-from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, DateTime, Text
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, Date, Text
 from sqlalchemy.orm import relationship
 from app import db
 from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
