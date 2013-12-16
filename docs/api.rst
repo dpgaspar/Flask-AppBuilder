@@ -1,8 +1,8 @@
 API Reference
 =============
 
-flask.ext.appbuilder.baseapp
-----------------------------
+BaseApp
+-------
 
 .. automodule:: flask.ext.appbuilder.baseapp
 
@@ -54,4 +54,13 @@ Mixins
         :members:
 
     .. autoclass:: AuditMixin
+        :members:
+
+Extra Columns
+-------------
+
+    .. autoclass:: FileColumn
+        :members:
+
+    .. autoclass:: ImageColumn
         :members:
