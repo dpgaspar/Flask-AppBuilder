@@ -8,11 +8,7 @@ import uuid
 import datetime
 
 
-#try:
-#    from app import db
-#except ImportError:
-#    raise Exception('db not found please use required skeleton application see documentation')
-
+_camelcase_re = re.compile(r'([A-Z]+)(?=[a-z0-9])')
 
 class FileColumn(types.TypeDecorator):
     """
@@ -31,6 +27,11 @@ class ImageColumn(types.TypeDecorator):
 class BaseMixin(object):
     __table_args__ = {'extend_existing': True}
 
+    def __new__(self):
+        if not self.__tablename__:
+            
+            self.__tablename__ = _camelcase_re.sub(_join, self.__class__.__name__).lstrip('_')
+            print "NEW", self.__tablename__
 
 class AuditMixin(BaseMixin):
     """
