@@ -75,11 +75,11 @@ Improvements
 ------------
 - Chart views with diferent equal presentation has list views.
 - Chart views with search possibility
+- BaseMixin with automatic table name like flask-sqlalchemy, no need to use db.Model.
 
 Bug Fixes
 ---------
 - Pre, Post methods to override, removes decorator classmethod
-
 
 Improvements and Bug fixes on 0.3.0
 -----------------------------------
