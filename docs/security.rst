@@ -51,14 +51,14 @@ These base permission will be associated with your view, so if you create a view
 If you extend your view with some exposed method via the @expose decorator::
 
 	class MyGeneralView(GeneralView):
-    	datamodel = SQLAModel(Group, db.session)
+    		datamodel = SQLAModel(Group, db.session)
     	
-    	list_columns = ['name']
-    	show_columns = ['name']
-    	order_columns = ['name']
-    	search_columns = ['name']
+    		list_columns = ['name']
+    		show_columns = ['name']
+    		order_columns = ['name']
+    		search_columns = ['name']
     	
-    	@expose('/mymethod/')
+    		@expose('/mymethod/')
 		@has_access
 		def mymethod(self):
 			# do something
