@@ -14,14 +14,15 @@ _camelcase_re = re.compile(r'([A-Z]+)(?=[a-z0-9])')
 
 class FileColumn(types.TypeDecorator):
     """
-    Extends SQLA to support a File Column
-    usefull to auto form generation.
-    
+        Extends SQLAlchemy to support and mostly identify a File Column
     """
     impl = types.Text
     
 
 class ImageColumn(types.TypeDecorator):
+    """
+        Extends SQLAlchemy to support and mostly identify a Image Column
+    """
     impl = types.Text
 
 
