@@ -44,3 +44,14 @@ Chart Views
 
     .. autoclass:: TimeChartView
         :members:
+
+Mixins
+------
+
+.. automodule:: flask.ext.appbuilder.models.mixins
+
+    .. autoclass:: BaseMixin
+        :members:
+
+    .. autoclass:: AuditMixin
+        :members:
