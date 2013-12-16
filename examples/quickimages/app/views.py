@@ -9,7 +9,6 @@ from app import app, db
 
 
 class PersonGeneralView(GeneralView):
-    route_base = '/persons'
     datamodel = SQLAModel(Person, db.session)
 
     list_title = 'List Contacts'
@@ -52,7 +51,6 @@ class PersonGeneralView(GeneralView):
 
 
 class GroupGeneralView(GeneralView):
-    route_base = '/groups'
     datamodel = SQLAModel(Group, db.session)
     related_views = [PersonGeneralView()]    
 
@@ -63,12 +61,13 @@ class GroupGeneralView(GeneralView):
     search_columns = ['name']
 
 class PersonChartView(ChartView):
-    
     route_base = '/persons'
+    datamodel = SQLAModel(Person, db.session)
     chart_title = 'Grouped Persons'
     label_columns = PersonGeneralView.label_columns
     group_by_columns = ['group']
-    datamodel = SQLAModel(Person, db.session)
+    search_columns = ['name','group']
+    
 
 baseapp = BaseApp(app, db)
 baseapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "Contacts")
