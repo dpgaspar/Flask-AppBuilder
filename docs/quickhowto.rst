@@ -30,8 +30,8 @@ Lets create a very simple contacts application.
 First we are going to create a *Group* table, to group our contacts
 
 .. note::
-	Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a diferent declarative model of the security tables of AppBuilder.
-
+	Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a diferent declarative model of the security tables from AppBuilder.
+	If you want to use AuditMixin :doc:`api` or include a relation to a User or login User you must be on the same declarative base.
 	Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, that you import::
 
 		flask.ext.appbuilder import Base
