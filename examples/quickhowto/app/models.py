@@ -8,7 +8,7 @@ from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn
 from flask.ext.appbuilder.filemanager import ImageManager
 from flask.ext.appbuilder import Base
 
-class Group(Base):
+class Group(BaseMixin):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique = True, nullable=False)
 
@@ -16,7 +16,7 @@ class Group(Base):
         return self.name
 
 
-class Contact(Base):
+class Contact(BaseMixin):
     id = Column(Integer, primary_key=True)
     name =  Column(String(150), unique = True, nullable=False)
     address = Column(String(564))
