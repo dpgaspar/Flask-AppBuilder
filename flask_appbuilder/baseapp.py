@@ -97,7 +97,7 @@ class BaseApp():
         if 'APP_ICON' in self.app.config:
             self.app_icon = self.app.config['APP_ICON']
         else:
-            self.app_icon = 'img/fab.jpg'
+            self.app_icon = 'img/fab.png'
         if 'APP_THEME' in self.app.config:
             self.app_theme = self.app.config['APP_THEME']
         else:
