@@ -22,7 +22,7 @@
 	
 	{% if value_columns %}
 	
-	<div class="list-group">
+	
   {% for item in value_columns %}
 		{% set outer_loop = loop %}
 		<center>
@@ -42,6 +42,7 @@
 			{% endif %}
 			</div>
 		</center>
+		<div class="list-group">
 		<a href="#" class="list-group-item">
 		{% for value in include_columns %}
   		
@@ -52,9 +53,10 @@
       			{% endif %}
 		{% endfor %}
 		</a>
+		</div>
 	{% endfor %}
 	
-	</div>
+	
 	{% else %}
 	<b> {{_("No records found")}}</b>
 	{% endif %}
