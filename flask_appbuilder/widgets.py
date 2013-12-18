@@ -145,3 +145,6 @@ class ListThumbnail(ListWidget):
 
 class ListCarousel(ListWidget):
     template = 'appbuilder/general/widgets/list_carousel.html'
+
+class ListItem(ListWidget):
+    template = 'appbuilder/general/widgets/list_item.html'
