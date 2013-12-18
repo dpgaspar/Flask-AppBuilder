@@ -60,9 +60,9 @@
                     <span class="icon-bar"></span>
                 </button>
                 {% if baseapp.app_icon %}
-                	<div class="navbar-brand" style="{height: 25px; padding-top: 0; padding-bottom: 0;}">
+                	<div class="navbar-brand" style="{max-height: 40px; overflow: visible;height: 25px; padding-top: 0; padding-bottom: 0;}">
                 	<a href="{{url_for('%s.%s' % (baseapp.indexview.endpoint, baseapp.indexview.default_view))}}">
-                	<img src="{{url_for('baseapp.static',filename=baseapp.app_icon)}}" height="25px" width="100%">
+                	<img src="{{url_for('baseapp.static',filename=baseapp.app_icon)}}" height="30px" width="100%">
                 	</a>
                 	</div>
                 {% else %}
