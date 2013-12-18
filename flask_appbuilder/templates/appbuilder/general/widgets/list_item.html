@@ -25,7 +25,7 @@
 	
   {% for item in value_columns %}
 		<div class="list-group">
-		<div class="btn-group btn-group-xs well">
+		<div class="btn-group btn-group-xs">
 				{% if can_show %}
 					{% set path = url_for(generalview_name + '.show',pk=pks[loop.index-1],next=request.path) %}
 					{% set path = path | set_link_filters(filters, pk) %}
