@@ -61,13 +61,13 @@
                 </button>
                 {% if baseapp.app_icon %}
                 	<span class="navbar-brand">
-                	<a href="{{url_for('%s.%s' % (self.baseapp.indexview.endpoint, self.baseapp.indexview.default_view))}}">
+                	<a href="{{url_for('%s.%s' % (baseapp.indexview.endpoint, baseapp.indexview.default_view))}}">
                 	<img src="{{url_for('baseapp.static',filename=baseapp.app_icon)}}" height="32" width="32">
                 	</a>
                 	</span>
                 {% else %}
                 	<span class="navbar-brand">
-                	<a href="{{url_for('%s.%s' % (self.baseapp.indexview.endpoint, self.baseapp.indexview.default_view))}}">
+                	<a href="{{url_for('%s.%s' % (baseapp.indexview.endpoint, baseapp.indexview.default_view))}}">
                 	{{ baseapp.app_name }}
                 	</a>
                 	</span>
