@@ -76,6 +76,7 @@ Improvements
 ------------
 
 - New config key APP_ICON to include an image to the navbar.
+- New Widget for displaying lists of items ListItem (Widget)
 
 Bug Fixes
 ---------
