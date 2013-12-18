@@ -43,6 +43,7 @@
 			</div>
 		</center>
 		<div class="list-group">
+		<a href="#" class="list-group-item active">
 		{% for value in include_columns %}
   			{% if loop.index == 1 %}
         			<h4 class="list-group-item-heading">{{ item[value]|safe }}</h4>
@@ -50,6 +51,7 @@
         			<p class="list-group-item-text">{{ item[value]|safe }}</p>
       			{% endif %}
 		{% endfor %}
+		</a>
 		</div>
 	{% endfor %}
 	
