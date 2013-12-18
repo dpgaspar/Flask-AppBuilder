@@ -50,7 +50,7 @@
 </li>
 {% endmacro %}       
 
-{% macro navbar_block(app_name, lst_menu, languages) %}
+{% macro navbar_block(lst_menu, languages) %}
 <div class="navbar navbar-inverse" role="navigation">
    <div class="container">
         <div class="navbar-header">
@@ -59,7 +59,19 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <span class="navbar-brand"><img src="{{url_for('baseapp.static',filename='img/fab.jpg')}}" height="42" width="42"></span>
+                {% if baseapp.app_icon %}
+                	<span class="navbar-brand">
+                	<a href="{{url_for('%s.%s' % (self.baseapp.indexview.endpoint, self.baseapp.indexview.default_view))}}">
+                	<img src="{{url_for('baseapp.static',filename=baseapp.app_icon)}}" height="32" width="32">
+                	</a>
+                	</span>
+                {% else %}
+                	<span class="navbar-brand">
+                	<a href="{{url_for('%s.%s' % (self.baseapp.indexview.endpoint, self.baseapp.indexview.default_view))}}">
+                	{{ baseapp.app_name }}
+                	</a>
+                	</span>
+                {% endif %}
         </div>
         <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
