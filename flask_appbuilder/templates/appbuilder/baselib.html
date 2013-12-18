@@ -60,9 +60,9 @@
                     <span class="icon-bar"></span>
                 </button>
                 {% if baseapp.app_icon %}
-                	<span class="icon-bar">
+                	<span class="navbar-brand">
                 	<a href="{{url_for('%s.%s' % (baseapp.indexview.endpoint, baseapp.indexview.default_view))}}">
-                	<img src="{{url_for('baseapp.static',filename=baseapp.app_icon)}}" height="" width="100%">
+                	<img src="{{url_for('baseapp.static',filename=baseapp.app_icon)}}" height="10px" width="100%">
                 	</a>
                 	</span>
                 {% else %}
