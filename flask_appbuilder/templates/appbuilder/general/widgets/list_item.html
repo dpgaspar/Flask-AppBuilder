@@ -1,0 +1,58 @@
+{% import 'appbuilder/general/lib.html' as lib %}
+
+
+	{% set can_add = "can_add" | is_item_visible(generalview_name) %}
+	{% set can_show = "can_show" | is_item_visible(generalview_name) %}
+    {% set can_edit = "can_edit" | is_item_visible(generalview_name) %}
+	{% set can_delete = "can_delete" | is_item_visible(generalview_name) %}
+    
+	<div class="well well-sm">
+		{{ lib.render_pagination(page, page_size, count, generalview_name) }}
+		{% if can_add %}
+			{% set path = url_for(generalview_name + '.add',next=request.path) %}
+			{% set path = path | set_link_filters(filters, pk) %}
+			{{ lib.lnk_add(path) }}
+		{% endif %}
+		{{ lib.lnk_back() }}
+		
+		<div class="pull-right">
+	  	<strong>{{ _('Record Count') }}:</strong> {{ count }}
+		</div>
+  </div>	
+	
+	{% if value_columns %}
+	
+	<div class="list-group">
+  {% for item in value_columns %}
+		{% set outer_loop = loop %}
+		<center>
+			<div class="btn-group btn-group-xs">
+			{% if can_show %}
+				{% set path = url_for(generalview_name + '.show',pk=pks[loop.index-1],next=request.path) %}
+				{% set path = path | set_link_filters(filters, pk) %}
+				{{ lib.lnk_show(path) }}
+			{% endif %}
+			{% if can_edit %}
+				{% set path = url_for(generalview_name + '.edit',pk=pks[loop.index-1],next=request.path) %}
+				{% set path = path | set_link_filters(filters, pk) %}
+				{{ lib.lnk_edit(path) }}
+			{% endif %}
+			{% if can_delete %}
+				{{ lib.lnk_delete(url_for(generalview_name + '.delete',pk=pks[loop.index-1],next=request.path)) }}
+			{% endif %}
+			</div>
+		</center>
+		{% for value in include_columns %}
+  		<a href="#" class="list-group-item active">
+  		{% if loop.index == 1}}
+        <h4 class="list-group-item-heading">{{ item[value]|safe }}</h4>
+      {% else %}
+        <p class="list-group-item-text">{{ item[value]|safe }}</p>
+      {% endif %}
+		{% endfor %}
+	{% endfor %}
+	
+	</div>
+	{% else %}
+	<b> {{_("No records found")}}</b>
+	{% endif %}
