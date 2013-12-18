@@ -25,11 +25,7 @@
 	
   {% for item in value_columns %}
 		<div class="list-group">
-		<a href="#" class="list-group-item">
-		
-		{% for value in include_columns %}
-  			{% if loop.index == 1 %}
-  				<div class="btn-group btn-group-xs">
+		<div class="btn-group btn-group-xs">
 				{% if can_show %}
 					{% set path = url_for(generalview_name + '.show',pk=pks[loop.index-1],next=request.path) %}
 					{% set path = path | set_link_filters(filters, pk) %}
@@ -44,6 +40,10 @@
 					{{ lib.lnk_delete(url_for(generalview_name + '.delete',pk=pks[loop.index-1],next=request.path)) }}
 				{% endif %}
 				</div>
+		<a href="#" class="list-group-item">
+		
+		{% for value in include_columns %}
+  			{% if loop.index == 1 %}
         			<h4 class="list-group-item-heading">{{ item[value]|safe }}</h4>
         			
       			{% else %}
