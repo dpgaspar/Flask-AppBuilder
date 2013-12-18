@@ -68,6 +68,20 @@ To this::
 
 Small change you just have to instantiate your classes.
 
+
+Improvements and Bug fixes on 0.3.10
+------------------------------------
+
+Improvements
+------------
+
+- New config key APP_ICON to include an image to the navbar.
+
+Bug Fixes
+---------
+- 
+
+
 Improvements and Bug fixes on 0.3.9
 -----------------------------------
 
