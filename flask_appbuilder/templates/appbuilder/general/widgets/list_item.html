@@ -42,14 +42,16 @@
 			{% endif %}
 			</div>
 		</center>
+		<a href="#" class="list-group-item active">
 		{% for value in include_columns %}
-  		<a href="#" class="list-group-item active">
-  		{% if loop.index == 1 %}
-        <h4 class="list-group-item-heading">{{ item[value]|safe }}</h4>
-      {% else %}
-        <p class="list-group-item-text">{{ item[value]|safe }}</p>
-      {% endif %}
+  		
+  			{% if loop.index == 1 %}
+        			<h4 class="list-group-item-heading">{{ item[value]|safe }}</h4>
+      			{% else %}
+        			<p class="list-group-item-text">{{ item[value]|safe }}</p>
+      			{% endif %}
 		{% endfor %}
+		</a>
 	{% endfor %}
 	
 	</div>
