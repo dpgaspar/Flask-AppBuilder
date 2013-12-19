@@ -16,14 +16,15 @@
 		{{ lib.lnk_back() }}
 		
 		<div class="pull-right">
-	  	<strong>{{ _('Record Count') }}:</strong> {{ count }}
+    	  	<strong>{{ _('Record Count') }}:</strong> {{ count }}
 		</div>
-  </div>	
+    </div>	
 	
 	{% if value_columns %}
 	
 	<div class="container">
       <div class="row">
+		<div class="col-md-4">
 		
   {% for item in value_columns %}
 		<div class="list-group">
@@ -44,18 +45,18 @@
 				{% endif %}
 		</div>
 		{% endif %}
-		  <div class="col-md-4">
-		    {% for value in include_columns %}
-  			  {% if loop.index == 1 %}
-            <h4 class="list-group-item-heading">{{ item[value]|safe }}</h4>
-      	  {% else %}
-        	  <p class="list-group-item-text">{{ item[value]|safe }}</p>
-      	  {% endif %}
-		    {% endfor %}
-		  </div>
-
-	{% endfor %}
-
+		</div>
+		  
+        {% for value in include_columns %}
+            {% if loop.index == 1 %}
+                <h4 class="list-group-item-heading">{{ item[value]|safe }}</h4>
+            {% else %}
+                <p class="list-group-item-text">{{ item[value]|safe }}</p>
+            {% endif %}
+		{% endfor %}
+		
+  {% endfor %}
+  </div>
 	  </div>
 		</div>
 		
