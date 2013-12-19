@@ -148,3 +148,6 @@ class ListCarousel(ListWidget):
 
 class ListItem(ListWidget):
     template = 'appbuilder/general/widgets/list_item.html'
+
+class ListBlock(ListWidget):
+    template = 'appbuilder/general/widgets/list_block.html'
