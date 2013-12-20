@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -14,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '0.3.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -25,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
-    <link rel="next" title="Versions" href="versions.html" />
-    <link rel="prev" title="Views" href="views.html" />
+    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="prev" title="Base Configuration" href="config.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -46,10 +45,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="versions.html" title="Versions"
+          <a href="api.html" title="API Reference"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="views.html" title="Views"
+          <a href="config.html" title="Base Configuration"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -88,7 +87,7 @@
 <div class="section" id="permissions">
 <h2>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h2>
 <p>The framework you automatically create all the possible existing permissions on your views or menus, by &#8220;inspection&#8221; your code.</p>
-<p>Each time you create a new view based on a model (derived from GeneralView) it will create the following permissions:</p>
+<p>Each time you create a new view based on a model (inherit from GeneralView) it will create the following permissions:</p>
 <blockquote>
 <div><ul class="simple">
 <li>can list</li>
@@ -111,19 +110,20 @@
 </ul>
 </div></blockquote>
 <p>If you extend your view with some exposed method via the &#64;expose decorator:</p>
-<div class="highlight-python"><pre>class MyGeneralView(GeneralView):
-datamodel = SQLAModel(Group, db.session)
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+        <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 
-list_columns = ['name']
-show_columns = ['name']
-order_columns = ['name']
-search_columns = ['name']
+        <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">show_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">order_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
 
-@expose('/mymethod/')
-        @has_access
-        def mymethod(self):
-                # do something
-                pass</pre>
+        <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/mymethod/&#39;</span><span class="p">)</span>
+        <span class="nd">@has_access</span>
+        <span class="k">def</span> <span class="nf">mymethod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="c"># do something</span>
+                <span class="k">pass</span>
+</pre></div>
 </div>
 <p>The framework will create the following access:</p>
 <blockquote>
@@ -153,8 +153,8 @@ search_columns = ['name']
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="views.html" title="previous chapter">Views</a></li>
-      <li>Next: <a href="versions.html" title="next chapter">Versions</a></li>
+      <li>Previous: <a href="config.html" title="previous chapter">Base Configuration</a></li>
+      <li>Next: <a href="api.html" title="next chapter">API Reference</a></li>
   </ul></li>
 </ul>
   <h3>This Page</h3>

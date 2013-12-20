@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -14,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '0.3.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -81,28 +80,36 @@
 <h2>Simple contacts application<a class="headerlink" href="#simple-contacts-application" title="Permalink to this headline">¶</a></h2>
 <p>Lets create a very simple contacts application.</p>
 <p>First we are going to create a <em>Group</em> table, to group our contacts</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a diferent declarative model of the security tables from AppBuilder.
+If you want to use AuditMixin <a class="reference internal" href="api.html"><em>API Reference</em></a> or include a relation to a User or login User you must be on the same declarative base.
+Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, that you import:</p>
+<div class="last highlight-python"><pre>flask.ext.appbuilder import Base</pre>
+</div>
+</div>
 </div>
 <div class="section" id="define-your-models-models-py">
 <h2>Define your models (models.py)<a class="headerlink" href="#define-your-models-models-py" title="Permalink to this headline">¶</a></h2>
 <p>The group table.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </pre></div>
 </div>
 <p>An <em>Contacts</em> table.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Contact</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span>  <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">address</span> <span class="o">=</span>  <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">564</span><span class="p">))</span>
-    <span class="n">birthday</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Date</span><span class="p">)</span>
-    <span class="n">personal_phone</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
-    <span class="n">personal_celphone</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
-    <span class="n">group_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;group.id&#39;</span><span class="p">))</span>
-    <span class="n">group</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">relationship</span><span class="p">(</span><span class="s">&quot;Group&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Contact</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">address</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">564</span><span class="p">))</span>
+    <span class="n">birthday</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Date</span><span class="p">)</span>
+    <span class="n">personal_phone</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+    <span class="n">personal_celphone</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+    <span class="n">group_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;group.id&#39;</span><span class="p">))</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s">&quot;Group&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
@@ -147,7 +154,7 @@
 </tbody>
 </table>
 <p>There are many more properties you can override to customize your views. you can define descriptions for columns, validators for forms, and many more</p>
-<p>Take a look at the <a class="reference internal" href="views.html"><em>Views</em></a>.</p>
+<p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>.</p>
 <p>But where is ContactGeneralView ? (that was a reference has a related_views)</p>
 <p>Let&#8217;s define it:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
@@ -187,9 +194,9 @@
 </div>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>
 <p>Some images:</p>
-<img alt="_images/login.png" src="_images/login.png" style="width: 100%;" />
-<img alt="_images/group_list.png" src="_images/group_list.png" style="width: 100%;" />
-<img alt="_images/contact_list.png" src="_images/contact_list.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="_images/login.png"><img alt="_images/login.png" src="_images/login.png" style="width: 100%;" /></a>
+<a class="reference internal image-reference" href="_images/group_list.png"><img alt="_images/group_list.png" src="_images/group_list.png" style="width: 100%;" /></a>
+<a class="reference internal image-reference" href="_images/contact_list.png"><img alt="_images/contact_list.png" src="_images/contact_list.png" style="width: 100%;" /></a>
 </div>
 </div>
 

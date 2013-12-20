@@ -69,6 +69,33 @@ To this::
 Small change you just have to instantiate your classes.
 
 
+Improvements and Bug fixes on 0.3.10
+------------------------------------
+
+Improvements
+------------
+
+- New config key APP_ICON to include an image to the navbar.
+- New Widget for displaying lists of items ListItem (Widget)
+
+Bug Fixes
+---------
+- 
+
+
+Improvements and Bug fixes on 0.3.9
+-----------------------------------
+
+Improvements
+------------
+- Chart views with diferent equal presentation has list views.
+- Chart views with search possibility
+- BaseMixin with automatic table name like flask-sqlalchemy, no need to use db.Model.
+
+Bug Fixes
+---------
+- Pre, Post methods to override, removes decorator classmethod
+
 Improvements and Bug fixes on 0.3.0
 -----------------------------------
 

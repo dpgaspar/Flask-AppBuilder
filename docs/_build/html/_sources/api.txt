@@ -1,8 +1,8 @@
 API Reference
 =============
 
-flask.ext.appbuilder.baseapp
-----------------------------
+BaseApp
+-------
 
 .. automodule:: flask.ext.appbuilder.baseapp
 
@@ -43,4 +43,24 @@ Chart Views
         :members:
 
     .. autoclass:: TimeChartView
+        :members:
+
+Mixins
+------
+
+.. automodule:: flask.ext.appbuilder.models.mixins
+
+    .. autoclass:: BaseMixin
+        :members:
+
+    .. autoclass:: AuditMixin
+        :members:
+
+Extra Columns
+-------------
+
+    .. autoclass:: FileColumn
+        :members:
+
+    .. autoclass:: ImageColumn
         :members:

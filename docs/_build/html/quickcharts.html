@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -14,7 +13,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '0.3.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -62,11 +61,11 @@
             
   <div class="section" id="quick-charts">
 <h1>Quick Charts<a class="headerlink" href="#quick-charts" title="Permalink to this headline">¶</a></h1>
-<p>To implement views with google charts derive from ChartsViews like this:</p>
+<p>To implement views with google charts inherit from ChartsViews like this:</p>
 <div class="section" id="define-your-chart-views-views-py">
 <h2>Define your Chart Views (views.py)<a class="headerlink" href="#define-your-chart-views-views-py" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactChartView</span><span class="p">(</span><span class="n">ChartView</span><span class="p">):</span>
-
+    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped contacts&#39;</span>
     <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactGeneralView</span><span class="o">.</span><span class="n">label_columns</span>
@@ -93,7 +92,7 @@ If you want a column chart just override this:</p>
 </div>
 <p>How about a chart grouped by a time frame? This is new on 0.2.0:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactTimeChartView</span><span class="p">(</span><span class="n">TimeChartView</span><span class="p">):</span>
-
+    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped Birth contacts&#39;</span>
     <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactGeneralView</span><span class="o">.</span><span class="n">label_columns</span>
     <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;birthday&#39;</span><span class="p">]</span>
@@ -110,10 +109,11 @@ If you want a column chart just override this:</p>
 </pre></div>
 </div>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>
+<p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>. For aditional costumization</p>
 <p>Some images:</p>
-<img alt="_images/chart.png" src="_images/chart.png" style="width: 100%;" />
-<img alt="_images/chart_time1.png" src="_images/chart_time1.png" style="width: 100%;" />
-<img alt="_images/chart_time2.png" src="_images/chart_time2.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="_images/chart.png"><img alt="_images/chart.png" src="_images/chart.png" style="width: 100%;" /></a>
+<a class="reference internal image-reference" href="_images/chart_time1.png"><img alt="_images/chart_time1.png" src="_images/chart_time1.png" style="width: 100%;" /></a>
+<a class="reference internal image-reference" href="_images/chart_time2.png"><img alt="_images/chart_time2.png" src="_images/chart_time2.png" style="width: 100%;" /></a>
 </div>
 </div>
 
