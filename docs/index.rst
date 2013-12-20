@@ -21,7 +21,7 @@ Contents:
    quickminimal
    quickcharts
    quickfiles
-   costumizing
+   customizing
    i18n
    config
    security
