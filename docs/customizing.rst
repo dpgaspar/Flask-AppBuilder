@@ -75,6 +75,10 @@ All views have templates that will display widgets in a certain layout. For exam
         
 The above example will override the show and edit templates that will change the related lists layout presentation.
 
+.. image:: ./images/list_cascade.png
+    :width: 100%
+
+
 If you want to change the above example, and change the way the server disks are displayed has a list just use the available widgets::
 
     class ServerDiskTypeGeneralView(GeneralView):
@@ -92,6 +96,10 @@ If you want to change the above example, and change the way the server disks are
         list_columns = ['name', 'serial']
         order_columns = ['name', 'serial']
         search_columns = ['name', 'serial']
+
+
+.. image:: ./images/list_cascade_block.png
+    :width: 100%
 
 
 on version 0.3.10 you have the following widgets already available
