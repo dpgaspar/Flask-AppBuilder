@@ -14,6 +14,7 @@ Use config.py to configure the following parameters. By default it will use SQLL
     :AUTH_ROLE_PUBLIC: Special Role that holds the public permissions, no authentication needed.
     :APP_NAME: The name of your application.
     :APP_THEME: Various themes for you to choose from (bootwatch).
+    :APP_ICON: path of your application icon, will be chown on the left side of the menu
     :UPLOAD_FOLDER: Files upload folder.
     :IMG_UPLOAD_FOLDER: Image upload folder.
     :IMG_UPLOAD_URL: Image relative URL.
