@@ -1,74 +1,6 @@
 Versions
 ========
 
-New 0.3.0 is out, and if you are using 0.2.X or bellow, take a close look at the following chapters.
-
-
-Migrating from 0.2.X to 0.3.X
------------------------------
-
-This new version (0.3.X) has many internal changes, if you feel lost please post an issue on github
-https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open
-
-All direct imports from your 'app' directory were removed, so there is no obligation in using the base AppBuilder-Skeleton.
-
-Security tables have changed their names, AppBuilder will automaticaly migrate all your data to the new tables.
-
-1 - Change your BaseApp initialization (views.py)
-
-From this::
-
-	baseapp = BaseApp(app)
-
-Change to this::
-
-	baseapp = BaseApp(app, db)
-	
-2 - Remove from OpenID and Login initialization (__init__.py)
-
-From this::
-
-	app = Flask(__name__)
-	app.config.from_object('config')
-	db = SQLAlchemy(app)
-	babel = Babel(app)
-	lm = LoginManager()
-	lm.init_app(app)
-	lm.login_view = 'login'
-	oid = OpenID(app, os.path.join(basedir, 'tmp'))
-	
-	from app import models, views
-	
-Change to this::
-
-	app = Flask(__name__)
-	app.config.from_object('config')
-	db = SQLAlchemy(app)
-	
-	from app import models, views
-
-
-
-Migrating from 0.1.X to 0.2.X
------------------------------
-
-It's very simple, change this::
-
-	baseapp = BaseApp(app)
-	baseapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
-	baseapp.add_view(PersonGeneralView, "List Contacts","/persons/list","earphone","Contacts")
-	baseapp.add_view(PersonChartView, "Contacts Chart","/persons/chart","earphone","Contacts")
-	
-To this::
-
-	baseapp = BaseApp(app)
-	baseapp.add_view(GroupGeneralView(), "List Groups","/groups/list","th-large","Contacts")
-	baseapp.add_view(PersonGeneralView(), "List Contacts","/persons/list","earphone","Contacts")
-	baseapp.add_view(PersonChartView(), "Contacts Chart","/persons/chart","earphone","Contacts")
-
-Small change you just have to instantiate your classes.
-
-
 Improvements and Bug fixes on 0.3.10
 ------------------------------------
 
@@ -76,11 +8,13 @@ Improvements
 ------------
 
 - New config key APP_ICON to include an image to the navbar.
+- Removed "Home" on the menu
 - New Widget for displaying lists of items ListItem (Widget)
+- New widget for displaying lists on blocks thumbnails
 
 Bug Fixes
 ---------
-- 
+- Logout translation on portuguese and spanish
 
 
 Improvements and Bug fixes on 0.3.9
@@ -88,7 +22,7 @@ Improvements and Bug fixes on 0.3.9
 
 Improvements
 ------------
-- Chart views with diferent equal presentation has list views.
+- Chart views with equal presentation has list views.
 - Chart views with search possibility
 - BaseMixin with automatic table name like flask-sqlalchemy, no need to use db.Model.
 

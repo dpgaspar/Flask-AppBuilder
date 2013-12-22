@@ -26,6 +26,7 @@ Contents:
    config
    security
    api
+   versionmigration
    versions
 
 

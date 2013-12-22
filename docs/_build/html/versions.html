@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
-    <link rel="prev" title="API Reference" href="api.html" />
+    <link rel="prev" title="Version Migration" href="versionmigration.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -44,7 +44,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="api.html" title="API Reference"
+          <a href="versionmigration.html" title="Version Migration"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -57,63 +57,6 @@
             
   <div class="section" id="versions">
 <h1>Versions<a class="headerlink" href="#versions" title="Permalink to this headline">¶</a></h1>
-<p>New 0.3.0 is out, and if you are using 0.2.X or bellow, take a close look at the following chapters.</p>
-<div class="section" id="migrating-from-0-2-x-to-0-3-x">
-<h2>Migrating from 0.2.X to 0.3.X<a class="headerlink" href="#migrating-from-0-2-x-to-0-3-x" title="Permalink to this headline">¶</a></h2>
-<p>This new version (0.3.X) has many internal changes, if you feel lost please post an issue on github
-<a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open">https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open</a></p>
-<p>All direct imports from your &#8216;app&#8217; directory were removed, so there is no obligation in using the base AppBuilder-Skeleton.</p>
-<p>Security tables have changed their names, AppBuilder will automaticaly migrate all your data to the new tables.</p>
-<p>1 - Change your BaseApp initialization (views.py)</p>
-<p>From this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Change to this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>2 - Remove from OpenID and Login initialization (__init__.py)</p>
-<p>From this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">SQLAlchemy</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-<span class="n">babel</span> <span class="o">=</span> <span class="n">Babel</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-<span class="n">lm</span> <span class="o">=</span> <span class="n">LoginManager</span><span class="p">()</span>
-<span class="n">lm</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-<span class="n">lm</span><span class="o">.</span><span class="n">login_view</span> <span class="o">=</span> <span class="s">&#39;login&#39;</span>
-<span class="n">oid</span> <span class="o">=</span> <span class="n">OpenID</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="s">&#39;tmp&#39;</span><span class="p">))</span>
-
-<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">models</span><span class="p">,</span> <span class="n">views</span>
-</pre></div>
-</div>
-<p>Change to this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">SQLAlchemy</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-
-<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">models</span><span class="p">,</span> <span class="n">views</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="migrating-from-0-1-x-to-0-2-x">
-<h2>Migrating from 0.1.X to 0.2.X<a class="headerlink" href="#migrating-from-0-1-x-to-0-2-x" title="Permalink to this headline">¶</a></h2>
-<p>It&#8217;s very simple, change this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">,</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="s">&quot;/groups/list&quot;</span><span class="p">,</span><span class="s">&quot;th-large&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonGeneralView</span><span class="p">,</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="s">&quot;/persons/list&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonChartView</span><span class="p">,</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span><span class="s">&quot;/persons/chart&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>To this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="s">&quot;/groups/list&quot;</span><span class="p">,</span><span class="s">&quot;th-large&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="s">&quot;/persons/list&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonChartView</span><span class="p">(),</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span><span class="s">&quot;/persons/chart&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Small change you just have to instantiate your classes.</p>
-</div>
 <div class="section" id="improvements-and-bug-fixes-on-0-3-10">
 <h2>Improvements and Bug fixes on 0.3.10<a class="headerlink" href="#improvements-and-bug-fixes-on-0-3-10" title="Permalink to this headline">¶</a></h2>
 </div>
@@ -121,13 +64,15 @@
 <h2>Improvements<a class="headerlink" href="#improvements" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>New config key APP_ICON to include an image to the navbar.</li>
+<li>Removed &#8220;Home&#8221; on the menu</li>
 <li>New Widget for displaying lists of items ListItem (Widget)</li>
+<li>New widget for displaying lists on blocks thumbnails</li>
 </ul>
 </div>
 <div class="section" id="bug-fixes">
 <h2>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li></li>
+<li>Logout translation on portuguese and spanish</li>
 </ul>
 </div>
 <div class="section" id="improvements-and-bug-fixes-on-0-3-9">
@@ -136,7 +81,7 @@
 <div class="section" id="id1">
 <h2>Improvements<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Chart views with diferent equal presentation has list views.</li>
+<li>Chart views with equal presentation has list views.</li>
 <li>Chart views with search possibility</li>
 <li>BaseMixin with automatic table name like flask-sqlalchemy, no need to use db.Model.</li>
 </ul>
@@ -212,8 +157,6 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Versions</a><ul>
-<li><a class="reference internal" href="#migrating-from-0-2-x-to-0-3-x">Migrating from 0.2.X to 0.3.X</a></li>
-<li><a class="reference internal" href="#migrating-from-0-1-x-to-0-2-x">Migrating from 0.1.X to 0.2.X</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-3-10">Improvements and Bug fixes on 0.3.10</a></li>
 <li><a class="reference internal" href="#improvements">Improvements</a></li>
 <li><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
@@ -232,7 +175,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="api.html" title="previous chapter">API Reference</a></li>
+      <li>Previous: <a href="versionmigration.html" title="previous chapter">Version Migration</a></li>
   </ul></li>
 </ul>
   <h3>This Page</h3>

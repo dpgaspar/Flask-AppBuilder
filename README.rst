@@ -8,7 +8,7 @@ Documentation at: http://flask-appbuilder.readthedocs.org/en/latest/
 Package Version
 ---------------
 
-New 0.3.9 with some new features for 0.3.0 !!  
+New 0.3.10 with some new features for 0.3.0 !!  
 
 please read the `http://flask-appbuilder.readthedocs.org/en/latest/versions.html`
 

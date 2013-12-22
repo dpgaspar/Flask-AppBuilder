@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Version Migration &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="index.html" />
+    <link rel="next" title="Versions" href="versions.html" />
+    <link rel="prev" title="API Reference" href="api.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="versions.html" title="Versions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="API Reference"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="version-migration">
+<h1>Version Migration<a class="headerlink" href="#version-migration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="migrating-from-0-2-x-to-0-3-x">
+<h2>Migrating from 0.2.X to 0.3.X<a class="headerlink" href="#migrating-from-0-2-x-to-0-3-x" title="Permalink to this headline">¶</a></h2>
+<p>This new version (0.3.X) has many internal changes, if you feel lost please post an issue on github
+<a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open">https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open</a></p>
+<p>All direct imports from your &#8216;app&#8217; directory were removed, so there is no obligation in using the base AppBuilder-Skeleton.</p>
+<p>Security tables have changed their names, AppBuilder will automaticaly migrate all your data to the new tables.</p>
+<p>1 - Change your BaseApp initialization (views.py)</p>
+<p>From this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Change to this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>2 - Remove from OpenID and Login initialization (__init__.py)</p>
+<p>From this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">SQLAlchemy</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">babel</span> <span class="o">=</span> <span class="n">Babel</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">lm</span> <span class="o">=</span> <span class="n">LoginManager</span><span class="p">()</span>
+<span class="n">lm</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">lm</span><span class="o">.</span><span class="n">login_view</span> <span class="o">=</span> <span class="s">&#39;login&#39;</span>
+<span class="n">oid</span> <span class="o">=</span> <span class="n">OpenID</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="s">&#39;tmp&#39;</span><span class="p">))</span>
+
+<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">models</span><span class="p">,</span> <span class="n">views</span>
+</pre></div>
+</div>
+<p>Change to this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">SQLAlchemy</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">models</span><span class="p">,</span> <span class="n">views</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="migrating-from-0-1-x-to-0-2-x">
+<h2>Migrating from 0.1.X to 0.2.X<a class="headerlink" href="#migrating-from-0-1-x-to-0-2-x" title="Permalink to this headline">¶</a></h2>
+<p>It&#8217;s very simple, change this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">,</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="s">&quot;/groups/list&quot;</span><span class="p">,</span><span class="s">&quot;th-large&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonGeneralView</span><span class="p">,</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="s">&quot;/persons/list&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonChartView</span><span class="p">,</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span><span class="s">&quot;/persons/chart&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="s">&quot;/groups/list&quot;</span><span class="p">,</span><span class="s">&quot;th-large&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="s">&quot;/persons/list&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonChartView</span><span class="p">(),</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span><span class="s">&quot;/persons/chart&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Small change you just have to instantiate your classes.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Version Migration</a><ul>
+<li><a class="reference internal" href="#migrating-from-0-2-x-to-0-3-x">Migrating from 0.2.X to 0.3.X</a></li>
+<li><a class="reference internal" href="#migrating-from-0-1-x-to-0-2-x">Migrating from 0.1.X to 0.2.X</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="api.html" title="previous chapter">API Reference</a></li>
+      <li>Next: <a href="versions.html" title="next chapter">Versions</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/versionmigration.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+<a href="http://github.com/dpgaspar/Flask-AppBuilder"><img style="position: fixed; top: 0; right: 0; border: 0;"
+src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+
+  <div class="footer">
+    &copy; Copyright 2013, Daniel Vaz Gaspar.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

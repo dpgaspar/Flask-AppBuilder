@@ -62,9 +62,9 @@
   <div class="section" id="quick-files-and-images">
 <h1>Quick Files and Images<a class="headerlink" href="#quick-files-and-images" title="Permalink to this headline">¶</a></h1>
 <p>You can implement views with images or files associated</p>
-<div class="section" id="define-your-product-model-models-py">
-<h2>Define your Product model (models.py)<a class="headerlink" href="#define-your-product-model-models-py" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+<div class="section" id="define-your-model-models-py">
+<h2>Define your model (models.py)<a class="headerlink" href="#define-your-model-models-py" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">photo</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">ImageColumn</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
@@ -72,9 +72,9 @@
     <span class="k">def</span> <span class="nf">photo_img</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">ImageManager</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;/productgeneralview/show/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;&#39;</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; alt=&quot;Photo&quot; class=&quot;img-rounded img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;/persongeneralview/show/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;&#39;</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; alt=&quot;Photo&quot; class=&quot;img-rounded img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;/productgeneralview/show/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;/persongeneralview/show/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Notice:</p>
@@ -83,7 +83,7 @@
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PersonGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Product</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 
     <span class="n">list_widget</span> <span class="o">=</span> <span class="n">ListThumbnail</span>
 
@@ -115,7 +115,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Quick Files and Images</a><ul>
-<li><a class="reference internal" href="#define-your-product-model-models-py">Define your Product model (models.py)</a></li>
+<li><a class="reference internal" href="#define-your-model-models-py">Define your model (models.py)</a></li>
 <li><a class="reference internal" href="#define-your-views-views-py">Define your Views (views.py)</a></li>
 <li><a class="reference internal" href="#next-step">Next step</a></li>
 </ul>
