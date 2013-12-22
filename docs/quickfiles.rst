@@ -57,4 +57,3 @@ Some images:
 
 .. image:: ./images/images_list.png
     :width: 100%
-

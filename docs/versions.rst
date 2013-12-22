@@ -76,11 +76,13 @@ Improvements
 ------------
 
 - New config key APP_ICON to include an image to the navbar.
+- Removed "Home" on the menu
 - New Widget for displaying lists of items ListItem (Widget)
+- New widget for displaying lists on blocks thumbnails
 
 Bug Fixes
 ---------
-- 
+- Logout has translation on portuguese and spanish
 
 
 Improvements and Bug fixes on 0.3.9
