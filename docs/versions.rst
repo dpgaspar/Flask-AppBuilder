@@ -1,6 +1,12 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.3.12
+------------------------------------
+
+- New property add_form_extra_fields to inject extra fields on add form
+- New property edit_form_extra_fields to inject extra fields on edit form
+
 Improvements and Bug fixes on 0.3.11
 ------------------------------------
 

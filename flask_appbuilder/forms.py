@@ -113,13 +113,16 @@ class GeneralModelConverter(object):
                 return self._convert_field(col, label, description, lst_validators, form_props)
 
 
-    def create_form(self, label_columns = {}, description_columns = {} ,validators_columns = {}, inc_columns = []):
+    def create_form(self, label_columns = {}, description_columns = {} ,validators_columns = {}, extra_fields = {}, inc_columns = []):
         form_props = {}
         for col in inc_columns:
-            prop = self.datamodel.get_col_property(col)
-            self._convert_prop(prop, self._get_label(col, label_columns),
-            self._get_description(col, description_columns),
-            self._get_validators(col, validators_columns), form_props)
+            if col in extra_fields:
+                form_props[col] = extra_fields.get(col)
+            else:
+                prop = self.datamodel.get_col_property(col)
+                self._convert_prop(prop, self._get_label(col, label_columns),
+                self._get_description(col, description_columns),
+                self._get_validators(col, validators_columns), form_props)
         return type('DynamicForm', (DynamicForm,), form_props)
 
 

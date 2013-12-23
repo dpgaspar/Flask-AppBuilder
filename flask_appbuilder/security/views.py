@@ -17,19 +17,6 @@ from openid.extensions import ax
 from openid.extensions.sreg import SRegRequest, SRegResponse
 
 
-
-
-#try:
-#    from app import app, db, lm, oid
-#except ImportError:
-#    raise Exception('app,db,lm,oid not found please use required skeleton application see documentation')
-
-
-
-
-#----------------------------- DEFS --------------------------------------
-#-------------------------------------------------------------------------
-
 class PermissionGeneralView(GeneralView):
     route_base = '/permissions'
     
@@ -138,7 +125,7 @@ class UserGeneralView(GeneralView):
                     'role':lazy_gettext('Role')}
     description_columns = {'first_name':lazy_gettext('Write the user first name or names'),
                     'last_name':lazy_gettext('Write the user last name'),
-        'username':lazy_gettext('Username valid for authentication on DB or LDAP, unused for OID auth'),
+                    'username':lazy_gettext('Username valid for authentication on DB or LDAP, unused for OID auth'),
                     'password':lazy_gettext('Please use a good password policy, this application does not check this for you'),
                     'active':lazy_gettext('Its not a good policy to remove a user, just make it inactive'),
                     'email':lazy_gettext('The users email, this will also be used for OID auth'),
@@ -174,6 +161,18 @@ class UserOIDGeneralView(UserGeneralView):
         self.add_form.password = None
 
 class UserDBGeneralView(UserGeneralView):
+    
+    add_form_extra_fields = {'password': PasswordField(gettext('Password'), 
+                                 description=gettext('Please use a good password policy, this application does not check this for you'),
+                                 widget=BS3PasswordFieldWidget()),
+                             'conf_password': PasswordField(gettext('Confirm Password'),
+                                 description=gettext('Please rewrite the users password to confirm'),
+                                 validators=[EqualTo('password',message=gettext('Passwords must match'))],
+                                 widget=BS3PasswordFieldWidget()) }
+    
+    add_columns = ['first_name','last_name','username', 'active', 'email','role','password','conf_password']
+    
+    
     def __init__(self, **kwargs):
         self.show_additional_links = [(AdditionalLinkItem('resetpassword', self.lnk_reset_password,"/resetpassword/form","lock"))]
         super(UserDBGeneralView, self).__init__(**kwargs)
@@ -190,7 +189,7 @@ class UserDBGeneralView(UserGeneralView):
 
     def _init_forms(self):
         super(UserGeneralView, self)._init_forms()
-                
+        """        
         self.add_form.password = PasswordField(gettext('Password'), 
                                  description=self.description_columns['password'],
                                  widget=BS3PasswordFieldWidget())
@@ -202,7 +201,7 @@ class UserDBGeneralView(UserGeneralView):
         
         if 'password' not in self.add_columns:
             self.add_columns = self.add_columns + ['password', 'conf_password']
-        
+        """
 
 class RoleGeneralView(GeneralView):
     route_base = '/roles'

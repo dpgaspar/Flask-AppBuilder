@@ -325,6 +325,11 @@ class BaseCRUDView(BaseView):
     label_columns = {}
     description_columns = {}
     
+    add_form_extra_fields = {}
+    """ Add extra fields to the Add form using this property """
+    edit_form_extra_fields = {}
+    """ Add extra fields to the Edit form using this property """
+    
     page_size = 30
 
     
@@ -377,12 +382,14 @@ class BaseCRUDView(BaseView):
             self.add_form = conv.create_form(self.label_columns,
                     self.description_columns,
                     self.validators_columns,
+                    self.add_form_extra_fields,
                     self.add_columns)
         if not self.edit_form:
             self.edit_form = conv.create_form(self.label_columns,
                     self.description_columns,
                     self.validators_columns,
-                    self.edit_columns)        
+                    self.edit_form_extra_fields,
+                    self.edit_columns)
         if not self.search_form:
             self.search_form = conv.create_form(self.label_columns,
                     self.description_columns,
