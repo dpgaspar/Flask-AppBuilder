@@ -1,40 +1,34 @@
 Versions
 ========
 
-Improvements and Bug fixes on 0.3.10
+Improvements and Bug fixes on 0.3.11
 ------------------------------------
 
-Improvements
-------------
+- Bootstrap css and js included in the package
+- Jquery included in the package
+- Google charts jsapi included in the package
+- requirement and setup preventing install for flask-login 0.2.8 only 0.2.7 or earlier, bug on init.html
+
+Improvements and Bug fixes on 0.3.10
+------------------------------------
 
 - New config key APP_ICON to include an image to the navbar.
 - Removed "Home" on the menu
 - New Widget for displaying lists of items ListItem (Widget)
 - New widget for displaying lists on blocks thumbnails
-
-Bug Fixes
----------
 - Logout translation on portuguese and spanish
 
 
 Improvements and Bug fixes on 0.3.9
 -----------------------------------
 
-Improvements
-------------
 - Chart views with equal presentation has list views.
 - Chart views with search possibility
 - BaseMixin with automatic table name like flask-sqlalchemy, no need to use db.Model.
-
-Bug Fixes
----------
 - Pre, Post methods to override, removes decorator classmethod
 
 Improvements and Bug fixes on 0.3.0
 -----------------------------------
-
-Improvements
-------------
 
 - AUTH_ROLE_ADMIN, AUTH_ROLE_PUBLIC not required to be defined.
 - UPLOAD_FOLDER, IMG_UPLOAD_FOLDER, IMG_UPLOAD_URL not required to be defined.
@@ -46,19 +40,12 @@ Improvements
 - Babel translations for Spanish
 - No need to initialize LoginManager, OID.
 - No need to initialize Babel (Flask-Babel) (since 0.3.5).
-
-Bug Fixes
----------
-
 - General import corrections
 - Support for PostgreSQL
 
 
 Improvements and Bug fixes on 0.2.0
 -----------------------------------
-
-Improvements
-------------
 
 - Pagination on lists.
 - Inline (panels) will reload/return to the same panel (via cookie).
@@ -69,10 +56,6 @@ Improvements
 - No need to define labels for model's columns, they will be prettified.
 - No need to define titles for list,add,edit and show views, they will be generated from the model's name.
 - No need to define menu url when registering a BaseView will be infered from BaseView.defaultview.
-
-Bug Fixes
----------
-
 - OpenID pictures not showing.
 - Security reset password corrections.
 - Date null Widget correction.

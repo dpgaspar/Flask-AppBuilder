@@ -22,7 +22,7 @@
         <meta name="author" content="">
     {% endblock %}
     {% block head_css %}
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+	<link href="{{url_for('baseapp.static',filename='css/bootstrap.min.css')}}" rel="stylesheet">
         <link href="{{url_for('baseapp.static',filename='css/themes/'+ baseapp.app_theme )}}"  rel="stylesheet">
 	<link href="{{url_for('baseapp.static',filename='datepicker/bootstrap-datepicker.css')}}" rel="stylesheet">
 	<link href="{{url_for('baseapp.static',filename='select2/select2.css')}}" rel="stylesheet">
@@ -44,8 +44,8 @@
 {% endblock %}
 
 {% block tail_js %}
-	<script src="http://code.jquery.com/jquery-latest.js"></script>
-	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+	<script src="{{url_for('baseapp.static',filename='js/jquery-latest.js')}}"></script>
+	<script src="{{url_for('baseapp.static',filename='js/bootstrap.min.js')}}"></script>
 	<script src="{{url_for('baseapp.static',filename='datepicker/bootstrap-datepicker.js')}}"></script>
 	<script src="{{url_for('baseapp.static',filename='select2/select2.js')}}"></script>
 

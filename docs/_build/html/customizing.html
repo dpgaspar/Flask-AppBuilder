@@ -81,8 +81,7 @@
 <p>What happened here? We should allways extend from &#8220;appbuilder/base.html&#8221; this is the base template that will include all CSS&#8217;s, Javascripts, and contruct the menu based on the user&#8217;s security definition.</p>
 <p>Next we will override the &#8220;content&#8221; block, we could override other areas like CSS, extend CSS, Javascript or extend javascript. We can even override the base.html completely</p>
 <p>I&#8217;ve presented the text on the content like:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">{{</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;text to be translated&quot;</span><span class="p">)}}</span>
-</pre></div>
+<div class="highlight-python"><pre>{{_("text to be translated")}}</pre>
 </div>
 <p>So that we can use Babel to translate our index text</p>
 <p>2 - Define an IndexView</p>
