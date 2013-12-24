@@ -25,22 +25,25 @@ class FormWidget(RenderTemplateWidget):
 
     route_base = ''
     form = None
+    include_cols = []
     exclude_cols = []
     fieldsets = []
 
-    def __init__(self, route_base='', form=None, exclude_cols=[], fieldsets = []):
+    def __init__(self, route_base='', form = None, include_cols = [], exclude_cols=[], fieldsets = []):
         self.route_base = route_base
         self.form = form
+        self.include_cols = include_cols
         self.exclude_cols = exclude_cols
         self.fieldsets = fieldsets
-
 
     def __call__(self, **kwargs):
         kwargs['route_base'] = self.route_base
         kwargs['form'] = self.form
+        kwargs['include_cols'] = self.include_cols
         kwargs['exclude_cols'] = self.exclude_cols
         kwargs['fieldsets'] = self.fieldsets
         return super(FormWidget, self).__call__(**kwargs)
+
 
 class SearchWidget(FormWidget):
     template = 'appbuilder/general/widgets/search.html'

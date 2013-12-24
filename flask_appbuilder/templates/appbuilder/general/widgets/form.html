@@ -26,7 +26,8 @@
 	
 	<div class="table-responsive">
 		<table class="table table-bordered">
-        		{% for field in form %}
+            {% for col in include_cols %}
+        		{% set field = form[col] %}
         			{% if field.name not in exclude_cols %}
                 			<tr>{{ lib.render_field(field) }}</tr>
                 		{% endif %}

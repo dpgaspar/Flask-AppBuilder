@@ -6,6 +6,8 @@ Improvements and Bug fixes on 0.3.12
 
 - New property add_form_extra_fields to inject extra fields on add form
 - New property edit_form_extra_fields to inject extra fields on edit form
+- Add and edit form order correction, order in add_columns, edit_columns or fieldsets
+- Correction of bootstrap inclusion
 
 Improvements and Bug fixes on 0.3.11
 ------------------------------------

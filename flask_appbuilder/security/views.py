@@ -172,7 +172,6 @@ class UserDBGeneralView(UserGeneralView):
     
     add_columns = ['first_name','last_name','username', 'active', 'email','role','password','conf_password']
     
-    
     def __init__(self, **kwargs):
         self.show_additional_links = [(AdditionalLinkItem('resetpassword', self.lnk_reset_password,"/resetpassword/form","lock"))]
         super(UserDBGeneralView, self).__init__(**kwargs)

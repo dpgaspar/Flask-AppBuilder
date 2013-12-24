@@ -22,13 +22,13 @@
         <meta name="author" content="">
     {% endblock %}
     {% block head_css %}
-	<link href="{{url_for('baseapp.static',filename='css/bootstrap.min.css')}}" rel="stylesheet">
+        <link href="{{url_for('baseapp.static',filename='css/bootstrap.min.css')}}" rel="stylesheet">
         <link href="{{url_for('baseapp.static',filename='css/themes/'+ baseapp.app_theme )}}"  rel="stylesheet">
-	<link href="{{url_for('baseapp.static',filename='datepicker/bootstrap-datepicker.css')}}" rel="stylesheet">
-	<link href="{{url_for('baseapp.static',filename='select2/select2.css')}}" rel="stylesheet">
+        <link href="{{url_for('baseapp.static',filename='datepicker/bootstrap-datepicker.css')}}" rel="stylesheet">
+        <link href="{{url_for('baseapp.static',filename='select2/select2.css')}}" rel="stylesheet">
         <link href="{{url_for('baseapp.static',filename='css/flags/flags16.css')}}" rel="stylesheet">
         <style>
-        .navbar .brand { max-height: 40px; overflow: visible; padding-top: 0; padding-bottom: 0; }
+            .navbar .brand { max-height: 40px; overflow: visible; padding-top: 0; padding-bottom: 0; }
         </style>
     {% endblock %}
 
@@ -45,7 +45,7 @@
 
 {% block tail_js %}
 	<script src="{{url_for('baseapp.static',filename='js/jquery-latest.js')}}"></script>
-	<script src="{{url_for('baseapp.static',filename='js/bootstrap.min.js')}}"></script>
+    <script src="{{url_for('baseapp.static',filename='js/bootstrap.min.js')}}"></script>
 	<script src="{{url_for('baseapp.static',filename='datepicker/bootstrap-datepicker.js')}}"></script>
 	<script src="{{url_for('baseapp.static',filename='select2/select2.js')}}"></script>
 

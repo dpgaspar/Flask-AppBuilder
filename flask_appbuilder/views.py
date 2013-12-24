@@ -394,6 +394,7 @@ class BaseCRUDView(BaseView):
             self.search_form = conv.create_form(self.label_columns,
                     self.description_columns,
                     self.validators_columns,
+                    [],
                     self.search_columns)
 
     def _init_titles(self):
@@ -488,6 +489,7 @@ class BaseCRUDView(BaseView):
     def _get_search_widget(self, form = None, exclude_cols = [], widgets = {}):
         widgets['search'] = self.search_widget(route_base = self.route_base,
                                                 form = form,
+                                                include_cols = self.search_columns,
                                                 exclude_cols = exclude_cols,
                                                 )
         return widgets
@@ -512,6 +514,7 @@ class BaseCRUDView(BaseView):
     def _get_add_widget(self, form = None, exclude_cols = [], widgets = {}):
         widgets['add'] = self.edit_widget(route_base = self.route_base,
                                                 form = form,
+                                                include_cols = self.add_columns,
                                                 exclude_cols = exclude_cols,
                                                 fieldsets = self.add_fieldsets
                                                 )
@@ -520,11 +523,11 @@ class BaseCRUDView(BaseView):
     def _get_edit_widget(self, form = None, exclude_cols = [], widgets = {}):
         widgets['edit'] = self.edit_widget(route_base = self.route_base,
                                                 form = form,
+                                                include_cols = self.edit_columns,
                                                 exclude_cols = exclude_cols,
                                                 fieldsets = self.edit_fieldsets
                                                 )
         return widgets
-
 
 
     def debug(self):
@@ -683,12 +686,10 @@ class GeneralView(BaseCRUDView):
             return redirect(self._get_redirect())
         else:
             widgets = self._get_add_widget(form = form, exclude_cols = exclude_cols)
-            return render_template(
-                                                    self.add_template,
-                                                    title = self.add_title,
-                                                    widgets = widgets,
-                                                    baseapp = self.baseapp
-                                                    )    
+            return render_template(self.add_template,
+                                   title = self.add_title,
+                                   widgets = widgets,
+                                   baseapp = self.baseapp)    
 
     """
     ---------------------------

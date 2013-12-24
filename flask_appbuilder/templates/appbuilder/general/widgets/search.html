@@ -3,7 +3,8 @@
 <form class="form-search" action="" method="get">
 <div class="table-responsive">
 <table class="table table-condensed"><tr>
-	{% for field in form %}
+    {% for col in include_cols %}
+   		{% set field = form[col] %}
 		{% if field.name not in exclude_cols %}
 			<tr>{{ lib.render_field_search(field) }}</tr>
 		{% endif %}
