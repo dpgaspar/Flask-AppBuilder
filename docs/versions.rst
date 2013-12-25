@@ -1,6 +1,12 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.3.15
+------------------------------------
+
+- Html error corrections
+- Charts outside panel correction
+
 Improvements and Bug fixes on 0.3.12
 ------------------------------------
 

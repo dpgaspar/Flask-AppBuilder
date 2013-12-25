@@ -1,10 +1,9 @@
-<!-- extend base layout -->
 {% extends "appbuilder/base.html" %}
 {% import 'appbuilder/general/lib.html' as lib %}
 
 {% block content %}
-{{ lib.panel_begin(title) }}
 
+{{ lib.panel_begin(title) }}
 	{% block list_search scoped %}
 		{% call lib.accordion_tag("accordion1",_("Search"), False) %}
 			{{ widgets.get('search')()|safe }} 
@@ -19,8 +18,8 @@
         </a>
     {% endfor %}
     </div>
-    
-    <div id="chart" class="col-sm-12 col-lg-12" style="height: {{height}};">
+
+    <div id="chart" style="height: {{height}};">
     {{ widgets.get('chart')()|safe }}
     </div>
 

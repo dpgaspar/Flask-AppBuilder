@@ -1,16 +1,16 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 
-<form class="form-search" action="" method="get">
+<form class="form-search" method="get">
 <div class="table-responsive">
-<table class="table table-condensed"><tr>
+<table class="table table-condensed">
     {% for col in include_cols %}
    		{% set field = form[col] %}
 		{% if field.name not in exclude_cols %}
 			<tr>{{ lib.render_field_search(field) }}</tr>
 		{% endif %}
 	{% endfor %}
-    <tr><td> {{ lib.btn_search() }} </td></tr>
-	
+    
 </table>
 </div>
+{{ lib.btn_search() }}
 </form>
