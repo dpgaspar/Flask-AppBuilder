@@ -210,6 +210,10 @@ class AuthView(BaseView):
     
     title = lazy_gettext('Sign In')
 
+    @expose('/login/', methods = ['GET', 'POST'])
+    def login(self):
+        pass
+
     @expose('/logout/')
     def logout(self):
         logout_user()
@@ -238,7 +242,6 @@ class AuthDBView(AuthView):
 
 class AuthOIDView(AuthView):
     
-
     @expose('/login/', methods = ['GET', 'POST'])
     def login(self, flag = True):
         if flag:
