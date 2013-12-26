@@ -29,6 +29,7 @@ class SecurityManager(object):
     auth_type = 1
     auth_role_admin = ""
     auth_role_public = ""
+    auth_view = None
     lm = None
     oid = None
 
@@ -57,13 +58,13 @@ class SecurityManager(object):
 
         if self._get_auth_type(baseapp.app) == AUTH_DB:
             user_view = baseapp._init_view_session(UserDBGeneralView)
-            auth_view = AuthDBView()            
+            self.auth_view = AuthDBView()            
         else:
             user_view = baseapp._init_view_session(UserOIDGeneralView)
-            auth_view = AuthOIDView()            
+            self.auth_view = AuthOIDView()            
             self.oid.after_login_func = auth_view.after_login
         
-        baseapp.add_view_no_menu(auth_view)
+        baseapp.add_view_no_menu(self.auth_view)
         
         baseapp.add_view(user_view, "List Users"
                                         ,"/users/list","user",
