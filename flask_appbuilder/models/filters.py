@@ -1,4 +1,3 @@
-
 class BaseFilter(object):
 
     column_name = ''
@@ -24,19 +23,35 @@ class FilterStartsWith(BaseFilter):
     
     def apply(self, query, model, value):
         return query.filter(getattr(model,self.name).like(value + '%'))
-         
+
+class FilterEndsWith(BaseFilter):
+    name = 'Ends with'
+    
+    def apply(self, query, model, value):
+        return query.filter(getattr(model,self.name).like('%' + value))
+
+class FilterContains(BaseFilter):
+    name = 'Contains'
+    
+    def apply(self, query, model, value):
+        return query.filter(getattr(model,self.name).like('%' + value + '%'))
+
 
 class FilterEqual(BaseFilter):
-    name = 'Equals'
+    name = 'Equal to'
     
     def apply(self, query, model, value):
         return query.filter(getattr(model,self.name) == value)
 
 class FilterGreater(BaseFilter):
+    name = 'Greater then'
+    
     def apply(self, query, model, value):
         return query.filter(getattr(model,self.name) > value)
         
 class FilterSmaller(BaseFilter):
+    name = 'Smaller then'
+    
     def apply(self, query, model, value):
         return query.filter(getattr(model,self.name) < value)
         
