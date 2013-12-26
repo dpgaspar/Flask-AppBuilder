@@ -1,15 +1,20 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.3.17
+------------------------------------
+
+- fix, Redirect to login when access denied was broken.
+
 Improvements and Bug fixes on 0.3.16
 ------------------------------------
 
-- Reset password form fix
+- fix, Reset password form
 
 Improvements and Bug fixes on 0.3.15
 ------------------------------------
 
-- Html error corrections
+- Html non compliance corrections
 - Charts outside panel correction
 
 Improvements and Bug fixes on 0.3.12
