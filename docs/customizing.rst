@@ -13,7 +13,7 @@ The index can be easily overridden by your own. You must develop your template, 
 
 The default index template is very simple, you can create your own like this:
 
-1 - Develop your template (own your <PROJECT_NAME>/app/templates/my_index.html)::
+1 - Develop your template (on your <PROJECT_NAME>/app/templates/my_index.html)::
 
     {% extends "appbuilder/base.html" %}
     {% block content %}
@@ -32,7 +32,7 @@ Next we will override the "content" block, we could override other areas like CS
 I've presented the text on the content like::
 
     {{_("text to be translated")}}
-    
+
 So that we can use Babel to translate our index text
 
 2 - Define an IndexView
