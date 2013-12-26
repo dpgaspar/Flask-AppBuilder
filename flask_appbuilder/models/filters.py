@@ -1,19 +1,15 @@
 
-
 class BaseFilter(object):
 
-    model = None
     column_name = ''
     name = ''
     widget = None
   
   
-    def __init__(self, model, column, name='', widget=None):
+    def __init__(self, column, name='', widget=None):
         """
             Constructor.
 
-            :param model:
-                The Backend Model 
             :param column_name:
                 Model field name
             :param name:
@@ -26,6 +22,21 @@ class BaseFilter(object):
 class FilterStartsWith(BaseFilter):
     name = 'Starts with'
     
-    def apply(self, query, value):
-         return query.filter(getattr(self.model,self.name).like(value + '%'))
+    def apply(self, query, model, value):
+        return query.filter(getattr(model,self.name).like(value + '%'))
          
+
+class FilterEqual(BaseFilter):
+    name = 'Equals'
+    
+    def apply(self, query, model, value):
+        return query.filter(getattr(model,self.name) == value)
+
+class FilterGreater(BaseFilter):
+    def apply(self, query, model, value):
+        return query.filter(getattr(model,self.name) > value)
+        
+class FilterSmaller(BaseFilter):
+    def apply(self, query, model, value):
+        return query.filter(getattr(model,self.name) < value)
+        
