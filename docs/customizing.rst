@@ -9,7 +9,7 @@ Event better you can develop your own widgets or templates and contribute to the
 Changing the index
 ------------------
 
-The index can be easely override by your own. You must develop your template, then define it in a IndexView and pass it to BaseApp
+The index can be easily overridden by your own. You must develop your template, then define it in a IndexView and pass it to BaseApp
 
 The default index template is very simple, you can create your own like this:
 
