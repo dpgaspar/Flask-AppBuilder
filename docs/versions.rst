@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.3.16
+------------------------------------
+
+- Reset password form fix
+
 Improvements and Bug fixes on 0.3.15
 ------------------------------------
 

@@ -74,7 +74,6 @@ class ResetMyPasswordView(SimpleFormView):
     
     form = ResetPasswordForm
     form_title = lazy_gettext('Reset Password Form')
-    form_columns = ['password','conf_password']
     redirect_url = '/'
 
     message = lazy_gettext('Password Changed')
@@ -94,7 +93,6 @@ class ResetPasswordView(SimpleFormView):
     
     form = ResetPasswordForm
     form_title = lazy_gettext('Reset Password Form')
-    form_columns = ['password','conf_password']
     redirect_url = '/'
 
     message = lazy_gettext('Password Changed')
@@ -155,10 +153,7 @@ class UserOIDGeneralView(UserGeneralView):
                            widgets = widgets,
                            baseapp = self.baseapp,
                            )
-
-    def _init_forms(self):
-        super(UserGeneralView, self)._init_forms()
-        self.add_form.password = None
+    
 
 class UserDBGeneralView(UserGeneralView):
     
@@ -185,22 +180,7 @@ class UserDBGeneralView(UserGeneralView):
                            widgets = widgets,
                            baseapp = self.baseapp,
                            )
-
-    def _init_forms(self):
-        super(UserGeneralView, self)._init_forms()
-        """        
-        self.add_form.password = PasswordField(gettext('Password'), 
-                                 description=self.description_columns['password'],
-                                 widget=BS3PasswordFieldWidget())
-        self.add_form.conf_password = PasswordField(gettext('Confirm Password'),
-                                 default=self.add_form.password,
-                                 description=self.description_columns['conf_password'],
-                                 validators=[EqualTo('password',message=gettext('Passwords must match'))],
-                                 widget=BS3PasswordFieldWidget())
-        
-        if 'password' not in self.add_columns:
-            self.add_columns = self.add_columns + ['password', 'conf_password']
-        """
+    
 
 class RoleGeneralView(GeneralView):
     route_base = '/roles'
