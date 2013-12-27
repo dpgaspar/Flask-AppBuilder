@@ -7,7 +7,7 @@ from .filemanager import uuid_originalname
 from .security.decorators import has_access
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget, ListCarousel
 from .actions import ActionItem
-
+from .models.filters import get_filters
 
 def expose(url='/', methods=('GET',)):
     """
@@ -414,6 +414,7 @@ class BaseCRUDView(BaseView):
                     self.validators_columns,
                     [],
                     self.search_columns)
+            print get_filters(self.search_columns, self.datamodel)
 
     def _init_titles(self):
         if not self.list_title:
