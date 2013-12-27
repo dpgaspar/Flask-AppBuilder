@@ -29,7 +29,7 @@ class FormWidget(RenderTemplateWidget):
     exclude_cols = []
     fieldsets = []
 
-    def __init__(self, route_base='', form = None, include_cols = [], exclude_cols=[], fieldsets = []):
+    def __init__(self, route_base='', form = None, include_cols = [], exclude_cols=[], fieldsets = [], **kwargs):
         self.route_base = route_base
         self.form = form
         self.include_cols = include_cols
