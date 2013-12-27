@@ -60,7 +60,7 @@ def get_filters(cols, datamodel):
     filters = {}
     for col in cols:
         filters[col] = get_filter_type(col, datamodel)
-
+    return filters
 
 def get_filter_type(col, datamodel):
     prop = datamodel.get_col_property(col)
