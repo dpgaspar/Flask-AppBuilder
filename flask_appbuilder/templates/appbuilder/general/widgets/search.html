@@ -4,16 +4,18 @@
 <div class="table-responsive">
 <table class="table table-condensed">
 
-    <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
-        {{ _('Add Filter') }}<b class="caret"></b>
-    </a>
-    <ul class="dropdown-menu field-filters">
-        {% for flt_col in search_filters %}
-        <li>
-            <a href="javascript:void(0)" class="filter" onclick="return false;">{{ form[flt_col].label }}</a>
-        </li>
-        {% endfor %}
+    <div class="btn-group">
+  	<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+    		Action <span class="caret"></span>
+  	</button>
+    <ul class="dropdown-menu" role="menu">
+    {% for flt_col in search_filters %}
+    <li>
+    	<a href="javascript:void(0)" class="filter" onclick="return false;">{{ form[flt_col].label }}</a>
+    </li>
+    {% endfor %}
     </ul>
+    </div>
     
     {% for col in include_cols %}
    		{% set field = form[col] %}
