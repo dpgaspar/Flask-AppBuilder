@@ -68,13 +68,13 @@ def get_filter_type(col, datamodel):
         return []
     else:
         if datamodel.is_text(col) or datamodel.is_string(col):
-            return [FilterStartsWith, FilterEndsWith, FilterContains, FilterEqual]    
-        elif self.datamodel.is_integer(col.name):
-            return [FilterEqual, FilterGreater, FilterSmaller]
-        elif self.datamodel.is_date(col.name):
-            return [FilterEqual, FilterGreater, FilterSmaller]
-        elif self.datamodel.is_datetime(col.name):
-            return [FilterEqual, FilterGreater, FilterSmaller]
+            return [FilterStartsWith(col), FilterEndsWith(col), FilterContains(col), FilterEqual(col)]    
+        elif self.datamodel.is_integer(col):
+            return [FilterEqual(col), FilterGreater(col), FilterSmaller(col)]
+        elif self.datamodel.is_date(col):
+            return [FilterEqual(col), FilterGreater(col), FilterSmaller(col)]
+        elif self.datamodel.is_datetime(col):
+            return [FilterEqual(col), FilterGreater(col), FilterSmaller(col)]
         else:
             print "Filter type not supported"
             return []
