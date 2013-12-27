@@ -1,5 +1,4 @@
-
-var AdminFilters = function(element, search_filters) {
+var AdminFilters = function(element) {
     var $root = $(element);
     var $container = $('.filters', $root);
     var lastCount = 0;
@@ -15,7 +14,7 @@ var AdminFilters = function(element, search_filters) {
     $('a.filter').click(function() {
         var name = $(this).text().trim();
         alert(name);
-        addFilter(name, search_filters[name]);
+        addFilter(name);
         
     });
 
