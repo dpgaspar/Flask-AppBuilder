@@ -3,6 +3,9 @@
 <form class="form-search" method="get">
 <div class="table-responsive">
 <table class="table table-condensed">
+    {% for flt in search_filters.keys() %}
+    	{{ flt, search_filters.get(flt).name }}
+    {% endfor %}
     {% for col in include_cols %}
    		{% set field = form[col] %}
 		{% if field.name not in exclude_cols %}
