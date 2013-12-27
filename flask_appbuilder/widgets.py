@@ -47,7 +47,7 @@ class FormWidget(RenderTemplateWidget):
 
 class SearchWidget(FormWidget):
     template = 'appbuilder/general/widgets/search.html'
-    search_filters
+    search_filters = None
     
     def __init__(self, **kwargs):
         self.search_filters = kwargs.get('search_filters')
