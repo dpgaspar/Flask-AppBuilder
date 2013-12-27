@@ -24,6 +24,9 @@ class FilterStartsWith(BaseFilter):
     def apply(self, query, model, value):
         return query.filter(getattr(model,self.name).like(value + '%'))
 
+    def __unicode__(self):
+        return self.name
+
 class FilterEndsWith(BaseFilter):
     name = 'Ends with'
     

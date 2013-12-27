@@ -1,8 +1,7 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 
-<form class="form-search" method="get">
+<form id="filter_form" class="form-search" method="get">
 <div class="table-responsive">
-<table class="table table-condensed">
 
     <div class="btn-group">
   	<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -17,6 +16,11 @@
     </ul>
     </div>
     
+    <table class="table table-condensed filters">
+       
+    </table>
+
+<table class="table table-condensed">    
     {% for col in include_cols %}
    		{% set field = form[col] %}
 		{% if field.name not in exclude_cols %}
@@ -32,7 +36,19 @@
 <script>
 	(function($) {
 	var filter = new AdminFilters(
-                    '#filter_form'
+                    '#filter_form',
+                    {
+                    {%- for col in include_cols %}
+                    '{{form[col].label.text}}': '{{ form[col]()|safe }}',
+                    {%- endfor %}
+                    },{
+                    {%- for col in include_cols %}
+                    '{{form[col].label.text}}': [
+                        {%- for flt_name in search_filters[col] %}
+                         '{{flt_name.name }}',
+                        {%- endfor %} ],
+                    {%- endfor %}
+                    }
                 );
 	})(jQuery);
 	
