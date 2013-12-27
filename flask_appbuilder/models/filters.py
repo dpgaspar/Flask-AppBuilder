@@ -55,3 +55,26 @@ class FilterSmaller(BaseFilter):
     def apply(self, query, model, value):
         return query.filter(getattr(model,self.name) < value)
         
+        
+def get_filters(cols, datamodel):
+    filters = {}
+    for col in cols:
+        filters[col] = get_filter_type(col, datamodel)
+
+
+def get_filter_type(col, datamodel):
+    prop = datamodel.get_col_property(col)
+    if datamodel.is_relation(prop):
+        return []
+    else:
+        if datamodel.is_text(col) or datamodel.is_string(col):
+            return [FilterStartsWith, FilterEndsWith, FilterContains, FilterEqual]    
+        elif self.datamodel.is_integer(col.name):
+            return [FilterEqual, FilterGreater, FilterSmaller]
+        elif self.datamodel.is_date(col.name):
+            return [FilterEqual, FilterGreater, FilterSmaller]
+        elif self.datamodel.is_datetime(col.name):
+            return [FilterEqual, FilterGreater, FilterSmaller]
+        else:
+            print "Filter type not supported"
+            return []
