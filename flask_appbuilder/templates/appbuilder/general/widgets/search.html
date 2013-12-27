@@ -10,10 +10,10 @@
 		</div>
 		<div class="controls">
 		  <td>
-    <select class="my_select2" data-placeholder="Select Value" id="group" name="group" style="width:250px">
+    <select class="my_select2 filter" data-placeholder="Select Value" id="group" name="group" style="width:250px">
     <option selected value="__None"></option>
     {% for flt_col in search_filters.keys() %}
-        <option class='filter' value="1">{{ form[flt_col].label }}</option>
+        <option value="1">{{ form[flt_col].label }}</option>
     {% endfor %}
     </select>
     </td>
@@ -34,7 +34,7 @@
 
 <script>
 	alert('on');
-	$('option.filter').click(function() {
+	$('select.filter').click(function() {
         	alert('click');
         //return false;
     });
