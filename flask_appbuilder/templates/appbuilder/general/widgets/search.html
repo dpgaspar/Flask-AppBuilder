@@ -34,7 +34,7 @@
 
 <script>
 	alert('on');
-	$('.filter').click(function() {
+	$('.filter').select2().on('change', function() {
         	alert('click');
         //return false;
     });
