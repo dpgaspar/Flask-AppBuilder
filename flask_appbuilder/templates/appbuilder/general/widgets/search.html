@@ -3,12 +3,15 @@
 <form class="form-search" method="get">
 <div class="table-responsive">
 <table class="table table-condensed">
-    {% for flt in search_filters.keys() %}
-    	{{ flt }}
-    	{% for flt_cls in search_filters.get(flt) %}
-    		{{ flt_cls.name }}
-    	{% endfor %}
+
+
+    <select class="my_select2" data-placeholder="Select Value" id="group" name="group" style="width:250px">
+    {% for flt_col in search_filters.keys() %}
+        <option value="{{ flt_col }}">IBM</option>
     {% endfor %}
+    
+    
+    </select>
     {% for col in include_cols %}
    		{% set field = form[col] %}
 		{% if field.name not in exclude_cols %}
