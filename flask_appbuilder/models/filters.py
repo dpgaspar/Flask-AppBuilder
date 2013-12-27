@@ -78,3 +78,19 @@ def get_filter_type(col, datamodel):
         else:
             print "Filter type not supported"
             return []
+
+
+class Filters(object):
+    
+    filters = []
+    values = []
+    
+    def add_filter(self, col, filter_class, value)
+        self.filters.append(filter_class(col))
+        self.values.append(value)
+
+    def add_relation_filter(self, col, value)
+        self.add_filter(col, FilterEqual, value)
+    
+    def get_filters_values(self)
+         return [(flt, value) for flt in self.filters for y in b]
