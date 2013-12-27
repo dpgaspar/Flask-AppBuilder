@@ -4,21 +4,16 @@
 <div class="table-responsive">
 <table class="table table-condensed">
 
-    <div class="control-group">
-		<div class="control-label">
-		  <th class="col-lg-2">{{_('Add Filter')}}</th>
-		</div>
-		<div class="controls">
-		  <td>
-    <select class="my_select2 filter" data-placeholder="Select Value" id="group" name="group" style="width:250px">
-    <option selected value="__None"></option>
-    {% for flt_col in search_filters.keys() %}
-        <option value="1">{{ form[flt_col].label }}</option>
-    {% endfor %}
-    </select>
-    </td>
-    </div>
-    </div>
+    <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
+        {{ _('Add Filter') }}<b class="caret"></b>
+    </a>
+    <ul class="dropdown-menu field-filters">
+        {% for flt_col in search_filters %}
+        <li>
+            <a href="javascript:void(0)" class="filter" onclick="return false;">{{ form[flt_col].label }}</a>
+        </li>
+        {% endfor %}
+    </ul>
     
     {% for col in include_cols %}
    		{% set field = form[col] %}
