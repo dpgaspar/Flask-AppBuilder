@@ -4,14 +4,22 @@
 <div class="table-responsive">
 <table class="table table-condensed">
 
-
+    <div class="control-group">
+		<div class="control-label">
+		  <th class="col-lg-2">{{_('Add Filter')}}</th>
+		</div>
+		<div class="controls">
+		  <td>
     <select class="my_select2" data-placeholder="Select Value" id="group" name="group" style="width:250px">
+    <option selected value="__None"></option>
     {% for flt_col in search_filters.keys() %}
-        <option value="{{ flt_col }}">IBM</option>
+        <option value="1">{{ flt_col }}</option>
     {% endfor %}
-    
-    
     </select>
+    </td>
+    </div>
+    </div>
+    
     {% for col in include_cols %}
    		{% set field = form[col] %}
 		{% if field.name not in exclude_cols %}
