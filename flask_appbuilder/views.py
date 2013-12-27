@@ -502,7 +502,6 @@ class BaseCRUDView(BaseView):
                                                 count = count,
                                                 pks = pks,
                                                 filters = filters,
-                                                search_filters = self._search_filters,
                                                 generalview_name = self.__class__.__name__
                                                 )
         return widgets
@@ -512,6 +511,7 @@ class BaseCRUDView(BaseView):
                                                 form = form,
                                                 include_cols = self.search_columns,
                                                 exclude_cols = exclude_cols,
+                                                search_filters = self._search_filters
                                                 )
         return widgets
 
