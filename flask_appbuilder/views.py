@@ -392,6 +392,7 @@ class BaseCRUDView(BaseView):
         
     show_additional_links = []
 
+    _search_filters = {}
     
     def _init_forms(self):
         
@@ -414,7 +415,7 @@ class BaseCRUDView(BaseView):
                     self.validators_columns,
                     [],
                     self.search_columns)
-            print get_filters(self.search_columns, self.datamodel)
+            self._search_filters = get_filters(self.search_columns, self.datamodel)
 
     def _init_titles(self):
         if not self.list_title:
