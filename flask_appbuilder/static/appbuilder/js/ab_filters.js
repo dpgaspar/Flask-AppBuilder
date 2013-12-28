@@ -29,7 +29,7 @@ var AdminFilters = function(element, labels, form, filters) {
 	{
 		var $select = $('<select class="filter-op my_select2" />')                     
 
-		cx = 1;
+		cx = 0;
         $(filters[name]).each(function() {
            	$select.append($('<option/>').attr('value', cx).text(this));
            	cx += 1;
