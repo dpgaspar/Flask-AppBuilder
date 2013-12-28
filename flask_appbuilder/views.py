@@ -7,7 +7,7 @@ from .filemanager import uuid_originalname
 from .security.decorators import has_access
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget, ListCarousel
 from .actions import ActionItem
-from .models.filters import get_filters
+from .models.filters import Filters
 
 def expose(url='/', methods=('GET',)):
     """
@@ -392,7 +392,8 @@ class BaseCRUDView(BaseView):
         
     show_additional_links = []
 
-    _search_filters = {}
+    _filters = None
+    """ Filters object will calculate all possible filter types based on search_columns """
     
     def _init_forms(self):
         
@@ -415,7 +416,7 @@ class BaseCRUDView(BaseView):
                     self.validators_columns,
                     [],
                     self.search_columns)
-            self._search_filters = get_filters(self.search_columns, self.datamodel)
+            self._filters = Filters(self.search_columns, self.datamodel)
 
     def _init_titles(self):
         if not self.list_title:
@@ -511,7 +512,7 @@ class BaseCRUDView(BaseView):
                                                 form = form,
                                                 include_cols = self.search_columns,
                                                 exclude_cols = exclude_cols,
-                                                search_filters = self._search_filters
+                                                search_filters = self._filters.get_search_filters()
                                                 )
         return widgets
 

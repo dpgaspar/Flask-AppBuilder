@@ -54,7 +54,21 @@ class SearchWidget(FormWidget):
         return super(SearchWidget, self).__init__(**kwargs)
 
     def __call__(self, **kwargs):
-        kwargs['search_filters'] = self.search_filters
+        """ create dict labels based on form """
+        """ create dict of form widgets """
+        """ create dict of filters """
+        label_columns = {}
+        form_fields = {}
+        search_filters = {}
+        for col in self.include_cols:
+            label_columns[col] = self.form[col].label.text
+            form_fields[col] = self.form[col]()
+            search_filters[col] = [flt.name for flt in self.search_filters[col]]                
+        
+        kwargs['search_filters'] = search_filters
+        kwargs['label_columns'] = label_columns
+        kwargs['form_fields'] = form_fields
+        
         return super(SearchWidget, self).__call__(**kwargs)
 
 class ShowWidget(RenderTemplateWidget):

@@ -8,9 +8,9 @@
     		Action <span class="caret"></span>
   	</button>
     <ul class="dropdown-menu" role="menu">
-    {% for flt_col in search_filters %}
+    {% for col in include_cols %}
     <li>
-    	<a href="javascript:void(0)" class="filter" onclick="return false;">{{ form[flt_col].label }}</a>
+    	<a href="javascript:void(0)" name={{col}} class="filter" onclick="return false;">{{ label_columns[col] }}</a>
     </li>
     {% endfor %}
     </ul>
@@ -37,18 +37,9 @@
 	(function($) {
 	var filter = new AdminFilters(
                     '#filter_form',
-                    {
-                    {%- for col in include_cols %}
-                    '{{form[col].label.text}}': '{{ form[col]()|safe }}',
-                    {%- endfor %}
-                    },{
-                    {%- for col in include_cols %}
-                    '{{form[col].label.text}}': [
-                        {%- for flt_name in search_filters[col] %}
-                         '{{flt_name.name }}',
-                        {%- endfor %} ],
-                    {%- endfor %}
-                    }
+                    {{ label_columns | tojson | safe }},
+                    {{ form_fields | tojson | safe }},
+                    {{ search_filters | tojson | safe }}                                        
                 );
 	})(jQuery);
 	
