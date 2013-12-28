@@ -187,17 +187,19 @@ class BaseView(object):
                 
 
     def _get_filter_args(self, filters={}):
+        self._filters.clear_filters()
         for arg in request.args:
             re_match = re.findall('_flt_(\d)_(.*)', arg)
             if re_match:
-                print re_match
+                self._filters.add_filter(re_match[0][1], int(re_match[0][0]), request.args.get(arg))                
             else:
                 re_match = re.findall('_flt_(.*)', arg)
-                print re_match
                 if re_match:
                     # ignore select2 __None value
                     if request.args.get(arg) not in ('__None',''):
+                        self._filters.add_relation_filter(re_match[0][1], request.args.get(arg))
                         filters[re_match[0]] = request.args.get(arg)
+        print self._filters
         return filters
 
 

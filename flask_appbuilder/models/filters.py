@@ -16,15 +16,15 @@ class BaseFilter(object):
                 Display name of the filter            
         """
         self.column_name = column_name
+        
+    def __repr__(self):
+        return self.name
 
 class FilterStartsWith(BaseFilter):
     name = 'Starts with'
     
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name).like(value + '%'))
-
-    def __unicode__(self):
-        return self.name
 
 class FilterEndsWith(BaseFilter):
     name = 'Ends with'
@@ -57,7 +57,12 @@ class FilterSmaller(BaseFilter):
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name) < value)
         
-        
+class FilterRelation(BaseFilter):
+    name = 'Relation'
+    
+    def apply(self, query, value):
+        return query.filter(getattr(self.model,self.column_name) == value)
+    
 
 class Filters(object):
     
@@ -81,7 +86,7 @@ class Filters(object):
     def _get_filter_type(self, col, datamodel):
         prop = datamodel.get_col_property(col)
         if datamodel.is_relation(prop):
-            return []
+            return [FilterRelation(col, datamodel.obj)]
         else:
             if datamodel.is_text(col) or datamodel.is_string(col):
                 return [FilterStartsWith(col, datamodel.obj), 
@@ -104,13 +109,22 @@ class Filters(object):
                 print "Filter type not supported"
                 return []
 
-    
-    def add_filter(self, col, filter_class, value):
-        self.filters.append(filter_class(col))
-        self.values.append(value)
+    def clear_filters(self):
+        self.filters = []
+        self.values = []
 
-    def add_relation_filter(self, col, value):
-        self.add_filter(col, FilterEqual, value)
+    def add_filter(self, col, filter_instance_index, value):
+        self._add_filter(col, self._search_filters[col][filter_instance_index], value)
     
+    def _add_filter(self, col, filter_instance, value):
+        self.filters.append(filter_instance)
+        self.values.append(value)
+     
     def get_filters_values(self):
-        return [(flt, value) for flt in self.filters for value in self.values]
+        return [(flt, value) for flt, value in zip(self.filters, self.values)]
+
+    def __repr__(self):
+        retstr = "FILTERS "
+        for flt, value in self.get_filters_values():
+            retstr = retstr + "%s:%s\n" % (str(flt) ,str(value))
+        return retstr 

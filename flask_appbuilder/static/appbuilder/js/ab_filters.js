@@ -49,26 +49,17 @@ var AdminFilters = function(element, labels, form, filters) {
 		
 		addRemoveFilter($el, name, labels[name]);
 
-        if ($(filters[name]).length > 0) {
-			addFilterOptions($el, name);
-			var $field = $(form[name]).attr('name', '_flt_0_' + name);
+        addFilterOptions($el, name);
+		var $field = $(form[name]).attr('name', '_flt_0_' + name);
 			
-			$field.attr('class', ' filter_val ' + $field.attr('class'));
-			$el.append(
-                $('<td/>').append($field)
-        	);
-        
+		$field.attr('class', ' filter_val ' + $field.attr('class'));
+		$el.append(
+               $('<td/>').append($field)
+        );;
+        if ($field.hasClass( "my_select2" )) {
+        	$field.select2({placeholder: "Select a State", allowClear: true});
         }
-        else {
-            var $select = $(form[name]).attr('name', '_flt_' + name);
-            $el.append(
-                $('<td/>').append($select)
-            );
-            $select.select2({placeholder: "Select a State", allowClear: true});
-        }
-        
-        lastCount += 1;        
-        
+        lastCount += 1;                
     };
 
 	// ----------------------------------------------------------
