@@ -23,8 +23,6 @@ var AdminFilters = function(element, labels, form, filters) {
             );
 	}
 	
-	
-	
 	function addFilterOptions($el, name)
 	{
 		var $select = $('<select class="filter-op my_select2" />')                     
@@ -73,12 +71,14 @@ var AdminFilters = function(element, labels, form, filters) {
         
     };
 
+	// ----------------------------------------------------------
+	// Trigger for option change will change input element name
+	// ----------------------------------------------------------
 	function changeOperation(e, $el, name) {
         $in = $el.find('.filter_val');
         $in.attr('name','_flt_' + e.val + '_' + name);
     }
 
-	
 
     $('a.filter').click(function() {
         var name = $(this).attr('name')

@@ -188,11 +188,16 @@ class BaseView(object):
 
     def _get_filter_args(self, filters={}):
         for arg in request.args:
-            re_match = re.findall('_flt_(.*)', arg)
+            re_match = re.findall('_flt_(\d)_(.*)', arg)
             if re_match:
-                # ignore select2 __None value
-                if request.args.get(arg) not in ('__None',''):
-                    filters[re_match[0]] = request.args.get(arg)
+                print re_match
+            else:
+                re_match = re.findall('_flt_(.*)', arg)
+                print re_match
+                if re_match:
+                    # ignore select2 __None value
+                    if request.args.get(arg) not in ('__None',''):
+                        filters[re_match[0]] = request.args.get(arg)
         return filters
 
 
