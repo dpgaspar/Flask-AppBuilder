@@ -74,11 +74,8 @@ var AdminFilters = function(element, labels, form, filters) {
     };
 
 	function changeOperation(e, $el, name) {
-        alert(name);
         $in = $el.find('.filter_val');
-        alert($in.attr('name'));
         $in.attr('name','_flt_' + e.val + '_' + name);
-        alert($in.attr('name'));
     }
 
 	
