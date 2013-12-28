@@ -2,27 +2,24 @@ class BaseFilter(object):
 
     column_name = ''
     name = ''
-    widget = None
-  
-  
-    def __init__(self, column, name='', widget=None):
+    
+    
+    def __init__(self, column_name, name=''):
         """
             Constructor.
 
             :param column_name:
                 Model field name
             :param name:
-                Display name of the filter
-            :param widget:
-                widget to use on the template
+                Display name of the filter            
         """
-        self.column = column
+        self.column_name = column_name
 
 class FilterStartsWith(BaseFilter):
     name = 'Starts with'
     
     def apply(self, query, model, value):
-        return query.filter(getattr(model,self.name).like(value + '%'))
+        return query.filter(getattr(model,self.column_name).like(value + '%'))
 
     def __unicode__(self):
         return self.name
@@ -31,32 +28,32 @@ class FilterEndsWith(BaseFilter):
     name = 'Ends with'
     
     def apply(self, query, model, value):
-        return query.filter(getattr(model,self.name).like('%' + value))
+        return query.filter(getattr(model,self.column_name).like('%' + value))
 
 class FilterContains(BaseFilter):
     name = 'Contains'
     
     def apply(self, query, model, value):
-        return query.filter(getattr(model,self.name).like('%' + value + '%'))
+        return query.filter(getattr(model,self.column_name).like('%' + value + '%'))
 
 
 class FilterEqual(BaseFilter):
     name = 'Equal to'
     
     def apply(self, query, model, value):
-        return query.filter(getattr(model,self.name) == value)
+        return query.filter(getattr(model,self.column_name) == value)
 
 class FilterGreater(BaseFilter):
     name = 'Greater then'
     
     def apply(self, query, model, value):
-        return query.filter(getattr(model,self.name) > value)
+        return query.filter(getattr(model,self.column_name) > value)
         
 class FilterSmaller(BaseFilter):
     name = 'Smaller then'
     
     def apply(self, query, model, value):
-        return query.filter(getattr(model,self.name) < value)
+        return query.filter(getattr(model,self.column_name) < value)
         
         
 def get_filters(cols, datamodel):
@@ -72,11 +69,11 @@ def get_filter_type(col, datamodel):
     else:
         if datamodel.is_text(col) or datamodel.is_string(col):
             return [FilterStartsWith(col), FilterEndsWith(col), FilterContains(col), FilterEqual(col)]    
-        elif self.datamodel.is_integer(col):
+        elif datamodel.is_integer(col):
             return [FilterEqual(col), FilterGreater(col), FilterSmaller(col)]
-        elif self.datamodel.is_date(col):
+        elif datamodel.is_date(col):
             return [FilterEqual(col), FilterGreater(col), FilterSmaller(col)]
-        elif self.datamodel.is_datetime(col):
+        elif datamodel.is_datetime(col):
             return [FilterEqual(col), FilterGreater(col), FilterSmaller(col)]
         else:
             print "Filter type not supported"
@@ -96,4 +93,4 @@ class Filters(object):
         self.add_filter(col, FilterEqual, value)
     
     def get_filters_values(self):
-         return [(flt, value) for flt in self.filters for y in b]
+        return [(flt, value) for flt in self.filters for value in self.values]
