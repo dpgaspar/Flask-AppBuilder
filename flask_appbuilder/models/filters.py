@@ -1,10 +1,11 @@
 class BaseFilter(object):
 
     column_name = ''
+    model = None
     name = ''
+    """ The filter display name """
     
-    
-    def __init__(self, column_name, model, name=''):
+    def __init__(self, column_name, model):
         """
             Constructor.
 
@@ -12,10 +13,12 @@ class BaseFilter(object):
                 Model field name
             :param model:
                 The Model column belongs to
-            :param name:
-                Display name of the filter            
         """
         self.column_name = column_name
+        self.model = model
+    
+    def apply(self, query, value):
+        pass
         
     def __repr__(self):
         return self.name
@@ -121,7 +124,13 @@ class Filters(object):
         self.values.append(value)
      
     def get_filters_values(self):
+        """
+            Returns a list of tuples [(FILTER, value),(...,...),....]
+        """
         return [(flt, value) for flt, value in zip(self.filters, self.values)]
+
+    def get_filters_values_tojson(self):
+        return [(flt.column_name, flt.name, value) for flt, value in zip(self.filters, self.values)]
 
     def __repr__(self):
         retstr = "FILTERS "

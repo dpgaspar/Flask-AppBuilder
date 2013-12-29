@@ -1,4 +1,4 @@
-var AdminFilters = function(element, labels, form, filters) {
+var AdminFilters = function(element, labels, form, filters, active_filters) {
     var $root = $(element);
     var $container = $('.filters', $root);
     var lastCount = 0;
@@ -8,6 +8,20 @@ var AdminFilters = function(element, labels, form, filters) {
         $('button', $root).show();
 
         return false;
+    }
+
+    function addActiveFilters()
+    {
+        $(active_filters).each(function() {
+            addActiveFilter(this[0], this[1], this[2]);
+        });
+    }
+
+    function addActiveFilter(name, filter_name, value)
+    {
+        alert(name);
+        alert(filter_name);
+        alert(value);
     }
 
 	function addRemoveFilter($el, name, label)
@@ -76,6 +90,6 @@ var AdminFilters = function(element, labels, form, filters) {
         addFilter(name);
     });
     
-    
+    addActiveFilters();
 
 };

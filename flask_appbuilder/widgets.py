@@ -47,27 +47,30 @@ class FormWidget(RenderTemplateWidget):
 
 class SearchWidget(FormWidget):
     template = 'appbuilder/general/widgets/search.html'
-    search_filters = None
+    filters = None
     
     def __init__(self, **kwargs):
-        self.search_filters = kwargs.get('search_filters')
+        self.filters = kwargs.get('filters')
         return super(SearchWidget, self).__init__(**kwargs)
 
     def __call__(self, **kwargs):
         """ create dict labels based on form """
         """ create dict of form widgets """
-        """ create dict of filters """
+        """ create dict of possible filters """
+        """ create list of active filters """
         label_columns = {}
         form_fields = {}
         search_filters = {}
+        dict_filters = self.filters.get_search_filters()
         for col in self.include_cols:
             label_columns[col] = self.form[col].label.text
             form_fields[col] = self.form[col]()
-            search_filters[col] = [flt.name for flt in self.search_filters[col]]                
-        
-        kwargs['search_filters'] = search_filters
+            search_filters[col] = [flt.name for flt in dict_filters[col]]                
+
         kwargs['label_columns'] = label_columns
         kwargs['form_fields'] = form_fields
+        kwargs['search_filters'] = search_filters
+        kwargs['active_filters'] = self.filters.get_filters_values_tojson()
         
         return super(SearchWidget, self).__call__(**kwargs)
 

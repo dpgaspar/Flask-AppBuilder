@@ -519,7 +519,7 @@ class BaseCRUDView(BaseView):
                                                 form = form,
                                                 include_cols = self.search_columns,
                                                 exclude_cols = exclude_cols,
-                                                search_filters = self._filters.get_search_filters()
+                                                filters = self._filters
                                                 )
         return widgets
 
