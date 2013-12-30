@@ -1,4 +1,10 @@
 var AdminFilters = function(element, labels, form, filters, active_filters) {
+    // Admin filters will deal with the adding and removing of search filters
+    // :param labels:
+    //      {'col','label'}
+    // :param active_filters:
+    //      [['col','filter name','value'],[...],...]
+    
     var $root = $(element);
     var $container = $('.filters', $root);
     var lastCount = 0;
@@ -19,9 +25,24 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 
     function addActiveFilter(name, filter_name, value)
     {
-        alert(name);
-        alert(filter_name);
-        alert(value);
+        var $el = $('<tr />').appendTo($container);
+
+		addRemoveFilter($el, name, labels[name]);
+        var i_option = addFilterOptionsValue($el, name, filter_name);
+		
+        var $field = $(form[name]).attr('name', '_flt_' + i_option + '_' + name);
+        
+        if ($field.hasClass( "my_select2" )) {
+            $field.val(value);
+        }
+        else {
+            $field.attr('value', value);
+        }
+
+		$field.attr('class', ' filter_val ' + $field.attr('class'));
+		$el.append(
+               $('<td/>').append($field)
+        );;
     }
 
 	function addRemoveFilter($el, name, label)
@@ -37,33 +58,42 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
             );
 	}
 	
-	function addFilterOptions($el, name)
+    function addFilterOptionsValue($el, name, value)
 	{
 		var $select = $('<select class="filter-op my_select2" />')                     
 
 		cx = 0;
+        var i_option = -1;
         $(filters[name]).each(function() {
-           	$select.append($('<option/>').attr('value', cx).text(this));
+            if (value == this) {
+                $select.append($('<option selected="selected"/>').attr('value', cx).text(this));
+                i_option = cx;
+            }
+            else {
+                $select.append($('<option/>').attr('value', cx).text(this));
+            }
            	cx += 1;
         });
 
         $el.append(
                $('<td/>').append($select)
         );
-        $select.select2();
+        // avoids error
+        if (i_option == -1) { $select.select2(); }
         $select.change(function(e) {
         	changeOperation(e, $el, name)
     	});
-    	
+        
+        return i_option;
 	}
-
+    
 
     function addFilter(name, filter) {
         var $el = $('<tr />').appendTo($container);
 		
 		addRemoveFilter($el, name, labels[name]);
 
-        addFilterOptions($el, name);
+        addFilterOptionsValue($el, name);
 		var $field = $(form[name]).attr('name', '_flt_0_' + name);
 			
 		$field.attr('class', ' filter_val ' + $field.attr('class'));

@@ -20,15 +20,6 @@
        
     </table>
 
-<table class="table table-condensed">    
-    {% for col in include_cols %}
-   		{% set field = form[col] %}
-		{% if field.name not in exclude_cols %}
-			<tr>{{ lib.render_field_search(field) }}</tr>
-		{% endif %}
-	{% endfor %}
-    
-</table>
 </div>
 {{ lib.btn_search() }}
 </form>
