@@ -467,8 +467,7 @@ class BaseCRUDView(BaseView):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
         filters = Filters([fk], related_view.datamodel)
-        filters.add_filter(fk, 0, item)
-        print filters
+        filters.add_filter(fk, 0, self.datamodel.get_pk_value(item))
         return related_view._get_list_widget(filters = filters, 
                     order_column = order_column, 
                     order_direction = order_direction,
