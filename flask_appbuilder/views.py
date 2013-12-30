@@ -491,7 +491,7 @@ class BaseCRUDView(BaseView):
                         page_size = None,
                         widgets = {}, **args):
 
-        print "LIST WIDGET BEFORE %s %s" % (filters, self.datamodel.obj.__class__.__name__)
+        print "LIST WIDGET BEFORE %s %s" % (filters, self.datamodel.obj.__tablename__)
         count, lst = self.datamodel.query(filters, order_column, order_direction, page=page, page_size=page_size)
         pks = self.datamodel.get_keys(lst)
         print "LIST WIDGET BEFORE" , filters
@@ -658,6 +658,7 @@ class GeneralView(BaseCRUDView):
         item = self.datamodel.get(pk)
         pages = self._get_page_args()
         orders = self._get_order_args()
+        self._get_filter_args()
         
         widgets = self._get_related_list_widgets(item, orders = orders, 
                 pages = pages, widgets = widgets)
