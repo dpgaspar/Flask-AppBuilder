@@ -134,6 +134,11 @@ class Filters(object):
     def get_filters_values_tojson(self):
         return [(flt.column_name, flt.name, value) for flt, value in zip(self.filters, self.values)]
 
+    def apply_all(self, query):
+        for flt, value in zip(self.filters, self.values):
+            query = flt.apply(query, value)
+        return query
+
     def __repr__(self):
         retstr = "FILTERS "
         for flt, value in self.get_filters_values():
