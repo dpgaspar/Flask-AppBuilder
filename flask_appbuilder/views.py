@@ -688,7 +688,7 @@ class GeneralView(BaseCRUDView):
             for filter_key in exclude_cols:
                 rel_obj = self.datamodel.get_related_obj(filter_key, filters.get(filter_key))
                 setattr(item, filter_key, rel_obj)
-                        
+
             self.pre_add(item)
             self.datamodel.add(item)
             self.post_add(item)
