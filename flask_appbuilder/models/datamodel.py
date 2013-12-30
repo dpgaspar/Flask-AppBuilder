@@ -61,7 +61,7 @@ class SQLAModel(DataModel):
 
     def _get_base_query(self, query = None, filters = None, order_column = '', order_direction = ''):
         if filters:
-            query = filter.apply_all(query)
+            query = filters.apply_all(query)
         if (order_column != ''):
             query = query.order_by(order_column + ' ' + order_direction)
         
