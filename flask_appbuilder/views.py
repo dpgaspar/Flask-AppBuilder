@@ -454,7 +454,7 @@ class BaseCRUDView(BaseView):
         else:
             if not self.edit_columns:
                 self.edit_columns = list_cols
-                        
+
         
     def __init__(self, **kwargs):
         self._init_vars()
@@ -469,6 +469,7 @@ class BaseCRUDView(BaseView):
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
         filters = Filters([fk], related_view.datamodel)
         filters.add_filter(fk, 0, item)
+        print filters
         return related_view._get_list_widget(filters = filters, 
                     order_column = order_column, order_direction = order_direction, page=page, page_size=page_size)
         
@@ -655,10 +656,10 @@ class GeneralView(BaseCRUDView):
         item = self.datamodel.get(pk)
         pages = self._get_page_args()
         orders = self._get_order_args()
-        """
+        
         widgets = self._get_related_list_widgets(item, self._filters, orders = orders, 
                 pages = pages, widgets = widgets)
-        """
+        
         return render_template(self.show_template,
                            pk = pk,
                            title = self.show_title,
