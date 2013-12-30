@@ -201,7 +201,6 @@ class BaseView(object):
         return filters
 
 
-
 class IndexView(BaseView):
     """
         A simple view that implements the index for the site
