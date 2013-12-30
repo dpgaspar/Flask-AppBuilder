@@ -146,5 +146,5 @@ class Filters(object):
     def __repr__(self):
         retstr = "FILTERS \n"
         for flt, value in self.get_filters_values():
-            retstr = retstr + "%s.%s:%s\n" % (self.model.__table__, str(flt) ,str(value))
+            retstr = retstr + "%s.%s:%s\n" % (flt.model.__table__, str(flt) ,str(value))
         return retstr 
