@@ -463,7 +463,7 @@ class BaseCRUDView(BaseView):
 
 
     def _get_related_list_widget(self, item, related_view, 
-                                filters, order_column='', order_direction='',
+                                order_column='', order_direction='',
                                 page=None, page_size=None):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
@@ -471,16 +471,17 @@ class BaseCRUDView(BaseView):
         filters.add_filter(fk, 0, item)
         print filters
         return related_view._get_list_widget(filters = filters, 
-                    order_column = order_column, order_direction = order_direction, page=page, page_size=page_size)
+                    order_column = order_column, 
+                    order_direction = order_direction,
+                    page=page, page_size=page_size)
 
-    def _get_related_list_widgets(self, item, filters, orders = {}, 
-                                pages=None, widgets = {}, **args):
+    def _get_related_list_widgets(self, item, orders = {}, pages=None, widgets = {}, **args):
         widgets['related_lists'] = []
         for view in self.related_views:
             if orders.get(view.__class__.__name__):
                 order_column, order_direction = orders.get(view.__class__.__name__)
             else: order_column, order_direction = '',''
-            widgets['related_lists'].append(self._get_related_list_widget(item, view, filters, 
+            widgets['related_lists'].append(self._get_related_list_widget(item, view, 
                     order_column, order_direction, page=pages.get(view.__class__.__name__), page_size=view.page_size).get('list'))
         return widgets
     
@@ -657,7 +658,7 @@ class GeneralView(BaseCRUDView):
         pages = self._get_page_args()
         orders = self._get_order_args()
         
-        widgets = self._get_related_list_widgets(item, self._filters, orders = orders, 
+        widgets = self._get_related_list_widgets(item, orders = orders, 
                 pages = pages, widgets = widgets)
         
         return render_template(self.show_template,
