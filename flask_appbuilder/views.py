@@ -494,6 +494,7 @@ class BaseCRUDView(BaseView):
 
         count, lst = self.datamodel.query(filters, order_column, order_direction, page=page, page_size=page_size)
         pks = self.datamodel.get_keys(lst)
+        print "LIST WIDGET" , filters
         widgets['list'] = self.list_widget(route_base = self.route_base,
                                                 label_columns = self.label_columns,
                                                 include_columns = self.list_columns,
@@ -661,7 +662,6 @@ class GeneralView(BaseCRUDView):
         widgets = self._get_related_list_widgets(item, orders = orders, 
                 pages = pages, widgets = widgets)
         
-        print "GOING to RENDER"
         return render_template(self.show_template,
                            pk = pk,
                            title = self.show_title,
