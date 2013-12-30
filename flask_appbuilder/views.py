@@ -490,10 +490,8 @@ class BaseCRUDView(BaseView):
                         page_size = None,
                         widgets = {}, **args):
 
-        print "LIST WIDGET BEFORE %s %s" % (filters, self.datamodel.obj.__tablename__)
         count, lst = self.datamodel.query(filters, order_column, order_direction, page=page, page_size=page_size)
         pks = self.datamodel.get_keys(lst)
-        print "LIST WIDGET BEFORE" , filters
         widgets['list'] = self.list_widget(route_base = self.route_base,
                                                 label_columns = self.label_columns,
                                                 include_columns = self.list_columns,
