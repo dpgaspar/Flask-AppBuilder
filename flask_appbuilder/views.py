@@ -655,7 +655,6 @@ class GeneralView(BaseCRUDView):
         item = self.datamodel.get(pk)
         pages = self._get_page_args()
         orders = self._get_order_args()
-        self._get_filter_args()
         
         widgets = self._get_related_list_widgets(item, orders = orders, 
                 pages = pages, widgets = widgets)
@@ -686,7 +685,7 @@ class GeneralView(BaseCRUDView):
             item = self.datamodel.obj()
             form.populate_obj(item)
             for filter_key in exclude_cols:
-                rel_obj = self.datamodel.get_related_obj(filter_key, filters.get(filter_key))
+                rel_obj = self.datamodel.get_related_obj(filter_key, self._filters.get_filter_value(filter_key))
                 setattr(item, filter_key, rel_obj)
 
             self.pre_add(item)
@@ -725,7 +724,7 @@ class GeneralView(BaseCRUDView):
                 form.populate_obj(item)
 
                 for filter_key in exclude_cols:
-                    rel_obj = self.datamodel.get_related_obj(filter_key, filters.get(filter_key))
+                    rel_obj = self.datamodel.get_related_obj(filter_key, self._filters.get_filter_value(filter_key))
                     setattr(item, filter_key, rel_obj)
                 
                 self.pre_update(item)
