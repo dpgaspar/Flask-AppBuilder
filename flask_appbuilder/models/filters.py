@@ -125,7 +125,10 @@ class Filters(object):
     def _add_filter(self, col, filter_instance, value):
         self.filters.append(filter_instance)
         self.values.append(value)
-     
+    
+    def get_relation_cols(self):
+        return [flr.column_name for flt in self.filters if isinstance(flt, FilterRelation)]
+    
     def get_filters_values(self):
         """
             Returns a list of tuples [(FILTER, value),(...,...),....]
