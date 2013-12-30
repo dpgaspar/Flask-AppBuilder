@@ -460,7 +460,7 @@ class BaseCRUDView(BaseView):
         self._init_vars()
         self._init_forms()
         super(BaseCRUDView, self).__init__(**kwargs)
-    
+
 
     def _get_related_list_widget(self, item, related_view, 
                                 filters, order_column='', order_direction='',
@@ -472,7 +472,7 @@ class BaseCRUDView(BaseView):
         print filters
         return related_view._get_list_widget(filters = filters, 
                     order_column = order_column, order_direction = order_direction, page=page, page_size=page_size)
-        
+
     def _get_related_list_widgets(self, item, filters, orders = {}, 
                                 pages=None, widgets = {}, **args):
         widgets['related_lists'] = []
