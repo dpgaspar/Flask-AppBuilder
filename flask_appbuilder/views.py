@@ -186,13 +186,12 @@ class BaseView(object):
         return orders
                 
 
-    def _get_filter_args(self, filters={}):
+    def _get_filter_args(self):
         self._filters.clear_filters()
         for arg in request.args:
             re_match = re.findall('_flt_(\d)_(.*)', arg)
             if re_match:
                 self._filters.add_filter(re_match[0][1], int(re_match[0][0]), request.args.get(arg))
-        return filters
 
 
     def _get_dict_from_form(self, form, filters={}):
@@ -626,23 +625,7 @@ class GeneralView(BaseCRUDView):
         else: order_column, order_direction = '',''
         page = self._get_page_args().get(self.__class__.__name__)
 
-        filters = {}
-        filters = self._get_filter_args()
-        
-        """
-        if (filters != {}):
-            item = self.datamodel.obj()
-            for filter_key in filters:
-                # on related models translate id to model obj
-                try:
-                    rel_obj = self.datamodel.get_related_obj(filter_key, filters.get(filter_key))
-                    setattr(item, filter_key, rel_obj)
-                    form = self.search_form(obj = item)
-                    filters[filter_key] = rel_obj
-                except:
-                    setattr(item, filter_key, filters.get(filter_key))
-                    form = self.search_form(obj = item)
-        """
+        self._get_filter_args()
         
         widgets = self._get_list_widget(filters = self._filters, 
                     order_column = order_column, 
