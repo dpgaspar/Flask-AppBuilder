@@ -66,7 +66,8 @@ class FilterRelation(BaseFilter):
     name = 'Relation'
     
     def apply(self, query, value):
-        return query.filter(getattr(self.model,self.column_name) == value)
+        rel_obj = self.datamodel.get_related_obj(self.column_name, value)
+        return query.filter(getattr(self.model,self.column_name) == rel_obj)
     
 
 class Filters(object):
