@@ -7,7 +7,7 @@ from .filemanager import uuid_originalname
 from .security.decorators import has_access
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget, ListCarousel
 from .actions import ActionItem
-from .models.filters import Filters
+from .models.filters import Filters, FilterRelation
 
 def expose(url='/', methods=('GET',)):
     """
@@ -191,7 +191,7 @@ class BaseView(object):
         for arg in request.args:
             re_match = re.findall('_flt_(\d)_(.*)', arg)
             if re_match:
-                self._filters.add_filter(re_match[0][1], int(re_match[0][0]), request.args.get(arg))
+                self._filters.add_filter_index(re_match[0][1], int(re_match[0][0]), request.args.get(arg))
 
 
     def _get_dict_from_form(self, form, filters={}):
@@ -466,10 +466,10 @@ class BaseCRUDView(BaseView):
                                 page=None, page_size=None):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
-        filters = Filters([fk], related_view.datamodel)
-        filters.add_filter(fk, 0, self.datamodel.get_pk_value(item))
-        return related_view._get_list_widget(filters = filters, 
-                    order_column = order_column, 
+        filters = Filters().add_filter(fk, FilterRelation, 
+                related_view.datamodel, self.datamodel.get_pk_value(item))
+        return related_view._get_list_widget(filters = filters,
+                    order_column = order_column,
                     order_direction = order_direction,
                     page=page, page_size=page_size)
 

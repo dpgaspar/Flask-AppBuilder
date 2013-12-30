@@ -77,9 +77,11 @@ class Filters(object):
     _search_filters = {}
     """ dict like {'col_name':[BaseFilter1, BaseFilter2, ...], ... } """
 
-    def __init__(self, filter_columns, datamodel):
-        self._search_filters = self._get_filters(filter_columns, datamodel)
-
+    def __init__(self, filter_columns = [], datamodel = None):
+        self.clear_filters()
+        if filter_columns and datamodel:
+            self._search_filters = self._get_filters(filter_columns, datamodel)
+        
     def get_search_filters(self):
         return self._search_filters
 
@@ -119,8 +121,12 @@ class Filters(object):
         self.filters = []
         self.values = []
 
-    def add_filter(self, col, filter_instance_index, value):
+    def add_filter_index(self, col, filter_instance_index, value):
         self._add_filter(col, self._search_filters[col][filter_instance_index], value)
+    
+    def add_filter(self, col, filter_class, datamodel, value):
+        self._add_filter(col, filter_class(col, datamodel), value)
+        return self
     
     def _add_filter(self, col, filter_instance, value):
         self.filters.append(filter_instance)
@@ -144,7 +150,6 @@ class Filters(object):
         for flt,value in zip(self.filters, self.values):
             if flt.column_name == column_name:
                 return value
-        
 
     def get_filters_values_tojson(self):
         return [(flt.column_name, flt.name, value) for flt, value in zip(self.filters, self.values)]
