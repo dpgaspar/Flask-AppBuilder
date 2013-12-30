@@ -463,15 +463,16 @@ class BaseCRUDView(BaseView):
     
 
     def _get_related_list_widget(self, item, related_view, 
-                                filters={}, order_column='', order_direction='',
+                                filters, order_column='', order_direction='',
                                 page=None, page_size=None):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
-        filters[fk] = item
+        filters = Filters([fk], related_view.datamodel)
+        filters.add_filter(fk, 0, item)
         return related_view._get_list_widget(filters = filters, 
                     order_column = order_column, order_direction = order_direction, page=page, page_size=page_size)
         
-    def _get_related_list_widgets(self, item, filters = {}, orders = {}, 
+    def _get_related_list_widgets(self, item, filters, orders = {}, 
                                 pages=None, widgets = {}, **args):
         widgets['related_lists'] = []
         for view in self.related_views:
@@ -655,7 +656,7 @@ class GeneralView(BaseCRUDView):
         pages = self._get_page_args()
         orders = self._get_order_args()
         
-        widgets = self._get_related_list_widgets(item, filters = {}, orders = orders, 
+        widgets = self._get_related_list_widgets(item, self._filters, orders = orders, 
                 pages = pages, widgets = widgets)
         return render_template(self.show_template,
                            pk = pk,
@@ -663,7 +664,6 @@ class GeneralView(BaseCRUDView):
                            widgets = widgets,
                            baseapp = self.baseapp,
                            related_views = self.related_views)
-
 
 
     """
@@ -675,10 +675,10 @@ class GeneralView(BaseCRUDView):
     @has_access
     def add(self):
 
-        filters = self._get_filter_args(filters={})
+        self._get_filter_args()
 
         form = self.add_form.refresh()
-        exclude_cols = self.datamodel.get_relation_filters(filters)
+        exclude_cols = self._filters.get_relation_cols()
 
         if form.validate_on_submit():
             item = self.datamodel.obj()
@@ -711,8 +711,8 @@ class GeneralView(BaseCRUDView):
         orders = self._get_order_args()
         
         item = self.datamodel.get(pk)
-        filters = self._get_filter_args(filters={})
-        exclude_cols = self.datamodel.get_relation_filters(filters)
+        self._get_filter_args()
+        exclude_cols = self._filters.get_relation_cols()
 
         if request.method == 'POST':
             form = self.edit_form(request.form)
