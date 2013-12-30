@@ -127,7 +127,12 @@ class Filters(object):
         self.values.append(value)
     
     def get_relation_cols(self):
-        return [flr.column_name for flt in self.filters if isinstance(flt, FilterRelation)]
+        retlst = []
+        for col in self._search_filters.keys():
+            for flt in self._search_filters.get(col):
+                if isinstance(flt, FilterRelation):
+                    retlst.append(col)
+        return retlst
     
     def get_filters_values(self):
         """
