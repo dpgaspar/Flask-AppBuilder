@@ -144,7 +144,7 @@ class Filters(object):
         return query
 
     def __repr__(self):
-        retstr = "FILTERS "
+        retstr = "FILTERS \n"
         for flt, value in self.get_filters_values():
-            retstr = retstr + "%s:%s\n" % (str(flt) ,str(value))
+            retstr = retstr + "%s.%s:%s\n" % (self.model.__table__, str(flt) ,str(value))
         return retstr 
