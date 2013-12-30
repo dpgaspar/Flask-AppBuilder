@@ -94,7 +94,7 @@
 	  	{{ field}}
 	  {% else %}
 		<div class="control-label">
-		  <th class="col-lg-2">{{ field.label.text }}{% if field.flags.required %}<strong style="color: red">&#42;</strong>{% endif %}</th>
+		  <th class="col-lg-2 col-md-2 col-sm-2">{{ field.label.text }}{% if field.flags.required %}<strong style="color: red">&#42;</strong>{% endif %}</th>
 		</div>
 		<div class="controls">
 		  <td>{{ field(**kwargs)|safe }}

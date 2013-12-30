@@ -4,16 +4,11 @@
 <div class="table-responsive">
 
     <div class="btn-group">
-  	<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-    		Action <span class="caret"></span>
-  	</button>
-    <ul class="dropdown-menu" role="menu">
-    {% for col in include_cols %}
-    <li>
-    	<a href="javascript:void(0)" name={{col}} class="filter" onclick="return false;">{{ label_columns[col] }}</a>
-    </li>
+  	{% for col in include_cols %}
+    	<a href="javascript:void(0)" name={{col}} class="filter btn btn-sm btn-primary" onclick="return false;">{{ label_columns[col] }}
+        <span class="caret"></span>
+        </a>
     {% endfor %}
-    </ul>
     </div>
     
     <table class="table table-condensed filters">

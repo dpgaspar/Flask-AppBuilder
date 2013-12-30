@@ -48,7 +48,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 	function addRemoveFilter($el, name, label)
 	{
 		$el.append(
-                $('<td/>').append(
+                $('<td class="col-lg-1 col-md-1" />').append(
                     $('<a href="#" class="btn remove-filter" />')
                         .append($('<span class="close-icon">&times;</span>'))
                         .append('&nbsp;')
@@ -76,7 +76,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
         });
 
         $el.append(
-               $('<td/>').append($select)
+               $('<td class="col-lg-1 col-md-1 col-sm-1" />').append($select)
         );
         // avoids error
         if (i_option == -1) { $select.select2(); }
