@@ -1,21 +1,23 @@
 class BaseFilter(object):
 
     column_name = ''
+    datamodel = None
     model = None
     name = ''
     """ The filter display name """
     
-    def __init__(self, column_name, model):
+    def __init__(self, column_name, datamodel):
         """
             Constructor.
 
             :param column_name:
                 Model field name
-            :param model:
-                The Model column belongs to
+            :param datamodel:
+                The datamodel access class
         """
         self.column_name = column_name
-        self.model = model
+        self.datamodel = datamodel
+        self.model = datamodel.obj
     
     def apply(self, query, value):
         pass
@@ -89,25 +91,25 @@ class Filters(object):
     def _get_filter_type(self, col, datamodel):
         prop = datamodel.get_col_property(col)
         if datamodel.is_relation(prop):
-            return [FilterRelation(col, datamodel.obj)]
+            return [FilterRelation(col, datamodel)]
         else:
             if datamodel.is_text(col) or datamodel.is_string(col):
-                return [FilterStartsWith(col, datamodel.obj), 
-                    FilterEndsWith(col, datamodel.obj), 
-                    FilterContains(col, datamodel.obj), 
-                    FilterEqual(col, datamodel.obj)]    
+                return [FilterStartsWith(col, datamodel), 
+                    FilterEndsWith(col, datamodel), 
+                    FilterContains(col, datamodel), 
+                    FilterEqual(col, datamodel)]    
             elif datamodel.is_integer(col):
-                return [FilterEqual(col, datamodel.obj),
-                    FilterGreater(col, datamodel.obj), 
-                    FilterSmaller(col, datamodel.obj)]
+                return [FilterEqual(col, datamodel),
+                    FilterGreater(col, datamodel), 
+                    FilterSmaller(col, datamodel)]
             elif datamodel.is_date(col):
-                return [FilterEqual(col, datamodel.obj), 
-                    FilterGreater(col, datamodel.obj), 
-                    FilterSmaller(col, datamodel.obj)]
+                return [FilterEqual(col, datamodel), 
+                    FilterGreater(col, datamodel), 
+                    FilterSmaller(col, datamodel)]
             elif datamodel.is_datetime(col):
-                return [FilterEqual(col, datamodel.obj), 
-                    FilterGreater(col, datamodel.obj), 
-                    FilterSmaller(col, datamodel.obj)]
+                return [FilterEqual(col, datamodel), 
+                    FilterGreater(col, datamodel), 
+                    FilterSmaller(col, datamodel)]
             else:
                 print "Filter type not supported"
                 return []
