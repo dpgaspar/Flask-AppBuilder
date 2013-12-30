@@ -140,6 +140,12 @@ class Filters(object):
         """
         return [(flt, value) for flt, value in zip(self.filters, self.values)]
 
+    def get_filter_value(self, column_name):
+        for flt,value in zip(self.filters, self.values):
+            if flt.column_name == column_name:
+                return value
+        
+
     def get_filters_values_tojson(self):
         return [(flt.column_name, flt.name, value) for flt, value in zip(self.filters, self.values)]
 
