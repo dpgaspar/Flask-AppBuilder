@@ -655,9 +655,10 @@ class GeneralView(BaseCRUDView):
         item = self.datamodel.get(pk)
         pages = self._get_page_args()
         orders = self._get_order_args()
-        
+        """
         widgets = self._get_related_list_widgets(item, self._filters, orders = orders, 
                 pages = pages, widgets = widgets)
+        """
         return render_template(self.show_template,
                            pk = pk,
                            title = self.show_title,
