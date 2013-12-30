@@ -661,6 +661,7 @@ class GeneralView(BaseCRUDView):
         widgets = self._get_related_list_widgets(item, orders = orders, 
                 pages = pages, widgets = widgets)
         
+        print "GOING to RENDER"
         return render_template(self.show_template,
                            pk = pk,
                            title = self.show_title,
