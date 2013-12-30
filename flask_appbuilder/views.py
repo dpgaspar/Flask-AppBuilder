@@ -191,15 +191,7 @@ class BaseView(object):
         for arg in request.args:
             re_match = re.findall('_flt_(\d)_(.*)', arg)
             if re_match:
-                self._filters.add_filter(re_match[0][1], int(re_match[0][0]), request.args.get(arg))                
-            else:
-                re_match = re.findall('_flt_(.*)', arg)
-                if re_match:
-                    # ignore select2 __None value
-                    if request.args.get(arg) not in ('__None',''):
-                        self._filters.add_relation_filter(re_match[0][1], request.args.get(arg))
-                        filters[re_match[0]] = request.args.get(arg)
-        print self._filters
+                self._filters.add_filter(re_match[0][1], int(re_match[0][0]), request.args.get(arg))
         return filters
 
 
@@ -491,7 +483,7 @@ class BaseCRUDView(BaseView):
                     order_column, order_direction, page=pages.get(view.__class__.__name__), page_size=view.page_size).get('list'))
         return widgets
     
-    def _get_list_widget(self, filters = {}, 
+    def _get_list_widget(self, filters, 
                         order_column = '', 
                         order_direction = '',
                         page = None,
@@ -635,7 +627,9 @@ class GeneralView(BaseCRUDView):
         page = self._get_page_args().get(self.__class__.__name__)
 
         filters = {}
-        filters = self._get_filter_args(filters)
+        filters = self._get_filter_args()
+        
+        """
         if (filters != {}):
             item = self.datamodel.obj()
             for filter_key in filters:
@@ -648,8 +642,9 @@ class GeneralView(BaseCRUDView):
                 except:
                     setattr(item, filter_key, filters.get(filter_key))
                     form = self.search_form(obj = item)
-
-        widgets = self._get_list_widget(filters = filters, 
+        """
+        
+        widgets = self._get_list_widget(filters = self._filters, 
                     order_column = order_column, 
                     order_direction = order_direction, 
                     page = page, 
