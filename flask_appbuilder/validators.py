@@ -1,5 +1,5 @@
+from .models.filters import Filters
 from sqlalchemy.orm.exc import NoResultFound
-
 from wtforms import ValidationError
 
 
@@ -22,8 +22,8 @@ class Unique(object):
         self.message = message
 
     def __call__(self, form, field):
-        filters = {}
-        filters[self.column.name] = field.data
+        filters = Filters([self.column_name], self.datamodel)
+        filters.add_filter(self.column_name, 0, field.data)
         count, obj = self.datamodel.query(filters)
         if (count > 0):
             # only test if Unique if pk value is diferent, update case.
