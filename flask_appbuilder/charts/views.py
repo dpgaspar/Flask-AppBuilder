@@ -10,7 +10,7 @@ from ..views import BaseView, expose
 from ..forms import GeneralModelConverter
 
 
-class BaseChartView(BaseView):
+class BaseChartView(BaseModelView):
     """
         This is the base class for all chart views. 
         Use ChartView or TimeChartView, override their properties and these
@@ -46,7 +46,7 @@ class BaseChartView(BaseView):
     """ A list of columns to be possibly grouped by """
     datamodel = None
     """ Your sqla model you must initialize it like datamodel = SQLAModel(Permission, session) """
-
+    
 
     def _init_forms(self):
         conv = GeneralModelConverter(self.datamodel)        
@@ -65,10 +65,10 @@ class BaseChartView(BaseView):
         widgets['search'] = self.search_widget(route_base = self.route_base,
                                                 form = form,
                                                 exclude_cols = exclude_cols,
-                                                )
+                                              )
         return widgets
 
-    
+
 
     def _get_chart_widget(self, value_columns = [], widgets = {}):        
         widgets['chart'] = self.chart_widget(route_base = self.route_base,

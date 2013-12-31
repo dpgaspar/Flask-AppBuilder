@@ -61,6 +61,8 @@ class TemplateFilters(object):
     @app_template_filter('set_link_filters')
     def set_link_filters_filter(self, path, filters, pk):
         lnkstr = path
+        for flt, value in filters.get_filters_values():
+            lnkstr = lnkstr + '&_flt_0_' + flt.column_name + '=' + str(pk)
         """
         for _filter in filters:
             lnkstr = lnkstr + '&_flt_' + _filter + '=' + str(pk)

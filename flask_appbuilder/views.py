@@ -7,7 +7,7 @@ from .filemanager import uuid_originalname
 from .security.decorators import has_access
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget, ListCarousel
 from .actions import ActionItem
-from .models.filters import Filters, FilterRelation
+from .models.filters import Filters, FilterRelationOneToMany
 
 def expose(url='/', methods=('GET',)):
     """
@@ -170,30 +170,6 @@ class BaseView(object):
         return pages
 
 
-
-    def _get_order_args(self, orders = {}):
-        """
-            Get order arguments, return a dictionary
-            { <VIEW_NAME>: (ORDER_COL, ORDER_DIRECTION) }
-        
-            Arguments are passed like: _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
-        
-        """
-        for arg in request.args:
-            re_match = re.findall('_oc_(.*)', arg)
-            if re_match:
-                orders[re_match[0]] = (request.args.get(arg),request.args.get('_od_' + re_match[0]))
-        return orders
-                
-
-    def _get_filter_args(self):
-        self._filters.clear_filters()
-        for arg in request.args:
-            re_match = re.findall('_flt_(\d)_(.*)', arg)
-            if re_match:
-                self._filters.add_filter_index(re_match[0][1], int(re_match[0][0]), request.args.get(arg))
-
-
     def _get_dict_from_form(self, form, filters={}):
         for item in form:
             if item.data:
@@ -302,18 +278,74 @@ class SimpleFormView(BaseView):
 
 
 
-class BaseCRUDView(BaseView):
+class BaseModelView(BaseView):
+    """
+        The base class of GeneralView and ChartView, all properties are inherited
+        Customize GeneralView and ChartView overriding this properties
+    """
+
+    datamodel = None
+    """ Your sqla model you must initialize it like datamodel = SQLAModel(Permission, session) """
+    
+    _filters = None
+    """ Filters object will calculate all possible filter types based on search_columns """
+
+    def __init__(self, **kwargs):
+        """
+            Constructor
+        """
+        self._filters = Filters(self.search_columns, self.datamodel)
+        super(BaseModelView, self).__init__(**kwargs)
+        
+
+    def _init_vars(self):
+        pass
+        
+    def _init_forms(self):
+        pass
+
+    def _get_order_args(self, orders = {}):
+        """
+            Get order arguments, return a dictionary
+            { <VIEW_NAME>: (ORDER_COL, ORDER_DIRECTION) }
+        
+            Arguments are passed like: _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
+        
+        """
+        for arg in request.args:
+            re_match = re.findall('_oc_(.*)', arg)
+            if re_match:
+                orders[re_match[0]] = (request.args.get(arg),request.args.get('_od_' + re_match[0]))
+        return orders
+
+    def _get_filter_args(self):
+        self._filters.clear_filters()
+        for arg in request.args:
+            re_match = re.findall('_flt_(\d)_(.*)', arg)
+            if re_match:
+                self._filters.add_filter_index(re_match[0][1], int(re_match[0][0]), request.args.get(arg))
+
+
+    def _get_search_widget(self, form = None, exclude_cols = [], widgets = {}):
+        widgets['search'] = self.search_widget(route_base = self.route_base,
+                                                form = form,
+                                                include_cols = self.search_columns,
+                                                exclude_cols = exclude_cols,
+                                                filters = self._filters
+                                                )
+        return widgets
+
+    
+
+class BaseCRUDView(BaseModelView):
     """
         The base class of GeneralView, all properties are inherited
         Customize GeneralView overriding this properties
     """
     
-    
-    datamodel = None
-    """ Your sqla model you must initialize it like datamodel = SQLAModel(Permission, session) """
+
     related_views = []
     """ Views that will be displayed related with this one, must be instantiated """
-    
     list_title = ""
     """ List Title """
     show_title = ""
@@ -323,7 +355,6 @@ class BaseCRUDView(BaseView):
     edit_title = ""
     """ Edit Title """
 
-    
     list_columns = []
     """ Include Columns for lists view """
     show_columns = []
@@ -336,17 +367,18 @@ class BaseCRUDView(BaseView):
     """ Allowed order columns """
     search_columns = []
     """ Allowed search columns """
-
     label_columns = {}
+    """ The labels for your columns, override this if you want diferent pretify labels """    
+        
     description_columns = {}
-    
+    """ description for columns that will be shown on the forms """
     add_form_extra_fields = {}
     """ Add extra fields to the Add form using this property """
     edit_form_extra_fields = {}
     """ Add extra fields to the Edit form using this property """
     
     page_size = 30
-
+    """ Page size """
     
     show_fieldsets = []
     """ show fieldsets [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....] """
@@ -362,9 +394,9 @@ class BaseCRUDView(BaseView):
     """ To implement your own add WTF form for Edit """
     search_form = None
     """ To implement your own add WTF form for Search """
-
+    
     validators_columns = {}
-
+    """ Add your own validators for forms """
     
     list_template = 'appbuilder/general/model/list.html'
     """ Your own add jinja2 template for list """
@@ -375,7 +407,6 @@ class BaseCRUDView(BaseView):
     show_template = 'appbuilder/general/model/show.html'
     """ Your own add jinja2 template for show """
 
-    
     list_widget = ListWidget
     """ List widget override """
     edit_widget = FormWidget
@@ -385,15 +416,18 @@ class BaseCRUDView(BaseView):
     show_widget = ShowWidget
     """ Show widget override """
     search_widget = SearchWidget
-    """ Search widget override """
+    """ Search widget you can override with your own """
         
     show_additional_links = []
 
-    _filters = None
-    """ Filters object will calculate all possible filter types based on search_columns """
+    def __init__(self, **kwargs):
+        self._init_titles()
+        self._init_vars()
+        self._init_forms()
+        super(BaseCRUDView, self).__init__(**kwargs)
+        
     
     def _init_forms(self):
-        
         conv = GeneralModelConverter(self.datamodel)        
         if not self.add_form:
             self.add_form = conv.create_form(self.label_columns,
@@ -409,11 +443,8 @@ class BaseCRUDView(BaseView):
                     self.edit_columns)
         if not self.search_form:
             self.search_form = conv.create_form(self.label_columns,
-                    self.description_columns,
-                    self.validators_columns,
-                    [],
-                    self.search_columns)
-            self._filters = Filters(self.search_columns, self.datamodel)
+                    {}, {}, [], self.search_columns)
+        
 
     def _init_titles(self):
         if not self.list_title:
@@ -426,8 +457,6 @@ class BaseCRUDView(BaseView):
             self.show_title = 'Show ' + self._prettify_name(self.datamodel.obj.__name__)
 
     def _init_vars(self):
-        self._init_titles()
-            
         list_cols = self.datamodel.get_columns_list()
         for col in list_cols:
             if not self.label_columns.get(col):
@@ -453,20 +482,14 @@ class BaseCRUDView(BaseView):
         else:
             if not self.edit_columns:
                 self.edit_columns = list_cols
-
         
-    def __init__(self, **kwargs):
-        self._init_vars()
-        self._init_forms()
-        super(BaseCRUDView, self).__init__(**kwargs)
-
 
     def _get_related_list_widget(self, item, related_view, 
                                 order_column='', order_direction='',
                                 page=None, page_size=None):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
-        filters = Filters().add_filter(fk, FilterRelation, 
+        filters = Filters().add_filter(fk, FilterRelationOneToMany, 
                 related_view.datamodel, self.datamodel.get_pk_value(item))
         return related_view._get_list_widget(filters = filters,
                     order_column = order_column,
@@ -503,15 +526,6 @@ class BaseCRUDView(BaseView):
                                                 pks = pks,
                                                 filters = filters,
                                                 generalview_name = self.__class__.__name__
-                                                )
-        return widgets
-
-    def _get_search_widget(self, form = None, exclude_cols = [], widgets = {}):
-        widgets['search'] = self.search_widget(route_base = self.route_base,
-                                                form = form,
-                                                include_cols = self.search_columns,
-                                                exclude_cols = exclude_cols,
-                                                filters = self._filters
                                                 )
         return widgets
 
@@ -684,6 +698,7 @@ class GeneralView(BaseCRUDView):
         if form.validate_on_submit():
             item = self.datamodel.obj()
             form.populate_obj(item)
+            print "EXT", exclude_cols
             for filter_key in exclude_cols:
                 rel_obj = self.datamodel.get_related_obj(filter_key, self._filters.get_filter_value(filter_key))
                 setattr(item, filter_key, rel_obj)

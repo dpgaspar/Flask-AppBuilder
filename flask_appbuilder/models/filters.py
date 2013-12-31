@@ -20,6 +20,9 @@ class BaseFilter(object):
         self.model = datamodel.obj
     
     def apply(self, query, value):
+        """
+            Override this to implement you own new filters
+        """
         pass
         
     def __repr__(self):
@@ -31,11 +34,25 @@ class FilterStartsWith(BaseFilter):
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name).like(value + '%'))
 
+class FilterNotStartsWith(BaseFilter):
+    name = 'Not Starts with'
+    
+    def apply(self, query, value):
+        return query.filter(~getattr(self.model,self.column_name).like(value + '%'))
+
+
 class FilterEndsWith(BaseFilter):
     name = 'Ends with'
     
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name).like('%' + value))
+
+class FilterNotEndsWith(BaseFilter):
+    name = 'Not Ends with'
+    
+    def apply(self, query, value):
+        return query.filter(~getattr(self.model,self.column_name).like('%' + value))
+
 
 class FilterContains(BaseFilter):
     name = 'Contains'
@@ -43,12 +60,25 @@ class FilterContains(BaseFilter):
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name).like('%' + value + '%'))
 
+class FilterNotContains(BaseFilter):
+    name = 'Not Contains'
+    
+    def apply(self, query, value):
+        return query.filter(~getattr(self.model,self.column_name).like('%' + value + '%'))
+
 
 class FilterEqual(BaseFilter):
     name = 'Equal to'
     
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name) == value)
+
+class FilterNotEqual(BaseFilter):
+    name = 'Equal to'
+    
+    def apply(self, query, value):
+        return query.filter(getattr(self.model,self.column_name) != value)
+
 
 class FilterGreater(BaseFilter):
     name = 'Greater then'
@@ -61,26 +91,41 @@ class FilterSmaller(BaseFilter):
     
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name) < value)
-        
+
+
 class FilterRelation(BaseFilter):
+    pass
+
+class FilterRelationOneToMany(FilterRelation):
     name = 'Relation'
     
     def apply(self, query, value):
         rel_obj = self.datamodel.get_related_obj(self.column_name, value)
         return query.filter(getattr(self.model,self.column_name) == rel_obj)
     
+class FilterRelationManyToMany(FilterRelation):
+    name = 'Relation Many'
+    
+    def apply(self, query, value):
+        rel_obj = self.datamodel.get_related_obj(self.column_name, value)
+        return query.filter(getattr(self.model,self.column_name).contains(item))
+
 
 class Filters(object):
     
     filters = []
+    """ List of instanciated filters """
     values = []
+    """ list of values to apply to filters """
     _search_filters = {}
     """ dict like {'col_name':[BaseFilter1, BaseFilter2, ...], ... } """
+    _all_filters = {}
 
-    def __init__(self, filter_columns = [], datamodel = None):
+    def __init__(self, search_columns = [], datamodel = None):
         self.clear_filters()
-        if filter_columns and datamodel:
-            self._search_filters = self._get_filters(filter_columns, datamodel)
+        if search_columns and datamodel:
+            self._search_filters = self._get_filters(search_columns, datamodel)
+            self._all_filters = self._get_filters(datamodel.get_columns_list(), datamodel)
         
     def get_search_filters(self):
         return self._search_filters
@@ -94,17 +139,25 @@ class Filters(object):
     def _get_filter_type(self, col, datamodel):
         prop = datamodel.get_col_property(col)
         if datamodel.is_relation(prop):
-            return [FilterRelation(col, datamodel)]
+            if datamodel.is_relation_many_to_one(prop):
+                return [FilterRelationOneToMany(col, datamodel)]
+            elif datamodel.is_relation_many_to_many(prop):
+                return [FilterRelationManyToMany(col, datamodel)]
         else:
             if datamodel.is_text(col) or datamodel.is_string(col):
                 return [FilterStartsWith(col, datamodel), 
                     FilterEndsWith(col, datamodel), 
                     FilterContains(col, datamodel), 
-                    FilterEqual(col, datamodel)]    
+                    FilterEqual(col, datamodel),
+                    FilterNotStartsWith(col, datamodel),
+                    FilterNotEndsWith(col, datamodel),
+                    FilterNotContains(col, datamodel),
+                    FilterNotEqual(col, datamodel),]    
             elif datamodel.is_integer(col):
                 return [FilterEqual(col, datamodel),
                     FilterGreater(col, datamodel), 
-                    FilterSmaller(col, datamodel)]
+                    FilterSmaller(col, datamodel),
+                    FilterNotEqual(col, datamodel)]
             elif datamodel.is_date(col):
                 return [FilterEqual(col, datamodel), 
                     FilterGreater(col, datamodel), 
@@ -122,7 +175,7 @@ class Filters(object):
         self.values = []
 
     def add_filter_index(self, col, filter_instance_index, value):
-        self._add_filter(col, self._search_filters[col][filter_instance_index], value)
+        self._add_filter(col, self._all_filters[col][filter_instance_index], value)
     
     def add_filter(self, col, filter_class, datamodel, value):
         self._add_filter(col, filter_class(col, datamodel), value)
@@ -134,12 +187,11 @@ class Filters(object):
     
     def get_relation_cols(self):
         retlst = []
-        for col in self._search_filters.keys():
-            for flt in self._search_filters.get(col):
-                if isinstance(flt, FilterRelation):
-                    retlst.append(col)
+        for flt, value in zip(self.filters, self.values):
+            if isinstance(flt, FilterRelation) and value:
+                    retlst.append(flt.column_name)
         return retlst
-    
+
     def get_filters_values(self):
         """
             Returns a list of tuples [(FILTER, value),(...,...),....]
@@ -163,4 +215,4 @@ class Filters(object):
         retstr = "FILTERS \n"
         for flt, value in self.get_filters_values():
             retstr = retstr + "%s.%s:%s:%s\n" % (flt.model.__table__, flt.column_name, str(flt) ,str(value))
-        return retstr 
+        return retstr

@@ -3,6 +3,7 @@
 <form id="filter_form" class="form-search" method="get">
 <div class="table-responsive">
 
+    <strong>{{_("Add Filter")}}:</strong>
     <div class="btn-group">
   	{% for col in include_cols %}
     	<a href="javascript:void(0)" name={{col}} class="filter btn btn-sm btn-primary" onclick="return false;">{{ label_columns[col] }}
