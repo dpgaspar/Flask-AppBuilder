@@ -286,6 +286,12 @@ class BaseModelView(BaseView):
 
     datamodel = None
     """ Your sqla model you must initialize it like datamodel = SQLAModel(Permission, session) """
+    search_columns = []
+    """ Allowed search columns """
+    label_columns = {}
+    """ The labels for your columns, override this if you want diferent pretify labels """    
+    search_form = None
+    """ To implement your own add WTF form for Search """
     
     _filters = None
     """ Filters object will calculate all possible filter types based on search_columns """
@@ -294,15 +300,24 @@ class BaseModelView(BaseView):
         """
             Constructor
         """
+        self._base_model_init_vars()
+        self._base_model_init_forms()
         self._filters = Filters(self.search_columns, self.datamodel)
         super(BaseModelView, self).__init__(**kwargs)
         
 
-    def _init_vars(self):
-        pass
+    def _base_model_init_vars(self):
+        list_cols = self.datamodel.get_columns_list()
+        for col in list_cols:
+            if not self.label_columns.get(col):
+                self.label_columns[col] = self._prettify_column(col)
         
-    def _init_forms(self):
-        pass
+    def _base_model_init_forms(self):
+        conv = GeneralModelConverter(self.datamodel)
+        if not self.search_form:
+            self.search_form = conv.create_form(self.label_columns,
+                    {}, {}, [], self.search_columns)
+        
 
     def _get_order_args(self, orders = {}):
         """
@@ -365,10 +380,6 @@ class BaseCRUDView(BaseModelView):
     """ Include Columns for edit view """
     order_columns = []
     """ Allowed order columns """
-    search_columns = []
-    """ Allowed search columns """
-    label_columns = {}
-    """ The labels for your columns, override this if you want diferent pretify labels """    
         
     description_columns = {}
     """ description for columns that will be shown on the forms """
@@ -392,8 +403,6 @@ class BaseCRUDView(BaseModelView):
     """ To implement your own add WTF form for Add """
     edit_form = None
     """ To implement your own add WTF form for Edit """
-    search_form = None
-    """ To implement your own add WTF form for Search """
     
     validators_columns = {}
     """ Add your own validators for forms """
@@ -421,11 +430,11 @@ class BaseCRUDView(BaseModelView):
     show_additional_links = []
 
     def __init__(self, **kwargs):
+        super(BaseCRUDView, self).__init__(**kwargs)
         self._init_titles()
         self._init_vars()
         self._init_forms()
-        super(BaseCRUDView, self).__init__(**kwargs)
-        
+
     
     def _init_forms(self):
         conv = GeneralModelConverter(self.datamodel)        
@@ -441,9 +450,6 @@ class BaseCRUDView(BaseModelView):
                     self.validators_columns,
                     self.edit_form_extra_fields,
                     self.edit_columns)
-        if not self.search_form:
-            self.search_form = conv.create_form(self.label_columns,
-                    {}, {}, [], self.search_columns)
         
 
     def _init_titles(self):
@@ -458,9 +464,6 @@ class BaseCRUDView(BaseModelView):
 
     def _init_vars(self):
         list_cols = self.datamodel.get_columns_list()
-        for col in list_cols:
-            if not self.label_columns.get(col):
-                self.label_columns[col] = self._prettify_column(col)
         if self.show_fieldsets:
             self.show_columns = []
             for fieldset_item in self.show_fieldsets:                
