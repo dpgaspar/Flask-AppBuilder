@@ -1,6 +1,18 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.4.0
+------------------------------------
+
+- fix, page was "remenbered" by class, returned empty lists on queries and inline lists.
+- New Filters class and BaseFilter with many subclasses. Restructing internals to enable feature.
+- New UI for search widget, dynamic filters showing the possibilities from filters. Starts with, greater then, etc...
+- New possible filters for dates, greater then, less, equal filters.
+- Restructuring of query function, simplified.
+- Internal class inherit change: BaseView, BaseModelView, BaseCRUDView, GeneralView.
+- Internal class inherit change: BaseView, BaseModelView, BaseChartView, (ChartView|TimeChartView).
+- Argument URL filter change "_flt_<index option filter>_<Col name>=<value>"
+
 Improvements and Bug fixes on 0.3.17
 ------------------------------------
 
