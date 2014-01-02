@@ -30,18 +30,13 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 		addRemoveFilter($el, name, labels[name]);
         var i_option = addFilterOptionsValue($el, name, filter_name);
 		
-        var $field = $(form[name]).attr('name', '_flt_' + i_option + '_' + name);
+        var $field = $(form[name])
+        $field.attr('name', '_flt_' + i_option + '_' + name);
         
-        if ($field.hasClass( "my_select2" )) {
-            $field.val(value);
-        }
-        else {
-            $field.attr('value', value);
-        }
-
-		$field.attr('class', ' filter_val ' + $field.attr('class'));
+        $field.val(value);
+        $field.attr('class', ' filter_val ' + $field.attr('class'));
 		$el.append(
-               $('<td/>').append($field)
+        	$('<td/>').append($field)
         );;
     }
 
