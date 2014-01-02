@@ -468,8 +468,10 @@ class BaseCRUDView(BaseModelView):
 
     def _init_vars(self):
         self.related_views = self.related_views or []
+        order_cols = self.datamodel.get_order_columns_list()
         list_cols = self.datamodel.get_columns_list()
-        self.list_columns = self.list_columns or [list_cols[0]]
+        self.list_columns = self.list_columns or [order_cols[0]]
+        self_order_columns = self.order_columns or order_cols
         if self.show_fieldsets:
             self.show_columns = []
             for fieldset_item in self.show_fieldsets:                
