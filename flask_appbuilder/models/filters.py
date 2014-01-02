@@ -81,13 +81,13 @@ class FilterNotEqual(BaseFilter):
 
 
 class FilterGreater(BaseFilter):
-    name = 'Greater then'
+    name = 'Greater than'
     
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name) > value)
         
 class FilterSmaller(BaseFilter):
-    name = 'Smaller then'
+    name = 'Smaller than'
     
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name) < value)
