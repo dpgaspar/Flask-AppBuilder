@@ -363,8 +363,8 @@ class BaseCRUDView(BaseModelView):
     """
     
 
-    related_views = []
-    """ Views that will be displayed related with this one, must be instantiated """
+    related_views = None
+    """ Views that will be displayed related with this one, the views must be instantiated """
     list_title = ""
     """ List Title """
     show_title = ""
@@ -374,17 +374,17 @@ class BaseCRUDView(BaseModelView):
     edit_title = ""
     """ Edit Title """
 
-    list_columns = []
+    list_columns = None
     """ Include Columns for lists view """
-    show_columns = []
+    show_columns = None
     """ Include Columns for show view """
-    add_columns = []
+    add_columns = None
     """ Include Columns for add view """
-    edit_columns = []
+    edit_columns = None
     """ Include Columns for edit view """
-    order_columns = []
+    order_columns = None
     """ Allowed order columns """
-        
+    
     description_columns = {}
     """ description for columns that will be shown on the forms """
     add_form_extra_fields = {}
