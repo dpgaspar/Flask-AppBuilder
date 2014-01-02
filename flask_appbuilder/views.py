@@ -181,13 +181,15 @@ class SimpleFormView(BaseView):
     edit_widget = FormWidget
     form_title = ''
     """ The form title to be displayed """
-    form_columns = []
+    form_columns = None
     """ The form columns to include, if empty will include all"""
     form = None
     """ The WTF form to render """
-    form_fieldsets = []
+    form_fieldsets = None
     
     def _init_vars(self):
+        self.form_columns = self.form_columns or []
+        self.form_fieldsets = self.form_fieldsets or []
         list_cols = [field.name for field in self.form.refresh()]
         if self.form_fieldsets:
             self.form_columns = []
@@ -320,7 +322,7 @@ class BaseModelView(BaseView):
         return pages
 
 
-    def _get_order_args(self, orders = {}):
+    def _get_order_args(self):
         """
             Get order arguments, return a dictionary
             { <VIEW_NAME>: (ORDER_COL, ORDER_DIRECTION) }
@@ -328,6 +330,7 @@ class BaseModelView(BaseView):
             Arguments are passed like: _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
         
         """
+        orders = {}
         for arg in request.args:
             re_match = re.findall('_oc_(.*)', arg)
             if re_match:
@@ -351,7 +354,7 @@ class BaseModelView(BaseView):
                                                 )
         return widgets
 
-    
+
 
 class BaseCRUDView(BaseModelView):
     """
