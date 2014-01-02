@@ -12,6 +12,8 @@ Improvements and Bug fixes on 0.4.0
 - Internal class inherit change: BaseView, BaseModelView, BaseCRUDView, GeneralView.
 - Internal class inherit change: BaseView, BaseModelView, BaseChartView, (ChartView|TimeChartView).
 - Argument URL filter change "_flt_<index option filter>_<Col name>=<value>"
+- New, no need to define search_columns property, if not defined all columns can be added to search.
+- fix, class init propertied correction
 
 Improvements and Bug fixes on 0.3.17
 ------------------------------------
