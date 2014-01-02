@@ -471,7 +471,7 @@ class BaseCRUDView(BaseModelView):
         order_cols = self.datamodel.get_order_columns_list()
         list_cols = self.datamodel.get_columns_list()
         self.list_columns = self.list_columns or [order_cols[0]]
-        self_order_columns = self.order_columns or order_cols
+        self.order_columns = self.order_columns or order_cols
         if self.show_fieldsets:
             self.show_columns = []
             for fieldset_item in self.show_fieldsets:                
@@ -634,12 +634,12 @@ class GeneralView(BaseCRUDView):
     def __init__(self, **kwargs):
         super(GeneralView, self).__init__(**kwargs)
 
+
     """
     --------------------------------
             LIST
     --------------------------------
     """
-    
     @expose('/list/')
     @has_access
     def list(self):
