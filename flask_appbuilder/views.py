@@ -467,7 +467,9 @@ class BaseCRUDView(BaseModelView):
             self.show_title = 'Show ' + self._prettify_name(self.datamodel.obj.__name__)
 
     def _init_vars(self):
+        self.related_views = self.related_views or []
         list_cols = self.datamodel.get_columns_list()
+        self.list_columns = self.list_columns or [list_cols[0]]
         if self.show_fieldsets:
             self.show_columns = []
             for fieldset_item in self.show_fieldsets:                
