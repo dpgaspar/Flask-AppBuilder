@@ -67,7 +67,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
             else {
                 $select.append($('<option/>').attr('value', cx).text(this));
             }
-           	cx += 1;
+	    cx += 1;
         });
 
         $el.append(
@@ -86,17 +86,23 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
     function addFilter(name, filter) {
         var $el = $('<tr />').appendTo($container);
 		
-		addRemoveFilter($el, name, labels[name]);
+	addRemoveFilter($el, name, labels[name]);
 
         addFilterOptionsValue($el, name);
-		var $field = $(form[name]).attr('name', '_flt_0_' + name);
-			
-		$field.attr('class', ' filter_val ' + $field.attr('class'));
-		$el.append(
-               $('<td/>').append($field)
+	var $field = $(form[name])
+	$field.attr('name', '_flt_0_' + name);
+	$field.attr('class', ' filter_val ' + $field.attr('class'));
+	$el.append(
+        	$('<td/>').append($field)
         );;
         if ($field.hasClass( "my_select2" )) {
         	$field.select2({placeholder: "Select a State", allowClear: true});
+        }
+        if ($field.hasClass( "appbuilder_datetime" )) {
+        	$field.datetimepicker();
+        }
+        if ($field.hasClass( "appbuilder_date" )) {
+        	datetimepicker({pickTime: false });
         }
         lastCount += 1;                
     };
