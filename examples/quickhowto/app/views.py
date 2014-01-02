@@ -13,10 +13,8 @@ class ContactGeneralView(GeneralView):
     datamodel = SQLAModel(Contact, db.session)
 
     label_columns = {'group':'Contacts Group'}
-    #list_columns = ['name','personal_celphone','birthday','group']
+    list_columns = ['name','personal_celphone','birthday','group']
 
-    #order_columns = ['name','personal_celphone','birthday']
-    
     show_fieldsets = [
          ('Summary',{'fields':['name','address','group']}),
          ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
@@ -27,8 +25,6 @@ class GroupGeneralView(GeneralView):
     datamodel = SQLAModel(Group, db.session)
     related_views = [ContactGeneralView()]
 
-    #list_columns = ['name']
-    #order_columns = ['name']
     
 class ContactChartView(ChartView):
     chart_title = 'Grouped contacts'
