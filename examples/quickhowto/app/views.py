@@ -16,8 +16,7 @@ class ContactGeneralView(GeneralView):
     list_columns = ['name','personal_celphone','birthday','group']
 
     order_columns = ['name','personal_celphone','birthday']
-    #search_columns = ['name','personal_celphone','group','birthday']
-
+    
     show_fieldsets = [
          ('Summary',{'fields':['name','address','group']}),
          ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
@@ -30,17 +29,14 @@ class GroupGeneralView(GeneralView):
 
     list_columns = ['name']
     order_columns = ['name']
-    #search_columns = ['name']
-
+    
 class ContactChartView(ChartView):
-    #search_columns = ['name','group']
     chart_title = 'Grouped contacts'
     label_columns = ContactGeneralView.label_columns
     group_by_columns = ['group']
     datamodel = SQLAModel(Contact, db.session)
 
 class ContactTimeChartView(TimeChartView):
-    #search_columns = ['name','group']
     chart_title = 'Grouped Birth contacts'
     label_columns = ContactGeneralView.label_columns
     group_by_columns = ['birthday']
