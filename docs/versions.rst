@@ -14,6 +14,7 @@ Improvements and Bug fixes on 0.4.0
 - Argument URL filter change "_flt_<index option filter>_<Col name>=<value>"
 - New, no need to define search_columns property, if not defined all columns can be added to search.
 - New, no need to define list_columns property, if not defined only the first orderable column will be displayed.
+- New, no need to define order_columns property, if not defined all ordered columns will be defined.
 - fix, class init properties correction
 
 Improvements and Bug fixes on 0.3.17
