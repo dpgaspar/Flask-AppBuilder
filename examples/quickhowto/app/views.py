@@ -15,7 +15,7 @@ class ContactGeneralView(GeneralView):
     label_columns = {'group':'Contacts Group'}
     #list_columns = ['name','personal_celphone','birthday','group']
 
-    order_columns = ['name','personal_celphone','birthday']
+    #order_columns = ['name','personal_celphone','birthday']
     
     show_fieldsets = [
          ('Summary',{'fields':['name','address','group']}),
@@ -28,7 +28,7 @@ class GroupGeneralView(GeneralView):
     related_views = [ContactGeneralView()]
 
     #list_columns = ['name']
-    order_columns = ['name']
+    #order_columns = ['name']
     
 class ContactChartView(ChartView):
     chart_title = 'Grouped contacts'
