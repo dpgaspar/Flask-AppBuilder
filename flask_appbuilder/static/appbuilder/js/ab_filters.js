@@ -32,12 +32,11 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 	
         var $field = $(form[name])
         // if form item complex like <div><input bla></div>, datetime
-        if ( $($field).has('input')) {
+        if ( $("input", $($field)).html() != undefined ) {
 		$field_inner = $("input", $field)
 		$field_inner.attr('name', '_flt_' + i_option + '_' + name);
 		$field_inner.val(value);
 		$field_inner.attr('class', ' filter_val ' + $field_inner.attr('class'));
-	
 	}
 	else {
 		$field.attr('name', '_flt_' + i_option + '_' + name);	
