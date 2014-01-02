@@ -102,7 +102,7 @@ class SQLAModel(DataModel):
         return count, query.all()
 
 
-    def query_simple_group(self, group_by = '', filters = {}, order_column = '', order_direction = ''):
+    def query_simple_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
         if self.is_relation_col(group_by):
             rel_model, rel_direction = self._get_related_model(group_by)
             query = self.session.query(rel_model, func.count(self.obj.id))
@@ -119,7 +119,7 @@ class SQLAModel(DataModel):
     def grouper(self, item):
         pass
 
-    def query_month_group(self, group_by = '', filters = {}, order_column = '', order_direction = ''):
+    def query_month_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
         query = self.session.query(self.obj)
         query = self._get_base_query(query = query, filters = filters, order_column = group_by, order_direction = 'asc')
         query_result = query.all()
@@ -128,7 +128,7 @@ class SQLAModel(DataModel):
             retlst.append([grouped, len(list(items))])
         return retlst
         
-    def query_year_group(self, group_by = '', filters = {}, order_column = '', order_direction = ''):
+    def query_year_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
         query = self.session.query(self.obj)
         query = self._get_base_query(query = query, filters = filters, order_column = group_by, order_direction = 'asc')
         query_result = query.all()
@@ -322,6 +322,14 @@ class SQLAModel(DataModel):
                     ret_lst.append(prop.key)
             else:
                 ret_lst.append(prop.key)
+        return ret_lst
+
+    def get_order_columns_list(self):
+        ret_lst = []
+        for prop in self.get_properties_iterator():
+            if not self.is_relation(prop):
+                if (not self.is_pk(self.get_property_first_col(prop))) and (not self.is_fk(self.get_property_first_col(prop))):
+                    ret_lst.append(prop.key)
         return ret_lst
 
     def get_file_column_list(self):
