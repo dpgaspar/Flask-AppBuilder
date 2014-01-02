@@ -90,7 +90,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 
         addFilterOptionsValue($el, name);
 	var $field = $(form[name])
-	alert($("input",$field).parent().html());
+	alert($("input",$field.parent()).html());
 	$field.attr('name', '_flt_0_' + name);
 	$field.attr('class', ' filter_val ' + $field.attr('class'));
 	$el.append(
