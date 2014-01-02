@@ -92,6 +92,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 	var $field = $(form[name])
 	$field.attr('name', '_flt_0_' + name);
 	$field.attr('class', ' filter_val ' + $field.attr('class'));
+	alert($field.html());
 	$el.append(
         	$('<td/>').append($field)
         );;
