@@ -61,7 +61,7 @@ class BaseView(object):
                 for attr_name in dir(self)
                 if hasattr(getattr(self, attr_name),'_urls')
                 ]
-            self.actions = actions or []
+            self.actions = self.actions or []
             for attr_name in dir(self):
                 if hasattr(getattr(self, attr_name),'_action'):
                     action = ActionItem(*attr_name._action, func = getattr(self, attr_name))
