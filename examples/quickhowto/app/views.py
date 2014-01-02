@@ -16,7 +16,7 @@ class ContactGeneralView(GeneralView):
     list_columns = ['name','personal_celphone','birthday','group']
 
     order_columns = ['name','personal_celphone','birthday']
-    search_columns = ['name','personal_celphone','group']
+    search_columns = ['name','personal_celphone','group','birthday']
 
     show_fieldsets = [
          ('Summary',{'fields':['name','address','group']}),
