@@ -31,11 +31,21 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
         var i_option = addFilterOptionsValue($el, name, filter_name);
 	
         var $field = $(form[name])
-        $field.attr('name', '_flt_' + i_option + '_' + name);
-        
-        $field.val(value);
-        $field.attr('class', ' filter_val ' + $field.attr('class'));
-		$el.append(
+        // if form item complex like <div><input bla></div>, datetime
+        if ( $($field).has('input')) {
+		$field_inner = $("input", $field)
+		$field_inner.attr('name', '_flt_' + i_option + '_' + name);
+		$field_inner.val(value);
+		$field_inner.attr('class', ' filter_val ' + $field_inner.attr('class'));
+	
+	}
+	else {
+		$field.attr('name', '_flt_' + i_option + '_' + name);	
+		$field.val(value);
+        	$field.attr('class', ' filter_val ' + $field.attr('class'));
+	
+	}
+        $el.append(
         	$('<td/>').append($field)
         );;
     }
@@ -90,14 +100,18 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 
         addFilterOptionsValue($el, name);
 	var $field = $(form[name])
+	
+	// if form item complex like <div><input bla></div>, datetime
 	if ( $($field).has('input')) {
 		$field_inner = $("input", $field)
 		$field_inner.attr('name', '_flt_0_' + name);
 		$field_inner.attr('class', ' filter_val ' + $field_inner.attr('class'));
 	
 	}
-	$field.attr('name', '_flt_0_' + name);
-	$field.attr('class', ' filter_val ' + $field.attr('class'));
+	else {
+		$field.attr('name', '_flt_0_' + name);
+		$field.attr('class', ' filter_val ' + $field.attr('class'));
+	}
 	$el.append(
         	$('<td/>').append($field)
         );;
