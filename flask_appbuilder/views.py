@@ -151,33 +151,6 @@ class BaseView(object):
                 return url_for('%s.%s' % (self.baseapp.indexview.endpoint, self.baseapp.indexview.default_view))
             
 
-    def _get_group_by_args(self):
-        group_by = request.args.get('group_by')
-        if not group_by: group_by = ''
-        return group_by
-
-    def _get_page_args(self):
-        """
-            Get page arguments, returns a dictionary
-            { <VIEW_NAME>: PAGE_NUMBER }
-        
-            Arguments are passed: page_<VIEW_NAME>=<PAGE_NUMBER>
-        
-        """
-        pages = {}
-        for arg in request.args:
-            re_match = re.findall('page_(.*)', arg)
-            if re_match:
-                pages[re_match[0]] = int(request.args.get(arg))
-        return pages
-
-    """
-    def _get_dict_from_form(self, form, filters={}):
-        for item in form:
-            if item.data:
-                filters[item.name] = item.data
-        return filters
-    """
 
 class IndexView(BaseView):
     """
@@ -288,9 +261,9 @@ class BaseModelView(BaseView):
 
     datamodel = None
     """ Your sqla model you must initialize it like datamodel = SQLAModel(Permission, session) """
-    search_columns = []
+    search_columns = None
     """ Allowed search columns """
-    label_columns = {}
+    label_columns = None
     """ The labels for your columns, override this if you want diferent pretify labels """    
     search_form = None
     """ To implement your own add WTF form for Search """
@@ -309,7 +282,9 @@ class BaseModelView(BaseView):
         
 
     def _base_model_init_vars(self):
+        self.label_columns = self.label_columns or {}
         list_cols = self.datamodel.get_columns_list()
+        self.search_columns = self.search_columns or list_cols
         for col in list_cols:
             if not self.label_columns.get(col):
                 self.label_columns[col] = self._prettify_column(col)
@@ -320,6 +295,30 @@ class BaseModelView(BaseView):
             self.search_form = conv.create_form(self.label_columns,
                     {}, {}, [], self.search_columns)
         
+
+    def _get_group_by_args(self):
+        """
+            Get page arguments for group by
+        """
+        group_by = request.args.get('group_by')
+        if not group_by: group_by = ''
+        return group_by
+
+    def _get_page_args(self):
+        """
+            Get page arguments, returns a dictionary
+            { <VIEW_NAME>: PAGE_NUMBER }
+        
+            Arguments are passed: page_<VIEW_NAME>=<PAGE_NUMBER>
+        
+        """
+        pages = {}
+        for arg in request.args:
+            re_match = re.findall('page_(.*)', arg)
+            if re_match:
+                pages[re_match[0]] = int(request.args.get(arg))
+        return pages
+
 
     def _get_order_args(self, orders = {}):
         """
