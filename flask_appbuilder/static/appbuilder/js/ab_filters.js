@@ -27,9 +27,9 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
     {
         var $el = $('<tr />').appendTo($container);
 
-		addRemoveFilter($el, name, labels[name]);
+	addRemoveFilter($el, name, labels[name]);
         var i_option = addFilterOptionsValue($el, name, filter_name);
-		
+	
         var $field = $(form[name])
         $field.attr('name', '_flt_' + i_option + '_' + name);
         
@@ -52,7 +52,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
                     )
             );
 	}
-	
+
     function addFilterOptionsValue($el, name, value)
 	{
 		var $select = $('<select class="filter-op my_select2" />')                     
@@ -90,7 +90,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 
         addFilterOptionsValue($el, name);
 	var $field = $(form[name])
-	alert($("input",$field.parent()).html());
+	$field = $("has(input)",$field);
 	$field.attr('name', '_flt_0_' + name);
 	$field.attr('class', ' filter_val ' + $field.attr('class'));
 	$el.append(
