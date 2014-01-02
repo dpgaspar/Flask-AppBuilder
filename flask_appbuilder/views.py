@@ -45,8 +45,8 @@ class BaseView(object):
     template_folder = 'templates'
     static_folder='static'
     
-    base_permissions = []
-    actions = []
+    base_permissions = None
+    actions = None
 
     default_view = 'list'
 
@@ -55,12 +55,13 @@ class BaseView(object):
             Initialization of base permissions
             based on exposed methods and actions
         """
-        if not self.base_permissions:
+        if self.base_permissions is None:
             self.base_permissions = [
                 ('can_' + attr_name)
                 for attr_name in dir(self)
                 if hasattr(getattr(self, attr_name),'_urls')
                 ]
+            self.actions = actions or []
             for attr_name in dir(self):
                 if hasattr(getattr(self, attr_name),'_action'):
                     action = ActionItem(*attr_name._action, func = getattr(self, attr_name))
@@ -155,27 +156,28 @@ class BaseView(object):
         if not group_by: group_by = ''
         return group_by
 
-    def _get_page_args(self, pages = {}):
+    def _get_page_args(self):
         """
-            Get page arguments, return a dictionary
+            Get page arguments, returns a dictionary
             { <VIEW_NAME>: PAGE_NUMBER }
         
             Arguments are passed: page_<VIEW_NAME>=<PAGE_NUMBER>
         
         """
+        pages = {}
         for arg in request.args:
             re_match = re.findall('page_(.*)', arg)
             if re_match:
                 pages[re_match[0]] = int(request.args.get(arg))
         return pages
 
-
+    """
     def _get_dict_from_form(self, form, filters={}):
         for item in form:
             if item.data:
                 filters[item.name] = item.data
         return filters
-
+    """
 
 class IndexView(BaseView):
     """
