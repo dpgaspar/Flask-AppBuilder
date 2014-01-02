@@ -89,7 +89,8 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 	addRemoveFilter($el, name, labels[name]);
 
         addFilterOptionsValue($el, name);
-	var $field = $(form[name])
+	var $field1 = $(form[name])
+	var $field = $("input", $field1)
 	$field.attr('name', '_flt_0_' + name);
 	$field.attr('class', ' filter_val ' + $field.attr('class'));
 	$el.append(
@@ -102,15 +103,15 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
         	$field.datetimepicker();
         }
         if ($field.hasClass( "appbuilder_date" )) {
-        	datetimepicker({pickTime: false });
+        	$field.datetimepicker({pickTime: false });
         }
-        lastCount += 1;                
+        lastCount += 1;
     };
 
 	// ----------------------------------------------------------
 	// Trigger for option change will change input element name
 	// ----------------------------------------------------------
-	function changeOperation(e, $el, name) {
+    function changeOperation(e, $el, name) {
         $in = $el.find('.filter_val');
         $in.attr('name','_flt_' + e.val + '_' + name);
     }
