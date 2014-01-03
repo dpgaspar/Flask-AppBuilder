@@ -1,15 +1,38 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.4.0
+------------------------------------
+
+- fix, page was "remenbered" by class, returned empty lists on queries and inline lists.
+- New Filters class and BaseFilter with many subclasses. Restructing internals to enable feature.
+- New UI for search widget, dynamic filters showing the possibilities from filters. Starts with, greater then, etc...
+- New possible filters for dates, greater then, less, equal filters.
+- Restructuring of query function, simplified.
+- Internal class inherit change: BaseView, BaseModelView, BaseCRUDView, GeneralView.
+- Internal class inherit change: BaseView, BaseModelView, BaseChartView, (ChartView|TimeChartView).
+- Argument URL filter change "_flt_<index option filter>_<Col name>=<value>"
+- New, no need to define search_columns property, if not defined all columns can be added to search.
+- New, no need to define list_columns property, if not defined only the first orderable column will be displayed.
+- New, no need to define order_columns property, if not defined all ordered columns will be defined.
+- fix, class init properties correction
+- New property base_filters to always filter the view, accepts functions and values with current filters
+- Babel actualization for filters in spanish and portuguese
+
+Improvements and Bug fixes on 0.3.17
+------------------------------------
+
+- fix, Redirect to login when access denied was broken.
+
 Improvements and Bug fixes on 0.3.16
 ------------------------------------
 
-- Reset password form fix
+- fix, Reset password form
 
 Improvements and Bug fixes on 0.3.15
 ------------------------------------
 
-- Html error corrections
+- Html non compliance corrections
 - Charts outside panel correction
 
 Improvements and Bug fixes on 0.3.12

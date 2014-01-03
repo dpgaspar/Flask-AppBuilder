@@ -122,10 +122,6 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
         <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
         <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">()]</span>
-
-        <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
-        <span class="n">order_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
-        <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>I hope this was easy enough! Some questions may arrise...</p>
@@ -135,12 +131,6 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">datamodel:</th><td class="field-body">is the db abstraction layer. Initialize it with your model and sqlalchemy session</td>
-</tr>
-<tr class="field-even field"><th class="field-name">list_columns:</th><td class="field-body">The columns that will be displayed on the list view.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">order_columns:</th><td class="field-body">The columns allowed to be ordered (to not define relations on this)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">search_columns:</th><td class="field-body">The columns that will display on the search form.</td>
 </tr>
 </tbody>
 </table>
@@ -162,9 +152,6 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
 
     <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;group&#39;</span><span class="p">:</span><span class="s">&#39;Contacts Group&#39;</span><span class="p">}</span>
     <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s">&#39;birthday&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
-
-    <span class="n">order_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s">&#39;birthday&#39;</span><span class="p">]</span>
-    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
 
     <span class="n">show_fieldsets</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s">&#39;Summary&#39;</span><span class="p">,{</span><span class="s">&#39;fields&#39;</span><span class="p">:[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]}),</span>

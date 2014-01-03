@@ -221,7 +221,7 @@ Inherit from this view to provide some base processing for your customized form 
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.SimpleFormView.form_columns">
-<tt class="descname">form_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_columns" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">form_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>The form columns to include, if empty will include all</p>
 </dd></dl>
 
@@ -252,7 +252,7 @@ Inherit from this view to provide some base processing for your customized form 
 Customize GeneralView overriding this properties</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.add_columns">
-<tt class="descname">add_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.add_columns" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.add_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Include Columns for add view</p>
 </dd></dl>
 
@@ -294,14 +294,14 @@ Customize GeneralView overriding this properties</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="flask.ext.appbuilder.views.BaseCRUDView.datamodel">
-<tt class="descname">datamodel</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.datamodel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Your sqla model you must initialize it like datamodel = SQLAModel(Permission, session)</p>
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.description_columns">
+<tt class="descname">description_columns</tt><em class="property"> = {}</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.description_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>description for columns that will be shown on the forms</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.edit_columns">
-<tt class="descname">edit_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.edit_columns" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">edit_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.edit_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Include Columns for edit view</p>
 </dd></dl>
 
@@ -344,7 +344,7 @@ Customize GeneralView overriding this properties</p>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.list_columns">
-<tt class="descname">list_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.list_columns" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">list_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.list_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Include Columns for lists view</p>
 </dd></dl>
 
@@ -369,8 +369,14 @@ Customize GeneralView overriding this properties</p>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.order_columns">
-<tt class="descname">order_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.order_columns" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">order_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.order_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Allowed order columns</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.page_size">
+<tt class="descname">page_size</tt><em class="property"> = 30</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.page_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Page size</p>
 </dd></dl>
 
 <dl class="method">
@@ -411,32 +417,20 @@ Customize GeneralView overriding this properties</p>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.related_views">
-<tt class="descname">related_views</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.related_views" title="Permalink to this definition">¶</a></dt>
-<dd><p>Views that will be displayed related with this one, must be instantiated</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.views.BaseCRUDView.search_columns">
-<tt class="descname">search_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.search_columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Allowed search columns</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.views.BaseCRUDView.search_form">
-<tt class="descname">search_form</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.search_form" title="Permalink to this definition">¶</a></dt>
-<dd><p>To implement your own add WTF form for Search</p>
+<tt class="descname">related_views</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.related_views" title="Permalink to this definition">¶</a></dt>
+<dd><p>Views that will be displayed related with this one, the views must be instantiated</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.search_widget">
 <tt class="descname">search_widget</tt><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.search_widget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Search widget override</p>
+<dd><p>Search widget you can override with your own</p>
 <p>alias of <tt class="xref py py-class docutils literal"><span class="pre">SearchWidget</span></tt></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.show_columns">
-<tt class="descname">show_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.show_columns" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">show_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.show_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Include Columns for show view</p>
 </dd></dl>
 
@@ -463,6 +457,12 @@ Customize GeneralView overriding this properties</p>
 <tt class="descname">show_widget</tt><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.show_widget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show widget override</p>
 <p>alias of <tt class="xref py py-class docutils literal"><span class="pre">ShowWidget</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.BaseCRUDView.validators_columns">
+<tt class="descname">validators_columns</tt><em class="property"> = {}</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.validators_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add your own validators for forms</p>
 </dd></dl>
 
 </dd></dl>
@@ -515,33 +515,9 @@ to customise your charts</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="flask.ext.appbuilder.charts.views.BaseChartView.datamodel">
-<tt class="descname">datamodel</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.charts.views.BaseChartView.datamodel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Your sqla model you must initialize it like datamodel = SQLAModel(Permission, session)</p>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="flask.ext.appbuilder.charts.views.BaseChartView.group_by_columns">
 <tt class="descname">group_by_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.charts.views.BaseChartView.group_by_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of columns to be possibly grouped by</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.charts.views.BaseChartView.label_columns">
-<tt class="descname">label_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.charts.views.BaseChartView.label_columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>The labels for the columns</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.charts.views.BaseChartView.search_columns">
-<tt class="descname">search_columns</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.charts.views.BaseChartView.search_columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Allowed search columns</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.charts.views.BaseChartView.search_form">
-<tt class="descname">search_form</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.charts.views.BaseChartView.search_form" title="Permalink to this definition">¶</a></dt>
-<dd><p>To implement your own add WTF form for Search</p>
 </dd></dl>
 
 <dl class="attribute">

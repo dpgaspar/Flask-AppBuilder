@@ -80,18 +80,12 @@ Now we are going to define our view to *Group* table
     		datamodel = SQLAModel(Group, db.session)
     		related_views = [ContactGeneralView()]
 
-    		list_columns = ['name']
-    		order_columns = ['name']
-    		search_columns = ['name']
 
 I hope this was easy enough! Some questions may arrise...
 
 Must have properties:
 
 :datamodel: is the db abstraction layer. Initialize it with your model and sqlalchemy session
-:list_columns: The columns that will be displayed on the list view.
-:order_columns: The columns allowed to be ordered (to not define relations on this)
-:search_columns: The columns that will display on the search form.
 
 Optional properties:
 
@@ -111,9 +105,6 @@ Let's define it::
 
         label_columns = {'group':'Contacts Group'}
         list_columns = ['name','personal_celphone','birthday','group']
-
-        order_columns = ['name','personal_celphone','birthday']
-        search_columns = ['name','personal_celphone','group']
 
         show_fieldsets = [
             ('Summary',{'fields':['name','address','group']}),

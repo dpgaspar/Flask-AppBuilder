@@ -57,16 +57,41 @@
             
   <div class="section" id="versions">
 <h1>Versions<a class="headerlink" href="#versions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="improvements-and-bug-fixes-on-0-4-0">
+<h2>Improvements and Bug fixes on 0.4.0<a class="headerlink" href="#improvements-and-bug-fixes-on-0-4-0" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>fix, page was &#8220;remenbered&#8221; by class, returned empty lists on queries and inline lists.</li>
+<li>New Filters class and BaseFilter with many subclasses. Restructing internals to enable feature.</li>
+<li>New UI for search widget, dynamic filters showing the possibilities from filters. Starts with, greater then, etc...</li>
+<li>New possible filters for dates, greater then, less, equal filters.</li>
+<li>Restructuring of query function, simplified.</li>
+<li>Internal class inherit change: BaseView, BaseModelView, BaseCRUDView, GeneralView.</li>
+<li>Internal class inherit change: BaseView, BaseModelView, BaseChartView, (ChartView|TimeChartView).</li>
+<li>Argument URL filter change &#8220;_flt_&lt;index option filter&gt;_&lt;Col name&gt;=&lt;value&gt;&#8221;</li>
+<li>New, no need to define search_columns property, if not defined all columns can be added to search.</li>
+<li>New, no need to define list_columns property, if not defined only the first orderable column will be displayed.</li>
+<li>New, no need to define order_columns property, if not defined all ordered columns will be defined.</li>
+<li>fix, class init properties correction</li>
+<li>New property base_filters to always filter the view, accepts functions and values with current filters</li>
+<li>Babel actualization for filters in spanish and portuguese</li>
+</ul>
+</div>
+<div class="section" id="improvements-and-bug-fixes-on-0-3-17">
+<h2>Improvements and Bug fixes on 0.3.17<a class="headerlink" href="#improvements-and-bug-fixes-on-0-3-17" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>fix, Redirect to login when access denied was broken.</li>
+</ul>
+</div>
 <div class="section" id="improvements-and-bug-fixes-on-0-3-16">
 <h2>Improvements and Bug fixes on 0.3.16<a class="headerlink" href="#improvements-and-bug-fixes-on-0-3-16" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Reset password form fix</li>
+<li>fix, Reset password form</li>
 </ul>
 </div>
 <div class="section" id="improvements-and-bug-fixes-on-0-3-15">
 <h2>Improvements and Bug fixes on 0.3.15<a class="headerlink" href="#improvements-and-bug-fixes-on-0-3-15" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Html error corrections</li>
+<li>Html non compliance corrections</li>
 <li>Charts outside panel correction</li>
 </ul>
 </div>
@@ -156,6 +181,8 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Versions</a><ul>
+<li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-4-0">Improvements and Bug fixes on 0.4.0</a></li>
+<li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-3-17">Improvements and Bug fixes on 0.3.17</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-3-16">Improvements and Bug fixes on 0.3.16</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-3-15">Improvements and Bug fixes on 0.3.15</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-3-12">Improvements and Bug fixes on 0.3.12</a></li>
