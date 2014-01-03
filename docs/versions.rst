@@ -16,6 +16,8 @@ Improvements and Bug fixes on 0.4.0
 - New, no need to define list_columns property, if not defined only the first orderable column will be displayed.
 - New, no need to define order_columns property, if not defined all ordered columns will be defined.
 - fix, class init properties correction
+- New property base_filters to always filter the view, accepts functions and values with current filters
+- Babel actualization for filters in spanish and portuguese
 
 Improvements and Bug fixes on 0.3.17
 ------------------------------------
