@@ -25,6 +25,9 @@ Views
     .. autoclass:: SimpleFormView
         :members:
 
+    .. autoclass:: BaseModelView
+        :members:
+
     .. autoclass:: BaseCRUDView
         :members:
 

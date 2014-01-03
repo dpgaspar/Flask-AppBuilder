@@ -82,16 +82,17 @@
 <p>First we are going to create a <em>Group</em> table, to group our contacts</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a diferent declarative model of the security tables from AppBuilder.
+<p>Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a diferent declarative model from the security tables of AppBuilder.
 If you want to use AuditMixin <a class="reference internal" href="api.html"><em>API Reference</em></a> or include a relation to a User or login User you must be on the same declarative base.
 Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, that you import:</p>
-<div class="last highlight-python"><pre>flask.ext.appbuilder import Base</pre>
+<div class="highlight-python"><pre>flask.ext.appbuilder import Base</pre>
 </div>
+<p class="last">This &#8220;Base&#8221; is the same declarative model of F.A.B.</p>
 </div>
 </div>
 <div class="section" id="define-your-models-models-py">
 <h2>Define your models (models.py)<a class="headerlink" href="#define-your-models-models-py" title="Permalink to this headline">¶</a></h2>
-<p>The group table.</p>
+<p>The <em>Group</em> table.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
@@ -100,7 +101,7 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </pre></div>
 </div>
-<p>An <em>Contacts</em> table.</p>
+<p>The <em>Contacts</em> table.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Contact</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
