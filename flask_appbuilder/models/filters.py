@@ -1,3 +1,5 @@
+from flask.ext.babel import lazy_gettext
+
 class BaseFilter(object):
 
     column_name = ''
@@ -29,86 +31,89 @@ class BaseFilter(object):
         return self.name
 
 class FilterStartsWith(BaseFilter):
-    name = 'Starts with'
+    name = lazy_gettext('Starts with')
     
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name).like(value + '%'))
 
 class FilterNotStartsWith(BaseFilter):
-    name = 'Not Starts with'
+    name = lazy_gettext('Not Starts with')
     
     def apply(self, query, value):
         return query.filter(~getattr(self.model,self.column_name).like(value + '%'))
 
-
 class FilterEndsWith(BaseFilter):
-    name = 'Ends with'
+    name = lazy_gettext('Ends with')
     
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name).like('%' + value))
 
 class FilterNotEndsWith(BaseFilter):
-    name = 'Not Ends with'
+    name = lazy_gettext('Not Ends with')
     
     def apply(self, query, value):
         return query.filter(~getattr(self.model,self.column_name).like('%' + value))
 
-
 class FilterContains(BaseFilter):
-    name = 'Contains'
+    name = lazy_gettext('Contains')
     
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name).like('%' + value + '%'))
 
 class FilterNotContains(BaseFilter):
-    name = 'Not Contains'
+    name = lazy_gettext('Not Contains')
     
     def apply(self, query, value):
         return query.filter(~getattr(self.model,self.column_name).like('%' + value + '%'))
 
 
 class FilterEqual(BaseFilter):
-    name = 'Equal to'
+    name = lazy_gettext('Equal to')
     
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name) == value)
 
 class FilterNotEqual(BaseFilter):
-    name = 'Equal to'
+    name = lazy_gettext('Not Equal to')
     
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name) != value)
 
 
 class FilterGreater(BaseFilter):
-    name = 'Greater than'
+    name = lazy_gettext('Greater than')
     
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name) > value)
         
 class FilterSmaller(BaseFilter):
-    name = 'Smaller than'
+    name = lazy_gettext('Smaller than')
     
     def apply(self, query, value):
         return query.filter(getattr(self.model,self.column_name) < value)
-
 
 class FilterRelation(BaseFilter):
     pass
 
 class FilterRelationOneToMany(FilterRelation):
-    name = 'Relation'
+    name = lazy_gettext('Relation')
     
     def apply(self, query, value):
         rel_obj = self.datamodel.get_related_obj(self.column_name, value)
         return query.filter(getattr(self.model,self.column_name) == rel_obj)
     
 class FilterRelationManyToMany(FilterRelation):
-    name = 'Relation Many'
+    name = lazy_gettext('Relation as Many')
     
     def apply(self, query, value):
         rel_obj = self.datamodel.get_related_obj(self.column_name, value)
         return query.filter(getattr(self.model,self.column_name).contains(item))
+
+class FilterEqualFunction(BaseFilter):
+    name = "Filter view with a function"
+    
+    def apply(self, query, func):
+        return query.filter(getattr(self.model,self.column_name) == func())
 
 
 class Filters(object):
@@ -174,14 +179,26 @@ class Filters(object):
         self.filters = []
         self.values = []
 
-    def add_filter_index(self, col, filter_instance_index, value):
-        self._add_filter(col, self._all_filters[col][filter_instance_index], value)
+    def add_filter_index(self, column_name, filter_instance_index, value):
+        self._add_filter(self._all_filters[column_name][filter_instance_index], value)
     
-    def add_filter(self, col, filter_class, datamodel, value):
-        self._add_filter(col, filter_class(col, datamodel), value)
+    def add_filter(self, column_name, filter_class, datamodel, value):
+        self._add_filter(filter_class(column_name, datamodel), value)
         return self
-    
-    def _add_filter(self, col, filter_instance, value):
+
+    def add_filter_list(self, datamodel, active_filter_list = None):
+        for item in active_filter_list:
+            column_name, filter_class, value = item
+            self._add_filter(filter_class(column_name, datamodel), value)
+        return self
+
+    def get_joined_filters(self, filters1, filters2):
+        filters = Filters()
+        filters.filters = filters1.filters + filters2.filters
+        filters.values = filters1.values + filters2.values
+        return filters
+
+    def _add_filter(self, filter_instance, value):
         self.filters.append(filter_instance)
         self.values.append(value)
     
@@ -204,7 +221,7 @@ class Filters(object):
                 return value
 
     def get_filters_values_tojson(self):
-        return [(flt.column_name, flt.name, value) for flt, value in zip(self.filters, self.values)]
+        return [(flt.column_name, flt.name.encode('utf-8'), value) for flt, value in zip(self.filters, self.values)]
 
     def apply_all(self, query):
         for flt, value in zip(self.filters, self.values):

@@ -269,7 +269,23 @@ class BaseModelView(BaseView):
     """ The labels for your columns, override this if you want diferent pretify labels """    
     search_form = None
     """ To implement your own add WTF form for Search """
+    base_filters = None
+    """ 
+        Filter the view use: ['column_name',BaseFilter,'value'] 
     
+        example::
+        
+            def get_user():
+                return g.user
+        
+            class MyView(GeneralView):
+                datamodel = SQLAModel(MyTable, db.session)
+                base_filters = [['created_by', FilterEqualFunction, get_user],
+                                ['name', FilterStartsWith, 'a']]
+                                            
+    """
+    _base_filters = None
+    """ Internal base Filter from class Filters will always filter view """
     _filters = None
     """ Filters object will calculate all possible filter types based on search_columns """
 
@@ -285,6 +301,8 @@ class BaseModelView(BaseView):
 
     def _base_model_init_vars(self):
         self.label_columns = self.label_columns or {}
+        self.base_filters = self.base_filters or []
+        self._base_filters = Filters().add_filter_list(self.datamodel, self.base_filters)
         list_cols = self.datamodel.get_columns_list()
         self.search_columns = self.search_columns or list_cols
         for col in list_cols:
@@ -524,7 +542,8 @@ class BaseCRUDView(BaseModelView):
                         page_size = None,
                         widgets = {}, **args):
 
-        count, lst = self.datamodel.query(filters, order_column, order_direction, page=page, page_size=page_size)
+        joined_filters = filters.get_joined_filters(filters, self._base_filters)
+        count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         pks = self.datamodel.get_keys(lst)
         widgets['list'] = self.list_widget(route_base = self.route_base,
                                                 label_columns = self.label_columns,
