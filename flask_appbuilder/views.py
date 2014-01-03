@@ -426,11 +426,28 @@ class BaseCRUDView(BaseModelView):
     """ Page size """
     
     show_fieldsets = []
-    """ show fieldsets [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....] """
+    """ 
+        show fieldsets django style [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....]
+        
+        ::
+        
+            class MyView(GeneralView):
+                datamodel = SQLAModel(MyTable, db.session)
+
+                show_fieldsets = [
+                    ('Summary',{'fields':['name','address','group']}),
+                    ('Personal Info',{'fields':['birthday','personal_phone'],'expanded':False}),
+                    ]
+
+    """
     add_fieldsets = []
-    """ add fieldsets [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....] """
+    """ 
+        add fieldsets django style (look at show_fieldsets)
+    """
     edit_fieldsets = []
-    """ edit fieldsets [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....] """
+    """ 
+        edit fieldsets django style (look at show_fieldsets)
+    """
 
     
     add_form = None
