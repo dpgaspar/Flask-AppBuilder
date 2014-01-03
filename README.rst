@@ -11,7 +11,7 @@ Take a look at instalation, quick how to tutorials, API reference etc:
 Package Version
 ---------------
 
-New 0.3.17 with some new features, and an important bug fix for 0.3.0 !!  
+New 0.4.0 with some great new features ;)  
 
 please read the `Versions <http://flask-appbuilder.readthedocs.org/en/latest/versions.html>`_
 
