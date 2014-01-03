@@ -264,9 +264,18 @@ class BaseModelView(BaseView):
     datamodel = None
     """ Your sqla model you must initialize it like datamodel = SQLAModel(Permission, session) """
     search_columns = None
-    """ Allowed search columns """
+    """ List with allowed search columns """
     label_columns = None
-    """ The labels for your columns, override this if you want diferent pretify labels """    
+    """ 
+        Dictionary of labels for your columns, override this if you want diferent pretify labels 
+        
+        example (will just override the label for name column)::
+        
+            class MyView(GeneralView):
+                datamodel = SQLAModel(MyTable, db.session)
+                label_columns = {'name':'My Name Label Overrride'}
+        
+    """    
     search_form = None
     """ To implement your own add WTF form for Search """
     base_filters = None
