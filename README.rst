@@ -54,11 +54,11 @@ https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/contact_list.png
 
 Charts:
 
-https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart.png
+`Group by pie chart <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart.png>`_
 
-https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time1.png
+`Group by month chart <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time1.png>`_
 
-https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time2.png
+`Group by year chart <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time2.png>`_
 
 Depends on:
 -----------
