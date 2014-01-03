@@ -60,10 +60,11 @@ class AuditMixin(BaseMixin):
         AuditMixin
         Mixin for models, adds 4 columns to stamp, time and user on creation and modification
         will create the following columns:
-            :created on:
-            :changed on:
-            :created by:
-            :changed by:
+        
+        :created on:
+        :changed on:
+        :created by:
+        :changed by:
     """
     created_on = Column(DateTime, default=datetime.datetime.now,nullable=False)
     changed_on = Column(DateTime, default=datetime.datetime.now,
