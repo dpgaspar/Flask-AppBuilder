@@ -23,8 +23,6 @@ class ProjectGeneralView(GeneralView):
     add_columns = ['name']
     edit_columns = ['name']
     list_columns = ['name','created_by', 'created_on', 'changed_by','changed_on']
-    order_columns = ['name']
-    search_columns = ['name', 'created_by']
     show_fieldsets = [
                  ('Info',{'fields':['name']}),
                  ('Audit',{'fields':['created_by', 'created_on', 'changed_by','changed_on'],'expanded':False})
