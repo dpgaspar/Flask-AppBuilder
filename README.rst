@@ -70,6 +70,4 @@ Depends on:
 - flask-wtform
 - flask-Babel
 
- 
-This is not production ready.
 
