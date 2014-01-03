@@ -25,9 +25,6 @@ class PersonGeneralView(GeneralView):
                 'business_email':'Business Email','notes':'Notes','group':'Group', 'group_id':'Group'}
     list_columns = ['photo_img', 'name','personal_celphone','business_celphone','birthday','group']
 
-    order_columns = ['name','personal_celphone','business_celphone','birthday']
-    search_columns = ['name','personal_celphone','group']
-
     show_fieldsets = [
                  ('Summary',{'fields':['photo_img','name','address','group']}),
                  ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone','personal_email'],'expanded':False}),
@@ -56,8 +53,6 @@ class GroupGeneralView(GeneralView):
 
     label_columns = { 'phone1':'Phone (1)','phone2':'Phone (2)','taxid':'Tax ID'}
     list_columns = ['name','notes']
-    show_columns = ['name','address','phone1','phone2','taxid','notes']
-    order_columns = ['name','notes']
     search_columns = ['name']
 
 class PersonChartView(ChartView):
