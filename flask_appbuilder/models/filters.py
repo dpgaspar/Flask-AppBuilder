@@ -192,11 +192,11 @@ class Filters(object):
             self._add_filter(filter_class(column_name, datamodel), value)
         return self
 
-    def get_joined_filters(self, filters1, filters2):
-        filters = Filters()
-        filters.filters = filters1.filters + filters2.filters
-        filters.values = filters1.values + filters2.values
-        return filters
+    def get_joined_filters(self, filters):
+        retfilters = Filters()
+        retfilters.filters = self.filters + filters.filters
+        retfilters.values = self.values + filters.values
+        return retfilters
 
     def _add_filter(self, filter_instance, value):
         self.filters.append(filter_instance)

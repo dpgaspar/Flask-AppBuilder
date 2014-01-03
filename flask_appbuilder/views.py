@@ -542,7 +542,8 @@ class BaseCRUDView(BaseModelView):
                         page_size = None,
                         widgets = {}, **args):
 
-        joined_filters = filters.get_joined_filters(filters, self._base_filters)
+        """ get joined base filter and current active filter for query """
+        joined_filters = filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         pks = self.datamodel.get_keys(lst)
         widgets['list'] = self.list_widget(route_base = self.route_base,
