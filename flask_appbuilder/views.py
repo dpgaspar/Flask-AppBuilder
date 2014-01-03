@@ -216,7 +216,7 @@ class SimpleFormView(BaseView):
 
     def form_get(self, form):
         """
-        Override this method to implement your form processing
+            Override this method to implement your form processing
         """
         pass
 
@@ -240,7 +240,7 @@ class SimpleFormView(BaseView):
 
     def form_post(self, form):
         """
-        Override this method to implement your form processing
+            Override this method to implement your form processing
         """
         pass
 
@@ -264,7 +264,7 @@ class BaseModelView(BaseView):
     datamodel = None
     """ Your sqla model you must initialize it like datamodel = SQLAModel(Permission, session) """
     search_columns = None
-    """ List with allowed search columns """
+    """ List with allowed search columns, if not provided all possible search columns will be used """
     label_columns = None
     """ 
         Dictionary of labels for your columns, override this if you want diferent pretify labels 
@@ -391,7 +391,10 @@ class BaseCRUDView(BaseModelView):
     
 
     related_views = None
-    """ Views that will be displayed related with this one, the views must be instantiated """
+    """ 
+        List with instantiated GeneralView classes
+        That will be displayed related with this one using relationship sqlalchemy property
+    """
     list_title = ""
     """ List Title """
     show_title = ""
