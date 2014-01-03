@@ -44,13 +44,13 @@ Includes:
 Some pictures
 -------------
 
-Login page (with AUTH_DB):
-
-https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login.png "Login"
+`Login page (with AUTH_DB): <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login.png>`_
 
 Lists:
 
-https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/contact_list.png
+`List contacts example <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/contact_list.png>`_
+
+`List Group example with search <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/group_list.png>`_
 
 Charts:
 
