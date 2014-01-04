@@ -68,7 +68,7 @@ class TemplateFilters(object):
     def get_link_next_filter(self, s):
         return request.args.get('next')
 
-    # to improve
+    # TODO improve this
     @app_template_filter('set_link_filters')
     def set_link_filters_filter(self, path, filters, pk):
         lnkstr = path
