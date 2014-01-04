@@ -1,13 +1,19 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.4.3
+------------------------------------
+
+- New, Search (filter) with boolean types.
+- New, Added search to users view.
+
 Improvements and Bug fixes on 0.4.1, 0.4.2
 ------------------------------------
 
 - Removed constraint in flask-login requirement for versions lower than 0.2.8, can be used 0.2.7 or lower and 0.2.9 and higher
-- fix, BaseCRUDView init properties correction
+- fix, BaseCRUDView init properties correction.
 - fix, delete user generates general error key.
-- Changed default page_size to 10
+- Changed default page_size to 10.
 
 Improvements and Bug fixes on 0.4.0
 ------------------------------------

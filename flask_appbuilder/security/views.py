@@ -28,11 +28,7 @@ class PermissionGeneralView(GeneralView):
     edit_title = lazy_gettext('Edit Base Permission')
 
     label_columns = {'name':lazy_gettext('Name')}
-    list_columns = ['name']
-    show_columns = ['name']
-    order_columns = ['name']
-    search_columns = ['name']
-
+    
 class ViewMenuGeneralView(GeneralView):
     route_base = '/viewmenus'
     
@@ -44,11 +40,7 @@ class ViewMenuGeneralView(GeneralView):
     edit_title = lazy_gettext('Edit View Menu')
 
     label_columns = {'name':lazy_gettext('Name')}
-    list_columns = ['name']
-    show_columns = ['name']
-    order_columns = ['name']
-    search_columns = ['name']
-
+    
 
 class PermissionViewGeneralView(GeneralView):
     route_base = '/permissionviews'
@@ -64,7 +56,7 @@ class PermissionViewGeneralView(GeneralView):
     list_columns = ['permission', 'view_menu']
     show_columns = ['permission', 'view_menu']
     search_columns = ['permission', 'view_menu']
-
+    
 
 class ResetMyPasswordView(SimpleFormView):
     """
@@ -132,7 +124,7 @@ class UserGeneralView(GeneralView):
     list_columns = ['full_name', 'username', 'email','active', 'role']
     show_columns = ['first_name','last_name','username', 'active', 'email','role']
     order_columns = ['username', 'email']
-    search_columns = ['first_name','last_name', 'username', 'email']
+    search_columns = ['first_name','last_name', 'username', 'email','active','role']
 
     add_columns = ['first_name','last_name','username', 'active', 'email','role']
     edit_columns = ['first_name','last_name','username', 'active', 'email','role']
@@ -180,7 +172,7 @@ class UserDBGeneralView(UserGeneralView):
                            widgets = widgets,
                            baseapp = self.baseapp,
                            )
-    
+
 
 class RoleGeneralView(GeneralView):
     route_base = '/roles'

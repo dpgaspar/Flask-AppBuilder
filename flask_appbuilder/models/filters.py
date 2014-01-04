@@ -138,7 +138,9 @@ class Filters(object):
     def _get_filters(self, cols, datamodel):
         filters = {}
         for col in cols:
-            filters[col] = self._get_filter_type(col, datamodel)
+            lst_flt = self._get_filter_type(col, datamodel)
+            if lst_flt:
+                filters[col] = lst_flt
         return filters
 
     def _get_filter_type(self, col, datamodel):
@@ -158,22 +160,17 @@ class Filters(object):
                     FilterNotEndsWith(col, datamodel),
                     FilterNotContains(col, datamodel),
                     FilterNotEqual(col, datamodel),]    
-            elif datamodel.is_integer(col):
+            elif datamodel.is_integer(col) or datamodel.is_date(col) or datamodel.is_datetime(col):
                 return [FilterEqual(col, datamodel),
                     FilterGreater(col, datamodel), 
                     FilterSmaller(col, datamodel),
                     FilterNotEqual(col, datamodel)]
-            elif datamodel.is_date(col):
-                return [FilterEqual(col, datamodel), 
-                    FilterGreater(col, datamodel), 
-                    FilterSmaller(col, datamodel)]
-            elif datamodel.is_datetime(col):
-                return [FilterEqual(col, datamodel), 
-                    FilterGreater(col, datamodel), 
-                    FilterSmaller(col, datamodel)]
+            elif datamodel.is_boolean(col):
+                return [FilterEqual(col, datamodel),
+                    FilterNotEqual(col, datamodel)]
             else:
-                print "Filter type not supported"
-                return []
+                print "Filter type not supported for column: %s" % (col)
+                return None
 
     def clear_filters(self):
         self.filters = []
