@@ -225,12 +225,6 @@ class SQLAModel(DataModel):
                 
     
     def delete(self, item):
-        self._delete_files(item)
-        self.session.delete(item)
-        self.session.commit()
-        flash(unicode(self.delete_row_message),'success')
-        return True
-        """    
         try:
             self._delete_files(item)
             self.session.delete(item)
@@ -245,8 +239,7 @@ class SQLAModel(DataModel):
             flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
             self.session.rollback()
             return False
-        """
-        
+                
     """
     FILE HANDLING METHODS
     """

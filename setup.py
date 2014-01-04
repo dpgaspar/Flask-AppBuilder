@@ -13,7 +13,7 @@ def desc():
 
 setup(
     name='Flask-AppBuilder',
-    version='0.4.1',
+    version='0.4.2',
     url='https://github.com/dpgaspar/flask-appbuilder/',
     license='BSD',
     author='Daniel Vaz Gaspar',
