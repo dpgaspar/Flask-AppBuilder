@@ -341,6 +341,7 @@ class BaseModelView(BaseView):
             Arguments are passed: page_<VIEW_NAME>=<PAGE_NUMBER>
         
         """
+        self._get_page_size_args()
         pages = {}
         for arg in request.args:
             re_match = re.findall('page_(.*)', arg)
@@ -348,7 +349,17 @@ class BaseModelView(BaseView):
                 pages[re_match[0]] = int(request.args.get(arg))
         return pages
 
-
+    def _get_page_size_args(self):
+        """
+            Get page size arguments, returns an int
+            { <VIEW_NAME>: PAGE_NUMBER }
+        
+            Arguments are passed: page_size=<PAGE_SIZE>
+        
+        """
+        page_size = (request.args.get('page_size'))
+        if page_size: self.page_size = int(page_size)
+        
     def _get_order_args(self):
         """
             Get order arguments, return a dictionary

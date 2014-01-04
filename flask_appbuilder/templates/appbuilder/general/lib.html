@@ -7,6 +7,21 @@
 	{% endif %}
 {% endmacro %}
 
+{% macro render_set_page_size(filters, generalview_name) %}
+<div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+    {{_('Page size')}}<span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li><a href={{5 | link_page_size }}>5</a></li>
+        <li><a href={{10 | link_page_size }}>10</a></li>
+        <li><a href={{20 | link_page_size }}>20</a></li>
+        <li><a href={{30 | link_page_size }}>30</a></li>
+        <li><a href={{40 | link_page_size }}>40</a></li>
+    </ul>
+</div>
+{% endmacro %}        
+
 
 {% macro render_pagination(page, page_size, count, generalview_name) %}
 
