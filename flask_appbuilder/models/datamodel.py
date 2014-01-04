@@ -225,6 +225,12 @@ class SQLAModel(DataModel):
                 
     
     def delete(self, item):
+        self._delete_files(item)
+        self.session.delete(item)
+        self.session.commit()
+        flash(unicode(self.delete_row_message),'success')
+        return True
+        """    
         try:
             self._delete_files(item)
             self.session.delete(item)
@@ -239,7 +245,7 @@ class SQLAModel(DataModel):
             flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
             self.session.rollback()
             return False
-        
+        """
         
     """
     FILE HANDLING METHODS
@@ -304,9 +310,10 @@ class SQLAModel(DataModel):
                 if model == self.get_model_relation(i):
                     return self.get_property_col(i)
 
+    """
     def get_relation_filters(self, filters = {}):
         return [filter_key for filter_key in filters if self.is_relation_col(filter_key)]
-    
+    """
 
     """
     ----------- GET METHODS -------------
@@ -333,10 +340,10 @@ class SQLAModel(DataModel):
         return ret_lst
 
     def get_file_column_list(self):
-        return [i.name for i in self.obj.__mapper__.columns if self.is_file(i.name)]
+        return [i.name for i in self.obj.__mapper__.columns if isinstance(i.type, FileColumn)]
         
     def get_image_column_list(self):
-        return [i.name for i in self.obj.__mapper__.columns if self.is_image(i.name)]
+        return [i.name for i in self.obj.__mapper__.columns if isinstance(i.type, ImageColumn)]
     
 
     def get_property_first_col(self, prop):

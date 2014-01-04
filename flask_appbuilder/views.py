@@ -415,17 +415,10 @@ class BaseCRUDView(BaseModelView):
     order_columns = None
     """ Allowed order columns """
     
-    description_columns = {}
-    """ description for columns that will be shown on the forms """
-    add_form_extra_fields = {}
-    """ Add extra fields to the Add form using this property """
-    edit_form_extra_fields = {}
-    """ Add extra fields to the Edit form using this property """
-    
-    page_size = 30
+    page_size = 10
     """ Page size """
     
-    show_fieldsets = []
+    show_fieldsets = None
     """ 
         show fieldsets django style [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....]
         
@@ -440,23 +433,30 @@ class BaseCRUDView(BaseModelView):
                     ]
 
     """
-    add_fieldsets = []
+    add_fieldsets = None
     """ 
-        add fieldsets django style (look at show_fieldsets)
+        add fieldsets django style (look at show_fieldsets for an example)
     """
-    edit_fieldsets = []
+    edit_fieldsets = None
     """ 
-        edit fieldsets django style (look at show_fieldsets)
+        edit fieldsets django style (look at show_fieldsets for an example)
     """
-
+    
+    description_columns = None
+    """ Dictionary with column descriptions that will be shown on the forms """
+    validators_columns = None
+    """ Dictionary to add your own validators for forms """
+    add_form_extra_fields = None
+    """ Dictionary to add extra fields to the Add form using this property """
+    edit_form_extra_fields = None
+    """ Dictionary to Add extra fields to the Edit form using this property """
+    
     
     add_form = None
     """ To implement your own add WTF form for Add """
     edit_form = None
     """ To implement your own add WTF form for Edit """
     
-    validators_columns = {}
-    """ Add your own validators for forms """
     
     list_template = 'appbuilder/general/model/list.html'
     """ Your own add jinja2 template for list """
@@ -482,10 +482,10 @@ class BaseCRUDView(BaseModelView):
 
     def __init__(self, **kwargs):
         super(BaseCRUDView, self).__init__(**kwargs)
-        self._init_titles()
-        self._init_vars()
+        self._init_properties()
         self._init_forms()
-
+        self._init_titles()
+        
     
     def _init_forms(self):
         conv = GeneralModelConverter(self.datamodel)        
@@ -513,8 +513,12 @@ class BaseCRUDView(BaseModelView):
         if not self.show_title:
             self.show_title = 'Show ' + self._prettify_name(self.datamodel.obj.__name__)
 
-    def _init_vars(self):
+    def _init_properties(self):
         self.related_views = self.related_views or []
+        self.description_columns = self.description_columns or {}
+        self.validators_columns = self.validators_columns or {}
+        self.add_form_extra_fields = self.add_form_extra_fields or {}
+        self.edit_form_extra_fields = self.edit_form_extra_fields or {}
         order_cols = self.datamodel.get_order_columns_list()
         list_cols = self.datamodel.get_columns_list()
         self.list_columns = self.list_columns or [order_cols[0]]
@@ -675,9 +679,9 @@ class BaseCRUDView(BaseModelView):
 
 class GeneralView(BaseCRUDView):
     """
-        This is the most important view. If you want to automatically implement create, edit, delete, show, and search form your database tables, inherit your views from this class.
+        This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and search form your database tables, inherit your views from this class.
 
-        Notice that this class inherits from BaseView so all properties from the parent class can be overrided also.
+        Notice that this class inherits from BaseCRUDView so all properties from the parent class can be overrided also.
     """
 
     def __init__(self, **kwargs):

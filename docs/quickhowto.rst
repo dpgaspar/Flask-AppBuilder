@@ -32,7 +32,7 @@ First we are going to create a *Group* table, to group our contacts
 .. note::
 	Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a diferent declarative model from the security tables of AppBuilder.
 	If you want to use AuditMixin :doc:`api` or include a relation to a User or login User you must be on the same declarative base.
-	Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, that you import::
+	Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, import::
 
 		flask.ext.appbuilder import Base
 	
@@ -67,7 +67,7 @@ The *Contacts* table.
 	    group = relationship("Group")	
 	    
 	    def __repr__(self):
-                return self.name	
+                return self.name
 
 
 Define your Views (views.py)
@@ -92,12 +92,12 @@ Optional properties:
 
 :related_views: if you want a master/detail view on the show and edit.
 
-There are many more properties you can override to customize your views. you can define descriptions for columns, validators for forms, and many more
+There are many more properties you can override to customize your views. you can define descriptions for columns, your own validators for forms fields, etc
 
 Take a look at the :doc:`api`.
 
 
-But where is ContactGeneralView ? (that was a reference has a related_views) 
+But where is ContactGeneralView ? (that was a reference in *related_views* list) 
 
 Let's define it::
 

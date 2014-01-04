@@ -23,7 +23,6 @@ class Unique(object):
 
     def __call__(self, form, field):
         filters = Filters().add_filter(self.column.name, FilterEqual, self.datamodel, field.data)
-        print filters
         count, obj = self.datamodel.query(filters)
         if (count > 0):
             # only test if Unique if pk value is diferent, update case.

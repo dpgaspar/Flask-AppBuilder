@@ -7,8 +7,8 @@
 	{% set can_delete = "can_delete" | is_item_visible(generalview_name) %}
     
 	<div class="well well-sm">
-		{{ lib.render_pagination(page, page_size, count, generalview_name) }}
-		{% if can_add %}
+        {{ lib.render_pagination(page, page_size, count, generalview_name) }}
+    	{% if can_add %}
 			{% set path = url_for(generalview_name + '.add',next=request.path) %}
 			{% set path = path | set_link_filters(filters, pk) %}
 			{{ lib.lnk_add(path) }}
@@ -18,9 +18,8 @@
 		<div class="pull-right">
 		<strong>{{ _('Record Count') }}:</strong> {{ count }}
 		</div>
-		
-		
-    </div>	
+    </div>
+    
 	{% if value_columns %}
 	<div class="table-responsive">
 	<table class="table table-bordered table-hover">
@@ -35,10 +34,10 @@
 				<th><a href={{ item | link_order(generalview_name) }}>{{label_columns.get(item)}}
 				<span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></a></th>
 			{% elif res == 1 %}
-                		<th><a href={{ item | link_order(generalview_name) }}>{{label_columns.get(item)}}
+                <th><a href={{ item | link_order(generalview_name) }}>{{label_columns.get(item)}}
 				<span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></a>
 			{% else %}
-                		<th><a href={{ item | link_order(generalview_name) }}>{{label_columns.get(item)}}
+                <th><a href={{ item | link_order(generalview_name) }}>{{label_columns.get(item)}}
 				<span class="glyphicon glyphicon-sort pull-right"></span></a>
 			{% endif %}
 		{% else %}
@@ -74,7 +73,7 @@
 	    </tr>
 	{% endfor %}
 	</table>
-	
+    
 	</div>
 	{% else %}
 	<b> {{_("No records found")}}</b>
