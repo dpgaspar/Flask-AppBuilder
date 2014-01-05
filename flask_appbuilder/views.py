@@ -341,7 +341,6 @@ class BaseModelView(BaseView):
             Arguments are passed: page_<VIEW_NAME>=<PAGE_NUMBER>
         
         """
-        self._get_page_size_args()
         pages = {}
         for arg in request.args:
             re_match = re.findall('page_(.*)', arg)
@@ -357,8 +356,12 @@ class BaseModelView(BaseView):
             Arguments are passed: page_size=<PAGE_SIZE>
         
         """
-        page_size = (request.args.get('page_size'))
-        if page_size: self.page_size = int(page_size)
+        page_sizes = {}
+        for arg in request.args:
+            re_match = re.findall('psize_(.*)', arg)
+            if re_match:
+                page_sizes[re_match[0]] = int(request.args.get(arg))
+        return page_sizes
         
     def _get_order_args(self):
         """
@@ -714,7 +717,7 @@ class GeneralView(BaseCRUDView):
             order_column, order_direction = self._get_order_args().get(self.__class__.__name__)
         else: order_column, order_direction = '',''
         page = self._get_page_args().get(self.__class__.__name__)
-
+        
         self._get_filter_args()
         
         widgets = self._get_list_widget(filters = self._filters, 

@@ -8,16 +8,15 @@
     
 	<div class="well well-sm">
         {{ lib.render_pagination(page, page_size, count, generalview_name) }}
+        {{ lib.render_set_page_size(page, page_size, count, generalview_name) }}
     	{% if can_add %}
 			{% set path = url_for(generalview_name + '.add',next=request.path) %}
 			{% set path = path | set_link_filters(filters, pk) %}
 			&nbsp;{{ lib.lnk_add(path) }}
 		{% endif %}
-		{{ lib.lnk_back() }}
-        {{ lib.render_set_page_size(filters, generalview_name) }}
-		    
+		{{ lib.lnk_back() }}        
 		<div class="pull-right">
-		<strong>{{ _('Record Count') }}:</strong> {{ count }}
+			<strong>{{ _('Record Count') }}:</strong> {{ count }}
 		</div>
     </div>
     

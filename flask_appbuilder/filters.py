@@ -52,15 +52,16 @@ class TemplateFilters(object):
         args['page_' + generalview_name] = page
         return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
 
+
     @app_template_filter('link_page_size')
-    def link_page_size_filter(self, page_size):
+    def link_page_size_filter(self, page_size, generalview_name):
         """
-        Arguments are passed like: page_<VIEW_NAME>=<PAGE_NUMBER>
+        Arguments are passed like: psize_<VIEW_NAME>=<PAGE_NUMBER>
         """
         print request.endpoint
         new_args = request.view_args.copy()
         args = request.args.copy()
-        args['page_size'] = page_size
+        args['psize_' + generalview_name] = page_size
         return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
                 
 
