@@ -9,7 +9,7 @@ If your working with the base skeleton application :doc:`instalation`
 you now have the following directory structure::
 
     <your project name>/
-        config.py : All the applications configuration
+        config.py : All the application's configuration
         run.py    : A runner mainly for debug
         app/
             __init__.py : Application's initialization
