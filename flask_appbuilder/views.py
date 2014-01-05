@@ -353,7 +353,7 @@ class BaseModelView(BaseView):
             Get page size arguments, returns an int
             { <VIEW_NAME>: PAGE_NUMBER }
         
-            Arguments are passed: page_size=<PAGE_SIZE>
+            Arguments are passed: psize_<VIEW_NAME>=<PAGE_SIZE>
         
         """
         page_sizes = {}
@@ -572,14 +572,15 @@ class BaseCRUDView(BaseModelView):
                     order_direction = order_direction,
                     page=page, page_size=page_size)
 
-    def _get_related_list_widgets(self, item, orders = {}, pages=None, widgets = {}, **args):
+    def _get_related_list_widgets(self, item, orders = {}, pages=None, page_sizes=None, widgets = {}, **args):
         widgets['related_lists'] = []
         for view in self.related_views:
             if orders.get(view.__class__.__name__):
                 order_column, order_direction = orders.get(view.__class__.__name__)
             else: order_column, order_direction = '',''
             widgets['related_lists'].append(self._get_related_list_widget(item, view, 
-                    order_column, order_direction, page=pages.get(view.__class__.__name__), page_size=view.page_size).get('list'))
+                    order_column, order_direction, 
+                    page=pages.get(view.__class__.__name__), page_size=page_sizes.get(view.__class__.__name__)).get('list'))
         return widgets
     
     def _get_list_widget(self, filters, 
@@ -590,6 +591,7 @@ class BaseCRUDView(BaseModelView):
                         widgets = {}, **args):
 
         """ get joined base filter and current active filter for query """
+        page_size = page_size or self.page_size        
         joined_filters = filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         pks = self.datamodel.get_keys(lst)
@@ -717,6 +719,7 @@ class GeneralView(BaseCRUDView):
             order_column, order_direction = self._get_order_args().get(self.__class__.__name__)
         else: order_column, order_direction = '',''
         page = self._get_page_args().get(self.__class__.__name__)
+        page_size = self._get_page_size_args().get(self.__class__.__name__)
         
         self._get_filter_args()
         
@@ -724,7 +727,7 @@ class GeneralView(BaseCRUDView):
                     order_column = order_column, 
                     order_direction = order_direction, 
                     page = page, 
-                    page_size = self.page_size)
+                    page_size = page_size)
         widgets = self._get_search_widget(form = form, widgets = widgets)
 
         return render_template(self.list_template,
@@ -746,10 +749,11 @@ class GeneralView(BaseCRUDView):
         widgets = self._get_show_widget(pk)
         item = self.datamodel.get(pk)
         pages = self._get_page_args()
+        page_sizes = self._get_page_size_args()
         orders = self._get_order_args()
         
         widgets = self._get_related_list_widgets(item, orders = orders, 
-                pages = pages, widgets = widgets)
+                pages = pages, page_sizes = page_sizes, widgets = widgets)
         
         return render_template(self.show_template,
                            pk = pk,
@@ -802,6 +806,7 @@ class GeneralView(BaseCRUDView):
     def edit(self, pk = 0):
 
         pages = self._get_page_args()
+        page_sizes = self._get_page_size_args()
         orders = self._get_order_args()
         
         item = self.datamodel.get(pk)
@@ -827,7 +832,7 @@ class GeneralView(BaseCRUDView):
             else:
                 widgets = self._get_edit_widget(form = form, exclude_cols = exclude_cols)
                 widgets = self._get_related_list_widgets(item, filters = {}, 
-                        orders = orders, pages = pages, widgets = widgets)
+                        orders = orders, pages = pages, page_sizes=page_sizes, widgets = widgets)
                 return render_template(self.edit_template,
                         title = self.edit_title,
                         widgets = widgets,
@@ -838,7 +843,7 @@ class GeneralView(BaseCRUDView):
             form = form.refresh(obj=item)
             widgets = self._get_edit_widget(form = form, exclude_cols = exclude_cols)
             widgets = self._get_related_list_widgets(item, filters = {}, 
-                        orders = orders, pages = pages, widgets = widgets)                
+                        orders = orders, pages = pages, page_sizes=page_sizes, widgets = widgets)                
             return render_template(self.edit_template,
                             title = self.edit_title,
                             widgets = widgets,

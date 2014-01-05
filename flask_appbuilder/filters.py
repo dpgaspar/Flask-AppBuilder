@@ -58,7 +58,6 @@ class TemplateFilters(object):
         """
         Arguments are passed like: psize_<VIEW_NAME>=<PAGE_NUMBER>
         """
-        print request.endpoint
         new_args = request.view_args.copy()
         args = request.args.copy()
         args['psize_' + generalview_name] = page_size

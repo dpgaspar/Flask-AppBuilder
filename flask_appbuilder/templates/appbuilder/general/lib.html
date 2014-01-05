@@ -13,15 +13,17 @@
 {% set pages = ((count / page_size)|round(0,'ceil')|int)%}
 {% if pages > 1 %}
 <div class="btn-group">
-    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
     {{_('Page size')}}<span class="caret"></span>
     </button>
     <ul class="dropdown-menu" role="menu">
-        <li><a href="{{5 | link_page_size(generalview_name) }}">5</a></li>
-        <li><a href="{{10 | link_page_size(generalview_name) }}">10</a></li>
-        <li><a href="{{20 | link_page_size(generalview_name) }}">20</a></li>
-        <li><a href="{{30 | link_page_size(generalview_name) }}">30</a></li>
-        <li><a href="{{40 | link_page_size(generalview_name) }}">40</a></li>
+    	{% for sel_page_size in range(5,40,5) %}
+    	{% if sel_page_size == page_size %}
+        	<li class="active"><a href="{{sel_page_size | link_page_size(generalview_name) }}">{{sel_page_size}}</a></li>
+        {% else %}
+        	<li><a href="{{sel_page_size | link_page_size(generalview_name) }}">{{sel_page_size}}</a></li>
+        {% endif %}
+        {% endfor %}
     </ul>
 </div>
 {% endif %}
