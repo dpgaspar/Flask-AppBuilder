@@ -311,8 +311,8 @@ Customize GeneralView overriding this properties</p>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.add_fieldsets">
-<tt class="descname">add_fieldsets</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.add_fieldsets" title="Permalink to this definition">¶</a></dt>
-<dd><p>add fieldsets django style (look at show_fieldsets)</p>
+<tt class="descname">add_fieldsets</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.add_fieldsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>add fieldsets django style (look at show_fieldsets for an example)</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -323,8 +323,8 @@ Customize GeneralView overriding this properties</p>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.add_form_extra_fields">
-<tt class="descname">add_form_extra_fields</tt><em class="property"> = {}</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.add_form_extra_fields" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add extra fields to the Add form using this property</p>
+<tt class="descname">add_form_extra_fields</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.add_form_extra_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary to add extra fields to the Add form using this property</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -348,8 +348,8 @@ Customize GeneralView overriding this properties</p>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.description_columns">
-<tt class="descname">description_columns</tt><em class="property"> = {}</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.description_columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>description for columns that will be shown on the forms</p>
+<tt class="descname">description_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.description_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary with column descriptions that will be shown on the forms</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -360,8 +360,8 @@ Customize GeneralView overriding this properties</p>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.edit_fieldsets">
-<tt class="descname">edit_fieldsets</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.edit_fieldsets" title="Permalink to this definition">¶</a></dt>
-<dd><p>edit fieldsets django style (look at show_fieldsets)</p>
+<tt class="descname">edit_fieldsets</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.edit_fieldsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>edit fieldsets django style (look at show_fieldsets for an example)</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -372,8 +372,8 @@ Customize GeneralView overriding this properties</p>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.edit_form_extra_fields">
-<tt class="descname">edit_form_extra_fields</tt><em class="property"> = {}</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.edit_form_extra_fields" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add extra fields to the Edit form using this property</p>
+<tt class="descname">edit_form_extra_fields</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.edit_form_extra_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary to Add extra fields to the Edit form using this property</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -428,7 +428,7 @@ Customize GeneralView overriding this properties</p>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.page_size">
-<tt class="descname">page_size</tt><em class="property"> = 30</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.page_size" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">page_size</tt><em class="property"> = 10</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.page_size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Page size</p>
 </dd></dl>
 
@@ -490,7 +490,7 @@ That will be displayed related with this one using relationship sqlalchemy prope
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.show_fieldsets">
-<tt class="descname">show_fieldsets</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.show_fieldsets" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">show_fieldsets</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.show_fieldsets" title="Permalink to this definition">¶</a></dt>
 <dd><p>show fieldsets django style [(&lt;&#8217;TITLE&#8217;<a href="#id1"><span class="problematic" id="id2">|</span></a>None&gt;, {&#8216;fields&#8217;:[&lt;F1&gt;,&lt;F2&gt;,...]}),....]</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
@@ -524,8 +524,8 @@ That will be displayed related with this one using relationship sqlalchemy prope
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.validators_columns">
-<tt class="descname">validators_columns</tt><em class="property"> = {}</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.validators_columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add your own validators for forms</p>
+<tt class="descname">validators_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.validators_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary to add your own validators for forms</p>
 </dd></dl>
 
 </dd></dl>
@@ -533,8 +533,8 @@ That will be displayed related with this one using relationship sqlalchemy prope
 <dl class="class">
 <dt id="flask.ext.appbuilder.views.GeneralView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">GeneralView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.GeneralView" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the most important view. If you want to automatically implement create, edit, delete, show, and search form your database tables, inherit your views from this class.</p>
-<p>Notice that this class inherits from BaseView so all properties from the parent class can be overrided also.</p>
+<dd><p>This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and search form your database tables, inherit your views from this class.</p>
+<p>Notice that this class inherits from BaseCRUDView so all properties from the parent class can be overrided also.</p>
 </dd></dl>
 
 </div>

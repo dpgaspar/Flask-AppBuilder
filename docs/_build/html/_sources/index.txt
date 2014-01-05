@@ -8,7 +8,7 @@ includes detailed security, auto form generation, google charts and much more.
 
 Important Note:
 
-Version 0.3.N had some changes look at chapter :doc:`versions`
+Version 0.4.N had some changes look at chapter :doc:`versions`
 
 Contents:
 

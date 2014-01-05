@@ -84,7 +84,7 @@
 <p class="first admonition-title">Note</p>
 <p>Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a diferent declarative model from the security tables of AppBuilder.
 If you want to use AuditMixin <a class="reference internal" href="api.html"><em>API Reference</em></a> or include a relation to a User or login User you must be on the same declarative base.
-Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, that you import:</p>
+Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, import:</p>
 <div class="highlight-python"><pre>flask.ext.appbuilder import Base</pre>
 </div>
 <p class="last">This &#8220;Base&#8221; is the same declarative model of F.A.B.</p>
@@ -144,9 +144,9 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
 </tr>
 </tbody>
 </table>
-<p>There are many more properties you can override to customize your views. you can define descriptions for columns, validators for forms, and many more</p>
+<p>There are many more properties you can override to customize your views. you can define descriptions for columns, your own validators for forms fields, etc</p>
 <p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>.</p>
-<p>But where is ContactGeneralView ? (that was a reference has a related_views)</p>
+<p>But where is ContactGeneralView ? (that was a reference in <em>related_views</em> list)</p>
 <p>Let&#8217;s define it:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>

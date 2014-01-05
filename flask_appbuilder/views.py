@@ -7,7 +7,7 @@ from .filemanager import uuid_originalname
 from .security.decorators import has_access
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget, ListCarousel
 from .actions import ActionItem
-from .models.filters import Filters, FilterRelationOneToMany
+from .models.filters import Filters, FilterRelationOneToManyEqual
 
 def expose(url='/', methods=('GET',)):
     """
@@ -565,7 +565,7 @@ class BaseCRUDView(BaseModelView):
                                 page=None, page_size=None):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
-        filters = Filters().add_filter(fk, FilterRelationOneToMany, 
+        filters = Filters().add_filter(fk, FilterRelationOneToManyEqual, 
                 related_view.datamodel, self.datamodel.get_pk_value(item))
         return related_view._get_list_widget(filters = filters,
                     order_column = order_column,
@@ -746,12 +746,13 @@ class GeneralView(BaseCRUDView):
     @has_access
     def show(self, pk):
 
-        widgets = self._get_show_widget(pk)
-        item = self.datamodel.get(pk)
         pages = self._get_page_args()
         page_sizes = self._get_page_size_args()
         orders = self._get_order_args()
-        
+
+        widgets = self._get_show_widget(pk)
+        item = self.datamodel.get(pk)
+                
         widgets = self._get_related_list_widgets(item, orders = orders, 
                 pages = pages, page_sizes = page_sizes, widgets = widgets)
         

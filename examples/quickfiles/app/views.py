@@ -30,9 +30,6 @@ class ProjectGeneralView(GeneralView):
 
 
 
-    
-
-
 baseapp = BaseApp(app, db)
 baseapp.add_view(ProjectGeneralView(), "List Projects",icon = "th-large",category = "Projects")
 baseapp.add_view_no_menu(ProjectFilesGeneralView())

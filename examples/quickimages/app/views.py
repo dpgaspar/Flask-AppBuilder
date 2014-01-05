@@ -53,7 +53,6 @@ class GroupGeneralView(GeneralView):
 
     label_columns = { 'phone1':'Phone (1)','phone2':'Phone (2)','taxid':'Tax ID'}
     list_columns = ['name','notes']
-    search_columns = ['name']
 
 class PersonChartView(ChartView):
     route_base = '/persons'

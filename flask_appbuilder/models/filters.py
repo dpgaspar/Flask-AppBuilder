@@ -95,14 +95,22 @@ class FilterSmaller(BaseFilter):
 class FilterRelation(BaseFilter):
     pass
 
-class FilterRelationOneToMany(FilterRelation):
+class FilterRelationOneToManyEqual(FilterRelation):
     name = lazy_gettext('Relation')
     
     def apply(self, query, value):
         rel_obj = self.datamodel.get_related_obj(self.column_name, value)
         return query.filter(getattr(self.model,self.column_name) == rel_obj)
+
+class FilterRelationOneToManyNotEqual(FilterRelation):
+    name = lazy_gettext('No Relation')
     
-class FilterRelationManyToMany(FilterRelation):
+    def apply(self, query, value):
+        rel_obj = self.datamodel.get_related_obj(self.column_name, value)
+        return query.filter(getattr(self.model,self.column_name) != rel_obj)
+
+    
+class FilterRelationManyToManyEqual(FilterRelation):
     name = lazy_gettext('Relation as Many')
     
     def apply(self, query, value):
@@ -147,9 +155,10 @@ class Filters(object):
         prop = datamodel.get_col_property(col)
         if datamodel.is_relation(prop):
             if datamodel.is_relation_many_to_one(prop):
-                return [FilterRelationOneToMany(col, datamodel)]
+                return [FilterRelationOneToManyEqual(col, datamodel),
+                        FilterRelationOneToManyNotEqual(col, datamodel)]
             elif datamodel.is_relation_many_to_many(prop):
-                return [FilterRelationManyToMany(col, datamodel)]
+                return [FilterRelationManyToManyEqual(col, datamodel)]
         else:
             if datamodel.is_text(col) or datamodel.is_string(col):
                 return [FilterStartsWith(col, datamodel), 
