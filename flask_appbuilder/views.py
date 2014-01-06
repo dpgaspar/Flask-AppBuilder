@@ -262,9 +262,22 @@ class BaseModelView(BaseView):
     """
 
     datamodel = None
-    """ Your sqla model you must initialize it like datamodel = SQLAModel(Permission, session) """
+    """ 
+        Your sqla model you must initialize it like::
+        
+            class MyView(GeneralView):
+                datamodel = SQLAModel(MyTable, db.session)
+    """
     search_columns = None
-    """ List with allowed search columns, if not provided all possible search columns will be used """
+    """ 
+        List with allowed search columns, if not provided all possible search columns will be used 
+        If you want to limit the search (*filter*) columns possibilities, define it with a list of column names from your model::
+        
+            class MyView(GeneralView):
+                datamodel = SQLAModel(MyTable, db.session)
+                search_columns = ['name','address']
+             
+    """
     label_columns = None
     """ 
         Dictionary of labels for your columns, override this if you want diferent pretify labels 
@@ -273,7 +286,7 @@ class BaseModelView(BaseView):
         
             class MyView(GeneralView):
                 datamodel = SQLAModel(MyTable, db.session)
-                label_columns = {'name':'My Name Label Overrride'}
+                label_columns = {'name':'My Name Label Override'}
         
     """    
     search_form = None
@@ -399,24 +412,23 @@ class BaseModelView(BaseView):
 
 class BaseCRUDView(BaseModelView):
     """
-        The base class of GeneralView, all properties are inherited
+        The base class for GeneralView, all properties are inherited
         Customize GeneralView overriding this properties
     """
     
-
     related_views = None
     """ 
         List with instantiated GeneralView classes
         That will be displayed related with this one using relationship sqlalchemy property
     """
     list_title = ""
-    """ List Title """
+    """ List Title, if not configured the default is 'List ' with pretty model name """
     show_title = ""
-    """ Show Title """
+    """ Show Title , if not configured the default is 'Show ' with pretty model name """
     add_title = ""
-    """ Add Title """
+    """ Add Title , if not configured the default is 'Add ' with pretty model name """
     edit_title = ""
-    """ Edit Title """
+    """ Edit Title , if not configured the default is 'Edit ' with pretty model name """
 
     list_columns = None
     """ Include Columns for lists view """
@@ -430,7 +442,9 @@ class BaseCRUDView(BaseModelView):
     """ Allowed order columns """
     
     page_size = 10
-    """ Page size """
+    """ 
+        Use this property to change default page size 
+    """
     
     show_fieldsets = None
     """ 
@@ -457,7 +471,14 @@ class BaseCRUDView(BaseModelView):
     """
     
     description_columns = None
-    """ Dictionary with column descriptions that will be shown on the forms """
+    """ 
+        Dictionary with column descriptions that will be shown on the forms::
+        
+            class MyView(GeneralView):
+                datamodel = SQLAModel(MyTable, db.session)
+
+                description_columns = {'name','your models name column','address','the address column'}
+    """
     validators_columns = None
     """ Dictionary to add your own validators for forms """
     add_form_extra_fields = None
@@ -697,7 +718,7 @@ class GeneralView(BaseCRUDView):
     """
         This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and search form your database tables, inherit your views from this class.
 
-        Notice that this class inherits from BaseCRUDView so all properties from the parent class can be overrided also.
+        Notice that this class inherits from BaseCRUDView so all properties from the parent class can be overriden.
     """
 
     def __init__(self, **kwargs):
@@ -781,7 +802,6 @@ class GeneralView(BaseCRUDView):
         if form.validate_on_submit():
             item = self.datamodel.obj()
             form.populate_obj(item)
-            print "EXT", exclude_cols
             for filter_key in exclude_cols:
                 rel_obj = self.datamodel.get_related_obj(filter_key, self._filters.get_filter_value(filter_key))
                 setattr(item, filter_key, rel_obj)
