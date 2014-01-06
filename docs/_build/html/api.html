@@ -76,6 +76,17 @@ Will hold your flask app object, all your views, and security classes.</p>
 </pre></div>
 </div>
 <dl class="method">
+<dt id="flask.ext.appbuilder.baseapp.BaseApp._gettext">
+<tt class="descname">_gettext</tt><big>(</big><em>string</em>, <em>**variables</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp._gettext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translates a string with the current locale and passes in the
+given keyword arguments as mapping to a string formatting string.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">gettext</span><span class="p">(</span><span class="s">u&#39;Hello World!&#39;</span><span class="p">)</span>
+<span class="n">gettext</span><span class="p">(</span><span class="s">u&#39;Hello </span><span class="si">%(name)s</span><span class="s">!&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;World&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="flask.ext.appbuilder.baseapp.BaseApp.add_link">
 <tt class="descname">add_link</tt><big>(</big><em>name</em>, <em>href</em>, <em>icon=''</em>, <em>category=''</em>, <em>baseview=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.add_link" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add your own links to menu using this method</p>
@@ -167,7 +178,11 @@ Will hold your flask app object, all your views, and security classes.</p>
 </table>
 </dd></dl>
 
-<dl class="class">
+</div>
+<div class="section" id="baseview">
+<h2>BaseView<a class="headerlink" href="#baseview" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="class">
 <dt id="flask.ext.appbuilder.views.BaseView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">BaseView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.BaseView" title="Permalink to this definition">¶</a></dt>
 <dd><p>All views inherit from this class. it&#8217;s constructor will register your exposed urls on flask as a Blueprint.</p>
@@ -200,13 +215,23 @@ Will hold your flask app object, all your views, and security classes.</p>
 
 </dd></dl>
 
-<dl class="class">
+</div></blockquote>
+</div>
+<div class="section" id="indexview">
+<h2>IndexView<a class="headerlink" href="#indexview" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="class">
 <dt id="flask.ext.appbuilder.views.IndexView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">IndexView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.IndexView" title="Permalink to this definition">¶</a></dt>
 <dd><p>A simple view that implements the index for the site</p>
 </dd></dl>
 
-<dl class="class">
+</div></blockquote>
+</div>
+<div class="section" id="simpleformview">
+<h2>SimpleFormView<a class="headerlink" href="#simpleformview" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="class">
 <dt id="flask.ext.appbuilder.views.SimpleFormView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">SimpleFormView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView" title="Permalink to this definition">¶</a></dt>
 <dd><p>View for presenting your own forms
@@ -245,7 +270,12 @@ Inherit from this view to provide some base processing for your customized form 
 
 </dd></dl>
 
-<dl class="class">
+</div></blockquote>
+</div>
+<div class="section" id="basemodelview">
+<h2>BaseModelView<a class="headerlink" href="#basemodelview" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="class">
 <dt id="flask.ext.appbuilder.views.BaseModelView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">BaseModelView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseModelView" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class of GeneralView and ChartView, all properties are inherited
@@ -298,7 +328,12 @@ Customize GeneralView and ChartView overriding this properties</p>
 
 </dd></dl>
 
-<dl class="class">
+</div></blockquote>
+</div>
+<div class="section" id="basecrudview">
+<h2>BaseCRUDView<a class="headerlink" href="#basecrudview" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="class">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">BaseCRUDView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class of GeneralView, all properties are inherited
@@ -530,17 +565,27 @@ That will be displayed related with this one using relationship sqlalchemy prope
 
 </dd></dl>
 
-<dl class="class">
+</div></blockquote>
+</div>
+<div class="section" id="basegeneralview">
+<h2>BaseGeneralView<a class="headerlink" href="#basegeneralview" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="class">
 <dt id="flask.ext.appbuilder.views.GeneralView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">GeneralView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.GeneralView" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and search form your database tables, inherit your views from this class.</p>
 <p>Notice that this class inherits from BaseCRUDView so all properties from the parent class can be overrided also.</p>
 </dd></dl>
 
+</div></blockquote>
 </div>
 <div class="section" id="module-flask.ext.appbuilder.charts.views">
 <span id="chart-views"></span><h2>Chart Views<a class="headerlink" href="#module-flask.ext.appbuilder.charts.views" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+</div>
+<div class="section" id="basechartview">
+<h2>BaseChartView<a class="headerlink" href="#basechartview" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="class">
 <dt id="flask.ext.appbuilder.charts.views.BaseChartView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">BaseChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.BaseChartView" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the base class for all chart views. 
@@ -598,20 +643,31 @@ to customise your charts</p>
 
 </dd></dl>
 
-<dl class="class">
+</div></blockquote>
+</div>
+<div class="section" id="chartview">
+<h2>ChartView<a class="headerlink" href="#chartview" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="class">
 <dt id="flask.ext.appbuilder.charts.views.ChartView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">ChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.ChartView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides a simple (and hopefully nice) way to draw charts on your application.</p>
 <p>This will show Google Charts based on group by of your tables.</p>
 </dd></dl>
 
-<dl class="class">
+</div></blockquote>
+</div>
+<div class="section" id="timechartview">
+<h2>TimeChartView<a class="headerlink" href="#timechartview" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="class">
 <dt id="flask.ext.appbuilder.charts.views.TimeChartView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">TimeChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.TimeChartView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides a simple way to draw some time charts on your application.</p>
 <p>This will show Google Charts based on count and group by month and year for your tables.</p>
 </dd></dl>
 
+</div></blockquote>
 </div>
 <div class="section" id="module-flask.ext.appbuilder.models.mixins">
 <span id="mixins"></span><h2>Mixins<a class="headerlink" href="#module-flask.ext.appbuilder.models.mixins" title="Permalink to this headline">¶</a></h2>
@@ -695,7 +751,16 @@ will create the following columns:</p>
 <li><a class="reference internal" href="#">API Reference</a><ul>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.baseapp">BaseApp</a></li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.views">Views</a></li>
+<li><a class="reference internal" href="#baseview">BaseView</a></li>
+<li><a class="reference internal" href="#indexview">IndexView</a></li>
+<li><a class="reference internal" href="#simpleformview">SimpleFormView</a></li>
+<li><a class="reference internal" href="#basemodelview">BaseModelView</a></li>
+<li><a class="reference internal" href="#basecrudview">BaseCRUDView</a></li>
+<li><a class="reference internal" href="#basegeneralview">BaseGeneralView</a></li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.charts.views">Chart Views</a></li>
+<li><a class="reference internal" href="#basechartview">BaseChartView</a></li>
+<li><a class="reference internal" href="#chartview">ChartView</a></li>
+<li><a class="reference internal" href="#timechartview">TimeChartView</a></li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.models.mixins">Mixins</a></li>
 <li><a class="reference internal" href="#extra-columns">Extra Columns</a></li>
 </ul>

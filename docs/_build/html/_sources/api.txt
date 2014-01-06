@@ -8,6 +8,7 @@ BaseApp
 
     .. autoclass:: BaseApp
         :members:
+        :private-members: __init__
 
 Views
 -----
@@ -16,20 +17,38 @@ Views
 
     .. autofunction:: expose
 
+BaseView
+--------
+
     .. autoclass:: BaseView
         :members:
+
+IndexView
+---------
 
     .. autoclass:: IndexView
         :members:
 
+SimpleFormView
+--------------
+
     .. autoclass:: SimpleFormView
         :members:
+
+BaseModelView
+-------------
 
     .. autoclass:: BaseModelView
         :members:
 
+BaseCRUDView
+------------
+
     .. autoclass:: BaseCRUDView
         :members:
+
+BaseGeneralView
+---------------
 
     .. autoclass:: GeneralView
         :members:
@@ -39,11 +58,20 @@ Chart Views
 
 .. automodule:: flask.ext.appbuilder.charts.views
 
+BaseChartView
+-------------
+
     .. autoclass:: BaseChartView
         :members:
 
+ChartView
+---------
+
     .. autoclass:: ChartView
         :members:
+
+TimeChartView
+-------------
 
     .. autoclass:: TimeChartView
         :members:

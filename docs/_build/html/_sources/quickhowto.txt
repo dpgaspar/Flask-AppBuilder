@@ -9,7 +9,7 @@ If your working with the base skeleton application :doc:`instalation`
 you now have the following directory structure::
 
     <your project name>/
-        config.py : All the applications configuration
+        config.py : All the application's configuration
         run.py    : A runner mainly for debug
         app/
             __init__.py : Application's initialization
@@ -92,7 +92,7 @@ Optional properties:
 
 :related_views: if you want a master/detail view on the show and edit.
 
-There are many more properties you can override to customize your views. you can define descriptions for columns, your own validators for forms fields, etc
+There are many more properties you can override to customize your views. you can define descriptions for columns, your own validators for forms fields, base filters etc
 
 Take a look at the :doc:`api`.
 
