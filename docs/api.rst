@@ -51,8 +51,8 @@ BaseCRUDView
     .. autoclass:: BaseCRUDView
         :members:
 
-BaseGeneralView
----------------
+GeneralView
+-----------
 
     .. autoclass:: GeneralView
         :members:
