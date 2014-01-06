@@ -1,6 +1,9 @@
 API Reference
 =============
 
+flask.ext.appbuilder.baseapp
+----------------------------
+
 BaseApp
 -------
 
