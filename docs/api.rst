@@ -8,10 +8,11 @@ BaseApp
 
     .. autoclass:: BaseApp
         :members:
-        :private-members: __init__
+        
+        .. automethod:: __init__
 
-Views
------
+flask.ext.appbuilder.views
+--------------------------
 
 .. automodule:: flask.ext.appbuilder.views
 
@@ -53,8 +54,8 @@ BaseGeneralView
     .. autoclass:: GeneralView
         :members:
 
-Chart Views
------------
+flask.ext.appbuilder.charts.views
+---------------------------------
 
 .. automodule:: flask.ext.appbuilder.charts.views
 
@@ -76,8 +77,8 @@ TimeChartView
     .. autoclass:: TimeChartView
         :members:
 
-Mixins
-------
+flask.ext.appbuilder.models.mixins
+----------------------------------
 
 .. automodule:: flask.ext.appbuilder.models.mixins
 
