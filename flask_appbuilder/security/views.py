@@ -1,20 +1,22 @@
 from ..forms import BS3PasswordFieldWidget
 from flask import render_template, flash, redirect, session, url_for, request, g, \
     current_app
-from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import BaseView, GeneralView, SimpleFormView, \
-    AdditionalLinkItem, expose
-from flask.ext.babel import gettext, lazy_gettext
-from flask.ext.login import login_user, logout_user, current_user, \
-    login_required
-from flask.ext.openid import SessionWrapper, OpenIDResponse
-from flask.ext.wtf import Required, Length, validators, EqualTo, PasswordField
-from forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
-from models import User, Permission, PermissionView, Role, ViewMenu
 from openid.consumer import discover
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
 from openid.extensions import ax
 from openid.extensions.sreg import SRegRequest, SRegResponse
+from flask.ext.openid import SessionWrapper, OpenIDResponse
+from flask.ext.wtf import Required, Length, validators, EqualTo, PasswordField
+from flask.ext.babel import gettext, lazy_gettext
+from flask.ext.login import login_user, logout_user, current_user, \
+    login_required
+
+from flask.ext.appbuilder.models.datamodel import SQLAModel
+from flask.ext.appbuilder.views import BaseView, GeneralView, SimpleFormView, \
+    AdditionalLinkItem, expose
+from forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
+from models import User, Permission, PermissionView, Role, ViewMenu
+from decorators import has_access
 
 
 class PermissionGeneralView(GeneralView):

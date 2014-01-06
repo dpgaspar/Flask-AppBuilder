@@ -12,6 +12,9 @@ class ActionItem():
         self.confirmation = confirmation
         self.func = func
 
+    def __repr__(self):
+        return "Action name:%s; text:%s; func:%s;" % (self.name, self.text, self.func.__name__)
+
 def action(name, text, confirmation=None):
     """
         Use this decorator to expose actions
@@ -28,20 +31,4 @@ def action(name, text, confirmation=None):
         f._action = (name, text, confirmation)
         return f
 
-    return wrap
-
-def show_added_link(url='/',  methods=('GET',)):
-    """
-        Use this decorator to add aditional links do show views in class GeneralView
-       
-        :param url:
-            Relative URL for the view
-        :param methods:
-            Allowed HTTP methods. By default only GET is allowed.
-    """
-    def wrap(f):
-        if not hasattr(f, '_urls'):
-            f._urls = []
-        f._urls.append((url, methods))
-        return f
     return wrap

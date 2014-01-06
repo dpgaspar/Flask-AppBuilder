@@ -1,8 +1,13 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.4.4
+-----------------------------------
+
+- fix, security userinfo without has_access decorator
+
 Improvements and Bug fixes on 0.4.3
-------------------------------------
+-----------------------------------
 
 - New, Search (filter) with boolean types.
 - New, Added search to users view.
@@ -10,7 +15,7 @@ Improvements and Bug fixes on 0.4.3
 - New, filter Relation not equal to.
 
 Improvements and Bug fixes on 0.4.1, 0.4.2
-------------------------------------
+------------------------------------------
 
 - Removed constraint in flask-login requirement for versions lower than 0.2.8, can be used 0.2.7 or lower and 0.2.9 and higher.
 - fix, BaseCRUDView init properties correction.
@@ -18,7 +23,7 @@ Improvements and Bug fixes on 0.4.1, 0.4.2
 - Changed default page_size to 10.
 
 Improvements and Bug fixes on 0.4.0
-------------------------------------
+-----------------------------------
 
 - fix, page was "remenbered" by class, returned empty lists on queries and inline lists.
 - New Filters class and BaseFilter with many subclasses. Restructing internals to enable feature.

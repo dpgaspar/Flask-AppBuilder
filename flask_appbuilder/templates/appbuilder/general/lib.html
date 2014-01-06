@@ -7,6 +7,15 @@
 	{% endif %}
 {% endmacro %}
 
+{% macro render_action_links(actions, pk) %}
+    {% for key in actions %}
+        {%  set action = actions.get(key) %}
+        <a href="{{url_for('.action', name = action.name, pk = pk)}}" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon"></span>
+			{{_(action.text)}}</a>
+    {% endfor %}
+	
+{% endmacro %}
+
 
 {% macro render_set_page_size(page, page_size, count, generalview_name) %}
 {% if not page %} {% set page = 0 %} {% endif %}

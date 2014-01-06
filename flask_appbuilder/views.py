@@ -60,12 +60,7 @@ class BaseView(object):
                 for attr_name in dir(self)
                 if hasattr(getattr(self, attr_name),'_urls')
                 ]
-            self.actions = self.actions or []
-            for attr_name in dir(self):
-                if hasattr(getattr(self, attr_name),'_action'):
-                    action = ActionItem(*attr_name._action, func = getattr(self, attr_name))
-                    self.base_permissions.append(action.name)
-                    self.actions.append(action)
+
 
     def create_blueprint(self, baseapp, 
                         endpoint = None, 
@@ -514,13 +509,23 @@ class BaseCRUDView(BaseModelView):
         
     show_additional_links = []
 
+    actions = None
+
     def __init__(self, **kwargs):
         super(BaseCRUDView, self).__init__(**kwargs)
         self._init_properties()
         self._init_forms()
         self._init_titles()
-        
-    
+
+        self.actions = {}
+        for attr_name in dir(self):
+            func = getattr(self, attr_name)
+            if hasattr(func,'_action'):
+                action = ActionItem(*func._action, func = func)
+                self.base_permissions.append(action.name)
+                self.actions[action.name] = (action)
+
+
     def _init_forms(self):
         conv = GeneralModelConverter(self.datamodel)        
         if not self.add_form:
@@ -630,7 +635,8 @@ class BaseCRUDView(BaseModelView):
         return widgets
 
 
-    def _get_show_widget(self, id, widgets = {}, show_additional_links = []):
+    def _get_show_widget(self, id, widgets = None, show_additional_links = []):
+        widgets = widgets or {}
         if show_additional_links:
             additional_links = show_additional_links
         else: additional_links = self.show_additional_links
@@ -641,12 +647,15 @@ class BaseCRUDView(BaseModelView):
                                                 include_columns = self.show_columns,
                                                 value_columns = self.datamodel.get_values_item(item, self.show_columns),
                                                 additional_links = additional_links,
+                                                actions = self.actions,
                                                 fieldsets = self.show_fieldsets
                                                 )
         return widgets
 
 
-    def _get_add_widget(self, form = None, exclude_cols = [], widgets = {}):
+    def _get_add_widget(self, form = None, exclude_cols = None, widgets = None):
+        exclude_cols = exclude_cols or []
+        widgets = widgets or {}
         widgets['add'] = self.edit_widget(route_base = self.route_base,
                                                 form = form,
                                                 include_cols = self.add_columns,
@@ -655,7 +664,9 @@ class BaseCRUDView(BaseModelView):
                                                 )
         return widgets
 
-    def _get_edit_widget(self, form = None, exclude_cols = [], widgets = {}):
+    def _get_edit_widget(self, form = None, exclude_cols = None, widgets = None):
+        exclude_cols = exclude_cols or []
+        widgets = widgets or {}
         widgets['edit'] = self.edit_widget(route_base = self.route_base,
                                                 form = form,
                                                 include_cols = self.edit_columns,
@@ -893,7 +904,13 @@ class GeneralView(BaseCRUDView):
         return send_file(self.baseapp.app.config['UPLOAD_FOLDER'] + filename, 
                     attachment_filename = uuid_originalname(filename), 
                     as_attachment = True)
-        
+
+
+    @expose('/action/<string:name>/<int:pk>')
+    def action(self, name, pk):
+        action = self.actions.get(name)
+        print action
+        action.func(self.datamodel.get(pk))
 
 
 
