@@ -52,6 +52,7 @@ class BaseApp():
                     static_url_path='/appbuilder'):
         """
             BaseApp constructor
+            
             :param app:
                 The flask app object
             :param db:
