@@ -137,6 +137,7 @@ class UserGeneralView(GeneralView):
 
 class UserOIDGeneralView(UserGeneralView):
     @expose('/userinfo/')
+    @has_access
     def userinfo(self):
         widgets = self._get_show_widget(g.user.id)
 
@@ -145,7 +146,7 @@ class UserOIDGeneralView(UserGeneralView):
                            widgets = widgets,
                            baseapp = self.baseapp,
                            )
-    
+
 
 class UserDBGeneralView(UserGeneralView):
     
@@ -164,6 +165,7 @@ class UserDBGeneralView(UserGeneralView):
         super(UserDBGeneralView, self).__init__(**kwargs)
 
     @expose('/userinfo/')
+    @has_access
     def userinfo(self):
         show_additional_links = [AdditionalLinkItem('resetmypassword', self.lnk_reset_password,"/resetmypassword/form","lock")]
         widgets = self._get_show_widget(g.user.id, show_additional_links = show_additional_links)

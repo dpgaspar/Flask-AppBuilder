@@ -6,7 +6,7 @@ from forms import GeneralModelConverter
 from .filemanager import uuid_originalname
 from .security.decorators import has_access
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget, ListCarousel
-from .actions import ActionItem
+from .actions import ActionItem, action
 from .models.filters import Filters, FilterRelationOneToManyEqual
 
 def expose(url='/', methods=('GET',)):
@@ -46,8 +46,7 @@ class BaseView(object):
     static_folder='static'
     
     base_permissions = None
-    actions = None
-
+    
     default_view = 'list'
 
     def __init__(self):
