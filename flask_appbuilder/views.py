@@ -909,9 +909,8 @@ class GeneralView(BaseCRUDView):
     @expose('/action/<string:name>/<int:pk>')
     def action(self, name, pk):
         action = self.actions.get(name)
-        print action
         action.func(self.datamodel.get(pk))
-
+        return redirect(self._get_redirect())
 
 
 class AdditionalLinkItem():

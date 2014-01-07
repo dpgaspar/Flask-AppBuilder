@@ -14,6 +14,7 @@ from flask.ext.login import login_user, logout_user, current_user, \
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.views import BaseView, GeneralView, SimpleFormView, \
     AdditionalLinkItem, expose
+from ..actions import action
 from forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
 from models import User, Permission, PermissionView, Role, ViewMenu
 from decorators import has_access
@@ -169,14 +170,18 @@ class UserDBGeneralView(UserGeneralView):
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
-        show_additional_links = [AdditionalLinkItem('resetmypassword', self.lnk_reset_password,"/resetmypassword/form","lock")]
-        widgets = self._get_show_widget(g.user.id, show_additional_links = show_additional_links)
+        #show_additional_links = [AdditionalLinkItem('resetmypassword', self.lnk_reset_password,"/resetmypassword/form","lock")]
+        widgets = self._get_show_widget(g.user.id) #, show_additional_links = show_additional_links)
         return render_template(self.show_template,
                            title = self.user_info_title,
                            widgets = widgets,
                            baseapp = self.baseapp,
                            )
 
+    @action('resetmypassword', 'Reset Password')
+    def resetmypassword(self, item):
+        print "RESET"
+        return redirect('/resetpassword/form')
 
 class RoleGeneralView(GeneralView):
     route_base = '/roles'
