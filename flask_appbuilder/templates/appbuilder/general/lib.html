@@ -200,9 +200,17 @@
 </button>
 {% endmacro %}
 
-{% macro lnk_back() %}
+{% macro lnk_back_old() %}
 <INPUT Type="button" class="btn  btn-sm btn-primary" VALUE="{{_('Back')}}" onClick="history.go(-1);return true;">
 {% endmacro %}
+
+{% macro lnk_back() %}
+<a href="{{ request | get_link_back }}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip" title="{{_('Back')}}">
+<span class="glyphicon glyphicon-arrow"></span>
+{{_('Back')}}
+</a>
+{% endmacro %}
+
 
 {% macro lnk_add(my_href) %}
 <a href="{{my_href}}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip" title="{{_('Add a new record')}}">
