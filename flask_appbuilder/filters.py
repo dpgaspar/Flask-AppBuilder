@@ -69,7 +69,7 @@ class TemplateFilters(object):
         return request.args.get('next')
         
     @app_template_filter('get_link_back')
-    def get_link_next_filter(self, s):
+    def get_link_back_filter(self, s):
         return request.args.get('next') or request.referrer
     
 
