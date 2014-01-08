@@ -1,7 +1,7 @@
 import re
 from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file
 from flask.ext.login import login_required
-from flask.ext.babel import gettext, ngettext, lazy_gettext
+from flask.ext.appbuilder.babel import gettext, ngettext, lazy_gettext
 from forms import GeneralModelConverter
 from .filemanager import uuid_originalname
 from urltools import *
@@ -45,9 +45,7 @@ class BaseView(object):
     
     template_folder = 'templates'
     static_folder='static'
-    
-    base_permissions = None
-    
+    base_permissions = None    
     default_view = 'list'
 
     def __init__(self):
@@ -111,7 +109,11 @@ class BaseView(object):
                                         attr_name,
                                         attr,
                                         methods=methods)
-        
+    
+    
+    def render_template(self, template, **kwargs):
+        kwargs['_'] = babel.gettext
+        return render_template(template, **kwargs)
 
     def _prettify_name(self, name):
         """
