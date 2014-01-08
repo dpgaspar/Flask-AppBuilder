@@ -8,7 +8,7 @@ from ..widgets import SearchWidget
 from ..security.decorators import has_access
 from ..views import BaseModelView, expose
 from ..forms import GeneralModelConverter
-
+from ..urltools import *
 
 class BaseChartView(BaseModelView):
     """
@@ -63,9 +63,9 @@ class ChartView(BaseChartView):
     @has_access
     def chart(self):
         form = self.search_form.refresh()
-        self._get_filter_args()
+        get_filter_args(self._filters)
         
-        group_by = self._get_group_by_args()
+        group_by = get_group_by_args()
         if group_by == '':
             group_by = self.group_by_columns[0]
         value_columns = self.datamodel.query_simple_group(group_by, filters= self._filters)
@@ -94,8 +94,8 @@ class TimeChartView(BaseChartView):
     @has_access
     def chart(self,period):
         form = self.search_form.refresh()
-        self._get_filter_args()
-        group_by = self._get_group_by_args()
+        get_filter_args(self._filters)
+        group_by = get_group_by_args()
         
         if group_by == '':
             group_by = self.group_by_columns[0]
