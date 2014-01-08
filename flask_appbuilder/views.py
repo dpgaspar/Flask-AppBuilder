@@ -4,6 +4,7 @@ from flask.ext.login import login_required
 from flask.ext.babel import gettext, ngettext, lazy_gettext
 from forms import GeneralModelConverter
 from .filemanager import uuid_originalname
+from urltools import *
 from .security.decorators import has_access
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget, ListCarousel
 from .actions import ActionItem, action
@@ -331,60 +332,6 @@ class BaseModelView(BaseView):
             self.search_form = conv.create_form(self.label_columns,
                     {}, {}, [], self.search_columns)
         
-
-    def _get_group_by_args(self):
-        """
-            Get page arguments for group by
-        """
-        group_by = request.args.get('group_by')
-        if not group_by: group_by = ''
-        return group_by
-
-    def _get_page_args(self):
-        """
-            Get page arguments, returns a dictionary
-            { <VIEW_NAME>: PAGE_NUMBER }
-        
-            Arguments are passed: page_<VIEW_NAME>=<PAGE_NUMBER>
-        
-        """
-        pages = {}
-        for arg in request.args:
-            re_match = re.findall('page_(.*)', arg)
-            if re_match:
-                pages[re_match[0]] = int(request.args.get(arg))
-        return pages
-
-    def _get_page_size_args(self):
-        """
-            Get page size arguments, returns an int
-            { <VIEW_NAME>: PAGE_NUMBER }
-        
-            Arguments are passed: psize_<VIEW_NAME>=<PAGE_SIZE>
-        
-        """
-        page_sizes = {}
-        for arg in request.args:
-            re_match = re.findall('psize_(.*)', arg)
-            if re_match:
-                page_sizes[re_match[0]] = int(request.args.get(arg))
-        return page_sizes
-        
-    def _get_order_args(self):
-        """
-            Get order arguments, return a dictionary
-            { <VIEW_NAME>: (ORDER_COL, ORDER_DIRECTION) }
-        
-            Arguments are passed like: _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
-        
-        """
-        orders = {}
-        for arg in request.args:
-            re_match = re.findall('_oc_(.*)', arg)
-            if re_match:
-                orders[re_match[0]] = (request.args.get(arg),request.args.get('_od_' + re_match[0]))
-        return orders
-
     def _get_filter_args(self):
         self._filters.clear_filters()
         for arg in request.args:
@@ -746,11 +693,11 @@ class GeneralView(BaseCRUDView):
 
         form = self.search_form.refresh()
         
-        if self._get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = self._get_order_args().get(self.__class__.__name__)
+        if get_order_args().get(self.__class__.__name__):
+            order_column, order_direction = get_order_args().get(self.__class__.__name__)
         else: order_column, order_direction = '',''
-        page = self._get_page_args().get(self.__class__.__name__)
-        page_size = self._get_page_size_args().get(self.__class__.__name__)
+        page = get_page_args().get(self.__class__.__name__)
+        page_size = get_page_size_args().get(self.__class__.__name__)
         
         self._get_filter_args()
         
@@ -777,9 +724,9 @@ class GeneralView(BaseCRUDView):
     @has_access
     def show(self, pk):
 
-        pages = self._get_page_args()
-        page_sizes = self._get_page_size_args()
-        orders = self._get_order_args()
+        pages = get_page_args()
+        page_sizes = get_page_size_args()
+        orders = get_order_args()
 
         widgets = self._get_show_widget(pk)
         item = self.datamodel.get(pk)
@@ -836,9 +783,9 @@ class GeneralView(BaseCRUDView):
     @has_access
     def edit(self, pk = 0):
 
-        pages = self._get_page_args()
-        page_sizes = self._get_page_size_args()
-        orders = self._get_order_args()
+        pages = get_page_args()
+        page_sizes = get_page_size_args()
+        orders = get_order_args()
         
         item = self.datamodel.get(pk)
         self._get_filter_args()
