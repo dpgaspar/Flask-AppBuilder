@@ -1,6 +1,5 @@
 
-
-def _get_group_by_args(self):
+def get_group_by_args():
     """
         Get page arguments for group by
     """
@@ -8,7 +7,7 @@ def _get_group_by_args(self):
     if not group_by: group_by = ''
     return group_by
 
-def _get_page_args(self):
+def get_page_args():
     """
         Get page arguments, returns a dictionary
         { <VIEW_NAME>: PAGE_NUMBER }
@@ -23,7 +22,7 @@ def _get_page_args(self):
             pages[re_match[0]] = int(request.args.get(arg))
     return pages
 
-def _get_page_size_args(self):
+def get_page_size_args():
     """
         Get page size arguments, returns an int
         { <VIEW_NAME>: PAGE_NUMBER }
@@ -38,7 +37,7 @@ def _get_page_size_args(self):
             page_sizes[re_match[0]] = int(request.args.get(arg))
     return page_sizes
         
-def _get_order_args(self):
+def get_order_args():
     """
         Get order arguments, return a dictionary
         { <VIEW_NAME>: (ORDER_COL, ORDER_DIRECTION) }
@@ -53,9 +52,9 @@ def _get_order_args(self):
             orders[re_match[0]] = (request.args.get(arg),request.args.get('_od_' + re_match[0]))
     return orders
 
-def _get_filter_args(self):
-    self._filters.clear_filters()
+def get_filter_args(filters):
+    filters.clear_filters()
     for arg in request.args:
         re_match = re.findall('_flt_(\d)_(.*)', arg)
         if re_match:
-            self._filters.add_filter_index(re_match[0][1], int(re_match[0][0]), request.args.get(arg))
+            filters.add_filter_index(re_match[0][1], int(re_match[0][0]), request.args.get(arg))
