@@ -1,3 +1,4 @@
+import re
 from flask import url_for, request
 
 def get_group_by_args():
