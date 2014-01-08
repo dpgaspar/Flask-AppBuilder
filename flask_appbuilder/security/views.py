@@ -127,7 +127,7 @@ class UserGeneralView(GeneralView):
     list_columns = ['full_name', 'username', 'email','active', 'role']
     show_columns = ['first_name','last_name','username', 'active', 'email','role']
     order_columns = ['username', 'email']
-    search_columns = ['first_name','last_name', 'username', 'email','active','role']
+    search_columns = ['first_name','last_name', 'username', 'email','role']
 
     add_columns = ['first_name','last_name','username', 'active', 'email','role']
     edit_columns = ['first_name','last_name','username', 'active', 'email','role']
