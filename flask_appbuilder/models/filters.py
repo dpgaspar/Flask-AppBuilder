@@ -174,9 +174,6 @@ class Filters(object):
                     FilterGreater(col, datamodel), 
                     FilterSmaller(col, datamodel),
                     FilterNotEqual(col, datamodel)]
-            elif datamodel.is_boolean(col):
-                return [FilterEqual(col, datamodel),
-                    FilterNotEqual(col, datamodel)]
             else:
                 print "Filter type not supported for column: %s" % (col)
                 return None
