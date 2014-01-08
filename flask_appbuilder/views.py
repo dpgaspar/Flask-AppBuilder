@@ -331,13 +331,6 @@ class BaseModelView(BaseView):
         if not self.search_form:
             self.search_form = conv.create_form(self.label_columns,
                     {}, {}, [], self.search_columns)
-        
-    def _get_filter_args(self):
-        self._filters.clear_filters()
-        for arg in request.args:
-            re_match = re.findall('_flt_(\d)_(.*)', arg)
-            if re_match:
-                self._filters.add_filter_index(re_match[0][1], int(re_match[0][0]), request.args.get(arg))
 
 
     def _get_search_widget(self, form = None, exclude_cols = [], widgets = {}):
@@ -699,7 +692,7 @@ class GeneralView(BaseCRUDView):
         page = get_page_args().get(self.__class__.__name__)
         page_size = get_page_size_args().get(self.__class__.__name__)
         
-        self._get_filter_args()
+        get_filter_args(self._filters)
         
         widgets = self._get_list_widget(filters = self._filters, 
                     order_column = order_column, 
@@ -751,7 +744,7 @@ class GeneralView(BaseCRUDView):
     @has_access
     def add(self):
 
-        self._get_filter_args()
+        get_filter_args(self._filters)
 
         form = self.add_form.refresh()
         exclude_cols = self._filters.get_relation_cols()
@@ -788,7 +781,7 @@ class GeneralView(BaseCRUDView):
         orders = get_order_args()
         
         item = self.datamodel.get(pk)
-        self._get_filter_args()
+        get_filter_args(self._filters)
         exclude_cols = self._filters.get_relation_cols()
 
         if request.method == 'POST':
