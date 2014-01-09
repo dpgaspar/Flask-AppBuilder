@@ -1,7 +1,7 @@
 import re
 from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file
 from flask.ext.login import login_required
-from flask.ext.appbuilder.babel import gettext, ngettext, lazy_gettext
+from flask.ext.babel import gettext, ngettext, lazy_gettext
 from forms import GeneralModelConverter
 from .filemanager import uuid_originalname
 from urltools import *
