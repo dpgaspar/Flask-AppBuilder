@@ -5,6 +5,9 @@ Improvements and Bug fixes on 0.4.4
 -----------------------------------
 
 - fix, security userinfo without has_access decorator
+- fix, encoding on search widget (List users breaks on portuguese).
+- New, Babel package support, using fork of flask-babel. No need to use translations from flask-appbuilder-skeleton
+- New, safe back button
 
 Improvements and Bug fixes on 0.4.3
 -----------------------------------

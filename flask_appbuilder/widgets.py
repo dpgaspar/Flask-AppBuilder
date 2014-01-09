@@ -63,9 +63,9 @@ class SearchWidget(FormWidget):
         search_filters = {}
         dict_filters = self.filters.get_search_filters()
         for col in self.include_cols:
-            label_columns[col] = self.form[col].label.text.encode('utf-8')
+            label_columns[col] = unicode(self.form[col].label.text)
             form_fields[col] = self.form[col]()
-            search_filters[col] = [flt.name.encode('utf-8') for flt in dict_filters[col]]                
+            search_filters[col] = [unicode(flt.name) for flt in dict_filters[col]]                
 
         kwargs['label_columns'] = label_columns
         kwargs['form_fields'] = form_fields

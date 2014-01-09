@@ -70,7 +70,6 @@ class TemplateFilters(object):
         
     @app_template_filter('get_link_back')
     def get_link_back_filter(self, request):
-        print "FILTER BACK", request.args.get('next') or request.referrer
         return request.args.get('next') or request.referrer
     
 
