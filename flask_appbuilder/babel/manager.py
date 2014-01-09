@@ -6,8 +6,8 @@ class  BabelManager(object):
     babel = None
     basel_default_locale = ''
 
-    def __init__(self, app):
-        self.babel = Babel(app)
+    def __init__(self, app, pkg_translations):
+        self.babel = Babel(app, pkg_translations)
         self.basel_default_locale = self._get_default_locale(app)
         self.babel.locale_selector_func = self.get_locale
         
