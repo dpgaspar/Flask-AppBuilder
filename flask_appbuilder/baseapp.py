@@ -6,6 +6,7 @@ from filters import TemplateFilters
 from flask import Blueprint
 from flask.ext.babel import gettext as _gettext, lazy_gettext
 from flask.ext.appbuilder.babel.manager import BabelManager
+from flask.ext.appbuilder import translations
 from menu import Menu
 
 
@@ -70,7 +71,7 @@ class BaseApp():
         self.db = db
                     
         self.sm = SecurityManager(app, db.session)
-        self.babelmanager = BabelManager(app)
+        self.babelmanager = BabelManager(app, translations)
         
         if menu:
             self.menu = menu
