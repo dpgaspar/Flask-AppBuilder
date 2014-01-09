@@ -71,7 +71,7 @@ class BaseApp():
         self.db = db
                     
         self.sm = SecurityManager(app, db.session)
-        self.babelmanager = BabelManager(app, translations)
+        self.babelmanager = BabelManager(app, pkg_translations=translations)
         
         if menu:
             self.menu = menu
