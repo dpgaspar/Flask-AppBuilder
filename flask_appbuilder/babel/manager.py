@@ -1,4 +1,4 @@
-from babel import Babel
+from flask.ext.babel import Babel
 from flask import session
 
 class  BabelManager(object):
