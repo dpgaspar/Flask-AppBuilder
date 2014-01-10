@@ -62,7 +62,7 @@ class SecurityManager(object):
         else:
             user_view = baseapp._init_view_session(UserOIDGeneralView)
             self.auth_view = AuthOIDView()            
-            self.oid.after_login_func = auth_view.after_login
+            self.oid.after_login_func = self.auth_view.after_login
         
         baseapp.add_view_no_menu(self.auth_view)
         
