@@ -74,8 +74,7 @@ class ResetMyPasswordView(SimpleFormView):
     message = lazy_gettext('Password Changed')
 
     def form_post(self, form):
-        pk = request.args.get('pk')
-        self.baseapp.sm.reset_password(pk, form.password.data)
+        self.baseapp.sm.reset_password(g.user.id, form.password.data)
         flash(unicode(self.message),'info')
 
 
