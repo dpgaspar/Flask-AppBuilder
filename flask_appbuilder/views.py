@@ -577,8 +577,10 @@ class BaseCRUDView(BaseModelView):
         return widgets
 
 
-    def _get_show_widget(self, id, widgets = None, show_additional_links = []):
+    def _get_show_widget(self, id, widgets = None, actions = None, show_additional_links = None):
         widgets = widgets or {}
+        actions = actions or self.actions
+        show_additional_links = show_additional_links or []
         if show_additional_links:
             additional_links = show_additional_links
         else: additional_links = self.show_additional_links
@@ -589,7 +591,7 @@ class BaseCRUDView(BaseModelView):
                                                 include_columns = self.show_columns,
                                                 value_columns = self.datamodel.get_values_item(item, self.show_columns),
                                                 additional_links = additional_links,
-                                                actions = self.actions,
+                                                actions = actions,
                                                 fieldsets = self.show_fieldsets
                                                 )
         return widgets
