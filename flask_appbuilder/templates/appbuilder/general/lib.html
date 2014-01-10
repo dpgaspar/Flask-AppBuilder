@@ -190,7 +190,7 @@
 <div class="well well-sm">
 	<button type="submit" class="btn  btn-sm btn-primary">{{_("Save")}}
 	<span class="glyphicon glyphicon-save"></span></button>
-        <INPUT Type="button" class="btn  btn-sm btn-primary" VALUE="{{_('Back')}}" onClick="history.go(-1);return true;">
+        {{ lnk_back() }}
 </div>
 {% endmacro %}
 
