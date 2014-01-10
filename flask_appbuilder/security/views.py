@@ -171,16 +171,24 @@ class UserDBGeneralView(UserGeneralView):
     @has_access
     def userinfo(self):
         #show_additional_links = [AdditionalLinkItem('resetmypassword', self.lnk_reset_password,"/resetmypassword/form","lock")]
-        widgets = self._get_show_widget(g.user.id) #, show_additional_links = show_additional_links)
+        actions = {}
+        actions['resetmypassword'] = self.actions.get('resetmypassword')
+        widgets = self._get_show_widget(g.user.id, actions = actions) #, show_additional_links = show_additional_links)
+        actions['resetmypassword'] = self.actions.get('resetmypassword')
         return render_template(self.show_template,
                            title = self.user_info_title,
                            widgets = widgets,
                            baseapp = self.baseapp,
                            )
 
-    @action('resetmypassword', 'Reset Password')
+    @action('resetmypassword', 'Reset My Password')
     def resetmypassword(self, item):
         return redirect(url_for('ResetMyPasswordView.this_form_get'))
+        
+    @action('resetpasswords', 'Reset Password')
+    def resetpasswords(self, item):
+        return redirect(url_for('ResetPasswordView.this_form_get', pk=item.id))
+    
 
 class RoleGeneralView(GeneralView):
     route_base = '/roles'
