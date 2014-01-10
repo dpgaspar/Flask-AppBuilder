@@ -180,7 +180,7 @@ class UserDBGeneralView(UserGeneralView):
 
     @action('resetmypassword', 'Reset Password')
     def resetmypassword(self, item):
-        return redirect(url_for('ResetMyPasswordView.form_get'))
+        return redirect(url_for('ResetMyPasswordView.this_form_get'))
 
 class RoleGeneralView(GeneralView):
     route_base = '/roles'
