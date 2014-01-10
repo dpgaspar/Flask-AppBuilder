@@ -7,6 +7,7 @@ Improvements and Bug fixes on 0.4.4
 - fix, security userinfo without has_access decorator
 - fix, encoding on search widget (List users breaks on portuguese).
 - New, safe back button
+- fix, oid authentication failed.
 
 Improvements and Bug fixes on 0.4.3
 -----------------------------------
