@@ -4,10 +4,11 @@ Versions
 Improvements and Bug fixes on 0.4.4
 -----------------------------------
 
-- fix, security userinfo without has_access decorator
+- fix, security userinfo without has_access decorator.
 - fix, encoding on search widget (List users breaks on portuguese).
-- New, safe back button
+- New, safe back button.
 - fix, oid authentication failed.
+- New, Change flask-babel to flask-babelpkg to support independent extension translations.
 
 Improvements and Bug fixes on 0.4.3
 -----------------------------------

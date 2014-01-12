@@ -7,7 +7,7 @@ from openid.extensions import ax
 from openid.extensions.sreg import SRegRequest, SRegResponse
 from flask.ext.openid import SessionWrapper, OpenIDResponse
 from flask.ext.wtf import Required, Length, validators, EqualTo, PasswordField
-from flask.ext.babel import gettext, lazy_gettext
+from flask.ext.babelpkg import gettext, lazy_gettext
 from flask.ext.login import login_user, logout_user, current_user, \
     login_required
 

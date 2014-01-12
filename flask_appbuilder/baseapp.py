@@ -4,7 +4,7 @@ from .security.manager import SecurityManager
 from .views import IndexView
 from filters import TemplateFilters
 from flask import Blueprint
-from flask.ext.babel import gettext as _gettext, lazy_gettext
+from flask.ext.babelpkg import gettext as _gettext, lazy_gettext
 from flask.ext.appbuilder.babel.manager import BabelManager
 from flask.ext.appbuilder import translations
 from menu import Menu

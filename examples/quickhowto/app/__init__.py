@@ -3,35 +3,12 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
-from flask.ext.babel import Babel
 from config import basedir
 
-"""
-# Include this for Flask-AppBuilder 0.2.X
-
-from flask.ext.login import LoginManager
-from flask.ext.openid import OpenID
-
-"""
 
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
-
-"""
-# Include Babel init if prior 0.3.5
-
-babel = Babel(app)
-"""
-
-"""
-# Include this for Flask-AppBuilder 0.2.X
-
-lm = LoginManager()
-lm.init_app(app)
-lm.login_view = 'login'
-oid = OpenID(app, os.path.join(basedir, 'tmp'))
-"""
 
 
 """

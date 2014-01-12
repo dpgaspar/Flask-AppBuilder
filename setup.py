@@ -28,7 +28,7 @@ setup(
     platforms='any',
     install_requires=[
         'Flask>=0.10',
-        'Flask-Babel>=0.8',
+        'Flask-BabelPkg>=0.9',
         'Flask-Login>=0.2.0',
         'Flask-OpenID>=1.1.0',
         'Flask-SQLAlchemy==0.16',

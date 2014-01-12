@@ -1,7 +1,7 @@
 import re
 from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file
 from flask.ext.login import login_required
-from flask.ext.babel import gettext, ngettext, lazy_gettext
+from flask.ext.babelpkg import gettext, ngettext, lazy_gettext
 from forms import GeneralModelConverter
 from .filemanager import uuid_originalname
 from urltools import *
@@ -851,6 +851,7 @@ class GeneralView(BaseCRUDView):
 
 
     @expose('/action/<string:name>/<int:pk>')
+    @has_access
     def action(self, name, pk):
         action = self.actions.get(name)
         return action.func(self.datamodel.get(pk))

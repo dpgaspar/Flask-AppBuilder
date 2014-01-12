@@ -1,4 +1,4 @@
-from flask.ext.babel import Babel
+from flask.ext.babelpkg import Babel
 from flask import session
 
 class  BabelManager(object):
@@ -16,7 +16,7 @@ class  BabelManager(object):
             self.basel_default_locale = app.config['BABEL_DEFAULT_LOCALE']
         else:
             self.basel_default_locale = 'en'
-        
+
     def get_locale(self):
         locale = session.get('locale')
         if locale:

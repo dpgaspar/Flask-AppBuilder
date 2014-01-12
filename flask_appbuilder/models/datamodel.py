@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from itertools import groupby
 from flask import flash
-from flask.ext.babel import gettext, ngettext, lazy_gettext
+from flask.ext.babelpkg import gettext, ngettext, lazy_gettext
 from sqlalchemy.orm import class_mapper, joinedload
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import MetaData
