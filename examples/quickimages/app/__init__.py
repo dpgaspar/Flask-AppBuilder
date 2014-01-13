@@ -3,7 +3,6 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
-from flask.ext.babel import Babel
 from config import basedir
 
 

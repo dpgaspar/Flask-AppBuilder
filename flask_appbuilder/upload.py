@@ -16,7 +16,7 @@ from .filemanager import ImageManager, FileManager
 class BS3FileUploadFieldWidget(object):
     
     empty_template = ('<div class="input-group">'
-                    '<span class="input-group-addon"><span class="glyphicon glyphicon-upload"></span>'
+                    '<span class="input-group-addon"><i class="fa fa-upload"></i>'
                     '</span>'
                     '<input class="form-control" %(file)s/>'
         '</div>'
@@ -27,7 +27,7 @@ class BS3FileUploadFieldWidget(object):
                      ' <input type="checkbox" name="%(marker)s">Delete</input>'
                      '</div>'
                      '<div class="input-group">'
-                    '<span class="input-group-addon"><span class="glyphicon glyphicon-upload"></span>'
+                    '<span class="input-group-addon"><i class="fa fa-upload"></i>'
                     '</span>'
                     '<input class="form-control" %(file)s/>'
         '</div>'

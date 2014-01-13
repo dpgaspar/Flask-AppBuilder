@@ -12,6 +12,7 @@ Improvements and Bug fixes on 0.5.0
 - fix, login forms with complete translations.
 - New, actions on records use @action decorator.
 - New, support for primary keys of any type.
+- New, Font-Awesome included
 
 Improvements and Bug fixes on 0.4.3
 -----------------------------------

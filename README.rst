@@ -45,6 +45,7 @@ Includes:
   - i18n
 	- Support for multi-language via Babel
   - Bootstrap 3.0.3 CSS and js, with Select2 and DatePicker
+  - Font-Awesome icons, for menu icons and actions.
 
 
 Some pictures

@@ -9,7 +9,7 @@
 				{% if item2.childs %}
 					<li class="dropdown">
                         	        <a tabindex="-1" href="{{item2.get_url()}}">
-                        	        <span class="glyphicon glyphicon-{{item2.icon}}"></span> - {{_(item2.name)}}</a>
+                        	        <i class="fa {{item2.icon}}"></i> - {{_(item2.name)}}</a>
 					</li>
 				{% else %}
 					{% if item2.name == '-' %}
@@ -17,7 +17,7 @@
                                 	{% else %}
 						{% if item2 | is_menu_visible %}
 						<li><a tabindex="-1" href="{{item2.get_url()}}">
-						<span class="glyphicon glyphicon-{{item2.icon}}"></span> - {{_(item2.name)}}</a></li>
+						<i class="fa {{item2.icon}}"></i> - {{_(item2.name)}}</a></li>
 						{% endif %}
 					{% endif %}
 				{% endif %}
@@ -78,10 +78,10 @@
                 <ul class="nav navbar-nav navbar-right">
                 {{ locale_menu(languages) }}
                 {% if not current_user.is_anonymous() %}
-				<li><a href="/logout">{{_("Logout")}}</a></li>
-                                <li><a class="pull-right" href="/users/userinfo">User: {{g.user.get_full_name()}}</a></li>
+				<li><a href="/logout"><i class="fa fa-sign-out"></i>{{_("Logout")}}</a></li>
+                                <li><a class="pull-right" href="/users/userinfo"><i class="fa fa-user"></i> {{g.user.get_full_name()}}</a></li>
                 {% else %}
-                                <li><a href="/login">Login</a></li>
+                                <li><a href="/login"><i class="fa fa-sign-in"></i>{{_("Login")}}</a></li>
                 {% endif %}
                 </ul>
         </div>

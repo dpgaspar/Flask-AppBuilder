@@ -185,11 +185,11 @@ class UserDBGeneralView(UserGeneralView):
                            baseapp = self.baseapp,
                            )
 
-    @action('resetmypassword', lazy_gettext("Reset my password"))
+    @action('resetmypassword', lazy_gettext("Reset my password"), "", "fa-lock")
     def resetmypassword(self, item):
         return redirect(url_for('ResetMyPasswordView.this_form_get'))
         
-    @action('resetpasswords', lazy_gettext("Reset Password"))
+    @action('resetpasswords', lazy_gettext("Reset Password"), "", "fa-lock")
     def resetpasswords(self, item):
         return redirect(url_for('ResetPasswordView.this_form_get', pk=item.id))
     

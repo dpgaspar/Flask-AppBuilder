@@ -11,13 +11,13 @@ You can add your own translations, and your own language support. Take a look at
 Babel Quick How to Config
 -------------------------
 
-On you projects root create a babel directory, then create and edit a file named babel.cfg with the following content::
+On you projects root create a directory named babel, then create and edit a file named babel.cfg with the following content::
 
 	[python: **.py]
 	[jinja2: **/templates/**.html]
 	encoding = utf-8
 	
-Then extract your strings to be translated, execute on you projects root::
+Next extract your strings to be translated, execute on you projects root::
 
 	pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
 	
@@ -81,6 +81,15 @@ Let's work with the contacts application example, so you want to add translation
 
     pybabel update -i ./babel/messages.pot -d app/translations
 	pybabel compile -d app/translations
+
+4 - Add your language support to the framework
+
+	- On config tell the framework the languages you support. With this you will have a menu with the corresponding languages country flags::
+	
+		LANGUAGES = {
+ 		   'en': {'flag':'gb', 'name':'English'},
+    	   'pt': {'flag':'pt', 'name':'Portuguese'}
+    	}
 
 And thats it!
 

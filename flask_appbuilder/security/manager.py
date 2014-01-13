@@ -65,16 +65,16 @@ class SecurityManager(object):
         baseapp.add_view_no_menu(self.auth_view)
         
         baseapp.add_view(user_view, "List Users"
-                                        ,"/users/list","user",
+                                        ,"/users/list","fa-user",
                                         "Security")
                  
         role_view = baseapp._init_view_session(RoleGeneralView)                       
-        baseapp.add_view(role_view, "List Roles","/roles/list","tags","Security")
+        baseapp.add_view(role_view, "List Roles","/roles/list","fa-group","Security")
         role_view.related_views = [user_view]
         baseapp.menu.add_separator("Security")
-        baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView), "Base Permissions","/permissions/list","lock","Security")
-        baseapp.add_view(baseapp._init_view_session(ViewMenuGeneralView), "Views/Menus","/viewmenus/list","list-alt","Security")
-        baseapp.add_view(baseapp._init_view_session(PermissionGeneralView), "Permission on Views/Menus","/permissionviews/list","lock","Security")
+        baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView), "Base Permissions","/permissions/list","fa-lock","Security")
+        baseapp.add_view(baseapp._init_view_session(ViewMenuGeneralView), "Views/Menus","/viewmenus/list","fa-list-alt","Security")
+        baseapp.add_view(baseapp._init_view_session(PermissionGeneralView), "Permission on Views/Menus","/permissionviews/list","fa-link","Security")
 
 
     def load_user(self, pk):

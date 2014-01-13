@@ -40,12 +40,14 @@ class ContactTimeChartView(TimeChartView):
 
 fixed_translations_import = [
         _("List Groups"),
-        _("List Contacts")]
+        _("List Contacts"),
+        _("Contacts Chart"),
+        _("Contacts Birth Chart")]
         
 genapp = BaseApp(app, db)
-genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "Contacts")
-genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")
+genapp.add_view(GroupGeneralView(), "List Groups",icon = "fa-folder-open-o",category = "Contacts")
+genapp.add_view(ContactGeneralView(), "List Contacts",icon = "fa-envelope",category = "Contacts")
 genapp.add_separator("Contacts")
-genapp.add_view(ContactChartView(), "Contacts Chart","/contactchartview/chart","signal","Contacts")
-genapp.add_view(ContactTimeChartView(), "Contacts Birth Chart","/contacttimechartview/chart/month","signal","Contacts")
+genapp.add_view(ContactChartView(), "Contacts Chart","/contactchartview/chart","fa-dashboard","Contacts")
+genapp.add_view(ContactTimeChartView(), "Contacts Birth Chart","/contacttimechartview/chart/month","fa-dashboard","Contacts")
 
