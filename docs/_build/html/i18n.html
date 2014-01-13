@@ -63,58 +63,54 @@
 <h1>i18n Translations<a class="headerlink" href="#i18n-translations" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>If your working with the base skeleton application <a class="reference internal" href="instalation.html"><em>Instalation</em></a></p>
-<p>you now have the following directory structure:</p>
-<div class="highlight-python"><pre>&lt;your project name&gt;/
-    babel/
-        babel.cfg : Babel configuration
-        messages.pot : All your applications messages
-    config.py : All the applications configuration
-    run.py    : A runner mainly for debug
-    app/
-        __init__.py : Application's initialization
-        models.py : Declare your database models here
-        views.py  : Implement your views here
-        translations/
-            pt/
-                LC_MESSAGES/
-                    messages.po
-            es/
-                LC_MESSAGES/
-                    messages.po</pre>
+<p>Since version 0.5 translations from F.A.B. are independent from your application&#8217;s translations. This means you no longer need to use flask-appbuilder-skeleton and don&#8217;t have to merge your translations with the ones from the framework.</p>
+<p>You can add your own translations, and your own language support. Take a look at <a class="reference external" href="http://pythonhosted.org/Flask-Babel">Flask-Babel</a> for setup an babel initial configuration.</p>
 </div>
-<p>Take a close look at the &#8216;babel&#8217; directory and the &#8216;translations&#8217; directory, these will hold all your messages.
-This is a tipical babel configuration, take a look at Flask-Babel project.</p>
-<p>You can add your own translations, and your own language support.</p>
+<div class="section" id="babel-quick-how-to-config">
+<h2>Babel Quick How to Config<a class="headerlink" href="#babel-quick-how-to-config" title="Permalink to this headline">¶</a></h2>
+<p>On you projects root create a directory named babel, then create and edit a file named babel.cfg with the following content:</p>
+<div class="highlight-python"><pre>[python: **.py]
+[jinja2: **/templates/**.html]
+encoding = utf-8</pre>
+</div>
+<p>Next extract your strings to be translated, execute on you projects root:</p>
+<div class="highlight-python"><pre>pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .</pre>
+</div>
+<p>Finaly create your translations, for example to portuguese, spanish and german, execute on you projects root:</p>
+<div class="highlight-python"><pre>pybabel init -i ./babel/messages.pot -d app/translations -l de
+pybabel init -i ./babel/messages.pot -d app/translations -l es
+pybabel init -i ./babel/messages.pot -d app/translations -l de</pre>
+</div>
 </div>
 <div class="section" id="quick-how-to">
 <h2>Quick How to<a class="headerlink" href="#quick-how-to" title="Permalink to this headline">¶</a></h2>
 <p>Let&#8217;s work with the contacts application example, so you want to add translations for the menus &#8220;List Groups&#8221; and &#8220;List Contacts&#8221;.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;th-large&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>1 - Add the messages to the main messages file</p>
-<blockquote>
-<div><ul>
-<li><p class="first">On babel/messages.pot add:</p>
-<div class="highlight-python"><pre>msgid "List Groups"
-msgstr ""
+<div class="highlight-python"><pre>        from flask.ext.babelpkg import lazy_gettext as _
 
-msgid "List Contacts"
-msgstr ""</pre>
+        class GroupGeneralView(GeneralView):
+        datamodel = SQLAModel(Group, db.session)
+        related_views = [ContactGeneralView()]
+
+                label_columns = {'name':_('Name')}
+
+        fixed_translations_import = [
+        _("List Groups"),
+        _("List Contacts")
+
+genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "Contacts")
+genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")</pre>
 </div>
-</li>
-</ul>
-</div></blockquote>
-<p>2 - Run the babel extraction shell script provided:</p>
-<div class="highlight-python"><pre>./babel_extract.sh</pre>
+<p>1 - Run the folowing extraction script:</p>
+<div class="highlight-python"><pre>pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .</pre>
 </div>
-<p>3 - Make your translations</p>
+<p>2 - Make your translations</p>
 <blockquote>
 <div><ul>
 <li><p class="first">On app/translations/pt/LC_MESSAGES/messages.po you will find the messages you added to translate:</p>
-<div class="highlight-python"><pre>msgid "List Groups"
+<div class="highlight-python"><pre>msgid "Name"
+msgstr ""
+
+msgid "List Groups"
 msgstr ""
 
 msgid "List Contacts"
@@ -122,7 +118,10 @@ msgstr ""</pre>
 </div>
 </li>
 <li><p class="first">Translate them:</p>
-<div class="highlight-python"><pre>msgid "List Groups"
+<div class="highlight-python"><pre>msgid "Nome"
+msgstr ""
+
+msgid "List Groups"
 msgstr "Lista de Grupos"
 
 msgid "List Contacts"
@@ -131,9 +130,23 @@ msgstr "Lista de Contactos"</pre>
 </li>
 </ul>
 </div></blockquote>
-<p>4 - Run the babel extraction shell script provided:</p>
-<div class="highlight-python"><pre>./babel_extract.sh</pre>
+<p>3 - Run the babel extraction again:</p>
+<div class="highlight-python"><pre>pybabel update -i ./babel/messages.pot -d app/translations
+    pybabel compile -d app/translations</pre>
 </div>
+<p>4 - Add your language support to the framework</p>
+<blockquote>
+<div><ul>
+<li><p class="first">On config tell the framework the languages you support. With this you will have a menu with the corresponding languages country flags:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">LANGUAGES</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="s">&#39;en&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;flag&#39;</span><span class="p">:</span><span class="s">&#39;gb&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;English&#39;</span><span class="p">},</span>
+   <span class="s">&#39;pt&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;flag&#39;</span><span class="p">:</span><span class="s">&#39;pt&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;Portuguese&#39;</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
 <p>And thats it!</p>
 </div>
 </div>
@@ -148,6 +161,7 @@ msgstr "Lista de Contactos"</pre>
   <ul>
 <li><a class="reference internal" href="#">i18n Translations</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#babel-quick-how-to-config">Babel Quick How to Config</a></li>
 <li><a class="reference internal" href="#quick-how-to">Quick How to</a></li>
 </ul>
 </li>

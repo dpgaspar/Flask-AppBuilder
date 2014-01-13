@@ -51,7 +51,11 @@ Includes:
 Some pictures
 -------------
 
-`Login page (with AUTH_DB): <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login.png>`_
+`Login page (with AUTH_DB): <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_db.png>`_
+
+`Login page (with AUTH_OID): <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_oid.png>`_
+
+`Security: <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/security.png>`_
 
 Lists:
 

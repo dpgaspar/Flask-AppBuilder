@@ -84,12 +84,12 @@ Let's work with the contacts application example, so you want to add translation
 
 4 - Add your language support to the framework
 
-	- On config tell the framework the languages you support. With this you will have a menu with the corresponding languages country flags::
-	
-		LANGUAGES = {
- 		   'en': {'flag':'gb', 'name':'English'},
-    	   'pt': {'flag':'pt', 'name':'Portuguese'}
-    	}
+     - On config tell the framework the languages you support. With this you will have a menu with the corresponding languages country flags::
+
+        LANGUAGES = {
+           'en': {'flag':'gb', 'name':'English'},
+           'pt': {'flag':'pt', 'name':'Portuguese'}
+        }
 
 And thats it!
 

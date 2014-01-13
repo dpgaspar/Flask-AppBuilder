@@ -4,32 +4,28 @@ i18n Translations
 Introduction
 ------------
 
-If your working with the base skeleton application :doc:`instalation`
+Since version 0.5 translations from F.A.B. are independent from your application's translations. This means you no longer need to use flask-appbuilder-skeleton and don't have to merge your translations with the ones from the framework.
 
-you now have the following directory structure::
+You can add your own translations, and your own language support. Take a look at `Flask-Babel <http://pythonhosted.org/Flask-Babel>`_ for setup an babel initial configuration.  
 
-    <your project name>/
-        babel/
-            babel.cfg : Babel configuration
-            messages.pot : All your applications messages
-        config.py : All the applications configuration
-        run.py    : A runner mainly for debug
-        app/
-            __init__.py : Application's initialization
-            models.py : Declare your database models here
-            views.py  : Implement your views here
-            translations/
-                pt/
-                    LC_MESSAGES/
-                        messages.po
-                es/
-                    LC_MESSAGES/
-                        messages.po
+Babel Quick How to Config
+-------------------------
 
-Take a close look at the 'babel' directory and the 'translations' directory, these will hold all your messages.                         
-This is a tipical babel configuration, take a look at Flask-Babel project.
+On you projects root create a directory named babel, then create and edit a file named babel.cfg with the following content::
 
-You can add your own translations, and your own language support.  
+	[python: **.py]
+	[jinja2: **/templates/**.html]
+	encoding = utf-8
+	
+Next extract your strings to be translated, execute on you projects root::
+
+	pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
+	
+Finaly create your translations, for example to portuguese, spanish and german, execute on you projects root::
+
+	pybabel init -i ./babel/messages.pot -d app/translations -l de
+	pybabel init -i ./babel/messages.pot -d app/translations -l es
+	pybabel init -i ./babel/messages.pot -d app/translations -l de
 
 Quick How to
 ------------
@@ -38,27 +34,32 @@ Let's work with the contacts application example, so you want to add translation
 
 ::
 
+		from flask.ext.babelpkg import lazy_gettext as _
+
+		class GroupGeneralView(GeneralView):
+    		datamodel = SQLAModel(Group, db.session)
+    		related_views = [ContactGeneralView()]
+
+			label_columns = {'name':_('Name')}
+
+		fixed_translations_import = [
+		_("List Groups"),
+		_("List Contacts")
+
         genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "Contacts")
         genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")
 
-1 - Add the messages to the main messages file
+1 - Run the folowing extraction script::
 
-    - On babel/messages.pot add::
-    
-        msgid "List Groups"
-        msgstr ""
+    pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
 
-        msgid "List Contacts"
-        msgstr ""
-
-2 - Run the babel extraction shell script provided::
-
-    ./babel_extract.sh
-
-3 - Make your translations
+2 - Make your translations
 
     - On app/translations/pt/LC_MESSAGES/messages.po you will find the messages you added to translate::
     
+    	msgid "Name"
+        msgstr ""
+    	    
         msgid "List Groups"
         msgstr ""
 
@@ -67,15 +68,28 @@ Let's work with the contacts application example, so you want to add translation
 
     - Translate them::
     
+    	msgid "Nome"
+        msgstr ""
+    	    
         msgid "List Groups"
         msgstr "Lista de Grupos"
 
         msgid "List Contacts"
         msgstr "Lista de Contactos"
 
-4 - Run the babel extraction shell script provided::
+3 - Run the babel extraction again::
 
-    ./babel_extract.sh
+    pybabel update -i ./babel/messages.pot -d app/translations
+	pybabel compile -d app/translations
+
+4 - Add your language support to the framework
+
+     - On config tell the framework the languages you support. With this you will have a menu with the corresponding languages country flags::
+
+        LANGUAGES = {
+           'en': {'flag':'gb', 'name':'English'},
+           'pt': {'flag':'pt', 'name':'Portuguese'}
+        }
 
 And thats it!
 

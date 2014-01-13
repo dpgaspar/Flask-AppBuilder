@@ -7,6 +7,12 @@ It's half way between a scafolding package on Bootstrap 3 and a full development
 
 This will lower errors, bugs, project's time to deliver. It's intended to be a rapid application development tool.
 
+This package has some CSS and JS batteries included:
+
+	- Google charts CSS and JS
+	- BootStrap CSS and JS
+	- Font-Awesome CSS and Fonts
+
 Includes
 --------
 
@@ -18,18 +24,18 @@ Includes
 	- Authentication based on OpenID and Database (Planning LDAP).
   - Views and Widgets
 	- Auto menu generator.
-	- Various view widgets: lists, master-detail, list of thumbnails etc
-	- Select2, Datepicker, DateTimePicker
-	- Menu with icons
+	- Various view widgets: lists, master-detail, list of thumbnails etc.
+	- Select2, Datepicker, DateTimePicker.
+	- Menu with icons.
 	- Google charts with automatic group by.
   - Forms
-	- Auto Create, Remove, Add, Edit and Show from Database Models
-	- Labels and descriptions for each field
+	- Auto Create, Remove, Add, Edit and Show from Database Models.
+	- Labels and descriptions for each field.
 	- Image and File support for upload and database field association. It will handle everything for you.
 	- Field sets for Form's (Django style).
   - i18n
-	- Support for multi-language via Babel (still not working in package form)
-  - Bootstrap 3.0.0 CSS and js, with Select2 and DatePicker
+	- Support for multi-language via Babel.
+  - Bootstrap 3.0.0 CSS and js, with Select2 and DatePicker.
 
 
 

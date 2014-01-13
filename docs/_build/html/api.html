@@ -61,6 +61,9 @@
             
   <div class="section" id="api-reference">
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="flask-ext-appbuilder-baseapp">
+<h2>flask.ext.appbuilder.baseapp<a class="headerlink" href="#flask-ext-appbuilder-baseapp" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="module-flask.ext.appbuilder.baseapp">
 <span id="baseapp"></span><h2>BaseApp<a class="headerlink" href="#module-flask.ext.appbuilder.baseapp" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -76,14 +79,25 @@ Will hold your flask app object, all your views, and security classes.</p>
 </pre></div>
 </div>
 <dl class="method">
-<dt id="flask.ext.appbuilder.baseapp.BaseApp._gettext">
-<tt class="descname">_gettext</tt><big>(</big><em>string</em>, <em>**variables</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp._gettext" title="Permalink to this definition">¶</a></dt>
-<dd><p>Translates a string with the current locale and passes in the
-given keyword arguments as mapping to a string formatting string.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">gettext</span><span class="p">(</span><span class="s">u&#39;Hello World!&#39;</span><span class="p">)</span>
-<span class="n">gettext</span><span class="p">(</span><span class="s">u&#39;Hello </span><span class="si">%(name)s</span><span class="s">!&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;World&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dt id="flask.ext.appbuilder.baseapp.BaseApp.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>app</em>, <em>db</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>BaseApp constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>app</strong> &#8211; The flask app object</li>
+<li><strong>db</strong> &#8211; The SQLAlchemy db object</li>
+<li><strong>menu</strong> &#8211; optional, a previous contructed menu</li>
+<li><strong>indexview</strong> &#8211; optional, your customized indexview</li>
+<li><strong>static_folder</strong> &#8211; optional, your override for the global static folder</li>
+<li><strong>static_url_path</strong> &#8211; optional, your override for the global static url path</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -155,11 +169,23 @@ given keyword arguments as mapping to a string formatting string.</p>
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.baseapp.BaseApp.bm">
+<tt class="descname">bm</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.bm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Babel Manager</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.baseapp.BaseApp.sm">
+<tt class="descname">sm</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.sm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Security Manager</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
 <div class="section" id="module-flask.ext.appbuilder.views">
-<span id="views"></span><h2>Views<a class="headerlink" href="#module-flask.ext.appbuilder.views" title="Permalink to this headline">¶</a></h2>
+<span id="flask-ext-appbuilder-views"></span><h2>flask.ext.appbuilder.views<a class="headerlink" href="#module-flask.ext.appbuilder.views" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="flask.ext.appbuilder.views.expose">
 <tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">expose</tt><big>(</big><em>url='/'</em>, <em>methods=('GET'</em>, <em>)</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.expose" title="Permalink to this definition">¶</a></dt>
@@ -299,7 +325,11 @@ Customize GeneralView and ChartView overriding this properties</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseModelView.datamodel">
 <tt class="descname">datamodel</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseModelView.datamodel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Your sqla model you must initialize it like datamodel = SQLAModel(Permission, session)</p>
+<dd><p>Your sqla model you must initialize it like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="attribute">
@@ -309,7 +339,7 @@ Customize GeneralView and ChartView overriding this properties</p>
 <p>example (will just override the label for name column):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
-    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;My Name Label Overrride&#39;</span><span class="p">}</span>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;My Name Label Override&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -317,7 +347,13 @@ Customize GeneralView and ChartView overriding this properties</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseModelView.search_columns">
 <tt class="descname">search_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseModelView.search_columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>List with allowed search columns, if not provided all possible search columns will be used</p>
+<dd><p>List with allowed search columns, if not provided all possible search columns will be used
+If you want to limit the search (<em>filter</em>) columns possibilities, define it with a list of column names from your model:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="attribute">
@@ -336,7 +372,7 @@ Customize GeneralView and ChartView overriding this properties</p>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">BaseCRUDView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView" title="Permalink to this definition">¶</a></dt>
-<dd><p>The base class of GeneralView, all properties are inherited
+<dd><p>The base class for GeneralView, all properties are inherited
 Customize GeneralView overriding this properties</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.add_columns">
@@ -371,7 +407,7 @@ Customize GeneralView overriding this properties</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.add_title">
 <tt class="descname">add_title</tt><em class="property"> = ''</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.add_title" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add Title</p>
+<dd><p>Add Title , if not configured the default is &#8216;Add &#8216; with pretty model name</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -384,7 +420,12 @@ Customize GeneralView overriding this properties</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.description_columns">
 <tt class="descname">description_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.description_columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dictionary with column descriptions that will be shown on the forms</p>
+<dd><p>Dictionary with column descriptions that will be shown on the forms:</p>
+<div class="highlight-python"><pre>class MyView(GeneralView):
+    datamodel = SQLAModel(MyTable, db.session)
+
+    description_columns = {'name','your models name column','address','the address column'}</pre>
+</div>
 </dd></dl>
 
 <dl class="attribute">
@@ -420,7 +461,7 @@ Customize GeneralView overriding this properties</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.edit_title">
 <tt class="descname">edit_title</tt><em class="property"> = ''</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.edit_title" title="Permalink to this definition">¶</a></dt>
-<dd><p>Edit Title</p>
+<dd><p>Edit Title , if not configured the default is &#8216;Edit &#8216; with pretty model name</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -445,7 +486,7 @@ Customize GeneralView overriding this properties</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.list_title">
 <tt class="descname">list_title</tt><em class="property"> = ''</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.list_title" title="Permalink to this definition">¶</a></dt>
-<dd><p>List Title</p>
+<dd><p>List Title, if not configured the default is &#8216;List &#8216; with pretty model name</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -464,7 +505,7 @@ Customize GeneralView overriding this properties</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.page_size">
 <tt class="descname">page_size</tt><em class="property"> = 10</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.page_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Page size</p>
+<dd><p>Use this property to change default page size</p>
 </dd></dl>
 
 <dl class="method">
@@ -547,7 +588,7 @@ That will be displayed related with this one using relationship sqlalchemy prope
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.views.BaseCRUDView.show_title">
 <tt class="descname">show_title</tt><em class="property"> = ''</em><a class="headerlink" href="#flask.ext.appbuilder.views.BaseCRUDView.show_title" title="Permalink to this definition">¶</a></dt>
-<dd><p>Show Title</p>
+<dd><p>Show Title , if not configured the default is &#8216;Show &#8216; with pretty model name</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -567,20 +608,20 @@ That will be displayed related with this one using relationship sqlalchemy prope
 
 </div></blockquote>
 </div>
-<div class="section" id="basegeneralview">
-<h2>BaseGeneralView<a class="headerlink" href="#basegeneralview" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="generalview">
+<h2>GeneralView<a class="headerlink" href="#generalview" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.views.GeneralView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">GeneralView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.GeneralView" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and search form your database tables, inherit your views from this class.</p>
-<p>Notice that this class inherits from BaseCRUDView so all properties from the parent class can be overrided also.</p>
+<p>Notice that this class inherits from BaseCRUDView so all properties from the parent class can be overriden.</p>
 </dd></dl>
 
 </div></blockquote>
 </div>
 <div class="section" id="module-flask.ext.appbuilder.charts.views">
-<span id="chart-views"></span><h2>Chart Views<a class="headerlink" href="#module-flask.ext.appbuilder.charts.views" title="Permalink to this headline">¶</a></h2>
+<span id="flask-ext-appbuilder-charts-views"></span><h2>flask.ext.appbuilder.charts.views<a class="headerlink" href="#module-flask.ext.appbuilder.charts.views" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="basechartview">
 <h2>BaseChartView<a class="headerlink" href="#basechartview" title="Permalink to this headline">¶</a></h2>
@@ -670,7 +711,7 @@ to customise your charts</p>
 </div></blockquote>
 </div>
 <div class="section" id="module-flask.ext.appbuilder.models.mixins">
-<span id="mixins"></span><h2>Mixins<a class="headerlink" href="#module-flask.ext.appbuilder.models.mixins" title="Permalink to this headline">¶</a></h2>
+<span id="flask-ext-appbuilder-models-mixins"></span><h2>flask.ext.appbuilder.models.mixins<a class="headerlink" href="#module-flask.ext.appbuilder.models.mixins" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="flask.ext.appbuilder.models.mixins.BaseMixin">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.mixins.</tt><tt class="descname">BaseMixin</tt><a class="headerlink" href="#flask.ext.appbuilder.models.mixins.BaseMixin" title="Permalink to this definition">¶</a></dt>
@@ -749,19 +790,20 @@ will create the following columns:</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">API Reference</a><ul>
+<li><a class="reference internal" href="#flask-ext-appbuilder-baseapp">flask.ext.appbuilder.baseapp</a></li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.baseapp">BaseApp</a></li>
-<li><a class="reference internal" href="#module-flask.ext.appbuilder.views">Views</a></li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.views">flask.ext.appbuilder.views</a></li>
 <li><a class="reference internal" href="#baseview">BaseView</a></li>
 <li><a class="reference internal" href="#indexview">IndexView</a></li>
 <li><a class="reference internal" href="#simpleformview">SimpleFormView</a></li>
 <li><a class="reference internal" href="#basemodelview">BaseModelView</a></li>
 <li><a class="reference internal" href="#basecrudview">BaseCRUDView</a></li>
-<li><a class="reference internal" href="#basegeneralview">BaseGeneralView</a></li>
-<li><a class="reference internal" href="#module-flask.ext.appbuilder.charts.views">Chart Views</a></li>
+<li><a class="reference internal" href="#generalview">GeneralView</a></li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.charts.views">flask.ext.appbuilder.charts.views</a></li>
 <li><a class="reference internal" href="#basechartview">BaseChartView</a></li>
 <li><a class="reference internal" href="#chartview">ChartView</a></li>
 <li><a class="reference internal" href="#timechartview">TimeChartView</a></li>
-<li><a class="reference internal" href="#module-flask.ext.appbuilder.models.mixins">Mixins</a></li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.models.mixins">flask.ext.appbuilder.models.mixins</a></li>
 <li><a class="reference internal" href="#extra-columns">Extra Columns</a></li>
 </ul>
 </li>

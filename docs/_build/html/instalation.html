@@ -61,22 +61,24 @@
             
   <div class="section" id="instalation">
 <h1>Instalation<a class="headerlink" href="#instalation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="step-instalation">
-<h2>2 Step instalation<a class="headerlink" href="#step-instalation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h2>Instalation<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p class="first">Install it:</p>
-<div class="highlight-python"><pre>pip install flask-appbuilder
-git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git</pre>
-</div>
-</li>
-<li><p class="first">Run it:</p>
-<div class="highlight-python"><pre>cd Flask-AppBuilder-Skeleton
-python run.py</pre>
+<div class="highlight-python"><pre>pip install flask-appbuilder</pre>
 </div>
 </li>
 </ul>
+</div>
+<div class="section" id="skeleton-application">
+<h2>Skeleton Application<a class="headerlink" href="#skeleton-application" title="Permalink to this headline">¶</a></h2>
+<p>If you want a simple and quick start, you can use one of the examples, or clone the base skeleton application:</p>
+<div class="highlight-python"><pre>    git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
+cd Flask-AppBuilder-Skeleton
+python run.py</pre>
+</div>
 <p>That&#8217;s it!!</p>
-<p>The git clone is not actually needed for you to run AppBuilder. but it&#8217;s a good way to start, also comes with all the translations from the framework see <a class="reference internal" href="i18n.html"><em>i18n Translations</em></a></p>
+<p>The git clone is not actually needed for you to run AppBuilder. but it&#8217;s a good way to start.</p>
 </div>
 <div class="section" id="what-requirements-were-instaled">
 <h2>What requirements were instaled<a class="headerlink" href="#what-requirements-were-instaled" title="Permalink to this headline">¶</a></h2>
@@ -89,7 +91,7 @@ python run.py</pre>
 <li>flask-login : Login, session on flask.</li>
 <li>flask-openid : Open ID authentication</li>
 <li>flask-wtform</li>
-<li>flask-Babel : For internationalization</li>
+<li>flask-BabelPkg : For internationalization, fork from flask-babel</li>
 </ul>
 </div></blockquote>
 <p>If you plan to use Image on database, you will need to install PIL:</p>
@@ -101,9 +103,8 @@ python run.py</pre>
 </div>
 <div class="section" id="initialization">
 <h2>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h2>
-<p>When starting your application for the first time, all your models and AppBuilder security tables will be created for you.
-Version 0.3.X does not need you to run &#8220;init_app.py&#8221;. AppBuilder will create all available permissions associated with your views and menus, and these will be automaticaly associated with your defined role AUTH_ROLE_ADMIN</p>
-<p>The &#8216;admin&#8217; password will be &#8216;general&#8217;. Change it on your first access using the application.
+<p>When starting your application for the first time, all your models and AppBuilder security tables will be created for you.</p>
+<p>The &#8216;admin&#8217; user password will be &#8216;general&#8217;. Change it on your first access using the application.
 (Click the username on the navigation bar, then choose &#8216;Reset Password&#8217;)</p>
 </div>
 </div>
@@ -117,7 +118,8 @@ Version 0.3.X does not need you to run &#8220;init_app.py&#8221;. AppBuilder wil
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Instalation</a><ul>
-<li><a class="reference internal" href="#step-instalation">2 Step instalation</a></li>
+<li><a class="reference internal" href="#id1">Instalation</a></li>
+<li><a class="reference internal" href="#skeleton-application">Skeleton Application</a></li>
 <li><a class="reference internal" href="#what-requirements-were-instaled">What requirements were instaled</a></li>
 <li><a class="reference internal" href="#initialization">Initialization</a></li>
 </ul>
