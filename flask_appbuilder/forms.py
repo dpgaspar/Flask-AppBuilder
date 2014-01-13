@@ -89,9 +89,9 @@ class GeneralModelConverter(object):
                                     validators=lst_validators)
         elif self.datamodel.is_date(col.name):
             form_props[col.name] = DateField(label,
-                                                    description=description,
-                                                    validators=lst_validators,
-                                                    widget=DatePickerWidget())
+                                    description=description,
+                                    validators=lst_validators,
+                                    widget=DatePickerWidget())
         elif self.datamodel.is_datetime(col.name):
             form_props[col.name] = DateField(label,
                                     description=description,
