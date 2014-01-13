@@ -27,6 +27,12 @@ Finaly create your translations, for example to portuguese, spanish and german, 
 	pybabel init -i ./babel/messages.pot -d app/translations -l es
 	pybabel init -i ./babel/messages.pot -d app/translations -l de
 
+If your using Flask-AppBuilder-Skeleton use the provided script::
+
+	./babel_init.sh pt
+	./babel_init.sh es
+	./babel_init.sh de
+
 Quick How to
 ------------
 
@@ -52,6 +58,10 @@ Let's work with the contacts application example, so you want to add translation
 1 - Run the folowing extraction script::
 
     pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
+    
+    - If your using Flask-AppBuilder-Skeleton use the provided script::
+    
+    	./babel_extract.sh
 
 2 - Make your translations
 
@@ -81,6 +91,10 @@ Let's work with the contacts application example, so you want to add translation
 
     pybabel update -i ./babel/messages.pot -d app/translations
 	pybabel compile -d app/translations
+
+	- If your using Flask-AppBuilder-Skeleton use the provided script::
+    
+    	./babel_extract.sh
 
 4 - Add your language support to the framework
 

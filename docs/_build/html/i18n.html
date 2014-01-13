@@ -81,6 +81,11 @@ encoding = utf-8</pre>
 pybabel init -i ./babel/messages.pot -d app/translations -l es
 pybabel init -i ./babel/messages.pot -d app/translations -l de</pre>
 </div>
+<p>If your using Flask-AppBuilder-Skeleton use the provided script:</p>
+<div class="highlight-python"><pre>./babel_init.sh pt
+./babel_init.sh es
+./babel_init.sh de</pre>
+</div>
 </div>
 <div class="section" id="quick-how-to">
 <h2>Quick How to<a class="headerlink" href="#quick-how-to" title="Permalink to this headline">¶</a></h2>
@@ -101,7 +106,11 @@ genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "
 genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")</pre>
 </div>
 <p>1 - Run the folowing extraction script:</p>
-<div class="highlight-python"><pre>pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .</pre>
+<div class="highlight-python"><pre>pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
+
+- If your using Flask-AppBuilder-Skeleton use the provided script::
+
+    ./babel_extract.sh</pre>
 </div>
 <p>2 - Make your translations</p>
 <blockquote>
@@ -132,7 +141,11 @@ msgstr "Lista de Contactos"</pre>
 </div></blockquote>
 <p>3 - Run the babel extraction again:</p>
 <div class="highlight-python"><pre>pybabel update -i ./babel/messages.pot -d app/translations
-    pybabel compile -d app/translations</pre>
+    pybabel compile -d app/translations
+
+    - If your using Flask-AppBuilder-Skeleton use the provided script::
+
+    ./babel_extract.sh</pre>
 </div>
 <p>4 - Add your language support to the framework</p>
 <blockquote>
