@@ -19,6 +19,7 @@ Fixes, Bugs and contributions
 Your welcome to report bugs, propose new features, or even better contribute to this project.
 
 `Issues, bugs and new features <https://github.com/dpgaspar/Flask-AppBuilder/issues/new>`_
+
 `Contribute <https://github.com/dpgaspar/Flask-AppBuilder/fork>`_
 
 Includes:
