@@ -1,6 +1,9 @@
 Actions
 =======
 
+Define you view
+---------------
+
 You can setup your actions for records on the show page. Just use the @action decorator pointing to yout own function 
 
 ::
