@@ -1,5 +1,5 @@
 from flask import redirect, request, session
-from flask.ext.babel import refresh
+from flask.ext.babelpkg import refresh
 from ..views import BaseView, expose
 
 
