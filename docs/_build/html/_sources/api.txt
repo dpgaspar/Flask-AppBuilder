@@ -63,6 +63,8 @@ flask.ext.appbuilder.actions
 
 .. automodule:: flask.ext.appbuilder.actions
 
+    .. autofunction:: action
+
 flask.ext.appbuilder.charts.views
 ---------------------------------
 
