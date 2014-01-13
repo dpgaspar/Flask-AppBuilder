@@ -14,7 +14,8 @@
 			{% set path = path | set_link_filters(filters, pk) %}
 			&nbsp;{{ lib.lnk_add(path) }}
 		{% endif %}
-		{{ lib.lnk_back() }}        
+		{{ lib.lnk_back() }}
+        {{ lib.render_actions(actions, generalview_name) }}        
 		<div class="pull-right">
 			<strong>{{ _('Record Count') }}:</strong> {{ count }}
 		</div>

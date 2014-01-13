@@ -15,7 +15,24 @@
     {% endfor %}
 	
 {% endmacro %}
-
+ 
+{% macro render_actions(actions, generalview_name) %}
+{% if actions %}
+<div class="btn-group">
+    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+    {{_('Actions')}}<span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+    	{% for action_key in actions %}
+            {% set action = actions.get(action_key) %}
+            {% if action.name | is_item_visible(generalview_name) %}
+                <li><a href="{{url_for(generalview_name + '.action',name=action.name,pk=1)}}">{{action.text}}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% endmacro %}
 
 {% macro render_set_page_size(page, page_size, count, generalview_name) %}
 {% if not page %} {% set page = 0 %} {% endif %}

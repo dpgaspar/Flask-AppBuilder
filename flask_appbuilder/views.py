@@ -449,8 +449,6 @@ class BaseCRUDView(BaseModelView):
     search_widget = SearchWidget
     """ Search widget you can override with your own """
         
-    show_additional_links = []
-
     actions = None
 
     def __init__(self, **kwargs):
@@ -550,7 +548,8 @@ class BaseCRUDView(BaseModelView):
                     page=pages.get(view.__class__.__name__), page_size=page_sizes.get(view.__class__.__name__)).get('list'))
         return widgets
     
-    def _get_list_widget(self, filters, 
+    def _get_list_widget(self, filters,
+                        actions = None,
                         order_column = '', 
                         order_direction = '',
                         page = None,
@@ -558,6 +557,7 @@ class BaseCRUDView(BaseModelView):
                         widgets = {}, **args):
 
         """ get joined base filter and current active filter for query """
+        actions = actions or self.actions
         page_size = page_size or self.page_size        
         joined_filters = filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
@@ -571,26 +571,22 @@ class BaseCRUDView(BaseModelView):
                                                 page_size = page_size,
                                                 count = count,
                                                 pks = pks,
+                                                actions = actions,
                                                 filters = filters,
                                                 generalview_name = self.__class__.__name__
                                                 )
         return widgets
 
 
-    def _get_show_widget(self, id, widgets = None, actions = None, show_additional_links = None):
+    def _get_show_widget(self, id, widgets = None, actions = None):
         widgets = widgets or {}
         actions = actions or self.actions
-        show_additional_links = show_additional_links or []
-        if show_additional_links:
-            additional_links = show_additional_links
-        else: additional_links = self.show_additional_links
         item = self.datamodel.get(id)
         widgets['show'] = self.show_widget(route_base = self.route_base,
                                                 pk = id,
                                                 label_columns = self.label_columns,
                                                 include_columns = self.show_columns,
                                                 value_columns = self.datamodel.get_values_item(item, self.show_columns),
-                                                additional_links = additional_links,
                                                 actions = actions,
                                                 fieldsets = self.show_fieldsets
                                                 )
@@ -717,7 +713,7 @@ class GeneralView(BaseCRUDView):
             SHOW
     --------------------------------
     """
-    @expose('/show/<int:pk>', methods=['GET'])
+    @expose('/show/<pk>', methods=['GET'])
     @has_access
     def show(self, pk):
 
@@ -776,15 +772,17 @@ class GeneralView(BaseCRUDView):
             EDIT
     ---------------------------
     """
-    @expose('/edit/<int:pk>', methods=['GET', 'POST'])
+    @expose('/edit/<pk>', methods=['GET', 'POST'])
     @has_access
-    def edit(self, pk = 0):
+    def edit(self, pk):
 
         pages = get_page_args()
         page_sizes = get_page_size_args()
         orders = get_order_args()
         
         item = self.datamodel.get(pk)
+        # convert pk to correct type, if pk is non string type.
+        pk = self.datamodel.get_pk_value(item)
         get_filter_args(self._filters)
         exclude_cols = self._filters.get_relation_cols()
 
@@ -795,7 +793,7 @@ class GeneralView(BaseCRUDView):
             form._id = pk
             if form.validate():
                 form.populate_obj(item)
-
+                # fill the form with the suppressed cols, generated from exclude_cols
                 for filter_key in exclude_cols:
                     rel_obj = self.datamodel.get_related_obj(filter_key, self._filters.get_filter_value(filter_key))
                     setattr(item, filter_key, rel_obj)
@@ -831,7 +829,7 @@ class GeneralView(BaseCRUDView):
             DELETE
     ---------------------------
     """
-    @expose('/delete/<int:pk>')
+    @expose('/delete/<pk>')
     @has_access
     def delete(self, pk):
         item = self.datamodel.get(pk)
@@ -850,7 +848,7 @@ class GeneralView(BaseCRUDView):
                     as_attachment = True)
 
 
-    @expose('/action/<string:name>/<int:pk>')
+    @expose('/action/<string:name>/<pk>')
     @has_access
     def action(self, name, pk):
         if self.baseapp.sm.has_access(name, self.__class__.__name__):
@@ -860,14 +858,3 @@ class GeneralView(BaseCRUDView):
             flash("Access is Denied %s %s" % (name, self.__class__.__name__),"danger")
             return redirect('.')
         
-class AdditionalLinkItem():
-    name = ""
-    label = ""
-    href = ""
-    icon = ""
-
-    def __init__(self, name, label, href, icon=""):
-        self.name = name
-        self.label = label
-        self.href = href
-        self.icon = icon

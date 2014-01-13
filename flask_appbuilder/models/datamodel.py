@@ -40,25 +40,6 @@ class SQLAModel(DataModel):
         DataModel.__init__(self, obj)
 
     
-    def _get_base_query_old(self, query = None, filters = {}, order_column = '', order_direction = ''):
-        for filter_key in filters:
-            if self.is_relation_col(filter_key):
-                item = filters.get(filter_key)
-                rel_direction = self._get_relation_direction(filter_key)
-                if rel_direction == 'MANYTOONE':
-                    query = query.filter(getattr(self.obj,filter_key) == item)
-                elif rel_direction == 'MANYTOMANY':
-                    query = query.filter(getattr(self.obj,filter_key).contains(item))
-                else:
-                    pass
-            else:
-                if self.is_string(filter_key) or self.is_text(filter_key):
-                    query = query.filter(getattr(self.obj,filter_key).like(filters.get(filter_key) + '%'))
-        if (order_column != ''):
-            query = query.order_by(order_column + ' ' + order_direction)
-        
-        return query
-
     def _get_base_query(self, query = None, filters = None, order_column = '', order_direction = ''):
         if filters:
             query = filters.apply_all(query)

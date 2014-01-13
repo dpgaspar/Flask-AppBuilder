@@ -83,7 +83,6 @@ class ShowWidget(RenderTemplateWidget):
     label_columns = []
     include_columns = []
     value_columns = []
-    additional_links = []
     actions = None
     fieldsets = []
 
@@ -92,7 +91,6 @@ class ShowWidget(RenderTemplateWidget):
                 label_columns = [],
                 include_columns = [],
                 value_columns = [],
-                additional_links = [],
                 actions = None,
                 fieldsets = []):
         self.route_base = route_base
@@ -100,7 +98,6 @@ class ShowWidget(RenderTemplateWidget):
         self.label_columns = label_columns
         self.include_columns = include_columns
         self.value_columns = value_columns
-        self.additional_links = additional_links
         self.actions = actions
         self.fieldsets = fieldsets
 
@@ -110,7 +107,6 @@ class ShowWidget(RenderTemplateWidget):
         kwargs['label_columns'] = self.label_columns
         kwargs['include_columns'] = self.include_columns
         kwargs['value_columns'] = self.value_columns
-        kwargs['additional_links'] = self.additional_links
         kwargs['actions'] = self.actions
         kwargs['fieldsets'] = self.fieldsets
         return super(ShowWidget, self).__call__(**kwargs)
@@ -129,6 +125,7 @@ class ListWidget(RenderTemplateWidget):
     page_size = None
     count = 0
     pks = []
+    actions = None
     filters = {}
     generalview_name = ''
 
@@ -141,6 +138,7 @@ class ListWidget(RenderTemplateWidget):
                  page_size = None,
                  count = 0,
                  pks = [],
+                 actions = None,
                  filters = {},
                  generalview_name = ''):
         self.route_base = route_base
@@ -152,6 +150,7 @@ class ListWidget(RenderTemplateWidget):
         self.page_size = page_size
         self.count = count
         self.pks = pks
+        self.actions = actions
         self.filters = filters
         self.generalview_name = generalview_name
 
@@ -167,6 +166,7 @@ class ListWidget(RenderTemplateWidget):
         kwargs['count'] = self.count
         
         kwargs['pks'] = self.pks
+        kwargs['actions'] = self.actions
         kwargs['filters'] = self.filters
         kwargs['generalview_name'] = self.generalview_name
         return super(ListWidget, self).__call__(**kwargs)

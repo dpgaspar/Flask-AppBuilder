@@ -9,8 +9,9 @@ Improvements and Bug fixes on 0.5.0
 - New, safe back button.
 - fix, oid authentication failed.
 - New, Change flask-babel to flask-babelpkg to support independent extension translations.
-- fix, login forms with complete translations
+- fix, login forms with complete translations.
 - New, actions on records use @action decorator.
+- New, support for primary keys of any type.
 
 Improvements and Bug fixes on 0.4.3
 -----------------------------------

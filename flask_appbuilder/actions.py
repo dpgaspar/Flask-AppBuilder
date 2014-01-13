@@ -3,19 +3,22 @@ class ActionItem():
     name = ""
     text = ""
     confirmation = ""
-    href = ""
+    icon = ""
+    multiple = False
     func = None
 
-    def __init__(self, name, text, confirmation, icon, func):
+    def __init__(self, name, text, confirmation, icon, multiple, func):
         self.name = name
         self.text = text
         self.confirmation = confirmation
+        self.icon = icon
+        self.multiple = multiple
         self.func = func
 
     def __repr__(self):
         return "Action name:%s; text:%s; func:%s;" % (self.name, self.text, self.func.__name__)
 
-def action(name, text, confirmation=None, icon = None):
+def action(name, text, confirmation=None, icon = None, multiple=False):
     """
         Use this decorator to expose actions
 
@@ -28,7 +31,7 @@ def action(name, text, confirmation=None, icon = None):
             unconditionally.
     """
     def wrap(f):
-        f._action = (name, text, confirmation, icon)
+        f._action = (name, text, confirmation, icon, multiple)
         return f
 
     return wrap

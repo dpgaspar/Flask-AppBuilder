@@ -12,8 +12,7 @@ from flask.ext.login import login_user, logout_user, current_user, \
     login_required
 
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import BaseView, GeneralView, SimpleFormView, \
-    AdditionalLinkItem, expose
+from flask.ext.appbuilder.views import BaseView, GeneralView, SimpleFormView, expose
 from ..actions import action
 from forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
 from models import User, Permission, PermissionView, Role, ViewMenu
