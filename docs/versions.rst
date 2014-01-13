@@ -1,7 +1,7 @@
 Versions
 ========
 
-Improvements and Bug fixes on 0.4.4
+Improvements and Bug fixes on 0.5.0
 -----------------------------------
 
 - fix, security userinfo without has_access decorator.
@@ -9,6 +9,8 @@ Improvements and Bug fixes on 0.4.4
 - New, safe back button.
 - fix, oid authentication failed.
 - New, Change flask-babel to flask-babelpkg to support independent extension translations.
+- fix, login forms with complete translations
+- New, actions on records use @action decorator.
 
 Improvements and Bug fixes on 0.4.3
 -----------------------------------

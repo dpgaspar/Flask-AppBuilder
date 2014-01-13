@@ -3,6 +3,7 @@ from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.views import GeneralView
 from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
+from flask.ext.babelpkg import lazy_gettext as _
 
 from app import app, db
 from models import Group, Contact
@@ -25,7 +26,6 @@ class GroupGeneralView(GeneralView):
     datamodel = SQLAModel(Group, db.session)
     related_views = [ContactGeneralView()]
 
-    
 class ContactChartView(ChartView):
     chart_title = 'Grouped contacts'
     label_columns = ContactGeneralView.label_columns
@@ -38,7 +38,10 @@ class ContactTimeChartView(TimeChartView):
     group_by_columns = ['birthday']
     datamodel = SQLAModel(Contact, db.session)
 
-
+fixed_translations_import = [
+        _("List Groups"),
+        _("List Contacts")]
+        
 genapp = BaseApp(app, db)
 genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "Contacts")
 genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")

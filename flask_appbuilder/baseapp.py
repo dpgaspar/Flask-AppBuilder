@@ -1,4 +1,4 @@
-from .babel.views import LocaleView
+
 from .security.manager import SecurityManager
     
 from .views import IndexView
@@ -26,10 +26,11 @@ class BaseApp():
     lst_baseview = []
     app = None
     db = None
-    # Security Manager
-    sm = None
-    babelmanager = None
     
+    sm = None
+    """ Security Manager """
+    bm = None
+    """ Babel Manager """
     app_name = ""
     app_theme = ''
     app_icon = None
@@ -71,7 +72,7 @@ class BaseApp():
         self.db = db
                     
         self.sm = SecurityManager(app, db.session)
-        self.babelmanager = BabelManager(app, pkg_translations=translations)
+        self.bm = BabelManager(app, pkg_translations=translations)
         
         if menu:
             self.menu = menu
@@ -122,7 +123,7 @@ class BaseApp():
     def _add_admin_views(self):
         self.indexview = self.indexview()
         self.add_view_no_menu(self.indexview)
-        self.add_view_no_menu(LocaleView())
+        self.bm.register_views(self)
         self.sm.register_views(self)
 
     def _init_view_session(self, baseview_class):

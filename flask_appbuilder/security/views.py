@@ -132,8 +132,7 @@ class UserGeneralView(GeneralView):
     edit_columns = ['first_name','last_name','username', 'active', 'email','role']
 
     user_info_title = lazy_gettext("Your user information")
-    lnk_reset_password = lazy_gettext("Reset Password")
-
+    
     show_additional_links = []
 
 
@@ -149,7 +148,6 @@ class UserOIDGeneralView(UserGeneralView):
                            baseapp = self.baseapp,
                            )
 
-
 class UserDBGeneralView(UserGeneralView):
     
     add_form_extra_fields = {'password': PasswordField(gettext('Password'), 
@@ -162,29 +160,37 @@ class UserDBGeneralView(UserGeneralView):
     
     add_columns = ['first_name','last_name','username', 'active', 'email','role','password','conf_password']
     
-    def __init__(self, **kwargs):
-        #self.show_additional_links = [(AdditionalLinkItem('resetpassword', self.lnk_reset_password,"/resetpassword/form","lock"))]
-        super(UserDBGeneralView, self).__init__(**kwargs)
+    @expose('/show/<int:pk>', methods=['GET'])
+    @has_access
+    def show(self, pk):
+        actions = {}
+        actions['resetpasswords'] = self.actions.get('resetpasswords')
+        widgets = self._get_show_widget(pk, actions = actions)
+        return render_template(self.show_template,
+                           pk = pk,
+                           title = self.show_title,
+                           widgets = widgets,
+                           baseapp = self.baseapp,
+                           related_views = self.related_views)
+
 
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
-        #show_additional_links = [AdditionalLinkItem('resetmypassword', self.lnk_reset_password,"/resetmypassword/form","lock")]
         actions = {}
         actions['resetmypassword'] = self.actions.get('resetmypassword')
-        widgets = self._get_show_widget(g.user.id, actions = actions) #, show_additional_links = show_additional_links)
-        actions['resetmypassword'] = self.actions.get('resetmypassword')
+        widgets = self._get_show_widget(g.user.id, actions = actions)
         return render_template(self.show_template,
                            title = self.user_info_title,
                            widgets = widgets,
                            baseapp = self.baseapp,
                            )
 
-    @action('resetmypassword', 'Reset My Password')
+    @action('resetmypassword', lazy_gettext("Reset my password"))
     def resetmypassword(self, item):
         return redirect(url_for('ResetMyPasswordView.this_form_get'))
         
-    @action('resetpasswords', 'Reset Password')
+    @action('resetpasswords', lazy_gettext("Reset Password"))
     def resetpasswords(self, item):
         return redirect(url_for('ResetPasswordView.this_form_get', pk=item.id))
     

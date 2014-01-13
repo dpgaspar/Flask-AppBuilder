@@ -853,10 +853,13 @@ class GeneralView(BaseCRUDView):
     @expose('/action/<string:name>/<int:pk>')
     @has_access
     def action(self, name, pk):
-        action = self.actions.get(name)
-        return action.func(self.datamodel.get(pk))
-
-
+        if self.baseapp.sm.has_access(name, self.__class__.__name__):
+            action = self.actions.get(name)
+            return action.func(self.datamodel.get(pk))
+        else:
+            flash("Access is Denied %s %s" % (name, self.__class__.__name__),"danger")
+            return redirect('.')
+        
 class AdditionalLinkItem():
     name = ""
     label = ""

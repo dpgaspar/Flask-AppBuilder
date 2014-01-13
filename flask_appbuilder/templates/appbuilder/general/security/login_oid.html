@@ -25,14 +25,14 @@ function set_openid(openid, pr)
     <h3>{{title}}</h3>
     <form class="form" action="" method="post" name="login">
         {{form.hidden_tag()}}
-        <div class="help-block">Click on your OpenID provider below:</div>
+        <div class="help-block">{{_("Click on your OpenID provider below")}}:</div>
         <div class="control-group">
             {% for pr in providers %}
             <a href="javascript:set_openid('{{pr.url}}', '{{pr.name}}');"><img src="{{url_for('baseapp.static',filename='img/' + pr.name.lower() + '.png')}}" class="img-polaroid" style="margin:2px;" /></a>
             {% endfor %}
         </div>
         <div class="control-group{% if form.errors.openid %} error{% endif %}">
-            <label class="control-label" for="openid">Or enter your OpenID here:</label>
+            <label class="control-label" for="openid">{{_("Or enter your OpenID here")}}:</label>
             <div class="controls">
                 {{ form.openid(size = 80, class = "form-control") }}
                 {% for error in form.errors.openid %}

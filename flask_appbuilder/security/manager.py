@@ -16,8 +16,6 @@ from views import AuthDBView, AuthOIDView, ResetMyPasswordView, \
     PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView
 
 
-
-
 AUTH_OID = 0
 AUTH_DB = 1
 AUTH_LDAP = 2
@@ -78,7 +76,7 @@ class SecurityManager(object):
         baseapp.add_view(baseapp._init_view_session(ViewMenuGeneralView), "Views/Menus","/viewmenus/list","list-alt","Security")
         baseapp.add_view(baseapp._init_view_session(PermissionGeneralView), "Permission on Views/Menus","/permissionviews/list","lock","Security")
 
-        
+
     def load_user(self, pk):
         return self.get_user_by_id(int(pk))
 
@@ -141,7 +139,7 @@ class SecurityManager(object):
             print "Migrating Users"
             self.migrate_obj(old_user, User)
             
-                        
+    
     def init_db(self):
         engine = self.session.get_bind(mapper=None, clause=None)        
         
@@ -278,6 +276,19 @@ class SecurityManager(object):
                     return True
             return False
         else: return False
+    
+    def has_access(self, permission_name, view_name):
+        if current_user.is_authenticated():
+            if self.has_permission_on_view(g.user, permission_name, view_name):
+               return True
+            else:
+               return False
+        else:
+            if self.is_item_public(permission_name, view_name):
+                return True
+            else:
+                return False
+        return False
     
     def _add_permission(self, name):
         """

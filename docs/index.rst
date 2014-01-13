@@ -6,9 +6,14 @@ Flask-AppBuilder
 Simple and rapid Application builder, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto form generation, google charts and much more.
 
-Important Note:
+Fixes, Bugs and contributions
+-----------------------------
 
-Version 0.4.N had some changes look at chapter :doc:`versions`
+Your welcome to report bugs, propose new features, or even better contribute to this project.
+
+`Issues, bugs and new features <https://github.com/dpgaspar/Flask-AppBuilder/issues/new>`_
+`Contribute <https://github.com/dpgaspar/Flask-AppBuilder/fork>`_
+
 
 Contents:
 
