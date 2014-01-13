@@ -70,4 +70,7 @@ The framework will create the following access:
 	
 And the decorator @has_access will prevent any unwanted access
 
-    
+Some images:
+
+.. image:: ./images/security.png
+    :width: 100%

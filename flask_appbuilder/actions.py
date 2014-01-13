@@ -29,6 +29,8 @@ def action(name, text, confirmation=None, icon = None, multiple=False):
         :param confirmation:
             Confirmation text. If not provided, action will be executed
             unconditionally.
+        :param icon:
+            Font Awesome icon name
     """
     def wrap(f):
         f._action = (name, text, confirmation, icon, multiple)

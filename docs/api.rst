@@ -56,6 +56,12 @@ GeneralView
 
     .. autoclass:: GeneralView
         :members:
+        
+
+flask.ext.appbuilder.actions
+----------------------------
+
+.. automodule:: flask.ext.appbuilder.actions
 
 flask.ext.appbuilder.charts.views
 ---------------------------------

@@ -27,6 +27,7 @@ Contents:
    quickcharts
    quickfiles
    customizing
+   actions
    i18n
    config
    security
