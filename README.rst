@@ -43,8 +43,8 @@ Includes:
 	- Image and File support for upload and database field association. It will handle everything for you.
 	- Field sets for Form's (Django style).
   - i18n
-	- Support for multi-language via Babel (still not working in package form)
-  - Bootstrap 3.0.0 CSS and js, with Select2 and DatePicker
+	- Support for multi-language via Babel
+  - Bootstrap 3.0.3 CSS and js, with Select2 and DatePicker
 
 
 Some pictures
