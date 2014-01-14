@@ -1,10 +1,31 @@
 Customizing
 ===========
 
-You can override and customize almost everything on the UI, or use diferent templates and widgets already on the framework.
+You can override and customize almost everything on the UI, or use different templates and widgets already on the framework.
 
 Event better you can develop your own widgets or templates and contribute to the project.
 
+Changing themes
+---------------
+
+F.A.B comes with bootwatch themes ready to use, to the bootstrap default theme just change the APP_THEME key
+
+	- On config.py (from flask-appbuilder-skeleton), using spacelab theme::
+
+    #APP_THEME = ""                  # default
+    #APP_THEME = "cerulean.css"      # COOL
+    #APP_THEME = "amelia.css"
+    #APP_THEME = "cosmo.css"
+    #APP_THEME = "cyborg.css"       # COOL
+    #APP_THEME = "flatly.css"
+    #APP_THEME = "journal.css"
+    #APP_THEME = "readable.css"
+    #APP_THEME = "simplex.css"
+    #APP_THEME = "slate.css"          # COOL
+    APP_THEME = "spacelab.css"      # NICE
+    #APP_THEME = "united.css"
+    #APP_THEME = "yeti.css"
+    
 
 Changing the index
 ------------------
