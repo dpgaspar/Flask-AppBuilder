@@ -5,6 +5,8 @@ Improvements and Bug fixes on 0.5.1
 -----------------------------------
 
 - New, top menu support, no need to create category with submenus.
+- New, reverse flag for navbar on Menu property.
+- New, update bootwatch.
 
 Improvements and Bug fixes on 0.5.0
 -----------------------------------

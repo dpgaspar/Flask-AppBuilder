@@ -95,6 +95,41 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="changing-menu-construction">
+<h2>Changing Menu Construction<a class="headerlink" href="#changing-menu-construction" title="Permalink to this headline">¶</a></h2>
+<p>You can change the way the menu is constructed adding your own links, separators and changing the navbar reverse property.</p>
+<p>By default menu is constructed based on your classes and in a reversed navbar. Let&#8217;s take a quick look on how to easily change this</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Change the reversed navbar style, on baseapp initialization:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">Menu</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Add your own menu links, on a default reversed navbar:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+<span class="c"># Register a view, rendering a top menu without icon</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView</span><span class="p">,</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
+<span class="c"># Register a view, a submenu &quot;Other View&quot; from &quot;Other&quot; with a phone icon</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">)</span>
+<span class="c"># Add a link</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;google&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-google-plus&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Add separators:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+<span class="c"># Register a view, rendering a top menu without icon</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView1</span><span class="p">,</span> <span class="s">&quot;My View 1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView2</span><span class="p">,</span> <span class="s">&quot;My View 2&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_separator</span><span class="p">(</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView3</span><span class="p">,</span> <span class="s">&quot;My View 3&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+</div>
 <div class="section" id="changing-widgets-amd-templates">
 <h2>Changing Widgets amd Templates<a class="headerlink" href="#changing-widgets-amd-templates" title="Permalink to this headline">¶</a></h2>
 <p>F.A.B. has a collection of widgets to change your views presentation, you can create your own and override, or (even better) create them and contribute to the project on git.</p>
@@ -164,6 +199,7 @@
   <ul>
 <li><a class="reference internal" href="#">Customizing</a><ul>
 <li><a class="reference internal" href="#changing-the-index">Changing the index</a></li>
+<li><a class="reference internal" href="#changing-menu-construction">Changing Menu Construction</a></li>
 <li><a class="reference internal" href="#changing-widgets-amd-templates">Changing Widgets amd Templates</a></li>
 </ul>
 </li>

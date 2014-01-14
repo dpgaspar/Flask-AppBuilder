@@ -1,7 +1,6 @@
 {% import 'appbuilder/baselib.html' as baselib with context %}
 
 {% if baseapp %}
-	{% set lst_menu = baseapp.menu.get_list() %}
 	{% set app_name = baseapp.app_name %}
 {% endif %}
 
@@ -42,7 +41,7 @@
 <body>
 
 {% block navbar %}
-{{ baselib.navbar_block(lst_menu, baseapp.languages) }}
+{{ baselib.navbar_block(baseapp.menu, baseapp.languages) }}
 {% endblock %}
 
 {% block body %}

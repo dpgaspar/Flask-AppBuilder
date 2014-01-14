@@ -1,5 +1,5 @@
-{% macro menu_block(lst_menu) %}
-	{% for item1 in lst_menu %}
+{% macro menu_block(menu) %}
+	{% for item1 in menu.get_list() %}
 		{% if item1 | is_menu_visible %}
 			{% if item1.childs %}
 				<li class="dropdown">
@@ -57,8 +57,12 @@
 </li>
 {% endmacro %}       
 
-{% macro navbar_block(lst_menu, languages) %}
-<div class="navbar navbar-inverse" role="navigation">
+{% macro navbar_block(menu, languages) %}
+{% if menu.reverse %}
+	<div class="navbar navbar-inverse" role="navigation">
+{% else %}
+	<div class="navbar" role="navigation">
+{% endif %}
    <div class="container">
         <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -80,7 +84,7 @@
         </div>
         <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                        {{ menu_block(lst_menu) }}
+                        {{ menu_block(menu)}}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                 {{ locale_menu(languages) }}

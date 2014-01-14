@@ -157,7 +157,17 @@ class BaseApp():
             :param icon:
                 Font-Awesome icon name, optional.
             :param category:
-                The menu category where the menu will be included, if non provided the view will be acessible as a top menu. 
+                The menu category where the menu will be included, if non provided the view will be acessible as a top menu.
+                
+            Examples::
+            
+                baseapp = BaseApp(app, db)
+                # Register a view, rendering a top menu without icon
+                baseapp.add_view(MyGeneralView, "My View")
+                # Register a view, a submenu "Other View" from "Other" with a phone icon
+                baseapp.add_view(MyOtherGeneralView, "Other View", icon='fa-phone', category="Others")
+                # Add a link
+                baseapp.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
         print "Registering:", category,".", name
         if baseview not in self.lst_baseview:

@@ -31,7 +31,12 @@ class MenuItem(object):
 
 class Menu(object):
 
-    menu = []
+    menu = None
+    reverse = True
+    
+    def __init__(self, reverse=True):
+        self.menu = []
+        self.reverse = reverse
 
     def get_list(self):
         return self.menu

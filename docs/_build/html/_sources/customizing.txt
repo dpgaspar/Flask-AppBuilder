@@ -46,6 +46,36 @@ Define a special and simple view inherite from IndexView::
 
     baseapp = BaseApp(app, db, indexview = MyIndexView)
 
+Changing Menu Construction
+--------------------------
+
+You can change the way the menu is constructed adding your own links, separators and changing the navbar reverse property.
+
+By default menu is constructed based on your classes and in a reversed navbar. Let's take a quick look on how to easily change this
+
+	- Change the reversed navbar style, on baseapp initialization::
+	
+		baseapp = BaseApp(app, db, menu=Menu(reverse=False))
+		
+	- Add your own menu links, on a default reversed navbar::
+	
+		baseapp = BaseApp(app, db)
+		# Register a view, rendering a top menu without icon
+		baseapp.add_view(MyGeneralView, "My View")
+		# Register a view, a submenu "Other View" from "Other" with a phone icon
+		baseapp.add_view(MyOtherGeneralView, "Other View", icon='fa-phone', category="Others")
+		# Add a link
+		baseapp.add_link("google", href="www.google.com", icon = "fa-google-plus")
+		
+	- Add separators::
+	
+		baseapp = BaseApp(app, db)
+		# Register a view, rendering a top menu without icon
+		baseapp.add_view(MyGeneralView1, "My View 1", category="My Views")
+		baseapp.add_view(MyGeneralView2, "My View 2", category="My Views")
+		baseapp.add_separator("My Views")
+		baseapp.add_view(MyGeneralView3, "My View 3", category="My Views")
+		
 
 Changing Widgets amd Templates
 ------------------------------
