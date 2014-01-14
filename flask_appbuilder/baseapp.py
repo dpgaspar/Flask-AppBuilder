@@ -153,11 +153,11 @@ class BaseApp():
             :param name:
                 The string name that will be displayed on the menu.
             :param href:
-                Override the generated href for the menu.
+                Override the generated href for the menu. if non provided default_view from view will be set as href.
             :param icon:
-                Bootstrap included icon name
+                Font-Awesome icon name, optional.
             :param category:
-                The menu category where the menu will be included        
+                The menu category where the menu will be included, if non provided the view will be acessible as a top menu. 
         """
         print "Registering:", category,".", name
         if baseview not in self.lst_baseview:
@@ -183,7 +183,8 @@ class BaseApp():
         self.menu.add_link(name = name, href = href, icon = icon, 
                         category = category, baseview = baseview)
         self._add_permissions_menu(name)
-        self._add_permissions_menu(category)
+        if category:
+            self._add_permissions_menu(category)
 
     def add_separator(self, category):
         """

@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.5.1
+-----------------------------------
+
+- New, top menu support, no need to create category with submenus.
+
 Improvements and Bug fixes on 0.5.0
 -----------------------------------
 

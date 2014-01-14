@@ -19,7 +19,10 @@ class MenuItem(object):
 
     def get_url(self):
         if not self.href:
-            return url_for('%s.%s' % (self.baseview.endpoint, self.baseview.default_view))
+            if not self.baseview:
+                return ""
+            else:
+                return url_for('%s.%s' % (self.baseview.endpoint, self.baseview.default_view))
         else:
             return self.href
 
@@ -52,14 +55,24 @@ class Menu(object):
         
 
     def add_link(self, name, href="", icon="", category="", baseview = None):
-        menu_item = self.find_category(category)
-        if menu_item:
-            menu_item.childs.append(MenuItem(name=name, href=href, icon = icon, baseview = baseview))
+        if category == "":
+            self.menu.append(MenuItem(name=name, href=href, icon = icon, baseview=baseview))
         else:
-            self.add_category(category=category)
-            self.find_category(category).childs.append(MenuItem(name=name, 
+            menu_item = self.find_category(category)
+            if menu_item:
+                menu_item.childs.append(MenuItem(name=name, href=href, icon = icon, baseview = baseview))
+            else:
+                self.add_category(category=category)
+                self.find_category(category).childs.append(MenuItem(name=name, 
                                         href=href, icon = icon, baseview = baseview))
         
 
     def add_separator(self, category=""):
         self.find_category(category).childs.append(MenuItem("-"))
+        
+    def debug(self):
+        for i in self.menu:
+            print i
+            for j in i.childs:
+                print "-", j
+

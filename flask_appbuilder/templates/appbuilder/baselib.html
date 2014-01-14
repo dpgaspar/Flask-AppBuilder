@@ -1,30 +1,37 @@
 {% macro menu_block(lst_menu) %}
 	{% for item1 in lst_menu %}
 		{% if item1 | is_menu_visible %}
-			<li class="dropdown">
-			<a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
-			{{_(item1.name)}}<b class="caret"></b></a>
+			{% if item1.childs %}
+				<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
+				{{_(item1.name)}}<b class="caret"></b></a>
 		        <ul class="dropdown-menu">
-			{% for item2 in item1.childs %}
-				{% if item2.childs %}
-					<li class="dropdown">
+				{% for item2 in item1.childs %}
+					{% if item2.childs %}
+						<li class="dropdown">
                         	        <a tabindex="-1" href="{{item2.get_url()}}">
                         	        <i class="fa {{item2.icon}}"></i> - {{_(item2.name)}}</a>
-					</li>
-				{% else %}
-					{% if item2.name == '-' %}
-                                        	<li class="divider"></li>
-                                	{% else %}
-						{% if item2 | is_menu_visible %}
-						<li><a tabindex="-1" href="{{item2.get_url()}}">
-						<i class="fa {{item2.icon}}"></i> - {{_(item2.name)}}</a></li>
+						</li>
+					{% else %}
+						{% if item2.name == '-' %}
+                       		<li class="divider"></li>
+                    	{% else %}
+							{% if item2 | is_menu_visible %}
+								<li><a tabindex="-1" href="{{item2.get_url()}}">
+								<i class="fa {{item2.icon}}"></i> - {{_(item2.name)}}</a></li>
+							{% endif %}
 						{% endif %}
 					{% endif %}
-				{% endif %}
-			{% endfor %}
-			</ul></li>
-		{% endif %}
-        {% endfor %}
+				{% endfor %}
+				</ul></li>
+			{% else %}
+				<li>			
+				<a tabindex="-1" href="{{item1.get_url()}}">
+            	<i class="fa {{item1.icon}}"></i> - {{_(item1.name)}}</a>
+            	</li>
+        	{% endif %}
+        {% endif %}
+    {% endfor %}
 {% endmacro %}
 
 {% macro locale_menu(languages) %}
