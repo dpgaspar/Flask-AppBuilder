@@ -12,19 +12,19 @@ F.A.B comes with bootwatch themes ready to use, to the bootstrap default theme j
 
 	- On config.py (from flask-appbuilder-skeleton), using spacelab theme::
 
-    #APP_THEME = ""                  # default
-    #APP_THEME = "cerulean.css"      # COOL
-    #APP_THEME = "amelia.css"
-    #APP_THEME = "cosmo.css"
-    #APP_THEME = "cyborg.css"       # COOL
-    #APP_THEME = "flatly.css"
-    #APP_THEME = "journal.css"
-    #APP_THEME = "readable.css"
-    #APP_THEME = "simplex.css"
-    #APP_THEME = "slate.css"          # COOL
-    APP_THEME = "spacelab.css"      # NICE
-    #APP_THEME = "united.css"
-    #APP_THEME = "yeti.css"
+        #APP_THEME = ""                  # default
+        #APP_THEME = "cerulean.css"      # COOL
+        #APP_THEME = "amelia.css"
+        #APP_THEME = "cosmo.css"
+        #APP_THEME = "cyborg.css"       # COOL
+        #APP_THEME = "flatly.css"
+        #APP_THEME = "journal.css"
+        #APP_THEME = "readable.css"
+        #APP_THEME = "simplex.css"
+        #APP_THEME = "slate.css"          # COOL
+        APP_THEME = "spacelab.css"      # NICE
+        #APP_THEME = "united.css"
+        #APP_THEME = "yeti.css"
     
 
 Changing the index
