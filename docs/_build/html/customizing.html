@@ -61,8 +61,32 @@
             
   <div class="section" id="customizing">
 <h1>Customizing<a class="headerlink" href="#customizing" title="Permalink to this headline">¶</a></h1>
-<p>You can override and customize almost everything on the UI, or use diferent templates and widgets already on the framework.</p>
+<p>You can override and customize almost everything on the UI, or use different templates and widgets already on the framework.</p>
 <p>Event better you can develop your own widgets or templates and contribute to the project.</p>
+<div class="section" id="changing-themes">
+<h2>Changing themes<a class="headerlink" href="#changing-themes" title="Permalink to this headline">¶</a></h2>
+<p>F.A.B comes with bootwatch themes ready to use, to the bootstrap default theme just change the APP_THEME key</p>
+<blockquote>
+<div><blockquote>
+<div><ul class="simple">
+<li>On config.py (from flask-appbuilder-skeleton), using spacelab theme:</li>
+</ul>
+</div></blockquote>
+<p>#APP_THEME = &#8220;&#8221;                  # default
+#APP_THEME = &#8220;cerulean.css&#8221;      # COOL
+#APP_THEME = &#8220;amelia.css&#8221;
+#APP_THEME = &#8220;cosmo.css&#8221;
+#APP_THEME = &#8220;cyborg.css&#8221;       # COOL
+#APP_THEME = &#8220;flatly.css&#8221;
+#APP_THEME = &#8220;journal.css&#8221;
+#APP_THEME = &#8220;readable.css&#8221;
+#APP_THEME = &#8220;simplex.css&#8221;
+#APP_THEME = &#8220;slate.css&#8221;          # COOL
+APP_THEME = &#8220;spacelab.css&#8221;      # NICE
+#APP_THEME = &#8220;united.css&#8221;
+#APP_THEME = &#8220;yeti.css&#8221;</p>
+</div></blockquote>
+</div>
 <div class="section" id="changing-the-index">
 <h2>Changing the index<a class="headerlink" href="#changing-the-index" title="Permalink to this headline">¶</a></h2>
 <p>The index can be easily overridden by your own. You must develop your template, then define it in a IndexView and pass it to BaseApp</p>
@@ -198,6 +222,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Customizing</a><ul>
+<li><a class="reference internal" href="#changing-themes">Changing themes</a></li>
 <li><a class="reference internal" href="#changing-the-index">Changing the index</a></li>
 <li><a class="reference internal" href="#changing-menu-construction">Changing Menu Construction</a></li>
 <li><a class="reference internal" href="#changing-widgets-amd-templates">Changing Widgets amd Templates</a></li>
