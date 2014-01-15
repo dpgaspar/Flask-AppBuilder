@@ -1,5 +1,5 @@
 
-class ActionItem():
+class ActionItem(object):
     name = ""
     text = ""
     confirmation = ""

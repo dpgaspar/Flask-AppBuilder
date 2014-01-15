@@ -10,7 +10,7 @@ from flask.ext.appbuilder import translations
 from menu import Menu
 
 
-class BaseApp():
+class BaseApp(object):
     """
         This is the base class for the all framework.
         Will hold your flask app object, all your views, and security classes.
