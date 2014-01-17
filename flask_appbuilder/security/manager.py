@@ -338,6 +338,20 @@ class SecurityManager(object):
         print "Added Permission View" , str(pv)
         return pv
     
+    def _del_permission_view_menu(self, permission_name, view_menu_name):
+        perm = self.session.query(Permission).filter_by(name = permission_name).first()
+        vm = self.session.query(ViewMenu).filter_by(name = view_menu_name).first()
+        pv = self.session.query(PermissionView).filter_by(permission = perm, view_menu = vm).first()
+        # delete permission on view
+        self.session.delete(pv)        
+        self.session.commit()
+        # if last permission delete permission
+        pv = self.session.query(PermissionView).filter_by(permission = perm).all()
+        if not pv:
+            self.session.delete(perm)
+            self.session.commit()
+        print "Removed Permission View", str(permission_name)
+        
     
     def _find_permission(self, lst, item):
         for i in lst:
@@ -357,8 +371,9 @@ class SecurityManager(object):
         if view_menu_db == None:
             view_menu_db = self._add_view_menu(view_menu)
         lst = self.session.query(PermissionView).filter_by(view_menu_id = view_menu_db.id).all()
-        # No permissions for this view
+        
         if lst == []:
+            # No permissions for this view
             for permission in base_permissions:
                 pv = self._add_permission_view_menu(permission, view_menu)
                 role_admin = self.session.query(Role).filter_by(name = self.auth_role_admin).first()
@@ -372,7 +387,13 @@ class SecurityManager(object):
             for item in lst:
                 if item.permission.name not in base_permissions:
                     # perm to delete
-                    pass
+                    roles = self.session.query(Role).all()
+                    pv = self.session.query(Permission).filter_by(name=item.permission.name).first()
+                    # del permission from all roles
+                    for role in roles:
+                        self.del_permission_role(role, pv)
+                    self._del_permission_view_menu(item.permission.name, view_menu)
+            
 
     def add_permissions_menu(self, view_menu):
         view_menu_db = self.session.query(ViewMenu).filter_by(name = view_menu).first()
@@ -384,10 +405,16 @@ class SecurityManager(object):
             role_admin = self.session.query(Role).filter_by(name = self.auth_role_admin).first()
             self.add_permission_role(role_admin, pv)
 
-    
     def add_permission_role(self, role, perm_view):
         if perm_view not in role.permissions:
             role.permissions.append(perm_view)
             self.session.merge(role)
             self.session.commit()
-            print "Added Permission" , str(perm_view) , " to Role " , role.name
+            print "Added Permission" , str(perm_view) , "to Role" , role.name
+
+    def del_permission_role(self, role, perm_view):
+        if perm_view in role.permissions:
+            role.permissions.remove(perm_view)
+            self.session.merge(role)
+            self.session.commit()
+            print "Removed Permission" , str(perm_view) , "to Role" , role.name

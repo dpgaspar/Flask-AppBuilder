@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.5.2
+-----------------------------------
+
+- Fix, Auto remove of non existent permissions from database and remove permissions from roles.
+
 Improvements and Bug fixes on 0.5.1
 -----------------------------------
 
