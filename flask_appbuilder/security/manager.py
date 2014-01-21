@@ -138,7 +138,7 @@ class SecurityManager(object):
             
             print "Migrating Users"
             self.migrate_obj(old_user, User)
-            
+
     
     def init_db(self):
         engine = self.session.get_bind(mapper=None, clause=None)        
@@ -223,29 +223,13 @@ class SecurityManager(object):
             return 'Public'
   
     
-    def is_menu_public(self, item):
-        """
-            Check if menu item has public permissions
-    
-            param item:
-                menu item
-        """
-        role = self.session.query(Role).filter_by(name = self.auth_role_public).first()
-        lst = role.permissions
-        if lst:
-            for i in lst:
-                if item == i.view_menu.name:
-                    return  True
-            return False
-        else: return False
-
     def is_item_public(self, permission_name, view_name):
         """
             Check if view has public permissions
     
-            param permission_name:
+            :param permission_name:
                 the permission: can_show, can_edit...
-            param view_name:
+            :param view_name:
                 the name of the class view (child of BaseView)
         """
 
@@ -258,17 +242,8 @@ class SecurityManager(object):
             return False
         else: return False
         
-    def has_menu_access(self, user, menu_name):
-        
-        lst = user.role.permissions
-        if lst:
-            for i in lst:
-                if menu_name == i.view_menu.name:
-                    return  True
-            return False
-        else: return False
-
-    def has_permission_on_view(self, user, permission_name, view_name):
+    
+    def has_view_access(self, user, permission_name, view_name):
         lst = user.role.permissions
         if lst:
             for i in lst:
@@ -277,9 +252,13 @@ class SecurityManager(object):
             return False
         else: return False
     
+    
     def has_access(self, permission_name, view_name):
+        """
+            Check if current user or public has access to view or menu
+        """
         if current_user.is_authenticated():
-            if self.has_permission_on_view(g.user, permission_name, view_name):
+            if self.has_view_access(g.user, permission_name, view_name):
                return True
             else:
                return False
@@ -292,8 +271,9 @@ class SecurityManager(object):
     
     def _add_permission(self, name):
         """
-            Adds a permission to the backend
-            param name:
+            Adds a permission to the backend, model permission
+            
+            :param name:
                 name of the permission to add: 'can_add','can_edit' etc...
         """
         perm = self.session.query(Permission).filter_by(name = name).first()
@@ -306,16 +286,16 @@ class SecurityManager(object):
         return perm
         
         
-    def _add_view_menu(self, name):
+    def _add_view_menu(self, view_name):
         """
-            Adds a view menu to the backend
+            Adds a view or menu to the backend, model view_menu
             param name:
                 name of the view menu to add
         """
-        view_menu = self.session.query(ViewMenu).filter_by(name = name).first()
+        view_menu = self.session.query(ViewMenu).filter_by(name = view_name).first()
         if view_menu == None:
             view_menu = ViewMenu()
-            view_menu.name = name
+            view_menu.name = view_name
             self.session.add(view_menu)
             self.session.commit()
             return view_menu
@@ -323,10 +303,11 @@ class SecurityManager(object):
 
     def _add_permission_view_menu(self, permission_name, view_menu_name):
         """
-            Adds a permission on a view menu to the backend
-            param permission_name:
+            Adds a permission on a view or menu to the backend
+            
+            :param permission_name:
                 name of the permission to add: 'can_add','can_edit' etc...
-            param view_menu_name:
+            :param view_menu_name:
                 name of the view menu to add
         """
         vm = self._add_view_menu(view_menu_name)
@@ -362,9 +343,10 @@ class SecurityManager(object):
     def add_permissions_view(self, base_permissions, view_menu):
         """
             Adds a permission on a view menu to the backend
-            param base_permissions:
+            
+            :param base_permissions:
                 list of permissions from view (all exposed methods): 'can_add','can_edit' etc...
-            param view_menu:
+            :param view_menu:
                 name of the view or menu to add
         """
         view_menu_db = self.session.query(ViewMenu).filter_by(name = view_menu).first()
@@ -395,17 +377,31 @@ class SecurityManager(object):
                     self._del_permission_view_menu(item.permission.name, view_menu)
             
 
-    def add_permissions_menu(self, view_menu):
-        view_menu_db = self.session.query(ViewMenu).filter_by(name = view_menu).first()
-        if view_menu_db == None:
-            view_menu_db = self._add_view_menu(view_menu)
-        lst = self.session.query(PermissionView).filter_by(view_menu_id = view_menu_db.id).all()
+    def add_permissions_menu(self, view_menu_name):
+        """
+            Adds menu_access to menu on permission_view_menu
+            
+            :param view_menu_name:
+                The menu name
+        """
+        view_menu = self.session.query(ViewMenu).filter_by(name = view_menu_name).first()
+        if view_menu == None:
+            view_menu = self._add_view_menu(view_menu_name)
+        lst = self.session.query(PermissionView).filter_by(view_menu_id = view_menu.id).all()
         if lst == []:
-            pv = self._add_permission_view_menu('menu_access', view_menu)
+            pv = self._add_permission_view_menu('menu_access', view_menu_name)
             role_admin = self.session.query(Role).filter_by(name = self.auth_role_admin).first()
             self.add_permission_role(role_admin, pv)
 
     def add_permission_role(self, role, perm_view):
+        """
+            Add permission-ViewMenu object to Role
+            
+            :param role:
+                The role object
+            :param perm_view:
+                The PermissionViewMenu object
+        """
         if perm_view not in role.permissions:
             role.permissions.append(perm_view)
             self.session.merge(role)
@@ -413,6 +409,14 @@ class SecurityManager(object):
             print "Added Permission" , str(perm_view) , "to Role" , role.name
 
     def del_permission_role(self, role, perm_view):
+        """
+            Remove permission-ViewMenu object to Role
+            
+            :param role:
+                The role object
+            :param perm_view:
+                The PermissionViewMenu object
+        """
         if perm_view in role.permissions:
             role.permissions.remove(perm_view)
             self.session.merge(role)

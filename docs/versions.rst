@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.5.3
+-----------------------------------
+
+- Fix, security.manager api improvement.
+
 Improvements and Bug fixes on 0.5.2
 -----------------------------------
 

@@ -8,15 +8,9 @@ def has_access(f):
         """
  
         def wraps(self, *args, **kwargs):
-            if current_user.is_authenticated():
-                if self.baseapp.sm.has_permission_on_view(g.user, "can_" + f.__name__, self.__class__.__name__):
-                    return f(self, *args, **kwargs)
-                else:
-                    flash("Access is Denied %s %s" % (f.__name__, self.__class__.__name__),"danger")
+            if self.baseapp.sm.has_access("can_" + f.__name__, self.__class__.__name__):
+                return f(self, *args, **kwargs)
             else:
-                if self.baseapp.sm.is_item_public("can_" + f.__name__, self.__class__.__name__):
-                    return f(self, *args, **kwargs)
-                else:
-                    flash("Access is Denied %s %s" % (f.__name__, self.__class__.__name__),"danger")
+                flash("Access is Denied %s %s" % (f.__name__, self.__class__.__name__),"danger")
             return redirect(url_for(self.baseapp.sm.auth_view.__class__.__name__+ ".login"))
         return wraps

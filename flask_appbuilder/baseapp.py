@@ -220,10 +220,10 @@ class BaseApp(object):
             self._add_permission(baseview)
 
     def _add_permission(self, baseview):
-        #try:
+        try:
             self.sm.add_permissions_view(baseview.base_permissions, baseview.__class__.__name__)
-        #except:
-        #    print "Add Permission on View Error: DB not created?"
+        except:
+            print "Add Permission on View Error: DB not created?"
         
     def register_blueprint(self, baseview, endpoint = None, static_folder = None):
         self.app.register_blueprint(baseview.create_blueprint(self,  endpoint = endpoint, static_folder = static_folder))

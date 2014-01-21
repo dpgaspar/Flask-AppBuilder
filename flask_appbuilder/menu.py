@@ -27,7 +27,7 @@ class MenuItem(object):
             return self.href
 
     def __repr__(self):
-        return self.name + ' href=' + self.get_url()
+        return self.name
 
 class Menu(object):
 

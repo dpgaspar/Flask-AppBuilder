@@ -11,7 +11,7 @@ class  BabelManager(object):
         self.babel = Babel(app, pkg_translations)
         self.basel_default_locale = self._get_default_locale(app)
         self.babel.locale_selector_func = self.get_locale
-        
+
     def register_views(self, baseapp):    
         baseapp.add_view_no_menu(LocaleView())
     

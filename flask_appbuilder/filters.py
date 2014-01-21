@@ -98,26 +98,9 @@ class TemplateFilters(object):
 
     @app_template_filter('is_menu_visible')
     def is_menu_visible(self, item):
-        if current_user.is_authenticated():
-            if self.security_manager.is_menu_public(item) or self.security_manager.has_menu_access(g.user, item.name):
-                return True
-            else:
-                return False
-        else:
-            if self.security_manager.is_menu_public(item.name):
-                return True
-            else:
-                return False
+        return self.security_manager.has_access("menu_access", item.name)
 
     @app_template_filter('is_item_visible')
     def is_item_visible(self, permission, item):
-        if current_user.is_authenticated():
-            if self.security_manager.has_permission_on_view(g.user, permission, item):
-                return True
-            else:
-                return False
-        else:
-            if self.security_manager.is_item_public(permission, item):
-                return True
-            else:
-                return False
+        return self.security_manager.has_access(permission, item)
+
