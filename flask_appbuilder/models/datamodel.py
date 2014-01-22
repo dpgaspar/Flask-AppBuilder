@@ -27,6 +27,59 @@ class DataModel():
 
     def __init__(self, obj):
         self.obj = obj
+        
+    def _get_attr_value(self, item, col):
+        if hasattr(getattr(item, col), '__call__'):
+            # its a function
+            return getattr(item, col)()
+        else:
+            # its attribute
+            return getattr(item, col)
+
+    def get_values_item(self, item, show_columns):
+        return [self._get_attr_value(item, col) for col in show_columns]
+        
+    def get_values(self, lst, list_columns):
+        """
+            Get Values: formats values for list template.
+            returns [{'col_name':'col_value',....},{'col_name':'col_value',....}]
+            
+            :param lst:
+                The list of item objects from query
+            :param list_columns:
+                The list of columns to include
+        """
+        retlst = []
+        for item in lst:
+            retdict = {}
+            for col in list_columns:
+                    retdict[col] = self._get_attr_value(item,col)
+            retlst.append(retdict)
+        return retlst
+
+    def get_gchart_json(self, lst, list_columns, label_columns):
+        """
+            Get google charts JSON
+        """
+        json_cols = []
+        for col_name in list_columns:
+            col = {}
+            col['id'] = col_name
+            col['label'] = label_columns.get(col_name)
+            if self.is_string(col_name): col['type'] = 'string'
+            elif self.is_integer(col_name): col['type'] = 'int'
+            elif self.is_date(col_name): col['type'] = 'date'
+            json_cols.append(col)
+        json_data = []
+        for item in list_columns:
+            data = {}
+            for col in list_columns:
+                    data['c'] = col 
+                    data['v'] = self._get_attr_value(item,col)
+            json_data.append(data)
+        return [{'cols':json_cols,'data':json_data}]
+
+
 
 class SQLAModel(DataModel):
     """
@@ -335,36 +388,7 @@ class SQLAModel(DataModel):
     def get_col_byname(self, name):
         return getattr(self.obj, name)
         
-    def _get_attr_value(self, item, col):
-        if hasattr(getattr(item, col), '__call__'):
-            # its a function
-            return getattr(item, col)()
-        else:
-            # its attribute
-            return getattr(item, col)
-
-    def get_values_item(self, item, show_columns):
-        return [self._get_attr_value(item, col) for col in show_columns]
-        
     
-    def get_values(self, lst, list_columns):
-        """
-            Get Values: formats values for list template.
-            returns [{'col_name':'col_value',....},{'col_name':'col_value',....}]
-            
-            :param lst:
-                The list of item objects from query
-            :param list_columns:
-                The list of columns to include
-        """
-        retlst = []
-        for item in lst:
-            retdict = {}
-            for col in list_columns:
-                    retdict[col] = self._get_attr_value(item,col)
-            retlst.append(retdict)
-        return retlst
-
     """
     ----------- GET KEYS -------------------
     """
