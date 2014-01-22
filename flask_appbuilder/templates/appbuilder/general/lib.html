@@ -7,11 +7,14 @@
 	{% endif %}
 {% endmacro %}
 
-{% macro render_action_links(actions, pk) %}
+{% macro render_action_links(actions, pk, generalview_name) %}
     {% for key in actions %}
         {%  set action = actions.get(key) %}
-        <a href="{{url_for('.action', name = action.name, pk = pk)}}" class="btn btn-sm btn-primary"><i class="fa {{action.icon}}"></i>
-			{{_(action.text)}}</a>
+        {% if action.name | is_item_visible(generalview_name) %}
+            <a href="{{url_for('.action', name = action.name, pk = pk)}}" class="btn btn-sm btn-primary"><i class="fa {{action.icon}}"></i>
+                {{_(action.text)}}
+            </a>
+        {% endif %}
     {% endfor %}
 	
 {% endmacro %}

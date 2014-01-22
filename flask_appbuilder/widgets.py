@@ -85,6 +85,7 @@ class ShowWidget(RenderTemplateWidget):
     value_columns = []
     actions = None
     fieldsets = []
+    generalview_name = ''
 
     def __init__(self, route_base = '',
                 pk = None,
@@ -92,7 +93,8 @@ class ShowWidget(RenderTemplateWidget):
                 include_columns = [],
                 value_columns = [],
                 actions = None,
-                fieldsets = []):
+                fieldsets = [],
+                generalview_name = ''):
         self.route_base = route_base
         self.pk = pk
         self.label_columns = label_columns
@@ -100,6 +102,7 @@ class ShowWidget(RenderTemplateWidget):
         self.value_columns = value_columns
         self.actions = actions
         self.fieldsets = fieldsets
+        self.generalview_name = generalview_name
 
     def __call__(self, **kwargs):
         kwargs['route_base'] = self.route_base
@@ -109,6 +112,7 @@ class ShowWidget(RenderTemplateWidget):
         kwargs['value_columns'] = self.value_columns
         kwargs['actions'] = self.actions
         kwargs['fieldsets'] = self.fieldsets
+        kwargs['generalview_name'] = self.generalview_name
         return super(ShowWidget, self).__call__(**kwargs)
 
 

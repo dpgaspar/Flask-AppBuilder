@@ -588,7 +588,8 @@ class BaseCRUDView(BaseModelView):
                                                 include_columns = self.show_columns,
                                                 value_columns = self.datamodel.get_values_item(item, self.show_columns),
                                                 actions = actions,
-                                                fieldsets = self.show_fieldsets
+                                                fieldsets = self.show_fieldsets,
+                                                generalview_name = self.__class__.__name__
                                                 )
         return widgets
 
