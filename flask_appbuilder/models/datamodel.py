@@ -346,10 +346,17 @@ class SQLAModel(DataModel):
     def get_values_item(self, item, show_columns):
         return [self._get_attr_value(item, col) for col in show_columns]
         
-    """
-    ----------- GET VALUES -----------------
-    """
+    
     def get_values(self, lst, list_columns):
+        """
+            Get Values: formats values for list template.
+            returns [{'col_name':'col_value',....},{'col_name':'col_value',....}]
+            
+            :param lst:
+                The list of item objects from query
+            :param list_columns:
+                The list of columns to include
+        """
         retlst = []
         for item in lst:
             retdict = {}
