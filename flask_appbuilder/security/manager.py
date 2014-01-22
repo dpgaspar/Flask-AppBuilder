@@ -257,7 +257,6 @@ class SecurityManager(object):
         """
             Check if current user or public has access to view or menu
         """
-        print permission_name, view_name
         if current_user.is_authenticated():
             if self.has_view_access(g.user, permission_name, view_name):
                return True
