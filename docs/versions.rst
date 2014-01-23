@@ -5,6 +5,9 @@ Improvements and Bug fixes on 0.5.3
 -----------------------------------
 
 - Fix, security.manager api improvement.
+- New, property for default order list on GeneralView.
+- Fix, actions not permitted will not show on UI.
+- Fix, BaseView, BaseModelView, BaseCRUDView separation to module baseviews.
 
 Improvements and Bug fixes on 0.5.2
 -----------------------------------

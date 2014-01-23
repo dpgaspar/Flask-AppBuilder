@@ -169,13 +169,21 @@ It's very flexible, you can apply multiple filters with static values, or values
 
 ::
 
-            def get_user():
-                return g.user
+    def get_user():
+        return g.user
         
-            class MyView(GeneralView):
-                datamodel = SQLAModel(MyTable, db.session)
-                base_filters = [['created_by', FilterEqualFunction, get_user],
-                                ['name', FilterStartsWith, 'a']]
+    class MyView(GeneralView):
+        datamodel = SQLAModel(MyTable, db.session)
+        base_filters = [['created_by', FilterEqualFunction, get_user],
+                        ['name', FilterStartsWith, 'a']]
+
+    - Default Order
+    
+Use a default order on your lists, this can be overridden by the user on the UI. Data structure ('col_name':'asc|desc') ::
+
+    class MyView(GeneralView):
+        datamodel = SQLAModel(MyTable, db.session)
+        base_order = ('my_col_to_be_ordered','asc')
 
     - Forms
     

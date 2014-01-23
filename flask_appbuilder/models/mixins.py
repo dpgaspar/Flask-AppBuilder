@@ -51,7 +51,6 @@ class BaseMixin(object):
             if len(word) > 1:
                 return ('_%s_%s' % (word[:-1], word[-1])).lower()
             return '_' + word.lower()
-        print "NEW", _camelcase_re.sub(_join, cls.__name__).lstrip('_')
         return _camelcase_re.sub(_join, cls.__name__).lstrip('_')
             
 

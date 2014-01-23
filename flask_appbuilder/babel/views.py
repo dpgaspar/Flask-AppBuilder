@@ -1,6 +1,6 @@
 from flask import redirect, request, session
 from flask.ext.babelpkg import refresh
-from ..views import BaseView, expose
+from ..baseviews import BaseView, expose
 
 
 class LocaleView(BaseView):

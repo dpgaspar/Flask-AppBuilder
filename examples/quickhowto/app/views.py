@@ -16,6 +16,8 @@ class ContactGeneralView(GeneralView):
     label_columns = {'group':'Contacts Group'}
     list_columns = ['name','personal_celphone','birthday','group']
 
+    base_order = ('name','asc')
+
     show_fieldsets = [
          ('Summary',{'fields':['name','address','group']}),
          ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),

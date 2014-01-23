@@ -6,7 +6,7 @@ from sqlalchemy.ext.serializer import loads, dumps
 from widgets import ChartWidget
 from ..widgets import SearchWidget
 from ..security.decorators import has_access
-from ..views import BaseModelView, expose
+from ..baseviews import BaseModelView, expose
 from ..forms import GeneralModelConverter
 from ..urltools import *
 
