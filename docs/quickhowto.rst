@@ -146,4 +146,45 @@ Some images:
 .. image:: ./images/contact_list.png
     :width: 100%
 
+Advanced Configuration
+----------------------
 
+    - Security
+
+To block or set the allowed permissions on a view, just set the *base_permissions* property with the base permissions::
+
+        class GroupGeneralView(GeneralView):
+    		datamodel = SQLAModel(Group, db.session)
+            base_permissions = ['can_add','can_delete']
+            
+With this initial config the framework will only create 'can_add' and 'can_edit' permissions on GroupGeneralView as the only allowed. So users and even administrator of the application will not have the possibility to add delete permission on Group table view.
+
+    - Base Filtering
+    
+To filter a views data, just set the *base_filter* property with your base filters. These will allways be applied first on any search. 
+
+It's very flexible, you can apply multiple filters with static values, or values based on a function you define. On this next example we are filtering a view by the logged in user and with column *name* starting with "a"
+
+*base_filters* is a list of lists with 3 values [['column name',FilterClass,'filter value],...]
+
+::
+
+            def get_user():
+                return g.user
+        
+            class MyView(GeneralView):
+                datamodel = SQLAModel(MyTable, db.session)
+                base_filters = [['created_by', FilterEqualFunction, get_user],
+                                ['name', FilterStartsWith, 'a']]
+
+    - Forms
+    
+You can define your own Add, Edit forms to override the automatic form creation.
+
+You can define what columns will be included on a Add or Edit forms, for example if you have automatic fields like user or date, you can remove this from the Add Form.
+
+You can contribute with any adittionals field that are not on a table, for example a confirmation field.
+
+You can contribute with your own aditional form validations rules. Remenber the framework will automaticaly validate any field that is defined on the database with *Not Null* (Required) or Unique constraints.
+
+Take a look at the :doc:`api`. Experiment with *add_form*, *edit_form*, *add_columns*, *edit_columns*, *validators_columns*, *add_form_extra_fields*, *edit_form_extra_fields*

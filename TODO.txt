@@ -1,4 +1,4 @@
-
+ - Implement base_order ['column name','asc|desc']
  - Add easy wizard flow generation.
  - Add tree list with multiple views.
  - Add actions on lists with checkboxes (Django style).
