@@ -158,7 +158,7 @@ To block or set the allowed permissions on a view, just set the *base_permission
 ::
 
     class GroupGeneralView(GeneralView):
-    	datamodel = SQLAModel(Group, db.session)
+        datamodel = SQLAModel(Group, db.session)
         base_permissions = ['can_add','can_delete']
             
 With this initial config the framework will only create 'can_add' and 'can_edit' permissions on GroupGeneralView as the only allowed. So users and even administrator of the application will not have the possibility to add delete permission on Group table view.
@@ -182,7 +182,7 @@ It's very flexible, you can apply multiple filters with static values, or values
                         ['name', FilterStartsWith, 'a']]
 
 
-    - **Default Order**
+- **Default Order**
     
 Use a default order on your lists, this can be overridden by the user on the UI. Data structure ('col_name':'asc|desc')
 
@@ -193,7 +193,7 @@ Use a default order on your lists, this can be overridden by the user on the UI.
         base_order = ('my_col_to_be_ordered','asc')
 
 
-    - **Forms**
+- **Forms**
     
 You can define your own Add, Edit forms to override the automatic form creation.
 
