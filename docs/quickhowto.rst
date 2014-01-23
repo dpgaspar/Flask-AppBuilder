@@ -45,12 +45,12 @@ The *Group* table.
 
 ::
 
-        class Group(BaseMixin, Base):
-            id = Column(Integer, primary_key=True)
-            name = Column(String(50), unique = True, nullable=False)
+    class Group(BaseMixin, Base):
+        id = Column(Integer, primary_key=True)
+        name = Column(String(50), unique = True, nullable=False)
 
-            def __repr__(self):
-                return self.name
+        def __repr__(self):
+            return self.name
 
 The *Contacts* table.
 
@@ -77,9 +77,9 @@ Now we are going to define our view for *Group* table
 
 ::
   
-        class GroupGeneralView(GeneralView):
-    		datamodel = SQLAModel(Group, db.session)
-    		related_views = [ContactGeneralView()]
+    class GroupGeneralView(GeneralView):
+        datamodel = SQLAModel(Group, db.session)
+        related_views = [ContactGeneralView()]
 
 
 I hope this was easy enough! Some questions may arrise...
@@ -121,7 +121,9 @@ Some explanation:
 Register (views.py)
 -------------------
 
-Register everything, to present the models and create the menu::
+Register everything, to present the models and create the menu
+
+::
 
         genapp = BaseApp(app, db)
         genapp.add_view(GroupGeneralView(), "List Groups",icon = ""fa-folder-open-o"",category = "Contacts")
@@ -149,17 +151,19 @@ Some images:
 Advanced Configuration
 ----------------------
 
-    - Security
+    - **Security**
 
-To block or set the allowed permissions on a view, just set the *base_permissions* property with the base permissions::
+To block or set the allowed permissions on a view, just set the *base_permissions* property with the base permissions
 
-        class GroupGeneralView(GeneralView):
-    		datamodel = SQLAModel(Group, db.session)
-            base_permissions = ['can_add','can_delete']
+::
+
+    class GroupGeneralView(GeneralView):
+    	datamodel = SQLAModel(Group, db.session)
+        base_permissions = ['can_add','can_delete']
             
 With this initial config the framework will only create 'can_add' and 'can_edit' permissions on GroupGeneralView as the only allowed. So users and even administrator of the application will not have the possibility to add delete permission on Group table view.
 
-    - Base Filtering
+    - **Base Filtering**
     
 To filter a views data, just set the *base_filter* property with your base filters. These will allways be applied first on any search. 
 
@@ -177,15 +181,19 @@ It's very flexible, you can apply multiple filters with static values, or values
         base_filters = [['created_by', FilterEqualFunction, get_user],
                         ['name', FilterStartsWith, 'a']]
 
-    - Default Order
+
+    - **Default Order**
     
-Use a default order on your lists, this can be overridden by the user on the UI. Data structure ('col_name':'asc|desc') ::
+Use a default order on your lists, this can be overridden by the user on the UI. Data structure ('col_name':'asc|desc')
+
+::
 
     class MyView(GeneralView):
         datamodel = SQLAModel(MyTable, db.session)
         base_order = ('my_col_to_be_ordered','asc')
 
-    - Forms
+
+    - **Forms**
     
 You can define your own Add, Edit forms to override the automatic form creation.
 
