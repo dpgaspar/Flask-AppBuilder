@@ -65,47 +65,42 @@
 <p>Event better you can develop your own widgets or templates and contribute to the project.</p>
 <div class="section" id="changing-themes">
 <h2>Changing themes<a class="headerlink" href="#changing-themes" title="Permalink to this headline">¶</a></h2>
-<p>F.A.B comes with bootwatch themes ready to use, to the bootstrap default theme just change the APP_THEME key</p>
-<blockquote>
-<div><blockquote>
-<div><ul class="simple">
-<li>On config.py (from flask-appbuilder-skeleton), using spacelab theme:</li>
+<p>F.A.B comes with bootwatch themes ready to use, to change bootstrap default theme just change the APP_THEME key</p>
+<ul>
+<li><p class="first">On config.py (from flask-appbuilder-skeleton), using spacelab theme:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">APP_THEME</span> <span class="o">=</span> <span class="s">&quot;spacelab.css&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Not using a config.py on your applications, set the key like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;APP_THEME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;spacelab.css&quot;</span>
+</pre></div>
+</div>
+</li>
 </ul>
-</div></blockquote>
-<p>#APP_THEME = &#8220;&#8221;                  # default
-#APP_THEME = &#8220;cerulean.css&#8221;      # COOL
-#APP_THEME = &#8220;amelia.css&#8221;
-#APP_THEME = &#8220;cosmo.css&#8221;
-#APP_THEME = &#8220;cyborg.css&#8221;       # COOL
-#APP_THEME = &#8220;flatly.css&#8221;
-#APP_THEME = &#8220;journal.css&#8221;
-#APP_THEME = &#8220;readable.css&#8221;
-#APP_THEME = &#8220;simplex.css&#8221;
-#APP_THEME = &#8220;slate.css&#8221;          # COOL
-APP_THEME = &#8220;spacelab.css&#8221;      # NICE
-#APP_THEME = &#8220;united.css&#8221;
-#APP_THEME = &#8220;yeti.css&#8221;</p>
-</div></blockquote>
+<p>You can choose from the folowing <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py">themes</a></p>
 </div>
 <div class="section" id="changing-the-index">
 <h2>Changing the index<a class="headerlink" href="#changing-the-index" title="Permalink to this headline">¶</a></h2>
 <p>The index can be easily overridden by your own. You must develop your template, then define it in a IndexView and pass it to BaseApp</p>
 <p>The default index template is very simple, you can create your own like this:</p>
 <p>1 - Develop your template (on your &lt;PROJECT_NAME&gt;/app/templates/my_index.html):</p>
-<div class="highlight-python"><pre>{% extends "appbuilder/base.html" %}
+<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;appbuilder/base.html&quot; %}
 {% block content %}
-&lt;div class="jumbotron"&gt;
-  &lt;div class="container"&gt;
-    &lt;h1&gt;{{_("My App on F.A.B.")}}&lt;/h1&gt;
-    &lt;p&gt;{{_("My first app using F.A.B, bla, bla, bla")}}&lt;/p&gt;
+&lt;div class=&quot;jumbotron&quot;&gt;
+  &lt;div class=&quot;container&quot;&gt;
+    &lt;h1&gt;{{_(&quot;My App on F.A.B.&quot;)}}&lt;/h1&gt;
+    &lt;p&gt;{{_(&quot;My first app using F.A.B, bla, bla, bla&quot;)}}&lt;/p&gt;
   &lt;/div&gt;
 &lt;/div&gt;
-{% endblock %}</pre>
+{% endblock %}
+</pre></div>
 </div>
 <p>What happened here? We should allways extend from &#8220;appbuilder/base.html&#8221; this is the base template that will include all CSS&#8217;s, Javascripts, and contruct the menu based on the user&#8217;s security definition.</p>
 <p>Next we will override the &#8220;content&#8221; block, we could override other areas like CSS, extend CSS, Javascript or extend javascript. We can even override the base.html completely</p>
 <p>I&#8217;ve presented the text on the content like:</p>
-<div class="highlight-python"><pre>{{_("text to be translated")}}</pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{{</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;text to be translated&quot;</span><span class="p">)}}</span>
+</pre></div>
 </div>
 <p>So that we can use Babel to translate our index text</p>
 <p>2 - Define an IndexView</p>

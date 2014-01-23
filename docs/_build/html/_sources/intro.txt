@@ -11,6 +11,7 @@ This package has some CSS and JS batteries included:
 
 	- Google charts CSS and JS
 	- BootStrap CSS and JS
+	- BootWatch Themes
 	- Font-Awesome CSS and Fonts
 
 Includes
@@ -35,7 +36,8 @@ Includes
 	- Field sets for Form's (Django style).
   - i18n
 	- Support for multi-language via Babel.
-  - Bootstrap 3.0.0 CSS and js, with Select2 and DatePicker.
+  - Bootstrap 3.0.3 CSS and js, with Select2 and DatePicker.
+  - Bootwatch Themes to choose from.
 
 
 

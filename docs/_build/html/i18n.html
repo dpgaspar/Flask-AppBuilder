@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Base Configuration" href="config.html" />
-    <link rel="prev" title="Customizing" href="customizing.html" />
+    <link rel="prev" title="Actions" href="actions.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -48,7 +48,7 @@
           <a href="config.html" title="Base Configuration"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="customizing.html" title="Customizing"
+          <a href="actions.html" title="Actions"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -69,83 +69,92 @@
 <div class="section" id="babel-quick-how-to-config">
 <h2>Babel Quick How to Config<a class="headerlink" href="#babel-quick-how-to-config" title="Permalink to this headline">¶</a></h2>
 <p>On you projects root create a directory named babel, then create and edit a file named babel.cfg with the following content:</p>
-<div class="highlight-python"><pre>[python: **.py]
+<div class="highlight-python"><div class="highlight"><pre>[python: **.py]
 [jinja2: **/templates/**.html]
-encoding = utf-8</pre>
+encoding = utf-8
+</pre></div>
 </div>
 <p>Next extract your strings to be translated, execute on you projects root:</p>
-<div class="highlight-python"><pre>pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .</pre>
+<div class="highlight-python"><div class="highlight"><pre>pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
+</pre></div>
 </div>
 <p>Finaly create your translations, for example to portuguese, spanish and german, execute on you projects root:</p>
-<div class="highlight-python"><pre>pybabel init -i ./babel/messages.pot -d app/translations -l de
+<div class="highlight-python"><div class="highlight"><pre>pybabel init -i ./babel/messages.pot -d app/translations -l de
 pybabel init -i ./babel/messages.pot -d app/translations -l es
-pybabel init -i ./babel/messages.pot -d app/translations -l de</pre>
+pybabel init -i ./babel/messages.pot -d app/translations -l de
+</pre></div>
 </div>
 <p>If your using Flask-AppBuilder-Skeleton use the provided script:</p>
-<div class="highlight-python"><pre>./babel_init.sh pt
+<div class="highlight-python"><div class="highlight"><pre>./babel_init.sh pt
 ./babel_init.sh es
-./babel_init.sh de</pre>
+./babel_init.sh de
+</pre></div>
 </div>
 </div>
 <div class="section" id="quick-how-to">
 <h2>Quick How to<a class="headerlink" href="#quick-how-to" title="Permalink to this headline">¶</a></h2>
 <p>Let&#8217;s work with the contacts application example, so you want to add translations for the menus &#8220;List Groups&#8221; and &#8220;List Contacts&#8221;.</p>
-<div class="highlight-python"><pre>        from flask.ext.babelpkg import lazy_gettext as _
+<div class="highlight-python"><div class="highlight"><pre>        from flask.ext.babelpkg import lazy_gettext as _
 
         class GroupGeneralView(GeneralView):
         datamodel = SQLAModel(Group, db.session)
         related_views = [ContactGeneralView()]
 
-                label_columns = {'name':_('Name')}
+                label_columns = {&#39;name&#39;:_(&#39;Name&#39;)}
 
         fixed_translations_import = [
-        _("List Groups"),
-        _("List Contacts")
+        _(&quot;List Groups&quot;),
+        _(&quot;List Contacts&quot;)
 
-genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "Contacts")
-genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")</pre>
+genapp.add_view(GroupGeneralView(), &quot;List Groups&quot;,icon = &quot;th-large&quot;,category = &quot;Contacts&quot;)
+genapp.add_view(ContactGeneralView(), &quot;List Contacts&quot;,icon = &quot;earphone&quot;,category = &quot;Contacts&quot;)
+</pre></div>
 </div>
 <p>1 - Run the folowing extraction script:</p>
-<div class="highlight-python"><pre>pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
+<div class="highlight-python"><div class="highlight"><pre>pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
 
 - If your using Flask-AppBuilder-Skeleton use the provided script::
 
-    ./babel_extract.sh</pre>
+    ./babel_extract.sh
+</pre></div>
 </div>
 <p>2 - Make your translations</p>
 <blockquote>
 <div><ul>
 <li><p class="first">On app/translations/pt/LC_MESSAGES/messages.po you will find the messages you added to translate:</p>
-<div class="highlight-python"><pre>msgid "Name"
-msgstr ""
+<div class="highlight-python"><div class="highlight"><pre>msgid &quot;Name&quot;
+msgstr &quot;&quot;
 
-msgid "List Groups"
-msgstr ""
+msgid &quot;List Groups&quot;
+msgstr &quot;&quot;
 
-msgid "List Contacts"
-msgstr ""</pre>
+msgid &quot;List Contacts&quot;
+msgstr &quot;&quot;
+</pre></div>
 </div>
 </li>
 <li><p class="first">Translate them:</p>
-<div class="highlight-python"><pre>msgid "Nome"
-msgstr ""
+<div class="highlight-python"><div class="highlight"><pre>msgid &quot;Nome&quot;
+msgstr &quot;&quot;
 
-msgid "List Groups"
-msgstr "Lista de Grupos"
+msgid &quot;List Groups&quot;
+msgstr &quot;Lista de Grupos&quot;
 
-msgid "List Contacts"
-msgstr "Lista de Contactos"</pre>
+msgid &quot;List Contacts&quot;
+msgstr &quot;Lista de Contactos&quot;
+</pre></div>
 </div>
 </li>
 </ul>
 </div></blockquote>
 <p>3 - Run the babel extraction again:</p>
-<div class="highlight-python"><pre>pybabel update -i ./babel/messages.pot -d app/translations
+<div class="highlight-python"><div class="highlight"><pre>pybabel update -i ./babel/messages.pot -d app/translations
     pybabel compile -d app/translations
 
     - If your using Flask-AppBuilder-Skeleton use the provided script::
 
-    ./babel_extract.sh</pre>
+    ./babel_extract.sh
+</pre></div>
 </div>
 <p>4 - Add your language support to the framework</p>
 <blockquote>
@@ -182,7 +191,7 @@ msgstr "Lista de Contactos"</pre>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="customizing.html" title="previous chapter">Customizing</a></li>
+      <li>Previous: <a href="actions.html" title="previous chapter">Actions</a></li>
       <li>Next: <a href="config.html" title="next chapter">Base Configuration</a></li>
   </ul></li>
 </ul>

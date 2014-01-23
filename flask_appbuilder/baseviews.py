@@ -314,7 +314,7 @@ class BaseCRUDView(BaseModelView):
             class MyView(GeneralView):
                 datamodel = SQLAModel(MyTable, db.session)
 
-                description_columns = {'name','your models name column','address','the address column'}
+                description_columns = {'name':'your models name column','address':'the address column'}
     """
     validators_columns = None
     """ Dictionary to add your own validators for forms """

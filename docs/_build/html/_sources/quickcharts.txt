@@ -1,7 +1,7 @@
 Quick Charts
 ============
 
-To implement views with google charts inherit from ChartsViews like this::
+To implement views with google charts inherit from ChartsViews like this
 
 Define your Chart Views (views.py)
 ----------------------------------

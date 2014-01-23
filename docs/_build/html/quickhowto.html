@@ -65,13 +65,14 @@
 <h2>The Base Skeleton Application<a class="headerlink" href="#the-base-skeleton-application" title="Permalink to this headline">¶</a></h2>
 <p>If your working with the base skeleton application <a class="reference internal" href="instalation.html"><em>Instalation</em></a></p>
 <p>you now have the following directory structure:</p>
-<div class="highlight-python"><pre>&lt;your project name&gt;/
-    config.py : All the application's configuration
+<div class="highlight-python"><div class="highlight"><pre>&lt;your project name&gt;/
+    config.py : All the application&#39;s configuration
     run.py    : A runner mainly for debug
     app/
-        __init__.py : Application's initialization
+        __init__.py : Application&#39;s initialization
         models.py : Declare your database models here
-        views.py  : Implement your views here</pre>
+        views.py  : Implement your views here
+</pre></div>
 </div>
 <p>It&#8217;s very easy and fast to create an application out of the box, with detailed security.</p>
 <p>Please take a look at github <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples">examples</a></p>
@@ -85,7 +86,8 @@
 <p>Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a diferent declarative model from the security tables of AppBuilder.
 If you want to use AuditMixin <a class="reference internal" href="api.html"><em>API Reference</em></a> or include a relation to a User or login User you must be on the same declarative base.
 Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, import:</p>
-<div class="highlight-python"><pre>flask.ext.appbuilder import Base</pre>
+<div class="highlight-python"><div class="highlight"><pre>flask.ext.appbuilder import Base
+</pre></div>
 </div>
 <p class="last">This &#8220;Base&#8221; is the same declarative model of F.A.B.</p>
 </div>
@@ -121,8 +123,8 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
 <p>Now we are going to define our view for <em>Group</em> table</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-        <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
-        <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">()]</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">()]</span>
 </pre></div>
 </div>
 <p>I hope this was easy enough! Some questions may arrise...</p>
@@ -174,10 +176,11 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
 </div>
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
-<p>Register everything, to present the models and create the menu:</p>
-<div class="highlight-python"><pre>genapp = BaseApp(app, db)
-genapp.add_view(GroupGeneralView(), "List Groups",icon = ""fa-folder-open-o"",category = "Contacts")
-genapp.add_view(ContactGeneralView(), "List Contacts",icon = "fa-envelope",category = "Contacts")</pre>
+<p>Register everything, to present the models and create the menu</p>
+<div class="highlight-python"><div class="highlight"><pre>genapp = BaseApp(app, db)
+genapp.add_view(GroupGeneralView(), &quot;List Groups&quot;,icon = &quot;&quot;fa-folder-open-o&quot;&quot;,category = &quot;Contacts&quot;)
+genapp.add_view(ContactGeneralView(), &quot;List Contacts&quot;,icon = &quot;fa-envelope&quot;,category = &quot;Contacts&quot;)
+</pre></div>
 </div>
 <p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a> for add_view method.</p>
 <div class="admonition note">
@@ -189,6 +192,55 @@ genapp.add_view(ContactGeneralView(), "List Contacts",icon = "fa-envelope",categ
 <a class="reference internal image-reference" href="_images/login.png"><img alt="_images/login.png" src="_images/login.png" style="width: 100%;" /></a>
 <a class="reference internal image-reference" href="_images/group_list.png"><img alt="_images/group_list.png" src="_images/group_list.png" style="width: 100%;" /></a>
 <a class="reference internal image-reference" href="_images/contact_list.png"><img alt="_images/contact_list.png" src="_images/contact_list.png" style="width: 100%;" /></a>
+</div>
+<div class="section" id="advanced-configuration">
+<h2>Advanced Configuration<a class="headerlink" href="#advanced-configuration" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><strong>Security</strong></li>
+</ul>
+</div></blockquote>
+<p>To block or set the allowed permissions on a view, just set the <em>base_permissions</em> property with the base permissions</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">base_permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;can_add&#39;</span><span class="p">,</span><span class="s">&#39;can_delete&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>With this initial config the framework will only create &#8216;can_add&#8217; and &#8216;can_edit&#8217; permissions on GroupGeneralView as the only allowed. So users and even administrator of the application will not have the possibility to add delete permission on Group table view.</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>Base Filtering</strong></li>
+</ul>
+</div></blockquote>
+<p>To filter a views data, just set the <em>base_filter</em> property with your base filters. These will allways be applied first on any search.</p>
+<p>It&#8217;s very flexible, you can apply multiple filters with static values, or values based on a function you define. On this next example we are filtering a view by the logged in user and with column <em>name</em> starting with &#8220;a&#8221;</p>
+<p><em>base_filters</em> is a list of lists with 3 values [[&#8216;column name&#8217;,FilterClass,&#8217;filter value],...]</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_user</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span>
+
+<span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">base_filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s">&#39;created_by&#39;</span><span class="p">,</span> <span class="n">FilterEqualFunction</span><span class="p">,</span> <span class="n">get_user</span><span class="p">],</span>
+                    <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="n">FilterStartsWith</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><strong>Default Order</strong></li>
+</ul>
+<p>Use a default order on your lists, this can be overridden by the user on the UI. Data structure (&#8216;col_name&#8217;:&#8217;asc|desc&#8217;)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">base_order</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;my_col_to_be_ordered&#39;</span><span class="p">,</span><span class="s">&#39;asc&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><strong>Forms</strong></li>
+</ul>
+<p>You can define your own Add, Edit forms to override the automatic form creation.</p>
+<p>You can define what columns will be included on a Add or Edit forms, for example if you have automatic fields like user or date, you can remove this from the Add Form.</p>
+<p>You can contribute with any adittionals field that are not on a table, for example a confirmation field.</p>
+<p>You can contribute with your own aditional form validations rules. Remenber the framework will automaticaly validate any field that is defined on the database with <em>Not Null</em> (Required) or Unique constraints.</p>
+<p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>. Experiment with <em>add_form</em>, <em>edit_form</em>, <em>add_columns</em>, <em>edit_columns</em>, <em>validators_columns</em>, <em>add_form_extra_fields</em>, <em>edit_form_extra_fields</em></p>
 </div>
 </div>
 
@@ -206,6 +258,7 @@ genapp.add_view(ContactGeneralView(), "List Contacts",icon = "fa-envelope",categ
 <li><a class="reference internal" href="#define-your-models-models-py">Define your models (models.py)</a></li>
 <li><a class="reference internal" href="#define-your-views-views-py">Define your Views (views.py)</a></li>
 <li><a class="reference internal" href="#register-views-py">Register (views.py)</a></li>
+<li><a class="reference internal" href="#advanced-configuration">Advanced Configuration</a></li>
 </ul>
 </li>
 </ul>

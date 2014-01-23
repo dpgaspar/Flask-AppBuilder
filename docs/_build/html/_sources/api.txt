@@ -14,10 +14,10 @@ BaseApp
         
         .. automethod:: __init__
 
-flask.ext.appbuilder.views
---------------------------
+flask.ext.appbuilder.baseviews
+------------------------------
 
-.. automodule:: flask.ext.appbuilder.views
+.. automodule:: flask.ext.appbuilder.baseviews
 
     .. autofunction:: expose
 
@@ -25,18 +25,6 @@ BaseView
 --------
 
     .. autoclass:: BaseView
-        :members:
-
-IndexView
----------
-
-    .. autoclass:: IndexView
-        :members:
-
-SimpleFormView
---------------
-
-    .. autoclass:: SimpleFormView
         :members:
 
 BaseModelView
@@ -49,6 +37,23 @@ BaseCRUDView
 ------------
 
     .. autoclass:: BaseCRUDView
+        :members:
+
+flask.ext.appbuilder.views
+------------------------------
+
+.. automodule:: flask.ext.appbuilder.views
+
+IndexView
+---------
+
+    .. autoclass:: IndexView
+        :members:
+
+SimpleFormView
+--------------
+
+    .. autoclass:: SimpleFormView
         :members:
 
 GeneralView
