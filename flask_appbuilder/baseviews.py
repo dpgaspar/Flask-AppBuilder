@@ -1,5 +1,5 @@
 import re
-from flask import Blueprint
+from flask import Blueprint, request
 from flask.ext.babelpkg import gettext, ngettext, lazy_gettext
 from forms import GeneralModelConverter
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget, ListCarousel

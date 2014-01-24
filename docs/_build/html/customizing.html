@@ -85,22 +85,20 @@
 <p>The index can be easily overridden by your own. You must develop your template, then define it in a IndexView and pass it to BaseApp</p>
 <p>The default index template is very simple, you can create your own like this:</p>
 <p>1 - Develop your template (on your &lt;PROJECT_NAME&gt;/app/templates/my_index.html):</p>
-<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;appbuilder/base.html&quot; %}
+<div class="highlight-python"><pre>{% extends "appbuilder/base.html" %}
 {% block content %}
-&lt;div class=&quot;jumbotron&quot;&gt;
-  &lt;div class=&quot;container&quot;&gt;
-    &lt;h1&gt;{{_(&quot;My App on F.A.B.&quot;)}}&lt;/h1&gt;
-    &lt;p&gt;{{_(&quot;My first app using F.A.B, bla, bla, bla&quot;)}}&lt;/p&gt;
+&lt;div class="jumbotron"&gt;
+  &lt;div class="container"&gt;
+    &lt;h1&gt;{{_("My App on F.A.B.")}}&lt;/h1&gt;
+    &lt;p&gt;{{_("My first app using F.A.B, bla, bla, bla")}}&lt;/p&gt;
   &lt;/div&gt;
 &lt;/div&gt;
-{% endblock %}
-</pre></div>
+{% endblock %}</pre>
 </div>
 <p>What happened here? We should allways extend from &#8220;appbuilder/base.html&#8221; this is the base template that will include all CSS&#8217;s, Javascripts, and contruct the menu based on the user&#8217;s security definition.</p>
 <p>Next we will override the &#8220;content&#8221; block, we could override other areas like CSS, extend CSS, Javascript or extend javascript. We can even override the base.html completely</p>
 <p>I&#8217;ve presented the text on the content like:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">{{</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;text to be translated&quot;</span><span class="p">)}}</span>
-</pre></div>
+<div class="highlight-python"><pre>{{_("text to be translated")}}</pre>
 </div>
 <p>So that we can use Babel to translate our index text</p>
 <p>2 - Define an IndexView</p>

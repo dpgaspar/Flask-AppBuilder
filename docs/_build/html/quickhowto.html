@@ -65,14 +65,13 @@
 <h2>The Base Skeleton Application<a class="headerlink" href="#the-base-skeleton-application" title="Permalink to this headline">¶</a></h2>
 <p>If your working with the base skeleton application <a class="reference internal" href="instalation.html"><em>Instalation</em></a></p>
 <p>you now have the following directory structure:</p>
-<div class="highlight-python"><div class="highlight"><pre>&lt;your project name&gt;/
-    config.py : All the application&#39;s configuration
+<div class="highlight-python"><pre>&lt;your project name&gt;/
+    config.py : All the application's configuration
     run.py    : A runner mainly for debug
     app/
-        __init__.py : Application&#39;s initialization
+        __init__.py : Application's initialization
         models.py : Declare your database models here
-        views.py  : Implement your views here
-</pre></div>
+        views.py  : Implement your views here</pre>
 </div>
 <p>It&#8217;s very easy and fast to create an application out of the box, with detailed security.</p>
 <p>Please take a look at github <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples">examples</a></p>
@@ -86,8 +85,7 @@
 <p>Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a diferent declarative model from the security tables of AppBuilder.
 If you want to use AuditMixin <a class="reference internal" href="api.html"><em>API Reference</em></a> or include a relation to a User or login User you must be on the same declarative base.
 Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, import:</p>
-<div class="highlight-python"><div class="highlight"><pre>flask.ext.appbuilder import Base
-</pre></div>
+<div class="highlight-python"><pre>flask.ext.appbuilder import Base</pre>
 </div>
 <p class="last">This &#8220;Base&#8221; is the same declarative model of F.A.B.</p>
 </div>
@@ -177,10 +175,9 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
 <p>Register everything, to present the models and create the menu</p>
-<div class="highlight-python"><div class="highlight"><pre>genapp = BaseApp(app, db)
-genapp.add_view(GroupGeneralView(), &quot;List Groups&quot;,icon = &quot;&quot;fa-folder-open-o&quot;&quot;,category = &quot;Contacts&quot;)
-genapp.add_view(ContactGeneralView(), &quot;List Contacts&quot;,icon = &quot;fa-envelope&quot;,category = &quot;Contacts&quot;)
-</pre></div>
+<div class="highlight-python"><pre>genapp = BaseApp(app, db)
+genapp.add_view(GroupGeneralView(), "List Groups",icon = ""fa-folder-open-o"",category = "Contacts")
+genapp.add_view(ContactGeneralView(), "List Contacts",icon = "fa-envelope",category = "Contacts")</pre>
 </div>
 <p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a> for add_view method.</p>
 <div class="admonition note">

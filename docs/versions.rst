@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.5.4
+-----------------------------------
+
+- Fix, missing import on baseviews, flask.request
+
 Improvements and Bug fixes on 0.5.3
 -----------------------------------
 
