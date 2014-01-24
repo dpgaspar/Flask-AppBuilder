@@ -112,9 +112,9 @@ class SimpleFormView(BaseView):
 
 class GeneralView(BaseCRUDView):
     """
-        This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and search form your database tables, inherit your views from this class.
+        This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and list from your database tables, inherit your views from this class.
 
-        Notice that this class inherits from BaseCRUDView so all properties from the parent class can be overriden.
+        Notice that this class inherits from BaseCRUDView and BaseModelView so all properties from the parent class can be overriden.
     """
 
     def __init__(self, **kwargs):
