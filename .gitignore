@@ -4,4 +4,4 @@ app.db
 ./build
 env
 venv
-
+*.sublime*
