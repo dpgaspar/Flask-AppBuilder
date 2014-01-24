@@ -63,9 +63,8 @@
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="flask-ext-appbuilder-baseapp">
 <h2>flask.ext.appbuilder.baseapp<a class="headerlink" href="#flask-ext-appbuilder-baseapp" title="Permalink to this headline">¶</a></h2>
-</div>
 <div class="section" id="module-flask.ext.appbuilder.baseapp">
-<span id="baseapp"></span><h2>BaseApp<a class="headerlink" href="#module-flask.ext.appbuilder.baseapp" title="Permalink to this headline">¶</a></h2>
+<span id="baseapp"></span><h3>BaseApp<a class="headerlink" href="#module-flask.ext.appbuilder.baseapp" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="flask.ext.appbuilder.baseapp.BaseApp">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.baseapp.</tt><tt class="descname">BaseApp</tt><big>(</big><em>app</em>, <em>db</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp" title="Permalink to this definition">¶</a></dt>
@@ -194,6 +193,7 @@ Will hold your flask app object, all your views, and security classes.</p>
 </dd></dl>
 
 </div>
+</div>
 <div class="section" id="module-flask.ext.appbuilder.baseviews">
 <span id="flask-ext-appbuilder-baseviews"></span><h2>flask.ext.appbuilder.baseviews<a class="headerlink" href="#module-flask.ext.appbuilder.baseviews" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -214,9 +214,8 @@ Will hold your flask app object, all your views, and security classes.</p>
 </table>
 </dd></dl>
 
-</div>
 <div class="section" id="baseview">
-<h2>BaseView<a class="headerlink" href="#baseview" title="Permalink to this headline">¶</a></h2>
+<h3>BaseView<a class="headerlink" href="#baseview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.baseviews.BaseView">
@@ -254,7 +253,7 @@ Will hold your flask app object, all your views, and security classes.</p>
 </div></blockquote>
 </div>
 <div class="section" id="basemodelview">
-<h2>BaseModelView<a class="headerlink" href="#basemodelview" title="Permalink to this headline">¶</a></h2>
+<h3>BaseModelView<a class="headerlink" href="#basemodelview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.baseviews.BaseModelView">
@@ -322,7 +321,7 @@ If you want to limit the search (<em>filter</em>) columns possibilities, define 
 </div></blockquote>
 </div>
 <div class="section" id="basecrudview">
-<h2>BaseCRUDView<a class="headerlink" href="#basecrudview" title="Permalink to this headline">¶</a></h2>
+<h3>BaseCRUDView<a class="headerlink" href="#basecrudview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView">
@@ -575,11 +574,11 @@ That will be displayed related with this one using relationship sqlalchemy prope
 
 </div></blockquote>
 </div>
+</div>
 <div class="section" id="module-flask.ext.appbuilder.views">
 <span id="flask-ext-appbuilder-views"></span><h2>flask.ext.appbuilder.views<a class="headerlink" href="#module-flask.ext.appbuilder.views" title="Permalink to this headline">¶</a></h2>
-</div>
 <div class="section" id="indexview">
-<h2>IndexView<a class="headerlink" href="#indexview" title="Permalink to this headline">¶</a></h2>
+<h3>IndexView<a class="headerlink" href="#indexview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.views.IndexView">
@@ -590,7 +589,7 @@ That will be displayed related with this one using relationship sqlalchemy prope
 </div></blockquote>
 </div>
 <div class="section" id="simpleformview">
-<h2>SimpleFormView<a class="headerlink" href="#simpleformview" title="Permalink to this headline">¶</a></h2>
+<h3>SimpleFormView<a class="headerlink" href="#simpleformview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.views.SimpleFormView">
@@ -634,16 +633,17 @@ Inherit from this view to provide some base processing for your customized form 
 </div></blockquote>
 </div>
 <div class="section" id="generalview">
-<h2>GeneralView<a class="headerlink" href="#generalview" title="Permalink to this headline">¶</a></h2>
+<h3>GeneralView<a class="headerlink" href="#generalview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.views.GeneralView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">GeneralView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.GeneralView" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and search form your database tables, inherit your views from this class.</p>
-<p>Notice that this class inherits from BaseCRUDView so all properties from the parent class can be overriden.</p>
+<dd><p>This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and list from your database tables, inherit your views from this class.</p>
+<p>Notice that this class inherits from BaseCRUDView and BaseModelView so all properties from the parent class can be overriden.</p>
 </dd></dl>
 
 </div></blockquote>
+</div>
 </div>
 <div class="section" id="module-flask.ext.appbuilder.actions">
 <span id="flask-ext-appbuilder-actions"></span><h2>flask.ext.appbuilder.actions<a class="headerlink" href="#module-flask.ext.appbuilder.actions" title="Permalink to this headline">¶</a></h2>
@@ -668,12 +668,11 @@ unconditionally.</li>
 </table>
 </dd></dl>
 
-</div>
 <div class="section" id="module-flask.ext.appbuilder.charts.views">
-<span id="flask-ext-appbuilder-charts-views"></span><h2>flask.ext.appbuilder.charts.views<a class="headerlink" href="#module-flask.ext.appbuilder.charts.views" title="Permalink to this headline">¶</a></h2>
+<span id="flask-ext-appbuilder-charts-views"></span><h3>flask.ext.appbuilder.charts.views<a class="headerlink" href="#module-flask.ext.appbuilder.charts.views" title="Permalink to this headline">¶</a></h3>
 </div>
 <div class="section" id="basechartview">
-<h2>BaseChartView<a class="headerlink" href="#basechartview" title="Permalink to this headline">¶</a></h2>
+<h3>BaseChartView<a class="headerlink" href="#basechartview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.charts.views.BaseChartView">
@@ -736,7 +735,7 @@ to customise your charts</p>
 </div></blockquote>
 </div>
 <div class="section" id="chartview">
-<h2>ChartView<a class="headerlink" href="#chartview" title="Permalink to this headline">¶</a></h2>
+<h3>ChartView<a class="headerlink" href="#chartview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.charts.views.ChartView">
@@ -748,7 +747,7 @@ to customise your charts</p>
 </div></blockquote>
 </div>
 <div class="section" id="timechartview">
-<h2>TimeChartView<a class="headerlink" href="#timechartview" title="Permalink to this headline">¶</a></h2>
+<h3>TimeChartView<a class="headerlink" href="#timechartview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.charts.views.TimeChartView">
@@ -758,6 +757,7 @@ to customise your charts</p>
 </dd></dl>
 
 </div></blockquote>
+</div>
 </div>
 <div class="section" id="module-flask.ext.appbuilder.models.mixins">
 <span id="flask-ext-appbuilder-models-mixins"></span><h2>flask.ext.appbuilder.models.mixins<a class="headerlink" href="#module-flask.ext.appbuilder.models.mixins" title="Permalink to this headline">¶</a></h2>
@@ -798,9 +798,8 @@ will create the following columns:</p>
 </table>
 </dd></dl>
 
-</div>
 <div class="section" id="extra-columns">
-<h2>Extra Columns<a class="headerlink" href="#extra-columns" title="Permalink to this headline">¶</a></h2>
+<h3>Extra Columns<a class="headerlink" href="#extra-columns" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.models.mixins.FileColumn">
@@ -829,6 +828,7 @@ will create the following columns:</p>
 </div></blockquote>
 </div>
 </div>
+</div>
 
 
           </div>
@@ -839,23 +839,33 @@ will create the following columns:</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">API Reference</a><ul>
-<li><a class="reference internal" href="#flask-ext-appbuilder-baseapp">flask.ext.appbuilder.baseapp</a></li>
+<li><a class="reference internal" href="#flask-ext-appbuilder-baseapp">flask.ext.appbuilder.baseapp</a><ul>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.baseapp">BaseApp</a></li>
-<li><a class="reference internal" href="#module-flask.ext.appbuilder.baseviews">flask.ext.appbuilder.baseviews</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.baseviews">flask.ext.appbuilder.baseviews</a><ul>
 <li><a class="reference internal" href="#baseview">BaseView</a></li>
 <li><a class="reference internal" href="#basemodelview">BaseModelView</a></li>
 <li><a class="reference internal" href="#basecrudview">BaseCRUDView</a></li>
-<li><a class="reference internal" href="#module-flask.ext.appbuilder.views">flask.ext.appbuilder.views</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.views">flask.ext.appbuilder.views</a><ul>
 <li><a class="reference internal" href="#indexview">IndexView</a></li>
 <li><a class="reference internal" href="#simpleformview">SimpleFormView</a></li>
 <li><a class="reference internal" href="#generalview">GeneralView</a></li>
-<li><a class="reference internal" href="#module-flask.ext.appbuilder.actions">flask.ext.appbuilder.actions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.actions">flask.ext.appbuilder.actions</a><ul>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.charts.views">flask.ext.appbuilder.charts.views</a></li>
 <li><a class="reference internal" href="#basechartview">BaseChartView</a></li>
 <li><a class="reference internal" href="#chartview">ChartView</a></li>
 <li><a class="reference internal" href="#timechartview">TimeChartView</a></li>
-<li><a class="reference internal" href="#module-flask.ext.appbuilder.models.mixins">flask.ext.appbuilder.models.mixins</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.models.mixins">flask.ext.appbuilder.models.mixins</a><ul>
 <li><a class="reference internal" href="#extra-columns">Extra Columns</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -1,8 +1,9 @@
+=============
 API Reference
 =============
 
 flask.ext.appbuilder.baseapp
-----------------------------
+============================
 
 BaseApp
 -------
@@ -15,7 +16,7 @@ BaseApp
         .. automethod:: __init__
 
 flask.ext.appbuilder.baseviews
-------------------------------
+==============================
 
 .. automodule:: flask.ext.appbuilder.baseviews
 
@@ -40,7 +41,7 @@ BaseCRUDView
         :members:
 
 flask.ext.appbuilder.views
-------------------------------
+==========================
 
 .. automodule:: flask.ext.appbuilder.views
 
@@ -64,7 +65,7 @@ GeneralView
         
 
 flask.ext.appbuilder.actions
-----------------------------
+============================
 
 .. automodule:: flask.ext.appbuilder.actions
 
@@ -94,7 +95,7 @@ TimeChartView
         :members:
 
 flask.ext.appbuilder.models.mixins
-----------------------------------
+==================================
 
 .. automodule:: flask.ext.appbuilder.models.mixins
 
