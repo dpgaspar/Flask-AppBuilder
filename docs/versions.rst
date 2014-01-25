@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.5.5
+-----------------------------------
+
+- Fix, group by on time charts returns month name and year.
+
 Improvements and Bug fixes on 0.5.4
 -----------------------------------
 

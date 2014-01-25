@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from itertools import groupby
+import calendar
 from flask import flash
 from flask.ext.babelpkg import gettext, ngettext, lazy_gettext
 from sqlalchemy.orm import class_mapper, joinedload
@@ -156,7 +157,7 @@ class SQLAModel(DataModel):
         query_result = query.all()
         retlst = []
         for ( grouped, items ) in groupby( query_result, lambda x: (getattr(x,group_by).month,getattr(x,group_by).year) ):
-            retlst.append([grouped, len(list(items))])
+            retlst.append([calendar.month_name[grouped[0]] + ' ' + str(grouped[1]), len(list(items))])
         return retlst
         
     def query_year_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
