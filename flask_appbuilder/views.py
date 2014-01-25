@@ -121,6 +121,67 @@ class GeneralView(BaseCRUDView):
         super(GeneralView, self).__init__(**kwargs)
 
 
+    def _list(self):
+        """
+            list function logic, override to implement diferent logic
+            returns list and search widget
+        """
+        if get_order_args().get(self.__class__.__name__):
+            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+        else: order_column, order_direction = '',''
+        page = get_page_args().get(self.__class__.__name__)
+        page_size = get_page_size_args().get(self.__class__.__name__)
+        get_filter_args(self._filters)
+        
+        widgets = self._get_list_widget(filters = self._filters, 
+                    order_column = order_column, 
+                    order_direction = order_direction, 
+                    page = page, 
+                    page_size = page_size)
+        form = self.search_form.refresh()
+        return self._get_search_widget(form = form, widgets = widgets)
+
+    def _show(self, pk):
+        """
+            show function logic, override to implement diferent logic
+            returns show and related list widget
+        """
+        pages = get_page_args()
+        page_sizes = get_page_size_args()
+        orders = get_order_args()
+
+        widgets = self._get_show_widget(pk)
+        item = self.datamodel.get(pk)
+                
+        return self._get_related_list_widgets(item, orders = orders, 
+                pages = pages, page_sizes = page_sizes, widgets = widgets)
+
+
+    def _add(self):
+        """
+            Add function logic, override to implement diferent logic
+            returns add widget or None
+        """
+        get_filter_args(self._filters)
+
+        form = self.add_form.refresh()
+        exclude_cols = self._filters.get_relation_cols()
+
+        if form.validate_on_submit():
+            item = self.datamodel.obj()
+            form.populate_obj(item)
+            for filter_key in exclude_cols:
+                rel_obj = self.datamodel.get_related_obj(filter_key, self._filters.get_filter_value(filter_key))
+                setattr(item, filter_key, rel_obj)
+
+            self.pre_add(item)
+            self.datamodel.add(item)
+            self.post_add(item)
+            return None
+        else:
+            return self._get_add_widget(form = form, exclude_cols = exclude_cols)
+
+
     """
     --------------------------------
             LIST
@@ -130,23 +191,7 @@ class GeneralView(BaseCRUDView):
     @has_access
     def list(self):
 
-        form = self.search_form.refresh()
-        
-        if get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = get_order_args().get(self.__class__.__name__)
-        else: order_column, order_direction = '',''
-        page = get_page_args().get(self.__class__.__name__)
-        page_size = get_page_size_args().get(self.__class__.__name__)
-        
-        get_filter_args(self._filters)
-        
-        widgets = self._get_list_widget(filters = self._filters, 
-                    order_column = order_column, 
-                    order_direction = order_direction, 
-                    page = page, 
-                    page_size = page_size)
-        widgets = self._get_search_widget(form = form, widgets = widgets)
-
+        widgets = self._list()
         return render_template(self.list_template,
                                         title = self.list_title,
                                         widgets = widgets,
@@ -163,16 +208,7 @@ class GeneralView(BaseCRUDView):
     @has_access
     def show(self, pk):
 
-        pages = get_page_args()
-        page_sizes = get_page_size_args()
-        orders = get_order_args()
-
-        widgets = self._get_show_widget(pk)
-        item = self.datamodel.get(pk)
-                
-        widgets = self._get_related_list_widgets(item, orders = orders, 
-                pages = pages, page_sizes = page_sizes, widgets = widgets)
-        
+        widgets = self._show(pk)        
         return render_template(self.show_template,
                            pk = pk,
                            title = self.show_title,
@@ -181,6 +217,7 @@ class GeneralView(BaseCRUDView):
                            related_views = self.related_views)
 
 
+    
     """
     ---------------------------
             ADD
@@ -190,27 +227,13 @@ class GeneralView(BaseCRUDView):
     @has_access
     def add(self):
 
-        get_filter_args(self._filters)
-
-        form = self.add_form.refresh()
-        exclude_cols = self._filters.get_relation_cols()
-
-        if form.validate_on_submit():
-            item = self.datamodel.obj()
-            form.populate_obj(item)
-            for filter_key in exclude_cols:
-                rel_obj = self.datamodel.get_related_obj(filter_key, self._filters.get_filter_value(filter_key))
-                setattr(item, filter_key, rel_obj)
-
-            self.pre_add(item)
-            self.datamodel.add(item)
-            self.post_add(item)
+        widget = self._add()
+        if not widget:
             return redirect(self._get_redirect())
         else:
-            widgets = self._get_add_widget(form = form, exclude_cols = exclude_cols)
             return render_template(self.add_template,
                                    title = self.add_title,
-                                   widgets = widgets,
+                                   widgets = widget,
                                    baseapp = self.baseapp)    
 
     """
