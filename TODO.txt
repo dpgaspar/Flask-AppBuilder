@@ -1,9 +1,7 @@
- - Implement base_order ['column name','asc|desc']
  - Add easy wizard flow generation.
  - Add tree list with multiple views.
  - Add actions on lists with checkboxes (Django style).
  - Add table with global, and db version key.
- - reorg code of security.manager.py.
  - GeneralModelConverter reorg code for field conversion, remove if blocks.
  - Diferent UI to add permissions to roles.
  - Solution to migrate/alter framework tables.
