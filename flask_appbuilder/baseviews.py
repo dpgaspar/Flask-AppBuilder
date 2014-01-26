@@ -455,6 +455,11 @@ class BaseCRUDView(BaseModelView):
                 self.edit_columns = list_cols
         
 
+    """
+    -----------------------------------------------------
+            GET WIDGETS SECTION
+    -----------------------------------------------------        
+    """
     def _get_related_list_widget(self, item, related_view, 
                                 order_column='', order_direction='',
                                 page=None, page_size=None):
@@ -549,6 +554,11 @@ class BaseCRUDView(BaseModelView):
         return widgets
 
 
+    """
+    -----------------------------------------------------
+            CRUD functions behaviour
+    -----------------------------------------------------        
+    """
     def _list(self):
         """
             list function logic, override to implement diferent logic
@@ -655,6 +665,13 @@ class BaseCRUDView(BaseModelView):
                         orders = orders, pages = pages, page_sizes=page_sizes, widgets = widgets)                
             return widgets
 
+
+    def _delete(self, pk):
+        item = self.datamodel.get(pk)
+        self.pre_delete(item)
+        self.datamodel.delete(item)
+        self.post_delete(item)        
+        
 
     def debug(self):
 

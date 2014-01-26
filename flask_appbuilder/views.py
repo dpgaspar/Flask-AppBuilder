@@ -1,6 +1,5 @@
 from flask import render_template, flash, redirect, url_for, request, send_file
 from .filemanager import uuid_originalname
-from urltools import *
 from .security.decorators import has_access
 from .widgets import FormWidget
 from .actions import action
@@ -201,11 +200,7 @@ class GeneralView(BaseCRUDView):
     @expose('/delete/<pk>')
     @has_access
     def delete(self, pk):
-        item = self.datamodel.get(pk)
-        
-        self.pre_delete(item)
-        self.datamodel.delete(item)
-        self.post_delete(item)        
+        self._delete(pk)
         return redirect(self._get_redirect())
 
 
@@ -227,3 +222,27 @@ class GeneralView(BaseCRUDView):
             flash("Access is Denied %s %s" % (name, self.__class__.__name__),"danger")
             return redirect('.')
         
+    
+class ListAddViewMixin(BaseCRUDView):
+    """
+        Mix with general view to implement a list with add
+    """
+    list_template = 'appbuilder/general/model/list_add.html'
+    """ Your own add jinja2 template for list and add """
+
+    def _get_list_widget(**kwargs):
+        pass
+
+    @expose('/list/', methods=['GET', 'POST'])
+    @has_access
+    def list(self):
+
+        list_widgets = self._list()
+        add_widgets = self._add()
+        if not add_widgets:
+            return redirect(self._get_redirect())
+        widgets = dict(list_widgets.items() + add_widgets.items())
+        return render_template(self.list_template,
+                                        title = self.list_title,
+                                        widgets = widgets,
+                                        baseapp = self.baseapp)
