@@ -1,5 +1,6 @@
  - Add easy wizard flow generation.
  - Add tree list with multiple views.
+ - Charts Time and normal, with multiple group by's, JSON output to template
  - Add actions on lists with checkboxes (Django style).
  - Add table with global, and db version key.
  - GeneralModelConverter reorg code for field conversion, remove if blocks.
