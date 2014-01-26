@@ -7,6 +7,7 @@ from forms import GeneralModelConverter
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget, ListCarousel
 from .models.filters import Filters, FilterRelationOneToManyEqual
 from .actions import ActionItem
+from urltools import *
 
 def expose(url='/', methods=('GET',)):
     """
@@ -546,6 +547,113 @@ class BaseCRUDView(BaseModelView):
                                                 fieldsets = self.edit_fieldsets
                                                 )
         return widgets
+
+
+    def _list(self):
+        """
+            list function logic, override to implement diferent logic
+            returns list and search widget
+        """
+        if get_order_args().get(self.__class__.__name__):
+            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+        else: order_column, order_direction = '',''
+        page = get_page_args().get(self.__class__.__name__)
+        page_size = get_page_size_args().get(self.__class__.__name__)
+        get_filter_args(self._filters)
+        
+        widgets = self._get_list_widget(filters = self._filters, 
+                    order_column = order_column, 
+                    order_direction = order_direction, 
+                    page = page, 
+                    page_size = page_size)
+        form = self.search_form.refresh()
+        return self._get_search_widget(form = form, widgets = widgets)
+
+
+    def _show(self, pk):
+        """
+            show function logic, override to implement diferent logic
+            returns show and related list widget
+        """
+        pages = get_page_args()
+        page_sizes = get_page_size_args()
+        orders = get_order_args()
+
+        widgets = self._get_show_widget(pk)
+        item = self.datamodel.get(pk)
+                
+        return self._get_related_list_widgets(item, orders = orders, 
+                pages = pages, page_sizes = page_sizes, widgets = widgets)
+
+
+    def _add(self):
+        """
+            Add function logic, override to implement diferent logic
+            returns add widget or None
+        """
+        get_filter_args(self._filters)
+
+        form = self.add_form.refresh()
+        exclude_cols = self._filters.get_relation_cols()
+
+        if form.validate_on_submit():
+            item = self.datamodel.obj()
+            form.populate_obj(item)
+            for filter_key in exclude_cols:
+                rel_obj = self.datamodel.get_related_obj(filter_key, self._filters.get_filter_value(filter_key))
+                setattr(item, filter_key, rel_obj)
+
+            self.pre_add(item)
+            self.datamodel.add(item)
+            self.post_add(item)
+            return None
+        else:
+            return self._get_add_widget(form = form, exclude_cols = exclude_cols)
+
+    def _edit(self, pk):
+        """
+            Edit function logic, override to implement diferent logic
+            returns Edit widget and related list or None
+        """
+
+        pages = get_page_args()
+        page_sizes = get_page_size_args()
+        orders = get_order_args()
+        
+        item = self.datamodel.get(pk)
+        # convert pk to correct type, if pk is non string type.
+        pk = self.datamodel.get_pk_value(item)
+        get_filter_args(self._filters)
+        exclude_cols = self._filters.get_relation_cols()
+
+        if request.method == 'POST':
+            form = self.edit_form(request.form)
+            form = form.refresh(obj=item)
+            # trick to pass unique validation
+            form._id = pk
+            if form.validate():
+                form.populate_obj(item)
+                # fill the form with the suppressed cols, generated from exclude_cols
+                for filter_key in exclude_cols:
+                    rel_obj = self.datamodel.get_related_obj(filter_key, self._filters.get_filter_value(filter_key))
+                    setattr(item, filter_key, rel_obj)
+                
+                self.pre_update(item)
+                self.datamodel.edit(item)
+                self.post_update(item)
+                return None
+            else:
+                widgets = self._get_edit_widget(form = form, exclude_cols = exclude_cols)
+                widgets = self._get_related_list_widgets(item, filters = {}, 
+                        orders = orders, pages = pages, page_sizes=page_sizes, widgets = widgets)
+                return widgets
+        else:
+            form = self.edit_form(obj=item)
+            form = form.refresh(obj=item)
+            widgets = self._get_edit_widget(form = form, exclude_cols = exclude_cols)
+            widgets = self._get_related_list_widgets(item, filters = {}, 
+                        orders = orders, pages = pages, page_sizes=page_sizes, widgets = widgets)                
+            return widgets
 
 
     def debug(self):
