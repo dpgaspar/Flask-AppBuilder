@@ -5,6 +5,7 @@ Improvements and Bug fixes on 0.5.5
 -----------------------------------
 
 - Fix, group by on time charts returns month name and year.
+- Fix, better redirect, example: after delete, previous search will be preserved.
 
 Improvements and Bug fixes on 0.5.4
 -----------------------------------

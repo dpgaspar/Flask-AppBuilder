@@ -162,8 +162,7 @@ class BaseView(object):
         next_url = request.args.get('next')
         print "REDIRECT", request.referrer, request.path, request.args 
         if (next_url):
-            if request.path == next_url:
-                print "EQUAL PATH", request.referrer, request.path, request.args
+            if next_url in request.referrer:
                 return request.referrer
             else:
                 return request.args.get('next')
