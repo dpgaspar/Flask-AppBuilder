@@ -161,17 +161,14 @@ class BaseView(object):
     def _get_redirect(self):
         next_url = request.args.get('next')
         if (next_url):
-            print "REDIRECT NEXT"
             if next_url in request.referrer:
                 return request.referrer
             else:
                 return request.args.get('next')
         else:
             try:
-                print "REDIRECT LIST"
                 return url_for('%s.%s' % (self.endpoint, self.default_view), **request.args)
             except:
-                print "REDIRECT INDEX"
                 return url_for('%s.%s' % (self.baseapp.indexview.endpoint, self.baseapp.indexview.default_view))
             
 
