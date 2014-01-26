@@ -1,7 +1,7 @@
 from flask.ext.appbuilder.menu import Menu
 from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import GeneralView, ListAddViewMixin
+from flask.ext.appbuilder.views import GeneralView
 from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
 from flask.ext.babelpkg import lazy_gettext as _
 
@@ -24,7 +24,7 @@ class ContactGeneralView(GeneralView):
          ]
 
 
-class GroupGeneralView(ListAddViewMixin, GeneralView):
+class GroupGeneralView(GeneralView):
     datamodel = SQLAModel(Group, db.session)
     related_views = [ContactGeneralView()]
 
