@@ -1,0 +1,121 @@
+{% import 'appbuilder/general/lib.html' as lib %}
+
+
+	{% set can_add = "can_add" | is_item_visible(generalview_name) %}
+	{% set can_show = "can_show" | is_item_visible(generalview_name) %}
+    {% set can_edit = "can_edit" | is_item_visible(generalview_name) %}
+	{% set can_delete = "can_delete" | is_item_visible(generalview_name) %}
+
+	{% if can_add %}
+	<form action="" method="post" enctype="multipart/form-data">
+	{{form.hidden_tag()}}
+	
+	{% if fieldsets %}
+	{% for fieldset_item in fieldsets %}
+		{% if fieldset_item[1].get('expanded') == None %}
+			{% set expanded = True %}
+		{% else %}
+			{% set expanded = fieldset_item[1].get('expanded') %}
+		{% endif %}
+		{% call lib.accordion_tag(loop.index,fieldset_item[0], expanded) %}
+			<div class="table-responsive">
+				<table class="table table-bordered">
+				{% for item in fieldset_item[1].get('fields') %}
+						{% if item not in exclude_cols %}
+							<tr>{{ lib.render_field(form[item]) }}</tr>
+						{% endif %}
+        		{% endfor %}
+        		</table></div>
+        {% endcall %}
+	{% endfor %}
+	{% else %}
+	
+	<div class="table-responsive">
+		<table class="table table-bordered">
+            {% for col in include_cols %}
+        		{% set field = form[col] %}
+        			{% if field.name not in exclude_cols %}
+                			<tr>{{ lib.render_field(field) }}</tr>
+                		{% endif %}
+        		{% endfor %}
+        	</table>
+	</div>
+	{% endif %}
+	
+	{{ lib.render_form_controls() }}
+	</form>
+	{% endif %}
+
+    
+	<div class="well well-sm">
+        {{ lib.render_pagination(page, page_size, count, generalview_name) }}
+        {{ lib.render_set_page_size(page, page_size, count, generalview_name) }}
+    	{% if can_add %}
+			{% set path = url_for(generalview_name + '.add',next=request.path) %}
+			{% set path = path | set_link_filters(filters, pk) %}
+			&nbsp;
+		{% endif %}
+		{{ lib.lnk_back() }}
+        <div class="pull-right">
+			<strong>{{ _('Record Count') }}:</strong> {{ count }}
+		</div>
+    </div>
+    
+	{% if value_columns %}
+	<div class="table-responsive">
+	<table class="table table-bordered table-hover">
+	<thead>
+	<tr>
+	<th class="col-md-1 col-lg-1 col-sm-1" ></th>
+    
+	{% for item in include_columns %}
+		{% if item in order_columns %}
+			{% set res = item | get_link_order(generalview_name) %}
+        		{% if res == 2 %}
+				<th><a href={{ item | link_order(generalview_name) }}>{{label_columns.get(item)}}
+				<i class="fa fa-chevron-up pull-right"></i></a></th>
+			{% elif res == 1 %}
+                <th><a href={{ item | link_order(generalview_name) }}>{{label_columns.get(item)}}
+				<i class="fa fa-chevron-down pull-right"></i></a>
+			{% else %}
+                <th><a href={{ item | link_order(generalview_name) }}>{{label_columns.get(item)}}
+				<i class="fa fa-arrows-v pull-right"></i></a>
+			{% endif %}
+		{% else %}
+			<th>{{label_columns.get(item)}}</th>
+		{% endif %}
+	{% endfor %}
+	</tr>
+	</thead>
+	
+	{% for item in value_columns %}
+	    <tr>
+		{% set outer_loop = loop %}
+		<td><center>
+			<div class="btn-group btn-group-xs">
+			{% if can_show %}
+				{% set path = url_for(generalview_name + '.show',pk=pks[loop.index-1],next=request.path) %}
+				{% set path = path | set_link_filters(filters, pk) %}
+				{{ lib.lnk_show(path) }}
+			{% endif %}
+			{% if can_edit %}
+				{% set path = url_for(generalview_name + '.edit',pk=pks[loop.index-1],next=request.path) %}
+				{% set path = path | set_link_filters(filters, pk) %}
+				{{ lib.lnk_edit(path) }}
+			{% endif %}
+			{% if can_delete %}
+				{{ lib.lnk_delete(url_for(generalview_name + '.delete',pk=pks[loop.index-1],next=request.path)) }}
+			{% endif %}
+			</div>
+		</center></td>
+		{% for value in include_columns %}
+			<td> {{ item[value]|safe }}</td>
+		{% endfor %}
+	    </tr>
+	{% endfor %}
+	</table>
+    
+	</div>
+	{% else %}
+	<b> {{_("No records found")}}</b>
+	{% endif %}

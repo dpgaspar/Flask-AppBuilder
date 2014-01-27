@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request, send_file
 from .filemanager import uuid_originalname
 from .security.decorators import has_access
-from .widgets import FormWidget
+from .widgets import FormWidget, ListAddWidget
 from .actions import action
 from .baseviews import expose, BaseView, BaseCRUDView
 
@@ -227,11 +227,42 @@ class ListAddViewMixin(BaseCRUDView):
     """
         Mix with general view to implement a list with add
     """
-    list_template = 'appbuilder/general/model/list_add.html'
-    """ Your own add jinja2 template for list and add """
-
-    def _get_list_widget(**kwargs):
-        pass
+    list_widget = ListAddWidget
+    
+    def _get_list_widget(self, filters,
+                        actions = None,
+                        order_column = '', 
+                        order_direction = '',
+                        page = None,
+                        page_size = None,
+                        widgets = {}, **args):
+        """ get joined base filter and current active filter for query """
+        actions = actions or self.actions
+        page_size = page_size or self.page_size
+        if not order_column and self.base_order:
+            order_column, order_direction = self.base_order    
+        joined_filters = filters.get_joined_filters(self._base_filters)
+        count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
+        pks = self.datamodel.get_keys(lst)
+        exclude_cols = filters.get_relation_cols()
+        form = self.add_form.refresh()
+        widgets['list'] = self.list_widget(route_base = self.route_base,
+                                                label_columns = self.label_columns,
+                                                include_columns = self.list_columns,
+                                                value_columns = self.datamodel.get_values(lst, self.list_columns),
+                                                order_columns = self.order_columns,
+                                                page = page,
+                                                page_size = page_size,
+                                                count = count,
+                                                pks = pks,
+                                                actions = actions,
+                                                filters = filters,
+                                                form = form,
+                                                include_cols = self.add_columns,
+                                                exclude_cols = exclude_cols,
+                                                generalview_name = self.__class__.__name__
+                                                )
+        return widgets
 
     @expose('/list/', methods=['GET', 'POST'])
     @has_access
@@ -241,8 +272,7 @@ class ListAddViewMixin(BaseCRUDView):
         add_widgets = self._add()
         if not add_widgets:
             return redirect(self._get_redirect())
-        widgets = dict(list_widgets.items() + add_widgets.items())
         return render_template(self.list_template,
                                         title = self.list_title,
-                                        widgets = widgets,
+                                        widgets = list_widgets,
                                         baseapp = self.baseapp)

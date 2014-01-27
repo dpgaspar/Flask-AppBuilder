@@ -1,7 +1,7 @@
 from flask.ext.appbuilder.menu import Menu
 from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import GeneralView
+from flask.ext.appbuilder.views import GeneralView, ListAddViewMixin
 from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
 from flask.ext.babelpkg import lazy_gettext as _
 
@@ -9,8 +9,7 @@ from app import app, db
 from models import Group, Contact
 
 
-
-class ContactGeneralView(GeneralView):
+class ContactGeneralView(ListAddViewMixin, GeneralView):
     datamodel = SQLAModel(Contact, db.session)
 
     label_columns = {'group':'Contacts Group'}

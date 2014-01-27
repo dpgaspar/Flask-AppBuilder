@@ -534,7 +534,7 @@ class BaseCRUDView(BaseModelView):
     def _get_add_widget(self, form = None, exclude_cols = None, widgets = None):
         exclude_cols = exclude_cols or []
         widgets = widgets or {}
-        widgets['add'] = self.edit_widget(route_base = self.route_base,
+        widgets['add'] = self.add_widget(route_base = self.route_base,
                                                 form = form,
                                                 include_cols = self.add_columns,
                                                 exclude_cols = exclude_cols,

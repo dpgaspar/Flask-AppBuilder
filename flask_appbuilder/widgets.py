@@ -174,6 +174,82 @@ class ListWidget(RenderTemplateWidget):
         kwargs['filters'] = self.filters
         kwargs['generalview_name'] = self.generalview_name
         return super(ListWidget, self).__call__(**kwargs)
+
+class ListAddWidget(RenderTemplateWidget):
+
+    template = 'appbuilder/general/widgets/list_add.html'
+
+    route_base = ''
+    label_columns = []
+    include_columns = []
+    value_columns = []
+    order_columns = []
+    page = None
+    page_size = None
+    count = 0
+    pks = []
+    actions = None
+    filters = {}
+    exclude_cols = None
+    include_cols = None
+    fieldsets = None
+    form = None
+    generalview_name = ''
+
+    def __init__(self, route_base = '',
+                 label_columns = [],
+                 include_columns = [],
+                 value_columns = [],
+                 order_columns = [],
+                 page = None,
+                 page_size = None,
+                 count = 0,
+                 pks = [],
+                 actions = None,
+                 filters = {},
+                 generalview_name = '',
+                 form = None, include_cols = [], exclude_cols=[], fieldsets = []):
+        self.route_base = route_base
+        self.label_columns = label_columns
+        self.include_columns = include_columns
+        self.value_columns = value_columns
+        self.order_columns = order_columns
+        self.page = page
+        self.page_size = page_size
+        self.count = count
+        self.pks = pks
+        self.actions = actions
+        self.filters = filters
+        self.generalview_name = generalview_name
+
+        self.form = form
+        self.include_cols = include_cols
+        self.exclude_cols = exclude_cols
+        self.fieldsets = fieldsets
+
+    def __call__(self, **kwargs):
+        kwargs['route_base'] = self.route_base
+        kwargs['label_columns'] = self.label_columns
+        kwargs['include_columns'] = self.include_columns
+        kwargs['value_columns'] = self.value_columns
+        kwargs['order_columns'] = self.order_columns
+        
+        kwargs['page'] = self.page
+        kwargs['page_size'] = self.page_size
+        kwargs['count'] = self.count
+        
+        kwargs['pks'] = self.pks
+        kwargs['actions'] = self.actions
+        kwargs['filters'] = self.filters
+        kwargs['generalview_name'] = self.generalview_name
+
+        kwargs['form'] = self.form
+        kwargs['include_cols'] = self.include_cols
+        kwargs['exclude_cols'] = self.exclude_cols
+        kwargs['fieldsets'] = self.fieldsets
+        
+        return super(ListAddWidget, self).__call__(**kwargs)
+
         
 class ListThumbnail(ListWidget):
     template = 'appbuilder/general/widgets/list_thumbnail.html'
