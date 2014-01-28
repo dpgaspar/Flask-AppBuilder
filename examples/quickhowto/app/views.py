@@ -9,7 +9,7 @@ from app import app, db
 from models import Group, Contact
 
 
-class ContactGeneralView(ListAddViewMixin, GeneralView):
+class ContactGeneralView(GeneralView):
     datamodel = SQLAModel(Contact, db.session)
 
     label_columns = {'group':'Contacts Group'}

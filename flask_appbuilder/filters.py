@@ -75,11 +75,11 @@ class TemplateFilters(object):
 
     # TODO improve this
     @app_template_filter('set_link_filters')
-    def set_link_filters_filter(self, path, filters, pk):
+    def set_link_filters_filter(self, path, filters):
         lnkstr = path
         for flt, value in filters.get_filters_values():
-            lnkstr = lnkstr + '&_flt_0_' + flt.column_name + '=' + str(pk)
-        return lnkstr        
+            lnkstr = lnkstr + '&_flt_0_' + flt.column_name + '=' + str(value)
+        return lnkstr
 
     @app_template_filter('get_link_order')
     def get_link_order_filter(self, column, generalview_name):

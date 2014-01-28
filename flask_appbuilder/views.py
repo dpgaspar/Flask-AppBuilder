@@ -244,8 +244,6 @@ class ListAddViewMixin(BaseCRUDView):
         joined_filters = filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         pks = self.datamodel.get_keys(lst)
-        exclude_cols = filters.get_relation_cols()
-        form = self.add_form.refresh()
         widgets['list'] = self.list_widget(route_base = self.route_base,
                                                 label_columns = self.label_columns,
                                                 include_columns = self.list_columns,
@@ -257,9 +255,7 @@ class ListAddViewMixin(BaseCRUDView):
                                                 pks = pks,
                                                 actions = actions,
                                                 filters = filters,
-                                                form = form,
-                                                include_cols = self.add_columns,
-                                                exclude_cols = exclude_cols,
+                                                add_widget = self._curr_form_widget,
                                                 generalview_name = self.__class__.__name__
                                                 )
         return widgets
@@ -269,8 +265,8 @@ class ListAddViewMixin(BaseCRUDView):
     def list(self):
 
         list_widgets = self._list()
-        add_widgets = self._add()
-        if not add_widgets:
+        self._curr_form_widget = self._add()
+        if not self._curr_form_widget:
             return redirect(self._get_redirect())
         return render_template(self.list_template,
                                         title = self.list_title,

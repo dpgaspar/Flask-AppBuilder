@@ -234,5 +234,5 @@ class Filters(object):
     def __repr__(self):
         retstr = "FILTERS \n"
         for flt, value in self.get_filters_values():
-            retstr = retstr + "%s.%s:%s:%s\n" % (flt.model.__table__, flt.column_name, str(flt) ,str(value))
+            retstr = retstr + "%s.%s:%s\n" % (flt.model.__table__, str(flt.column_name), str(value))
         return retstr

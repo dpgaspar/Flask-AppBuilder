@@ -472,7 +472,10 @@ class BaseCRUDView(BaseModelView):
                     order_direction = order_direction,
                     page=page, page_size=page_size)
 
-    def _get_related_list_widgets(self, item, orders = {}, pages=None, page_sizes=None, widgets = {}, **args):
+    def _get_related_list_widgets(self, item, orders = None, 
+                                pages=None, page_sizes=None, 
+                                widgets = None, **args):
+        widgets = widgets or {}
         widgets['related_lists'] = []
         for view in self.related_views:
             if orders.get(view.__class__.__name__):
@@ -489,9 +492,10 @@ class BaseCRUDView(BaseModelView):
                         order_direction = '',
                         page = None,
                         page_size = None,
-                        widgets = {}, **args):
+                        widgets = None, **args):
 
         """ get joined base filter and current active filter for query """
+        widgets = widgets or {}
         actions = actions or self.actions
         page_size = page_size or self.page_size
         if not order_column and self.base_order:
@@ -499,19 +503,18 @@ class BaseCRUDView(BaseModelView):
         joined_filters = filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         pks = self.datamodel.get_keys(lst)
-        widgets['list'] = self.list_widget(route_base = self.route_base,
-                                                label_columns = self.label_columns,
-                                                include_columns = self.list_columns,
-                                                value_columns = self.datamodel.get_values(lst, self.list_columns),
-                                                order_columns = self.order_columns,
-                                                page = page,
-                                                page_size = page_size,
-                                                count = count,
-                                                pks = pks,
-                                                actions = actions,
-                                                filters = filters,
-                                                generalview_name = self.__class__.__name__
-                                                )
+        widgets['list'] = self.list_widget(label_columns = self.label_columns,
+                                            include_columns = self.list_columns,
+                                            value_columns = self.datamodel.get_values(lst, self.list_columns),
+                                            order_columns = self.order_columns,
+                                            page = page,
+                                            page_size = page_size,
+                                            count = count,
+                                            pks = pks,
+                                            actions = actions,
+                                            filters = filters,
+                                            generalview_name = self.__class__.__name__
+                                            )
         return widgets
 
 
@@ -519,38 +522,35 @@ class BaseCRUDView(BaseModelView):
         widgets = widgets or {}
         actions = actions or self.actions
         item = self.datamodel.get(id)
-        widgets['show'] = self.show_widget(route_base = self.route_base,
-                                                pk = id,
-                                                label_columns = self.label_columns,
-                                                include_columns = self.show_columns,
-                                                value_columns = self.datamodel.get_values_item(item, self.show_columns),
-                                                actions = actions,
-                                                fieldsets = self.show_fieldsets,
-                                                generalview_name = self.__class__.__name__
-                                                )
+        widgets['show'] = self.show_widget(pk = id,
+                                            label_columns = self.label_columns,
+                                            include_columns = self.show_columns,
+                                            value_columns = self.datamodel.get_values_item(item, self.show_columns),
+                                            actions = actions,
+                                            fieldsets = self.show_fieldsets,
+                                            generalview_name = self.__class__.__name__
+                                            )
         return widgets
 
 
-    def _get_add_widget(self, form = None, exclude_cols = None, widgets = None):
+    def _get_add_widget(self, form, exclude_cols = None, widgets = None):
         exclude_cols = exclude_cols or []
         widgets = widgets or {}
-        widgets['add'] = self.add_widget(route_base = self.route_base,
-                                                form = form,
-                                                include_cols = self.add_columns,
-                                                exclude_cols = exclude_cols,
-                                                fieldsets = self.add_fieldsets
-                                                )
+        widgets['add'] = self.add_widget(form = form,
+                                            include_cols = self.add_columns,
+                                            exclude_cols = exclude_cols,
+                                            fieldsets = self.add_fieldsets
+                                            )
         return widgets
 
-    def _get_edit_widget(self, form = None, exclude_cols = None, widgets = None):
+    def _get_edit_widget(self, form, exclude_cols = None, widgets = None):
         exclude_cols = exclude_cols or []
         widgets = widgets or {}
-        widgets['edit'] = self.edit_widget(route_base = self.route_base,
-                                                form = form,
-                                                include_cols = self.edit_columns,
-                                                exclude_cols = exclude_cols,
-                                                fieldsets = self.edit_fieldsets
-                                                )
+        widgets['edit'] = self.edit_widget(form = form,
+                                            include_cols = self.edit_columns,
+                                            exclude_cols = exclude_cols,
+                                            fieldsets = self.edit_fieldsets
+                                            )
         return widgets
 
 
@@ -602,7 +602,6 @@ class BaseCRUDView(BaseModelView):
             returns add widget or None
         """
         get_filter_args(self._filters)
-
         form = self.add_form.refresh()
         exclude_cols = self._filters.get_relation_cols()
 
