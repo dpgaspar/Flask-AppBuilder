@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.5.6
+-----------------------------------
+
+- Fix, list_block, list_thumbnail, list_item, bug on set_link_filter.
+
 Improvements and Bug fixes on 0.5.5
 -----------------------------------
 
