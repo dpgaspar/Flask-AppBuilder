@@ -36,10 +36,10 @@ class GeneralModelConverter(object):
     def _convert_many_to_one(self, prop, label, description, lst_validators, form_props):
         rel_model = self.datamodel.get_model_relation(prop)
         form_props[self.datamodel.get_property_col(prop)] = QuerySelectField(label,
-                                                description=description,
-                                                query_factory = lambda: self.datamodel.session.query(rel_model),
-                                                allow_blank = True,
-                                                widget=Select2Widget())
+                description=description,
+                query_factory = lambda: self.datamodel.session.query(rel_model),
+                allow_blank = True,
+                widget=Select2Widget())
         return form_props
 
     def _convert_many_to_many(self, prop, label, description, lst_validators, form_props):

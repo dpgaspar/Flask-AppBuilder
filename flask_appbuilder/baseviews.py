@@ -222,7 +222,7 @@ class BaseModelView(BaseView):
                 datamodel = SQLAModel(MyTable, db.session)
                 base_filters = [['created_by', FilterEqualFunction, get_user],
                                 ['name', FilterStartsWith, 'a']]
-                                            
+    
     """
     _base_filters = None
     """ Internal base Filter from class Filters will always filter view """
@@ -351,12 +351,15 @@ class BaseCRUDView(BaseModelView):
     """ Dictionary to add extra fields to the Add form using this property """
     edit_form_extra_fields = None
     """ Dictionary to Add extra fields to the Edit form using this property """
-    
-    
+    add_form_query_rel_fields = None
+    """ Dictionary to Add Customized query for related fields on add form """
+    edit_form_query_rel_fields = None
+    """ Dictionary to Add Customized query for related fields on edit form """
+
     add_form = None
-    """ To implement your own add WTF form for Add """
+    """ To implement your own assign WTF form for Add """
     edit_form = None
-    """ To implement your own add WTF form for Edit """
+    """ To implement your own assign WTF form for Edit """
     
     
     list_template = 'appbuilder/general/model/list.html'

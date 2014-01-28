@@ -7,7 +7,7 @@ Improvements and Bug fixes on 0.5.5
 - New, group by on time charts returns month name and year.
 - Fix, better redirect, example: after delete, previous search will be preserved.
 - New, widgets module reorg.
-- Fix, add and edit with filter was not remving filterd columns, with auto fill.
+- Fix, add and edit with filter was not remving filtered columns, with auto fill.
 
 Improvements and Bug fixes on 0.5.4
 -----------------------------------
