@@ -1,4 +1,5 @@
 import os
+import logging
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.engine import Engine
@@ -10,6 +11,9 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
+
+logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
+logging.getLogger().setLevel(logging.DEBUG)
 
 """
 Only include this for SQLLite constraints
