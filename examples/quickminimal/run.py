@@ -1,8 +1,13 @@
 import os
+import logging
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
+
+logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
+logging.getLogger().setLevel(logging.DEBUG)
+
 from flask.ext.appbuilder.baseapp import BaseApp
 
 basedir = os.path.abspath(os.path.dirname(__file__))
