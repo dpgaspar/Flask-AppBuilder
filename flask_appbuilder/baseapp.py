@@ -1,14 +1,15 @@
+import logging
 
-from .security.manager import SecurityManager
-    
 from .views import IndexView
 from filters import TemplateFilters
 from flask import Blueprint
 from flask.ext.babelpkg import gettext as _gettext, lazy_gettext
 from flask.ext.appbuilder.babel.manager import BabelManager
 from flask.ext.appbuilder import translations
+from .security.manager import SecurityManager
 from menu import Menu
 
+log = logging.getLogger(__name__)
 
 class BaseApp(object):
     """
@@ -135,7 +136,7 @@ class BaseApp(object):
         try:
             self.sm.add_permissions_menu(name)
         except:
-            print "Add Permission on Menu Error: DB not created"
+            log.error("Add Permission on Menu Error")
     
     
     def _add_menu_permissions(self):
@@ -169,7 +170,7 @@ class BaseApp(object):
                 # Add a link
                 baseapp.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
-        print "Registering:", category,".", name
+        log.info("Registering:%s.%s" % (category,name))
         if baseview not in self.lst_baseview:
             baseview.baseapp = self
             self.lst_baseview.append(baseview)
@@ -223,7 +224,7 @@ class BaseApp(object):
         try:
             self.sm.add_permissions_view(baseview.base_permissions, baseview.__class__.__name__)
         except:
-            print "Add Permission on View Error: DB not created?"
+            log.error("Add Permission on View Error")
         
     def register_blueprint(self, baseview, endpoint = None, static_folder = None):
         self.app.register_blueprint(baseview.create_blueprint(self,  endpoint = endpoint, static_folder = static_folder))
