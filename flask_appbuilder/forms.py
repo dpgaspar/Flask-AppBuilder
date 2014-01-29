@@ -1,5 +1,5 @@
+import logging
 from wtforms.widgets import HTMLString, html_params
-import sqlalchemy as sa
 
 from flask.ext.wtf import (Form, fields, widgets, TextField, BooleanField, 
                            TextAreaField,IntegerField, DateField,
@@ -9,6 +9,8 @@ from flask.ext.wtf import (Form, fields, widgets, TextField, BooleanField,
 from flask.ext.wtf import Required, Length, validators, EqualTo
 from upload import BS3FileUploadFieldWidget, BS3ImageUploadFieldWidget, FileUploadField,ImageUploadField
 from validators import Unique
+
+log = logging.getLogger(__name__)
 
 class GeneralModelConverter(object):
 
@@ -98,7 +100,7 @@ class GeneralModelConverter(object):
                                     validators=lst_validators,
                                     widget=DateTimePickerWidget())
         else:
-            print col.name + 'Column Type not supported!'
+            log.error('Column %s Type not supported' % (col.name))
         return form_props
 
     def _convert_prop(self, prop, label, description, lst_validators, form_props):
