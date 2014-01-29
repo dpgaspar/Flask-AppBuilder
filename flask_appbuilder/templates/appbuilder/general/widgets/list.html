@@ -5,6 +5,14 @@
 	{% set can_show = "can_show" | is_item_visible(generalview_name) %}
     {% set can_edit = "can_edit" | is_item_visible(generalview_name) %}
 	{% set can_delete = "can_delete" | is_item_visible(generalview_name) %}
+
+
+	{% if form_widget %}
+
+		{{ form_widget(form_action = form_action) | safe }}
+		
+	{% endif %}
+
     <div class="well well-sm">
         {{ lib.render_pagination(page, page_size, count, generalview_name) }}
         {{ lib.render_set_page_size(page, page_size, count, generalview_name) }}

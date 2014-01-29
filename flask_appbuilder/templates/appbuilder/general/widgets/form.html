@@ -1,6 +1,9 @@
 
 {% import 'appbuilder/general/lib.html' as lib %}
 
+{% if form_action %}
+	<form action="{{form_action}}" method="post" enctype="multipart/form-data">
+{% endif %}
 <form action="" method="post" enctype="multipart/form-data">
 	{{form.hidden_tag()}}
 	

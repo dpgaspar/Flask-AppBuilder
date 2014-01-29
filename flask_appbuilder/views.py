@@ -227,8 +227,9 @@ class ListAddViewMixin(BaseCRUDView):
     """
         Mix with general view to implement a list with add
     """
-    list_widget = ListAddWidget
-    
+    _session_form_widget = None
+    _session_form_action = ''
+
     def _get_list_widget(self, filters,
                         actions = None,
                         order_column = '', 
@@ -255,20 +256,46 @@ class ListAddViewMixin(BaseCRUDView):
                                                 pks = pks,
                                                 actions = actions,
                                                 filters = filters,
-                                                add_widget = self._curr_form_widget,
-                                                generalview_name = self.__class__.__name__
+                                                generalview_name = self.__class__.__name__,
+                                                form_widget = self._session_form_widget,
+                                                form_action = self._session_form_action
                                                 )
         return widgets
 
     @expose('/list/', methods=['GET', 'POST'])
     @has_access
     def list(self):
-
         list_widgets = self._list()
-        self._curr_form_widget = self._add()
-        if not self._curr_form_widget:
-            return redirect(self._get_redirect())
         return render_template(self.list_template,
                                         title = self.list_title,
                                         widgets = list_widgets,
                                         baseapp = self.baseapp)
+
+    @expose('/add/', methods=['GET', 'POST'])
+    @has_access
+    def add(self):
+        widgets = self._add()
+        if not widgets:
+            self._session_form_action = ''
+            self._session_form_widget = None
+            return redirect(self._get_redirect())
+        else:
+            self._session_form_widget = widgets.get('add')
+            self._session_form_action = request.path
+            return redirect(url_for('.list'))
+
+
+    @expose('/edit/<pk>', methods=['GET', 'POST'])
+    @has_access
+    def edit(self, pk):
+        widgets = self._edit(pk)
+        if not widgets:
+            self._session_form_action = ''
+            self._session_form_widget = None
+            
+            return redirect(self._get_redirect())
+        else:
+            self._session_form_widget = widgets.get('edit')
+            self._session_form_action = request.path
+            return redirect(url_for('.list'))
+            

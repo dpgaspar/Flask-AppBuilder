@@ -1,6 +1,6 @@
 from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import GeneralView
+from flask.ext.appbuilder.views import GeneralView, ListAddViewMixin
 from app.models import Project, ProjectFiles
 from flask.ext.appbuilder import Base
 from app import app, db
