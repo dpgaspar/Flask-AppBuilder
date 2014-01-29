@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.5.7
+-----------------------------------
+
+- New, package using python's logging module for correct and flexible logging of info and errors.
+
 Improvements and Bug fixes on 0.5.6
 -----------------------------------
 
