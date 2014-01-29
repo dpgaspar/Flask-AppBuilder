@@ -1,5 +1,6 @@
 from flask import url_for
 
+
 class MenuItem(object):
 
     name = ""
