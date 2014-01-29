@@ -238,7 +238,7 @@ class SQLAModel(DataModel):
             return True
         except IntegrityError as e:
             flash(unicode(self.add_integrity_error_message),'warning')
-            log.exception("Add record error")
+            log.warning("Add record integrity error")
             self.session.rollback()
             return False
         except:
@@ -255,7 +255,7 @@ class SQLAModel(DataModel):
             return True
         except IntegrityError as e:
             flash(unicode(self.edit_integrity_error_message),'warning')
-            log.exception("Edit record error")
+            log.warning("Edit record integrity error")
             self.session.rollback()
             return False
         except:
@@ -274,7 +274,7 @@ class SQLAModel(DataModel):
             return True
         except IntegrityError as e:
             flash(unicode(self.delete_integrity_error_message),'warning')
-            log.exception("Delete record error")
+            log.warning("Delete record integrity error")
             self.session.rollback()
             return False
         except:
