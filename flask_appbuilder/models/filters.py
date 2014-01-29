@@ -1,4 +1,7 @@
+import logging
 from flask.ext.babelpkg import lazy_gettext
+
+log = logging.getLogger(__name__)
 
 class BaseFilter(object):
 
@@ -175,7 +178,7 @@ class Filters(object):
                     FilterSmaller(col, datamodel),
                     FilterNotEqual(col, datamodel)]
             else:
-                print "Filter type not supported for column: %s" % (col)
+                log.error('Filter type not supported for column: %s" % (col))
                 return None
 
     def clear_filters(self):
