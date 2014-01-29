@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
-from itertools import groupby
 import calendar
+import sys
+import logging
+import sqlalchemy as sa
+
+from itertools import groupby
 from flask import flash
 from flask.ext.babelpkg import gettext, ngettext, lazy_gettext
 from sqlalchemy.orm import class_mapper, joinedload
@@ -8,11 +12,12 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import MetaData
 from sqlalchemy import func
 
-import sqlalchemy as sa
-import sys
+
+
 from mixins import FileColumn, ImageColumn
 from ..filemanager import FileManager, ImageManager
 
+log = logging.getLogger(__name__)
 
 class DataModel():
     obj = None
@@ -233,10 +238,12 @@ class SQLAModel(DataModel):
             return True
         except IntegrityError as e:
             flash(unicode(self.add_integrity_error_message),'warning')
+            log.exception("Add record error")
             self.session.rollback()
             return False
         except:
             flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
+            log.exception("Add record error")
             self.session.rollback()
             return False
 
@@ -248,10 +255,12 @@ class SQLAModel(DataModel):
             return True
         except IntegrityError as e:
             flash(unicode(self.edit_integrity_error_message),'warning')
+            log.exception("Edit record error")
             self.session.rollback()
             return False
         except:
             flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
+            log.exception("Edit record error")
             self.session.rollback()
             return False
                 
@@ -265,10 +274,12 @@ class SQLAModel(DataModel):
             return True
         except IntegrityError as e:
             flash(unicode(self.delete_integrity_error_message),'warning')
+            log.exception("Delete record error")
             self.session.rollback()
             return False
         except:
             flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
+            log.exception("Delete record error")
             self.session.rollback()
             return False
                 
