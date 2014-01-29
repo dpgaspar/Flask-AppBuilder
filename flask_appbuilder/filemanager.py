@@ -1,15 +1,19 @@
 import os
+import uuid
+import logging
 import os.path as op
 
 from wtforms import ValidationError
 from werkzeug import secure_filename
 from werkzeug.datastructures import FileStorage
-import uuid
+
+
+log = logging.getLogger(__name__)
 
 try:
     from config import UPLOAD_FOLDER, IMG_UPLOAD_FOLDER, IMG_UPLOAD_URL
 except  ImportError:
-    print "UPLOAD_FOLDER, IMG_UPLOAD_FOLDER, IMG_UPLOAD_URL not found. Using default"
+    log.warning("Configuration keys for UPLOAD not found. Using default")
     basedir = os.path.abspath(os.path.dirname(__file__))
     UPLOAD_FOLDER = basedir + '/app/static/uploads/' 
     IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
@@ -156,7 +160,6 @@ class ImageManager(FileManager):
 
         if image.size[0] > width or image.size[1] > height:
             if force:
-                print "FORCE"
                 return ImageOps.fit(self.image, (width, height), Image.ANTIALIAS)
             else:
                 thumb = self.image.copy()
