@@ -1,3 +1,4 @@
+import logging
 from flask import current_app, g, request, current_app
 from flask.ext.appbuilder import Base
 from flask.ext.login import current_user
@@ -15,6 +16,8 @@ from views import AuthDBView, AuthOIDView, ResetMyPasswordView, \
     ResetPasswordView, UserDBGeneralView, UserOIDGeneralView, RoleGeneralView, \
     PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView
 
+
+log = logging.getLogger(__name__)
 
 AUTH_OID = 0
 AUTH_DB = 1
@@ -145,22 +148,22 @@ class SecurityManager(object):
         
         inspector = Inspector.from_engine(engine)
         if 'ab_user' not in inspector.get_table_names():
-            print "Security DB not found Creating..."
+            log.info("Security DB not found Creating")
             Base.metadata.create_all(engine)
-            print "Security DB Created"
+            log.info("Security DB Created")
             self.migrate_db()
         if self.session.query(Role).filter_by(name = self.auth_role_admin).first() is None:
             role = Role()
             role.name = self.auth_role_admin
             self.session.add(role)
             self.session.commit()
-            print "Inserted Role for public access", self.auth_role_admin            
+            log.info("Inserted Role for public access %s" % (self.auth_role_admin))
         if not self.session.query(Role).filter_by(name = self.auth_role_public).first():
             role = Role()
             role.name = self.auth_role_public
             self.session.add(role)
             self.session.commit()
-            print "Inserted Role for public access", self.auth_role_public
+            log.info("Inserted Role for public access %s" % (self.auth_role_public))
         if not self.session.query(User).all():
             user = User()
             user.first_name = 'Admin'
@@ -171,8 +174,8 @@ class SecurityManager(object):
             user.role = self.session.query(Role).filter_by(name = self.auth_role_admin).first()
             self.session.add(user)
             self.session.commit()
-            print "Inserted initial Admin user"
-            print "Login using Admin/general"
+            log.info("Inserted initial Admin user")
+            log.info("Login using Admin/general")
         
         
   
@@ -316,7 +319,7 @@ class SecurityManager(object):
         pv.view_menu_id, pv.permission_id = vm.id, perm.id
         self.session.add(pv)
         self.session.commit()
-        print "Added Permission View" , str(pv)
+        log.info("Added Permission View %s" % (str(pv)))
         return pv
     
     def _del_permission_view_menu(self, permission_name, view_menu_name):
@@ -331,7 +334,7 @@ class SecurityManager(object):
         if not pv:
             self.session.delete(perm)
             self.session.commit()
-        print "Removed Permission View", str(permission_name)
+        log.info("Removed Permission View %s" % (str(permission_name)))
         
     
     def _find_permission(self, lst, item):
@@ -406,7 +409,7 @@ class SecurityManager(object):
             role.permissions.append(perm_view)
             self.session.merge(role)
             self.session.commit()
-            print "Added Permission" , str(perm_view) , "to Role" , role.name
+            log.info("Added Permission %s to role %s" % (str(perm_view), role.name))
 
     def del_permission_role(self, role, perm_view):
         """
@@ -421,4 +424,4 @@ class SecurityManager(object):
             role.permissions.remove(perm_view)
             self.session.merge(role)
             self.session.commit()
-            print "Removed Permission" , str(perm_view) , "to Role" , role.name
+            log.info("Removed Permission %s to role %s" % (str(perm_view), role.name))
