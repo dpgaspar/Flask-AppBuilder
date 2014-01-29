@@ -170,7 +170,7 @@ class BaseApp(object):
                 # Add a link
                 baseapp.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
-        log.info("Registering:%s.%s" % (category,name))
+        log.info("Registering %s.%s" % (category,name))
         if baseview not in self.lst_baseview:
             baseview.baseapp = self
             self.lst_baseview.append(baseview)
