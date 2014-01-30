@@ -278,9 +278,7 @@ class ListAddViewMixin(BaseCRUDView):
     @expose('/add/', methods=['GET', 'POST'])
     @has_access
     def add(self):
-        log.debug("ADD")
         widgets = self._add()
-        log.debug("ADD %s" % (str(widgets)))
         if not widgets:
             self._session_form_action = ''
             self._session_form_widget = None
@@ -288,6 +286,7 @@ class ListAddViewMixin(BaseCRUDView):
         else:
             self._session_form_widget = widgets.get('add')
             self._session_form_action = request.path
+            log.debug("ADD %s" % (str(self._session_form_widget), self._session_form_action))
             return redirect(self._get_redirect())
 
 
