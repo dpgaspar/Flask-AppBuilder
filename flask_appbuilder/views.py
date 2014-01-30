@@ -259,6 +259,7 @@ class ListAddViewMixin(BaseCRUDView):
                                                 filters = filters,
                                                 generalview_name = self.__class__.__name__
                                                 )
+        log.debug("_list_widget(1) %s %s" % (str(self._session_form_widget), self._session_form_action))
         ret_widget = {}
         ret_widget['list'] = GroupFormListWidget(list_widget=widgets.get('list'), 
                                     form_widget = self._session_form_widget,
