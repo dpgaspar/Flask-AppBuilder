@@ -263,7 +263,7 @@ class ListAddViewMixin(BaseCRUDView):
         ret_widget['list'] = GroupFormListWidget(list_widget=widgets.get('list'), 
                                     form_widget = self._session_form_widget,
                                     form_action = self._session_form_action)
-        log.debug("_list_widget %s" % (str(ret_widget)))
+        log.debug("_list_widget %s" % (str(ret_widget.get('list'))))
         return ret_widget
 
     @expose('/list/', methods=['GET', 'POST'])
