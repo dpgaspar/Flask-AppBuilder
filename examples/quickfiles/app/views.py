@@ -6,7 +6,7 @@ from flask.ext.appbuilder import Base
 from app import app, db
 
 
-class ProjectFilesGeneralView(GeneralView, ListAddViewMixin):
+class ProjectFilesGeneralView(ListAddViewMixin, GeneralView):
     datamodel = SQLAModel(ProjectFiles, db.session)
     
     label_columns = {'download':'Download'}
