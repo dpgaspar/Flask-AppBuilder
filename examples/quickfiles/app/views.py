@@ -16,7 +16,7 @@ class ProjectFilesGeneralView(ListAddViewMixin, GeneralView):
     show_columns = ['file','download']
     
 
-class ProjectGeneralView(GeneralView):
+class ProjectGeneralView(ListAddViewMixin, GeneralView):
     datamodel = SQLAModel(Project, db.session)
     related_views = [ProjectFilesGeneralView()]    
 
