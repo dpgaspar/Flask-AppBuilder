@@ -1,0 +1,5 @@
+{% if form_widget %}
+		{{ form_widget }}
+		{{ form_widget(form_action = form_action) | safe }}		
+{% endif %}
+{{ list_widget() | safe }}

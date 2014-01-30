@@ -35,6 +35,9 @@ class FormWidget(RenderTemplateWidget):
     """
     template = 'appbuilder/general/widgets/form.html'
 
+class GroupFormListWidget(RenderTemplateWidget):
+    template = 'appbuilder/general/widgets/group_form_list.html'    
+
 
 class SearchWidget(FormWidget):
     template = 'appbuilder/general/widgets/search.html'

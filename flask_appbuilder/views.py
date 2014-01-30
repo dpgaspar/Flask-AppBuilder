@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request, send_file
 from .filemanager import uuid_originalname
 from .security.decorators import has_access
-from .widgets import FormWidget, ListAddWidget
+from .widgets import FormWidget, GroupFormListWidget
 from .actions import action
 from .baseviews import expose, BaseView, BaseCRUDView
 
@@ -245,8 +245,7 @@ class ListAddViewMixin(BaseCRUDView):
         joined_filters = filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         pks = self.datamodel.get_keys(lst)
-        widgets['list'] = self.list_widget(route_base = self.route_base,
-                                                label_columns = self.label_columns,
+        widgets['list'] = self.list_widget(label_columns = self.label_columns,
                                                 include_columns = self.list_columns,
                                                 value_columns = self.datamodel.get_values(lst, self.list_columns),
                                                 order_columns = self.order_columns,
@@ -256,11 +255,13 @@ class ListAddViewMixin(BaseCRUDView):
                                                 pks = pks,
                                                 actions = actions,
                                                 filters = filters,
-                                                generalview_name = self.__class__.__name__,
-                                                form_widget = self._session_form_widget,
-                                                form_action = self._session_form_action
+                                                generalview_name = self.__class__.__name__
                                                 )
-        return widgets
+        ret_widget = {}
+        ret_widget['list'] = GroupFormListWidget(list_widget=widgets.get('list'), 
+                                    form_widget = self._session_form_widget,
+                                    form_action = self._session_form_action)
+        return ret_widget
 
     @expose('/list/', methods=['GET', 'POST'])
     @has_access
@@ -282,7 +283,7 @@ class ListAddViewMixin(BaseCRUDView):
         else:
             self._session_form_widget = widgets.get('add')
             self._session_form_action = request.path
-            return redirect(url_for('.list'))
+            return redirect(self._get_redirect())
 
 
     @expose('/edit/<pk>', methods=['GET', 'POST'])
@@ -297,5 +298,5 @@ class ListAddViewMixin(BaseCRUDView):
         else:
             self._session_form_widget = widgets.get('edit')
             self._session_form_action = request.path
-            return redirect(url_for('.list'))
+            return redirect(self._get_redirect())
             
