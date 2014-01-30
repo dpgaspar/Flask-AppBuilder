@@ -1,3 +1,4 @@
+import logging
 from flask import render_template, flash, redirect, url_for, request, send_file
 from .filemanager import uuid_originalname
 from .security.decorators import has_access
@@ -5,6 +6,7 @@ from .widgets import FormWidget, GroupFormListWidget
 from .actions import action
 from .baseviews import expose, BaseView, BaseCRUDView
 
+log = logging.getLogger(__name__)
 
 class IndexView(BaseView):
     """
@@ -261,6 +263,7 @@ class ListAddViewMixin(BaseCRUDView):
         ret_widget['list'] = GroupFormListWidget(list_widget=widgets.get('list'), 
                                     form_widget = self._session_form_widget,
                                     form_action = self._session_form_action)
+        log.debug("_list_widget %s" % (str(ret_widget)))
         return ret_widget
 
     @expose('/list/', methods=['GET', 'POST'])
@@ -275,7 +278,9 @@ class ListAddViewMixin(BaseCRUDView):
     @expose('/add/', methods=['GET', 'POST'])
     @has_access
     def add(self):
+        log.debug("ADD")
         widgets = self._add()
+        log.debug("ADD %s" % (str(widgets)))
         if not widgets:
             self._session_form_action = ''
             self._session_form_widget = None
