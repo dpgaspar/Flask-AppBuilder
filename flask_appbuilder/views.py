@@ -240,6 +240,7 @@ class ListAddViewMixin(BaseCRUDView):
                         page_size = None,
                         widgets = {}, **args):
         """ get joined base filter and current active filter for query """
+        log.debug("_list_widget(0) %s %s" % (str(self._session_form_widget), self._session_form_action))
         actions = actions or self.actions
         page_size = page_size or self.page_size
         if not order_column and self.base_order:
