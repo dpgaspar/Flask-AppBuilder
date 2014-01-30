@@ -4,8 +4,10 @@ Created on Oct 12, 2013
 @author: Daniel Gaspar
 '''
 
+import logging
 from flask.globals import _request_ctx_stack
 
+log = logging.getLogger(__name__)
 
 class RenderTemplateWidget(object):
 
@@ -18,9 +20,10 @@ class RenderTemplateWidget(object):
     def __call__(self, **kwargs):
         ctx = _request_ctx_stack.top
         jinja_env = ctx.app.jinja_env
-
+        
         template = jinja_env.get_template(self.template)
         args = dict(self.template_args.items() + kwargs.items())
+        log.debug('RenderTemplateWidget.__class__.args: %s' % (str(args)))
         return template.render(args)
 
 
