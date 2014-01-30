@@ -23,7 +23,6 @@ class RenderTemplateWidget(object):
         
         template = jinja_env.get_template(self.template)
         args = dict(self.template_args.items() + kwargs.items())
-        log.debug('RenderTemplateWidget.__class__.args: %s' % (str(args)))
         return template.render(args)
 
 
