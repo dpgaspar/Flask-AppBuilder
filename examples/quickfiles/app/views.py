@@ -18,7 +18,7 @@ class ProjectFilesGeneralView(ListAddViewMixin, GeneralView):
 
 class ProjectGeneralView(ListAddViewMixin, GeneralView):
     datamodel = SQLAModel(Project, db.session)
-    related_views = [ProjectFilesGeneralView()]    
+    related_views = [ProjectFilesGeneralView]    
 
     add_columns = ['name']
     edit_columns = ['name']
