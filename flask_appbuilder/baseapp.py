@@ -232,9 +232,11 @@ class BaseApp(object):
         self.app.register_blueprint(baseview.create_blueprint(self,  endpoint = endpoint, static_folder = static_folder))
 
     def _set_ref_related_views(self, view):
+        log.debug('_set_ref_related_views INIT')
         if hasattr(view, 'related_views'):
             for rel_class in view.related_views:
                 for v in self.baseviews:
+                    log.debug('_set_ref_related_views %s %s' % (str(view.__class__.__name__), rel_class, str(v.__class__.__name__)))
                     if isinstance(v, rel_class) and v not in view._related_views:
                         log.debug('_get_view GOT IT!')
                         view._related_views.append(v)
