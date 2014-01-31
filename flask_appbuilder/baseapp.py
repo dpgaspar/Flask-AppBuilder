@@ -228,3 +228,9 @@ class BaseApp(object):
         
     def register_blueprint(self, baseview, endpoint = None, static_folder = None):
         self.app.register_blueprint(baseview.create_blueprint(self,  endpoint = endpoint, static_folder = static_folder))
+
+    def _get_view(self, class_name):
+        for view in self.lst_baseview:
+            if isinstance(view, class_name):
+                return view
+        
