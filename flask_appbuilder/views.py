@@ -152,7 +152,7 @@ class GeneralView(BaseCRUDView):
                            title = self.show_title,
                            widgets = widgets,
                            baseapp = self.baseapp,
-                           related_views = self.related_views)
+                           related_views = self._related_views)
 
 
     
@@ -190,7 +190,7 @@ class GeneralView(BaseCRUDView):
                         title = self.edit_title,
                         widgets = widgets,
                         baseapp = self.baseapp,
-                        related_views = self.related_views)
+                        related_views = self._related_views)
 
         
 
