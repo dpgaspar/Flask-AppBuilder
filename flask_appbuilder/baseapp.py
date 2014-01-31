@@ -233,7 +233,7 @@ class BaseApp(object):
 
     def _set_ref_related_views(self, view):
         if hasattr(view, 'related_views'):
-            for rel_class in view.related_view:
+            for rel_class in view.related_views:
                 for v in self.lst_baseviews:
                     if isinstance(v, rel_class) and v not in view._related_views:
                         log.debug('_get_view GOT IT!')
