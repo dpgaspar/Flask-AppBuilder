@@ -73,7 +73,7 @@ class SecurityManager(object):
                  
         role_view = baseapp._init_view_session(RoleGeneralView)                       
         baseapp.add_view(role_view, "List Roles","/roles/list","fa-group","Security")
-        role_view.related_views = [user_view]
+        role_view.related_views = [user_view.__class__]
         baseapp.menu.add_separator("Security")
         baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView), "Base Permissions","/permissions/list","fa-lock","Security")
         baseapp.add_view(baseapp._init_view_session(ViewMenuGeneralView), "Views/Menus","/viewmenus/list","fa-list-alt","Security")
