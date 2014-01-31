@@ -24,7 +24,7 @@ class BaseApp(object):
             baseapp = BaseApp(app, db)
         
     """
-    lst_baseview = []
+    baseviews = []
     app = None
     db = None
     
@@ -171,9 +171,9 @@ class BaseApp(object):
                 baseapp.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
         log.info("Registering class %s on menu %s.%s" % (baseview.__class__.__name__, category,name))
-        if baseview not in self.lst_baseview:
+        if baseview not in self.baseviews:
             baseview.baseapp = self
-            self.lst_baseview.append(baseview)
+            self.baseviews.append(baseview)
             self._set_ref_related_views(baseview)
             self.register_blueprint(baseview)
             self._add_permission(baseview)
@@ -215,9 +215,9 @@ class BaseApp(object):
                 A BaseView type class instantiated.
                     
         """
-        if baseview not in self.lst_baseview:
+        if baseview not in self.baseviews:
             baseview.baseapp = self
-            self.lst_baseview.append(baseview)
+            self.baseviews.append(baseview)
             self._set_ref_related_views(baseview)
             self.register_blueprint(baseview, endpoint = endpoint, static_folder = static_folder)
             self._add_permission(baseview)
@@ -234,7 +234,7 @@ class BaseApp(object):
     def _set_ref_related_views(self, view):
         if hasattr(view, 'related_views'):
             for rel_class in view.related_views:
-                for v in self.lst_baseviews:
+                for v in self.baseviews:
                     if isinstance(v, rel_class) and v not in view._related_views:
                         log.debug('_get_view GOT IT!')
                         view._related_views.append(v)
