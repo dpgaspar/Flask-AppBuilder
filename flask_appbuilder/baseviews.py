@@ -275,9 +275,11 @@ class BaseCRUDView(BaseModelView):
     
     related_views = None
     """ 
-        List with instantiated GeneralView classes
+        List with GeneralView classes
         That will be displayed related with this one using relationship sqlalchemy property
     """
+    _related_views = None
+    """ internal list with ref to instantiated view classes """
     list_title = ""
     """ List Title, if not configured the default is 'List ' with pretty model name """
     show_title = ""
@@ -427,6 +429,7 @@ class BaseCRUDView(BaseModelView):
 
     def _init_properties(self):
         self.related_views = self.related_views or []
+        self._related_views = self._related_views or []
         self.description_columns = self.description_columns or {}
         self.validators_columns = self.validators_columns or {}
         self.add_form_extra_fields = self.add_form_extra_fields or {}
@@ -480,8 +483,7 @@ class BaseCRUDView(BaseModelView):
                                 widgets = None, **args):
         widgets = widgets or {}
         widgets['related_lists'] = []
-        for cls_view in self.related_views:
-            view = self.baseapp._get_view(cls_view)
+        for view in self._related_views:
             if orders.get(view.__class__.__name__):
                 order_column, order_direction = orders.get(view.__class__.__name__)
             else: order_column, order_direction = '',''
