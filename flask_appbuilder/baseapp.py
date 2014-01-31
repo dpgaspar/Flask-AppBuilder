@@ -236,7 +236,7 @@ class BaseApp(object):
         if hasattr(view, 'related_views'):
             for rel_class in view.related_views:
                 for v in self.baseviews:
-                    log.debug('_set_ref_related_views %s %s' % (str(view.__class__.__name__), rel_class, str(v.__class__.__name__)))
+                    log.debug('_set_ref_related_views %s %s.%s' % (str(view.__class__.__name__), rel_class, str(v.__class__.__name__)))
                     if isinstance(v, rel_class) and v not in view._related_views:
                         log.debug('_get_view GOT IT!')
                         view._related_views.append(v)
