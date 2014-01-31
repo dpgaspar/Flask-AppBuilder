@@ -281,8 +281,8 @@ class ListAddViewMixin(BaseCRUDView):
         if not widgets:
             self._session_form_action = ''
             self._session_form_widget = None
-            log.debug("ADD %s " % (self._get_redirect()))
-            return redirect(self._get_redirect())
+            log.debug("ADD %s " % (request.referrer))
+            return redirect(request.referrer)
         else:
             self._session_form_widget = widgets.get('add')
             self._session_form_action = request.path
