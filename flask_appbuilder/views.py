@@ -240,8 +240,6 @@ class ListAddViewMixin(BaseCRUDView):
                         page_size = None,
                         widgets = {}, **args):
         """ get joined base filter and current active filter for query """
-        log.debug("_list_widget(0) %s %s" % (str(self._session_form_widget), self._session_form_action))
-        log.debug("_list_widget dir %s" % (str(dir(self))))
         actions = actions or self.actions
         page_size = page_size or self.page_size
         if not order_column and self.base_order:
@@ -261,12 +259,10 @@ class ListAddViewMixin(BaseCRUDView):
                                                 filters = filters,
                                                 generalview_name = self.__class__.__name__
                                                 )
-        log.debug("_list_widget(1) %s %s" % (str(self._session_form_widget), self._session_form_action))
         ret_widget = {}
         ret_widget['list'] = GroupFormListWidget(list_widget=widgets.get('list'), 
                                     form_widget = self._session_form_widget,
                                     form_action = self._session_form_action)
-        log.debug("_list_widget %s" % (str(ret_widget.get('list'))))
         return ret_widget
 
     @expose('/list/', methods=['GET', 'POST'])
@@ -285,12 +281,12 @@ class ListAddViewMixin(BaseCRUDView):
         if not widgets:
             self._session_form_action = ''
             self._session_form_widget = None
+            log.debug("ADD %s " % (self._get_redirect())
             return redirect(self._get_redirect())
         else:
             self._session_form_widget = widgets.get('add')
             self._session_form_action = request.path
             log.debug("ADD %s %s" % (str(self._session_form_widget), self._session_form_action))
-            log.debug("ADD %s" % (str(dir(self))))
             return redirect(self._get_redirect())
 
 
