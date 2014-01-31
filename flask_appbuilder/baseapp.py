@@ -234,6 +234,7 @@ class BaseApp(object):
     def _process_ref_related_views(self):
         log.debug('_set_ref_related_views INIT')
         for view in self.baseviews:
+            log.debug('_set_ref_related_views %s' % (str(view.__class__.__name__)))
             if hasattr(view, 'related_views'):
                 for rel_class in view.related_views:
                     for v in self.baseviews:
