@@ -174,7 +174,7 @@ class BaseApp(object):
         if baseview not in self.baseviews:
             baseview.baseapp = self
             self.baseviews.append(baseview)
-            self._set_ref_related_views(baseview)
+            self._process_ref_related_views()
             self.register_blueprint(baseview)
             self._add_permission(baseview)
         self.add_link(name = name, href = href, icon = icon, category = category, baseview = baseview)
@@ -218,7 +218,7 @@ class BaseApp(object):
         if baseview not in self.baseviews:
             baseview.baseapp = self
             self.baseviews.append(baseview)
-            self._set_ref_related_views(baseview)
+            self._process_ref_related_views()
             self.register_blueprint(baseview, endpoint = endpoint, static_folder = static_folder)
             self._add_permission(baseview)
 
@@ -231,14 +231,15 @@ class BaseApp(object):
     def register_blueprint(self, baseview, endpoint = None, static_folder = None):
         self.app.register_blueprint(baseview.create_blueprint(self,  endpoint = endpoint, static_folder = static_folder))
 
-    def _set_ref_related_views(self, view):
+    def _process_ref_related_views(self):
         log.debug('_set_ref_related_views INIT')
-        if hasattr(view, 'related_views'):
-            for rel_class in view.related_views:
-                for v in self.baseviews:
-                    log.debug('_set_ref_related_views %s %s.%s' % (str(view.__class__.__name__), rel_class, str(v.__class__.__name__)))
-                    if isinstance(v, rel_class) and v not in view._related_views:
-                        log.debug('_get_view GOT IT!')
-                        view._related_views.append(v)
+        for view in self.baseviews:
+            if hasattr(view, 'related_views'):
+                for rel_class in view.related_views:
+                    for v in self.baseviews:
+                        log.debug('_set_ref_related_views %s %s.%s' % (str(view.__class__.__name__), rel_class, str(v.__class__.__name__)))
+                        if isinstance(v, rel_class) and v not in view._related_views:
+                            log.debug('_get_view GOT IT!')
+                            view._related_views.append(v)
 
         
