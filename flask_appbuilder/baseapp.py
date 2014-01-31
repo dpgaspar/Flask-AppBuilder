@@ -233,5 +233,6 @@ class BaseApp(object):
         for view in self.lst_baseview:
             log.debug('_get_view %s %s' % (str(view.__class__.__name__), str(class_name)))
             if isinstance(view, class_name):
+                log.debug('_get_view GOT IT!')
                 return view
         
