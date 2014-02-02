@@ -1,6 +1,31 @@
 Version Migration
 =================
 
+Migrating from 0.5.X to 0.6.X
+-----------------------------
+
+This new version has some new breaking features, that i hope will be easily changeable on your code.
+
+If you feel lost please post an issue on github: https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open
+
+If your using the **related_views** attribute on GeneralView classes, you must not instantiate the related classes. This is the correct form, it will be less memory and cpu resource consuming.
+
+From this::
+
+
+    class MyView(GeneralView):
+        datamodel = SQLAModel(Group, db.session)
+        related_views = [MyOtherView()]
+
+
+Change to this::
+
+  
+    class MyView(GeneralView):
+        datamodel = SQLAModel(Group, db.session)
+        related_views = [MyOtherView]
+
+
 Migrating from 0.2.X to 0.3.X
 -----------------------------
 

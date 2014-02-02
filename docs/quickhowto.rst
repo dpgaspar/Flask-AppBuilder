@@ -79,7 +79,7 @@ Now we are going to define our view for *Group* table
   
     class GroupGeneralView(GeneralView):
         datamodel = SQLAModel(Group, db.session)
-        related_views = [ContactGeneralView()]
+        related_views = [ContactGeneralView]
 
 
 I hope this was easy enough! Some questions may arrise...

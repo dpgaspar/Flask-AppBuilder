@@ -1,12 +1,12 @@
 from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import GeneralView, ListAddViewMixin
+from flask.ext.appbuilder.views import GeneralView, CompactCRUDMixin
 from app.models import Project, ProjectFiles
 from flask.ext.appbuilder import Base
 from app import app, db
 
 
-class ProjectFilesGeneralView(ListAddViewMixin, GeneralView):
+class ProjectFilesGeneralView(CompactCRUDMixin, GeneralView):
     datamodel = SQLAModel(ProjectFiles, db.session)
     
     label_columns = {'download':'Download'}
@@ -16,7 +16,7 @@ class ProjectFilesGeneralView(ListAddViewMixin, GeneralView):
     show_columns = ['file','download']
     
 
-class ProjectGeneralView(ListAddViewMixin, GeneralView):
+class ProjectGeneralView(CompactCRUDMixin, GeneralView):
     datamodel = SQLAModel(Project, db.session)
     related_views = [ProjectFilesGeneralView]    
 
@@ -33,4 +33,3 @@ class ProjectGeneralView(ListAddViewMixin, GeneralView):
 baseapp = BaseApp(app, db)
 baseapp.add_view(ProjectGeneralView(), "List Projects",icon = "fa-table",category = "Projects")
 baseapp.add_view_no_menu(ProjectFilesGeneralView())
-

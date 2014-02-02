@@ -108,7 +108,7 @@ All views have templates that will display widgets in a certain layout. For exam
 
     class ServerGeneralView(GeneralView):
         datamodel = SQLAModel(Server, db.session)
-        related_views = [ServerDiskTypeGeneralView()]
+        related_views = [ServerDiskTypeGeneralView]
 
         show_template = 'appbuilder/general/model/show_cascade.html'
         edit_template = 'appbuilder/general/model/edit_cascade.html'
@@ -147,7 +147,7 @@ If you want to change the above example, and change the way the server disks are
     :width: 100%
 
 
-on version 0.3.10 you have the following widgets already available
+You have the following widgets already available
 
 - ListWidget (default)
 - ListItem

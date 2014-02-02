@@ -276,7 +276,12 @@ class BaseCRUDView(BaseModelView):
     related_views = None
     """ 
         List with GeneralView classes
-        That will be displayed related with this one using relationship sqlalchemy property
+        Will be displayed related with this one using relationship sqlalchemy property::
+
+            class MyView(GeneralView):
+                datamodel = SQLAModel(Group, db.session)
+                related_views = [MyOtherRelatedView]
+                
     """
     _related_views = None
     """ internal list with ref to instantiated view classes """

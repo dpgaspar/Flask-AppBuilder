@@ -1,6 +1,13 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.6.0
+-----------------------------------
+
+- New, compact view with add and edit on the same page has lists. Use of CompactCRUDMixin Mixin.
+- Break, GeneralView (BaseCRUDView) related_views attr, must be filled with classes intead of instances.
+- Fix, removed Flask-SQlAlchemy version constraint.
+
 Improvements and Bug fixes on 0.5.7
 -----------------------------------
 

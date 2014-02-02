@@ -224,41 +224,17 @@ class GeneralView(BaseCRUDView):
             flash("Access is Denied %s %s" % (name, self.__class__.__name__),"danger")
             return redirect('.')
         
-    
-class ListAddViewMixin(BaseCRUDView):
+
+class CompactCRUDMixin(BaseCRUDView):
     """
-        Mix with general view to implement a list with add
+        Mix with GeneralView to implement a list with add and edit on the same page.
     """
     _session_form_widget = None
     _session_form_action = ''
 
-    def _get_list_widget(self, filters,
-                        actions = None,
-                        order_column = '', 
-                        order_direction = '',
-                        page = None,
-                        page_size = None,
-                        widgets = {}, **args):
+    def _get_list_widget(self, **args):
         """ get joined base filter and current active filter for query """
-        actions = actions or self.actions
-        page_size = page_size or self.page_size
-        if not order_column and self.base_order:
-            order_column, order_direction = self.base_order    
-        joined_filters = filters.get_joined_filters(self._base_filters)
-        count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
-        pks = self.datamodel.get_keys(lst)
-        widgets['list'] = self.list_widget(label_columns = self.label_columns,
-                                                include_columns = self.list_columns,
-                                                value_columns = self.datamodel.get_values(lst, self.list_columns),
-                                                order_columns = self.order_columns,
-                                                page = page,
-                                                page_size = page_size,
-                                                count = count,
-                                                pks = pks,
-                                                actions = actions,
-                                                filters = filters,
-                                                generalview_name = self.__class__.__name__
-                                                )
+        widgets = super(CompactCRUDMixin, self)._get_list_widget(**args)
         ret_widget = {}
         ret_widget['list'] = GroupFormListWidget(list_widget=widgets.get('list'), 
                                     form_widget = self._session_form_widget,
@@ -281,13 +257,10 @@ class ListAddViewMixin(BaseCRUDView):
         if not widgets:
             self._session_form_action = ''
             self._session_form_widget = None
-            log.debug("ADD FILTERS %s" % (str(self._filters)))
-            log.debug("ADD %s " % (request.referrer))
             return redirect(request.referrer)
         else:
             self._session_form_widget = widgets.get('add')
-            self._session_form_action = request.path
-            log.debug("ADD %s %s" % (str(self._session_form_widget), self._session_form_action))
+            self._session_form_action = request.url
             return redirect(self._get_redirect())
 
 
@@ -302,6 +275,6 @@ class ListAddViewMixin(BaseCRUDView):
             return redirect(self._get_redirect())
         else:
             self._session_form_widget = widgets.get('edit')
-            self._session_form_action = request.path
+            self._session_form_action = request.url
             return redirect(self._get_redirect())
             
