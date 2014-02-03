@@ -229,6 +229,7 @@ class CompactCRUDMixin(BaseCRUDView):
     """
         Mix with GeneralView to implement a list with add and edit on the same page.
     """
+    _session_form_title = ''
     _session_form_widget = None
     _session_form_action = ''
 
@@ -238,7 +239,8 @@ class CompactCRUDMixin(BaseCRUDView):
         ret_widget = {}
         ret_widget['list'] = GroupFormListWidget(list_widget=widgets.get('list'), 
                                     form_widget = self._session_form_widget,
-                                    form_action = self._session_form_action)
+                                    form_action = self._session_form_action,
+                                    form_title = self._session_form_title)
         return ret_widget
 
     @expose('/list/', methods=['GET', 'POST'])
@@ -261,6 +263,7 @@ class CompactCRUDMixin(BaseCRUDView):
         else:
             self._session_form_widget = widgets.get('add')
             self._session_form_action = request.url
+            self._session_form_title = self.add_title
             return redirect(self._get_redirect())
 
 
@@ -276,5 +279,6 @@ class CompactCRUDMixin(BaseCRUDView):
         else:
             self._session_form_widget = widgets.get('edit')
             self._session_form_action = request.url
+            self._session_form_title = self.edit_title
             return redirect(self._get_redirect())
             
