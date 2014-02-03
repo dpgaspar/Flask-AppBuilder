@@ -12,7 +12,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import MetaData
 from sqlalchemy import func
 
-
+from group import GroupByDateYear
 
 from mixins import FileColumn, ImageColumn
 from ..filemanager import FileManager, ImageManager
@@ -164,15 +164,25 @@ class SQLAModel(DataModel):
         for ( grouped, items ) in groupby( query_result, lambda x: (getattr(x,group_by).month,getattr(x,group_by).year) ):
             retlst.append([calendar.month_name[grouped[0]] + ' ' + str(grouped[1]), len(list(items))])
         return retlst
-        
+
+    """        
     def query_year_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
         query = self.session.query(self.obj)
         query = self._get_base_query(query = query, filters = filters, order_column = group_by, order_direction = 'asc')
         query_result = query.all()
+        log.debug("query_year_group %s" % (str(query_result)))
         retlst = []
         for ( grouped, items ) in groupby( query_result, lambda x: (getattr(x,group_by).year)):
             retlst.append([grouped, len(list(items))])
         return retlst
+    """
+
+    def query_year_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
+        query = self.session.query(self.obj)
+        query = self._get_base_query(query = query, filters = filters, order_column = group_by, order_direction = 'asc')
+        query_result = query.all()
+        group_year = GroupByDateYear(group_by,'Group by Year')
+        return group_year.apply(query_result)
 
     """
     -----------------------------------------

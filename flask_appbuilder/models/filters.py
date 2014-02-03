@@ -9,8 +9,7 @@ class BaseFilter(object):
     datamodel = None
     model = None
     name = ''
-    """ The filter display name """
-    
+
     def __init__(self, column_name, datamodel):
         """
             Constructor.

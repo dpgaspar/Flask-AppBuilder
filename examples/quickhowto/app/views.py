@@ -25,7 +25,7 @@ class ContactGeneralView(GeneralView):
 
 class GroupGeneralView(GeneralView):
     datamodel = SQLAModel(Group, db.session)
-    related_views = [ContactGeneralView()]
+    related_views = [ContactGeneralView]
 
 class ContactChartView(ChartView):
     chart_title = 'Grouped contacts'
