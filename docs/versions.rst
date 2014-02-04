@@ -1,7 +1,7 @@
 Versions
 ========
 
-Improvements and Bug fixes on 0.6.1
+Improvements and Bug fixes on 0.6.2
 -----------------------------------
 
 - New, compact view with add and edit on the same page has lists. Use of CompactCRUDMixin Mixin.
