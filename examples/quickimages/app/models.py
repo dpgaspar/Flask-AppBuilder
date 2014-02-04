@@ -25,7 +25,7 @@ class Person(BaseMixin, Base):
     name =  Column(String(150), unique = True, nullable=False)
     address =  Column(String(564))
     birthday = Column(Date)
-    photo = Column(ImageColumn, nullable=False )
+    photo = Column(ImageColumn)
     personal_phone = Column(String(20))
     personal_celphone = Column(String(20))
     personal_email = Column(String(64))
@@ -41,7 +41,7 @@ class Person(BaseMixin, Base):
     def photo_img(self):
         im = ImageManager()
         if self.photo:
-            return Markup('<a href="/persons/show/' + str(self.id) + '" class="thumbnail"><img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"></a>')
+            return Markup('<a href="/persongeneralview/show/' + str(self.id) + '" class="thumbnail"><img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"></a>')
         else:
-            return Markup('<a href="/persons/show/' + str(self.id) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
+            return Markup('<a href="/persongeneralview/show/' + str(self.id) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
         

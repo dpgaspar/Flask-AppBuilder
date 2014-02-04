@@ -1,7 +1,7 @@
 Versions
 ========
 
-Improvements and Bug fixes on 0.6.0
+Improvements and Bug fixes on 0.6.1
 -----------------------------------
 
 - New, compact view with add and edit on the same page has lists. Use of CompactCRUDMixin Mixin.
@@ -10,6 +10,7 @@ Improvements and Bug fixes on 0.6.0
 - Fix, TimeChartView resolved error with null dates. 
 - Fix, registering related_views with instances will raise proper error.
 - Fix, filter not supported with report a warning not an error.
+- Fix, ImageColumn and FileColumn was being included has a possible filter.
 
 Improvements and Bug fixes on 0.5.7
 -----------------------------------

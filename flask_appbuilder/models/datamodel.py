@@ -374,6 +374,20 @@ class SQLAModel(DataModel):
                 ret_lst.append(prop.key)
         return ret_lst
 
+    #TODO get diferent solution, more intergrated with filters
+    def get_search_columns_list(self):
+        ret_lst = []
+        for prop in self.get_properties_iterator():
+            if not self.is_relation(prop):
+                if (not self.is_pk(self.get_property_first_col(prop))) and (not self.is_fk(self.get_property_first_col(prop))):
+                    col = prop.key
+                    if (not self.is_image(col)) and (not self.is_file(col)):
+                        ret_lst.append(prop.key)
+            else:
+                    ret_lst.append(prop.key)
+        return ret_lst
+
+
     def get_order_columns_list(self):
         ret_lst = []
         for prop in self.get_properties_iterator():
