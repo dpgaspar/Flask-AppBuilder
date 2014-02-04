@@ -85,20 +85,22 @@
 <p>The index can be easily overridden by your own. You must develop your template, then define it in a IndexView and pass it to BaseApp</p>
 <p>The default index template is very simple, you can create your own like this:</p>
 <p>1 - Develop your template (on your &lt;PROJECT_NAME&gt;/app/templates/my_index.html):</p>
-<div class="highlight-python"><pre>{% extends "appbuilder/base.html" %}
+<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;appbuilder/base.html&quot; %}
 {% block content %}
-&lt;div class="jumbotron"&gt;
-  &lt;div class="container"&gt;
-    &lt;h1&gt;{{_("My App on F.A.B.")}}&lt;/h1&gt;
-    &lt;p&gt;{{_("My first app using F.A.B, bla, bla, bla")}}&lt;/p&gt;
+&lt;div class=&quot;jumbotron&quot;&gt;
+  &lt;div class=&quot;container&quot;&gt;
+    &lt;h1&gt;{{_(&quot;My App on F.A.B.&quot;)}}&lt;/h1&gt;
+    &lt;p&gt;{{_(&quot;My first app using F.A.B, bla, bla, bla&quot;)}}&lt;/p&gt;
   &lt;/div&gt;
 &lt;/div&gt;
-{% endblock %}</pre>
+{% endblock %}
+</pre></div>
 </div>
 <p>What happened here? We should allways extend from &#8220;appbuilder/base.html&#8221; this is the base template that will include all CSS&#8217;s, Javascripts, and contruct the menu based on the user&#8217;s security definition.</p>
 <p>Next we will override the &#8220;content&#8221; block, we could override other areas like CSS, extend CSS, Javascript or extend javascript. We can even override the base.html completely</p>
 <p>I&#8217;ve presented the text on the content like:</p>
-<div class="highlight-python"><pre>{{_("text to be translated")}}</pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{{</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;text to be translated&quot;</span><span class="p">)}}</span>
+</pre></div>
 </div>
 <p>So that we can use Babel to translate our index text</p>
 <p>2 - Define an IndexView</p>
@@ -158,7 +160,7 @@
 
 <span class="k">class</span> <span class="nc">ServerGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Server</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
-    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ServerDiskTypeGeneralView</span><span class="p">()]</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ServerDiskTypeGeneralView</span><span class="p">]</span>
 
     <span class="n">show_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/show_cascade.html&#39;</span>
     <span class="n">edit_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/edit_cascade.html&#39;</span>
@@ -178,7 +180,7 @@
 
 <span class="k">class</span> <span class="nc">ServerGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Server</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
-    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ServerDiskTypeGeneralView</span><span class="p">()]</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ServerDiskTypeGeneralView</span><span class="p">]</span>
 
     <span class="n">show_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/show_cascade.html&#39;</span>
     <span class="n">edit_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/edit_cascade.html&#39;</span>
@@ -189,7 +191,7 @@
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="_images/list_cascade_block.png"><img alt="_images/list_cascade_block.png" src="_images/list_cascade_block.png" style="width: 100%;" /></a>
-<p>on version 0.3.10 you have the following widgets already available</p>
+<p>You have the following widgets already available</p>
 <ul class="simple">
 <li>ListWidget (default)</li>
 <li>ListItem</li>
@@ -203,6 +205,34 @@
     <span class="n">template</span> <span class="o">=</span> <span class="s">&#39;/widgets/my_widget_list.html&#39;</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="change-default-view-behaviour">
+<h2>Change Default View Behaviour<a class="headerlink" href="#change-default-view-behaviour" title="Permalink to this headline">¶</a></h2>
+<p>If you want to have Add, edit and list on the same page, this can be done. This could be very helpfull on master/detail lists (inline) on views based on tables with very few columns.</p>
+<p>All you have to do is to mix <em>CompactCRUDMixin</em> class with the <em>GeneralView</em> class.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseapp</span> <span class="kn">import</span> <span class="n">BaseApp</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.datamodel</span> <span class="kn">import</span> <span class="n">SQLAModel</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.views</span> <span class="kn">import</span> <span class="n">GeneralView</span><span class="p">,</span> <span class="n">CompactCRUDMixin</span>
+<span class="kn">from</span> <span class="nn">app.models</span> <span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ProjectFiles</span>
+<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">app</span><span class="p">,</span> <span class="n">db</span>
+
+
+<span class="k">class</span> <span class="nc">MyInlineView</span><span class="p">(</span><span class="n">CompactCRUDMixin</span><span class="p">,</span> <span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyInlineTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyViewTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyInlineView</span><span class="p">]</span>
+
+<span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">(),</span> <span class="s">&quot;List My View&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-table&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="n">MyInlineView</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Notice the class mixin, with this configuration you will have a <em>Master View</em> with the inline view <em>MyInlineView</em> where you can Add and Edit on the same page.</p>
+<p>Of course you could use the mixin on <em>MyView</em> also, use it only on GeneralView classes.</p>
+<p>Take a look at the example: <a class="reference external" href="https://github.com/dpgaspar/Flask-appBuilder/tree/master/examples/quickfiles">https://github.com/dpgaspar/Flask-appBuilder/tree/master/examples/quickfiles</a></p>
+<a class="reference internal image-reference" href="_images/list_compact_inline.png"><img alt="_images/list_compact_inline.png" src="_images/list_compact_inline.png" style="width: 100%;" /></a>
 </div>
 </div>
 
@@ -219,6 +249,7 @@
 <li><a class="reference internal" href="#changing-the-index">Changing the index</a></li>
 <li><a class="reference internal" href="#changing-menu-construction">Changing Menu Construction</a></li>
 <li><a class="reference internal" href="#changing-widgets-amd-templates">Changing Widgets amd Templates</a></li>
+<li><a class="reference internal" href="#change-default-view-behaviour">Change Default View Behaviour</a></li>
 </ul>
 </li>
 </ul>

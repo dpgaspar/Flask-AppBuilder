@@ -63,6 +63,12 @@ GeneralView
     .. autoclass:: GeneralView
         :members:
         
+CompactCRUDMixin
+----------------
+
+    .. autoclass:: CompactCRUDMixin
+        :members:
+
 
 flask.ext.appbuilder.actions
 ============================

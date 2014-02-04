@@ -199,6 +199,6 @@ Of course you could use the mixin on *MyView* also, use it only on GeneralView c
 Take a look at the example: https://github.com/dpgaspar/Flask-appBuilder/tree/master/examples/quickfiles
 
 
-.. image:: ./images/list_conpact_inline.png
+.. image:: ./images/list_compact_inline.png
     :width: 100%
 

@@ -61,6 +61,24 @@
             
   <div class="section" id="version-migration">
 <h1>Version Migration<a class="headerlink" href="#version-migration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="migrating-from-0-5-x-to-0-6-x">
+<h2>Migrating from 0.5.X to 0.6.X<a class="headerlink" href="#migrating-from-0-5-x-to-0-6-x" title="Permalink to this headline">¶</a></h2>
+<p>This new version has some new breaking features, that i hope will be easily changeable on your code.</p>
+<p>If you feel lost please post an issue on github: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open">https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open</a></p>
+<p>If your using the <strong>related_views</strong> attribute on GeneralView classes, you must not instantiate the related classes. This is the correct form, it will be less memory and cpu resource consuming.</p>
+<p>From this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyOtherView</span><span class="p">()]</span>
+</pre></div>
+</div>
+<p>Change to this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyOtherView</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="migrating-from-0-2-x-to-0-3-x">
 <h2>Migrating from 0.2.X to 0.3.X<a class="headerlink" href="#migrating-from-0-2-x-to-0-3-x" title="Permalink to this headline">¶</a></h2>
 <p>This new version (0.3.X) has many internal changes, if you feel lost please post an issue on github
@@ -128,6 +146,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Version Migration</a><ul>
+<li><a class="reference internal" href="#migrating-from-0-5-x-to-0-6-x">Migrating from 0.5.X to 0.6.X</a></li>
 <li><a class="reference internal" href="#migrating-from-0-2-x-to-0-3-x">Migrating from 0.2.X to 0.3.X</a></li>
 <li><a class="reference internal" href="#migrating-from-0-1-x-to-0-2-x">Migrating from 0.1.X to 0.2.X</a></li>
 </ul>

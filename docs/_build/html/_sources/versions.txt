@@ -1,6 +1,35 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.6.1
+-----------------------------------
+
+- New, compact view with add and edit on the same page has lists. Use of CompactCRUDMixin Mixin.
+- Break, GeneralView (BaseCRUDView) related_views attr, must be filled with classes intead of instances.
+- Fix, removed Flask-SQlAlchemy version constraint.
+- Fix, TimeChartView resolved error with null dates. 
+- Fix, registering related_views with instances will raise proper error.
+- Fix, filter not supported with report a warning not an error.
+- Fix, ImageColumn and FileColumn was being included has a possible filter.
+
+Improvements and Bug fixes on 0.5.7
+-----------------------------------
+
+- New, package using python's logging module for correct and flexible logging of info and errors.
+
+Improvements and Bug fixes on 0.5.6
+-----------------------------------
+
+- Fix, list_block, list_thumbnail, list_item, bug on set_link_filter.
+
+Improvements and Bug fixes on 0.5.5
+-----------------------------------
+
+- New, group by on time charts returns month name and year.
+- Fix, better redirect, example: after delete, previous search will be preserved.
+- New, widgets module reorg.
+- Fix, add and edit with filter was not remving filtered columns, with auto fill.
+
 Improvements and Bug fixes on 0.5.4
 -----------------------------------
 

@@ -57,6 +57,39 @@
             
   <div class="section" id="versions">
 <h1>Versions<a class="headerlink" href="#versions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="improvements-and-bug-fixes-on-0-6-1">
+<h2>Improvements and Bug fixes on 0.6.1<a class="headerlink" href="#improvements-and-bug-fixes-on-0-6-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>New, compact view with add and edit on the same page has lists. Use of CompactCRUDMixin Mixin.</li>
+<li>Break, GeneralView (BaseCRUDView) related_views attr, must be filled with classes intead of instances.</li>
+<li>Fix, removed Flask-SQlAlchemy version constraint.</li>
+<li>Fix, TimeChartView resolved error with null dates.</li>
+<li>Fix, registering related_views with instances will raise proper error.</li>
+<li>Fix, filter not supported with report a warning not an error.</li>
+<li>Fix, ImageColumn and FileColumn was being included has a possible filter.</li>
+</ul>
+</div>
+<div class="section" id="improvements-and-bug-fixes-on-0-5-7">
+<h2>Improvements and Bug fixes on 0.5.7<a class="headerlink" href="#improvements-and-bug-fixes-on-0-5-7" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>New, package using python&#8217;s logging module for correct and flexible logging of info and errors.</li>
+</ul>
+</div>
+<div class="section" id="improvements-and-bug-fixes-on-0-5-6">
+<h2>Improvements and Bug fixes on 0.5.6<a class="headerlink" href="#improvements-and-bug-fixes-on-0-5-6" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Fix, list_block, list_thumbnail, list_item, bug on set_link_filter.</li>
+</ul>
+</div>
+<div class="section" id="improvements-and-bug-fixes-on-0-5-5">
+<h2>Improvements and Bug fixes on 0.5.5<a class="headerlink" href="#improvements-and-bug-fixes-on-0-5-5" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>New, group by on time charts returns month name and year.</li>
+<li>Fix, better redirect, example: after delete, previous search will be preserved.</li>
+<li>New, widgets module reorg.</li>
+<li>Fix, add and edit with filter was not remving filtered columns, with auto fill.</li>
+</ul>
+</div>
 <div class="section" id="improvements-and-bug-fixes-on-0-5-4">
 <h2>Improvements and Bug fixes on 0.5.4<a class="headerlink" href="#improvements-and-bug-fixes-on-0-5-4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -243,6 +276,10 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Versions</a><ul>
+<li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-6-1">Improvements and Bug fixes on 0.6.1</a></li>
+<li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-5-7">Improvements and Bug fixes on 0.5.7</a></li>
+<li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-5-6">Improvements and Bug fixes on 0.5.6</a></li>
+<li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-5-5">Improvements and Bug fixes on 0.5.5</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-5-4">Improvements and Bug fixes on 0.5.4</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-5-3">Improvements and Bug fixes on 0.5.3</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-5-2">Improvements and Bug fixes on 0.5.2</a></li>
