@@ -92,7 +92,7 @@ By default menu is constructed based on your classes and in a reversed navbar. L
 		baseapp.add_view(MyGeneralView3, "My View 3", category="My Views")
 		
 
-Changing Widgets amd Templates
+Changing Widgets and Templates
 ------------------------------
 
 F.A.B. has a collection of widgets to change your views presentation, you can create your own and override, or (even better) create them and contribute to the project on git.
