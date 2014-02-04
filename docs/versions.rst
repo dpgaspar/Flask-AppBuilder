@@ -7,6 +7,9 @@ Improvements and Bug fixes on 0.6.0
 - New, compact view with add and edit on the same page has lists. Use of CompactCRUDMixin Mixin.
 - Break, GeneralView (BaseCRUDView) related_views attr, must be filled with classes intead of instances.
 - Fix, removed Flask-SQlAlchemy version constraint.
+- Fix, TimeChartView resolved error with null dates. 
+- Fix, registering related_views with instances will raise proper error.
+- Fix, filter not supported with report a warning not an error.
 
 Improvements and Bug fixes on 0.5.7
 -----------------------------------

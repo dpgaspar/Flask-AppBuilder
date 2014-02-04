@@ -1,3 +1,4 @@
+import calendar
 import logging
 from itertools import groupby
 
@@ -17,7 +18,7 @@ def aggregate_avg(items, col):
     return (self.aggregate_sum(items,col) / self.aggregate_count(items, col))
 
 
-class GroupBy(object):
+class BaseGroupBy(object):
     column_name = ''
     name = ''
     aggregate_func = None
@@ -51,7 +52,19 @@ class GroupBy(object):
         return self.name
 
 
-class GroupByDateYear(GroupBy):
+class GroupByCol(BaseGroupBy):
+    def apply(self, data):
+        retlst = []
+        for ( grouped, items ) in groupby( data, self.group_operation):
+            retlst.append([grouped, self.aggregate_func(items, self.aggregate_col)])
+        log.debug(str(retlst))
+        return retlst
+
+    def group_operation(self, item):
+        return getattr(item, self.column_name)
+    
+
+class GroupByDateYear(BaseGroupBy):
 
     def apply(self, data):
         retlst = []
@@ -60,16 +73,19 @@ class GroupByDateYear(GroupBy):
         return retlst
 
     def group_operation(self, item):
-    	return getattr(item, self.column_name).year
+        value = getattr(item, self.column_name) 
+    	if value: return value.year
     
-class GroupByDateMonth(GroupBy):
+class GroupByDateMonth(BaseGroupBy):
     def apply(self, data):
         retlst = []
         for ( grouped, items ) in groupby( data, self.group_operation):
-            retlst.append([calendar.month_name[grouped[0]] + ' ' + str(grouped[1]), self.aggregate_func(items, self.aggregate_col)])
+            if grouped:
+                retlst.append([calendar.month_name[grouped[0]] + ' ' + str(grouped[1]), self.aggregate_func(items, self.aggregate_col)])
         return retlst
 
     def group_operation(self, item):
-        return (getattr(item ,self.column_name).month,getattr(item,self.column_name).year)
+        value = getattr(item, self.column_name) 
+        if value: return (value.month,value.year)
     
 

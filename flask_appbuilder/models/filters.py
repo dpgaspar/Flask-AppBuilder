@@ -177,7 +177,7 @@ class Filters(object):
                     FilterSmaller(col, datamodel),
                     FilterNotEqual(col, datamodel)]
             else:
-                log.error('Filter type not supported for column: %s' % (col))
+                log.warning('Filter type not supported for column: %s' % (col))
                 return None
 
     def clear_filters(self):

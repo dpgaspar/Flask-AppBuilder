@@ -12,7 +12,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import MetaData
 from sqlalchemy import func
 
-from group import GroupByDateYear
+from group import GroupByDateYear, GroupByDateMonth, GroupByCol
 
 from mixins import FileColumn, ImageColumn
 from ..filemanager import FileManager, ImageManager
@@ -141,7 +141,6 @@ class SQLAModel(DataModel):
         
         return count, query.all()
 
-
     def query_simple_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
         if self.is_relation_col(group_by):
             rel_model, rel_direction = self._get_related_model(group_by)
@@ -160,10 +159,8 @@ class SQLAModel(DataModel):
         query = self.session.query(self.obj)
         query = self._get_base_query(query = query, filters = filters, order_column = group_by, order_direction = 'asc')
         query_result = query.all()
-        retlst = []
-        for ( grouped, items ) in groupby( query_result, lambda x: (getattr(x,group_by).month,getattr(x,group_by).year) ):
-            retlst.append([calendar.month_name[grouped[0]] + ' ' + str(grouped[1]), len(list(items))])
-        return retlst
+        group = GroupByDateMonth(group_by,'Group by Month')
+        return group.apply(query_result)
 
     """        
     def query_year_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):

@@ -232,11 +232,13 @@ class BaseApp(object):
         self.app.register_blueprint(baseview.create_blueprint(self,  endpoint = endpoint, static_folder = static_folder))
 
     def _process_ref_related_views(self):
-        for view in self.baseviews:
-            if hasattr(view, 'related_views'):
-                for rel_class in view.related_views:
-                    for v in self.baseviews:
-                        if isinstance(v, rel_class) and v not in view._related_views:
-                            view._related_views.append(v)
-
+        try:
+            for view in self.baseviews:
+                if hasattr(view, 'related_views'):
+                    for rel_class in view.related_views:
+                        for v in self.baseviews:
+                            if isinstance(v, rel_class) and v not in view._related_views:
+                                view._related_views.append(v)
+        except:
+            raise Exception('Use related_views with classes, not instances')
         

@@ -49,7 +49,7 @@ class PersonGeneralView(GeneralView):
 
 class GroupGeneralView(GeneralView):
     datamodel = SQLAModel(Group, db.session)
-    related_views = [PersonGeneralView()]    
+    related_views = [PersonGeneralView]    
 
     label_columns = { 'phone1':'Phone (1)','phone2':'Phone (2)','taxid':'Tax ID'}
     list_columns = ['name','notes']
@@ -64,6 +64,6 @@ class PersonChartView(ChartView):
     
 
 baseapp = BaseApp(app, db)
-baseapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large",category = "Contacts")
-baseapp.add_view(PersonGeneralView(), "List Contacts",icon = "earphone",category = "Contacts")
-baseapp.add_view(PersonChartView(), "Contacts Chart","/persons/chart","earphone","Contacts")
+baseapp.add_view(GroupGeneralView(), "List Groups",icon = "fa-folder-open-o",category = "Contacts")
+baseapp.add_view(PersonGeneralView(), "List Contacts",icon = "fa-envelope",category = "Contacts")
+baseapp.add_view(PersonChartView(), "Contacts Chart","/persons/chart","fa-dashboard","Contacts")
