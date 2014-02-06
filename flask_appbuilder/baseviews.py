@@ -679,7 +679,7 @@ class BaseCRUDView(BaseModelView):
                 HELPER FUNCTIONS
     ------------------------------------------------
     """
-    def _fill_item_exclude_cols(exclude_cols, item):
+    def _fill_item_exclude_cols(self, exclude_cols, item):
         """
             fill the model item with the suppressed cols, generated from exclude_cols 
         """

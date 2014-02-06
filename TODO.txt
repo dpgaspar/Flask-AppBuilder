@@ -12,5 +12,5 @@
  - Search with boolean fields.
  - Improve FileColumn support. Remove UUID from file name to user.
  - Improve ImageColumn support, update, remove, etc.
- - Add form related dropdown list with configurable query
-  
+ - Form related dropdown list with configurable query
+

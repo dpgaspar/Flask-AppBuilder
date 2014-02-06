@@ -3,6 +3,7 @@ import uuid
 import logging
 import os.path as op
 
+from flask.globals import _request_ctx_stack
 from wtforms import ValidationError
 from werkzeug import secure_filename
 from werkzeug.datastructures import FileStorage
@@ -10,14 +11,6 @@ from werkzeug.datastructures import FileStorage
 
 log = logging.getLogger(__name__)
 
-try:
-    from config import UPLOAD_FOLDER, IMG_UPLOAD_FOLDER, IMG_UPLOAD_URL
-except  ImportError:
-    log.warning("Configuration keys for UPLOAD not found. Using default")
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    UPLOAD_FOLDER = basedir + '/app/static/uploads/' 
-    IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
-    IMG_UPLOAD_URL = '/static/uploads/'
 
 try:
     from PIL import Image, ImageOps
@@ -28,12 +21,20 @@ except ImportError:
 
 class FileManager(object):
     
-    def __init__(self, base_path=UPLOAD_FOLDER,
-                    relative_path="",
+    def __init__(self, base_path=None,
+                    relative_path='',
                     namegen = None,
                     allowed_extensions=None,
                     permission=0o666, **kwargs):
         
+
+        ctx = _request_ctx_stack.top
+                
+        if 'UPLOAD_FOLDER' in ctx.app.config and not base_path:
+            base_path = ctx.app.config['UPLOAD_FOLDER']
+        if not base_path:
+            raise Exception('Config key UPLOAD_FOLDER is mandatory')
+
         self.base_path = base_path
         self.relative_path = relative_path
         self.namegen = namegen or uuid_namegen
@@ -41,13 +42,13 @@ class FileManager(object):
         self.permission = permission
         self._should_delete = False
         
-    
+
     def is_file_allowed(self, filename):
         if not self.allowed_extensions:
             return True
         return ('.' in filename and
                 filename.rsplit('.', 1)[1].lower() in self.allowed_extensions)
-    
+
     def generate_name(self, obj, file_data):
         return self.namegen(obj, file_data)
 
@@ -74,10 +75,10 @@ class ImageManager(FileManager):
     
     keep_image_formats = ('PNG',)
     
-    def __init__(self,base_path=IMG_UPLOAD_FOLDER,
-                    max_size=(300,200,True),
+    def __init__(self,base_path=None,
+                    relative_path=None,
+                    max_size = None,
                     namegen = None,
-                    relative_path=IMG_UPLOAD_URL,
                     allowed_extensions=None,
                     thumbgen=None, thumbnail_size=None,
                     permission=0o666,
@@ -87,7 +88,22 @@ class ImageManager(FileManager):
         if Image is None:
             raise Exception('PIL library was not found')
 
-        self.max_size = max_size
+        ctx = _request_ctx_stack.top
+        if 'IMG_SIZE' in ctx.app.config and not max_size:
+            max_size = ctx.app.config['IMG_SIZE']
+        self.max_size = max_size or (300,200, True)
+
+        if 'IMG_UPLOAD_URL' in ctx.app.config and not relative_path:
+            relative_path = ctx.app.config['IMG_UPLOAD_URL']
+        if not relative_path:
+            raise Exception('Config key IMG_UPLOAD_URL is mandatory') 
+
+        if 'IMG_UPLOAD_FOLDER' in ctx.app.config and not base_path:
+            base_path = ctx.app.config['IMG_UPLOAD_FOLDER']
+        if not base_path:
+            raise Exception('Config key IMG_UPLOAD_FOLDER is mandatory') 
+
+        log.debug('IM %s %s' % (relative_path, base_path))
         self.thumbnail_fn = thumbgen or thumbgen_filename
         self.thumbnail_size = thumbnail_size
         self.image = None
@@ -101,6 +117,7 @@ class ImageManager(FileManager):
                                         allowed_extensions=allowed_extensions,
                                         permission=permission,
                                         **kwargs)
+
 
     def get_url(self, filename):
         if isinstance(filename, FileStorage):

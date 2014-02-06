@@ -5,6 +5,9 @@ Improvements and Bug fixes on 0.6.3
 -----------------------------------
 
 - Fix, Add and edit form will not surpress fields if filters come from user search. will only surpress on related views behaviour.
+- New, added pagination to list thumbnails.
+- Fix, no need to have a config.py to configure key for image upload and file upload.
+- New, new config key for resizing images, IMG_SIZE.
 
 Improvements and Bug fixes on 0.6.2
 -----------------------------------

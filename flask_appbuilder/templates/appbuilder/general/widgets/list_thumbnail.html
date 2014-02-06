@@ -4,13 +4,19 @@
         {% set can_show = "can_show" | is_item_visible(generalview_name) %}
         {% set can_edit = "can_edit" | is_item_visible(generalview_name) %}
         {% set can_delete = "can_delete" | is_item_visible(generalview_name) %}
+        
         <div class="well well-sm">
-                {% if can_add %}
+        {{ lib.render_pagination(page, page_size, count, generalview_name) }}
+        {{ lib.render_set_page_size(page, page_size, count, generalview_name) }}
+        {% if can_add %}
                         {% set path = url_for(generalview_name + '.add',next=request.path) %}
                         {% set path = path | set_link_filters(filters) %}
-                        {{ lib.lnk_add(path) }}
+                        &nbsp;{{ lib.lnk_add(path) }}
                 {% endif %}
                 {{ lib.lnk_back() }}
+        <div class="pull-right">
+                        <strong>{{ _('Record Count') }}:</strong> {{ count }}
+                </div>
         </div>
         
         {% if value_columns %}
