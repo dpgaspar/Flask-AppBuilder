@@ -235,7 +235,6 @@ class BaseModelView(BaseView):
         """
         self._base_model_init_vars()
         self._base_model_init_forms()
-        self._filters = Filters(self.search_columns, self.datamodel)
         super(BaseModelView, self).__init__(**kwargs)
         
 
@@ -248,6 +247,8 @@ class BaseModelView(BaseView):
         for col in list_cols:
             if not self.label_columns.get(col):
                 self.label_columns[col] = self._prettify_column(col)
+        self._filters = Filters(self.search_columns, self.datamodel)
+
         
     def _base_model_init_forms(self):
         conv = GeneralModelConverter(self.datamodel)
@@ -476,7 +477,7 @@ class BaseCRUDView(BaseModelView):
                                 page=None, page_size=None):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
-        filters = Filters().add_filter(fk, FilterRelationOneToManyEqual, 
+        filters = Filters().add_filter_related_view(fk, FilterRelationOneToManyEqual, 
                 related_view.datamodel, self.datamodel.get_pk_value(item))
         return related_view._get_list_widget(filters = filters,
                     order_column = order_column,
@@ -503,7 +504,8 @@ class BaseCRUDView(BaseModelView):
                         order_direction = '',
                         page = None,
                         page_size = None,
-                        widgets = None, **args):
+                        widgets = None, 
+                        **args):
 
         """ get joined base filter and current active filter for query """
         widgets = widgets or {}
@@ -619,10 +621,7 @@ class BaseCRUDView(BaseModelView):
         if form.validate_on_submit():
             item = self.datamodel.obj()
             form.populate_obj(item)
-            for filter_key in exclude_cols:
-                rel_obj = self.datamodel.get_related_obj(filter_key, self._filters.get_filter_value(filter_key))
-                setattr(item, filter_key, rel_obj)
-
+            self._fill_item_exclude_cols(exclude_cols, item)
             self.pre_add(item)
             self.datamodel.add(item)
             self.post_add(item)
@@ -639,13 +638,13 @@ class BaseCRUDView(BaseModelView):
         pages = get_page_args()
         page_sizes = get_page_size_args()
         orders = get_order_args()
+        get_filter_args(self._filters)
+        exclude_cols = self._filters.get_relation_cols()
         
         item = self.datamodel.get(pk)
         # convert pk to correct type, if pk is non string type.
         pk = self.datamodel.get_pk_value(item)
-        get_filter_args(self._filters)
-        exclude_cols = self._filters.get_relation_cols()
-
+        
         if request.method == 'POST':
             form = self.edit_form(request.form)
             form = form.refresh(obj=item)
@@ -654,26 +653,18 @@ class BaseCRUDView(BaseModelView):
             if form.validate():
                 form.populate_obj(item)
                 # fill the form with the suppressed cols, generated from exclude_cols
-                for filter_key in exclude_cols:
-                    rel_obj = self.datamodel.get_related_obj(filter_key, self._filters.get_filter_value(filter_key))
-                    setattr(item, filter_key, rel_obj)
-                
+                self._fill_item_exclude_cols(exclude_cols, item)
                 self.pre_update(item)
                 self.datamodel.edit(item)
                 self.post_update(item)
                 return None
-            else:
-                widgets = self._get_edit_widget(form = form, exclude_cols = exclude_cols)
-                widgets = self._get_related_list_widgets(item, filters = {}, 
-                        orders = orders, pages = pages, page_sizes=page_sizes, widgets = widgets)
-                return widgets
         else:
             form = self.edit_form(obj=item)
             form = form.refresh(obj=item)
-            widgets = self._get_edit_widget(form = form, exclude_cols = exclude_cols)
-            widgets = self._get_related_list_widgets(item, filters = {}, 
+        widgets = self._get_edit_widget(form = form, exclude_cols = exclude_cols)
+        widgets = self._get_related_list_widgets(item, filters = {}, 
                         orders = orders, pages = pages, page_sizes=page_sizes, widgets = widgets)                
-            return widgets
+        return widgets
 
 
     def _delete(self, pk):
@@ -682,6 +673,21 @@ class BaseCRUDView(BaseModelView):
         self.datamodel.delete(item)
         self.post_delete(item)        
         
+
+    """
+    ------------------------------------------------
+                HELPER FUNCTIONS
+    ------------------------------------------------
+    """
+    def _fill_item_exclude_cols(exclude_cols, item):
+        """
+            fill the model item with the suppressed cols, generated from exclude_cols 
+        """
+        for filter_key in exclude_cols:
+            filter_value = self._filters.get_filter_value(filter_key)
+            rel_obj = self.datamodel.get_related_obj(filter_key, filter_value)
+            setattr(item, filter_key, rel_obj)
+
 
     def debug(self):
 

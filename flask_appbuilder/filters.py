@@ -78,7 +78,8 @@ class TemplateFilters(object):
     def set_link_filters_filter(self, path, filters):
         lnkstr = path
         for flt, value in filters.get_filters_values():
-            lnkstr = lnkstr + '&_flt_0_' + flt.column_name + '=' + str(value)
+            if flt.is_related_view:
+                lnkstr = lnkstr + '&_flt_0_' + flt.column_name + '=' + str(value)
         return lnkstr
 
     @app_template_filter('get_link_order')

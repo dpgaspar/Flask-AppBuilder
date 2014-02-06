@@ -9,8 +9,13 @@ class BaseFilter(object):
     datamodel = None
     model = None
     name = ''
+    is_related_view = False
+    """ 
+        Sets this filter to a special kind of filter for related views.
+        If true this filter was not set by the user
+    """
 
-    def __init__(self, column_name, datamodel):
+    def __init__(self, column_name, datamodel, is_related_view = False):
         """
             Constructor.
 
@@ -22,6 +27,7 @@ class BaseFilter(object):
         self.column_name = column_name
         self.datamodel = datamodel
         self.model = datamodel.obj
+        self.is_related_view = is_related_view
     
     def apply(self, query, value):
         """
@@ -191,6 +197,10 @@ class Filters(object):
         self._add_filter(filter_class(column_name, datamodel), value)
         return self
 
+    def add_filter_related_view(self, column_name, filter_class, datamodel, value):
+        self._add_filter(filter_class(column_name, datamodel, True), value)
+        return self
+
     def add_filter_list(self, datamodel, active_filter_list = None):
         for item in active_filter_list:
             column_name, filter_class, value = item
@@ -208,6 +218,9 @@ class Filters(object):
         self.values.append(value)
     
     def get_relation_cols(self):
+        """
+            Returns the filter active FilterRelation cols
+        """
         retlst = []
         for flt, value in zip(self.filters, self.values):
             if isinstance(flt, FilterRelation) and value:

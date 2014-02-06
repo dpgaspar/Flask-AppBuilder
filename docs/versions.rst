@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.6.3
+-----------------------------------
+
+- Fix, Add and edit form will not surpress fields if filters come from user search. will only surpress on related views behaviour.
+
 Improvements and Bug fixes on 0.6.2
 -----------------------------------
 
