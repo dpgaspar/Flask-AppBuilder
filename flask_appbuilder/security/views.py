@@ -1,4 +1,4 @@
-from ..forms import BS3PasswordFieldWidget
+from ..fieldwidgets import BS3PasswordFieldWidget
 from flask import render_template, flash, redirect, session, url_for, request, g, \
     current_app
 from openid.consumer import discover

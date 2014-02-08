@@ -2,7 +2,8 @@ from flask.ext.wtf import Form, TextField, BooleanField, TextAreaField, Password
 from flask.ext.babelpkg import lazy_gettext
 from wtforms.ext.sqlalchemy.orm import model_form
 from flask.ext.wtf import Required, Length, validators, EqualTo
-from flask.ext.appbuilder.forms import DynamicForm, BS3PasswordFieldWidget
+from flask.ext.appbuilder.fieldwidgets import BS3PasswordFieldWidget
+from flask.ext.appbuilder.forms import DynamicForm
 
 class LoginForm_oid(DynamicForm):
     openid = TextField(lazy_gettext('openid'), validators = [Required()])

@@ -1,16 +1,59 @@
 import logging
-from wtforms.widgets import HTMLString, html_params
 
-from flask.ext.wtf import (Form, fields, widgets, TextField, BooleanField, 
+from flask.ext.wtf import (Form, BooleanField, TextField,
                            TextAreaField,IntegerField, DateField,
                            SelectFieldBase, SelectField, QuerySelectField, 
                            QuerySelectMultipleField, HiddenField)
 
 from flask.ext.wtf import Required, Length, validators, EqualTo
-from upload import BS3FileUploadFieldWidget, BS3ImageUploadFieldWidget, FileUploadField,ImageUploadField
+from upload import (BS3FileUploadFieldWidget, 
+                    BS3ImageUploadFieldWidget, 
+                    FileUploadField,
+                    ImageUploadField)
 from validators import Unique
+from fieldwidgets import (BS3TextAreaFieldWidget, 
+                        BS3TextFieldWidget,
+                        DatePickerWidget,
+                        DateTimePickerWidget, 
+                        Select2Widget,
+                        Select2ManyWidget)
 
 log = logging.getLogger(__name__)
+
+
+class FieldConverter(object):
+
+    conversion_table = (('is_image', ImageUploadField, BS3ImageUploadFieldWidget),
+                        ('is_file', FileUploadField, BS3FileUploadFieldWidget),
+                        ('is_text', TextAreaField, BS3TextAreaFieldWidget),
+                        ('is_string', TextField, BS3TextFieldWidget),
+                        ('is_integer', IntegerField, BS3TextFieldWidget),
+                        ('is_boolean', BooleanField, None),
+                        ('is_date', DateField, DatePickerWidget),
+                        ('is_datetime', DateField, DateTimePickerWidget),
+                        )
+
+
+    def __init__(self, datamodel, colname, label, description, validators):
+        self.datamodel = datamodel
+        self.colname = colname
+        self.label = label
+        self.description = description
+        self.validators = validators
+
+    def convert(self):
+        for conversion in self.conversion_table:
+            if getattr(self.datamodel, conversion[0])(self.colname):
+                if conversion[2]:
+                    return conversion[1](self.label,
+                                    description=self.description,
+                                    validators=self.validators,
+                                    widget=conversion[2]())
+                else:
+                    return conversion[1](self.label,
+                                    description=self.description,
+                                    validators=self.validators)
+        log.error('Column %s Type not supported' % (self.colname))        
 
 class GeneralModelConverter(object):
 
@@ -60,47 +103,9 @@ class GeneralModelConverter(object):
             lst_validators.append(validators.Optional())
         if col.unique:
             lst_validators.append(Unique(self.datamodel, col))
-        if self.datamodel.is_image(col.name):
-            form_props[col.name] = ImageUploadField(label,
-                                    description=description,
-                                    validators=lst_validators,
-                                    widget=BS3ImageUploadFieldWidget())
-        elif self.datamodel.is_file(col.name):
-            form_props[col.name] = FileUploadField(label,
-                                    description=description,
-                                    validators=lst_validators,
-                                    widget=BS3FileUploadFieldWidget())
-        elif self.datamodel.is_text(col.name):
-            form_props[col.name] = TextAreaField(label,
-                                    description=description,
-                                    validators=lst_validators,
-                                    widget=BS3TextAreaFieldWidget())
-        elif self.datamodel.is_string(col.name):
-            form_props[col.name] = TextField(label,
-                                    description=description,
-                                    validators=lst_validators,
-                                    widget=BS3TextFieldWidget())
-        elif self.datamodel.is_integer(col.name):
-            form_props[col.name] = IntegerField(label,
-                                    description=description,
-                                    validators=lst_validators,
-                                    widget=BS3TextFieldWidget())
-        elif self.datamodel.is_boolean(col.name):
-            form_props[col.name] = BooleanField(label,
-                                    description=description,
-                                    validators=lst_validators)
-        elif self.datamodel.is_date(col.name):
-            form_props[col.name] = DateField(label,
-                                    description=description,
-                                    validators=lst_validators,
-                                    widget=DatePickerWidget())
-        elif self.datamodel.is_datetime(col.name):
-            form_props[col.name] = DateField(label,
-                                    description=description,
-                                    validators=lst_validators,
-                                    widget=DateTimePickerWidget())
-        else:
-            log.error('Column %s Type not supported' % (col.name))
+
+        fc = FieldConverter(self.datamodel, col.name, label, description, lst_validators)
+        form_props[col.name] = fc.convert()
         return form_props
 
     def _convert_prop(self, prop, label, description, lst_validators, form_props):
@@ -141,101 +146,3 @@ class DynamicForm(Form):
         for item in self():
             print item.name
 
-#------------------------------------------
-#         WIDGETS
-#------------------------------------------
-class DatePickerWidget(object):
-    """
-    Date Time picker from Eonasdan GitHub
-
-    """
-    data_template = ('<div class="input-group date appbuilder_date" id="datepicker">'
-                    '<span class="input-group-addon"><i class="fa fa-calendar"></i>'
-                    '</span>'
-                    '<input class="form-control" data-format="yyyy-MM-dd" %(text)s/>'
-                    '</div>'
-                    )
-
-    def __call__(self, field, **kwargs):
-        kwargs.setdefault('id', field.id)
-        kwargs.setdefault('name', field.name)
-        if not field.data:
-            field.data = ""
-        template = self.data_template
-
-        return HTMLString(template % {'text': html_params(type='text',
-                                      value=field.data,
-                                      **kwargs)
-                                      })
-
-
-class DateTimePickerWidget(object):
-    """
-    Date Time picker from Eonasdan GitHub
-
-    """
-    data_template = ('<div class="input-group date appbuilder_datetime" id="datetimepicker">'
-                    '<span class="input-group-addon"><i class="fa fa-calendar"></i>'
-                    '</span>'
-                    '<input class="form-control" data-format="yyyy-MM-dd hh:mm:ss" %(text)s/>'
-        '</div>'
-        )
-
-    def __call__(self, field, **kwargs):
-        kwargs.setdefault('id', field.id)
-        kwargs.setdefault('name', field.name)
-        if not field.data:
-            field.data = ""
-        template = self.data_template
-
-        return HTMLString(template % {'text': html_params(type='text',
-                                        value=field.data,
-                                        **kwargs)
-                                })
-
-
-
-
-class BS3TextFieldWidget(widgets.TextInput):
-    def __call__(self, field, **kwargs):
-        kwargs['class'] = u'form-control'
-        if field.label:
-            kwargs['placeholder'] = field.label.text
-        if 'name_' in kwargs:
-            field.name = kwargs['name_']
-        return super(BS3TextFieldWidget, self).__call__(field, **kwargs)
-
-class BS3TextAreaFieldWidget(widgets.TextArea):
-    def __call__(self, field, **kwargs):
-        kwargs['class'] = u'form-control'
-        kwargs['rows'] = 3
-        if field.label:
-            kwargs['placeholder'] = field.label.text
-        return super(BS3TextAreaFieldWidget, self).__call__(field, **kwargs)
-
-class BS3PasswordFieldWidget(widgets.PasswordInput):
-    def __call__(self, field, **kwargs):
-        kwargs['class'] = u'form-control'
-        if field.label:
-            kwargs['placeholder'] = field.label.text
-        return super(BS3PasswordFieldWidget, self).__call__(field, **kwargs)
-
-
-class Select2Widget(widgets.Select):
-    def __call__(self, field, **kwargs):
-        kwargs['class'] = u'my_select2'
-        kwargs['style'] = u'width:250px'
-        kwargs['data-placeholder'] = u'Select Value'
-        if 'name_' in kwargs:
-            field.name = kwargs['name_']
-        return super(Select2Widget, self).__call__(field, **kwargs)
-
-class Select2ManyWidget(widgets.Select):
-    def __call__(self, field, **kwargs):
-        kwargs['class'] = u'my_select2'
-        kwargs['style'] = u'width:250px'
-        kwargs['data-placeholder'] = u'Select Value'
-        kwargs['multiple'] = u'true'
-        if 'name_' in kwargs:
-            field.name = kwargs['name_']
-        return super(Select2ManyWidget, self).__call__(field, **kwargs)
