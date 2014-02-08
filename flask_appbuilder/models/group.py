@@ -87,5 +87,14 @@ class GroupByDateMonth(BaseGroupBy):
     def group_operation(self, item):
         value = getattr(item, self.column_name) 
         if value: return (value.month,value.year)
-    
+
+
+class GroupBys(object):
+    groups = None
+    """
+        {'group_col': 'COLNAME', 
+        'group_class': GROUP_CLASS, 
+        'aggregate_func': AGR_FUNC, 
+        'aggregate_col': 'COLNAME'}
+    """
 

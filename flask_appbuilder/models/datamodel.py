@@ -156,6 +156,7 @@ class SQLAModel(DataModel):
             query = query.group_by(group_by)
             return query.all()
     """
+
     def query_simple_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
         query = self.session.query(self.obj)
         query = self._get_base_query(query = query, filters = filters)
