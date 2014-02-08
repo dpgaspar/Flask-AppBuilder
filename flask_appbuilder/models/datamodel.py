@@ -162,17 +162,6 @@ class SQLAModel(DataModel):
         group = GroupByDateMonth(group_by,'Group by Month')
         return group.apply(query_result)
 
-    """        
-    def query_year_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
-        query = self.session.query(self.obj)
-        query = self._get_base_query(query = query, filters = filters, order_column = group_by, order_direction = 'asc')
-        query_result = query.all()
-        log.debug("query_year_group %s" % (str(query_result)))
-        retlst = []
-        for ( grouped, items ) in groupby( query_result, lambda x: (getattr(x,group_by).year)):
-            retlst.append([grouped, len(list(items))])
-        return retlst
-    """
 
     def query_year_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
         query = self.session.query(self.obj)
@@ -353,10 +342,6 @@ class SQLAModel(DataModel):
                 if model == self.get_model_relation(i):
                     return self.get_property_col(i)
 
-    """
-    def get_relation_filters(self, filters = {}):
-        return [filter_key for filter_key in filters if self.is_relation_col(filter_key)]
-    """
 
     """
     ----------- GET METHODS -------------

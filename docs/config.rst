@@ -33,4 +33,3 @@ Use config.py to configure the following parameters. By default it will use SQLL
  	app.config.from_object('config')
  
  Take a look at the skeleton `config.py <https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py>`_
-

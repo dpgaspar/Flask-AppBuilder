@@ -54,12 +54,11 @@ class BaseGroupBy(object):
 
 class GroupByCol(BaseGroupBy):
     def apply(self, data):
-        retlst = []
-        for ( grouped, items ) in groupby( data, self.group_operation):
-            retlst.append([grouped, self.aggregate_func(items, self.aggregate_col)])
-        log.debug(str(retlst))
-        return retlst
-
+        return [
+                [grouped, self.aggregate_func(items, self.aggregate_col)]
+                for ( grouped, items ) in groupby( data, self.group_operation)
+                ]
+        
     def group_operation(self, item):
         return getattr(item, self.column_name)
     
@@ -67,22 +66,23 @@ class GroupByCol(BaseGroupBy):
 class GroupByDateYear(BaseGroupBy):
 
     def apply(self, data):
-        retlst = []
-        for ( grouped, items ) in groupby( data, self.group_operation):
-            retlst.append([grouped, self.aggregate_func(items, self.aggregate_col)])
-        return retlst
-
+        return [
+                [grouped, self.aggregate_func(items, self.aggregate_col)]
+                for ( grouped, items ) in groupby( data, self.group_operation)
+                ]
+        
     def group_operation(self, item):
         value = getattr(item, self.column_name) 
     	if value: return value.year
     
 class GroupByDateMonth(BaseGroupBy):
     def apply(self, data):
-        retlst = []
-        for ( grouped, items ) in groupby( data, self.group_operation):
-            if grouped:
-                retlst.append([calendar.month_name[grouped[0]] + ' ' + str(grouped[1]), self.aggregate_func(items, self.aggregate_col)])
-        return retlst
+        return [
+                [calendar.month_name[grouped[0]] + ' ' 
+                + str(grouped[1]), self.aggregate_func(items, self.aggregate_col)]
+                for ( grouped, items ) in groupby( data, self.group_operation)
+                if grouped
+                ]
 
     def group_operation(self, item):
         value = getattr(item, self.column_name) 
