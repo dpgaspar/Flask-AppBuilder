@@ -141,6 +141,7 @@ class SQLAModel(DataModel):
         
         return count, query.all()
 
+    """
     def query_simple_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
         if self.is_relation_col(group_by):
             rel_model, rel_direction = self._get_related_model(group_by)
@@ -154,19 +155,30 @@ class SQLAModel(DataModel):
             query = self._get_base_query(query = query, filters = filters, order_column = order_column, order_direction = order_direction)
             query = query.group_by(group_by)
             return query.all()
+    """
+    def query_simple_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
+        query = self.session.query(self.obj)
+        query = self._get_base_query(query = query, filters = filters)
+        query_result = query.all()
+        query_result = sorted(query_result, key=lambda item: getattr(item, group_by))
+        group = GroupByCol(group_by,'Group by')
+        return group.apply(query_result)
+    
 
     def query_month_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
         query = self.session.query(self.obj)
-        query = self._get_base_query(query = query, filters = filters, order_column = group_by, order_direction = 'asc')
+        query = self._get_base_query(query = query, filters = filters)
         query_result = query.all()
+        query_result = sorted(query_result, key=lambda item: getattr(item, group_by))
         group = GroupByDateMonth(group_by,'Group by Month')
         return group.apply(query_result)
 
 
     def query_year_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
         query = self.session.query(self.obj)
-        query = self._get_base_query(query = query, filters = filters, order_column = group_by, order_direction = 'asc')
+        query = self._get_base_query(query = query, filters = filters)
         query_result = query.all()
+        query_result = sorted(query_result, key=lambda item: getattr(item, group_by))
         group_year = GroupByDateYear(group_by,'Group by Year')
         return group_year.apply(query_result)
 
