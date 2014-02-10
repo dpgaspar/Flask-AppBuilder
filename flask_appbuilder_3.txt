@@ -1,0 +1,469 @@
+--- flask_appbuilder/baseapp.py	(original)
++++ flask_appbuilder/baseapp.py	(refactored)
+@@ -1,13 +1,13 @@
+ import logging
+ 
+ from .views import IndexView
+-from filters import TemplateFilters
++from .filters import TemplateFilters
+ from flask import Blueprint
+ from flask.ext.babelpkg import gettext as _gettext, lazy_gettext
+ from flask.ext.appbuilder.babel.manager import BabelManager
+ from flask.ext.appbuilder import translations
+ from .security.manager import SecurityManager
+-from menu import Menu
++from .menu import Menu
+ 
+ log = logging.getLogger(__name__)
+ 
+--- flask_appbuilder/baseviews.py	(original)
++++ flask_appbuilder/baseviews.py	(refactored)
+@@ -3,11 +3,11 @@
+ from flask.globals import _app_ctx_stack, _request_ctx_stack
+ from werkzeug.urls import url_parse
+ from flask.ext.babelpkg import gettext, ngettext, lazy_gettext
+-from forms import GeneralModelConverter
++from .forms import GeneralModelConverter
+ from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget, ListCarousel
+ from .models.filters import Filters, FilterRelationOneToManyEqual
+ from .actions import ActionItem
+-from urltools import *
++from .urltools import *
+ 
+ def expose(url='/', methods=('GET',)):
+     """
+@@ -691,13 +691,13 @@
+ 
+     def debug(self):
+ 
+-        print self.__class__.__name__, "SHOW FS", self.show_fieldsets
+-        print self.__class__.__name__, "SHOW COL", self.show_columns
+-        print self.__class__.__name__, "ADD FS", self.add_fieldsets
+-        print self.__class__.__name__, "ADD COL", self.add_columns
+-        print self.__class__.__name__, "EDIT FS", self.edit_fieldsets
+-        print self.__class__.__name__, "EDIT COL", self.edit_columns
+-        print self.__class__.__name__, "LIST COL", self.list_columns
++        print(self.__class__.__name__, "SHOW FS", self.show_fieldsets)
++        print(self.__class__.__name__, "SHOW COL", self.show_columns)
++        print(self.__class__.__name__, "ADD FS", self.add_fieldsets)
++        print(self.__class__.__name__, "ADD COL", self.add_columns)
++        print(self.__class__.__name__, "EDIT FS", self.edit_fieldsets)
++        print(self.__class__.__name__, "EDIT COL", self.edit_columns)
++        print(self.__class__.__name__, "LIST COL", self.list_columns)
+ 
+     
+     def pre_update(self, item):
+--- flask_appbuilder/fieldwidgets.py	(original)
++++ flask_appbuilder/fieldwidgets.py	(refactored)
+@@ -56,7 +56,7 @@
+ 
+ class BS3TextFieldWidget(widgets.TextInput):
+     def __call__(self, field, **kwargs):
+-        kwargs['class'] = u'form-control'
++        kwargs['class'] = 'form-control'
+         if field.label:
+             kwargs['placeholder'] = field.label.text
+         if 'name_' in kwargs:
+@@ -65,7 +65,7 @@
+ 
+ class BS3TextAreaFieldWidget(widgets.TextArea):
+     def __call__(self, field, **kwargs):
+-        kwargs['class'] = u'form-control'
++        kwargs['class'] = 'form-control'
+         kwargs['rows'] = 3
+         if field.label:
+             kwargs['placeholder'] = field.label.text
+@@ -73,7 +73,7 @@
+ 
+ class BS3PasswordFieldWidget(widgets.PasswordInput):
+     def __call__(self, field, **kwargs):
+-        kwargs['class'] = u'form-control'
++        kwargs['class'] = 'form-control'
+         if field.label:
+             kwargs['placeholder'] = field.label.text
+         return super(BS3PasswordFieldWidget, self).__call__(field, **kwargs)
+@@ -81,19 +81,19 @@
+ 
+ class Select2Widget(widgets.Select):
+     def __call__(self, field, **kwargs):
+-        kwargs['class'] = u'my_select2'
+-        kwargs['style'] = u'width:250px'
+-        kwargs['data-placeholder'] = u'Select Value'
++        kwargs['class'] = 'my_select2'
++        kwargs['style'] = 'width:250px'
++        kwargs['data-placeholder'] = 'Select Value'
+         if 'name_' in kwargs:
+             field.name = kwargs['name_']
+         return super(Select2Widget, self).__call__(field, **kwargs)
+ 
+ class Select2ManyWidget(widgets.Select):
+     def __call__(self, field, **kwargs):
+-        kwargs['class'] = u'my_select2'
+-        kwargs['style'] = u'width:250px'
+-        kwargs['data-placeholder'] = u'Select Value'
+-        kwargs['multiple'] = u'true'
++        kwargs['class'] = 'my_select2'
++        kwargs['style'] = 'width:250px'
++        kwargs['data-placeholder'] = 'Select Value'
++        kwargs['multiple'] = 'true'
+         if 'name_' in kwargs:
+             field.name = kwargs['name_']
+         return super(Select2ManyWidget, self).__call__(field, **kwargs)
+--- flask_appbuilder/filters.py	(original)
++++ flask_appbuilder/filters.py	(refactored)
+@@ -39,7 +39,7 @@
+         else:
+             args['_oc_' + generalview_name] = column
+             args['_od_' + generalview_name] = 'asc'
+-        return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
++        return url_for(request.endpoint,**dict(list(new_args.items()) + list(args.to_dict().items())))
+ 
+ 
+     @app_template_filter('link_page')
+@@ -50,7 +50,7 @@
+         new_args = request.view_args.copy()
+         args = request.args.copy()
+         args['page_' + generalview_name] = page
+-        return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
++        return url_for(request.endpoint,**dict(list(new_args.items()) + list(args.to_dict().items())))
+ 
+ 
+     @app_template_filter('link_page_size')
+@@ -61,7 +61,7 @@
+         new_args = request.view_args.copy()
+         args = request.args.copy()
+         args['psize_' + generalview_name] = page_size
+-        return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
++        return url_for(request.endpoint,**dict(list(new_args.items()) + list(args.to_dict().items())))
+                 
+ 
+     @app_template_filter('get_link_next')
+--- flask_appbuilder/forms.py	(original)
++++ flask_appbuilder/forms.py	(refactored)
+@@ -6,12 +6,12 @@
+                            QuerySelectMultipleField, HiddenField)
+ 
+ from flask.ext.wtf import Required, Length, validators, EqualTo
+-from upload import (BS3FileUploadFieldWidget, 
++from .upload import (BS3FileUploadFieldWidget, 
+                     BS3ImageUploadFieldWidget, 
+                     FileUploadField,
+                     ImageUploadField)
+-from validators import Unique
+-from fieldwidgets import (BS3TextAreaFieldWidget, 
++from .validators import Unique
++from .fieldwidgets import (BS3TextAreaFieldWidget, 
+                         BS3TextFieldWidget,
+                         DatePickerWidget,
+                         DateTimePickerWidget, 
+@@ -142,7 +142,7 @@
+ 
+     @classmethod
+     def debug(self):
+-        print self.__class__.__name__
++        print(self.__class__.__name__)
+         for item in self():
+-            print item.name
++            print(item.name)
+ 
+--- flask_appbuilder/menu.py	(original)
++++ flask_appbuilder/menu.py	(refactored)
+@@ -78,7 +78,7 @@
+         
+     def debug(self):
+         for i in self.menu:
+-            print i
++            print(i)
+             for j in i.childs:
+-                print "-", j
++                print("-", j)
+ 
+--- flask_appbuilder/validators.py	(original)
++++ flask_appbuilder/validators.py	(refactored)
+@@ -28,6 +28,6 @@
+             # only test if Unique, if pk value is diferent on update.
+             if not hasattr(form,'_id') or form._id != self.datamodel.get_keys(obj)[0]:
+                 if self.message is None:
+-                    self.message = field.gettext(u'Already exists.')
++                    self.message = field.gettext('Already exists.')
+                 raise ValidationError(self.message)
+         
+--- flask_appbuilder/widgets.py	(original)
++++ flask_appbuilder/widgets.py	(refactored)
+@@ -22,7 +22,7 @@
+         jinja_env = ctx.app.jinja_env
+         
+         template = jinja_env.get_template(self.template)
+-        args = dict(self.template_args.items() + kwargs.items())
++        args = dict(list(self.template_args.items()) + list(kwargs.items()))
+         return template.render(args)
+ 
+ 
+@@ -59,9 +59,9 @@
+         search_filters = {}
+         dict_filters = self.filters.get_search_filters()
+         for col in self.template_args['include_cols']:
+-            label_columns[col] = unicode(self.template_args['form'][col].label.text)
++            label_columns[col] = str(self.template_args['form'][col].label.text)
+             form_fields[col] = self.template_args['form'][col]()
+-            search_filters[col] = [unicode(flt.name) for flt in dict_filters[col]]                
++            search_filters[col] = [str(flt.name) for flt in dict_filters[col]]                
+ 
+         kwargs['label_columns'] = label_columns
+         kwargs['form_fields'] = form_fields
+--- flask_appbuilder/babel/manager.py	(original)
++++ flask_appbuilder/babel/manager.py	(refactored)
+@@ -1,6 +1,6 @@
+ from flask.ext.babelpkg import Babel
+ from flask import session
+-from views import LocaleView
++from .views import LocaleView
+ 
+ class  BabelManager(object):
+ 
+--- flask_appbuilder/charts/views.py	(original)
++++ flask_appbuilder/charts/views.py	(refactored)
+@@ -3,7 +3,7 @@
+ 
+ from sqlalchemy.ext.serializer import loads, dumps
+ 
+-from widgets import ChartWidget
++from .widgets import ChartWidget
+ from ..widgets import SearchWidget
+ from ..security.decorators import has_access
+ from ..baseviews import BaseModelView, expose
+--- flask_appbuilder/models/datamodel.py	(original)
++++ flask_appbuilder/models/datamodel.py	(refactored)
+@@ -12,9 +12,9 @@
+ from sqlalchemy import MetaData
+ from sqlalchemy import func
+ 
+-from group import GroupByDateYear, GroupByDateMonth, GroupByCol
+-
+-from mixins import FileColumn, ImageColumn
++from .group import GroupByDateYear, GroupByDateMonth, GroupByCol
++
++from .mixins import FileColumn, ImageColumn
+ from ..filemanager import FileManager, ImageManager
+ 
+ log = logging.getLogger(__name__)
+@@ -243,15 +243,15 @@
+         try:
+             self.session.add(item)
+             self.session.commit()
+-            flash(unicode(self.add_row_message),'success')
++            flash(str(self.add_row_message),'success')
+             return True
+         except IntegrityError as e:
+-            flash(unicode(self.add_integrity_error_message),'warning')
++            flash(str(self.add_integrity_error_message),'warning')
+             log.warning("Add record integrity error")
+             self.session.rollback()
+             return False
+         except:
+-            flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
++            flash(str(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
+             log.exception("Add record error")
+             self.session.rollback()
+             return False
+@@ -260,15 +260,15 @@
+         try:
+             self.session.merge(item)
+             self.session.commit()
+-            flash(unicode(self.edit_row_message),'success')
++            flash(str(self.edit_row_message),'success')
+             return True
+         except IntegrityError as e:
+-            flash(unicode(self.edit_integrity_error_message),'warning')
++            flash(str(self.edit_integrity_error_message),'warning')
+             log.warning("Edit record integrity error")
+             self.session.rollback()
+             return False
+         except:
+-            flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
++            flash(str(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
+             log.exception("Edit record error")
+             self.session.rollback()
+             return False
+@@ -279,15 +279,15 @@
+             self._delete_files(item)
+             self.session.delete(item)
+             self.session.commit()
+-            flash(unicode(self.delete_row_message),'success')
++            flash(str(self.delete_row_message),'success')
+             return True
+         except IntegrityError as e:
+-            flash(unicode(self.delete_integrity_error_message),'warning')
++            flash(str(self.delete_integrity_error_message),'warning')
+             log.warning("Delete record integrity error")
+             self.session.rollback()
+             return False
+         except:
+-            flash(unicode(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
++            flash(str(self.general_error_message + ' '  + str(sys.exc_info()[0])),'danger')
+             log.exception("Delete record error")
+             self.session.rollback()
+             return False
+@@ -443,4 +443,4 @@
+ 
+     def printdebug(self):
+         for item in list(self.obj.__mapper__.columns):
+-            print item.name, ' ', item.type, item.primary_key, item.nullable
++            print(item.name, ' ', item.type, item.primary_key, item.nullable)
+--- flask_appbuilder/models/filters.py	(original)
++++ flask_appbuilder/models/filters.py	(refactored)
+@@ -239,7 +239,7 @@
+                 return value
+ 
+     def get_filters_values_tojson(self):
+-        return [(flt.column_name, unicode(flt.name), value) for flt, value in zip(self.filters, self.values)]
++        return [(flt.column_name, str(flt.name), value) for flt, value in zip(self.filters, self.values)]
+ 
+     def apply_all(self, query):
+         for flt, value in zip(self.filters, self.values):
+--- flask_appbuilder/security/manager.py	(original)
++++ flask_appbuilder/security/manager.py	(refactored)
+@@ -10,9 +10,9 @@
+ from flask.ext.openid import OpenID
+ from flask.ext.appbuilder import Base
+ 
+-from models import User, Role, PermissionView, Permission, ViewMenu, \
++from .models import User, Role, PermissionView, Permission, ViewMenu, \
+     assoc_permissionview_role
+-from views import AuthDBView, AuthOIDView, ResetMyPasswordView, \
++from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, \
+     ResetPasswordView, UserDBGeneralView, UserOIDGeneralView, RoleGeneralView, \
+     PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView
+ 
+@@ -87,7 +87,7 @@
+         g.user = current_user
+ 
+     def migrate_get_new_obj(self, old_obj, new_obj):
+-        for col in old_obj.keys():
++        for col in list(old_obj.keys()):
+             setattr(new_obj,col,getattr(old_obj,col))
+         return new_obj
+         
+@@ -113,7 +113,7 @@
+         inspector = Inspector.from_engine(engine)
+         if 'user' in inspector.get_table_names() and 'role' in inspector.get_table_names() and 'permission' in inspector.get_table_names():
+             
+-            print "Found previous security tables, migrating..."
++            print("Found previous security tables, migrating...")
+             
+             metadata = MetaData(engine)
+ 
+@@ -124,22 +124,22 @@
+             old_view_menu = Table('view_menu', metadata, autoload=True)
+             old_permission_view_role = Table('permission_view_role', metadata, autoload=True)
+                         
+-            print "Migrating Views and Menus"
++            print("Migrating Views and Menus")
+             self.migrate_obj(old_view_menu, ViewMenu)            
+                         
+-            print "Migrating Permissions"
++            print("Migrating Permissions")
+             self.migrate_obj(old_permission, Permission)
+                 
+-            print "Migrating Permissions on Views"
++            print("Migrating Permissions on Views")
+             self.migrate_obj(old_permission_view, PermissionView)
+                                     
+-            print "Migrating Roles"
++            print("Migrating Roles")
+             self.migrate_obj(old_role, Role)
+             
+-            print "Migrating Roles to Permissions on Views"
++            print("Migrating Roles to Permissions on Views")
+             self.migrate_obj(old_permission_view_role, self.quick_mapper(assoc_permissionview_role))            
+             
+-            print "Migrating Users"
++            print("Migrating Users")
+             self.migrate_obj(old_user, User)
+ 
+     
+--- flask_appbuilder/security/models.py	(original)
++++ flask_appbuilder/security/models.py	(refactored)
+@@ -93,7 +93,7 @@
+         return False
+ 
+     def get_id(self):
+-        return unicode(self.id)
++        return str(self.id)
+ 
+     def get_full_name(self):
+         return self.first_name + " " + self.last_name
+--- flask_appbuilder/security/views.py	(original)
++++ flask_appbuilder/security/views.py	(refactored)
+@@ -14,9 +14,9 @@
+ from flask.ext.appbuilder.models.datamodel import SQLAModel
+ from flask.ext.appbuilder.views import BaseView, GeneralView, SimpleFormView, expose
+ from ..actions import action
+-from forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
+-from models import User, Permission, PermissionView, Role, ViewMenu
+-from decorators import has_access
++from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
++from .models import User, Permission, PermissionView, Role, ViewMenu
++from .decorators import has_access
+ 
+ 
+ class PermissionGeneralView(GeneralView):
+@@ -74,7 +74,7 @@
+ 
+     def form_post(self, form):
+         self.baseapp.sm.reset_password(g.user.id, form.password.data)
+-        flash(unicode(self.message),'info')
++        flash(str(self.message),'info')
+ 
+ 
+ class ResetPasswordView(SimpleFormView):
+@@ -93,7 +93,7 @@
+     def form_post(self, form):
+         pk = request.args.get('pk')
+         self.baseapp.sm.reset_password(pk, form.password.data)
+-        flash(unicode(self.message),'info')
++        flash(str(self.message),'info')
+ 
+ 
+ class UserGeneralView(GeneralView):
+@@ -242,7 +242,7 @@
+         if form.validate_on_submit():
+             user = self.baseapp.sm.auth_user_db(form.username.data, form.password.data)
+             if not user:
+-                flash(unicode(self.invalid_login_message),'warning')
++                flash(str(self.invalid_login_message),'warning')
+                 return redirect('/login')
+             login_user(user, remember = False)
+             return redirect('/')
+@@ -272,7 +272,7 @@
+                 )
+ 
+     def oid_login_handler(self, f, oid):
+-        if request.args.get('openid_complete') != u'yes':
++        if request.args.get('openid_complete') != 'yes':
+             return f(False)
+         consumer = Consumer(SessionWrapper(self), oid.store_factory())
+         openid_response = consumer.complete(request.args.to_dict(),
+@@ -280,18 +280,18 @@
+         if openid_response.status == SUCCESS:
+             return oid.after_login_func(OpenIDResponse(openid_response))
+         elif openid_response.status == CANCEL:
+-            oid.signal_error(u'The request was cancelled')
++            oid.signal_error('The request was cancelled')
+             return redirect(oid.get_current_url())
+-        oid.signal_error(u'OpenID authentication error')
++        oid.signal_error('OpenID authentication error')
+         return redirect(oid.get_current_url())
+ 
+     def after_login(self, resp):
+         if resp.email is None or resp.email == "":
+-            flash(unicode(self.invalid_login_message),'warning')
++            flash(str(self.invalid_login_message),'warning')
+             return redirect('appbuilder/general/security/login_oid.html')
+         user = self.baseapp.sm.auth_user_oid(resp.email)
+         if user is None:
+-            flash(unicode(self.invalid_login_message),'warning')
++            flash(str(self.invalid_login_message),'warning')
+             return redirect('appbuilder/general/security/login_oid.html')
+         remember_me = False
+         if 'remember_me' in session:
