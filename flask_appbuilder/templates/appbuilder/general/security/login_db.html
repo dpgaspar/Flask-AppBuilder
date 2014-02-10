@@ -15,12 +15,18 @@
         <div class="control-group{% if form.errors.openid %} error{% endif %}">
             <label class="control-label" for="openid">{{_("Username")}}:</label>
             <div class="controls">
+                <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-user"></i></span>
                 {{ form.username(size = 80, class = "form-control") }}
+                </div>
                 {% for error in form.errors.openid %}
                     <span class="help-inline">[{{error}}]</span><br>
                 {% endfor %}
 		<label class="control-label" for="openid">{{_("Password")}}:</label>
-		{{ form.password(size = 80, class = "form-control") }}
+		        <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                {{ form.password(size = 80, class = "form-control") }}
+                </div>
                 {% for error in form.errors.openid %}
                     <span class="help-inline">[{{error}}]</span><br>
                 {% endfor %}
