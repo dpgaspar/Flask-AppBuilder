@@ -10,6 +10,7 @@ from urltools import *
 
 log = logging.getLogger(__name__)
 
+
 def expose(url='/', methods=('GET',)):
     """
         Use this decorator to expose views in your view classes.
@@ -19,11 +20,13 @@ def expose(url='/', methods=('GET',)):
         :param methods:
             Allowed HTTP methods. By default only GET is allowed.
     """
+
     def wrap(f):
         if not hasattr(f, '_urls'):
             f._urls = []
         f._urls.append((url, methods))
         return f
+
     return wrap
 
 
@@ -39,13 +42,13 @@ class BaseView(object):
     baseapp = None
     blueprint = None
     endpoint = None
-    
+
     route_base = None
     """ Override this if you want to define your own relative url """
-    
+
     template_folder = 'templates'
-    static_folder='static'
-    base_permissions = None    
+    static_folder = 'static'
+    base_permissions = None
     default_view = 'list'
 
     def __init__(self):
@@ -57,13 +60,13 @@ class BaseView(object):
             self.base_permissions = [
                 ('can_' + attr_name)
                 for attr_name in dir(self)
-                if hasattr(getattr(self, attr_name),'_urls')
-                ]
+                if hasattr(getattr(self, attr_name), '_urls')
+            ]
 
 
-    def create_blueprint(self, baseapp, 
-                        endpoint = None, 
-                        static_folder = None):
+    def create_blueprint(self, baseapp,
+                         endpoint=None,
+                         static_folder=None):
         """
             Create Flask blueprint. You will generally not use it
             
@@ -78,23 +81,22 @@ class BaseView(object):
         self.baseapp = baseapp
 
         # If endpoint name is not provided, get it from the class name
-        if not self.endpoint:
-            self.endpoint = self.__class__.__name__
+        self.endpoint = endpoint or self.__class__.__name__
 
         if self.route_base is None:
             self.route_base = '/' + self.__class__.__name__.lower()
 
         self.static_folder = static_folder
         if not static_folder:
-        # Create blueprint and register rules
+            # Create blueprint and register rules
             self.blueprint = Blueprint(self.endpoint, __name__,
-                                   url_prefix=self.route_base,
-                                   template_folder=self.template_folder)
+                                       url_prefix=self.route_base,
+                                       template_folder=self.template_folder)
         else:
             self.blueprint = Blueprint(self.endpoint, __name__,
-                                   url_prefix=self.route_base,
-                                   template_folder=self.template_folder,
-                                   static_folder = static_folder)
+                                       url_prefix=self.route_base,
+                                       template_folder=self.template_folder,
+                                       static_folder=static_folder)
 
         self._register_urls()
         return self.blueprint
@@ -106,14 +108,13 @@ class BaseView(object):
             if hasattr(attr, '_urls'):
                 for url, methods in attr._urls:
                     self.blueprint.add_url_rule(url,
-                                        attr_name,
-                                        attr,
-                                        methods=methods)
-    
-    
+                                                attr_name,
+                                                attr,
+                                                methods=methods)
+
+
     def render_template(self, template, **kwargs):
-        kwargs['_'] = babel.gettext
-        return render_template(template, **kwargs)
+        pass
 
     def _prettify_name(self, name):
         """
@@ -138,13 +139,13 @@ class BaseView(object):
         return name.replace('_', ' ').title()
 
 
-    def route_from(url, method = None):
+    def route_from(url, method=None):
         appctx = _app_ctx_stack.top
         reqctx = _request_ctx_stack.top
         if appctx is None:
             raise RuntimeError('Attempted to match a URL without the '
-                           'application context being pushed. This has to be '
-                           'executed when application context is available.')
+                               'application context being pushed. This has to be '
+                               'executed when application context is available.')
 
         if reqctx is not None:
             url_adapter = reqctx.url_adapter
@@ -152,9 +153,9 @@ class BaseView(object):
             url_adapter = appctx.url_adapter
             if url_adapter is None:
                 raise RuntimeError('Application was not able to create a URL '
-                               'adapter for request independent URL matching. '
-                               'You might be able to fix this by setting '
-                               'the SERVER_NAME config variable.')
+                                   'adapter for request independent URL matching. '
+                                   'You might be able to fix this by setting '
+                                   'the SERVER_NAME config variable.')
         parsed_url = url_parse(url)
         if parsed_url.netloc is not "" and parsed_url.netloc != url_adapter.server_name:
             raise NotFound()
@@ -162,7 +163,7 @@ class BaseView(object):
 
     def _get_redirect(self):
         next_url = request.args.get('next')
-        if (next_url):
+        if next_url:
             if next_url in request.referrer:
                 return request.referrer
             else:
@@ -172,7 +173,7 @@ class BaseView(object):
                 return url_for('%s.%s' % (self.endpoint, self.default_view), **request.args)
             except:
                 return url_for('%s.%s' % (self.baseapp.indexview.endpoint, self.baseapp.indexview.default_view))
-            
+
 
 class BaseModelView(BaseView):
     """
@@ -207,7 +208,7 @@ class BaseModelView(BaseView):
                 datamodel = SQLAModel(MyTable, db.session)
                 label_columns = {'name':'My Name Label Override'}
         
-    """    
+    """
     search_form = None
     """ To implement your own add WTF form for Search """
     base_filters = None
@@ -237,7 +238,7 @@ class BaseModelView(BaseView):
         self._base_model_init_vars()
         self._base_model_init_forms()
         super(BaseModelView, self).__init__(**kwargs)
-        
+
 
     def _base_model_init_vars(self):
         self.label_columns = self.label_columns or {}
@@ -250,23 +251,22 @@ class BaseModelView(BaseView):
                 self.label_columns[col] = self._prettify_column(col)
         self._filters = Filters(self.search_columns, self.datamodel)
 
-        
+
     def _base_model_init_forms(self):
         conv = GeneralModelConverter(self.datamodel)
         if not self.search_form:
             self.search_form = conv.create_form(self.label_columns,
-                    {}, {}, [], self.search_columns)
+                {}, {}, [], self.search_columns)
 
 
-    def _get_search_widget(self, form = None, exclude_cols = [], widgets = {}):
-        widgets['search'] = self.search_widget(route_base = self.route_base,
-                                                form = form,
-                                                include_cols = self.search_columns,
-                                                exclude_cols = exclude_cols,
-                                                filters = self._filters
-                                                )
+    def _get_search_widget(self, form=None, exclude_cols=[], widgets={}):
+        widgets['search'] = self.search_widget(route_base=self.route_base,
+                                               form=form,
+                                               include_cols=self.search_columns,
+                                               exclude_cols=exclude_cols,
+                                               filters=self._filters
+        )
         return widgets
-
 
 
 class BaseCRUDView(BaseModelView):
@@ -274,7 +274,7 @@ class BaseCRUDView(BaseModelView):
         The base class for GeneralView, all properties are inherited
         Customize GeneralView overriding this properties
     """
-    
+
     related_views = None
     """ 
         List with GeneralView classes
@@ -306,7 +306,7 @@ class BaseCRUDView(BaseModelView):
     """ Include Columns for edit view """
     order_columns = None
     """ Allowed order columns """
-    
+
     page_size = 10
     """ 
         Use this property to change default page size 
@@ -320,7 +320,7 @@ class BaseCRUDView(BaseModelView):
                 base_order = ('my_column_name','asc')
         
     """
-    
+
     show_fieldsets = None
     """ 
         show fieldsets django style [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....]
@@ -344,7 +344,7 @@ class BaseCRUDView(BaseModelView):
     """ 
         edit fieldsets django style (look at show_fieldsets for an example)
     """
-    
+
     description_columns = None
     """ 
         Dictionary with column descriptions that will be shown on the forms::
@@ -369,8 +369,7 @@ class BaseCRUDView(BaseModelView):
     """ To implement your own assign WTF form for Add """
     edit_form = None
     """ To implement your own assign WTF form for Edit """
-    
-    
+
     list_template = 'appbuilder/general/model/list.html'
     """ Your own add jinja2 template for list """
     edit_template = 'appbuilder/general/model/edit.html'
@@ -390,7 +389,7 @@ class BaseCRUDView(BaseModelView):
     """ Show widget override """
     search_widget = SearchWidget
     """ Search widget you can override with your own """
-        
+
     actions = None
 
     def __init__(self, **kwargs):
@@ -402,27 +401,27 @@ class BaseCRUDView(BaseModelView):
         self.actions = {}
         for attr_name in dir(self):
             func = getattr(self, attr_name)
-            if hasattr(func,'_action'):
-                action = ActionItem(*func._action, func = func)
+            if hasattr(func, '_action'):
+                action = ActionItem(*func._action, func=func)
                 self.base_permissions.append(action.name)
                 self.actions[action.name] = (action)
 
 
     def _init_forms(self):
-        conv = GeneralModelConverter(self.datamodel)        
+        conv = GeneralModelConverter(self.datamodel)
         if not self.add_form:
             self.add_form = conv.create_form(self.label_columns,
-                    self.description_columns,
-                    self.validators_columns,
-                    self.add_form_extra_fields,
-                    self.add_columns)
+                                             self.description_columns,
+                                             self.validators_columns,
+                                             self.add_form_extra_fields,
+                                             self.add_columns)
         if not self.edit_form:
             self.edit_form = conv.create_form(self.label_columns,
-                    self.description_columns,
-                    self.validators_columns,
-                    self.edit_form_extra_fields,
-                    self.edit_columns)
-        
+                                              self.description_columns,
+                                              self.validators_columns,
+                                              self.edit_form_extra_fields,
+                                              self.edit_columns)
+
 
     def _init_titles(self):
         if not self.list_title:
@@ -447,7 +446,7 @@ class BaseCRUDView(BaseModelView):
         self.order_columns = self.order_columns or order_cols
         if self.show_fieldsets:
             self.show_columns = []
-            for fieldset_item in self.show_fieldsets:                
+            for fieldset_item in self.show_fieldsets:
                 self.show_columns = self.show_columns + list(fieldset_item[1].get('fields'))
         else:
             if not self.show_columns:
@@ -466,105 +465,109 @@ class BaseCRUDView(BaseModelView):
         else:
             if not self.edit_columns:
                 self.edit_columns = list_cols
-        
+
 
     """
     -----------------------------------------------------
             GET WIDGETS SECTION
     -----------------------------------------------------        
     """
-    def _get_related_list_widget(self, item, related_view, 
-                                order_column='', order_direction='',
-                                page=None, page_size=None):
+
+    def _get_related_list_widget(self, item, related_view,
+                                 order_column='', order_direction='',
+                                 page=None, page_size=None):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
-        filters = Filters().add_filter_related_view(fk, FilterRelationOneToManyEqual, 
-                related_view.datamodel, self.datamodel.get_pk_value(item))
-        return related_view._get_list_widget(filters = filters,
-                    order_column = order_column,
-                    order_direction = order_direction,
-                    page=page, page_size=page_size)
+        filters = Filters().add_filter_related_view(fk, FilterRelationOneToManyEqual,
+                                                    related_view.datamodel, self.datamodel.get_pk_value(item))
+        return related_view._get_list_widget(filters=filters,
+                                             order_column=order_column,
+                                             order_direction=order_direction,
+                                             page=page, page_size=page_size)
 
-    def _get_related_list_widgets(self, item, orders = None, 
-                                pages=None, page_sizes=None, 
-                                widgets = None, **args):
+    def _get_related_list_widgets(self, item, orders=None,
+                                  pages=None, page_sizes=None,
+                                  widgets=None, **args):
         widgets = widgets or {}
         widgets['related_lists'] = []
         for view in self._related_views:
             if orders.get(view.__class__.__name__):
                 order_column, order_direction = orders.get(view.__class__.__name__)
-            else: order_column, order_direction = '',''
-            widgets['related_lists'].append(self._get_related_list_widget(item, view, 
-                    order_column, order_direction, 
-                    page=pages.get(view.__class__.__name__), page_size=page_sizes.get(view.__class__.__name__)).get('list'))
+            else:
+                order_column, order_direction = '', ''
+            widgets['related_lists'].append(self._get_related_list_widget(item, view,
+                                                                          order_column, order_direction,
+                                                                          page=pages.get(view.__class__.__name__),
+                                                                          page_size=page_sizes.get(
+                                                                              view.__class__.__name__)).get('list'))
         return widgets
-    
+
     def _get_list_widget(self, filters,
-                        actions = None,
-                        order_column = '', 
-                        order_direction = '',
-                        page = None,
-                        page_size = None,
-                        widgets = None, 
-                        **args):
+                         actions=None,
+                         order_column='',
+                         order_direction='',
+                         page=None,
+                         page_size=None,
+                         widgets=None,
+                         **args):
 
         """ get joined base filter and current active filter for query """
         widgets = widgets or {}
         actions = actions or self.actions
         page_size = page_size or self.page_size
         if not order_column and self.base_order:
-            order_column, order_direction = self.base_order    
+            order_column, order_direction = self.base_order
         joined_filters = filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         pks = self.datamodel.get_keys(lst)
-        widgets['list'] = self.list_widget(label_columns = self.label_columns,
-                                            include_columns = self.list_columns,
-                                            value_columns = self.datamodel.get_values(lst, self.list_columns),
-                                            order_columns = self.order_columns,
-                                            page = page,
-                                            page_size = page_size,
-                                            count = count,
-                                            pks = pks,
-                                            actions = actions,
-                                            filters = filters,
-                                            generalview_name = self.__class__.__name__
-                                            )
+        widgets['list'] = self.list_widget(label_columns=self.label_columns,
+                                           include_columns=self.list_columns,
+                                           value_columns=self.datamodel.get_values(lst, self.list_columns),
+                                           order_columns=self.order_columns,
+                                           page=page,
+                                           page_size=page_size,
+                                           count=count,
+                                           pks=pks,
+                                           actions=actions,
+                                           filters=filters,
+                                           generalview_name=self.__class__.__name__
+        )
         return widgets
 
 
-    def _get_show_widget(self, id, widgets = None, actions = None):
+    def _get_show_widget(self, id, widgets=None, actions=None):
         widgets = widgets or {}
         actions = actions or self.actions
         item = self.datamodel.get(id)
-        widgets['show'] = self.show_widget(pk = id,
-                                            label_columns = self.label_columns,
-                                            include_columns = self.show_columns,
-                                            value_columns = self.datamodel.get_values_item(item, self.show_columns),
-                                            actions = actions,
-                                            fieldsets = self.show_fieldsets,
-                                            generalview_name = self.__class__.__name__
-                                            )
+        widgets['show'] = self.show_widget(pk=id,
+                                           label_columns=self.label_columns,
+                                           include_columns=self.show_columns,
+                                           value_columns=self.datamodel.get_values_item(item, self.show_columns),
+                                           actions=actions,
+                                           fieldsets=self.show_fieldsets,
+                                           generalview_name=self.__class__.__name__
+        )
         return widgets
 
 
-    def _get_add_widget(self, form, exclude_cols = None, widgets = None):
+    def _get_add_widget(self, form, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []
         widgets = widgets or {}
-        widgets['add'] = self.add_widget(form = form,
-                                            include_cols = self.add_columns,
-                                            exclude_cols = exclude_cols,
-                                            fieldsets = self.add_fieldsets
-                                            )
+        widgets['add'] = self.add_widget(form=form,
+                                         include_cols=self.add_columns,
+                                         exclude_cols=exclude_cols,
+                                         fieldsets=self.add_fieldsets
+        )
         return widgets
 
-    def _get_edit_widget(self, form, exclude_cols = None, widgets = None):
+    def _get_edit_widget(self, form, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []
         widgets = widgets or {}
-        widgets['edit'] = self.edit_widget(form = form,
-                                            include_cols = self.edit_columns,
-                                            exclude_cols = exclude_cols,
-                                            fieldsets = self.edit_fieldsets
-                                            )
+        widgets['edit'] = self.edit_widget(form=form,
+                                           include_cols=self.edit_columns,
+                                           exclude_cols=exclude_cols,
+                                           fieldsets=self.edit_fieldsets
+        )
         return widgets
 
 
@@ -573,6 +576,7 @@ class BaseCRUDView(BaseModelView):
             CRUD functions behaviour
     -----------------------------------------------------        
     """
+
     def _list(self):
         """
             list function logic, override to implement diferent logic
@@ -580,18 +584,19 @@ class BaseCRUDView(BaseModelView):
         """
         if get_order_args().get(self.__class__.__name__):
             order_column, order_direction = get_order_args().get(self.__class__.__name__)
-        else: order_column, order_direction = '',''
+        else:
+            order_column, order_direction = '', ''
         page = get_page_args().get(self.__class__.__name__)
         page_size = get_page_size_args().get(self.__class__.__name__)
         get_filter_args(self._filters)
-        
-        widgets = self._get_list_widget(filters = self._filters, 
-                    order_column = order_column, 
-                    order_direction = order_direction, 
-                    page = page, 
-                    page_size = page_size)
+
+        widgets = self._get_list_widget(filters=self._filters,
+                                        order_column=order_column,
+                                        order_direction=order_direction,
+                                        page=page,
+                                        page_size=page_size)
         form = self.search_form.refresh()
-        return self._get_search_widget(form = form, widgets = widgets)
+        return self._get_search_widget(form=form, widgets=widgets)
 
 
     def _show(self, pk):
@@ -605,9 +610,9 @@ class BaseCRUDView(BaseModelView):
 
         widgets = self._get_show_widget(pk)
         item = self.datamodel.get(pk)
-                
-        return self._get_related_list_widgets(item, orders = orders, 
-                pages = pages, page_sizes = page_sizes, widgets = widgets)
+
+        return self._get_related_list_widgets(item, orders=orders,
+                                              pages=pages, page_sizes=page_sizes, widgets=widgets)
 
 
     def _add(self):
@@ -628,7 +633,7 @@ class BaseCRUDView(BaseModelView):
             self.post_add(item)
             return None
         else:
-            return self._get_add_widget(form = form, exclude_cols = exclude_cols)
+            return self._get_add_widget(form=form, exclude_cols=exclude_cols)
 
     def _edit(self, pk):
         """
@@ -641,11 +646,11 @@ class BaseCRUDView(BaseModelView):
         orders = get_order_args()
         get_filter_args(self._filters)
         exclude_cols = self._filters.get_relation_cols()
-        
+
         item = self.datamodel.get(pk)
         # convert pk to correct type, if pk is non string type.
         pk = self.datamodel.get_pk_value(item)
-        
+
         if request.method == 'POST':
             form = self.edit_form(request.form)
             form = form.refresh(obj=item)
@@ -662,9 +667,9 @@ class BaseCRUDView(BaseModelView):
         else:
             form = self.edit_form(obj=item)
             form = form.refresh(obj=item)
-        widgets = self._get_edit_widget(form = form, exclude_cols = exclude_cols)
-        widgets = self._get_related_list_widgets(item, filters = {}, 
-                        orders = orders, pages = pages, page_sizes=page_sizes, widgets = widgets)                
+        widgets = self._get_edit_widget(form=form, exclude_cols=exclude_cols)
+        widgets = self._get_related_list_widgets(item, filters={},
+                                                 orders=orders, pages=pages, page_sizes=page_sizes, widgets=widgets)
         return widgets
 
 
@@ -672,14 +677,15 @@ class BaseCRUDView(BaseModelView):
         item = self.datamodel.get(pk)
         self.pre_delete(item)
         self.datamodel.delete(item)
-        self.post_delete(item)        
-        
+        self.post_delete(item)
+
 
     """
     ------------------------------------------------
                 HELPER FUNCTIONS
     ------------------------------------------------
     """
+
     def _fill_item_exclude_cols(self, exclude_cols, item):
         """
             fill the model item with the suppressed cols, generated from exclude_cols 
@@ -700,7 +706,7 @@ class BaseCRUDView(BaseModelView):
         print self.__class__.__name__, "EDIT COL", self.edit_columns
         print self.__class__.__name__, "LIST COL", self.list_columns
 
-    
+
     def pre_update(self, item):
         """
             Override this, will be called before update
@@ -710,29 +716,29 @@ class BaseCRUDView(BaseModelView):
     def post_update(self, item):
         """
             Override this, will be called after update
-        """        
+        """
         pass
 
     def pre_add(self, item):
         """
             Override this, will be called before add
-        """        
+        """
         pass
 
     def post_add(self, item):
         """
             Override this, will be called after update
-        """        
+        """
         pass
 
     def pre_delete(self, item):
         """
             Override this, will be called before delete
-        """        
+        """
         pass
 
     def post_delete(self, item):
         """
             Override this, will be called after delete
-        """        
+        """
         pass
