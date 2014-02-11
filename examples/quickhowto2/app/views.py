@@ -50,6 +50,9 @@ class ContactTimeChartView(TimeChartView):
     group_by_columns = ['birthday']
     datamodel = SQLAModel(Contact, db.session)
 
+
+
+
 fixed_translations_import = [
         _("List Groups"),
         _("List Contacts"),

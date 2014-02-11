@@ -29,8 +29,18 @@ class ContactGeneralView(GeneralView):
     base_order = ('name','asc')
 
     show_fieldsets = [
-         ('Summary',{'fields':['name','gender','address','group']}),
-         ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
+         ('Summary',{'fields':['name','gender','group']}),
+         ('Personal Info',{'fields':['address', 'birthday','personal_phone','personal_celphone'],'expanded':False}),
+         ]
+
+    add_fieldsets = [
+         ('Summary',{'fields':['name','gender','group']}),
+         ('Personal Info',{'fields':['address', 'birthday','personal_phone','personal_celphone'],'expanded':False}),
+         ]
+
+    edit_fieldsets = [
+         ('Summary',{'fields':['name','gender','group']}),
+         ('Personal Info',{'fields':['address', 'birthday','personal_phone','personal_celphone'],'expanded':False}),
          ]
 
 
@@ -55,7 +65,8 @@ fixed_translations_import = [
         _("List Contacts"),
         _("Contacts Chart"),
         _("Contacts Birth Chart")]
-        
+
+fill_gender()        
 genapp = BaseApp(app, db)
 genapp.add_view(GroupGeneralView(), "List Groups",icon = "fa-folder-open-o",category = "Contacts")
 genapp.add_view(ContactGeneralView(), "List Contacts",icon = "fa-envelope",category = "Contacts")
