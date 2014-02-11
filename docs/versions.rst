@@ -6,6 +6,7 @@ Improvements and Bug fixes on 0.6.4
 
 - Field widget removed from forms module to new fieldwidgets, this can be a breaking feature.
 - Form creation code reorg (more simple and readable).
+- New, form db login with icons.
 
 Improvements and Bug fixes on 0.6.3
 -----------------------------------

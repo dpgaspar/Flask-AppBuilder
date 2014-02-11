@@ -1,13 +1,24 @@
 from flask.ext.appbuilder.menu import Menu
 from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import GeneralView, CompactCRUDMixin
+from flask.ext.appbuilder.views import GeneralView
 from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
 from flask.ext.babelpkg import lazy_gettext as _
 
 from app import app, db
-from models import Group, Contact
+from models import Group, Gender, Contact
 
+def fill_gender():
+    g1 = Gender()
+    g1.name = 'Male'
+    g2 = Gender()
+    g2.name = 'Female'
+    try:
+        db.session.add(g1)
+        db.session.add(g2)
+        db.session.commit()
+    except:
+        db.session.rollback()
 
 class ContactGeneralView(GeneralView):
     datamodel = SQLAModel(Contact, db.session)
@@ -18,22 +29,19 @@ class ContactGeneralView(GeneralView):
     base_order = ('name','asc')
 
     show_fieldsets = [
-         ('Summary',{'fields':['name','address','group']}),
+         ('Summary',{'fields':['name','gender','address','group']}),
          ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
          ]
 
 
-class GroupGeneralView(CompactCRUDMixin, GeneralView):
+class GroupGeneralView(GeneralView):
     datamodel = SQLAModel(Group, db.session)
     related_views = [ContactGeneralView]
-
-    show_template = 'appbuilder/general/model/show_cascade.html'
-    edit_template = 'appbuilder/general/model/edit_cascade.html'
 
 class ContactChartView(ChartView):
     chart_title = 'Grouped contacts'
     label_columns = ContactGeneralView.label_columns
-    group_by_columns = ['group']
+    group_by_columns = ['group','gender']
     datamodel = SQLAModel(Contact, db.session)
 
 class ContactTimeChartView(TimeChartView):

@@ -48,6 +48,13 @@ class BaseGroupBy(object):
     def group_operation(self, value):
     	pass
         
+
+    def get_aggregate_col_name(self):
+        if self.aggregate_col:
+            return self.aggregate_func.__name__ + '_' + self.aggregate_col
+        else:
+            return self.aggregate_func.__name__ 
+
     def __repr__(self):
         return self.name
 
@@ -58,7 +65,18 @@ class GroupByCol(BaseGroupBy):
                 [grouped, self.aggregate_func(items, self.aggregate_col)]
                 for ( grouped, items ) in groupby( data, self.group_operation)
                 ]
-        
+    
+
+    def apply2(self, data):
+        ret = []
+        for ( grouped, items ) in groupby( data, self.group_operation):
+            item = {}
+            item[self.column_name] = grouped
+            item[self.get_aggregate_col_name()] = self.aggregate_func(items, self.aggregate_col)
+            item['items'] = items
+            ret.append(item)
+        return ret                
+    
     def group_operation(self, item):
         return getattr(item, self.column_name)
     

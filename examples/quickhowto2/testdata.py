@@ -1,5 +1,5 @@
 from app import db
-from app.models import Group, Contact
+from app.models import Group, Gender, Contact
 import random
 from datetime import datetime
 import sys
@@ -23,6 +23,18 @@ try:
 except:
     db.session.rollback()
 
+g1 = Gender()
+g1.name = 'Male'
+g2 = Gender()
+g2.name = 'Female'
+try:
+    db.session.add(g1)
+    db.session.add(g2)
+    db.session.commit()
+except:
+    db.session.rollback()
+
+
 f = open('NAMES.DIC', "rb")
 names_list = [x.strip() for x in f.readlines()]
     
@@ -37,6 +49,7 @@ for i in range(1,1000):
     c.personal_phone = random.randrange(1111111,9999999)
     c.personal_celphone = random.randrange(1111111,9999999)
     c.group_id = random.randrange(1,4)
+    c.gender_id = random.randrange(1,3)
     year = random.choice(range(1900, 2012))
     month = random.choice(range(1, 12))
     day = random.choice(range(1, 28))

@@ -163,6 +163,7 @@ class SQLAModel(DataModel):
         query_result = query.all()
         query_result = sorted(query_result, key=lambda item: getattr(item, group_by))
         group = GroupByCol(group_by,'Group by')
+        log.debug("GROUP %s" % group.apply(query_result))
         return group.apply(query_result)
     
 

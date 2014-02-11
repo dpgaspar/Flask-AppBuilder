@@ -3,7 +3,7 @@ from sqlalchemy.ext.serializer import loads, dumps
 
 from sqlalchemy.ext.serializer import loads, dumps
 
-from widgets import ChartWidget
+from widgets import ChartWidget, MultipleChartWidget
 from ..widgets import SearchWidget
 from ..security.decorators import has_access
 from ..baseviews import BaseModelView, expose
@@ -33,11 +33,13 @@ class BaseChartView(BaseModelView):
     width = 400
     """ The width """
     height = '400px'
-    group_by = ''
     
     group_by_columns = []
     """ A list of columns to be possibly grouped by """
     
+    group_bys = {}
+    """ New for 0.6.4, on test """
+
 
     def __init__(self, **kwargs):
         super(BaseChartView, self).__init__(**kwargs)
@@ -114,4 +116,27 @@ class TimeChartView(BaseChartView):
                                                 widgets = widgets, 
                                                 baseapp = self.baseapp)
 
+class MultipleChartView(BaseChartView):
+    chart_template = 'appbuilder/general/charts/chart.html'
+    chart_type = 'ColumnChart'
     
+    chart_widget = MultipleChartWidget
+    
+
+    @expose('/chart/')
+    @has_access
+    def chart(self):
+        form = self.search_form.refresh()
+        get_filter_args(self._filters)
+        
+        value_columns = self.datamodel.query_simple_group(self.group_bys, filters= self._filters)
+        
+        widgets = self._get_chart_widget(value_columns = value_columns)
+        widgets = self._get_search_widget(form = form, widgets = widgets)
+        return render_template(self.chart_template, route_base = self.route_base, 
+                                                title = self.chart_title,
+                                                label_columns = self.label_columns, 
+                                                group_by_columns = self.group_by_columns,
+                                                height = self.height,
+                                                widgets = widgets, 
+                                                baseapp = self.baseapp)
