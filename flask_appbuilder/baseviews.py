@@ -1,3 +1,4 @@
+import logging
 import re
 from flask import Blueprint, request
 from flask.globals import _app_ctx_stack, _request_ctx_stack
@@ -8,6 +9,8 @@ from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget, ListCarou
 from .models.filters import Filters, FilterRelationOneToManyEqual
 from .actions import ActionItem
 from urltools import *
+
+log = logging.getLogger(__name__)
 
 def expose(url='/', methods=('GET',)):
     """

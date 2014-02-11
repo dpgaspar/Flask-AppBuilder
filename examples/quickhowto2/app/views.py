@@ -2,8 +2,9 @@ from flask.ext.appbuilder.menu import Menu
 from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.views import GeneralView
-from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
+from flask.ext.appbuilder.charts.views import ChartView, TimeChartView, MultipleChartView
 from flask.ext.babelpkg import lazy_gettext as _
+from flask.ext.appbuilder.models.group import GroupByCol
 
 from app import app, db
 from models import Group, Gender, Contact
@@ -50,7 +51,11 @@ class ContactTimeChartView(TimeChartView):
     group_by_columns = ['birthday']
     datamodel = SQLAModel(Contact, db.session)
 
-
+class ContactMultipleChartView(MultipleChartView):
+    chart_title = 'Grouped contacts'
+    label_columns = ContactGeneralView.label_columns
+    group_bys = [[GroupByCol('group','Group Label')]]
+    datamodel = SQLAModel(Contact, db.session)
 
 
 fixed_translations_import = [
@@ -63,6 +68,6 @@ genapp = BaseApp(app, db)
 genapp.add_view(GroupGeneralView(), "List Groups",icon = "fa-folder-open-o",category = "Contacts")
 genapp.add_view(ContactGeneralView(), "List Contacts",icon = "fa-envelope",category = "Contacts")
 genapp.add_separator("Contacts")
-genapp.add_view(ContactChartView(), "Contacts Chart","/contactchartview/chart","fa-dashboard","Contacts")
-genapp.add_view(ContactTimeChartView(), "Contacts Birth Chart","/contacttimechartview/chart/month","fa-dashboard","Contacts")
-
+genapp.add_view(ContactChartView(), "Contacts Chart",icon="fa-dashboard",category="Contacts")
+genapp.add_view(ContactTimeChartView(), "Contacts Birth Chart",icon="fa-dashboard",category="Contacts")
+genapp.add_view(ContactMultipleChartView(), "Contacts Multiple Chart",icon="fa-dashboard",category="Contacts")

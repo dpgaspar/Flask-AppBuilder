@@ -45,7 +45,7 @@ class BaseGroupBy(object):
         """
         pass
 
-    def group_operation(self, value):
+    def get_group_col(self, value):
     	pass
         
 
@@ -63,13 +63,14 @@ class GroupByCol(BaseGroupBy):
     def apply(self, data):
         return [
                 [grouped, self.aggregate_func(items, self.aggregate_col)]
-                for ( grouped, items ) in groupby( data, self.group_operation)
+                for ( grouped, items ) in groupby( data, self.get_group_col)
                 ]
     
 
     def apply2(self, data):
+        data = sorted(data, key=self.get_group_col)
         ret = []
-        for ( grouped, items ) in groupby( data, self.group_operation):
+        for ( grouped, items ) in groupby( data, self.get_group_col):
             item = {}
             item[self.column_name] = grouped
             item[self.get_aggregate_col_name()] = self.aggregate_func(items, self.aggregate_col)
@@ -77,42 +78,43 @@ class GroupByCol(BaseGroupBy):
             ret.append(item)
         return ret                
     
-    def group_operation(self, item):
+    def get_group_col(self, item):
         return getattr(item, self.column_name)
     
 
 class GroupByDateYear(BaseGroupBy):
-
     def apply(self, data):
+        data = sorted(data, key=self.get_group_col)
         return [
                 [grouped, self.aggregate_func(items, self.aggregate_col)]
-                for ( grouped, items ) in groupby( data, self.group_operation)
+                for ( grouped, items ) in groupby( data, self.get_group_col)
                 ]
         
-    def group_operation(self, item):
+    def get_group_col(self, item):
         value = getattr(item, self.column_name) 
     	if value: return value.year
     
 class GroupByDateMonth(BaseGroupBy):
     def apply(self, data):
+        data = sorted(data, key=self.get_group_col)
         return [
                 [calendar.month_name[grouped[0]] + ' ' 
                 + str(grouped[1]), self.aggregate_func(items, self.aggregate_col)]
-                for ( grouped, items ) in groupby( data, self.group_operation)
+                for ( grouped, items ) in groupby( data, self.get_group_col)
                 if grouped
                 ]
 
-    def group_operation(self, item):
+    def get_group_col(self, item):
         value = getattr(item, self.column_name) 
         if value: return (value.month,value.year)
 
 
 class GroupBys(object):
-    groups = None
+    group_bys = None
     """
-        {'group_col': 'COLNAME', 
-        'group_class': GROUP_CLASS, 
-        'aggregate_func': AGR_FUNC, 
-        'aggregate_col': 'COLNAME'}
+        [['COLNAME',GROUP_CLASS, AGR_FUNC,'AGR_COLNAME'],]
     """
+
+    def __init__(self, group_bys):
+        self.group_bys = group_bys
 

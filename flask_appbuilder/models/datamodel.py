@@ -12,7 +12,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import MetaData
 from sqlalchemy import func
 
-from group import GroupByDateYear, GroupByDateMonth, GroupByCol
+from group import GroupByDateYear, GroupByDateMonth, GroupByCol, GroupBys
 
 from mixins import FileColumn, ImageColumn
 from ..filemanager import FileManager, ImageManager
@@ -167,11 +167,18 @@ class SQLAModel(DataModel):
         return group.apply(query_result)
     
 
+    def query_group(self, group_bys, filters = None, order_column = '', order_direction = ''):
+        query = self.session.query(self.obj)
+        query = self._get_base_query(query = query, filters = filters)
+        query_result = query.all()
+        result = group_bys[0][0].apply(query_result)
+        return result
+
+
     def query_month_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
         query = self.session.query(self.obj)
         query = self._get_base_query(query = query, filters = filters)
         query_result = query.all()
-        query_result = sorted(query_result, key=lambda item: getattr(item, group_by))
         group = GroupByDateMonth(group_by,'Group by Month')
         return group.apply(query_result)
 
@@ -180,7 +187,6 @@ class SQLAModel(DataModel):
         query = self.session.query(self.obj)
         query = self._get_base_query(query = query, filters = filters)
         query_result = query.all()
-        query_result = sorted(query_result, key=lambda item: getattr(item, group_by))
         group_year = GroupByDateYear(group_by,'Group by Year')
         return group_year.apply(query_result)
 

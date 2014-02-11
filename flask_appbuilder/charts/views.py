@@ -1,4 +1,5 @@
-from flask import render_template
+import logging
+from flask import render_template, request
 from sqlalchemy.ext.serializer import loads, dumps
 
 from sqlalchemy.ext.serializer import loads, dumps
@@ -9,6 +10,8 @@ from ..security.decorators import has_access
 from ..baseviews import BaseModelView, expose
 from ..forms import GeneralModelConverter
 from ..urltools import *
+
+log = logging.getLogger(__name__)
 
 class BaseChartView(BaseModelView):
     """
@@ -26,6 +29,8 @@ class BaseChartView(BaseModelView):
     
     chart_title = 'Chart'
     """ A title to be displayed on the chart """
+    default_view = 'chart'
+
     chart_type = 'PieChart'
     """ The chart type PieChart or ColumnChart """
     chart_3d = 'true'
@@ -92,17 +97,21 @@ class TimeChartView(BaseChartView):
     chart_template = 'appbuilder/general/charts/chart_time.html'
     chart_type = 'ColumnChart'
     
-    @expose('/chart/<string:period>')
+
+    @expose('/chart/')
     @has_access
-    def chart(self,period):
+    def chart(self):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
         group_by = get_group_by_args()
-        
+        group_by = group_by or self.group_by_columns[0]
+        period = request.args.get('period')
+
         if group_by == '':
             group_by = self.group_by_columns[0]
         
-        if period == 'month':
+        if period == 'month' or not period:
+            log.debug("GROUO %s" % group_by)
             value_columns = self.datamodel.query_month_group(group_by, filters = self._filters)
         elif period == 'year':
             value_columns = self.datamodel.query_year_group(group_by, filters = self._filters)
@@ -129,7 +138,7 @@ class MultipleChartView(BaseChartView):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
         
-        value_columns = self.datamodel.query_simple_group(self.group_bys, filters= self._filters)
+        value_columns = self.datamodel.query_group(self.group_bys, filters= self._filters)
         
         widgets = self._get_chart_widget(value_columns = value_columns)
         widgets = self._get_search_widget(form = form, widgets = widgets)
