@@ -423,9 +423,9 @@ class SQLAModel(DataModel):
         # support for only one col for pk and fk
         return prop.columns[0]
 
-    def get_col_property(self, colname):
+    def get_col_property(self, col_name):
         for prop in self.get_properties_iterator():
-            if colname == prop.key:
+            if col_name == prop.key:
                 return prop
 
     def get(self, id):
@@ -449,12 +449,12 @@ class SQLAModel(DataModel):
     """
 
     def get_pk_name(self):
-        retstr = ""
+        ret_str = ""
         for item in list(self.obj.__mapper__.columns):
             if item.primary_key:
-                retstr = item.name
+                ret_str = item.name
                 break
-        return retstr
+        return ret_str
 
     def get_pk_value(self, item):
         for col in list(self.obj.__mapper__.columns):
