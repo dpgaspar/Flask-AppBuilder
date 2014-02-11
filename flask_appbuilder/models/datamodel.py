@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
-import calendar
 import sys
 import logging
 import sqlalchemy as sa
 
-from itertools import groupby
 from flask import flash
-from flask.ext.babelpkg import gettext, ngettext, lazy_gettext
-from sqlalchemy.orm import class_mapper, joinedload
+from flask_babelpkg import lazy_gettext
+from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import MetaData
 from sqlalchemy import func
 
-from group import GroupByDateYear, GroupByDateMonth, GroupByCol, GroupBys
+from group import GroupByDateYear, GroupByDateMonth, GroupByCol
 
 from mixins import FileColumn, ImageColumn
 from ..filemanager import FileManager, ImageManager
@@ -170,7 +167,9 @@ class SQLAModel(DataModel):
         query = self.session.query(self.obj)
         query = self._get_base_query(query = query, filters = filters)
         query_result = query.all()
-        result = group_bys[0][0].apply2(query_result)
+        for group_by in group_bys:
+            result = group_by.apply2(query_result)
+            log.debug("QG: %s" % result)
         return result
 
 
