@@ -61,6 +61,7 @@ class BaseGroupBy(object):
 
 class GroupByCol(BaseGroupBy):
     def apply(self, data):
+        data = sorted(data, key=self.get_group_col)
         return [
                 [grouped, self.aggregate_func(items, self.aggregate_col)]
                 for ( grouped, items ) in groupby( data, self.get_group_col)
