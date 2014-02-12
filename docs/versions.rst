@@ -7,7 +7,8 @@ Improvements and Bug fixes on 0.6.4
 - Field widget removed from forms module to new fieldwidgets, this can be a breaking feature.
 - Form creation code reorg (more simple and readable).
 - New, form db login with icons.
-- New, No need to define menu url on chart views (when registering), will work like GeneralViews
+- New, No need to define menu url on chart views (when registering), will work like GeneralViews.
+- New, related form field filter configuration, add_form_query_rel_fields and edit_form_query_rel_fields.
 
 Improvements and Bug fixes on 0.6.3
 -----------------------------------

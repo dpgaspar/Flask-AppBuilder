@@ -15,9 +15,10 @@ Use config.py to configure the following parameters. By default it will use SQLL
     :APP_NAME: The name of your application.
     :APP_THEME: Various themes for you to choose from (bootwatch).
     :APP_ICON: path of your application icon, will be chown on the left side of the menu
-    :UPLOAD_FOLDER: Files upload folder.
-    :IMG_UPLOAD_FOLDER: Image upload folder.
-    :IMG_UPLOAD_URL: Image relative URL.
+    :UPLOAD_FOLDER: Files upload folder. Mandatory for file uploads.
+    :IMG_UPLOAD_FOLDER: Image upload folder. Mandatory for image uploads.
+    :IMG_UPLOAD_URL: Image relative URL. Mandatory for image uploads.
+    :IMG_SIZE: tuple to define image resize, (width, height, True|False).
     :BABEL_DEFAULT_LOCALE: Babel's default language.
     :LANGUAGES: A dictionary mapping the existing languages with the countries name and flag
  
@@ -32,4 +33,3 @@ Use config.py to configure the following parameters. By default it will use SQLL
  	app.config.from_object('config')
  
  Take a look at the skeleton `config.py <https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py>`_
-

@@ -4,7 +4,7 @@ Quick How to
 The Base Skeleton Application
 -----------------------------
 
-If your working with the base skeleton application :doc:`instalation`
+If your working with the base skeleton application :doc:`installation`
 
 you now have the following directory structure::
 
@@ -30,7 +30,7 @@ Lets create a very simple contacts application.
 First we are going to create a *Group* table, to group our contacts
 
 .. note::
-	Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a diferent declarative model from the security tables of AppBuilder.
+	Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a different declarative model from the security tables of AppBuilder.
 	If you want to use AuditMixin :doc:`api` or include a relation to a User or login User you must be on the same declarative base.
 	Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, import::
 
@@ -82,7 +82,7 @@ Now we are going to define our view for *Group* table
         related_views = [ContactGeneralView]
 
 
-I hope this was easy enough! Some questions may arrise...
+I hope this was easy enough! Some questions may arise...
 
 Must have properties:
 
@@ -194,13 +194,33 @@ Use a default order on your lists, this can be overridden by the user on the UI.
 
 
 - **Forms**
-    
+
+You can create a custom query filter for all related columns like this::
+
+    class ContactGeneralView(GeneralView):
+        datamodel = SQLAModel(Contact, db.session)
+        add_form_query_rel_fields = ('group',
+                    SQLAModel(Group, db.session),
+                    [['name',FilterStartsWith,'W']]
+                    )
+
+
+This will filter list combo on Contact's model related with Group model. The combo will be filtered with entries that start with W. You can define individual filters for add and edit. Take a look at the :doc:`api`
+
+
 You can define your own Add, Edit forms to override the automatic form creation.
 
 You can define what columns will be included on a Add or Edit forms, for example if you have automatic fields like user or date, you can remove this from the Add Form.
 
-You can contribute with any adittionals field that are not on a table, for example a confirmation field.
+You can contribute with any additional field that are not on a table, for example a confirmation field::
 
-You can contribute with your own aditional form validations rules. Remenber the framework will automaticaly validate any field that is defined on the database with *Not Null* (Required) or Unique constraints.
+    class ContactGeneralView(GeneralView):
+        datamodel = SQLAModel(Contact, db.session)
+        add_form_extra_fields = {'extra': TextField(gettext('Extra Field'),
+                        description=gettext('Extra Field description'),
+                        widget=BS3TextFieldWidget())}
+
+
+You can contribute with your own additional form validations rules. Remember the framework will automatically validate any field that is defined on the database with *Not Null* (Required) or Unique constraints.
 
 Take a look at the :doc:`api`. Experiment with *add_form*, *edit_form*, *add_columns*, *edit_columns*, *validators_columns*, *add_form_extra_fields*, *edit_form_extra_fields*

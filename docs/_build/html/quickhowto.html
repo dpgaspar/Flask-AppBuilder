@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Quick Minimal Application" href="quickminimal.html" />
-    <link rel="prev" title="Instalation" href="instalation.html" />
+    <link rel="prev" title="Instalation" href="installation.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -48,7 +48,7 @@
           <a href="quickminimal.html" title="Quick Minimal Application"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="instalation.html" title="Instalation"
+          <a href="installation.html" title="Instalation"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -63,7 +63,7 @@
 <h1>Quick How to<a class="headerlink" href="#quick-how-to" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="the-base-skeleton-application">
 <h2>The Base Skeleton Application<a class="headerlink" href="#the-base-skeleton-application" title="Permalink to this headline">¶</a></h2>
-<p>If your working with the base skeleton application <a class="reference internal" href="instalation.html"><em>Instalation</em></a></p>
+<p>If your working with the base skeleton application <a class="reference internal" href="installation.html"><em>Instalation</em></a></p>
 <p>you now have the following directory structure:</p>
 <div class="highlight-python"><div class="highlight"><pre>&lt;your project name&gt;/
     config.py : All the application&#39;s configuration
@@ -83,7 +83,7 @@
 <p>First we are going to create a <em>Group</em> table, to group our contacts</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a diferent declarative model from the security tables of AppBuilder.
+<p>Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a different declarative model from the security tables of AppBuilder.
 If you want to use AuditMixin <a class="reference internal" href="api.html"><em>API Reference</em></a> or include a relation to a User or login User you must be on the same declarative base.
 Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, import:</p>
 <div class="highlight-python"><div class="highlight"><pre>flask.ext.appbuilder import Base
@@ -127,7 +127,7 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>I hope this was easy enough! Some questions may arrise...</p>
+<p>I hope this was easy enough! Some questions may arise...</p>
 <p>Must have properties:</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -236,10 +236,27 @@ genapp.add_view(ContactGeneralView(), &quot;List Contacts&quot;,icon = &quot;fa-
 <ul class="simple">
 <li><strong>Forms</strong></li>
 </ul>
+<p>You can create a custom query filter for all related columns like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">add_form_query_rel_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;group&#39;</span><span class="p">,</span>
+                <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
+                <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;W&#39;</span><span class="p">]]</span>
+                <span class="p">)</span>
+</pre></div>
+</div>
+<p>This will filter list combo on Contact&#8217;s model related with Group model. The combo will be filtered with entries that start with W. You can define individual filters for add and edit. Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a></p>
 <p>You can define your own Add, Edit forms to override the automatic form creation.</p>
 <p>You can define what columns will be included on a Add or Edit forms, for example if you have automatic fields like user or date, you can remove this from the Add Form.</p>
-<p>You can contribute with any adittionals field that are not on a table, for example a confirmation field.</p>
-<p>You can contribute with your own aditional form validations rules. Remenber the framework will automaticaly validate any field that is defined on the database with <em>Not Null</em> (Required) or Unique constraints.</p>
+<p>You can contribute with any additional field that are not on a table, for example a confirmation field:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">add_form_extra_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;extra&#39;</span><span class="p">:</span> <span class="n">TextField</span><span class="p">(</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;Extra Field&#39;</span><span class="p">),</span>
+                    <span class="n">description</span><span class="o">=</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;Extra Field description&#39;</span><span class="p">),</span>
+                    <span class="n">widget</span><span class="o">=</span><span class="n">BS3TextFieldWidget</span><span class="p">())}</span>
+</pre></div>
+</div>
+<p>You can contribute with your own additional form validations rules. Remember the framework will automatically validate any field that is defined on the database with <em>Not Null</em> (Required) or Unique constraints.</p>
 <p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>. Experiment with <em>add_form</em>, <em>edit_form</em>, <em>add_columns</em>, <em>edit_columns</em>, <em>validators_columns</em>, <em>add_form_extra_fields</em>, <em>edit_form_extra_fields</em></p>
 </div>
 </div>
@@ -265,7 +282,7 @@ genapp.add_view(ContactGeneralView(), &quot;List Contacts&quot;,icon = &quot;fa-
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="instalation.html" title="previous chapter">Instalation</a></li>
+      <li>Previous: <a href="installation.html" title="previous chapter">Instalation</a></li>
       <li>Next: <a href="quickminimal.html" title="next chapter">Quick Minimal Application</a></li>
   </ul></li>
 </ul>

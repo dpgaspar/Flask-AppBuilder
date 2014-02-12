@@ -17,12 +17,13 @@ Your welcome to report bugs, propose new features, or even better contribute to 
 
 
 Contents:
+---------
 
 .. toctree::
    :maxdepth: 1
 
    intro
-   instalation
+   installation
    quickhowto
    quickminimal
    quickcharts

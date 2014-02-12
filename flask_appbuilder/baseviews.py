@@ -360,9 +360,33 @@ class BaseCRUDView(BaseModelView):
     edit_form_extra_fields = None
     """ Dictionary to Add extra fields to the Edit form using this property """
     add_form_query_rel_fields = None
-    """ Dictionary to Add Customized query for related fields on add form """
+    """
+        Add Customized query for related fields on add form.
+        Assign a tuble like ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
+        Add a custom filter to form related fields::
+
+        class ContactGeneralView(GeneralView):
+            datamodel = SQLAModel(Contact, db.session)
+            add_form_query_rel_fields = ('group',
+                        SQLAModel(Group, db.session),
+                        [['name',FilterStartsWith,'W']]
+                        )
+
+    """
     edit_form_query_rel_fields = None
-    """ Dictionary to Add Customized query for related fields on edit form """
+    """
+        Add Customized query for related fields on edit form.
+        Assign a tuble like ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
+        Add a custom filter to form related fields::
+
+        class ContactGeneralView(GeneralView):
+            datamodel = SQLAModel(Contact, db.session)
+            edit_form_query_rel_fields = ('group',
+                        SQLAModel(Group, db.session),
+                        [['name',FilterStartsWith,'W']]
+                        )
+
+    """
 
     add_form = None
     """ To implement your own assign WTF form for Add """
