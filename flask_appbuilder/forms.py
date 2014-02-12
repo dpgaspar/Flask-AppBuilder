@@ -88,7 +88,8 @@ class GeneralModelConverter(object):
                 sqla = filter_rel_fields[1]
                 _filters = Filters().add_filter_list(sqla, filter_rel_fields[2])
                 query_func = lambda: sqla.query(_filters)[1]
-        if not query_func: query_func = lambda: self.datamodel.session.query(rel_model)
+        if not query_func:
+            query_func = lambda: self.datamodel.session.query(rel_model)
         form_props[self.datamodel.get_property_col(prop)] = \
             QuerySelectField(label,
                              description=description,
