@@ -365,9 +365,9 @@ class BaseCRUDView(BaseModelView):
         Assign a tuble like ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
         Add a custom filter to form related fields::
 
-        class ContactGeneralView(GeneralView):
-            datamodel = SQLAModel(Contact, db.session)
-            add_form_query_rel_fields = ('group',
+            class ContactGeneralView(GeneralView):
+                datamodel = SQLAModel(Contact, db.session)
+                add_form_query_rel_fields = ('group',
                         SQLAModel(Group, db.session),
                         [['name',FilterStartsWith,'W']]
                         )
@@ -379,9 +379,9 @@ class BaseCRUDView(BaseModelView):
         Assign a tuble like ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
         Add a custom filter to form related fields::
 
-        class ContactGeneralView(GeneralView):
-            datamodel = SQLAModel(Contact, db.session)
-            edit_form_query_rel_fields = ('group',
+            class ContactGeneralView(GeneralView):
+                datamodel = SQLAModel(Contact, db.session)
+                edit_form_query_rel_fields = ('group',
                         SQLAModel(Group, db.session),
                         [['name',FilterStartsWith,'W']]
                         )
