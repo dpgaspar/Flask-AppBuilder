@@ -23,6 +23,8 @@ class BaseFilter(object):
                 Model field name
             :param datamodel:
                 The datamodel access class
+            :param is_related_view:
+                Optional internal parameter to filter related views
         """
         self.column_name = column_name
         self.datamodel = datamodel

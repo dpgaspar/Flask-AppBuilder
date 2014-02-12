@@ -213,7 +213,7 @@ class BaseModelView(BaseView):
     """ To implement your own add WTF form for Search """
     base_filters = None
     """ 
-        Filter the view use: ['column_name',BaseFilter,'value'] 
+        Filter the view use: [['column_name',BaseFilter,'value'],]
     
         example::
         
@@ -255,8 +255,7 @@ class BaseModelView(BaseView):
     def _base_model_init_forms(self):
         conv = GeneralModelConverter(self.datamodel)
         if not self.search_form:
-            self.search_form = conv.create_form(self.label_columns,
-                {}, {}, [], self.search_columns)
+            self.search_form = conv.create_form(self.label_columns, self.search_columns)
 
 
     def _get_search_widget(self, form=None, exclude_cols=[], widgets={}):
@@ -411,16 +410,18 @@ class BaseCRUDView(BaseModelView):
         conv = GeneralModelConverter(self.datamodel)
         if not self.add_form:
             self.add_form = conv.create_form(self.label_columns,
+                                             self.add_columns,
                                              self.description_columns,
                                              self.validators_columns,
                                              self.add_form_extra_fields,
-                                             self.add_columns)
+                                             self.add_form_query_rel_fields)
         if not self.edit_form:
             self.edit_form = conv.create_form(self.label_columns,
+                                              self.edit_columns,
                                               self.description_columns,
                                               self.validators_columns,
                                               self.edit_form_extra_fields,
-                                              self.edit_columns)
+                                              self.edit_form_query_rel_fields)
 
 
     def _init_titles(self):

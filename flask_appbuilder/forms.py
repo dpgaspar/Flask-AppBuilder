@@ -1,28 +1,29 @@
 import logging
 
-from flask.ext.wtf import (Form, BooleanField, TextField,
-                           TextAreaField,IntegerField, DateField,
-                           SelectFieldBase, SelectField, QuerySelectField, 
-                           QuerySelectMultipleField, HiddenField)
+from flask_wtf import (Form, BooleanField, TextField,
+                       TextAreaField, IntegerField, DateField,
+                       SelectFieldBase, SelectField, QuerySelectField,
+                       QuerySelectMultipleField)
 
-from flask.ext.wtf import Required, Length, validators, EqualTo
-from upload import (BS3FileUploadFieldWidget, 
-                    BS3ImageUploadFieldWidget, 
+from flask_wtf import Required, Length, validators, EqualTo
+from upload import (BS3FileUploadFieldWidget,
+                    BS3ImageUploadFieldWidget,
                     FileUploadField,
                     ImageUploadField)
 from validators import Unique
-from fieldwidgets import (BS3TextAreaFieldWidget, 
-                        BS3TextFieldWidget,
-                        DatePickerWidget,
-                        DateTimePickerWidget, 
-                        Select2Widget,
-                        Select2ManyWidget)
+from fieldwidgets import (BS3TextAreaFieldWidget,
+                          BS3TextFieldWidget,
+                          DatePickerWidget,
+                          DateTimePickerWidget,
+                          Select2Widget,
+                          Select2ManyWidget)
+from .models.filters import Filters
+from .models.datamodel import SQLAModel
 
 log = logging.getLogger(__name__)
 
 
 class FieldConverter(object):
-
     conversion_table = (('is_image', ImageUploadField, BS3ImageUploadFieldWidget),
                         ('is_file', FileUploadField, BS3FileUploadFieldWidget),
                         ('is_text', TextAreaField, BS3TextAreaFieldWidget),
@@ -31,7 +32,7 @@ class FieldConverter(object):
                         ('is_boolean', BooleanField, None),
                         ('is_date', DateField, DatePickerWidget),
                         ('is_datetime', DateField, DateTimePickerWidget),
-                        )
+    )
 
 
     def __init__(self, datamodel, colname, label, description, validators):
@@ -46,17 +47,17 @@ class FieldConverter(object):
             if getattr(self.datamodel, conversion[0])(self.colname):
                 if conversion[2]:
                     return conversion[1](self.label,
-                                    description=self.description,
-                                    validators=self.validators,
-                                    widget=conversion[2]())
+                                         description=self.description,
+                                         validators=self.validators,
+                                         widget=conversion[2]())
                 else:
                     return conversion[1](self.label,
-                                    description=self.description,
-                                    validators=self.validators)
-        log.error('Column %s Type not supported' % (self.colname))        
+                                         description=self.description,
+                                         validators=self.validators)
+        log.error('Column %s Type not supported' % self.colname)
+
 
 class GeneralModelConverter(object):
-
     def __init__(self, datamodel):
         self.datamodel = datamodel
 
@@ -78,22 +79,33 @@ class GeneralModelConverter(object):
         else:
             return ""
 
-    def _convert_many_to_one(self, prop, label, description, lst_validators, form_props):
+    def _convert_many_to_one(self, prop, label, description, lst_validators, filter_rel_fields, form_props):
         rel_model = self.datamodel.get_model_relation(prop)
-        form_props[self.datamodel.get_property_col(prop)] = QuerySelectField(label,
-                description=description,
-                query_factory = lambda: self.datamodel.session.query(rel_model),
-                allow_blank = True,
-                widget=Select2Widget())
+
+        query_func = None
+        if filter_rel_fields:
+            if filter_rel_fields[0] == prop.key:
+                sqla = filter_rel_fields[1]
+                _filters = Filters().add_filter_list(sqla, filter_rel_fields[2])
+                query_func = lambda: sqla.query(_filters)[1]
+        if not query_func: query_func = lambda: self.datamodel.session.query(rel_model)
+        form_props[self.datamodel.get_property_col(prop)] = \
+            QuerySelectField(label,
+                             description=description,
+                             query_factory=query_func,
+                             allow_blank=True,
+                             widget=Select2Widget())
         return form_props
 
-    def _convert_many_to_many(self, prop, label, description, lst_validators, form_props):
+    def _convert_many_to_many(self, prop, label, description, lst_validators, filter_rel_fields, form_props):
         rel_model = self.datamodel.get_model_relation(prop)
-        form_props[self.datamodel.get_property_col(prop)] = QuerySelectMultipleField(label,
-                description=description,
-                query_factory = lambda: self.datamodel.session.query(rel_model),
-                allow_blank=True,
-                widget=Select2ManyWidget())
+        form_props[self.datamodel.get_property_col(prop)] = \
+            QuerySelectMultipleField(label,
+                                     description=description,
+                                     query_factory=lambda: self.datamodel.session.query(
+                                         rel_model),
+                                     allow_blank=True,
+                                     widget=Select2ManyWidget())
         return form_props
 
     def _convert_field(self, col, label, description, lst_validators, form_props):
@@ -108,19 +120,25 @@ class GeneralModelConverter(object):
         form_props[col.name] = fc.convert()
         return form_props
 
-    def _convert_prop(self, prop, label, description, lst_validators, form_props):
+    def _convert_prop(self, prop, label, description, lst_validators, filter_rel_fields, form_props):
         if self.datamodel.is_relation(prop):
             if self.datamodel.is_relation_many_to_one(prop):
-                return self._convert_many_to_one(prop, label, description, lst_validators, form_props)
+                return self._convert_many_to_one(prop, label,
+                                                 description, lst_validators,
+                                                 filter_rel_fields, form_props)
             if self.datamodel.is_relation_many_to_many(prop):
-                return self._convert_many_to_many(prop, label, description, lst_validators, form_props)
+                return self._convert_many_to_many(prop, label,
+                                                  description, lst_validators,
+                                                  filter_rel_fields, form_props)
         else:
             col = self.datamodel.get_property_first_col(prop)
             if not (self.datamodel.is_pk(col) or self.datamodel.is_fk(col)):
                 return self._convert_field(col, label, description, lst_validators, form_props)
 
 
-    def create_form(self, label_columns = {}, description_columns = {} ,validators_columns = {}, extra_fields = {}, inc_columns = []):
+    def create_form(self, label_columns={}, inc_columns=[],
+                    description_columns={}, validators_columns={},
+                    extra_fields={}, filter_rel_fields=[]):
         form_props = {}
         for col in inc_columns:
             if col in extra_fields:
@@ -128,13 +146,13 @@ class GeneralModelConverter(object):
             else:
                 prop = self.datamodel.get_col_property(col)
                 self._convert_prop(prop, self._get_label(col, label_columns),
-                self._get_description(col, description_columns),
-                self._get_validators(col, validators_columns), form_props)
+                                   self._get_description(col, description_columns),
+                                   self._get_validators(col, validators_columns),
+                                   filter_rel_fields, form_props)
         return type('DynamicForm', (DynamicForm,), form_props)
 
 
 class DynamicForm(Form):
-
     @classmethod
     def refresh(self, obj=None):
         form = self(obj=obj)

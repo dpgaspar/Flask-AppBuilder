@@ -5,6 +5,7 @@ from flask.ext.appbuilder.views import GeneralView
 from flask.ext.appbuilder.charts.views import ChartView, TimeChartView, MultipleChartView
 from flask.ext.babelpkg import lazy_gettext as _
 from flask.ext.appbuilder.models.group import GroupByCol
+from flask_appbuilder.models.filters import FilterStartsWith
 
 from app import app, db
 from models import Group, Gender, Contact
@@ -34,6 +35,7 @@ class ContactGeneralView(GeneralView):
          ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
          ]
 
+    add_form_query_rel_fields = ('group', SQLAModel(Group, db.session), [['name',FilterStartsWith,'W']])
 
 class GroupGeneralView(GeneralView):
     datamodel = SQLAModel(Group, db.session)
