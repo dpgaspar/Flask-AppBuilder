@@ -35,7 +35,7 @@ class ContactGeneralView(GeneralView):
          ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
          ]
 
-    add_form_query_rel_fields = ('group', SQLAModel(Group, db.session), [['name',FilterStartsWith,'W']])
+    add_form_query_rel_fields = (('group', SQLAModel(Group, db.session), [['name',FilterStartsWith,'W']]))
 
 class GroupGeneralView(GeneralView):
     datamodel = SQLAModel(Group, db.session)
