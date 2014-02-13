@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.6.5
+-----------------------------------
+
+- Fix, allow to filter multiple related fields on forms. Support for Many to Many relations.
+
 Improvements and Bug fixes on 0.6.4
 -----------------------------------
 

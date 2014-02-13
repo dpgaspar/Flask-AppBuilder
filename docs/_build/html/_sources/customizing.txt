@@ -40,7 +40,7 @@ The default index template is very simple, you can create your own like this:
     </div>
     {% endblock %}
 
-What happened here? We should allways extend from "appbuilder/base.html" this is the base template that will include all CSS's, Javascripts, and contruct the menu based on the user's security definition.
+What happened here? We should always extend from "appbuilder/base.html" this is the base template that will include all CSS's, Javascripts, and contruct the menu based on the user's security definition.
 
 Next we will override the "content" block, we could override other areas like CSS, extend CSS, Javascript or extend javascript. We can even override the base.html completely
 
@@ -52,7 +52,7 @@ So that we can use Babel to translate our index text
 
 2 - Define an IndexView
 
-Define a special and simple view inherite from IndexView::
+Define a special and simple view inherit from IndexView::
 
     class MyIndexView(IndexView):
         index_template = 'index.html'
@@ -167,7 +167,7 @@ Implement your own and then create a very simple class like this one::
 Change Default View Behaviour
 -----------------------------
 
-If you want to have Add, edit and list on the same page, this can be done. This could be very helpfull on master/detail lists (inline) on views based on tables with very few columns.
+If you want to have Add, edit and list on the same page, this can be done. This could be very helpful on master/detail lists (inline) on views based on tables with very few columns.
 
 All you have to do is to mix *CompactCRUDMixin* class with the *GeneralView* class.
 

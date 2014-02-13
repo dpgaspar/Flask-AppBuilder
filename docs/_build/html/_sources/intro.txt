@@ -3,7 +3,7 @@ Introduction
 
 The main goal for this project is to provide a simple development framework that handles the main problems any web application or site encounters.
 
-It's half way between a scafolding package on Bootstrap 3 and a full development framework, it has some goodies built in like image and file handling on forms, and google charts
+It's half way between a scaffolding package on Bootstrap 3 and a full development framework, it has some goodies built in like image and file handling on forms, and google charts
 
 This will lower errors, bugs, project's time to deliver. It's intended to be a rapid application development tool.
 

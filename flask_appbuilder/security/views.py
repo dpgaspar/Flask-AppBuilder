@@ -1,6 +1,5 @@
 from ..fieldwidgets import BS3PasswordFieldWidget
-from flask import render_template, flash, redirect, session, url_for, request, g, \
-    current_app
+from flask import render_template, flash, redirect, session, url_for, request, g
 from openid.consumer import discover
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
 from openid.extensions import ax
@@ -10,8 +9,8 @@ from flask_wtf import EqualTo, PasswordField
 from flask.ext.babelpkg import gettext, lazy_gettext
 from flask_login import login_user, logout_user
 
-from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import BaseView, GeneralView, SimpleFormView, expose
+from flask_appbuilder.models.datamodel import SQLAModel
+from flask_appbuilder.views import BaseView, GeneralView, SimpleFormView, expose
 from ..actions import action
 from forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
 from models import User, Permission, PermissionView, Role, ViewMenu

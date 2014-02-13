@@ -356,18 +356,16 @@ Customize GeneralView overriding this properties</p>
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.add_form_query_rel_fields">
 <tt class="descname">add_form_query_rel_fields</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.add_form_query_rel_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add Customized query for related fields on add form.
-Assign a tuble like (&#8216;relation col name&#8217;,SQLAModel,[[&#8216;Related model col&#8217;,FilterClass,&#8217;Filter Value&#8217;],...])
+Assign a list of tuples like (&#8216;relation col name&#8217;,SQLAModel,[[&#8216;Related model col&#8217;,FilterClass,&#8217;Filter Value&#8217;],...])
 Add a custom filter to form related fields:</p>
-<dl class="docutils">
-<dt>class ContactGeneralView(GeneralView):</dt>
-<dd><p class="first">datamodel = SQLAModel(Contact, db.session)
-add_form_query_rel_fields = (&#8216;group&#8217;,</p>
-<blockquote class="last">
-<div>SQLAModel(Group, db.session),
-[[&#8216;name&#8217;,FilterStartsWith,&#8217;W&#8217;]]
-)</div></blockquote>
-</dd>
-</dl>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">add_form_query_rel_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;group&#39;</span><span class="p">,</span>
+            <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
+            <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;W&#39;</span><span class="p">]]</span>
+            <span class="p">)]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="attribute">
@@ -440,18 +438,16 @@ add_form_query_rel_fields = (&#8216;group&#8217;,</p>
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form_query_rel_fields">
 <tt class="descname">edit_form_query_rel_fields</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form_query_rel_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add Customized query for related fields on edit form.
-Assign a tuble like (&#8216;relation col name&#8217;,SQLAModel,[[&#8216;Related model col&#8217;,FilterClass,&#8217;Filter Value&#8217;],...])
+Assign a list of tuples like (&#8216;relation col name&#8217;,SQLAModel,[[&#8216;Related model col&#8217;,FilterClass,&#8217;Filter Value&#8217;],...])
 Add a custom filter to form related fields:</p>
-<dl class="docutils">
-<dt>class ContactGeneralView(GeneralView):</dt>
-<dd><p class="first">datamodel = SQLAModel(Contact, db.session)
-edit_form_query_rel_fields = (&#8216;group&#8217;,</p>
-<blockquote class="last">
-<div>SQLAModel(Group, db.session),
-[[&#8216;name&#8217;,FilterStartsWith,&#8217;W&#8217;]]
-)</div></blockquote>
-</dd>
-</dl>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">edit_form_query_rel_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;group&#39;</span><span class="p">,</span>
+            <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
+            <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;W&#39;</span><span class="p">]]</span>
+            <span class="p">)]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="attribute">

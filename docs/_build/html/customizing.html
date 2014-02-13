@@ -96,7 +96,7 @@
 {% endblock %}
 </pre></div>
 </div>
-<p>What happened here? We should allways extend from &#8220;appbuilder/base.html&#8221; this is the base template that will include all CSS&#8217;s, Javascripts, and contruct the menu based on the user&#8217;s security definition.</p>
+<p>What happened here? We should always extend from &#8220;appbuilder/base.html&#8221; this is the base template that will include all CSS&#8217;s, Javascripts, and contruct the menu based on the user&#8217;s security definition.</p>
 <p>Next we will override the &#8220;content&#8221; block, we could override other areas like CSS, extend CSS, Javascript or extend javascript. We can even override the base.html completely</p>
 <p>I&#8217;ve presented the text on the content like:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="p">{{</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;text to be translated&quot;</span><span class="p">)}}</span>
@@ -104,7 +104,7 @@
 </div>
 <p>So that we can use Babel to translate our index text</p>
 <p>2 - Define an IndexView</p>
-<p>Define a special and simple view inherite from IndexView:</p>
+<p>Define a special and simple view inherit from IndexView:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyIndexView</span><span class="p">(</span><span class="n">IndexView</span><span class="p">):</span>
     <span class="n">index_template</span> <span class="o">=</span> <span class="s">&#39;index.html&#39;</span>
 </pre></div>
@@ -208,7 +208,7 @@
 </div>
 <div class="section" id="change-default-view-behaviour">
 <h2>Change Default View Behaviour<a class="headerlink" href="#change-default-view-behaviour" title="Permalink to this headline">¶</a></h2>
-<p>If you want to have Add, edit and list on the same page, this can be done. This could be very helpfull on master/detail lists (inline) on views based on tables with very few columns.</p>
+<p>If you want to have Add, edit and list on the same page, this can be done. This could be very helpful on master/detail lists (inline) on views based on tables with very few columns.</p>
 <p>All you have to do is to mix <em>CompactCRUDMixin</em> class with the <em>GeneralView</em> class.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseapp</span> <span class="kn">import</span> <span class="n">BaseApp</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.datamodel</span> <span class="kn">import</span> <span class="n">SQLAModel</span>

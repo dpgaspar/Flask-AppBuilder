@@ -79,18 +79,19 @@ class GeneralModelConverter(object):
         else:
             return ""
 
-    def _convert_many_to_one(self, prop, label, description, lst_validators, filter_rel_fields, form_props):
-        rel_model = self.datamodel.get_model_relation(prop)
-
-        query_func = None
+    def _get_func_related_query(self, prop, filter_rel_fields):
         if filter_rel_fields:
-            for filter_rel_field in filter_rel_fields:                                
+            for filter_rel_field in filter_rel_fields:
                 if filter_rel_field[0] == prop.key:
-                    sqla = filter_rel_fields[1]
-                    _filters = Filters().add_filter_list(sqla, filter_rel_fields[2])
-                    query_func = lambda: sqla.query(_filters)[1]
-        if not query_func:
-            query_func = lambda: self.datamodel.session.query(rel_model)
+                    sqla = filter_rel_field[1]
+                    _filters = Filters().add_filter_list(sqla, filter_rel_field[2])
+                    return lambda: sqla.query(_filters)[1]
+        rel_model = self.datamodel.get_model_relation(prop)
+        return lambda: self.datamodel.session.query(rel_model)
+
+
+    def _convert_many_to_one(self, prop, label, description, filter_rel_fields, form_props):
+        query_func = self._get_func_related_query(prop, filter_rel_fields)
         form_props[self.datamodel.get_property_col(prop)] = \
             QuerySelectField(label,
                              description=description,
@@ -99,13 +100,12 @@ class GeneralModelConverter(object):
                              widget=Select2Widget())
         return form_props
 
-    def _convert_many_to_many(self, prop, label, description, lst_validators, filter_rel_fields, form_props):
-        rel_model = self.datamodel.get_model_relation(prop)
+    def _convert_many_to_many(self, prop, label, description, filter_rel_fields, form_props):
+        query_func = self._get_func_related_query(prop, filter_rel_fields)
         form_props[self.datamodel.get_property_col(prop)] = \
             QuerySelectMultipleField(label,
                                      description=description,
-                                     query_factory=lambda: self.datamodel.session.query(
-                                         rel_model),
+                                     query_factory=query_func,
                                      allow_blank=True,
                                      widget=Select2ManyWidget())
         return form_props
@@ -126,11 +126,11 @@ class GeneralModelConverter(object):
         if self.datamodel.is_relation(prop):
             if self.datamodel.is_relation_many_to_one(prop):
                 return self._convert_many_to_one(prop, label,
-                                                 description, lst_validators,
+                                                 description,
                                                  filter_rel_fields, form_props)
             if self.datamodel.is_relation_many_to_many(prop):
                 return self._convert_many_to_many(prop, label,
-                                                  description, lst_validators,
+                                                  description,
                                                   filter_rel_fields, form_props)
         else:
             col = self.datamodel.get_property_first_col(prop)
@@ -140,7 +140,7 @@ class GeneralModelConverter(object):
 
     def create_form(self, label_columns={}, inc_columns=[],
                     description_columns={}, validators_columns={},
-                    extra_fields={}, filter_rel_fields=[]):
+                    extra_fields={}, filter_rel_fields=None):
         form_props = {}
         for col in inc_columns:
             if col in extra_fields:

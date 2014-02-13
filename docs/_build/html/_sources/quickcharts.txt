@@ -36,7 +36,7 @@ How about a chart grouped by a time frame? This is new on 0.2.0::
         group_by_columns = ['birthday']
         datamodel = SQLAModel(Contact, db.session)
 
-this will produce a column chart, with the number of contacts that have borned on a particular month or year.
+this will produce a column chart, with the number of contacts that were born on a particular month or year.
 
 Register (views.py)
 -------------------
@@ -48,7 +48,7 @@ Register everything, to present your charts and create the menu::
 
 You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto
 
-Take a look at the :doc:`api`. For aditional costumization
+Take a look at the :doc:`api`. For additional customization
 
 
 Some images:

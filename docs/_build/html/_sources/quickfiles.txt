@@ -42,7 +42,7 @@ Notice:
 
 We are overriding the list_widget, the widget that is normally used by GeneralView. This will display a thumbnail list excelent for displaying images.
 
-And thats it! images will be saved on the server has UUID's and will be resized for optimization.
+And that's it! images will be saved on the server has UUID's and will be resized for optimization.
 
 Next step
 ---------

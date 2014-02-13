@@ -199,20 +199,33 @@ You can create a custom query filter for all related columns like this::
 
     class ContactGeneralView(GeneralView):
         datamodel = SQLAModel(Contact, db.session)
-        add_form_query_rel_fields = ('group',
+        add_form_query_rel_fields = [('group',
                     SQLAModel(Group, db.session),
                     [['name',FilterStartsWith,'W']]
-                    )
+                    )]
 
 
 This will filter list combo on Contact's model related with Group model. The combo will be filtered with entries that start with W. You can define individual filters for add and edit. Take a look at the :doc:`api`
+If you want to filter multiple related fields just add tuples to the list, remember you can add multiple filters for each field also, take a look at the *base_filter* property::
+
+    class ContactGeneralView(GeneralView):
+        datamodel = SQLAModel(Contact, db.session)
+        add_form_query_rel_fields = [('group',
+                    SQLAModel(Group, db.session),
+                    [['name',FilterStartsWith,'W']]
+                    ),
+                    ('gender',
+                    SQLAModel(Gender, db.session),
+                    [['name',FilterStartsWith,'M']]
+                    )
+        ]
 
 
 You can define your own Add, Edit forms to override the automatic form creation.
 
 You can define what columns will be included on a Add or Edit forms, for example if you have automatic fields like user or date, you can remove this from the Add Form.
 
-You can contribute with any additional field that are not on a table, for example a confirmation field::
+You can contribute with any additional field that are not on a table/model, for example a confirmation field::
 
     class ContactGeneralView(GeneralView):
         datamodel = SQLAModel(Contact, db.session)
