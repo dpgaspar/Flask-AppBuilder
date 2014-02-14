@@ -31,7 +31,7 @@ First we are going to create a *Group* table, to group our contacts
 
 .. note::
 	Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a different declarative model from the security tables of AppBuilder.
-	If you want to use AuditMixin :doc:`api` or include a relation to a User or login User you must be on the same declarative base.
+	If you want to use AuditMixin :doc:`api` or include a relation to a User or login User, you must be on the same declarative base.
 	Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, import::
 
 		flask.ext.appbuilder import Base
@@ -249,6 +249,6 @@ If you want to filter multiple related fields just add tuples to the list, remem
     class MyView(GeneralView):
         datamodel = SQLAModel(MyModel, db.session)
         validators_columns = {'my_field1':[EqualTo('my_field2', message=gettext(
-                                                                'fields must match'))]
+                                                                'fields must match'))}
 
 Take a look at the :doc:`api`. Experiment with *add_form*, *edit_form*, *add_columns*, *edit_columns*, *validators_columns*, *add_form_extra_fields*, *edit_form_extra_fields*
