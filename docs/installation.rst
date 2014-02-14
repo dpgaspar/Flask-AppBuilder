@@ -21,6 +21,14 @@ That's it!!
 
 The git clone is not actually needed for you to run AppBuilder. but it's a good way to start.
 
+Initialization
+--------------
+
+When starting your application for the first time, all your models and AppBuilder security tables will be created for you.
+
+**The 'admin' user password will be 'general'**. Change it on your first access using the application.
+(Click the username on the navigation bar, then choose 'Reset Password')
+
 What requirements were instaled
 -------------------------------
 
@@ -43,10 +51,3 @@ or::
 
     pip install PIL
 
-Initialization
---------------
-
-When starting your application for the first time, all your models and AppBuilder security tables will be created for you.
- 
-The 'admin' user password will be 'general'. Change it on your first access using the application.
-(Click the username on the navigation bar, then choose 'Reset Password')
