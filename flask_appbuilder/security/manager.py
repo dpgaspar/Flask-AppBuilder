@@ -25,7 +25,6 @@ AUTH_LDAP = 2
 
 
 class SecurityManager(object):
-
     session = None
     auth_type = 1
     auth_role_admin = ""
@@ -46,11 +45,11 @@ class SecurityManager(object):
         self.auth_type = self._get_auth_type(app)
         self.auth_role_admin = self._get_auth_role_admin(app)
         self.auth_role_public = self._get_auth_role_public(app)
-                    
+
         self.lm = LoginManager(app)
         self.lm.login_view = 'login'
         self.oid = OpenID(app)
-        self.lm.user_loader(self.load_user)        
+        self.lm.user_loader(self.load_user)
         self.init_db()
 
     def register_views(self, baseapp):
@@ -59,52 +58,58 @@ class SecurityManager(object):
 
         if self._get_auth_type(baseapp.app) == AUTH_DB:
             user_view = baseapp._init_view_session(UserDBGeneralView)
-            self.auth_view = AuthDBView()            
+            self.auth_view = AuthDBView()
         else:
             user_view = baseapp._init_view_session(UserOIDGeneralView)
-            self.auth_view = AuthOIDView()            
+            self.auth_view = AuthOIDView()
             self.oid.after_login_func = self.auth_view.after_login
-        
+
         baseapp.add_view_no_menu(self.auth_view)
-        
+
         baseapp.add_view(user_view, "List Users"
-                                        ,"/users/list","fa-user",
-                                        "Security")
-                 
-        role_view = baseapp._init_view_session(RoleGeneralView)                       
-        baseapp.add_view(role_view, "List Roles","/roles/list","fa-group","Security")
+                         , "/users/list", "fa-user",
+                         "Security")
+
+        role_view = baseapp._init_view_session(RoleGeneralView)
+        baseapp.add_view(role_view, "List Roles", "/roles/list", "fa-group", "Security")
         role_view.related_views = [user_view.__class__]
         baseapp.menu.add_separator("Security")
-        baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView), "Base Permissions","/permissions/list","fa-lock","Security")
-        baseapp.add_view(baseapp._init_view_session(ViewMenuGeneralView), "Views/Menus","/viewmenus/list","fa-list-alt","Security")
-        baseapp.add_view(baseapp._init_view_session(PermissionGeneralView), "Permission on Views/Menus","/permissionviews/list","fa-link","Security")
+        baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView), "Base Permissions", "/permissions/list",
+                         "fa-lock", "Security")
+        baseapp.add_view(baseapp._init_view_session(ViewMenuGeneralView), "Views/Menus", "/viewmenus/list",
+                         "fa-list-alt", "Security")
+        baseapp.add_view(baseapp._init_view_session(PermissionGeneralView), "Permission on Views/Menus",
+                         "/permissionviews/list", "fa-link", "Security")
 
 
     def load_user(self, pk):
         return self.get_user_by_id(int(pk))
 
-    def before_request(self):
+    @staticmethod
+    def before_request():
         g.user = current_user
 
     def migrate_get_new_obj(self, old_obj, new_obj):
         for col in old_obj.keys():
-            setattr(new_obj,col,getattr(old_obj,col))
+            setattr(new_obj, col, getattr(old_obj, col))
         return new_obj
-        
+
     def migrate_obj(self, old_table, new_class):
         old_objs = self.session.query(old_table).all()
         for old_obj in old_objs:
             new_obj = self.migrate_get_new_obj(old_obj, new_class())
             self.session.add(new_obj)
             self.session.commit()
-       
+
     def quick_mapper(self, table):
         Base = declarative_base()
+
         class GenericMapper(Base):
             __table__ = table
+
         return GenericMapper
-            
-       
+
+
     def migrate_db(self):
         """
             Migrate security tables from Flask-AppBuilder 0.2.X to 0.3.X
@@ -112,53 +117,52 @@ class SecurityManager(object):
         engine = self.session.get_bind(mapper=None, clause=None)
         inspector = Inspector.from_engine(engine)
         if 'user' in inspector.get_table_names() and 'role' in inspector.get_table_names() and 'permission' in inspector.get_table_names():
-            
             print "Found previous security tables, migrating..."
-            
+
             metadata = MetaData(engine)
 
-            old_user = Table('user', metadata, autoload=True) 
+            old_user = Table('user', metadata, autoload=True)
             old_role = Table('role', metadata, autoload=True)
             old_permission = Table('permission', metadata, autoload=True)
             old_permission_view = Table('permission_view', metadata, autoload=True)
             old_view_menu = Table('view_menu', metadata, autoload=True)
             old_permission_view_role = Table('permission_view_role', metadata, autoload=True)
-                        
+
             print "Migrating Views and Menus"
-            self.migrate_obj(old_view_menu, ViewMenu)            
-                        
+            self.migrate_obj(old_view_menu, ViewMenu)
+
             print "Migrating Permissions"
             self.migrate_obj(old_permission, Permission)
-                
+
             print "Migrating Permissions on Views"
             self.migrate_obj(old_permission_view, PermissionView)
-                                    
+
             print "Migrating Roles"
             self.migrate_obj(old_role, Role)
-            
+
             print "Migrating Roles to Permissions on Views"
-            self.migrate_obj(old_permission_view_role, self.quick_mapper(assoc_permissionview_role))            
-            
+            self.migrate_obj(old_permission_view_role, self.quick_mapper(assoc_permissionview_role))
+
             print "Migrating Users"
             self.migrate_obj(old_user, User)
 
-    
+
     def init_db(self):
-        engine = self.session.get_bind(mapper=None, clause=None)        
-        
+        engine = self.session.get_bind(mapper=None, clause=None)
+
         inspector = Inspector.from_engine(engine)
         if 'ab_user' not in inspector.get_table_names():
             log.info("Security DB not found Creating")
             Base.metadata.create_all(engine)
             log.info("Security DB Created")
             self.migrate_db()
-        if self.session.query(Role).filter_by(name = self.auth_role_admin).first() is None:
+        if self.session.query(Role).filter_by(name=self.auth_role_admin).first() is None:
             role = Role()
             role.name = self.auth_role_admin
             self.session.add(role)
             self.session.commit()
             log.info("Inserted Role for public access %s" % (self.auth_role_admin))
-        if not self.session.query(Role).filter_by(name = self.auth_role_public).first():
+        if not self.session.query(Role).filter_by(name=self.auth_role_public).first():
             role = Role()
             role.name = self.auth_role_public
             self.session.add(role)
@@ -171,51 +175,50 @@ class SecurityManager(object):
             user.username = 'admin'
             user.password = 'general'
             user.active = True
-            user.role = self.session.query(Role).filter_by(name = self.auth_role_admin).first()
+            user.role = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
             self.session.add(user)
             self.session.commit()
             log.info("Inserted initial Admin user")
             log.info("Login using Admin/general")
-        
-        
-  
+
+
     def auth_user_db(self, username, password):
         if username is None or username == "":
             return None
-        user = self.session.query(User).filter_by(username = username, password = password).first()
+        user = self.session.query(User).filter_by(username=username, password=password).first()
         if user is None or (not user.is_active()):
             return None
         else:
             return user
-    
+
     def auth_user_oid(self, email):
-        user = self.session.query(User).filter_by(email = email).first()
+        user = self.session.query(User).filter_by(email=email).first()
         if user is None or (not user.is_active()):
             return None
         else:
             return user
-  
+
     def reset_password(self, userid, password):
         user = self.get_user_by_id(userid)
         user.password = password
         self.session.commit()
-    
+
     def get_user_by_id(self, pk):
         return self.session.query(User).get(pk)
-  
-  
+
+
     def _get_auth_type(self, app):
         if 'AUTH_TYPE' in app.config:
             return app.config['AUTH_TYPE']
         else:
             return AUTH_DB
-      
+
     def _get_auth_role_admin(self, app):
         if 'AUTH_ROLE_ADMIN' in app.config:
             return app.config['AUTH_ROLE_ADMIN']
         else:
             return 'Admin'
-      
+
     def _get_auth_role_public(self, app):
         """
             To retrive the name of the public role
@@ -224,8 +227,8 @@ class SecurityManager(object):
             return app.config['AUTH_ROLE_PUBLIC']
         else:
             return 'Public'
-  
-    
+
+
     def is_item_public(self, permission_name, view_name):
         """
             Check if view has public permissions
@@ -236,16 +239,17 @@ class SecurityManager(object):
                 the name of the class view (child of BaseView)
         """
 
-        role = self.session.query(Role).filter_by(name = self.auth_role_public).first()
+        role = self.session.query(Role).filter_by(name=self.auth_role_public).first()
         lst = role.permissions
         if lst:
             for i in lst:
                 if (view_name == i.view_menu.name) and (permission_name == i.permission.name):
                     return True
             return False
-        else: return False
-        
-    
+        else:
+            return False
+
+
     def has_view_access(self, user, permission_name, view_name):
         lst = user.role.permissions
         if lst:
@@ -253,25 +257,26 @@ class SecurityManager(object):
                 if (view_name == i.view_menu.name) and (permission_name == i.permission.name):
                     return True
             return False
-        else: return False
-    
-    
+        else:
+            return False
+
+
     def has_access(self, permission_name, view_name):
         """
             Check if current user or public has access to view or menu
         """
         if current_user.is_authenticated():
             if self.has_view_access(g.user, permission_name, view_name):
-               return True
+                return True
             else:
-               return False
+                return False
         else:
             if self.is_item_public(permission_name, view_name):
                 return True
             else:
                 return False
         return False
-    
+
     def _add_permission(self, name):
         """
             Adds a permission to the backend, model permission
@@ -279,7 +284,7 @@ class SecurityManager(object):
             :param name:
                 name of the permission to add: 'can_add','can_edit' etc...
         """
-        perm = self.session.query(Permission).filter_by(name = name).first()
+        perm = self.session.query(Permission).filter_by(name=name).first()
         if perm == None:
             perm = Permission()
             perm.name = name
@@ -287,16 +292,16 @@ class SecurityManager(object):
             self.session.commit()
             return perm
         return perm
-        
-        
+
+
     def _add_view_menu(self, view_name):
         """
             Adds a view or menu to the backend, model view_menu
             param name:
                 name of the view menu to add
         """
-        view_menu = self.session.query(ViewMenu).filter_by(name = view_name).first()
-        if view_menu == None:
+        view_menu = self.session.query(ViewMenu).filter_by(name=view_name).first()
+        if view_menu is None:
             view_menu = ViewMenu()
             view_menu.name = view_name
             self.session.add(view_menu)
@@ -321,28 +326,28 @@ class SecurityManager(object):
         self.session.commit()
         log.info("Added Permission View %s" % (str(pv)))
         return pv
-    
+
     def _del_permission_view_menu(self, permission_name, view_menu_name):
-        perm = self.session.query(Permission).filter_by(name = permission_name).first()
-        vm = self.session.query(ViewMenu).filter_by(name = view_menu_name).first()
-        pv = self.session.query(PermissionView).filter_by(permission = perm, view_menu = vm).first()
+        perm = self.session.query(Permission).filter_by(name=permission_name).first()
+        vm = self.session.query(ViewMenu).filter_by(name=view_menu_name).first()
+        pv = self.session.query(PermissionView).filter_by(permission=perm, view_menu=vm).first()
         # delete permission on view
-        self.session.delete(pv)        
+        self.session.delete(pv)
         self.session.commit()
         # if last permission delete permission
-        pv = self.session.query(PermissionView).filter_by(permission = perm).all()
+        pv = self.session.query(PermissionView).filter_by(permission=perm).all()
         if not pv:
             self.session.delete(perm)
             self.session.commit()
         log.info("Removed Permission View %s" % (str(permission_name)))
-        
-    
+
+
     def _find_permission(self, lst, item):
         for i in lst:
             if i.permission.name == item:
                 return True
         return False
-    
+
     def add_permissions_view(self, base_permissions, view_menu):
         """
             Adds a permission on a view menu to the backend
@@ -352,22 +357,22 @@ class SecurityManager(object):
             :param view_menu:
                 name of the view or menu to add
         """
-        view_menu_db = self.session.query(ViewMenu).filter_by(name = view_menu).first()
-        if view_menu_db == None:
+        view_menu_db = self.session.query(ViewMenu).filter_by(name=view_menu).first()
+        if view_menu_db is None:
             view_menu_db = self._add_view_menu(view_menu)
-        lst = self.session.query(PermissionView).filter_by(view_menu_id = view_menu_db.id).all()
-        
-        if lst == []:
+        lst = self.session.query(PermissionView).filter_by(view_menu_id=view_menu_db.id).all()
+
+        if lst:
             # No permissions for this view
             for permission in base_permissions:
                 pv = self._add_permission_view_menu(permission, view_menu)
-                role_admin = self.session.query(Role).filter_by(name = self.auth_role_admin).first()
+                role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
                 self.add_permission_role(role_admin, pv)
         else:
             for permission in base_permissions:
                 if not self._find_permission(lst, permission):
                     pv = self._add_permission_view_menu(permission, view_menu)
-                    role_admin = self.session.query(Role).filter_by(name = self.auth_role_admin).first()
+                    role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
                     self.add_permission_role(role_admin, pv)
             for item in lst:
                 if item.permission.name not in base_permissions:
@@ -378,7 +383,7 @@ class SecurityManager(object):
                     for role in roles:
                         self.del_permission_role(role, pv)
                     self._del_permission_view_menu(item.permission.name, view_menu)
-            
+
 
     def add_permissions_menu(self, view_menu_name):
         """
@@ -387,13 +392,13 @@ class SecurityManager(object):
             :param view_menu_name:
                 The menu name
         """
-        view_menu = self.session.query(ViewMenu).filter_by(name = view_menu_name).first()
-        if view_menu == None:
+        view_menu = self.session.query(ViewMenu).filter_by(name=view_menu_name).first()
+        if view_menu is None:
             view_menu = self._add_view_menu(view_menu_name)
-        lst = self.session.query(PermissionView).filter_by(view_menu_id = view_menu.id).all()
-        if lst == []:
+        lst = self.session.query(PermissionView).filter_by(view_menu_id=view_menu.id).all()
+        if lst:
             pv = self._add_permission_view_menu('menu_access', view_menu_name)
-            role_admin = self.session.query(Role).filter_by(name = self.auth_role_admin).first()
+            role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
             self.add_permission_role(role_admin, pv)
 
     def add_permission_role(self, role, perm_view):

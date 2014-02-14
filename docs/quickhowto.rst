@@ -221,7 +221,9 @@ If you want to filter multiple related fields just add tuples to the list, remem
         ]
 
 
-You can define your own Add, Edit forms to override the automatic form creation.
+You can define your own Add, Edit forms to override the automatic form creation::
+
+
 
 You can define what columns will be included on a Add or Edit forms, for example if you have automatic fields like user or date, you can remove this from the Add Form.
 
