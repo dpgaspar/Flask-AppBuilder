@@ -6,16 +6,33 @@ Configuration keys
 
 Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap 3.0.0 base theme:
 
-    :SQLALCHEMY_DATABASE_URI: Database connection string
-    :AUTH_TYPE: This is the authentication type
-        - 0 = Open ID
-        - 1 = Database style (user/password)
-    :AUTH_ROLE_ADMIN: Configure the name of the admin role. 
-    :AUTH_ROLE_PUBLIC: Special Role that holds the public permissions, no authentication needed.
-    :APP_NAME: The name of your application.
-    :APP_THEME: Various themes for you to choose from (bootwatch).
-    :APP_ICON: path of your application icon, will be shown on the left side of the menu
-    :UPLOAD_FOLDER: Files upload folder. Mandatory for file uploads.
++-----------------------------------+--------------------------------------------+-----------+
+| Key                               | Description                                |           |
++===================================+============================================+===========+
+| SQLALCHEMY_DATABASE_URI           | Database connection string                 |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_TYPE = 0 | 1                 | This is the authentication type            |           |
+|                                   |  - 0 = Open ID                             |           |
+|                                   |  - 1 = Database style (user/password)      |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_ROLE_ADMIN                   | Configure the name of the admin role.      |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_ROLE_PUBLIC                  | Special Role that holds the public         |           |
+|                                   | permissions, no authentication needed.     |           |
++-----------------------------------+--------------------------------------------+-----------+
+| APP_NAME                          | The name of your application.              |           |
++-----------------------------------+--------------------------------------------+-----------+
+| APP_THEME                         | Various themes for you to choose           |           |
+|                                   | from (bootwatch).                          |           |
++-----------------------------------+--------------------------------------------+-----------+
+| APP_ICON                          | path of your application icons             |           |
+|                                   | will be shown on the left side of the menu |           |
++-----------------------------------+--------------------------------------------+-----------+
+| UPLOAD_FOLDER                     | Files upload folder.                       |           |
+|                                   | Mandatory for file uploads.                |           |
++-----------------------------------+--------------------------------------------+-----------+
+
+
     :IMG_UPLOAD_FOLDER: Image upload folder. Mandatory for image uploads.
     :IMG_UPLOAD_URL: Image relative URL. Mandatory for image uploads.
     :IMG_SIZE: tuple to define image resize, (width, height, True|False).
