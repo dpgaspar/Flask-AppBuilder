@@ -21,9 +21,10 @@ Use config.py to configure the following parameters. By default it will use SQLL
     :IMG_SIZE: tuple to define image resize, (width, height, True|False).
     :BABEL_DEFAULT_LOCALE: Babel's default language.
     :LANGUAGES: A dictionary mapping the existing languages with the countries name and flag
- 
- Using config.py
- ---------------
+
+
+Using config.py
+---------------
  
  My favorite way, and the one i advise if you are building a medium to large size application is to place all you configuration key on a config.py file
  
