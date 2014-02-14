@@ -223,9 +223,17 @@ If you want to filter multiple related fields just add tuples to the list, remem
 
 You can define your own Add, Edit forms to override the automatic form creation::
 
+    class MyView(GeneralView):
+        datamodel = SQLAModel(MyModel, db.session)
+        add_form = AddFormWTF
 
 
-You can define what columns will be included on a Add or Edit forms, for example if you have automatic fields like user or date, you can remove this from the Add Form.
+You can define what columns will be included on a Add or Edit forms, for example if you have automatic fields like user or date, you can remove this from the Add Form::
+
+    class MyView(GeneralView):
+        datamodel = SQLAModel(MyModel, db.session)
+        add_columns = ['my_field1','my_field2']
+        edit_columns = ['my_field1']
 
 You can contribute with any additional field that are not on a table/model, for example a confirmation field::
 
@@ -236,6 +244,11 @@ You can contribute with any additional field that are not on a table/model, for 
                         widget=BS3TextFieldWidget())}
 
 
-You can contribute with your own additional form validations rules. Remember the framework will automatically validate any field that is defined on the database with *Not Null* (Required) or Unique constraints.
+You can contribute with your own additional form validations rules. Remember the framework will automatically validate any field that is defined on the database with *Not Null* (Required) or Unique constraints::
+
+    class MyView(GeneralView):
+        datamodel = SQLAModel(MyModel, db.session)
+        validators_columns = {'my_field1':[EqualTo('my_field2', message=gettext(
+                                                                'fields must match'))]
 
 Take a look at the :doc:`api`. Experiment with *add_form*, *edit_form*, *add_columns*, *edit_columns*, *validators_columns*, *add_form_extra_fields*, *edit_form_extra_fields*
