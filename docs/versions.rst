@@ -1,6 +1,13 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.6.6
+-----------------------------------
+
+- New, automatic support for required field validation on related dropdown lists.
+- Fix, does not allow empty passwords on user creation.
+- Fix, does not allow a user without a role assigned.
+
 Improvements and Bug fixes on 0.6.5
 -----------------------------------
 

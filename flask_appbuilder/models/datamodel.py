@@ -423,6 +423,10 @@ class SQLAModel(DataModel):
         # support for only one col for pk and fk
         return prop.columns[0]
 
+    def get_relation_fk(self, prop):
+        # support for only one col for pk and fk
+        return list(prop.local_columns)[0]
+
     def get_col_property(self, col_name):
         for prop in self.get_properties_iterator():
             if col_name == prop.key:

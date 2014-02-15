@@ -362,7 +362,7 @@ class SecurityManager(object):
             view_menu_db = self._add_view_menu(view_menu)
         lst = self.session.query(PermissionView).filter_by(view_menu_id=view_menu_db.id).all()
 
-        if lst:
+        if not lst:
             # No permissions for this view
             for permission in base_permissions:
                 pv = self._add_permission_view_menu(permission, view_menu)
@@ -396,7 +396,7 @@ class SecurityManager(object):
         if view_menu is None:
             view_menu = self._add_view_menu(view_menu_name)
         lst = self.session.query(PermissionView).filter_by(view_menu_id=view_menu.id).all()
-        if lst:
+        if not lst:
             pv = self._add_permission_view_menu('menu_access', view_menu_name)
             role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
             self.add_permission_role(role_admin, pv)

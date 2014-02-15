@@ -29,9 +29,9 @@ class Contact(BaseMixin, Base):
     birthday = Column(Date, nullable=True)
     personal_phone = Column(String(20))
     personal_celphone = Column(String(20))
-    group_id = Column(Integer, ForeignKey('group.id'))
+    group_id = Column(Integer, ForeignKey('group.id'), nullable=False)
     group = relationship("Group")
-    gender_id = Column(Integer, ForeignKey('gender.id'))
+    gender_id = Column(Integer, ForeignKey('gender.id'), nullable=False)
     gender = relationship("Gender")
 
     def __repr__(self):

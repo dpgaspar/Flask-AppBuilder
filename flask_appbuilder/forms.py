@@ -1,11 +1,10 @@
 import logging
 
 from flask_wtf import (Form, BooleanField, TextField,
-                       TextAreaField, IntegerField, DateField,
-                       SelectFieldBase, SelectField, QuerySelectField,
+                       TextAreaField, IntegerField, DateField, QuerySelectField,
                        QuerySelectMultipleField)
 
-from flask_wtf import Required, Length, validators, EqualTo
+from flask_wtf import validators
 from upload import (BS3FileUploadFieldWidget,
                     BS3ImageUploadFieldWidget,
                     FileUploadField,
@@ -90,23 +89,35 @@ class GeneralModelConverter(object):
         return lambda: self.datamodel.session.query(rel_model)
 
 
-    def _convert_many_to_one(self, prop, label, description, filter_rel_fields, form_props):
+    def _convert_many_to_one(self, prop, label, description,
+                             lst_validators, filter_rel_fields, form_props):
         query_func = self._get_func_related_query(prop, filter_rel_fields)
+        allow_blank = True
+        col = self.datamodel.get_relation_fk(prop)
+        if not col.nullable:
+            lst_validators.append(validators.Required())
+            allow_blank = False
+        else:
+            lst_validators.append(validators.Optional())
         form_props[self.datamodel.get_property_col(prop)] = \
             QuerySelectField(label,
                              description=description,
                              query_factory=query_func,
-                             allow_blank=True,
+                             allow_blank=allow_blank,
+                             validators=lst_validators,
                              widget=Select2Widget())
         return form_props
 
-    def _convert_many_to_many(self, prop, label, description, filter_rel_fields, form_props):
+    def _convert_many_to_many(self, prop, label, description,
+                              lst_validators, filter_rel_fields, form_props):
         query_func = self._get_func_related_query(prop, filter_rel_fields)
+        allow_blank = True
         form_props[self.datamodel.get_property_col(prop)] = \
             QuerySelectMultipleField(label,
                                      description=description,
                                      query_factory=query_func,
-                                     allow_blank=True,
+                                     allow_blank=allow_blank,
+                                     validators=lst_validators,
                                      widget=Select2ManyWidget())
         return form_props
 
@@ -127,10 +138,12 @@ class GeneralModelConverter(object):
             if self.datamodel.is_relation_many_to_one(prop):
                 return self._convert_many_to_one(prop, label,
                                                  description,
+                                                 lst_validators,
                                                  filter_rel_fields, form_props)
             if self.datamodel.is_relation_many_to_many(prop):
                 return self._convert_many_to_many(prop, label,
                                                   description,
+                                                  lst_validators,
                                                   filter_rel_fields, form_props)
         else:
             col = self.datamodel.get_property_first_col(prop)

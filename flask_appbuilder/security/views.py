@@ -1,4 +1,5 @@
 from ..fieldwidgets import BS3PasswordFieldWidget
+from flask_wtf import validators
 from flask import render_template, flash, redirect, session, url_for, request, g
 from openid.consumer import discover
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
@@ -153,6 +154,7 @@ class UserDBGeneralView(UserGeneralView):
     add_form_extra_fields = {'password': PasswordField(gettext('Password'),
                                                        description=gettext(
                                                            'Please use a good password policy, this application does not check this for you'),
+                                                       validators=[validators.Required()],
                                                        widget=BS3PasswordFieldWidget()),
                              'conf_password': PasswordField(gettext('Confirm Password'),
                                                             description=gettext(
