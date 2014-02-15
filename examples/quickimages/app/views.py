@@ -64,6 +64,6 @@ class PersonChartView(ChartView):
     
 
 baseapp = BaseApp(app, db)
-baseapp.add_view(GroupGeneralView(), "List Groups",icon = "fa-folder-open-o",category = "Contacts")
-baseapp.add_view(PersonGeneralView(), "List Contacts",icon = "fa-envelope",category = "Contacts")
-baseapp.add_view(PersonChartView(), "Contacts Chart","/persons/chart","fa-dashboard","Contacts")
+baseapp.add_view(GroupGeneralView(), "List Groups", icon = "fa-folder-open-o",category = "Contacts")
+baseapp.add_view(PersonGeneralView(), "List Contacts", icon = "fa-envelope",category = "Contacts")
+baseapp.add_view(PersonChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")

@@ -8,28 +8,27 @@ from app import app, db
 
 class ProjectFilesGeneralView(CompactCRUDMixin, GeneralView):
     datamodel = SQLAModel(ProjectFiles, db.session)
-    
-    label_columns = {'download':'Download'}
+
+    label_columns = {'download': 'Download'}
     add_columns = ['file']
     edit_columns = ['file']
-    list_columns = ['file','download']
-    show_columns = ['file','download']
-    
+    list_columns = ['file', 'download']
+    show_columns = ['file', 'download']
+
 
 class ProjectGeneralView(CompactCRUDMixin, GeneralView):
     datamodel = SQLAModel(Project, db.session)
-    related_views = [ProjectFilesGeneralView]    
+    related_views = [ProjectFilesGeneralView]
 
     add_columns = ['name']
     edit_columns = ['name']
-    list_columns = ['name','created_by', 'created_on', 'changed_by','changed_on']
+    list_columns = ['name', 'created_by', 'created_on', 'changed_by', 'changed_on']
     show_fieldsets = [
-                 ('Info',{'fields':['name']}),
-                 ('Audit',{'fields':['created_by', 'created_on', 'changed_by','changed_on'],'expanded':False})
-                 ]
-
+        ('Info', {'fields': ['name']}),
+        ('Audit', {'fields': ['created_by', 'created_on', 'changed_by', 'changed_on'], 'expanded': False})
+    ]
 
 
 baseapp = BaseApp(app, db)
-baseapp.add_view(ProjectGeneralView(), "List Projects",icon = "fa-table",category = "Projects")
+baseapp.add_view(ProjectGeneralView(), "List Projects", icon="fa-table", category="Projects")
 baseapp.add_view_no_menu(ProjectFilesGeneralView())

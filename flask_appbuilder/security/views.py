@@ -281,7 +281,7 @@ class AuthOIDView(AuthView):
         openid_response = consumer.complete(request.args.to_dict(),
                                             oid.get_current_url())
         if openid_response.status == SUCCESS:
-            return oid.after_login_func(OpenIDResponse(openid_response))
+            return oid.after_login_func(OpenIDResponse(openid_response, []))
         elif openid_response.status == CANCEL:
             oid.signal_error(u'The request was cancelled')
             return redirect(oid.get_current_url())

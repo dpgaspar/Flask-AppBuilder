@@ -7,6 +7,7 @@ Improvements and Bug fixes on 0.6.6
 - New, automatic support for required field validation on related dropdown lists.
 - Fix, does not allow empty passwords on user creation.
 - Fix, does not allow a user without a role assigned.
+- Fix, OpenID bug. Needs flask-openID > 1.2.0
 
 Improvements and Bug fixes on 0.6.5
 -----------------------------------
