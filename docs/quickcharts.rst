@@ -43,8 +43,8 @@ Register (views.py)
 
 Register everything, to present your charts and create the menu::
 
-    genapp.add_view(ContactChartView(), "Contacts Chart","/contactchartview/chart","signal","Contacts")
-    genapp.add_view(ContactTimeChartView(), "Contacts Birth Chart","/contacttimechartview/chart/month","signal","Contacts")
+    baseapp.add_view(PersonGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")
+    baseapp.add_view(PersonChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")
 
 You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto
 
