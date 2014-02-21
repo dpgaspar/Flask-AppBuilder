@@ -34,19 +34,19 @@ class BaseGroupBy(object):
                 The group by name
 
         """
-    	self.column_name = column_name
-    	self.name = name
-    	self.aggregate_func = aggregate_func
-    	self.aggregate_col = aggregate_col
+        self.column_name = column_name
+        self.name = name
+        self.aggregate_func = aggregate_func
+        self.aggregate_col = aggregate_col
 
-	def apply(self, data):
-		"""
-			Override this to implement you own new filters
+    def apply(self, data):
+        """
+            Override this to implement you own new filters
         """
         pass
 
     def get_group_col(self, value):
-    	pass
+        pass
         
 
     def get_aggregate_col_name(self):
@@ -93,7 +93,7 @@ class GroupByDateYear(BaseGroupBy):
         
     def get_group_col(self, item):
         value = getattr(item, self.column_name) 
-    	if value: return value.year
+        if value: return value.year
     
 class GroupByDateMonth(BaseGroupBy):
     def apply(self, data):
@@ -107,7 +107,8 @@ class GroupByDateMonth(BaseGroupBy):
 
     def get_group_col(self, item):
         value = getattr(item, self.column_name) 
-        if value: return (value.month,value.year)
+        if value:
+            return value.month,value.year
 
 
 class GroupBys(object):
