@@ -10,7 +10,9 @@ You have three types of authentication methods
 	
 	- Open ID: Uses the user's email field to authenticate on Gmail, Yahoo etc...
 
-	- LDAP: Authentication on an LDAP server, like Microsoft Active Directory.
+	- LDAP: Authentication against an LDAP server, like Microsoft Active Directory.
+
+Configure the authentication type on config take a look :doc:`config`
 
 The session is preserved and encrypted using Flask-Login, OpenID requires Flask-OpenID.
 
