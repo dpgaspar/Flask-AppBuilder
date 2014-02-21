@@ -1,0 +1,44 @@
+<!-- extend base layout -->
+{% extends "appbuilder/init.html" %}
+
+{% block body %}
+
+{% include 'appbuilder/flash.html' %}
+<div class="container">
+<div class="col-lg-3">
+</div>
+<div class="well col-lg-6">
+    <h3>{{title}}</h3>
+    <form class="form" action="" method="post" name="login">
+        {{form.hidden_tag()}}
+        <div class="help-block">{{_("Enter your login and password below")}}:</div>
+        <div class="control-group{% if form.errors.openid %} error{% endif %}">
+            <label class="control-label" for="openid">{{_("Username")}}:</label>
+            <div class="controls">
+                <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                {{ form.username(size = 80, class = "form-control") }}
+                </div>
+                {% for error in form.errors.openid %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+		<label class="control-label" for="openid">{{_("Password")}}:</label>
+		        <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                {{ form.password(size = 80, class = "form-control") }}
+                </div>
+                {% for error in form.errors.openid %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+	<div class="control-group">
+            <div class="controls">
+		<br>
+                <input class="btn btn-primary btn-block" type="submit" value="Sign In">
+	    </div>
+	</div>
+    </form>
+</div>
+</div>
+{% endblock %}

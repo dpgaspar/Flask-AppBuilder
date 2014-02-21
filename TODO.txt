@@ -3,7 +3,6 @@
  - Charts Time and normal, with multiple group by's, JSON output to template
  - Add actions on lists with checkboxes (Django style).
  - Add table with global, and db version key.
- - GeneralModelConverter reorg code for field conversion, remove if blocks.
  - Diferent UI to add permissions to roles.
  - Solution to migrate/alter framework tables.
  - Add new cols to user table. Number of logins, date of last login. Date of last pwd change. AuditMixin

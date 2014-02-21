@@ -191,6 +191,16 @@ class SecurityManager(object):
         else:
             return user
 
+    def auth_user_ldap(self, username, password):
+        if username is None or username == "":
+            return None
+        user = self.session.query(User).filter_by(username=username).first()
+        if user is None or (not user.is_active()):
+            return None
+        else:
+            # import ldap and verify password
+            return None
+
     def auth_user_oid(self, email):
         user = self.session.query(User).filter_by(email=email).first()
         if user is None or (not user.is_active()):

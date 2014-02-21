@@ -146,8 +146,19 @@ class UserOIDGeneralView(UserGeneralView):
         return render_template(self.show_template,
                                title=self.user_info_title,
                                widgets=widgets,
-                               baseapp=self.baseapp
-        )
+                               baseapp=self.baseapp)
+
+
+class UserLDAPGeneralView(UserGeneralView):
+    @expose('/userinfo/')
+    @has_access
+    def userinfo(self):
+        widgets = self._get_show_widget(g.user.id)
+
+        return render_template(self.show_template,
+                               title=self.user_info_title,
+                               widgets=widgets,
+                               baseapp=self.baseapp)
 
 
 class UserDBGeneralView(UserGeneralView):
@@ -219,8 +230,7 @@ class RoleGeneralView(GeneralView):
 
 class AuthView(BaseView):
     route_base = ''
-    login_db_template = 'appbuilder/general/security/login_db.html'
-    login_oid_template = 'appbuilder/general/security/login_oid.html'
+    login_template = ''
 
     invalid_login_message = lazy_gettext('Invalid login. Please try again.')
 
@@ -237,6 +247,8 @@ class AuthView(BaseView):
 
 
 class AuthDBView(AuthView):
+    login_template = 'appbuilder/general/security/login_db.html'
+
     @expose('/login/', methods=['GET', 'POST'])
     def login(self):
         if g.user is not None and g.user.is_authenticated():
@@ -249,14 +261,36 @@ class AuthDBView(AuthView):
                 return redirect('/login')
             login_user(user, remember=False)
             return redirect('/')
-        return render_template(self.login_db_template,
+        return render_template(self.login_template,
                                title=self.title,
                                form=form,
-                               baseapp=self.baseapp
-        )
+                               baseapp=self.baseapp)
+
+
+class AuthLDAPView(AuthView):
+    login_template = 'appbuilder/general/security/login_ldap.html'
+
+    @expose('/login/', methods=['GET', 'POST'])
+    def login(self):
+        if g.user is not None and g.user.is_authenticated():
+            return redirect('/')
+        form = LoginForm_db()
+        if form.validate_on_submit():
+            user = self.baseapp.sm.auth_user_ldap(form.username.data, form.password.data)
+            if not user:
+                flash(unicode(self.invalid_login_message), 'warning')
+                return redirect('/login')
+            login_user(user, remember=False)
+            return redirect('/')
+        return render_template(self.login_template,
+                               title=self.title,
+                               form=form,
+                               baseapp=self.baseapp)
 
 
 class AuthOIDView(AuthView):
+    login_template = 'appbuilder/general/security/login_oid.html'
+
     @expose('/login/', methods=['GET', 'POST'])
     def login(self, flag=True):
         if flag:
@@ -267,7 +301,7 @@ class AuthOIDView(AuthView):
         if form.validate_on_submit():
             session['remember_me'] = form.remember_me.data
             return self.baseapp.sm.oid.try_login(form.openid.data, ask_for=['email'])
-        return render_template(self.login_oid_template,
+        return render_template(self.login_template,
                                title=self.title,
                                form=form,
                                providers=self.baseapp.app.config['OPENID_PROVIDERS'],
