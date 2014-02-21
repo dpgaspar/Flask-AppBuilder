@@ -30,7 +30,7 @@ Includes:
         - Inserts on the Database all the detailed permissions possible on your application.
         - Public (no authentication needed) and Private permissions.
         - Role based permissions.
-        - Authentication based on OpenID and Database (Planning LDAP).
+        - Authentication based on OpenID, Database and LDAP.
   - Views and Widgets
 	- Auto menu generator.
 	- Various view widgets: lists, master-detail, list of thumbnails etc

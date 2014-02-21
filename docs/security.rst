@@ -4,13 +4,15 @@ Security
 The Authentication methods
 --------------------------
 
-You have two types of authentication methods
+You have three types of authentication methods
 
 	- Database type authentications: username and password style that is queried from the database to match, atention this framework does not encrypt (yet...) the passwords.
 	
 	- Open ID: Uses the user's email field to authenticate on Gmail, Yahoo etc...
-	
-The session is preserved and encrypted using Flask-Login, OpenID required Flask-OpenID.
+
+	- LDAP: Authentication on an LDAP server, like Microsoft Active Directory.
+
+The session is preserved and encrypted using Flask-Login, OpenID requires Flask-OpenID.
 
 Role based
 ----------
