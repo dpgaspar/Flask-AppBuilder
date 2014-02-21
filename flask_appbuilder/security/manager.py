@@ -49,7 +49,7 @@ class SecurityManager(object):
             if 'AUTH_LDAP_SERVER' in app.config:
                 self.auth_ldap_server = app.config['AUTH_LDAP_SERVER']
             else:
-                raise "No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type."
+                raise Exception("No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type.")
 
 
         self.lm = LoginManager(app)
@@ -210,14 +210,15 @@ class SecurityManager(object):
             try:
                 import ldap
             except:
-                raise "No ldap library for python."
+                raise Exception("No ldap library for python.")
             try:
                 con = ldap.initialize("ldap://srvbpndc01.bpn.com")
-                con.set_option(ldap.OPT_REFERRALS,0)
+                con.set_option(ldap.OPT_REFERRALS, 0)
                 try:
                     con.bind_s(username, password)
                     return user
                 except ldap.INVALID_CREDENTIALS:
+                    log.error("INVALID {} {}".format(username, password))
                     return None
             except ldap.LDAPError, e:
                 if type(e.message) == dict and e.message.has_key('desc'):

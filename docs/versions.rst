@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.6.7
+-----------------------------------
+
+- New, LDAP Authentication type, tested on MS Active Directory.
+
 Improvements and Bug fixes on 0.6.6
 -----------------------------------
 

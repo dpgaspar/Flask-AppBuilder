@@ -17,6 +17,9 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   |  - 2 = LDAP, use AUTH_LDAP_SERVER also     |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_SERVER                  | define your ldap server when AUTH_TYPE=2   |   Cond.   |
+|                                   | example:                                   |           |
+|                                   | AUTH_TYPE = 2                              |           |
+|                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_ROLE_ADMIN                   | Configure the name of the admin role.      |   No      |
 +-----------------------------------+--------------------------------------------+-----------+

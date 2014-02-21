@@ -33,6 +33,7 @@ UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_URL = '/static/uploads/'
 AUTH_TYPE = 1
+#AUTH_LDAP_SERVER = "ldap://srvbpndc01.bpn.com"
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
 APP_NAME = "F.A.B. Example"
