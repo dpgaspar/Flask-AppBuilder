@@ -1,19 +1,18 @@
 import logging
-from flask import current_app, g, request, current_app
-from flask.ext.appbuilder import Base
-from flask.ext.login import current_user
+from flask import g
+from flask_appbuilder import Base
+from flask_login import current_user
 from sqlalchemy import MetaData, Table
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.ext.declarative import declarative_base
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask.ext.login import LoginManager
-from flask.ext.openid import OpenID
-from flask.ext.appbuilder import Base
+from flask_login import LoginManager
+from flask_openid import OpenID
 
 from models import User, Role, PermissionView, Permission, ViewMenu, \
     assoc_permissionview_role
-from views import AuthDBView, AuthOIDView, ResetMyPasswordView, \
-    ResetPasswordView, UserDBGeneralView, UserOIDGeneralView, RoleGeneralView, \
+from views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, \
+    ResetPasswordView, UserDBGeneralView, UserLDAPGeneralView, UserOIDGeneralView, RoleGeneralView, \
     PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView
 
 
@@ -30,6 +29,7 @@ class SecurityManager(object):
     auth_role_admin = ""
     auth_role_public = ""
     auth_view = None
+    auth_ldap_server = ""
     lm = None
     oid = None
 
@@ -45,6 +45,12 @@ class SecurityManager(object):
         self.auth_type = self._get_auth_type(app)
         self.auth_role_admin = self._get_auth_role_admin(app)
         self.auth_role_public = self._get_auth_role_public(app)
+        if self.auth_type == AUTH_LDAP:
+            if 'AUTH_LDAP_SERVER' in app.config:
+                self.auth_ldap_server = app.config['AUTH_LDAP_SERVER']
+            else:
+                raise "No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type."
+
 
         self.lm = LoginManager(app)
         self.lm.login_view = 'login'
@@ -59,6 +65,9 @@ class SecurityManager(object):
         if self._get_auth_type(baseapp.app) == AUTH_DB:
             user_view = baseapp._init_view_session(UserDBGeneralView)
             self.auth_view = AuthDBView()
+        elif self._get_auth_type(baseapp.app) == AUTH_LDAP:
+            user_view = baseapp._init_view_session(UserLDAPGeneralView)
+            self.auth_view = AuthLDAPView()
         else:
             user_view = baseapp._init_view_session(UserOIDGeneralView)
             self.auth_view = AuthOIDView()

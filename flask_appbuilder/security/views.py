@@ -268,6 +268,7 @@ class AuthDBView(AuthView):
 
 
 class AuthLDAPView(AuthView):
+
     login_template = 'appbuilder/general/security/login_ldap.html'
 
     @expose('/login/', methods=['GET', 'POST'])
