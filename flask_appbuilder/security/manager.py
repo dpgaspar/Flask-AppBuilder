@@ -207,8 +207,25 @@ class SecurityManager(object):
         if user is None or (not user.is_active()):
             return None
         else:
-            # import ldap and verify password
-            return None
+            try:
+                import ldap
+            except:
+                raise "No ldap library for python."
+            try:
+                con = ldap.initialize("ldap://srvbpndc01.bpn.com")
+                con.set_option(ldap.OPT_REFERRALS,0)
+                try:
+                    con.bind_s(username, password)
+                    return user
+                except ldap.INVALID_CREDENTIALS:
+                    return None
+            except ldap.LDAPError, e:
+                if type(e.message) == dict and e.message.has_key('desc'):
+                    log.error(e.message['desc'])
+                    return None
+                else:
+                    log.error(e)
+                    return None
 
     def auth_user_oid(self, email):
         user = self.session.query(User).filter_by(email=email).first()
