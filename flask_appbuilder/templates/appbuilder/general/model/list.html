@@ -6,11 +6,14 @@
 
 	{% block list_search scoped %}
 		{% call lib.accordion_tag("accordion1",_("Search"), False) %}
-			{{ widgets.get('search')()|safe }} 
+			{{ widgets.get('search')()|safe }}
 		{% endcall %}
 	{% endblock %}
+
 	{% block list_list scoped %}
-		{{ widgets.get('list')()|safe }} 
+        <div>
+		{{ widgets.get('list')()|safe }}
+        </div>
 	{% endblock %}
 {{ lib.panel_end() }}
 

@@ -1,22 +1,25 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 
 <form id="filter_form" class="form-search" method="get">
-<div class="table-responsive">
 
-    <strong>{{_("Add Filter")}}:</strong>
     <div class="btn-group">
-  	{% for col in include_cols %}
-    	<a href="javascript:void(0)" name={{col}} class="filter btn btn-sm btn-primary" onclick="return false;">{{ label_columns[col] }}
-        <span class="caret"></span>
-        </a>
-    {% endfor %}
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        {{_("Add Filter")}}
+      <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            {% for col in include_cols %}
+            <li><a href="javascript:void(0)" name={{col}} class="filter btn" onclick="return false;">
+                {{ label_columns[col] }}</a>
+            </li>
+            {% endfor %}
+        </ul>
     </div>
-    
+
     <table class="table table-condensed filters">
        
     </table>
 
-</div>
 {{ lib.btn_search() }}
 </form>
 

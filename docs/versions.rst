@@ -1,6 +1,15 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.6.9
+-----------------------------------
+
+- Fix, template table display not showing top first line.
+- Fix, search widget permits dropdowns with overflow.
+- Fix, removed style tag on init.html.
+- New, ab.css for F.A.B custom styles.
+- New, search widget with dropdown list of column choices instead of buttons.
+
 Improvements and Bug fixes on 0.6.8
 -----------------------------------
 
