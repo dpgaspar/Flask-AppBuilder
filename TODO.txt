@@ -7,9 +7,6 @@
  - Solution to migrate/alter framework tables.
  - Add new cols to user table. Number of logins, date of last login. Date of last pwd change. AuditMixin
  - Encrypt db passwords.
- - Add LDAP module for auth.
  - Search with boolean fields.
  - Improve FileColumn support. Remove UUID from file name to user.
  - Improve ImageColumn support, update, remove, etc.
- - Form related dropdown list with configurable query
-

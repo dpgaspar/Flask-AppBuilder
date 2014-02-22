@@ -65,9 +65,9 @@ class AuditMixin(BaseMixin):
         :created by:
         :changed by:
     """
-    created_on = Column(DateTime, default=datetime.datetime.now,nullable=False)
+    created_on = Column(DateTime, default=datetime.datetime.now, nullable=False)
     changed_on = Column(DateTime, default=datetime.datetime.now,
-                            onupdate=datetime.datetime.now,nullable=False)
+                            onupdate=datetime.datetime.now, nullable=False)
 
     @declared_attr
     def created_by_fk(cls):

@@ -29,4 +29,3 @@ class  BabelManager(object):
         return session['locale']
 
 
-    

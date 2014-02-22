@@ -248,7 +248,9 @@ If you want to filter multiple related fields just add tuples to the list, remem
 
     class MyView(GeneralView):
         datamodel = SQLAModel(MyModel, db.session)
-        validators_columns = {'my_field1':[EqualTo('my_field2', message=gettext(
-                                                                'fields must match'))}
+        validators_columns = {'my_field1':[EqualTo('my_field2',
+                                            message=gettext('fields must match'))
+                                          ]
+        }
 
 Take a look at the :doc:`api`. Experiment with *add_form*, *edit_form*, *add_columns*, *edit_columns*, *validators_columns*, *add_form_extra_fields*, *edit_form_extra_fields*

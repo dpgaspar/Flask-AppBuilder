@@ -1,5 +1,5 @@
 from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
-from sqlalchemy.orm import relationship, column_property, backref
+from sqlalchemy.orm import relationship, column_property
 from flask.ext.appbuilder import Base
 
 
@@ -67,6 +67,10 @@ class User(Base):
     password = Column(String(32))
     active = Column(Boolean)
     email = Column(String(64), unique=True, nullable=True)
+
+    #last_login = Column(DateTime, default=datetime.datetime.now, nullable=False)
+    #login_count = Column(Integer)
+
     role_id = Column(Integer, ForeignKey('ab_role.id'), nullable=False)
     role = relationship("Role")
 
@@ -101,5 +105,5 @@ class User(Base):
         return self.first_name + " " + self.last_name
 
     def __repr__(self):
-        return (self.get_full_name())
+        return self.get_full_name()
 
