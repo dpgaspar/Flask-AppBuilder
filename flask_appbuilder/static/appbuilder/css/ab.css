@@ -14,3 +14,6 @@
     overflow: visible;
 }
 
+.in {
+    overflow: visible !important;
+}
