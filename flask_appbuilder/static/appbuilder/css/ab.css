@@ -6,14 +6,13 @@
 }
 
 .collapse.in {
-	height: 10px;
+    display:block;
 	overflow: visible;
 }
+
+
 
 .panel-group .panel {
     overflow: visible;
 }
 
-.in {
-    overflow: visible !important;
-}
