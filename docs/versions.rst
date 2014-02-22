@@ -1,6 +1,12 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.6.8
+-----------------------------------
+
+- Fix, LDAP server key was hardcoded.
+
+
 Improvements and Bug fixes on 0.6.7
 -----------------------------------
 

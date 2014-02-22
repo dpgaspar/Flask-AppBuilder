@@ -212,7 +212,7 @@ class SecurityManager(object):
             except:
                 raise Exception("No ldap library for python.")
             try:
-                con = ldap.initialize("ldap://srvbpndc01.bpn.com")
+                con = ldap.initialize(self.auth_ldap_server)
                 con.set_option(ldap.OPT_REFERRALS, 0)
                 try:
                     con.bind_s(username, password)
