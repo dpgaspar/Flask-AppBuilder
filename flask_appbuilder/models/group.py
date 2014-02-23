@@ -107,7 +107,7 @@ class GroupByDateMonth(BaseGroupBy):
             if grouped
         ]
 
-    def get_grdfoup_col(self, item):
+    def get_group_col(self, item):
         value = getattr(item, self.column_name)
         if value:
             return value.month, value.year

@@ -108,7 +108,6 @@ class TimeChartView(BaseChartView):
             group_by = self.group_by_columns[0]
 
         if period == 'month' or not period:
-            log.debug("GROUO %s" % group_by)
             value_columns = self.datamodel.query_month_group(group_by, filters=self._filters)
         elif period == 'year':
             value_columns = self.datamodel.query_year_group(group_by, filters=self._filters)
