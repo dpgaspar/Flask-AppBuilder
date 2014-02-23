@@ -12,7 +12,7 @@ You have three types of authentication methods
 
 	- LDAP: Authentication against an LDAP server, like Microsoft Active Directory.
 
-Configure the authentication type on config take a look :doc:`config`
+Configure the authentication type on config.py, take a look at :doc:`config`
 
 The session is preserved and encrypted using Flask-Login, OpenID requires Flask-OpenID.
 
