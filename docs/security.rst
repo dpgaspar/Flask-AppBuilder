@@ -19,7 +19,7 @@ The session is preserved and encrypted using Flask-Login, OpenID requires Flask-
 Role based
 ----------
 
-Each user belong's to a role, and a role holds permissions on views and menus, so a user has permissions on views and menus.
+Each user belongs to a role, and a role holds permissions on views and menus, so a user has permissions on views and menus.
 
 There are two special roles, you can define their names on the :doc:`config`
 
