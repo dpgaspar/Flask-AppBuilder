@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.6.10
+------------------------------------
+
+- Fix, Chart month bug, typo on code.
+
 Improvements and Bug fixes on 0.6.9
 -----------------------------------
 
