@@ -161,7 +161,7 @@ To block or set the allowed permissions on a view, just set the *base_permission
         datamodel = SQLAModel(Group, db.session)
         base_permissions = ['can_add','can_delete']
             
-With this initial config the framework will only create 'can_add' and 'can_edit' permissions on GroupGeneralView as the only allowed. So users and even administrator of the application will not have the possibility to add delete permission on Group table view.
+With this initial config, the framework will only create 'can_add' and 'can_edit' permissions on GroupGeneralView as the only allowed. So users and even administrator of the application will not have the possibility to add delete permission on Group table view.
 
     - **Base Filtering**
     
@@ -228,7 +228,7 @@ If you want to filter multiple related fields just add tuples to the list, remem
         add_form = AddFormWTF
 
 
-- You can define what columns will be included on a Add or Edit forms, for example if you have automatic fields like user or date, you can remove this from the Add Form::
+- You can define what columns will be included on Add or Edit forms, for example if you have automatic fields like user or date, you can remove this from the Add Form::
 
     class MyView(GeneralView):
         datamodel = SQLAModel(MyModel, db.session)

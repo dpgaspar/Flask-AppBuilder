@@ -1,7 +1,7 @@
 Quick Charts
 ============
 
-To implement views with google charts inherit from ChartsViews like this
+To implement views with google charts.
 
 Define your Chart Views (views.py)
 ----------------------------------
@@ -21,13 +21,15 @@ Notice that:
 :group_by_columns: Is a list of columns that you want to group.
 
 this will produce a Pie chart, with the percentage of contacts by group.
-If you want a column chart just override this::
+If you want a column chart just define::
 
-	chart_type = 'PieChart' # default
-	chart_type = 'ColumnsChart'
+	chart_type = 'ColumnChart'
 
+You can use 'BarChart' or 'LineChart' the default is 'PieChart', take a look at the google charts documentation, the *chart_type* is the function on 'google.visualization' object
 
-How about a chart grouped by a time frame? This is new on 0.2.0::
+How about a chart grouped by a time frame?
+
+::
 
     class ContactTimeChartView(TimeChartView):
         search_columns = ['name','group']
@@ -37,6 +39,7 @@ How about a chart grouped by a time frame? This is new on 0.2.0::
         datamodel = SQLAModel(Contact, db.session)
 
 this will produce a column chart, with the number of contacts that were born on a particular month or year.
+Notice that the label_columns are from and already defined *ContactGeneralView* take a look at the :doc:`quickhowto`
 
 Register (views.py)
 -------------------
