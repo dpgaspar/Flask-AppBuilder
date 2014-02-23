@@ -92,7 +92,7 @@ Optional properties:
 
 :related_views: if you want a master/detail view on the show and edit.
 
-There are many more properties you can override to customize your views. you can define descriptions for columns, your own validators for forms fields, base filters etc
+There are many more properties you can override to customize your views. you can define descriptions for columns, your own validators for form fields, base filters etc
 
 Take a look at the :doc:`api`.
 
