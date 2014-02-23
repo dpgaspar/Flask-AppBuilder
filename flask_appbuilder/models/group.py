@@ -8,16 +8,14 @@ log = logging.getLogger(__name__)
 def aggregate_count(items, col):
     return len(list(items))
 
-
 def aggregate_sum(items, col):
     value = 0
     for item in items:
         value = value + getattr(item, col)
     return value
 
-
 def aggregate_avg(items, col):
-    return (self.aggregate_sum(items, col) / self.aggregate_count(items, col))
+    return aggregate_sum(items, col) / aggregate_count(items, col)
 
 
 class BaseGroupBy(object):
@@ -109,7 +107,7 @@ class GroupByDateMonth(BaseGroupBy):
             if grouped
         ]
 
-    def get_group_col(self, item):
+    def get_grdfoup_col(self, item):
         value = getattr(item, self.column_name)
         if value:
             return value.month, value.year
