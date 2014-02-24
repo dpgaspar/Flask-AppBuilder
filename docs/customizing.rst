@@ -3,7 +3,7 @@ Customizing
 
 You can override and customize almost everything on the UI, or use different templates and widgets already on the framework.
 
-Event better you can develop your own widgets or templates and contribute to the project.
+Even better you can develop your own widgets or templates and contribute to the project.
 
 Changing themes
 ---------------
