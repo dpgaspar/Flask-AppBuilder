@@ -63,18 +63,20 @@
 <h1>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="the-authentication-methods">
 <h2>The Authentication methods<a class="headerlink" href="#the-authentication-methods" title="Permalink to this headline">¶</a></h2>
-<p>You have two types of authentication methods</p>
+<p>You have three types of authentication methods</p>
 <blockquote>
 <div><ul class="simple">
 <li>Database type authentications: username and password style that is queried from the database to match, atention this framework does not encrypt (yet...) the passwords.</li>
 <li>Open ID: Uses the user&#8217;s email field to authenticate on Gmail, Yahoo etc...</li>
+<li>LDAP: Authentication against an LDAP server, like Microsoft Active Directory.</li>
 </ul>
 </div></blockquote>
-<p>The session is preserved and encrypted using Flask-Login, OpenID required Flask-OpenID.</p>
+<p>Configure the authentication type on config.py, take a look at <a class="reference internal" href="config.html"><em>Base Configuration</em></a></p>
+<p>The session is preserved and encrypted using Flask-Login, OpenID requires Flask-OpenID.</p>
 </div>
 <div class="section" id="role-based">
 <h2>Role based<a class="headerlink" href="#role-based" title="Permalink to this headline">¶</a></h2>
-<p>Each user belong&#8217;s to a role, and a role holds permissions on views and menus, so a user has permissions on views and menus.</p>
+<p>Each user belongs to a role, and a role holds permissions on views and menus, so a user has permissions on views and menus.</p>
 <p>There are two special roles, you can define their names on the <a class="reference internal" href="config.html"><em>Base Configuration</em></a></p>
 <blockquote>
 <div><ul class="simple">

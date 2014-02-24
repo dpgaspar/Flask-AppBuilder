@@ -61,7 +61,7 @@
             
   <div class="section" id="quick-charts">
 <h1>Quick Charts<a class="headerlink" href="#quick-charts" title="Permalink to this headline">¶</a></h1>
-<p>To implement views with google charts inherit from ChartsViews like this</p>
+<p>To implement views with google charts.</p>
 <div class="section" id="define-your-chart-views-views-py">
 <h2>Define your Chart Views (views.py)<a class="headerlink" href="#define-your-chart-views-views-py" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactChartView</span><span class="p">(</span><span class="n">ChartView</span><span class="p">):</span>
@@ -85,12 +85,12 @@
 </tbody>
 </table>
 <p>this will produce a Pie chart, with the percentage of contacts by group.
-If you want a column chart just override this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">chart_type</span> <span class="o">=</span> <span class="s">&#39;PieChart&#39;</span> <span class="c"># default</span>
-<span class="n">chart_type</span> <span class="o">=</span> <span class="s">&#39;ColumnsChart&#39;</span>
+If you want a column chart just define:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">chart_type</span> <span class="o">=</span> <span class="s">&#39;ColumnChart&#39;</span>
 </pre></div>
 </div>
-<p>How about a chart grouped by a time frame? This is new on 0.2.0:</p>
+<p>You can use &#8216;BarChart&#8217; or &#8216;LineChart&#8217; the default is &#8216;PieChart&#8217;, take a look at the google charts documentation, the <em>chart_type</em> is the function on &#8216;google.visualization&#8217; object</p>
+<p>How about a chart grouped by a time frame?</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactTimeChartView</span><span class="p">(</span><span class="n">TimeChartView</span><span class="p">):</span>
     <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped Birth contacts&#39;</span>
@@ -99,13 +99,14 @@ If you want a column chart just override this:</p>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>this will produce a column chart, with the number of contacts that were born on a particular month or year.</p>
+<p>this will produce a column chart, with the number of contacts that were born on a particular month or year.
+Notice that the label_columns are from and already defined <em>ContactGeneralView</em> take a look at the <a class="reference internal" href="quickhowto.html"><em>Quick How to</em></a></p>
 </div>
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
 <p>Register everything, to present your charts and create the menu:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactChartView</span><span class="p">(),</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span><span class="s">&quot;/contactchartview/chart&quot;</span><span class="p">,</span><span class="s">&quot;signal&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactTimeChartView</span><span class="p">(),</span> <span class="s">&quot;Contacts Birth Chart&quot;</span><span class="p">,</span><span class="s">&quot;/contacttimechartview/chart/month&quot;</span><span class="p">,</span><span class="s">&quot;signal&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonChartView</span><span class="p">(),</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-dashboard&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>

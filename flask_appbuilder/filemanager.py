@@ -200,11 +200,31 @@ def uuid_namegen(file_data):
     return str(uuid.uuid1()) + '_sep_' + file_data.filename
 
 def get_file_original_name(name):
+    """
+        Use this function to get the user's original filename.
+        Filename is concatenated with <UUID>_sep_<FILE NAME>, to avoid collisions.
+        Use this function on your models on an aditional function
+
+        ::
+
+            class ProjectFiles(Base):
+                id = Column(Integer, primary_key=True)
+                file = Column(FileColumn, nullable=False)
+
+                def file_name(self):
+                    return get_file_original_name(str(self.file))
+
+        :param name:
+            The file name from model
+        :return:
+            Returns the user's original filename removes <UUID>_sep_
+    """
     re_match = re.findall('.*_sep_(.*)', name)
     if re_match:
-       return re_match[0]
+        return re_match[0]
     else:
-       return 'Not valid'
+        return 'Not valid'
+
 
 def uuid_originalname(uuid_filename):
     return uuid_filename.split('_sep_')[1]

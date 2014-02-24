@@ -722,9 +722,38 @@ unconditionally.</li>
 </table>
 </dd></dl>
 
-<div class="section" id="module-flask.ext.appbuilder.charts.views">
-<span id="flask-ext-appbuilder-charts-views"></span><h3>flask.ext.appbuilder.charts.views<a class="headerlink" href="#module-flask.ext.appbuilder.charts.views" title="Permalink to this headline">¶</a></h3>
 </div>
+<div class="section" id="module-flask.ext.appbuilder.filemanager">
+<span id="flask-ext-appbuilder-filemanager"></span><h2>flask.ext.appbuilder.filemanager<a class="headerlink" href="#module-flask.ext.appbuilder.filemanager" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="flask.ext.appbuilder.filemanager.get_file_original_name">
+<tt class="descclassname">flask.ext.appbuilder.filemanager.</tt><tt class="descname">get_file_original_name</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.filemanager.get_file_original_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this function to get the user&#8217;s original filename.
+Filename is concatenated with &lt;UUID&gt;_sep_&lt;FILE NAME&gt;, to avoid collisions.
+Use this function on your models on an aditional function</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ProjectFiles</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="nb">file</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">FileColumn</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">file_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">get_file_original_name</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">))</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; The file name from model</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Returns the user&#8217;s original filename removes &lt;UUID&gt;_sep_</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-flask.ext.appbuilder.charts.views">
+<span id="flask-ext-appbuilder-charts-views"></span><h2>flask.ext.appbuilder.charts.views<a class="headerlink" href="#module-flask.ext.appbuilder.charts.views" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="basechartview">
 <h3>BaseChartView<a class="headerlink" href="#basechartview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
@@ -916,8 +945,9 @@ will create the following columns:</p>
 <li><a class="reference internal" href="#compactcrudmixin">CompactCRUDMixin</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-flask.ext.appbuilder.actions">flask.ext.appbuilder.actions</a><ul>
-<li><a class="reference internal" href="#module-flask.ext.appbuilder.charts.views">flask.ext.appbuilder.charts.views</a></li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.actions">flask.ext.appbuilder.actions</a></li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.filemanager">flask.ext.appbuilder.filemanager</a></li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.charts.views">flask.ext.appbuilder.charts.views</a><ul>
 <li><a class="reference internal" href="#basechartview">BaseChartView</a></li>
 <li><a class="reference internal" href="#chartview">ChartView</a></li>
 <li><a class="reference internal" href="#timechartview">TimeChartView</a></li>

@@ -9,7 +9,7 @@ includes detailed security, auto form generation, google charts and much more.
 Fixes, bugs and contributions
 -----------------------------
 
-Your welcome to report bugs, propose new features, or even better contribute to this project.
+You're welcome to report bugs, propose new features, or even better contribute to this project.
 
 `Issues, bugs and new features <https://github.com/dpgaspar/Flask-AppBuilder/issues/new>`_
 

@@ -64,49 +64,103 @@
 <div class="section" id="configuration-keys">
 <h2>Configuration keys<a class="headerlink" href="#configuration-keys" title="Permalink to this headline">¶</a></h2>
 <p>Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap 3.0.0 base theme:</p>
-<blockquote>
-<div><blockquote>
-<div><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
+<table border="1" class="docutils">
+<colgroup>
+<col width="39%" />
+<col width="49%" />
+<col width="12%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Key</th>
+<th class="head">Description</th>
+<th class="head">Mandatory</th>
+</tr>
+</thead>
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">SQLALCHEMY_DATABASE_URI:</th></tr>
-<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Database connection string</td>
+<tr class="row-even"><td>SQLALCHEMY_DATABASE_URI</td>
+<td>Database connection string</td>
+<td>Yes</td>
 </tr>
-<tr class="field-even field"><th class="field-name">AUTH_TYPE:</th><td class="field-body">This is the authentication type
-- 0 = Open ID
-- 1 = Database style (user/password)</td>
+<tr class="row-odd"><td>AUTH_TYPE = 0 | 1 | 2</td>
+<td><dl class="first last docutils">
+<dt>This is the authentication type</dt>
+<dd><ul class="first last simple">
+<li>0 = Open ID</li>
+<li>1 = Database style (user/password)</li>
+<li>2 = LDAP, use AUTH_LDAP_SERVER also</li>
+</ul>
+</dd>
+</dl>
+</td>
+<td>Yes</td>
 </tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">AUTH_ROLE_ADMIN:</th></tr>
-<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Configure the name of the admin role.</td>
+<tr class="row-even"><td>AUTH_LDAP_SERVER</td>
+<td>define your ldap server when AUTH_TYPE=2
+example:
+AUTH_TYPE = 2
+AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8220;</td>
+<td>Cond.</td>
 </tr>
-<tr class="field-even field"><th class="field-name" colspan="2">AUTH_ROLE_PUBLIC:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Special Role that holds the public permissions, no authentication needed.</td>
+<tr class="row-odd"><td>AUTH_ROLE_ADMIN</td>
+<td>Configure the name of the admin role.</td>
+<td>No</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">APP_NAME:</th><td class="field-body">The name of your application.</td>
+<tr class="row-even"><td>AUTH_ROLE_PUBLIC</td>
+<td>Special Role that holds the public
+permissions, no authentication needed.</td>
+<td>No</td>
 </tr>
-<tr class="field-even field"><th class="field-name">APP_THEME:</th><td class="field-body">Various themes for you to choose from (bootwatch).</td>
+<tr class="row-odd"><td>APP_NAME</td>
+<td>The name of your application.</td>
+<td>No</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">APP_ICON:</th><td class="field-body">path of your application icon, will be shown on the left side of the menu</td>
+<tr class="row-even"><td>APP_THEME</td>
+<td>Various themes for you to choose
+from (bootwatch).</td>
+<td>No</td>
 </tr>
-<tr class="field-even field"><th class="field-name">UPLOAD_FOLDER:</th><td class="field-body">Files upload folder. Mandatory for file uploads.</td>
+<tr class="row-odd"><td>APP_ICON</td>
+<td>path of your application icons
+will be shown on the left side of the menu</td>
+<td>No</td>
 </tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">IMG_UPLOAD_FOLDER:</th></tr>
-<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Image upload folder. Mandatory for image uploads.</td>
+<tr class="row-even"><td>UPLOAD_FOLDER</td>
+<td>Files upload folder.
+Mandatory for file uploads.</td>
+<td>No</td>
 </tr>
-<tr class="field-even field"><th class="field-name">IMG_UPLOAD_URL:</th><td class="field-body">Image relative URL. Mandatory for image uploads.</td>
+<tr class="row-odd"><td>IMG_UPLOAD_FOLDER</td>
+<td>Image upload folder.
+Mandatory for image uploads.</td>
+<td>No</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">IMG_SIZE:</th><td class="field-body">tuple to define image resize, (width, height, True|False).</td>
+<tr class="row-even"><td>IMG_UPLOAD_URL</td>
+<td>Image relative URL.
+Mandatory for image uploads.</td>
+<td>No</td>
 </tr>
-<tr class="field-even field"><th class="field-name" colspan="2">BABEL_DEFAULT_LOCALE:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Babel&#8217;s default language.</td>
+<tr class="row-odd"><td>IMG_SIZE</td>
+<td>tuple to define image resize.
+(width, height, True|False).</td>
+<td>No</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">LANGUAGES:</th><td class="field-body">A dictionary mapping the existing languages with the countries name and flag</td>
+<tr class="row-even"><td>BABEL_DEFAULT_LOCALE</td>
+<td>Babel&#8217;s default language.</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>LANGUAGES</td>
+<td>A dictionary mapping
+the existing languages with the countries
+name and flag</td>
+<td>No</td>
 </tr>
 </tbody>
 </table>
-</div></blockquote>
-<p>My favorite way, and the one i advise if you are building a medium to large size application is to place all you configuration key on a config.py file</p>
+</div>
+<div class="section" id="using-config-py">
+<h2>Using config.py<a class="headerlink" href="#using-config-py" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>My favorite way, and the one i advise if you are building a medium to large size application is to place all you configuration key on a config.py file</p>
 <p>next you only have to import them to the Flask app object, like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
@@ -127,6 +181,7 @@
   <ul>
 <li><a class="reference internal" href="#">Base Configuration</a><ul>
 <li><a class="reference internal" href="#configuration-keys">Configuration keys</a></li>
+<li><a class="reference internal" href="#using-config-py">Using config.py</a></li>
 </ul>
 </li>
 </ul>

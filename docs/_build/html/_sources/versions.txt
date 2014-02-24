@@ -1,6 +1,43 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.6.11
+------------------------------------
+
+- New, *get_file_orginal_name* helper function to remove UUID from file name.
+
+Improvements and Bug fixes on 0.6.10
+------------------------------------
+
+- Fix, Chart month bug, typo on code.
+
+Improvements and Bug fixes on 0.6.9
+-----------------------------------
+
+- Fix, template table display not showing top first line.
+- Fix, search widget permits dropdowns with overflow.
+- Fix, removed style tag on init.html.
+- New, ab.css for F.A.B custom styles.
+- New, search widget with dropdown list of column choices, instead of buttons.
+
+Improvements and Bug fixes on 0.6.8
+-----------------------------------
+
+- Fix, LDAP server key was hardcoded.
+
+Improvements and Bug fixes on 0.6.7
+-----------------------------------
+
+- New, LDAP Authentication type, tested on MS Active Directory.
+
+Improvements and Bug fixes on 0.6.6
+-----------------------------------
+
+- New, automatic support for required field validation on related dropdown lists.
+- Fix, does not allow empty passwords on user creation.
+- Fix, does not allow a user without a role assigned.
+- Fix, OpenID bug. Needs flask-openID > 1.2.0
+
 Improvements and Bug fixes on 0.6.5
 -----------------------------------
 

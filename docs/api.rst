@@ -77,6 +77,13 @@ flask.ext.appbuilder.actions
 
     .. autofunction:: action
 
+flask.ext.appbuilder.filemanager
+================================
+
+.. automodule:: flask.ext.appbuilder.filemanager
+
+    .. autofunction:: get_file_original_name
+
 flask.ext.appbuilder.charts.views
 =================================
 

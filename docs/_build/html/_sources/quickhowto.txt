@@ -31,7 +31,7 @@ First we are going to create a *Group* table, to group our contacts
 
 .. note::
 	Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a different declarative model from the security tables of AppBuilder.
-	If you want to use AuditMixin :doc:`api` or include a relation to a User or login User you must be on the same declarative base.
+	If you want to use AuditMixin :doc:`api` or include a relation to a User or login User, you must be on the same declarative base.
 	Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, import::
 
 		flask.ext.appbuilder import Base
@@ -92,7 +92,7 @@ Optional properties:
 
 :related_views: if you want a master/detail view on the show and edit.
 
-There are many more properties you can override to customize your views. you can define descriptions for columns, your own validators for forms fields, base filters etc
+There are many more properties you can override to customize your views. you can define descriptions for columns, your own validators for form fields, base filters etc
 
 Take a look at the :doc:`api`.
 
@@ -161,7 +161,7 @@ To block or set the allowed permissions on a view, just set the *base_permission
         datamodel = SQLAModel(Group, db.session)
         base_permissions = ['can_add','can_delete']
             
-With this initial config the framework will only create 'can_add' and 'can_edit' permissions on GroupGeneralView as the only allowed. So users and even administrator of the application will not have the possibility to add delete permission on Group table view.
+With this initial config, the framework will only create 'can_add' and 'can_edit' permissions on GroupGeneralView as the only allowed. So users and even administrator of the application will not have the possibility to add delete permission on Group table view.
 
     - **Base Filtering**
     
@@ -195,7 +195,7 @@ Use a default order on your lists, this can be overridden by the user on the UI.
 
 - **Forms**
 
-You can create a custom query filter for all related columns like this::
+- You can create a custom query filter for all related columns like this::
 
     class ContactGeneralView(GeneralView):
         datamodel = SQLAModel(Contact, db.session)
@@ -221,11 +221,21 @@ If you want to filter multiple related fields just add tuples to the list, remem
         ]
 
 
-You can define your own Add, Edit forms to override the automatic form creation.
+- You can define your own Add, Edit forms to override the automatic form creation::
 
-You can define what columns will be included on a Add or Edit forms, for example if you have automatic fields like user or date, you can remove this from the Add Form.
+    class MyView(GeneralView):
+        datamodel = SQLAModel(MyModel, db.session)
+        add_form = AddFormWTF
 
-You can contribute with any additional field that are not on a table/model, for example a confirmation field::
+
+- You can define what columns will be included on Add or Edit forms, for example if you have automatic fields like user or date, you can remove this from the Add Form::
+
+    class MyView(GeneralView):
+        datamodel = SQLAModel(MyModel, db.session)
+        add_columns = ['my_field1','my_field2']
+        edit_columns = ['my_field1']
+
+- You can contribute with any additional field that are not on a table/model, for example a confirmation field::
 
     class ContactGeneralView(GeneralView):
         datamodel = SQLAModel(Contact, db.session)
@@ -234,6 +244,13 @@ You can contribute with any additional field that are not on a table/model, for 
                         widget=BS3TextFieldWidget())}
 
 
-You can contribute with your own additional form validations rules. Remember the framework will automatically validate any field that is defined on the database with *Not Null* (Required) or Unique constraints.
+- You can contribute with your own additional form validations rules. Remember the framework will automatically validate any field that is defined on the database with *Not Null* (Required) or Unique constraints::
+
+    class MyView(GeneralView):
+        datamodel = SQLAModel(MyModel, db.session)
+        validators_columns = {'my_field1':[EqualTo('my_field2',
+                                            message=gettext('fields must match'))
+                                          ]
+        }
 
 Take a look at the :doc:`api`. Experiment with *add_form*, *edit_form*, *add_columns*, *edit_columns*, *validators_columns*, *add_form_extra_fields*, *edit_form_extra_fields*
