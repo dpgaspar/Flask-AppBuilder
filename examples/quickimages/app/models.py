@@ -1,5 +1,5 @@
 import datetime
-from flask import Markup
+from flask import Markup, url_for
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, Date, Text
 from sqlalchemy.orm import relationship
 from app import db
@@ -41,7 +41,7 @@ class Person(BaseMixin, Base):
     def photo_img(self):
         im = ImageManager()
         if self.photo:
-            return Markup('<a href="/persongeneralview/show/' + str(self.id) + '" class="thumbnail"><img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"></a>')
+            return Markup('<a href="' + url_for('PersonGeneralView.show',pk=str(self.id)) + '" class="thumbnail"><img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"></a>')
         else:
-            return Markup('<a href="/persongeneralview/show/' + str(self.id) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
+            return Markup('<a href="'+ url_for('PersonGeneralView.show',pk=str(self.id)) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
         
