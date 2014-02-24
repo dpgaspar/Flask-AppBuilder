@@ -11,7 +11,7 @@ This package has some CSS and JS batteries included:
 
 	- Google charts CSS and JS
 	- BootStrap CSS and JS
-	- BootWatch Themes
+	- BootsWatch Themes
 	- Font-Awesome CSS and Fonts
 
 Includes
