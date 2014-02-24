@@ -8,7 +8,7 @@ Event better you can develop your own widgets or templates and contribute to the
 Changing themes
 ---------------
 
-F.A.B comes with bootwatch themes ready to use, to change bootstrap default theme just change the APP_THEME key
+F.A.B comes with bootswatch themes ready to use, to change bootstrap default theme just change the APP_THEME key's value.
 
 - On config.py (from flask-appbuilder-skeleton), using spacelab theme::
 
