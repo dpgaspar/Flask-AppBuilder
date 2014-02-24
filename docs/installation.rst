@@ -1,4 +1,4 @@
-Instalation
+Installation
 ===========
 
 Using pip
@@ -32,7 +32,7 @@ When starting your application for the first time, all your models and AppBuilde
 What requirements were instaled
 -------------------------------
 
-pip instalations installs all the requirements for you.
+pip installations installs all the requirements for you.
 
 Flask App Builder dependes on
 
