@@ -6,19 +6,22 @@ from flask.ext.appbuilder import Base
 from app import app, db
 
 
-class ProjectFilesGeneralView(CompactCRUDMixin, GeneralView):
+class ProjectFilesGeneralView(GeneralView):
     datamodel = SQLAModel(ProjectFiles, db.session)
 
-    label_columns = {'download': 'Download'}
-    add_columns = ['file']
-    edit_columns = ['file']
-    list_columns = ['file', 'download']
-    show_columns = ['file', 'download']
+    label_columns = {'file_name': 'File Name', 'download': 'Download'}
+    add_columns = ['file', 'description']
+    edit_columns = ['file', 'description']
+    list_columns = ['file_name', 'download']
+    show_columns = ['file_name', 'download']
 
 
 class ProjectGeneralView(CompactCRUDMixin, GeneralView):
     datamodel = SQLAModel(Project, db.session)
     related_views = [ProjectFilesGeneralView]
+
+    show_template = 'appbuilder/general/model/show_cascade.html'
+    edit_template = 'appbuilder/general/model/edit_cascade.html'
 
     add_columns = ['name']
     edit_columns = ['name']

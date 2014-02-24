@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.6.11
+------------------------------------
+
+- New, *get_file_orginal_name helper function to remove UUID from file name.
+
 Improvements and Bug fixes on 0.6.10
 ------------------------------------
 
