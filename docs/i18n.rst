@@ -90,13 +90,16 @@ Let's work with the contacts application example, so you want to add translation
 3 - Run the babel extraction again::
 
     pybabel update -i ./babel/messages.pot -d app/translations
-	pybabel compile -d app/translations
-
+	
 	- If your using Flask-AppBuilder-Skeleton use the provided script::
     
     	./babel_extract.sh
 
-4 - Add your language support to the framework
+4 - Run the compilation:
+
+    pybabel compile -d app/translations
+
+5 - Add your language support to the framework
 
      - On config tell the framework the languages you support. With this you will have a menu with the corresponding languages country flags::
 
