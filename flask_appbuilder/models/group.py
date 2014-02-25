@@ -8,11 +8,13 @@ log = logging.getLogger(__name__)
 def aggregate_count(items, col):
     return len(list(items))
 
+
 def aggregate_sum(items, col):
     value = 0
     for item in items:
         value = value + getattr(item, col)
     return value
+
 
 def aggregate_avg(items, col):
     return aggregate_sum(items, col) / aggregate_count(items, col)
@@ -45,9 +47,11 @@ class BaseGroupBy(object):
         """
         pass
 
-    def get_group_col(self, value):
-        pass
+    def get_group_col(self, item):
+        return getattr(item, self.column_name)
 
+    def get_format_group_col(self, item):
+        return item
 
     def get_aggregate_col_name(self):
         if self.aggregate_col:
@@ -60,18 +64,30 @@ class BaseGroupBy(object):
 
 
 class GroupByCol(BaseGroupBy):
+    def _apply(self, data):
+        data = sorted(data, key=self.get_group_col)
+        json_data = dict()
+        json_data['rows'] = [{'id': self.column_name},
+                             {'id': self.aggregate_func.__name__ + '_' + self.column_name}]
+        json_data['cols'] = []
+        for (grouped, items) in groupby(data, self.get_group_col):
+            aggregate_value = self.aggregate_func(items, self.aggregate_col)
+            json_data['cols'].append([
+                {"c": [{"v": self.get_format_group_col(grouped)}, {"v": aggregate_value}]}])
+        return json_data
+
     def apply(self, data):
         data = sorted(data, key=self.get_group_col)
         return [
-            [grouped, self.aggregate_func(items, self.aggregate_col)]
-            for ( grouped, items ) in groupby(data, self.get_group_col)
+            [self.get_format_group_col(grouped), self.aggregate_func(items, self.aggregate_col)]
+            for (grouped, items) in groupby(data, self.get_group_col)
         ]
 
 
     def apply2(self, data):
         data = sorted(data, key=self.get_group_col)
         ret = []
-        for ( grouped, items) in groupby(data, self.get_group_col):
+        for (grouped, items) in groupby(data, self.get_group_col):
             item = {}
             item[self.column_name] = grouped
             item[self.get_aggregate_col_name()] = self.aggregate_func(items, self.aggregate_col)
@@ -79,16 +95,14 @@ class GroupByCol(BaseGroupBy):
             ret.append(item)
         return ret
 
-    def get_group_col(self, item):
-        return getattr(item, self.column_name)
-
 
 class GroupByDateYear(BaseGroupBy):
+
     def apply(self, data):
         data = sorted(data, key=self.get_group_col)
         return [
-            [grouped, self.aggregate_func(items, self.aggregate_col)]
-            for ( grouped, items) in groupby(data, self.get_group_col)
+            [self.get_format_group_col(grouped), self.aggregate_func(items, self.aggregate_col)]
+            for (grouped, items) in groupby(data, self.get_group_col)
         ]
 
     def get_group_col(self, item):
@@ -101,9 +115,8 @@ class GroupByDateMonth(BaseGroupBy):
     def apply(self, data):
         data = sorted(data, key=self.get_group_col)
         return [
-            [calendar.month_name[grouped[0]] + ' '
-             + str(grouped[1]), self.aggregate_func(items, self.aggregate_col)]
-            for ( grouped, items ) in groupby(data, self.get_group_col)
+            [self.get_format_group_col(grouped), self.aggregate_func(items, self.aggregate_col)]
+            for (grouped, items) in groupby(data, self.get_group_col)
             if grouped
         ]
 
@@ -112,6 +125,8 @@ class GroupByDateMonth(BaseGroupBy):
         if value:
             return value.month, value.year
 
+    def get_format_group_col(self, item):
+        return calendar.month_name[item[0]] + ' ' + str(item[1])
 
 class GroupBys(object):
     group_bys = None

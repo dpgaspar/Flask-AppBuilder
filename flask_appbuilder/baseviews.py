@@ -646,19 +646,20 @@ class BaseCRUDView(BaseModelView):
             returns add widget or None
         """
         get_filter_args(self._filters)
-        form = self.add_form.refresh()
         exclude_cols = self._filters.get_relation_cols()
+        form = self.add_form.refresh()
 
-        if form.validate_on_submit():
-            item = self.datamodel.obj()
-            form.populate_obj(item)
-            self._fill_item_exclude_cols(exclude_cols, item)
-            self.pre_add(item)
-            self.datamodel.add(item)
-            self.post_add(item)
-            return None
-        else:
-            return self._get_add_widget(form=form, exclude_cols=exclude_cols)
+        if request.method == 'POST':
+            form = self.add_form(request.form)
+            self._fill_form_exclude_cols(exclude_cols, form)
+            if form.validate():
+                item = self.datamodel.obj()
+                form.populate_obj(item)
+                self.pre_add(item)
+                self.datamodel.add(item)
+                self.post_add(item)
+                return None
+        return self._get_add_widget(form=form, exclude_cols=exclude_cols)
 
     def _edit(self, pk):
         """
@@ -679,12 +680,12 @@ class BaseCRUDView(BaseModelView):
         if request.method == 'POST':
             form = self.edit_form(request.form)
             form = form.refresh(obj=item)
+            # fill the form with the suppressed cols, generated from exclude_cols
+            self._fill_form_exclude_cols(exclude_cols, form)
             # trick to pass unique validation
             form._id = pk
             if form.validate():
                 form.populate_obj(item)
-                # fill the form with the suppressed cols, generated from exclude_cols
-                self._fill_item_exclude_cols(exclude_cols, item)
                 self.pre_update(item)
                 self.datamodel.edit(item)
                 self.post_update(item)
@@ -711,14 +712,15 @@ class BaseCRUDView(BaseModelView):
     ------------------------------------------------
     """
 
-    def _fill_item_exclude_cols(self, exclude_cols, item):
+    def _fill_form_exclude_cols(self, exclude_cols, form):
         """
-            fill the model item with the suppressed cols, generated from exclude_cols 
+            fill the form with the suppressed cols, generated from exclude_cols
         """
         for filter_key in exclude_cols:
             filter_value = self._filters.get_filter_value(filter_key)
             rel_obj = self.datamodel.get_related_obj(filter_key, filter_value)
-            setattr(item, filter_key, rel_obj)
+            field = getattr(form, filter_key)
+            field.data = rel_obj
 
 
     def debug(self):

@@ -5,6 +5,7 @@ Improvements and Bug fixes on 0.6.11
 ------------------------------------
 
 - New, *get_file_orginal_name* helper function to remove UUID from file name.
+- Fix, bug on related views was not adding new models. Impossible to insert on related views.
 
 Improvements and Bug fixes on 0.6.10
 ------------------------------------

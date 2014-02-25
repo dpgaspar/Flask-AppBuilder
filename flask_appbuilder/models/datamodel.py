@@ -82,7 +82,7 @@ class DataModel():
                 data['c'] = col
                 data['v'] = self._get_attr_value(item, col)
             json_data.append(data)
-        return [{'cols': json_cols, 'data': json_data}]
+        return [{'cols': json_cols, 'rows': json_data}]
 
 
 class SQLAModel(DataModel):
@@ -166,6 +166,7 @@ class SQLAModel(DataModel):
         query_result = query.all()
         #query_result = sorted(query_result, key=lambda item: getattr(item, group_by))
         group = GroupByCol(group_by, 'Group by')
+        log.debug(group._apply(query_result))
         return group.apply(query_result)
 
 
