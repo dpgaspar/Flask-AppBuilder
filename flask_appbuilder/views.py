@@ -168,9 +168,7 @@ class GeneralView(BaseCRUDView):
     def add(self):
 
         widget = self._add()
-        log.debug("ADD {}".format(widget))
         if not widget:
-            log.debug("GOING TO ADD {}".format(self._get_redirect()))
             return redirect(self._get_redirect())
         else:
             return render_template(self.add_template,
