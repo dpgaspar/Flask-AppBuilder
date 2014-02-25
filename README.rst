@@ -9,7 +9,7 @@ Take a look at instalation, quick how to tutorials, API reference etc: `Document
 Package Version
 ---------------
 
-*New 0.6.11* with an importante bug fix.
+*New 0.6.11* with an important bug fix. Please update
 
 please read the `Versions <http://flask-appbuilder.readthedocs.org/en/latest/versions.html>`_
 

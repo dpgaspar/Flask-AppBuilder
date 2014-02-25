@@ -164,9 +164,7 @@ class SQLAModel(DataModel):
         query = self.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
         query_result = query.all()
-        #query_result = sorted(query_result, key=lambda item: getattr(item, group_by))
         group = GroupByCol(group_by, 'Group by')
-        log.debug(group._apply(query_result))
         return group.apply(query_result)
 
 
