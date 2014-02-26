@@ -10,8 +10,8 @@ class ProjectFilesGeneralView(GeneralView):
     datamodel = SQLAModel(ProjectFiles, db.session)
 
     label_columns = {'file_name': 'File Name', 'download': 'Download'}
-    add_columns = ['file', 'description']
-    edit_columns = ['file', 'description']
+    add_columns = ['file', 'description','project']
+    edit_columns = ['file', 'description','project']
     list_columns = ['file_name', 'download']
     show_columns = ['file_name', 'download']
 
