@@ -4,7 +4,7 @@ Flask App Builder
 Simple and rapid application builder framework, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto form generation, google charts and much more.
 
-Take a look at installation, quick how to tutorials, API reference etc: `Documentation <http://flask-appbuilder.readthedocs.org/en/latest/>`_
+Take a look at installation, quick howto tutorials, API reference etc: `Documentation <http://flask-appbuilder.readthedocs.org/en/latest/>`_
 
 Package Version
 ---------------
