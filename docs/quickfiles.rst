@@ -40,9 +40,9 @@ Define your Views (views.py)
 
 Notice:
 
-We are overriding the list_widget, the widget that is normally used by GeneralView. This will display a thumbnail list excelent for displaying images.
+We are overriding the list_widget, the widget that is normally used by GeneralView. This will display a thumbnail list excellent for displaying images.
 
-And that's it! images will be saved on the server has UUID's and will be resized for optimization.
+And that's it! Images will be saved on the server and has UUID's and will be resized for optimization.
 
 Next step
 ---------
