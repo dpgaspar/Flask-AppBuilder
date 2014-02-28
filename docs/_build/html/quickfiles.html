@@ -72,11 +72,13 @@
     <span class="k">def</span> <span class="nf">photo_img</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">ImageManager</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;/persongeneralview/show/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;&#39;</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; alt=&quot;Photo&quot; class=&quot;img-rounded img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonGeneralView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;&#39;</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; alt=&quot;Photo&quot; class=&quot;img-rounded img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;/persongeneralview/show/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonGeneralView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Create an additional method in this case <em>photo_img</em> to inject your own custom HTML to show your saved images. In this example we are showing the images and linking them with the show view.</p>
+<p>Later reference this method like it&#8217;s a column on your view.</p>
 <p>Notice:</p>
 <p>The &#8220;ImageColumn&#8221; type, this is an extended type from Flask-AppBuilder.</p>
 </div>
@@ -93,7 +95,8 @@
 </pre></div>
 </div>
 <p>Notice:</p>
-<p>We are overriding the list_widget, the widget that is normally used by GeneralView. This will display a thumbnail list excelent for displaying images.</p>
+<p>We are overriding the <em>list_widget</em>, the widget that is normally used by GeneralView. This will display a thumbnail list excelent for displaying images.</p>
+<p>Notice that we are not using the <em>image</em> column but the method <em>photo_img</em> we have created that will display the image and link it to the show view.</p>
 <p>And that&#8217;s it! images will be saved on the server has UUID&#8217;s and will be resized for optimization.</p>
 </div>
 <div class="section" id="next-step">

@@ -6,7 +6,7 @@ The Authentication methods
 
 You have three types of authentication methods
 
-	- Database type authentications: username and password style that is queried from the database to match, atention this framework does not encrypt (yet...) the passwords.
+	- Database type authentications: username and password style that is queried from the database to match, attention this framework does not encrypt (yet...) the passwords.
 	
 	- Open ID: Uses the user's email field to authenticate on Gmail, Yahoo etc...
 
@@ -27,7 +27,7 @@ There are two special roles, you can define their names on the :doc:`config`
 
 	- Public Role: This is a special role for non authenticated users, you can assign all the permissions on views and menus to this role, and everyone will access specific parts of you application.
 	
-Of course you can create any aditional role you want and configure them as you like.
+Of course you can create any additional role you want and configure them as you like.
 
 Permissions
 -----------

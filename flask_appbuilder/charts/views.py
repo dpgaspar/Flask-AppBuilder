@@ -28,7 +28,7 @@ class BaseChartView(BaseModelView):
     default_view = 'chart'
 
     chart_type = 'PieChart'
-    """ The chart type PieChart or ColumnChart """
+    """ The chart type PieChart, ColumnChart, LineChart """
     chart_3d = 'true'
     """ Will display in 3D? """
     width = 400
@@ -36,14 +36,16 @@ class BaseChartView(BaseModelView):
     height = '400px'
 
     group_by_columns = []
-    """ A list of columns to be possibly grouped by """
+    """ A list of columns to be possibly grouped by, this list must be filled """
 
     group_bys = {}
-    """ New for 0.6.4, on test """
+    """ New for 0.6.4, on test, don't use yet """
 
 
     def __init__(self, **kwargs):
-        super(BaseChartView, self).__init__(**kwargs)
+        if not self.group_by_columns:
+            raise Exception('Base Chart View property <group_by_columns> must not be empty')
+        else: super(BaseChartView, self).__init__(**kwargs)
 
 
     def _get_chart_widget(self, value_columns=[], widgets={}):
@@ -62,15 +64,14 @@ class ChartView(BaseChartView):
         This will show Google Charts based on group by of your tables.                
     """
 
+    @expose('/chart/<group_by>')
     @expose('/chart/')
     @has_access
-    def chart(self):
+    def chart(self, group_by=''):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
 
-        group_by = get_group_by_args()
-        if group_by == '':
-            group_by = self.group_by_columns[0]
+        group_by = group_by or self.group_by_columns[0]
         value_columns = self.datamodel.query_simple_group(group_by, filters=self._filters)
 
         widgets = self._get_chart_widget(value_columns=value_columns)
@@ -95,17 +96,15 @@ class TimeChartView(BaseChartView):
     chart_type = 'ColumnChart'
 
 
+    @expose('/chart/<group_by>')
     @expose('/chart/')
     @has_access
-    def chart(self):
+    def chart(self, group_by=''):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
-        group_by = get_group_by_args()
+
         group_by = group_by or self.group_by_columns[0]
         period = request.args.get('period')
-
-        if group_by == '':
-            group_by = self.group_by_columns[0]
 
         if period == 'month' or not period:
             value_columns = self.datamodel.query_month_group(group_by, filters=self._filters)

@@ -149,14 +149,16 @@ msgstr &quot;Lista de Contactos&quot;
 </div></blockquote>
 <p>3 - Run the babel extraction again:</p>
 <div class="highlight-python"><div class="highlight"><pre>pybabel update -i ./babel/messages.pot -d app/translations
-    pybabel compile -d app/translations
 
     - If your using Flask-AppBuilder-Skeleton use the provided script::
 
     ./babel_extract.sh
 </pre></div>
 </div>
-<p>4 - Add your language support to the framework</p>
+<p>4 - Run the compilation:</p>
+<blockquote>
+<div>pybabel compile -d app/translations</div></blockquote>
+<p>5 - Add your language support to the framework</p>
 <blockquote>
 <div><ul>
 <li><p class="first">On config tell the framework the languages you support. With this you will have a menu with the corresponding languages country flags:</p>

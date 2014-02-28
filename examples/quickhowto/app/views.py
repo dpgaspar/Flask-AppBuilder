@@ -10,13 +10,9 @@ from models import Group, Gender, Contact
 
 
 def fill_gender():
-    g1 = Gender()
-    g1.name = 'Male'
-    g2 = Gender()
-    g2.name = 'Female'
     try:
-        db.session.add(g1)
-        db.session.add(g2)
+        db.session.add(Gender(name='Male'))
+        db.session.add(Gender(name='Female'))
         db.session.commit()
     except:
         db.session.rollback()

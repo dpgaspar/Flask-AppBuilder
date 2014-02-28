@@ -1,8 +1,14 @@
 Versions
 ========
 
-Improvements and Bug fixes on 0.6.11
+Improvements and Bug fixes on 0.6.13
 ------------------------------------
+
+- BaseChartView *group_by_columns* empty list validation.
+- Fix, url's for charts were changed to allow search on every group by column.
+
+Improvements and Bug fixes on 0.6.11, 0.6.12
+--------------------------------------------
 
 - New, *get_file_orginal_name* helper function to remove UUID from file name.
 - Fix, bug on related views was not adding new models. Impossible to insert on related views.

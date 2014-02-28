@@ -1,0 +1,36 @@
+
+<script type="text/javascript" src="{{url_for('baseapp.static',filename='js/google_charts.js')}}"></script>
+<script type="text/javascript">
+            //load the Google Visualization API and the chart
+            google.load('visualization', '1', {'packages': ['corechart']});
+
+            //set callback
+            google.setOnLoadCallback (createChart);
+
+            //callback function
+            function createChart() {
+
+                //create data table object
+                var dataTable = new google.visualization.DataTable();
+
+                //define columns
+                dataTable.addColumn('string','x1');
+                dataTable.addColumn('number', 'Count');
+				
+				dataTable.addRows([
+				{%- for str_r, str_v in value_columns %}                
+	          		['{{str_r}}', {{str_v}}],    	      
+				{%- endfor %}
+				]);
+				
+                //instantiate our chart object
+                var chart = new google.visualization.{{chart_type}}(document.getElementById('chart'));
+
+                //define options for visualization
+                var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
+
+                //draw our chart
+                chart.draw(dataTable, options);
+
+            }
+</script>
