@@ -24,9 +24,8 @@ Create an additional method in this case *photo_img* to inject your own custom H
 
 Later reference this method like it's a column on your view.
 
-Notice:
-
-The "ImageColumn" type, this is an extended type from Flask-AppBuilder.
+.. note::
+    The "ImageColumn" type, is an extended type from Flask-AppBuilder.
 
 Define your Views (views.py)
 ----------------------------
@@ -44,11 +43,15 @@ Define your Views (views.py)
 
 Notice:
 
-We are overriding the *list_widget*, the widget that is normally used by GeneralView. This will display a thumbnail list excelent for displaying images.
+We are overriding the *list_widget*, the widget that is normally used by GeneralView. This will display a thumbnail list excellent for displaying images.
 
 Notice that we are not using the *image* column but the method *photo_img* we have created that will display the image and link it to the show view.
 
-And that's it! images will be saved on the server has UUID's and will be resized for optimization.
+And that's it! images will be saved on the server. Their file names will result in the concatenation of UUID with their original name. They will be resized for optimization.
+
+.. note::
+    Control image resizing using configuration key *IMG_SIZE*
+
 
 Next step
 ---------
