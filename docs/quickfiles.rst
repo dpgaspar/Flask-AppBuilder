@@ -1,7 +1,7 @@
 Quick Files and Images
 ======================
 
-You can implement views with images or files associated
+You can implement views with images or files embedded on the model definition
 
 Define your model (models.py)
 -----------------------------
@@ -20,7 +20,7 @@ Define your model (models.py)
             else:
                 return Markup('<a href="' + url_for('PersonGeneralView.show',pk=str(self.id)) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
         
-Create an additional method in this case *photo_img* to inject your own custom HTML to show your saved images. In this example we are showing the images and linking them with the show view.
+Create an additional method in this case *photo_img*, to inject your own custom HTML, to show your saved images. In this example we are showing the images, and linking them with the show view.
 
 Later reference this method like it's a column on your view.
 
@@ -43,9 +43,9 @@ Define your Views (views.py)
 
 Notice:
 
-We are overriding the *list_widget*, the widget that is normally used by GeneralView. This will display a thumbnail list excellent for displaying images.
+We are overriding the *list_widget*, the widget that is normally used by GeneralView. This will display a thumbnail list, excellent for displaying images.
 
-Notice that we are not using the *image* column but the method *photo_img* we have created that will display the image and link it to the show view.
+Notice that we are not using the *image* column but the method *photo_img* we have created. This method will display the image and link it to the show view.
 
 And that's it! images will be saved on the server. Their file names will result in the concatenation of UUID with their original name. They will be resized for optimization.
 

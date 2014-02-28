@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.6.14
+------------------------------------
+
+-
+
 Improvements and Bug fixes on 0.6.13
 ------------------------------------
 

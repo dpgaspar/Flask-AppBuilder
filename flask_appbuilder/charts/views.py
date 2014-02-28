@@ -48,7 +48,8 @@ class BaseChartView(BaseModelView):
         else: super(BaseChartView, self).__init__(**kwargs)
 
 
-    def _get_chart_widget(self, value_columns=[], widgets={}):
+    def _get_chart_widget(self, value_columns=None, widgets=None):
+        widgets = widgets or dict()
         widgets['chart'] = self.chart_widget(route_base=self.route_base,
                                              chart_title=self.chart_title,
                                              chart_type=self.chart_type,

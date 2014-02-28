@@ -51,7 +51,7 @@ class BaseGroupBy(object):
         return getattr(item, self.column_name)
 
     def get_format_group_col(self, item):
-        return item
+        return str(item)
 
     def get_aggregate_col_name(self):
         if self.aggregate_col:
@@ -64,17 +64,23 @@ class BaseGroupBy(object):
 
 
 class GroupByCol(BaseGroupBy):
+
     def _apply(self, data):
         data = sorted(data, key=self.get_group_col)
         json_data = dict()
-        json_data['rows'] = [{'id': self.column_name},
-                             {'id': self.aggregate_func.__name__ + '_' + self.column_name}]
-        json_data['cols'] = []
+        json_data['cols'] = [{'id': self.column_name,
+                             'label': self.column_name,
+                              'type': 'string'},
+                             {'id': self.aggregate_func.__name__ + '_' + self.column_name,
+                              'label': self.aggregate_func.__name__ + '_' + self.column_name,
+                              'type': 'number'}]
+        json_data['rows'] = []
         for (grouped, items) in groupby(data, self.get_group_col):
             aggregate_value = self.aggregate_func(items, self.aggregate_col)
-            json_data['cols'].append([
-                {"c": [{"v": self.get_format_group_col(grouped)}, {"v": aggregate_value}]}])
+            json_data['rows'].append(
+                {"c": [{"v": self.get_format_group_col(grouped)}, {"v": aggregate_value}]})
         return json_data
+
 
     def apply(self, data):
         data = sorted(data, key=self.get_group_col)
@@ -84,20 +90,7 @@ class GroupByCol(BaseGroupBy):
         ]
 
 
-    def apply2(self, data):
-        data = sorted(data, key=self.get_group_col)
-        ret = []
-        for (grouped, items) in groupby(data, self.get_group_col):
-            item = {}
-            item[self.column_name] = grouped
-            item[self.get_aggregate_col_name()] = self.aggregate_func(items, self.aggregate_col)
-            item['items'] = items
-            ret.append(item)
-        return ret
-
-
 class GroupByDateYear(BaseGroupBy):
-
     def apply(self, data):
         data = sorted(data, key=self.get_group_col)
         return [
@@ -127,6 +120,7 @@ class GroupByDateMonth(BaseGroupBy):
 
     def get_format_group_col(self, item):
         return calendar.month_name[item[0]] + ' ' + str(item[1])
+
 
 class GroupBys(object):
     group_bys = None
