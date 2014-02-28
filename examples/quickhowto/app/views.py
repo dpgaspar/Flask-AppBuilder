@@ -62,6 +62,7 @@ class ContactChartView(ChartView):
 
 class ContactTimeChartView(TimeChartView):
     chart_title = 'Grouped Birth contacts'
+    chart_type = 'AreaChart'
     label_columns = ContactGeneralView.label_columns
     group_by_columns = ['birthday']
     datamodel = SQLAModel(Contact, db.session)
@@ -72,6 +73,7 @@ fixed_translations_import = [
     _("List Contacts"),
     _("Contacts Chart"),
     _("Contacts Birth Chart")]
+
 
 fill_gender()
 genapp = BaseApp(app, db)

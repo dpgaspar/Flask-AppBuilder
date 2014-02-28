@@ -17,7 +17,7 @@ Define your Chart Views (views.py)
     	
 Notice that:
 
-:label_columns: The same label's from ContactGeneralView.
+:label_columns: Are the labels that will be displayed instead of the model's columns name. In this case they are the same labels from ContactGeneralView.
 :group_by_columns: Is a list of columns that you want to group.
 
 this will produce a Pie chart, with the percentage of contacts by group.
@@ -25,7 +25,7 @@ If you want a column chart just define::
 
 	chart_type = 'ColumnChart'
 
-You can use 'BarChart' or 'LineChart' the default is 'PieChart', take a look at the google charts documentation, the *chart_type* is the function on 'google.visualization' object
+You can use 'BarChart', 'LineChart', 'AreaChart' the default is 'PieChart', take a look at the google charts documentation, the *chart_type* is the function on 'google.visualization' object
 
 How about a chart grouped by a time frame?
 
