@@ -30,7 +30,13 @@ class Person(BaseMixin, Base):
     personal_celphone = Column(String(20))
     personal_email = Column(String(64))
     notes = Column(Text())
-    business_function = Column(String(64))
+    business_function = Column(String(64))def photo_img(self):
+        im = ImageManager()
+        if self.photo:
+            return Markup('<a href="' + url_for('PersonGeneralView.show',pk=str(self.id)) + '" class="thumbnail"><img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"></a>')
+        else:
+            return Markup('<a href="'+ url_for('PersonGeneralView.show',pk=str(self.id)) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
+
     business_phone = Column(String(20))
     business_celphone = Column(String(20))
     business_email = Column(String(64))

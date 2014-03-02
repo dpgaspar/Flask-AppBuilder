@@ -1,7 +1,7 @@
 import logging
 
 from flask_wtf import (Form, BooleanField, TextField,
-                       TextAreaField, IntegerField, DateField, QuerySelectField,
+                       TextAreaField, IntegerField, FloatField, DateField, QuerySelectField,
                        QuerySelectMultipleField)
 
 from flask_wtf import validators
@@ -17,7 +17,6 @@ from fieldwidgets import (BS3TextAreaFieldWidget,
                           Select2Widget,
                           Select2ManyWidget)
 from .models.filters import Filters
-from .models.datamodel import SQLAModel
 
 log = logging.getLogger(__name__)
 
@@ -28,6 +27,7 @@ class FieldConverter(object):
                         ('is_text', TextAreaField, BS3TextAreaFieldWidget),
                         ('is_string', TextField, BS3TextFieldWidget),
                         ('is_integer', IntegerField, BS3TextFieldWidget),
+                        ('is_float', FloatField, BS3TextFieldWidget),
                         ('is_boolean', BooleanField, None),
                         ('is_date', DateField, DatePickerWidget),
                         ('is_datetime', DateField, DateTimePickerWidget),

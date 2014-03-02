@@ -97,15 +97,14 @@ class TimeChartView(BaseChartView):
     chart_type = 'ColumnChart'
 
 
-    @expose('/chart/<group_by>')
+    @expose('/chart/<group_by>/<period>')
     @expose('/chart/')
     @has_access
-    def chart(self, group_by=''):
+    def chart(self, group_by='', period=''):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
 
         group_by = group_by or self.group_by_columns[0]
-        period = request.args.get('period')
 
         if period == 'month' or not period:
             value_columns = self.datamodel.query_month_group(group_by, filters=self._filters)

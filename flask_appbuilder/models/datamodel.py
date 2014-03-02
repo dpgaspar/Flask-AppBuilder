@@ -214,6 +214,9 @@ class SQLAModel(DataModel):
     def is_integer(self, col_name):
         return isinstance(self.obj.__mapper__.columns[col_name].type, sa.types.Integer)
 
+    def is_float(self, col_name):
+        return isinstance(self.obj.__mapper__.columns[col_name].type, sa.types.Float)
+
     def is_boolean(self, col_name):
         return isinstance(self.obj.__mapper__.columns[col_name].type, sa.types.Boolean)
 
