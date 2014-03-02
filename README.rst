@@ -9,9 +9,9 @@ Take a look at installation, quick howto tutorials, API reference etc: `Document
 Package Version
 ---------------
 
-*New 0.6.13* with an important bug fix. Please update
+*New 0.6.14* with a bug fix, and support for float database type. Please update
 
-please read the `Versions <http://flask-appbuilder.readthedocs.org/en/latest/versions.html>`_
+please read the `Versions <http://flask-appbuilder.readthedocs.org/en/latest/versions.html>`_ for further detail.
 
 Fixes, Bugs and contributions
 -----------------------------

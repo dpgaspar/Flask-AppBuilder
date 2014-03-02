@@ -5,6 +5,7 @@ Improvements and Bug fixes on 0.6.14
 ------------------------------------
 
 - Fix, url on time chart views to allow search on every group by column.
+- New, support for float database type.
 
 Improvements and Bug fixes on 0.6.13
 ------------------------------------

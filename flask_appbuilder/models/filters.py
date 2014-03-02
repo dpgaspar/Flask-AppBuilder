@@ -178,8 +178,11 @@ class Filters(object):
                     FilterNotStartsWith(col, datamodel),
                     FilterNotEndsWith(col, datamodel),
                     FilterNotContains(col, datamodel),
-                    FilterNotEqual(col, datamodel),]    
-            elif datamodel.is_integer(col) or datamodel.is_date(col) or datamodel.is_datetime(col):
+                    FilterNotEqual(col, datamodel)]
+            elif datamodel.is_integer(col) or \
+                    datamodel.is_date(col) or \
+                    datamodel.is_datetime(col) or \
+                    datamodel.is_float(col):
                 return [FilterEqual(col, datamodel),
                     FilterGreater(col, datamodel), 
                     FilterSmaller(col, datamodel),

@@ -3,7 +3,7 @@ from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.views import GeneralView, BaseView
 from flask.ext.appbuilder.charts.views import ChartView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.widgets import ListThumbnail
+from flask.ext.appbuilder.widgets import ListBlock
 
 from app import app, db
 
@@ -11,12 +11,12 @@ from app import app, db
 class ProductGeneralView(GeneralView):
     datamodel = SQLAModel(Product, db.session)
 
-    #list_widget = ListThumbnail
+    list_widget = ListBlock
 
     label_columns = {'photo_img': 'Photo'}
 
-    list_columns = ['name', 'photo_img']
-    search_columns = ['name']
+    list_columns = ['name', 'photo_img', 'price']
+    search_columns = ['name','price']
 
 
 class ProductTypeGeneralView(GeneralView):
