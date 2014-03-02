@@ -16,8 +16,8 @@ class ProductType(BaseMixin, Base):
 
 class Product(BaseMixin, Base):
     id = Column(Integer, primary_key=True)
-    name =  Column(String(50), unique = True, nullable=False)
-    price =  Column(Float)
+    name = Column(String(50), unique = True, nullable=False)
+    #price = Column(Float)
     photo = Column(ImageColumn)
     description = Column(Text())
     product_type_id = Column(Integer, ForeignKey('product_type.id'), nullable=False)

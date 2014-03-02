@@ -15,7 +15,7 @@ class ProductGeneralView(GeneralView):
 
     label_columns = {'photo_img': 'Photo'}
 
-    list_columns = ['name', 'photo_img', 'price']
+    list_columns = ['name', 'photo_img']
     search_columns = ['name']
 
 
