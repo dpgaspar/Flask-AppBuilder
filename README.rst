@@ -53,22 +53,42 @@ Includes:
 Some pictures
 -------------
 
-`Login page (with AUTH_DB) <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_db.png>`_
+Login page (with AUTH_DB) 
 
 .. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_db.png
     :width: 480px
     :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_db.png
     
 
-`Login page (with AUTH_OID) <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_oid.png>`_
+Login page (with AUTH_OID)
 
-`Security <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/security.png>`_
+.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_oid.png
+    :width: 480px
+    :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_oid.png
+
+
+Security 
+
+.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/security.png
+    :width: 480px
+    :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/security.png
+
 
 Lists:
 
-`List contacts example <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/contact_list.png>`_
+List contacts example 
 
-`List Group example with search <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/group_list.png>`_
+.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/contact_list.png
+    :width: 480px
+    :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/contact_list.png
+
+
+`List Group example with search 
+
+.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/group_list.png
+    :width: 480px
+    :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/group_list.png
+
 
 Charts:
 
