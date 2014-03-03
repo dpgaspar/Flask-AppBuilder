@@ -16,7 +16,7 @@ class ProductType(BaseMixin, Base):
 class Product(BaseMixin, Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
-    price = Column(Float)
+    price = Column(Float, nullable=False)
     photo = Column(ImageColumn)
     description = Column(Text())
     product_type_id = Column(Integer, ForeignKey('product_type.id'), nullable=False)
@@ -25,13 +25,12 @@ class Product(BaseMixin, Base):
     def photo_img(self):
         im = ImageManager()
         if self.photo:
-            return Markup('<a href="' + url_for('ProductGeneralView.show',
+            return Markup('<a href="' + url_for('ProductPubView.show',
                                                 pk=str(self.id)) + '" class="thumbnail"><img src="' +
                           im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"></a>')
         else:
-            return Markup('<a href="' + url_for('ProductGeneralView.show',
-                                                pk=str(
-                                                    self.id)) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
+            return Markup('<a href="' + url_for('ProductPubView.show',
+                                                pk=str(self.id)) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
 
 
     def __repr__(self):

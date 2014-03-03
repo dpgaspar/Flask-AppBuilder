@@ -74,7 +74,11 @@ class Menu(object):
         
 
     def add_separator(self, category=""):
-        self.find_category(category).childs.append(MenuItem("-"))
+        menu_item = self.find_category(category)
+        if menu_item:
+            menu_item.childs.append(MenuItem("-"))
+        else:
+            raise Exception("Menu separator does not have correct category {}".format(category))
         
     def debug(self):
         for i in self.menu:
