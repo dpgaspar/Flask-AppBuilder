@@ -55,6 +55,11 @@ Some pictures
 
 `Login page (with AUTH_DB) <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_db.png>`_
 
+.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_db.png
+    :width: 480px
+    :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_db.png
+    
+
 `Login page (with AUTH_OID) <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_oid.png>`_
 
 `Security <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/security.png>`_
