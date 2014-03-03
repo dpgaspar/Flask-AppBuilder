@@ -92,11 +92,24 @@ List contacts example
 
 Charts:
 
-`Group by pie chart <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart.png>`_
+Group by pie chart 
 
-`Group by month chart <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time1.png>`_
+.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart.png
+    :width: 480px
+    :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart.png
 
-`Group by year chart <https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time2.png>`_
+Group by month chart 
+
+.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time1.png
+    :width: 480px
+    :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time1.png
+
+Group by year chart
+
+.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time2.png
+    :width: 480px
+    :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time2.png
+
 
 Depends on:
 -----------
