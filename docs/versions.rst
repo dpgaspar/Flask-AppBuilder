@@ -5,7 +5,7 @@ Improvements and Bug fixes on 0.6.15
 ------------------------------------
 
 - New, ListBlock support for pagination.
-- New, Menu separator raises exception if it does not have correct category.
+- New, Menu separator raises exception if it does not have a correct category.
 - New, ShowBlockWidget different show detail presentation.
 
 Improvements and Bug fixes on 0.6.14
