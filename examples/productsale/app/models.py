@@ -32,6 +32,8 @@ class Product(BaseMixin, Base):
             return Markup('<a href="' + url_for('ProductPubView.show',
                                                 pk=str(self.id)) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
 
+    def price_label(self):
+        return Markup('Price:<strong> {} </strong>'.format(self.price))
 
     def __repr__(self):
         return self.name

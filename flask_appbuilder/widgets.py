@@ -85,6 +85,9 @@ class ShowWidget(RenderTemplateWidget):
     """
     template = 'appbuilder/general/widgets/show.html'
 
+class ShowBlockWidget(RenderTemplateWidget):
+    template = 'appbuilder/general/widgets/show_block.html'
+
 
 class ListWidget(RenderTemplateWidget):
     """

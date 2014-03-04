@@ -3,7 +3,7 @@ from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.views import GeneralView, BaseView
 from flask.ext.appbuilder.charts.views import ChartView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.widgets import ListBlock
+from flask.ext.appbuilder.widgets import ListBlock, ShowBlockWidget
 
 from app import app, db
 
@@ -12,11 +12,19 @@ class ProductPubView(GeneralView):
     datamodel = SQLAModel(Product, db.session)
     base_permissions = ['can_list', 'can_show']
     list_widget = ListBlock
+    show_widget = ShowBlockWidget
 
     label_columns = {'photo_img': 'Photo'}
 
-    list_columns = ['name', 'photo_img', 'price']
+    list_columns = ['name', 'photo_img', 'price_label']
     search_columns = ['name', 'price', 'product_type']
+
+    show_fieldsets = [
+        ('Summary', {'fields': ['name', 'price_label', 'photo_img', 'product_type']}),
+        (
+            'Description',
+            {'fields': ['description'], 'expanded': True}),
+    ]
 
 class ProductView(GeneralView):
     datamodel = SQLAModel(Product, db.session)
