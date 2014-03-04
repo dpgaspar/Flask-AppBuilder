@@ -30,7 +30,9 @@ class Person(BaseMixin, Base):
     personal_celphone = Column(String(20))
     personal_email = Column(String(64))
     notes = Column(Text())
-    business_function = Column(String(64))def photo_img(self):
+    business_function = Column(String(64))
+
+    def photo_img(self):
         im = ImageManager()
         if self.photo:
             return Markup('<a href="' + url_for('PersonGeneralView.show',pk=str(self.id)) + '" class="thumbnail"><img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"></a>')
