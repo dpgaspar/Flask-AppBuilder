@@ -1,9 +1,10 @@
 import sys
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_appbuilder.security.models import User
 
 try:
-    from app import db
-    from flask_appbuilder.security.models import User
+    from app import app, db
+
 except:
     from flask import Flask
     from flask.ext.sqlalchemy import SQLAlchemy
@@ -15,6 +16,7 @@ except:
 
 
 try:
+    print "using connection string: {}".format(app.config['SQLALCHEMY_DATABASE_URI'])
     users = db.session.query(User).all()
 except:
     print "Query, connection error {}".format(sys.exc_info()[0])
