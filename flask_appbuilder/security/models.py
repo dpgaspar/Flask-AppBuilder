@@ -69,7 +69,7 @@ class User(Base):
     email = Column(String(64), unique=True, nullable=True)
 
     #last_login = Column(DateTime, default=datetime.datetime.now, nullable=False)
-    #login_count = Column(Integer)
+    login_count = Column(Integer)
 
     role_id = Column(Integer, ForeignKey('ab_role.id'), nullable=False)
     role = relationship("Role")

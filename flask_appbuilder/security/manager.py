@@ -1,3 +1,4 @@
+import sys
 import logging
 from flask import g
 from flask_appbuilder import Base
@@ -156,39 +157,41 @@ class SecurityManager(object):
 
 
     def init_db(self):
-        engine = self.session.get_bind(mapper=None, clause=None)
+        try:
+            engine = self.session.get_bind(mapper=None, clause=None)
 
-        inspector = Inspector.from_engine(engine)
-        if 'ab_user' not in inspector.get_table_names():
-            log.info("Security DB not found Creating")
-            Base.metadata.create_all(engine)
-            log.info("Security DB Created")
-            self.migrate_db()
-        if self.session.query(Role).filter_by(name=self.auth_role_admin).first() is None:
-            role = Role()
-            role.name = self.auth_role_admin
-            self.session.add(role)
-            self.session.commit()
-            log.info("Inserted Role for public access %s" % (self.auth_role_admin))
-        if not self.session.query(Role).filter_by(name=self.auth_role_public).first():
-            role = Role()
-            role.name = self.auth_role_public
-            self.session.add(role)
-            self.session.commit()
-            log.info("Inserted Role for public access %s" % (self.auth_role_public))
-        if not self.session.query(User).all():
-            user = User()
-            user.first_name = 'Admin'
-            user.last_name = 'User'
-            user.username = 'admin'
-            user.password = generate_password_hash('general')
-            user.active = True
-            user.role = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
-            self.session.add(user)
-            self.session.commit()
-            log.info("Inserted initial Admin user")
-            log.info("Login using Admin/general")
-
+            inspector = Inspector.from_engine(engine)
+            if 'ab_user' not in inspector.get_table_names():
+                log.info("Security DB not found Creating")
+                Base.metadata.create_all(engine)
+                log.info("Security DB Created")
+                self.migrate_db()
+            if self.session.query(Role).filter_by(name=self.auth_role_admin).first() is None:
+                role = Role()
+                role.name = self.auth_role_admin
+                self.session.add(role)
+                self.session.commit()
+                log.info("Inserted Role for public access %s" % (self.auth_role_admin))
+            if not self.session.query(Role).filter_by(name=self.auth_role_public).first():
+                role = Role()
+                role.name = self.auth_role_public
+                self.session.add(role)
+                self.session.commit()
+                log.info("Inserted Role for public access %s" % (self.auth_role_public))
+            if not self.session.query(User).all():
+                user = User()
+                user.first_name = 'Admin'
+                user.last_name = 'User'
+                user.username = 'admin'
+                user.password = generate_password_hash('general')
+                user.active = True
+                user.role = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
+                self.session.add(user)
+                self.session.commit()
+                log.info("Inserted initial Admin user")
+                log.info("Login using Admin/general")
+        except:
+            log.error("DB Creation and initialization failed {}".format(sys.exc_info()[0]))
 
     def auth_user_db(self, username, password):
         """

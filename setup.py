@@ -22,7 +22,7 @@ setup(
     long_description=desc(),
     packages=find_packages(),
     package_data={'': ['LICENSE']},
-    scripts=['bin/init_app.py'],
+    scripts=['bin/hash_db_password.py'],
     include_package_data=True,
     zip_safe=False,
     platforms='any',
