@@ -1,8 +1,8 @@
 Versions
 ========
 
-Improvements and Bug fixes on 0.6.15
-------------------------------------
+Improvements and Bug fixes on 0.7.0
+-----------------------------------
 
 - New, ListBlock with pagination.
 - New, Menu separator raises exception if it does not have a correct category.
