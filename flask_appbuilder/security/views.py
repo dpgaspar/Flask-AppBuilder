@@ -1,6 +1,7 @@
 from ..fieldwidgets import BS3PasswordFieldWidget
 from flask_wtf import validators
 from flask import render_template, flash, redirect, session, url_for, request, g
+from werkzeug.security import generate_password_hash, check_password_hash
 from openid.consumer import discover
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
 from openid.extensions import ax
@@ -209,6 +210,13 @@ class UserDBGeneralView(UserGeneralView):
     @action('resetpasswords', lazy_gettext("Reset Password"), "", "fa-lock")
     def resetpasswords(self, item):
         return redirect(url_for('ResetPasswordView.this_form_get', pk=item.id))
+
+
+    def pre_update(self, item):
+        item.password = generate_password_hash(item.password)
+
+    def pre_add(self, item):
+        item.password = generate_password_hash(item.password)
 
 
 class RoleGeneralView(GeneralView):

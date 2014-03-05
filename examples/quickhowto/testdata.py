@@ -2,7 +2,6 @@ from app import db
 from app.models import Group, Gender, Contact
 import random
 from datetime import datetime
-import sys
 
 
 def get_random_name(names_list, size=1):

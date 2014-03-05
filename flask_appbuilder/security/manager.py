@@ -51,7 +51,6 @@ class SecurityManager(object):
             else:
                 raise Exception("No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type.")
 
-
         self.lm = LoginManager(app)
         self.lm.login_view = 'login'
         self.oid = OpenID(app)
@@ -182,7 +181,7 @@ class SecurityManager(object):
             user.first_name = 'Admin'
             user.last_name = 'User'
             user.username = 'admin'
-            user.password = 'general'
+            user.password = generate_password_hash('general')
             user.active = True
             user.role = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
             self.session.add(user)
@@ -192,13 +191,23 @@ class SecurityManager(object):
 
 
     def auth_user_db(self, username, password):
+        """
+            Method for authenticating user, auth db style
+
+            :param username:
+                The username
+            :param password:
+                The password, will be tested against hashed password on db
+        """
         if username is None or username == "":
             return None
-        user = self.session.query(User).filter_by(username=username, password=password).first()
+        user = self.session.query(User).filter_by(username=username).first()
         if user is None or (not user.is_active()):
             return None
-        else:
+        elif check_password_hash(user.password, password):
             return user
+        else:
+            return None
 
     def auth_user_ldap(self, username, password):
         if username is None or username == "":
@@ -237,7 +246,7 @@ class SecurityManager(object):
 
     def reset_password(self, userid, password):
         user = self.get_user_by_id(userid)
-        user.password = password
+        user.password = generate_password_hash(password)
         self.session.commit()
 
     def get_user_by_id(self, pk):

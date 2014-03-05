@@ -4,9 +4,11 @@ Versions
 Improvements and Bug fixes on 0.6.15
 ------------------------------------
 
-- New, ListBlock support for pagination.
+- New, ListBlock with pagination.
 - New, Menu separator raises exception if it does not have a correct category.
 - New, ShowBlockWidget different show detail presentation.
+- Fix, login failed was not displaying error message.
+- New, password is saved hashed on database.
 
 Improvements and Bug fixes on 0.6.14
 ------------------------------------
