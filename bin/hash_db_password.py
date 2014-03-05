@@ -9,6 +9,10 @@ except:
     from flask import Flask
     from flask.ext.sqlalchemy import SQLAlchemy
 
+    if len(sys.argv) < 2:
+        print "Without typical app structure use parameter to config"
+        print "Use example: python hash_db_password.py sqlite:////home/user/application/app.db"
+        exit()
     con_str = sys.argv[1]
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = con_str
