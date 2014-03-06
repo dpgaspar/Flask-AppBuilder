@@ -19,20 +19,25 @@ except:
     db = SQLAlchemy(app)
 
 
+logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
+logging.getLogger().setLevel(logging.DEBUG)
+log = logging.getLogger(__name__)
+
+
 try:
-    print "using connection string: {0}".format(app.config['SQLALCHEMY_DATABASE_URI'])
+    log.info("using connection string: {0}".format(app.config['SQLALCHEMY_DATABASE_URI']))
     users = db.session.query(User).all()
 except Exception as e:
-    print "Query, connection error {0}".format(e)
-    print "Config db key {}".format(app.config['SQLALCHEMY_DATABASE_URI'])
+    log.error("Query, connection error {0}".format(e))
+    log.error("Config db key {}".format(app.config['SQLALCHEMY_DATABASE_URI']))
     exit()
 
 for user in users:
-    print "Hashing password for {0}".format(user.full_name)
+    log.info("Hashing password for {0}".format(user.full_name))
     user.password = generate_password_hash(user.password)
     try:
         db.session.merge(user)
         db.session.commit()
     except:
-        print "Error updating password for {0}".format(user.full_name)
+        log.error("Error updating password for {0}".format(user.full_name))
 
