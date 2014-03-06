@@ -24,10 +24,14 @@ logging.getLogger().setLevel(logging.DEBUG)
 log = logging.getLogger(__name__)
 
 def add_column(engine, table, column):
-  table_name = table.__tablename__
-  column_name = column.key
-  column_type = column.type.compile(engine.dialect)
-  engine.execute('ALTER TABLE %s ADD COLUMN %s %s' % (table_name, column_name, column_type))
+    table_name = table.__tablename__
+    column_name = column.key
+    column_type = column.type.compile(engine.dialect)
+    try:
+        engine.execute('ALTER TABLE %s ADD COLUMN %s %s' % (table_name, column_name, column_type))
+        log.info("Added Column {0} on {1}".format(column_name, table_name))
+    except Exception as e:
+        log.error("Error adding Column {0} on {1}: {2}".format(column_name, table_name, str(e)))
 
 
 engine = db.session.get_bind(mapper=None, clause=None)
