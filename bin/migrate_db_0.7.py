@@ -33,3 +33,9 @@ def add_column(engine, table, column):
 engine = db.session.get_bind(mapper=None, clause=None)
 
 add_column(engine, User, User.login_count)
+add_column(engine, User, User.created_on)
+add_column(engine, User, User.changed_on)
+add_column(engine, User, User.created_by_fk)
+add_column(engine, User, User.changed_by_fk)
+add_column(engine, User, User.last_login)
+add_column(engine, User, User.fail_login_count)
