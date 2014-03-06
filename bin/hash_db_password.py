@@ -39,7 +39,8 @@ for user in users:
     try:
         db.session.merge(user)
         db.session.commit()
-    except:
-        log.error("Error updating password for {0}".format(user.full_name))
+    except Exception as e:
         db.session.rollback()
+        log.error("Error updating password for {0}: {1}".format(user.full_name, str(e)))
+        
 
