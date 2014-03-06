@@ -28,7 +28,7 @@ except Exception as e:
     exit()
 
 for user in users:
-    print "Hashing password for {}".format(user.full_name)
+    print "Hashing password for {0}".format(user.full_name)
     user.password = generate_password_hash(user.password)
     try:
         db.session.merge(user)
