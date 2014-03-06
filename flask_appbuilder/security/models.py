@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import relationship, column_property
 from flask.ext.appbuilder import Base
 from flask.ext.appbuilder.models.mixins import AuditMixin
