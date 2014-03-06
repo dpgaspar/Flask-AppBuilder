@@ -41,4 +41,5 @@ for user in users:
         db.session.commit()
     except:
         log.error("Error updating password for {0}".format(user.full_name))
+        db.session.rollback()
 
