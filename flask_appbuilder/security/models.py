@@ -1,6 +1,7 @@
 from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship, column_property
 from flask.ext.appbuilder import Base
+from flask.ext.appbuilder.models.mixins import AuditMixin
 
 
 class Permission(Base):
@@ -57,7 +58,7 @@ class Role(Base):
         return self.name
 
 
-class User(Base):
+class User(AuditMixin, Base):
     __tablename__ = 'ab_user'
     id = Column(Integer, primary_key=True)
     first_name = Column(String(64), nullable=False)
@@ -68,8 +69,9 @@ class User(Base):
     active = Column(Boolean)
     email = Column(String(64), unique=True, nullable=True)
 
-    #last_login = Column(DateTime, default=datetime.datetime.now, nullable=False)
+    last_login = Column(DateTime)
     login_count = Column(Integer)
+    fail_login_count = Column(Integer)
 
     role_id = Column(Integer, ForeignKey('ab_role.id'), nullable=False)
     role = relationship("Role")
