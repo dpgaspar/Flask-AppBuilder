@@ -1,3 +1,4 @@
+import logging
 import sys
 from werkzeug.security import generate_password_hash
 from flask_appbuilder.security.models import User
