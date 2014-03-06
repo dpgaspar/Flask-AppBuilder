@@ -38,7 +38,7 @@ def alter_column(engine, table, column):
     column_name = column.key
     column_type = column.type.compile(engine.dialect)
     try:
-        engine.execute('ALTER TABLE %s ALTER COLUMN %s %s' % (table_name, column_name, column_type))
+        engine.execute('ALTER TABLE %s ALTER COLUMN %s TYPE %s' % (table_name, column_name, column_type))
         log.info("Altered Column {0} on {1}".format(column_name, table_name))
     except Exception as e:
         log.error("Error altering Column {0} on {1}: {2}".format(column_name, table_name, str(e)))
