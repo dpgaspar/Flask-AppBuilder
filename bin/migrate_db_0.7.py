@@ -18,7 +18,6 @@ except:
     db = SQLAlchemy(app)
 
 
-
 def add_column(engine, table, column):
   table_name = table.__tablename__
   column_name = column.key
