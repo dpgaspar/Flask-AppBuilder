@@ -23,7 +23,7 @@ try:
     print "using connection string: {}".format(app.config['SQLALCHEMY_DATABASE_URI'])
     users = db.session.query(User).all()
 except Exception as e:
-    print "Query, connection error {}".format(e.message)
+    print "Query, connection error {}".format(e)
     print "Config db key {}".format(app.config['SQLALCHEMY_DATABASE_URI'])
     exit()
 
