@@ -191,7 +191,7 @@ class SecurityManager(object):
                 log.info("Inserted initial Admin user")
                 log.info("Login using Admin/general")
         except:
-            log.error("DB Creation and initialization failed {}".format(sys.exc_info()[0]))
+            log.error("DB Creation and initialization failed, if just upgraded to 0.7.X you must migrate the DB.")
 
     def auth_user_db(self, username, password):
         """
