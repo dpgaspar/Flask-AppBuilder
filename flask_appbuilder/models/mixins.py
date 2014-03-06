@@ -1,6 +1,7 @@
 import re
 import uuid
 import datetime
+import logging
 
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, DateTime
@@ -9,6 +10,8 @@ import sqlalchemy.types as types
 from sqlalchemy.types import String
 from flask import g
 
+
+log = logging.GetLogger(__name__)
 
 _camelcase_re = re.compile(r'([A-Z]+)(?=[a-z0-9])')
 
@@ -90,4 +93,9 @@ class AuditMixin(BaseMixin):
 
     @classmethod
     def get_user_id(cls):
-        return g.user.id
+        try:
+            return g.user.id
+        except Exception as e:
+            log.error("AuditMixin Get User ID {0}".format(str(e)))
+            return None
+        
