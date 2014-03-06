@@ -20,10 +20,10 @@ except:
 
 
 try:
-    print "using connection string: {}".format(app.config['SQLALCHEMY_DATABASE_URI'])
+    print "using connection string: {0}".format(app.config['SQLALCHEMY_DATABASE_URI'])
     users = db.session.query(User).all()
 except Exception as e:
-    print "Query, connection error {}".format(e)
+    print "Query, connection error {0}".format(e)
     print "Config db key {}".format(app.config['SQLALCHEMY_DATABASE_URI'])
     exit()
 
@@ -34,5 +34,5 @@ for user in users:
         db.session.merge(user)
         db.session.commit()
     except:
-        print "Error updating password for {}".format(user.full_name)
+        print "Error updating password for {0}".format(user.full_name)
 
