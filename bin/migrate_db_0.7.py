@@ -1,4 +1,5 @@
 import sys
+import logging
 from flask_appbuilder.security.models import User
 
 try:
@@ -17,6 +18,10 @@ except:
     app.config['SQLALCHEMY_DATABASE_URI'] = con_str
     db = SQLAlchemy(app)
 
+
+logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
+logging.getLogger().setLevel(logging.DEBUG)
+log = logging.getLogger(__name__)
 
 def add_column(engine, table, column):
   table_name = table.__tablename__
