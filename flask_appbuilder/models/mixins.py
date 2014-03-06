@@ -11,7 +11,7 @@ from sqlalchemy.types import String
 from flask import g
 
 
-log = logging.GetLogger(__name__)
+log = logging.getLogger(__name__)
 
 _camelcase_re = re.compile(r'([A-Z]+)(?=[a-z0-9])')
 
