@@ -32,6 +32,10 @@ mod_column_stmt = {'mysql': 'ALTER TABLE %s MODIFY COLUMN %s %s',
                    'postgresql': 'ALTER TABLE %s ALTER COLUMN %s TYPE %s'}
 
 
+def check_engine_support(conn):
+    if not conn.engine.name in add_column_stmt:
+        log.error('Engine type not supported by migration script, please alter schema for 0.7 read the documentation")
+        exit()
 
 def add_column(conn, table, column):
     table_name = table.__tablename__
@@ -61,6 +65,7 @@ def alter_column(conn, table, column):
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 conn = engine.connect()
 log.info("Database identified has {0}".format(conn.engine.name))
+check_engine_support(conn)
 
 alter_column(conn, User, User.password)
 add_column(conn, User, User.login_count)
