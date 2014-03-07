@@ -34,7 +34,7 @@ mod_column_stmt = {'mysql': 'ALTER TABLE %s MODIFY COLUMN %s %s',
 
 def check_engine_support(conn):
     if not conn.engine.name in add_column_stmt:
-        log.error('Engine type not supported by migration script, please alter schema for 0.7 read the documentation")
+        log.error('Engine type not supported by migration script, please alter schema for 0.7 read the documentation')
         exit()
 
 def add_column(conn, table, column):
