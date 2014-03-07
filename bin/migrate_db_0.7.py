@@ -28,7 +28,7 @@ add_column_stmt = {'mysql': 'ALTER TABLE %s ADD COLUMN %s %s',
                    'posgres': 'ALTER TABLE %s ADD COLUMN %s %s'}
 
 mod_column_stmt = {'mysql': 'ALTER TABLE %s ALTER COLUMN %s TYPE %s',
-                   'sqlite': 'ALTER TABLE %s ALTER COLUMN %s TYPE %s',
+                   'sqlite': '',
                    'posgres': 'ALTER TABLE %s ALTER COLUMN %s TYPE %s'}
 
 
@@ -60,6 +60,7 @@ def alter_column(conn, table, column):
 
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 con = engine.connect()
+log.info("Database identified has {0}".format(conn.engine.name))
 
 alter_column(con, User, User.password)
 add_column(con, User, User.login_count)
