@@ -59,16 +59,16 @@ def alter_column(conn, table, column):
 
 
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-con = engine.connect()
+conn = engine.connect()
 log.info("Database identified has {0}".format(conn.engine.name))
 
-alter_column(con, User, User.password)
-add_column(con, User, User.login_count)
-add_column(con, User, User.created_on)
-add_column(con, User, User.changed_on)
-add_column(con, User, User.created_by_fk)
-add_column(con, User, User.changed_by_fk)
-add_column(con, User, User.last_login)
-add_column(con, User, User.fail_login_count)
+alter_column(conn, User, User.password)
+add_column(conn, User, User.login_count)
+add_column(conn, User, User.created_on)
+add_column(conn, User, User.changed_on)
+add_column(conn, User, User.created_by_fk)
+add_column(conn, User, User.changed_by_fk)
+add_column(conn, User, User.last_login)
+add_column(conn, User, User.fail_login_count)
 
-con.close()
+conn.close()
