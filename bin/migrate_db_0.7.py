@@ -25,11 +25,11 @@ except Exception as e:
 
 add_column_stmt = {'mysql': 'ALTER TABLE %s ADD COLUMN %s %s',
                    'sqlite': 'ALTER TABLE %s ADD COLUMN %s %s',
-                   'posgres': 'ALTER TABLE %s ADD COLUMN %s %s'}
+                   'postgresql': 'ALTER TABLE %s ADD COLUMN %s %s'}
 
 mod_column_stmt = {'mysql': 'ALTER TABLE %s ALTER COLUMN %s TYPE %s',
                    'sqlite': '',
-                   'posgres': 'ALTER TABLE %s ALTER COLUMN %s TYPE %s'}
+                   'postgresql': 'ALTER TABLE %s ALTER COLUMN %s TYPE %s'}
 
 
 
