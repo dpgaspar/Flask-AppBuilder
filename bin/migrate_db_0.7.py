@@ -27,7 +27,7 @@ add_column_stmt = {'mysql': 'ALTER TABLE %s ADD COLUMN %s %s',
                    'sqlite': 'ALTER TABLE %s ADD COLUMN %s %s',
                    'postgresql': 'ALTER TABLE %s ADD COLUMN %s %s'}
 
-mod_column_stmt = {'mysql': 'ALTER TABLE %s ALTER COLUMN %s TYPE %s',
+mod_column_stmt = {'mysql': 'ALTER TABLE %s MODIFY COLUMN %s %s',
                    'sqlite': '',
                    'postgresql': 'ALTER TABLE %s ALTER COLUMN %s TYPE %s'}
 
