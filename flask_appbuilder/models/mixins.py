@@ -96,5 +96,5 @@ class AuditMixin(BaseMixin):
         try:
             return g.user.id
         except Exception as e:
-            log.warning("AuditMixin Get User ID {0}".format(str(e)))
+            #log.warning("AuditMixin Get User ID {0}".format(str(e)))
             return None
