@@ -14,6 +14,7 @@ Improvements and Bug fixes on 0.7.0
 - New, User model column login_count
 - New, User model column AuditMixin columns (created_on, changed_on, created_by_fk, changed_by_fk)
 - New, AuditMixin allows null on FK columns.
+- Fix, Add user on non sqlite db, faild if no email provided. Unique db constraint.
 
 Improvements and Bug fixes on 0.6.14
 ------------------------------------
