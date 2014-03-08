@@ -334,12 +334,16 @@ class SecurityManager(object):
                 name of the permission to add: 'can_add','can_edit' etc...
         """
         perm = self.session.query(Permission).filter_by(name=name).first()
-        if perm == None:
-            perm = Permission()
-            perm.name = name
-            self.session.add(perm)
-            self.session.commit()
-            return perm
+        if perm is None:
+            try:
+                perm = Permission()
+                perm.name = name
+                self.session.add(perm)
+                self.session.commit()
+                return perm
+            except Exception as e:
+                log.error("Add Permission: {0}".format(str(e)))
+                self.session.rollback()
         return perm
 
 
@@ -351,11 +355,15 @@ class SecurityManager(object):
         """
         view_menu = self.session.query(ViewMenu).filter_by(name=view_name).first()
         if view_menu is None:
-            view_menu = ViewMenu()
-            view_menu.name = view_name
-            self.session.add(view_menu)
-            self.session.commit()
-            return view_menu
+            try:
+                view_menu = ViewMenu()
+                view_menu.name = view_name
+                self.session.add(view_menu)
+                self.session.commit()
+                return view_menu
+            except Exception as e:
+                log.error("Add View Menu Error: {0}".format(str(e)))
+                self.session.rollback()
         return view_menu
 
     def _add_permission_view_menu(self, permission_name, view_menu_name):
@@ -371,24 +379,34 @@ class SecurityManager(object):
         perm = self._add_permission(permission_name)
         pv = PermissionView()
         pv.view_menu_id, pv.permission_id = vm.id, perm.id
-        self.session.add(pv)
-        self.session.commit()
-        log.info("Added Permission View %s" % (str(pv)))
-        return pv
+        try:
+            self.session.add(pv)
+            self.session.commit()
+            log.info("Added Permission View %s" % (str(pv)))
+            return pv
+        except Exception as e:
+            log.error("Add Permission to View Error: {0}".format(str(e)))
+            self.session.rollback()
+
 
     def _del_permission_view_menu(self, permission_name, view_menu_name):
-        perm = self.session.query(Permission).filter_by(name=permission_name).first()
-        vm = self.session.query(ViewMenu).filter_by(name=view_menu_name).first()
-        pv = self.session.query(PermissionView).filter_by(permission=perm, view_menu=vm).first()
-        # delete permission on view
-        self.session.delete(pv)
-        self.session.commit()
-        # if last permission delete permission
-        pv = self.session.query(PermissionView).filter_by(permission=perm).all()
-        if not pv:
-            self.session.delete(perm)
+        try:
+            perm = self.session.query(Permission).filter_by(name=permission_name).first()
+            vm = self.session.query(ViewMenu).filter_by(name=view_menu_name).first()
+            pv = self.session.query(PermissionView).filter_by(permission=perm, view_menu=vm).first()
+            # delete permission on view
+            self.session.delete(pv)
             self.session.commit()
-        log.info("Removed Permission View %s" % (str(permission_name)))
+            # if last permission delete permission
+            pv = self.session.query(PermissionView).filter_by(permission=perm).all()
+            if not pv:
+                self.session.delete(perm)
+                self.session.commit()
+            log.info("Removed Permission View %s" % (str(permission_name)))
+        except Exception as e:
+            log.error("Del Permission from View Error: {0}".format(str(e)))
+            self.session.rollback()
+
 
 
     def _find_permission(self, lst, item):
@@ -460,10 +478,15 @@ class SecurityManager(object):
                 The PermissionViewMenu object
         """
         if perm_view not in role.permissions:
-            role.permissions.append(perm_view)
-            self.session.merge(role)
-            self.session.commit()
-            log.info("Added Permission %s to role %s" % (str(perm_view), role.name))
+            try:
+                role.permissions.append(perm_view)
+                self.session.merge(role)
+                self.session.commit()
+                log.info("Added Permission %s to role %s" % (str(perm_view), role.name))
+            except Exception as e:
+                log.error("Add Permission to Role Error: {0}".format(str(e)))
+                self.session.rollback()
+
 
     def del_permission_role(self, role, perm_view):
         """
@@ -475,7 +498,11 @@ class SecurityManager(object):
                 The PermissionViewMenu object
         """
         if perm_view in role.permissions:
-            role.permissions.remove(perm_view)
-            self.session.merge(role)
-            self.session.commit()
-            log.info("Removed Permission %s to role %s" % (str(perm_view), role.name))
+            try:
+                role.permissions.remove(perm_view)
+                self.session.merge(role)
+                self.session.commit()
+                log.info("Removed Permission %s to role %s" % (str(perm_view), role.name))
+            except Exception as e:
+                log.error("Del Permission to Role Error: {0}".format(str(e)))
+                self.session.rollback()

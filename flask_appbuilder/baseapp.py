@@ -135,8 +135,8 @@ class BaseApp(object):
     def _add_permissions_menu(self, name):
         try:
             self.sm.add_permissions_menu(name)
-        except:
-            log.error("Add Permission on Menu Error")
+        except Exception as e:
+            log.error("Add Permission on Menu Error: {0}".format(str(e)))
     
     
     def _add_menu_permissions(self):
@@ -225,8 +225,8 @@ class BaseApp(object):
     def _add_permission(self, baseview):
         try:
             self.sm.add_permissions_view(baseview.base_permissions, baseview.__class__.__name__)
-        except:
-            log.error("Add Permission on View Error")
+        except Exception as e:
+            log.error("Add Permission on View Error: {0}".format(str(e)))
         
     def register_blueprint(self, baseview, endpoint = None, static_folder = None):
         self.app.register_blueprint(baseview.create_blueprint(self,  endpoint = endpoint, static_folder = static_folder))
