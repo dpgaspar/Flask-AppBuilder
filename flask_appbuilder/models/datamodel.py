@@ -265,9 +265,9 @@ class SQLAModel(DataModel):
             log.warning("Add record integrity error")
             self.session.rollback()
             return False
-        except:
+        except Exception as e:
             flash(unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
-            log.exception("Add record error")
+            log.exception("Add record error: {0}".format(str(e)))
             self.session.rollback()
             return False
 
@@ -282,9 +282,9 @@ class SQLAModel(DataModel):
             log.warning("Edit record integrity error")
             self.session.rollback()
             return False
-        except:
+        except Exception as e:
             flash(unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
-            log.exception("Edit record error")
+            log.exception("Edit record error: {0}".format(str(e)))
             self.session.rollback()
             return False
 
@@ -301,9 +301,9 @@ class SQLAModel(DataModel):
             log.warning("Delete record integrity error")
             self.session.rollback()
             return False
-        except:
+        except Exception as e:
             flash(unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
-            log.exception("Delete record error")
+            log.exception("Delete record error: {0}".format(str(e)))
             self.session.rollback()
             return False
 

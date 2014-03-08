@@ -15,19 +15,19 @@ log = logging.getLogger(__name__)
 
 _camelcase_re = re.compile(r'([A-Z]+)(?=[a-z0-9])')
 
+
 class FileColumn(types.TypeDecorator):
     """
         Extends SQLAlchemy to support and mostly identify a File Column
     """
     impl = types.Text
-    
+
 
 class ImageColumn(types.TypeDecorator):
     """
         Extends SQLAlchemy to support and mostly identify a Image Column
     """
     impl = types.Text
-
 
 
 class BaseMixin(object):
@@ -54,8 +54,9 @@ class BaseMixin(object):
             if len(word) > 1:
                 return ('_%s_%s' % (word[:-1], word[-1])).lower()
             return '_' + word.lower()
+
         return _camelcase_re.sub(_join, cls.__name__).lstrip('_')
-            
+
 
 class AuditMixin(BaseMixin):
     """
@@ -70,25 +71,25 @@ class AuditMixin(BaseMixin):
     """
     created_on = Column(DateTime, default=datetime.datetime.now, nullable=False)
     changed_on = Column(DateTime, default=datetime.datetime.now,
-                            onupdate=datetime.datetime.now, nullable=False)
+                        onupdate=datetime.datetime.now, nullable=False)
 
     @declared_attr
     def created_by_fk(cls):
         return Column(Integer, ForeignKey('ab_user.id'),
-                default=cls.get_user_id, nullable=True)
+                      default=cls.get_user_id, nullable=True)
 
     @declared_attr
     def created_by(cls):
-        return relationship("User", primaryjoin='%s.created_by_fk == User.id'%cls.__name__)
+        return relationship("User", primaryjoin='%s.created_by_fk == User.id' % cls.__name__)
 
     @declared_attr
     def changed_by_fk(cls):
         return Column(Integer, ForeignKey('ab_user.id'),
-                default=cls.get_user_id, onupdate=cls.get_user_id, nullable=True)
+                      default=cls.get_user_id, onupdate=cls.get_user_id, nullable=True)
 
     @declared_attr
     def changed_by(cls):
-        return relationship("User", primaryjoin='%s.changed_by_fk == User.id'%cls.__name__)
+        return relationship("User", primaryjoin='%s.changed_by_fk == User.id' % cls.__name__)
 
 
     @classmethod
