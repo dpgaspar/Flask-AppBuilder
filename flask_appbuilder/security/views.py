@@ -113,7 +113,15 @@ class UserGeneralView(GeneralView):
                      'password': lazy_gettext('Password'),
                      'active': lazy_gettext('Is Active?'),
                      'email': lazy_gettext('EMail'),
-                     'role': lazy_gettext('Role')}
+                     'role': lazy_gettext('Role'),
+                     'last_login': lazy_gettext('Last login'),
+                     'login_count': lazy_gettext('Login count'),
+                     'fail_login_count': lazy_gettext('Failed login count'),
+                     'created_on': lazy_gettext('Created on'),
+                     'created_by': lazy_gettext('Created by'),
+                     'changed_on': lazy_gettext('Changed on'),
+                     'changed_by': lazy_gettext('Changed by')}
+    
     description_columns = {'first_name': lazy_gettext('Write the user first name or names'),
                            'last_name': lazy_gettext('Write the user last name'),
                            'username': lazy_gettext(
