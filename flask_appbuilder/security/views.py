@@ -145,7 +145,7 @@ class UserGeneralView(GeneralView):
             {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
         ('Audit Info',
             {'fields': ['last_login', 'fail_login_count', 'created_on',
-                        'created_by', 'changed_on', 'changed_by'], 'expanded': True}),
+                        'created_by', 'changed_on', 'changed_by'], 'expanded': False}),
     ]
 
     order_columns = ['username', 'email']
