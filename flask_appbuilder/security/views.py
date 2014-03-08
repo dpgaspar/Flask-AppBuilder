@@ -121,7 +121,7 @@ class UserGeneralView(GeneralView):
                      'created_by': lazy_gettext('Created by'),
                      'changed_on': lazy_gettext('Changed on'),
                      'changed_by': lazy_gettext('Changed by')}
-    
+
     description_columns = {'first_name': lazy_gettext('Write the user first name or names'),
                            'last_name': lazy_gettext('Write the user last name'),
                            'username': lazy_gettext(
@@ -133,8 +133,21 @@ class UserGeneralView(GeneralView):
                            'role': lazy_gettext(
                                'The user role on the application, this will associate with a list of permissions'),
                            'conf_password': lazy_gettext('Please rewrite the users password to confirm')}
+
     list_columns = ['full_name', 'username', 'email', 'active', 'role']
-    show_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
+
+    #show_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
+
+    show_fieldsets = [
+        ('User info',
+            {'fields': ['username', 'active', 'role', 'login_count']}),
+        ('Personal Info',
+            {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
+        ('Audit Info',
+            {'fields': ['last_login', 'fail_login_count', 'created_on',
+                        'created_by', 'changed_on', 'changed_by'], 'expanded': True}),
+    ]
+
     order_columns = ['username', 'email']
     search_columns = ['first_name', 'last_name', 'username', 'email', 'role']
 
@@ -143,7 +156,7 @@ class UserGeneralView(GeneralView):
 
     user_info_title = lazy_gettext("Your user information")
 
-    show_additional_links = []
+    #show_additional_links = []
 
 
 class UserOIDGeneralView(UserGeneralView):
