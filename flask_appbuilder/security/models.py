@@ -67,7 +67,7 @@ class User(AuditMixin, Base):
     username = Column(String(32), unique=True, nullable=False)
     password = Column(String(256))
     active = Column(Boolean)
-    email = Column(String(64), unique=True, nullable=True)
+    email = Column(String(64), unique=True, nullable=False)
 
     last_login = Column(DateTime)
     login_count = Column(Integer)
