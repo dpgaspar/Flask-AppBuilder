@@ -13,7 +13,7 @@ Improvements and Bug fixes on 0.7.0
 - New, User model column last_login
 - New, User model column login_count
 - New, User model column AuditMixin columns (created_on, changed_on, created_by_fk, changed_by_fk)
-- New, AudidMixin allows null on FK columns.
+- New, AuditMixin allows null on FK columns.
 
 Improvements and Bug fixes on 0.6.14
 ------------------------------------
