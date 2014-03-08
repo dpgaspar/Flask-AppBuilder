@@ -1,4 +1,5 @@
 import sys
+import datetime
 import logging
 from flask import g
 from flask_appbuilder import Base
@@ -193,6 +194,12 @@ class SecurityManager(object):
         except:
             log.error("DB Creation and initialization failed, if just upgraded to 0.7.X you must migrate the DB.")
 
+
+    """
+    ----------------------------------------
+        AUTHENTICATION METHODS
+    ----------------------------------------
+    """
     def auth_user_db(self, username, password):
         """
             Method for authenticating user, auth db style
@@ -208,6 +215,7 @@ class SecurityManager(object):
         if user is None or (not user.is_active()):
             return None
         elif check_password_hash(user.password, password):
+            self._update_user_auth_stat(user)
             return user
         else:
             return None
@@ -228,6 +236,7 @@ class SecurityManager(object):
                 con.set_option(ldap.OPT_REFERRALS, 0)
                 try:
                     con.bind_s(username, password)
+                    self._update_user_auth_stat(user)
                     return user
                 except ldap.INVALID_CREDENTIALS:
                     log.error("INVALID {} {}".format(username, password))
@@ -241,16 +250,48 @@ class SecurityManager(object):
                     return None
 
     def auth_user_oid(self, email):
+        """
+            OpenID user Authentication
+
+            :type self: User model
+        """
         user = self.session.query(User).filter_by(email=email).first()
         if user is None or (not user.is_active()):
             return None
         else:
+            self._update_user_auth_stat(user)
             return user
 
+    def _update_user_login_stat(self, user):
+        """
+            Update authentication successful to user.
+
+            :param user:
+                The authenticated user model
+        """
+        try:
+            if not user.login_count:
+                user.login_count = 1
+            else:
+                user.login_count += 1
+            user.fail_login_count = 0
+            user.last_login = datetime.datetime.now
+            self.session.merge(user)
+            self.session.commit()
+        except Exception as e:
+            log.error("Update user login stat: {0}".format(str(e)))
+            self.session.rollback()
+
+
     def reset_password(self, userid, password):
-        user = self.get_user_by_id(userid)
-        user.password = generate_password_hash(password)
-        self.session.commit()
+        try:
+            user = self.get_user_by_id(userid)
+            user.password = generate_password_hash(password)
+            self.session.commit()
+        except Exception as e:
+            log.error("Reset password: {0}".format(str(e)))
+            self.session.rollback()
+
 
     def get_user_by_id(self, pk):
         return self.session.query(User).get(pk)
