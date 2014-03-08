@@ -262,7 +262,7 @@ class SecurityManager(object):
             self._update_user_auth_stat(user)
             return user
 
-    def _update_user_login_stat(self, user):
+    def _update_user_auth_stat(self, user):
         """
             Update authentication successful to user.
 
