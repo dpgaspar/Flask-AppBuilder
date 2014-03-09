@@ -1,5 +1,8 @@
+import datetime
+from flask import g
 from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime, ForeignKey
-from sqlalchemy.orm import relationship, column_property
+from sqlalchemy.orm import relationship, column_property, backref
+from sqlalchemy.ext.declarative import declared_attr
 from flask.ext.appbuilder import Base
 from flask.ext.appbuilder.models.mixins import AuditMixin
 
@@ -58,7 +61,7 @@ class Role(Base):
         return self.name
 
 
-class User(AuditMixin, Base):
+class User(Base):
     __tablename__ = 'ab_user'
     id = Column(Integer, primary_key=True)
     first_name = Column(String(64), nullable=False)
@@ -75,6 +78,33 @@ class User(AuditMixin, Base):
 
     role_id = Column(Integer, ForeignKey('ab_role.id'), nullable=False)
     role = relationship("Role")
+
+    created_on = Column(DateTime, default=datetime.datetime.now, nullable=False)
+    changed_on = Column(DateTime, default=datetime.datetime.now,
+                        onupdate=datetime.datetime.now, nullable=False)
+
+    @declared_attr
+    def created_by_fk(self):
+        return Column(Integer, ForeignKey('ab_user.id'),
+                      default=self.get_user_id, nullable=False)
+
+    @declared_attr
+    def changed_by_fk(self):
+        return Column(Integer, ForeignKey('ab_user.id'),
+                      default=self.get_user_id, onupdate=self.get_user_id, nullable=False)
+
+    created_by = relationship("User", backref=backref("created", uselist=False),
+                              remote_side=[id], primaryjoin='User.created_by_fk == User.id', uselist=False)
+    changed_by = relationship("User", backref=backref("changed", uselist=False),
+                              remote_side=[id], primaryjoin='User.changed_by_fk == User.id', uselist=False)
+
+    @classmethod
+    def get_user_id(self):
+        try:
+            return g.user.id
+        except Exception as e:
+            return None
+
 
     @staticmethod
     def make_unique_nickname(nickname):
@@ -108,3 +138,5 @@ class User(AuditMixin, Base):
 
     def __repr__(self):
         return self.get_full_name()
+
+
