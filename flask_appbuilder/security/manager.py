@@ -185,6 +185,7 @@ class SecurityManager(object):
                 user.last_name = 'User'
                 user.username = 'admin'
                 user.password = generate_password_hash('general')
+                user.email = 'admin@fab.org'
                 user.active = True
                 user.role = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
                 self.session.add(user)

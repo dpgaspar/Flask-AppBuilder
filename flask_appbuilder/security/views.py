@@ -234,6 +234,7 @@ class UserDBGeneralView(UserGeneralView):
 
 
     def pre_update(self, item):
+        print "HHH {0} {1}".format(item.changed_by_fk, item.changed_by)
         item.password = generate_password_hash(item.password)
 
     def pre_add(self, item):

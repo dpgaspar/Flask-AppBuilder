@@ -95,6 +95,7 @@ class AuditMixin(BaseMixin):
     @classmethod
     def get_user_id(cls):
         try:
+            log.debug("GET USER ID: {0}".format(g.user.id))
             return g.user.id
         except Exception as e:
             #log.warning("AuditMixin Get User ID {0}".format(str(e)))
