@@ -246,7 +246,7 @@ class UserLoginCountChartView(DirectChartView):
     chart_title = 'Grouped contacts'
     label_columns = UserGeneralView.label_columns
     group_by_columns = ['login_count', 'fail_login_count']
-    datamodel = SQLAModel(User, db.session)
+    datamodel = SQLAModel(User)
 
 
 class RoleGeneralView(GeneralView):
