@@ -160,7 +160,7 @@ class SQLAModel(DataModel):
             return query.all()
     """
 
-    def query_simple_group(self, group_by='', filters=None):
+    def query_simple_group(self, group_by='', aggregate_func = None, aggregate_col = None, filters=None):
         query = self.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
         query_result = query.all()

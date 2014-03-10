@@ -44,7 +44,7 @@ class BaseChartView(BaseModelView):
 
     def __init__(self, **kwargs):
         if not self.group_by_columns:
-            raise Exception('Base Chart View property <group_by_columns> must not be empty')
+            raise Exception('Base Chart View property <group_by_columns | flex_group_by_columns> must not be empty')
         else: super(BaseChartView, self).__init__(**kwargs)
 
 
@@ -110,6 +110,40 @@ class TimeChartView(BaseChartView):
             value_columns = self.datamodel.query_month_group(group_by, filters=self._filters)
         elif period == 'year':
             value_columns = self.datamodel.query_year_group(group_by, filters=self._filters)
+        widgets = self._get_chart_widget(value_columns=value_columns)
+        widgets = self._get_search_widget(form=form, widgets=widgets)
+        return render_template(self.chart_template, route_base=self.route_base,
+                               title=self.chart_title,
+                               label_columns=self.label_columns,
+                               group_by_columns=self.group_by_columns,
+                               height=self.height,
+                               widgets=widgets,
+                               baseapp=self.baseapp)
+
+
+class DirectChartView(BaseChartView):
+    """
+        This class is responsible for displaying a chart with
+        direct model values. No group by is processed.
+    """
+
+    @expose('/chart/<group_by>')
+    @expose('/chart/')
+    @has_access
+    def chart(self, group_by=''):
+        form = self.search_form.refresh()
+        get_filter_args(self._filters)
+
+        group_by = group_by or self.group_by_columns[0]
+        count, lst = self.datamodel.query(group_by, filters=self._filters)
+        value_columns = self.datamodel.get_values(lst, group_by)
+        i = 0
+        for value in value_columns:
+            value['id'] = lst[i]
+            i += 1
+
+        log.info("VALUES".format(value_columns))
+
         widgets = self._get_chart_widget(value_columns=value_columns)
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return render_template(self.chart_template, route_base=self.route_base,

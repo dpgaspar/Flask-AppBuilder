@@ -13,6 +13,7 @@ from flask_login import login_user, logout_user
 
 from flask_appbuilder.models.datamodel import SQLAModel
 from flask_appbuilder.views import BaseView, GeneralView, SimpleFormView, expose
+from flask_appbuilder.charts.views import DirectChartView
 from ..actions import action
 from forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
 from models import User, Permission, PermissionView, Role, ViewMenu
@@ -239,6 +240,13 @@ class UserDBGeneralView(UserGeneralView):
 
     def pre_add(self, item):
         item.password = generate_password_hash(item.password)
+
+
+class UserLoginCountChartView(DirectChartView):
+    chart_title = 'Grouped contacts'
+    label_columns = UserGeneralView.label_columns
+    group_by_columns = ['login_count', 'fail_login_count']
+    datamodel = SQLAModel(User, db.session)
 
 
 class RoleGeneralView(GeneralView):

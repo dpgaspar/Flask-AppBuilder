@@ -240,11 +240,11 @@ class SecurityManager(object):
                     self._update_user_auth_stat(user)
                     return user
                 except ldap.INVALID_CREDENTIALS:
-                    log.error("INVALID {} {}".format(username, password))
+                    log.warning("Invalid Credentials {0} {1}".format(username, password))
                     return None
             except ldap.LDAPError, e:
                 if type(e.message) == dict and e.message.has_key('desc'):
-                    log.error(e.message['desc'])
+                    log.error("LDAP Error {0}".format(e.message['desc']))
                     return None
                 else:
                     log.error(e)
