@@ -51,7 +51,7 @@ class BaseGroupBy(object):
         return getattr(item, self.column_name)
 
     def get_format_group_col(self, item):
-        return str(item)
+        return unicode(item)
 
     def get_aggregate_col_name(self):
         if self.aggregate_col:

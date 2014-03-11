@@ -8,7 +8,7 @@
             google.setOnLoadCallback (createChart);
             // playground http://code.google.com/apis/ajax/playground/?type=visualization#line_chart
 
-            var jsonData = {{ value_columns | safe }}
+            var jsonData = {{ value_columns | tojson | safe }}
 
             //callback function
             function createChart() {

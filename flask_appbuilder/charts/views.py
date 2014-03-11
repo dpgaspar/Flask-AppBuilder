@@ -163,7 +163,7 @@ class DirectChartView(BaseSimpleDirectChartView):
         for value in value_columns:
             row = {'c': []}
             for ycol in ycols:
-                row['c'].append({'v': (value[xcol]).encode('utf-8')})
+                row['c'].append({'v': (value[xcol])})
                 if value[ycol]:
                     row['c'].append({'v': int(value[ycol])})
                 else:
