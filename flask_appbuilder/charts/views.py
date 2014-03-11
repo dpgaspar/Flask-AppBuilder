@@ -39,13 +39,13 @@ class BaseChartView(BaseModelView):
     """ New for 0.6.4, on test, don't use yet """
 
 
-    def _get_chart_widget(self, value_columns=None, widgets=None):
+    def _get_chart_widget(self, value_columns=None, widgets=None, **args):
         widgets = widgets or dict()
         widgets['chart'] = self.chart_widget(route_base=self.route_base,
                                              chart_title=self.chart_title,
                                              chart_type=self.chart_type,
                                              chart_3d=self.chart_3d,
-                                             value_columns=value_columns)
+                                             value_columns=value_columns, **args)
         return widgets
 
 
@@ -155,13 +155,21 @@ class DirectChartView(BaseSimpleDirectChartView):
                              'label': labels[xcol],
                               'type': 'string'}]
         for ycol in ycols:
+            print "YCOL {0}".format(ycol)
             json_data['cols'].append({'id': ycol,
                                       'label': labels[ycol],
                                       'type': 'number'})
         json_data['rows'] = []
-        for ycol in ycols:
-            json_date['rows'].append
-
+        for value in value_columns:
+            row = {'c': []}
+            for ycol in ycols:
+                row['c'].append({'v': (value[xcol]).encode('utf-8')})
+                if value[ycol]:
+                    row['c'].append({'v': int(value[ycol])})
+                else:
+                    row['c'].append({'v': 0})
+            json_data['rows'].append(row)
+        return json_data
 
     @expose('/chart/<direct>')
     @expose('/chart/')
@@ -174,7 +182,10 @@ class DirectChartView(BaseSimpleDirectChartView):
         count, lst = self.datamodel.query(filters=self._filters)
         value_columns = self.datamodel.get_values(lst, list(direct))
         log.info("VALUES {0}".format(value_columns))
+        print "DIR {0}".format(direct)
+        log.info("JSON VAL {0}".format(self._dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)))
 
+        value_columns = self._dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)
         widgets = self._get_chart_widget(value_columns=value_columns)
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return render_template(self.chart_template, route_base=self.route_base,

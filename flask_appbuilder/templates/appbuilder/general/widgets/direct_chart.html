@@ -8,18 +8,7 @@
             google.setOnLoadCallback (createChart);
             // playground http://code.google.com/apis/ajax/playground/?type=visualization#line_chart
 
-            var jsonData = {
-                "cols": [
-                    {"id":"","label":"Group","pattern":"","type":"string"},
-                    {"id":"","label":"Male","pattern":"","type":"number"},
-                    {"id":"","label":"Female","pattern":"","type":"number"}
-                    ],
-                "rows": [
-                    {"c":[{"v":"Friends"},{"v":"7"},{"v":3}]},
-                    {"c":[{"v":"Work"},{"v":"2"},{"v":3}]},
-                    {"c":[{"v":"Family"},{"v":"6"},{"v":4}]},
-                    ]
-            }
+            var jsonData = {{ value_columns | safe }}
 
             //callback function
             function createChart() {
