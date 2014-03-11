@@ -149,7 +149,7 @@ class DirectChartView(BaseSimpleDirectChartView):
 
     chart_widget = DirectChartWidget
 
-    def _dict_to_json(self, xcol, ycols, labels):
+    def _dict_to_json(self, xcol, ycols, labels, value_columns):
         json_data = dict()
         json_data['cols'] = [{'id': xcol,
                              'label': labels[xcol],
@@ -158,7 +158,9 @@ class DirectChartView(BaseSimpleDirectChartView):
             json_data['cols'].append({'id': ycol,
                                       'label': labels[ycol],
                                       'type': 'number'})
-        
+        json_data['rows'] = []
+        for ycol in ycols:
+            json_date['rows'].append
 
 
     @expose('/chart/<direct>')
