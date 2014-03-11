@@ -1,6 +1,6 @@
 import logging
 from flask import render_template
-from widgets import ChartWidget, MultipleChartWidget
+from widgets import ChartWidget, DirectChartWidget, MultipleChartWidget
 from ..widgets import SearchWidget
 from ..security.decorators import has_access
 from ..baseviews import BaseModelView, expose
@@ -145,6 +145,21 @@ class DirectChartView(BaseSimpleDirectChartView):
         This class is responsible for displaying a chart with
         direct model values. No group by is processed.
     """
+    chart_type = 'ColumnChart'
+
+    chart_widget = DirectChartWidget
+
+    def _dict_to_json(self, xcol, ycols, labels):
+        json_data = dict()
+        json_data['cols'] = [{'id': xcol,
+                             'label': labels[xcol],
+                              'type': 'string'}]
+        for ycol in ycols:
+            json_data['cols'].append({'id': ycol,
+                                      'label': labels[ycol],
+                                      'type': 'number'})
+        
+
 
     @expose('/chart/<direct>')
     @expose('/chart/')
@@ -157,9 +172,6 @@ class DirectChartView(BaseSimpleDirectChartView):
         count, lst = self.datamodel.query(filters=self._filters)
         value_columns = self.datamodel.get_values(lst, list(direct))
         log.info("VALUES {0}".format(value_columns))
-        log.info("labels {0}".format(self.label_columns))
-        log.info("SEARCH {0}".format(self.search_columns))
-
 
         widgets = self._get_chart_widget(value_columns=value_columns)
         widgets = self._get_search_widget(form=form, widgets=widgets)
@@ -177,7 +189,6 @@ class MultipleChartView(BaseChartView):
     chart_type = 'ColumnChart'
 
     chart_widget = MultipleChartWidget
-
 
     @expose('/chart/')
     @has_access

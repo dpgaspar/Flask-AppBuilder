@@ -16,7 +16,7 @@ Improvements and Bug fixes on 0.7.0
 - New, AuditMixin allows null on FK columns.
 - Fix, Add user on non sqlite db, failed if no email provided. Unique db constraint.
 - Fix, form convert field exception handling (for method fields).
-- New, support for "one to one" relations and "one to many", on forms, and filters.
+- New, support for "one to one" relations and "one to many", on forms, and filters (beta).
 
 Improvements and Bug fixes on 0.6.14
 ------------------------------------

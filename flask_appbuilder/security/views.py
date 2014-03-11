@@ -107,7 +107,6 @@ class UserGeneralView(GeneralView):
     add_title = lazy_gettext('Add User')
     edit_title = lazy_gettext('Edit User')
 
-
     label_columns = {'get_full_name': lazy_gettext('Full Name'),
                      'first_name': lazy_gettext('First Name'),
                      'last_name': lazy_gettext('Last Name'),
@@ -124,7 +123,6 @@ class UserGeneralView(GeneralView):
                      'changed_on': lazy_gettext('Changed on'),
                      'changed_by': lazy_gettext('Changed by')}
 
-
     description_columns = {'first_name': lazy_gettext('Write the user first name or names'),
                            'last_name': lazy_gettext('Write the user last name'),
                            'username': lazy_gettext(
@@ -137,9 +135,7 @@ class UserGeneralView(GeneralView):
                                'The user role on the application, this will associate with a list of permissions'),
                            'conf_password': lazy_gettext('Please rewrite the users password to confirm')}
 
-    list_columns = ['get_full_name', 'username', 'email', 'active', 'role']
-
-    #show_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
+    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'role']
 
     show_fieldsets = [
         ('User info',
@@ -158,8 +154,6 @@ class UserGeneralView(GeneralView):
     edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
 
     user_info_title = lazy_gettext("Your user information")
-
-    #show_additional_links = []
 
 
 class UserOIDGeneralView(UserGeneralView):
