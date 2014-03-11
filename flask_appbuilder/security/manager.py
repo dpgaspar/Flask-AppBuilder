@@ -277,7 +277,7 @@ class SecurityManager(object):
             else:
                 user.login_count += 1
             user.fail_login_count = 0
-            user.last_login = datetime.datetime.now
+            #user.last_login = datetime.datetime.now
             self.session.merge(user)
             self.session.commit()
         except Exception as e:
