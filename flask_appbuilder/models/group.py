@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import calendar
 import logging
 from itertools import groupby
@@ -51,7 +52,7 @@ class BaseGroupBy(object):
         return getattr(item, self.column_name)
 
     def get_format_group_col(self, item):
-        return unicode(item)
+        return (item)
 
     def get_aggregate_col_name(self):
         if self.aggregate_col:

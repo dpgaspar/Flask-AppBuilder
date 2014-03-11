@@ -242,7 +242,7 @@ class UserDBGeneralView(UserGeneralView):
 class UserLoginCountChartView(DirectChartView):
     chart_title = 'Grouped contacts'
     #label_columns = UserGeneralView.label_columns
-    direct_columns = [('username', 'login_count')]
+    direct_columns = [('username', 'login_count', 'fail_login_count')]
     datamodel = SQLAModel(User)
 
 

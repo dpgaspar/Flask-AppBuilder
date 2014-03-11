@@ -1,4 +1,5 @@
 import logging
+import jsontools
 from flask import render_template
 from widgets import ChartWidget, DirectChartWidget, MultipleChartWidget
 from ..widgets import SearchWidget
@@ -149,28 +150,6 @@ class DirectChartView(BaseSimpleDirectChartView):
 
     chart_widget = DirectChartWidget
 
-    def _dict_to_json(self, xcol, ycols, labels, value_columns):
-        json_data = dict()
-        json_data['cols'] = [{'id': xcol,
-                             'label': labels[xcol],
-                              'type': 'string'}]
-        for ycol in ycols:
-            print "YCOL {0}".format(ycol)
-            json_data['cols'].append({'id': ycol,
-                                      'label': labels[ycol],
-                                      'type': 'number'})
-        json_data['rows'] = []
-        for value in value_columns:
-            row = {'c': []}
-            for ycol in ycols:
-                row['c'].append({'v': (value[xcol])})
-                if value[ycol]:
-                    row['c'].append({'v': int(value[ycol])})
-                else:
-                    row['c'].append({'v': 0})
-            json_data['rows'].append(row)
-        return json_data
-
     @expose('/chart/<direct>')
     @expose('/chart/')
     @has_access
@@ -181,11 +160,8 @@ class DirectChartView(BaseSimpleDirectChartView):
         direct = direct or self.direct_columns[0]
         count, lst = self.datamodel.query(filters=self._filters)
         value_columns = self.datamodel.get_values(lst, list(direct))
-        log.info("VALUES {0}".format(value_columns))
-        print "DIR {0}".format(direct)
-        log.info("JSON VAL {0}".format(self._dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)))
 
-        value_columns = self._dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)
+        value_columns = jsontools.dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)
         widgets = self._get_chart_widget(value_columns=value_columns)
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return render_template(self.chart_template, route_base=self.route_base,

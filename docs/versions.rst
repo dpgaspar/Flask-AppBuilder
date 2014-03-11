@@ -10,14 +10,14 @@ Improvements and Bug fixes on 0.7.0
 - Fix, login failed was not displaying error message.
 - New, password is saved hashed on database.
 - New, better database exceptions on security module
-- New, User model column last_login
-- New, User model column login_count
-- New, User model column AuditMixin columns (created_on, changed_on, created_by_fk, changed_by_fk)
+- New, User model columns: last_login, login_count, fail_login_count.
+- New, User model column AuditMixin columns (created_on, changed_on, created_by_fk, changed_by_fk).
 - New, AuditMixin allows null on FK columns.
 - Fix, Add user on non sqlite db, failed if no email provided. Unique db constraint.
 - Fix, form convert field exception handling (for method fields).
 - New, support for "one to one" relations and "one to many", on forms, and filters (beta).
 - Fix, ChartView unicode correction.
+- New, DirectChartView to present database queries on numeric columns with multiple series.
 
 Improvements and Bug fixes on 0.6.14
 ------------------------------------
