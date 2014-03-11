@@ -15,7 +15,7 @@ from models import User, Role, PermissionView, Permission, ViewMenu, \
     assoc_permissionview_role
 from views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, \
     ResetPasswordView, UserDBGeneralView, UserLDAPGeneralView, UserOIDGeneralView, RoleGeneralView, \
-    PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView
+    PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, UserLoginCountChartView
 
 
 log = logging.getLogger(__name__)
@@ -83,6 +83,7 @@ class SecurityManager(object):
         role_view = baseapp._init_view_session(RoleGeneralView)
         baseapp.add_view(role_view, "List Roles", "/roles/list", "fa-group", "Security")
         role_view.related_views = [user_view.__class__]
+        baseapp.add_view(baseapp._init_view_session(UserLoginCountChartView), "Chart Users", icon="fa-bar-chart-o", category="Security")
         baseapp.menu.add_separator("Security")
         baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView), "Base Permissions", "/permissions/list",
                          "fa-lock", "Security")

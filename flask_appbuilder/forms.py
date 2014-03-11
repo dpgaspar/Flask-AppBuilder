@@ -122,29 +122,34 @@ class GeneralModelConverter(object):
         return form_props
 
     def _convert_field(self, col, label, description, lst_validators, form_props):
-        if not col.nullable:
-            lst_validators.append(validators.Required())
-        else:
-            lst_validators.append(validators.Optional())
-        if col.unique:
-            lst_validators.append(Unique(self.datamodel, col))
+        try:
+            if not col.nullable:
+                lst_validators.append(validators.Required())
+            else:
+                lst_validators.append(validators.Optional())
+            if col.unique:
+                lst_validators.append(Unique(self.datamodel, col))
 
-        fc = FieldConverter(self.datamodel, col.name, label, description, lst_validators)
-        form_props[col.name] = fc.convert()
-        return form_props
+            fc = FieldConverter(self.datamodel, col.name, label, description, lst_validators)
+            form_props[col.name] = fc.convert()
+            return form_props
+        except Exception as e:
+            log.warning("Cannot convert field: {0} ({1})".format(col, label))
 
     def _convert_prop(self, prop, label, description, lst_validators, filter_rel_fields, form_props):
         if self.datamodel.is_relation(prop):
-            if self.datamodel.is_relation_many_to_one(prop):
+            if self.datamodel.is_relation_many_to_one(prop) or self.datamodel.is_relation_one_to_one(prop):
                 return self._convert_many_to_one(prop, label,
                                                  description,
                                                  lst_validators,
                                                  filter_rel_fields, form_props)
-            if self.datamodel.is_relation_many_to_many(prop):
+            elif self.datamodel.is_relation_many_to_many(prop) or self.datamodel.is_relation_one_to_many(prop):
                 return self._convert_many_to_many(prop, label,
                                                   description,
                                                   lst_validators,
                                                   filter_rel_fields, form_props)
+            else:
+                log.warning("Relation {0} not supported on {1}".format(prop.direction.name, prop))
         else:
             col = self.datamodel.get_property_first_col(prop)
             if not (self.datamodel.is_pk(col) or self.datamodel.is_fk(col)):

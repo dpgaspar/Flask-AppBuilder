@@ -242,6 +242,13 @@ class SQLAModel(DataModel):
     def is_relation_many_to_many(self, prop):
         return prop.direction.name == 'MANYTOMANY'
 
+    def is_relation_one_to_one(self, prop):
+        return prop.direction.name == 'ONETOONE'
+
+    def is_relation_one_to_many(self, prop):
+        return prop.direction.name == 'ONETOMANY'
+
+
     def is_pk(self, col):
         return col.primary_key
 
@@ -384,8 +391,8 @@ class SQLAModel(DataModel):
         ret_lst = []
         for prop in self.get_properties_iterator():
             if not self.is_relation(prop):
-                if (not self.is_pk(self.get_property_first_col(prop))) and (
-                        not self.is_fk(self.get_property_first_col(prop))):
+                tmp_prop = self.get_property_first_col(prop)
+                if (not self.is_pk(tmp_prop)) and (not self.is_fk(tmp_prop)):
                     ret_lst.append(prop.key)
             else:
                 ret_lst.append(prop.key)
@@ -399,7 +406,7 @@ class SQLAModel(DataModel):
                 tmp_prop = self.get_property_first_col(prop)
                 if (not self.is_pk(tmp_prop)) and (not self.is_fk(tmp_prop)):
                     col = prop.key
-                    if (not self.is_image(col)) and (not self.is_file(col)):
+                    if (not self.is_image(col)) and (not self.is_file(col)) and (not self.is_boolean(col)):
                         ret_lst.append(col)
             else:
                 ret_lst.append(prop.key)

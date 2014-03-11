@@ -136,7 +136,7 @@ class FilterRelationManyToManyEqual(FilterRelation):
 
     def apply(self, query, value):
         rel_obj = self.datamodel.get_related_obj(self.column_name, value)
-        return query.filter(getattr(self.model, self.column_name).contains(item))
+        return query.filter(getattr(self.model, self.column_name).contains(rel_obj))
 
 
 class FilterEqualFunction(BaseFilter):
@@ -175,10 +175,10 @@ class Filters(object):
     def _get_filter_type(self, col, datamodel):
         prop = datamodel.get_col_property(col)
         if datamodel.is_relation(prop):
-            if datamodel.is_relation_many_to_one(prop):
+            if datamodel.is_relation_many_to_one(prop) or datamodel.is_relation_one_to_one(prop):
                 return [FilterRelationOneToManyEqual(col, datamodel),
                         FilterRelationOneToManyNotEqual(col, datamodel)]
-            elif datamodel.is_relation_many_to_many(prop):
+            elif datamodel.is_relation_many_to_many(prop) or datamodel.is_relation_one_to_many(prop):
                 return [FilterRelationManyToManyEqual(col, datamodel)]
         else:
             if datamodel.is_text(col) or datamodel.is_string(col):

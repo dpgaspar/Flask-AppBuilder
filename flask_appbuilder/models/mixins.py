@@ -76,7 +76,7 @@ class AuditMixin(BaseMixin):
     @declared_attr
     def created_by_fk(cls):
         return Column(Integer, ForeignKey('ab_user.id'),
-                      default=cls.get_user_id, nullable=True)
+                      default=cls.get_user_id, nullable=False)
 
     @declared_attr
     def created_by(cls):
@@ -85,7 +85,7 @@ class AuditMixin(BaseMixin):
     @declared_attr
     def changed_by_fk(cls):
         return Column(Integer, ForeignKey('ab_user.id'),
-                      default=cls.get_user_id, onupdate=cls.get_user_id, nullable=True)
+                      default=cls.get_user_id, onupdate=cls.get_user_id, nullable=False)
 
     @declared_attr
     def changed_by(cls):

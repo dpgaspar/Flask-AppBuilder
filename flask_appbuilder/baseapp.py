@@ -11,6 +11,7 @@ from menu import Menu
 
 log = logging.getLogger(__name__)
 
+
 class BaseApp(object):
     """
         This is the base class for the all framework.
@@ -27,7 +28,7 @@ class BaseApp(object):
     baseviews = []
     app = None
     db = None
-    
+
     sm = None
     """ Security Manager """
     bm = None
@@ -35,24 +36,24 @@ class BaseApp(object):
     app_name = ""
     app_theme = ''
     app_icon = None
-    
+
     menu = None
     indexview = None
-    
+
     static_folder = None
     static_url_path = None
-    
+
     template_filters = None
-    
+
     languages = None
     admin = None
     _gettext = _gettext
 
-    def __init__(self, app, db, 
-                    menu = None, 
-                    indexview = None, 
-                    static_folder='static/appbuilder', 
-                    static_url_path='/appbuilder'):
+    def __init__(self, app, db,
+                 menu=None,
+                 indexview=None,
+                 static_folder='static/appbuilder',
+                 static_url_path='/appbuilder'):
         """
             BaseApp constructor
             
@@ -71,30 +72,30 @@ class BaseApp(object):
         """
         self.app = app
         self.db = db
-                    
+
         self.sm = SecurityManager(app, db.session)
         self.bm = BabelManager(app, pkg_translations=translations)
-        
+
         if menu:
             self.menu = menu
             self._add_menu_permissions()
         else:
             self.menu = Menu()
-        
+
         self.app.before_request(self.sm.before_request)
-        
+
         self._init_config_parameters()
         self.indexview = indexview or IndexView
         self.static_folder = static_folder
         self.static_url_path = static_url_path
         self._add_admin_views()
         self._add_global_static()
-        self._add_global_filters()        
-    
+        self._add_global_filters()
+
         # Creating Developer's models
         self.db.create_all()
-        
-    
+
+
     def _init_config_parameters(self):
         if 'APP_NAME' in self.app.config:
             self.app_name = self.app.config['APP_NAME']
@@ -110,15 +111,16 @@ class BaseApp(object):
             self.languages = self.app.config['LANGUAGES']
         else:
             self.languages = {
-                'en': {'flag':'gb', 'name':'English'},
-                }
-    
+                'en': {'flag': 'gb', 'name': 'English'},
+            }
+
     def _add_global_filters(self):
         self.template_filters = TemplateFilters(self.app, self.sm)
 
     def _add_global_static(self):
         bp = Blueprint('baseapp', __name__, url_prefix='/static',
-                template_folder='templates', static_folder = self.static_folder, static_url_path = self.static_url_path)
+                       template_folder='templates', static_folder=self.static_folder,
+                       static_url_path=self.static_url_path)
         self.app.register_blueprint(bp)
 
     def _add_admin_views(self):
@@ -131,21 +133,21 @@ class BaseApp(object):
         if baseview_class.datamodel.session == None:
             baseview_class.datamodel.session = self.db.session
         return baseview_class()
-    
+
     def _add_permissions_menu(self, name):
         try:
             self.sm.add_permissions_menu(name)
         except Exception as e:
             log.error("Add Permission on Menu Error: {0}".format(str(e)))
-    
-    
+
+
     def _add_menu_permissions(self):
         for category in self.menu.get_list():
             self._add_permissions_menu(category.name)
             for item in category.childs:
                 self._add_permissions_menu(item.name)
-    
-    def add_view(self, baseview, name, href = "", icon = "", category = ""):
+
+    def add_view(self, baseview, name, href="", icon="", category=""):
         """
             Add your views associated with menus using this method.
             
@@ -170,16 +172,16 @@ class BaseApp(object):
                 # Add a link
                 baseapp.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
-        log.info("Registering class %s on menu %s.%s" % (baseview.__class__.__name__, category,name))
+        log.info("Registering class %s on menu %s.%s" % (baseview.__class__.__name__, category, name))
         if baseview not in self.baseviews:
             baseview.baseapp = self
             self.baseviews.append(baseview)
             self._process_ref_related_views()
             self.register_blueprint(baseview)
             self._add_permission(baseview)
-        self.add_link(name = name, href = href, icon = icon, category = category, baseview = baseview)
-        
-    def add_link(self, name, href, icon = "", category = "", baseview = None):
+        self.add_link(name=name, href=href, icon=icon, category=category, baseview=baseview)
+
+    def add_link(self, name, href, icon="", category="", baseview=None):
         """
             Add your own links to menu using this method
             
@@ -192,8 +194,8 @@ class BaseApp(object):
             :param category:
                 The menu category where the menu will be included        
         """
-        self.menu.add_link(name = name, href = href, icon = icon, 
-                        category = category, baseview = baseview)
+        self.menu.add_link(name=name, href=href, icon=icon,
+                           category=category, baseview=baseview)
         self._add_permissions_menu(name)
         if category:
             self._add_permissions_menu(category)
@@ -207,7 +209,7 @@ class BaseApp(object):
         """
         self.menu.add_separator(category)
 
-    def add_view_no_menu(self, baseview, endpoint = None, static_folder = None):
+    def add_view_no_menu(self, baseview, endpoint=None, static_folder=None):
         """
             Add your views without creating a menu.
             
@@ -219,7 +221,7 @@ class BaseApp(object):
             baseview.baseapp = self
             self.baseviews.append(baseview)
             self._process_ref_related_views()
-            self.register_blueprint(baseview, endpoint = endpoint, static_folder = static_folder)
+            self.register_blueprint(baseview, endpoint=endpoint, static_folder=static_folder)
             self._add_permission(baseview)
 
     def _add_permission(self, baseview):
@@ -227,9 +229,9 @@ class BaseApp(object):
             self.sm.add_permissions_view(baseview.base_permissions, baseview.__class__.__name__)
         except Exception as e:
             log.error("Add Permission on View Error: {0}".format(str(e)))
-        
-    def register_blueprint(self, baseview, endpoint = None, static_folder = None):
-        self.app.register_blueprint(baseview.create_blueprint(self,  endpoint = endpoint, static_folder = static_folder))
+
+    def register_blueprint(self, baseview, endpoint=None, static_folder=None):
+        self.app.register_blueprint(baseview.create_blueprint(self, endpoint=endpoint, static_folder=static_folder))
 
     def _process_ref_related_views(self):
         try:

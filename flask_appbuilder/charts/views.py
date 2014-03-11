@@ -35,17 +35,8 @@ class BaseChartView(BaseModelView):
     """ The width """
     height = '400px'
 
-    group_by_columns = []
-    """ A list of columns to be possibly grouped by, this list must be filled """
-
     group_bys = {}
     """ New for 0.6.4, on test, don't use yet """
-
-
-    def __init__(self, **kwargs):
-        if not self.group_by_columns:
-            raise Exception('Base Chart View property <group_by_columns | flex_group_by_columns> must not be empty')
-        else: super(BaseChartView, self).__init__(**kwargs)
 
 
     def _get_chart_widget(self, value_columns=None, widgets=None):
@@ -58,7 +49,36 @@ class BaseChartView(BaseModelView):
         return widgets
 
 
-class ChartView(BaseChartView):
+class BaseSimpleGroupByChartView(BaseChartView):
+    group_by_columns = []
+    """ A list of columns to be possibly grouped by, this list must be filled """
+
+    def __init__(self, **kwargs):
+        if not self.group_by_columns:
+            raise Exception('Base Chart View property <group_by_columns> must not be empty')
+        else: super(BaseChartView, self).__init__(**kwargs)
+
+
+class BaseSimpleDirectChartView(BaseChartView):
+    direct_columns = []
+    """
+        Make chart using the column on the list
+        chart_columns = [('X column','Y1 Column','Y2 Column, ...),('X Column','Y1 Column',...),...]
+    """
+    def __init__(self, **kwargs):
+        if not self.direct_columns:
+            raise Exception('Base Chart View property <direct_columns> must not be empty')
+        else: super(BaseChartView, self).__init__(**kwargs)
+
+
+    def get_group_by_columns(self):
+        """
+            returns first item (X Column) from direct_columns
+            Used in template, so that user can choose from options
+        """
+        return [item[0] for item in self.direct_columns]
+
+class ChartView(BaseSimpleGroupByChartView):
     """
         Provides a simple (and hopefully nice) way to draw charts on your application.
 
@@ -86,7 +106,7 @@ class ChartView(BaseChartView):
                                baseapp=self.baseapp)
 
 
-class TimeChartView(BaseChartView):
+class TimeChartView(BaseSimpleGroupByChartView):
     """
         Provides a simple way to draw some time charts on your application.
 
@@ -95,7 +115,6 @@ class TimeChartView(BaseChartView):
 
     chart_template = 'appbuilder/general/charts/chart_time.html'
     chart_type = 'ColumnChart'
-
 
     @expose('/chart/<group_by>/<period>')
     @expose('/chart/')
@@ -121,35 +140,33 @@ class TimeChartView(BaseChartView):
                                baseapp=self.baseapp)
 
 
-class DirectChartView(BaseChartView):
+class DirectChartView(BaseSimpleDirectChartView):
     """
         This class is responsible for displaying a chart with
         direct model values. No group by is processed.
     """
 
-    @expose('/chart/<group_by>')
+    @expose('/chart/<direct>')
     @expose('/chart/')
     @has_access
-    def chart(self, group_by=''):
+    def chart(self, direct=''):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
 
-        group_by = group_by or self.group_by_columns[0]
-        count, lst = self.datamodel.query(group_by, filters=self._filters)
-        value_columns = self.datamodel.get_values(lst, group_by)
-        i = 0
-        for value in value_columns:
-            value['id'] = lst[i]
-            i += 1
+        direct = direct or self.direct_columns[0]
+        count, lst = self.datamodel.query(filters=self._filters)
+        value_columns = self.datamodel.get_values(lst, list(direct))
+        log.info("VALUES {0}".format(value_columns))
+        log.info("labels {0}".format(self.label_columns))
+        log.info("SEARCH {0}".format(self.search_columns))
 
-        log.info("VALUES".format(value_columns))
 
         widgets = self._get_chart_widget(value_columns=value_columns)
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,
                                label_columns=self.label_columns,
-                               group_by_columns=self.group_by_columns,
+                               group_by_columns=self.get_group_by_columns(),
                                height=self.height,
                                widgets=widgets,
                                baseapp=self.baseapp)

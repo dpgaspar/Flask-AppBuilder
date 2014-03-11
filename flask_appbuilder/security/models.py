@@ -66,7 +66,6 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String(64), nullable=False)
     last_name = Column(String(64), nullable=False)
-    full_name = column_property(first_name + " " + last_name)
     username = Column(String(32), unique=True, nullable=False)
     password = Column(String(256))
     active = Column(Boolean)
@@ -93,9 +92,9 @@ class User(Base):
         return Column(Integer, ForeignKey('ab_user.id'),
                       default=self.get_user_id, onupdate=self.get_user_id, nullable=False)
 
-    created_by = relationship("User", backref=backref("created", uselist=False),
+    created_by = relationship("User", backref=backref("created", uselist=True),
                               remote_side=[id], primaryjoin='User.created_by_fk == User.id', uselist=False)
-    changed_by = relationship("User", backref=backref("changed", uselist=False),
+    changed_by = relationship("User", backref=backref("changed", uselist=True),
                               remote_side=[id], primaryjoin='User.changed_by_fk == User.id', uselist=False)
 
     @classmethod
