@@ -147,7 +147,7 @@ class UserGeneralView(GeneralView):
                         'created_by', 'changed_on', 'changed_by'], 'expanded': False}),
     ]
 
-    order_columns = ['username', 'email']
+    order_columns = ['first_name', 'last_name', 'username', 'email', 'active']
     search_columns = ['first_name', 'last_name', 'username', 'email', 'role']
 
     add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
