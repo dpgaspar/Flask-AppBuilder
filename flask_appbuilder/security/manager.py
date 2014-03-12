@@ -476,9 +476,9 @@ class SecurityManager(object):
         view_menu_db = self.session.query(ViewMenu).filter_by(name=view_menu).first()
         if view_menu_db is None:
             view_menu_db = self._add_view_menu(view_menu)
-        lst = self.session.query(PermissionView).filter_by(view_menu_id=view_menu_db.id).all()
+        perm_views = self.session.query(PermissionView).filter_by(view_menu_id=view_menu_db.id).all()
 
-        if not lst:
+        if not perm_views:
             # No permissions yet on this view
             for permission in base_permissions:
                 pv = self._add_permission_view_menu(permission, view_menu)
@@ -489,21 +489,21 @@ class SecurityManager(object):
             role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
             for permission in base_permissions:
                 # Check if base view permissions exist
-                if not self._find_permission(lst, permission):
+                if not self._find_permission(perm_views, permission):
                     pv = self._add_permission_view_menu(permission, view_menu)
                     self.add_permission_role(role_admin, pv)
-            for item in lst:
+            for perm_view in perm_views:
                 if item.permission.name not in base_permissions:
                     # perm to delete
                     roles = self.session.query(Role).all()
-                    perm = self.session.query(Permission).filter_by(name=item.permission.name).first()
+                    perm = self.session.query(Permission).filter_by(name=perm_view.permission.name).first()
                     # del permission from all roles
                     for role in roles:
                         self.del_permission_role(role, perm)
-                    self._del_permission_view_menu(item.permission.name, view_menu)
-                elif item not in role_admin.permissions:
-                    log.debug("YO !!!!!")
-                    self.add_permission_role(role_admin, item)
+                    self._del_permission_view_menu(perm_view.permission.name, view_menu)
+                elif perm_view not in role_admin.permissions:
+                    # Role Admin must have all permissions
+                    self.add_permission_role(role_admin, perm_view)
 
 
     def add_permissions_menu(self, view_menu_name):
