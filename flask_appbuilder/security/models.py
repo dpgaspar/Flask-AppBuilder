@@ -78,19 +78,19 @@ class User(Base):
     role_id = Column(Integer, ForeignKey('ab_role.id'), nullable=False)
     role = relationship("Role")
 
-    created_on = Column(DateTime, default=datetime.datetime.now, nullable=False)
+    created_on = Column(DateTime, default=datetime.datetime.now, nullable=True)
     changed_on = Column(DateTime, default=datetime.datetime.now,
-                        onupdate=datetime.datetime.now, nullable=False)
+                        onupdate=datetime.datetime.now, nullable=True)
 
     @declared_attr
     def created_by_fk(self):
         return Column(Integer, ForeignKey('ab_user.id'),
-                      default=self.get_user_id, nullable=False)
+                      default=self.get_user_id, nullable=True)
 
     @declared_attr
     def changed_by_fk(self):
         return Column(Integer, ForeignKey('ab_user.id'),
-                      default=self.get_user_id, onupdate=self.get_user_id, nullable=False)
+                      default=self.get_user_id, onupdate=self.get_user_id, nullable=True)
 
     created_by = relationship("User", backref=backref("created", uselist=True),
                               remote_side=[id], primaryjoin='User.created_by_fk == User.id', uselist=False)
