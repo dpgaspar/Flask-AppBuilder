@@ -193,8 +193,8 @@ class SecurityManager(object):
                 self.session.commit()
                 log.info("Inserted initial Admin user")
                 log.info("Login using Admin/general")
-        except:
-            log.error("DB Creation and initialization failed, if just upgraded to 0.7.X you must migrate the DB.")
+        except Exception as e:
+            log.error("DB Creation and initialization failed, if just upgraded to 0.7.X you must migrate the DB. {0}".format(str(e))) ")
 
 
     """
