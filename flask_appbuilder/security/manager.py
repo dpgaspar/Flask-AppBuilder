@@ -1,8 +1,7 @@
-import sys
 import datetime
 import logging
+
 from flask import g
-from flask_appbuilder import Base
 from flask_login import current_user
 from sqlalchemy import MetaData, Table
 from sqlalchemy.engine.reflection import Inspector
@@ -11,11 +10,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager
 from flask_openid import OpenID
 
+from flask_appbuilder import Base
 from models import User, Role, PermissionView, Permission, ViewMenu, \
     assoc_permissionview_role
 from views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, \
     ResetPasswordView, UserDBGeneralView, UserLDAPGeneralView, UserOIDGeneralView, RoleGeneralView, \
-    PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, UserLoginCountChartView
+    PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, UserStatsChartView
 
 
 log = logging.getLogger(__name__)
@@ -83,7 +83,7 @@ class SecurityManager(object):
         role_view = baseapp._init_view_session(RoleGeneralView)
         baseapp.add_view(role_view, "List Roles", "/roles/list", "fa-group", "Security")
         role_view.related_views = [user_view.__class__]
-        baseapp.add_view(baseapp._init_view_session(UserLoginCountChartView), "Chart Users", icon="fa-bar-chart-o", category="Security")
+        baseapp.add_view(baseapp._init_view_session(UserStatsChartView), "User's Statistics", icon="fa-bar-chart-o", category="Security")
         baseapp.menu.add_separator("Security")
         baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView), "Base Permissions", "/permissions/list",
                          "fa-lock", "Security")
@@ -294,10 +294,8 @@ class SecurityManager(object):
             log.error("Reset password: {0}".format(str(e)))
             self.session.rollback()
 
-
     def get_user_by_id(self, pk):
         return self.session.query(User).get(pk)
-
 
     def _get_auth_type(self, app):
         if 'AUTH_TYPE' in app.config:
@@ -320,6 +318,12 @@ class SecurityManager(object):
         else:
             return 'Public'
 
+
+    """
+        ----------------------------------------
+            PERMISSION ACCESS CHECK
+        ----------------------------------------
+    """
 
     def is_item_public(self, permission_name, view_name):
         """
@@ -368,6 +372,14 @@ class SecurityManager(object):
             else:
                 return False
         return False
+
+
+
+    """
+        ----------------------------------------
+            PERMISSION MANAGEMENT
+        ----------------------------------------
+    """
 
     def _add_permission(self, name):
         """
@@ -449,7 +461,6 @@ class SecurityManager(object):
         except Exception as e:
             log.error("Del Permission from View Error: {0}".format(str(e)))
             self.session.rollback()
-
 
 
     def _find_permission(self, lst, item):

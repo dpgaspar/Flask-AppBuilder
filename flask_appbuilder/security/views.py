@@ -239,11 +239,11 @@ class UserDBGeneralView(UserGeneralView):
         item.password = generate_password_hash(item.password)
 
 
-class UserLoginCountChartView(DirectChartView):
-    chart_title = 'Grouped contacts'
+class UserStatsChartView(DirectChartView):
+    datamodel = SQLAModel(User)
+    chart_title = lazy_gettext('User Statistics')
     #label_columns = UserGeneralView.label_columns
     direct_columns = [('username', 'login_count', 'fail_login_count')]
-    datamodel = SQLAModel(User)
 
 
 class RoleGeneralView(GeneralView):
