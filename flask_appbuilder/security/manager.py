@@ -486,8 +486,6 @@ class SecurityManager(object):
                     self.add_permission_role(role_admin, pv)
                 elif not self._find_permission(role_admin.permissions, permission): 
                     self.add_permission_role(role_admin, pv)
-                log.debug("ADD PERM DEBUG {0} {1}".format(role_admin.permissions, permission)
-                
             for item in lst:
                 if item.permission.name not in base_permissions:
                     # perm to delete
