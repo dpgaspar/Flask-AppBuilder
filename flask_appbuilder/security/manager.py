@@ -458,9 +458,9 @@ class SecurityManager(object):
                 return True
         return False
 
-    def _find_permission_view(self, lst, perm, view):
+    def _find_permission_view(self, lst, permission, view_menu):
         for i in lst:
-            if i.permission.name == perm and i.view.name == view:
+            if i.permission.name == permission and i.view_menu.name == view_menu:
                 return True
         return False
 
