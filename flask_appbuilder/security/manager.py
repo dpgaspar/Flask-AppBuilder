@@ -484,6 +484,7 @@ class SecurityManager(object):
                 if not self._find_permission(lst, permission):
                     pv = self._add_permission_view_menu(permission, view_menu)
                     self.add_permission_role(role_admin, pv)
+                log.debug("ADD PERM DEBUG {0} {1}".format(role_admin.permissions, permission)
                 elif not self._find_permission(role_admin.permissions, permission): 
                     self.add_permission_role(role_admin, pv)
             for item in lst:
