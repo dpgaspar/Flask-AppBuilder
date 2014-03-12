@@ -458,6 +458,12 @@ class SecurityManager(object):
                 return True
         return False
 
+    def _find_permission_view(self, lst, perm, view):
+        for i in lst:
+            if i.permission.name == perm and i.view.name == view:
+                return True
+        return False
+
     def add_permissions_view(self, base_permissions, view_menu):
         """
             Adds a permission on a view menu to the backend
@@ -473,22 +479,21 @@ class SecurityManager(object):
         lst = self.session.query(PermissionView).filter_by(view_menu_id=view_menu_db.id).all()
 
         if not lst:
-            # No permissions for this view
+            # No permissions yet on this view
             for permission in base_permissions:
                 pv = self._add_permission_view_menu(permission, view_menu)
                 role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
                 self.add_permission_role(role_admin, pv)
         else:
+            # Permissions on this view exist but....
             role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
             for permission in base_permissions:
                 if not self._find_permission(lst, permission):
                     pv = self._add_permission_view_menu(permission, view_menu)
                     self.add_permission_role(role_admin, pv)
-                elif not self._find_permission(role_admin.permissions, permission):
-                    log.debug("YO")
+                elif not self._find_permission_view(role_admin.permissions, permission, view_menu):
+                    log.debug("YO !!!!!")
                     self.add_permission_role(role_admin, pv)
-                else:
-                    log.debug("YO YO {0} {1}".format(role_admin.permissions, permission))
             for item in lst:
                 if item.permission.name not in base_permissions:
                     # perm to delete
