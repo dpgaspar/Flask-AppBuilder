@@ -479,13 +479,13 @@ class SecurityManager(object):
                 role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
                 self.add_permission_role(role_admin, pv)
         else:
+            role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
             for permission in base_permissions:
                 if not self._find_permission(lst, permission):
-                    log.info("NOT FOUND {0}".format(permission))
                     pv = self._add_permission_view_menu(permission, view_menu)
-                    role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
                     self.add_permission_role(role_admin, pv)
-                log.info("......... {0}".format(permission))
+                else if not self._find_permission(role_admin.permissions, permission): 
+                    self.add_permission_role(role_admin, pv)
             for item in lst:
                 if item.permission.name not in base_permissions:
                     # perm to delete
