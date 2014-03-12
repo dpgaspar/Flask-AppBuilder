@@ -488,21 +488,22 @@ class SecurityManager(object):
             # Permissions on this view exist but....
             role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
             for permission in base_permissions:
+                # Check if base view permissions exist
                 if not self._find_permission(lst, permission):
                     pv = self._add_permission_view_menu(permission, view_menu)
-                    self.add_permission_role(role_admin, pv)
-                elif not self._find_permission_view(role_admin.permissions, permission, view_menu):
-                    log.debug("YO !!!!!")
                     self.add_permission_role(role_admin, pv)
             for item in lst:
                 if item.permission.name not in base_permissions:
                     # perm to delete
                     roles = self.session.query(Role).all()
-                    pv = self.session.query(Permission).filter_by(name=item.permission.name).first()
+                    perm = self.session.query(Permission).filter_by(name=item.permission.name).first()
                     # del permission from all roles
                     for role in roles:
-                        self.del_permission_role(role, pv)
+                        self.del_permission_role(role, perm)
                     self._del_permission_view_menu(item.permission.name, view_menu)
+                elif item not in role_admin.permissions:
+                    log.debug("YO !!!!!")
+                    self.add_permission_role(role_admin, item)
 
 
     def add_permissions_menu(self, view_menu_name):
