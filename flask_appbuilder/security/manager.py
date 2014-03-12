@@ -493,7 +493,7 @@ class SecurityManager(object):
                     pv = self._add_permission_view_menu(permission, view_menu)
                     self.add_permission_role(role_admin, pv)
             for perm_view in perm_views:
-                if item.permission.name not in base_permissions:
+                if perm_view.permission.name not in base_permissions:
                     # perm to delete
                     roles = self.session.query(Role).all()
                     perm = self.session.query(Permission).filter_by(name=perm_view.permission.name).first()
