@@ -18,6 +18,7 @@ Improvements and Bug fixes on 0.7.0
 - New, support for "one to one" relations and "one to many", on forms, and filters (beta).
 - Fix, ChartView unicode correction.
 - New, DirectChartView to present database queries on numeric columns with multiple series.
+- Fix, Adds all missing permissions to the role admin. Allways
 
 Improvements and Bug fixes on 0.6.14
 ------------------------------------
