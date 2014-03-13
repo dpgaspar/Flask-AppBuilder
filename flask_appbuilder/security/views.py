@@ -243,7 +243,9 @@ class UserStatsChartView(DirectChartView):
     datamodel = SQLAModel(User)
     chart_title = lazy_gettext('User Statistics')
     label_columns = UserGeneralView.label_columns
-    direct_columns = {'Login Count':('username', 'login_count', 'fail_login_count')}
+    search_columns = UserGeneralView.search_columns
+    direct_columns = {'Login Count': ('username', 'login_count'),
+                      'Failed Login Count': ('username', 'fail_login_count')}
 
 
 class RoleGeneralView(GeneralView):
