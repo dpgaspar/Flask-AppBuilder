@@ -63,8 +63,9 @@ class BaseSimpleGroupByChartView(BaseChartView):
 class BaseSimpleDirectChartView(BaseChartView):
     direct_columns = []
     """
-        Make chart using the column on the list
-        chart_columns = [('X column','Y1 Column','Y2 Column, ...),('X Column','Y1 Column',...),...]
+        Make chart using the column on the dict
+        chart_columns = {'chart label 1':('X column','Y1 Column','Y2 Column, ...),
+                        'chart label 2': ('X Column','Y1 Column',...),...}
     """
     def __init__(self, **kwargs):
         if not self.direct_columns:
@@ -74,10 +75,10 @@ class BaseSimpleDirectChartView(BaseChartView):
 
     def get_group_by_columns(self):
         """
-            returns first item (X Column) from direct_columns
+            returns the keys from direct_columns
             Used in template, so that user can choose from options
         """
-        return [item[0] for item in self.direct_columns]
+        return self.direct_columns.keys()
 
 class ChartView(BaseSimpleGroupByChartView):
     """
@@ -150,14 +151,15 @@ class DirectChartView(BaseSimpleDirectChartView):
 
     chart_widget = DirectChartWidget
 
-    @expose('/chart/<direct>')
+    @expose('/chart/<direct_key>')
     @expose('/chart/')
     @has_access
-    def chart(self, direct=''):
+    def chart(self, direct_key=''):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
 
-        direct = direct or self.direct_columns[0]
+        direct_key = direct_key or self.direct_columns.keys()[0]
+        direct = self.direct_columns.get(direct_key)
         count, lst = self.datamodel.query(filters=self._filters)
         value_columns = self.datamodel.get_values(lst, list(direct))
 

@@ -147,7 +147,7 @@ class UserGeneralView(GeneralView):
                         'created_by', 'changed_on', 'changed_by'], 'expanded': False}),
     ]
 
-    order_columns = ['first_name', 'last_name', 'username', 'email', 'active']
+    order_columns = ['first_name', 'last_name', 'username', 'email']
     search_columns = ['first_name', 'last_name', 'username', 'email', 'role', 
                     'created_by', 'changed_by', 'changed_on','changed_by', 'login_count']
 
@@ -242,8 +242,8 @@ class UserDBGeneralView(UserGeneralView):
 class UserStatsChartView(DirectChartView):
     datamodel = SQLAModel(User)
     chart_title = lazy_gettext('User Statistics')
-    #label_columns = UserGeneralView.label_columns
-    direct_columns = [('username', 'login_count', 'fail_login_count')]
+    label_columns = UserGeneralView.label_columns
+    direct_columns = {'Login Count':('username', 'login_count', 'fail_login_count')}
 
 
 class RoleGeneralView(GeneralView):
