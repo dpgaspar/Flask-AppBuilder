@@ -1,5 +1,4 @@
-from __future__ import unicode_literals
-
+from flask_appbuilder._compat import as_unicode
 
 def dict_to_json(xcol, ycols, labels, value_columns):
     """
@@ -17,11 +16,11 @@ def dict_to_json(xcol, ycols, labels, value_columns):
     """
     json_data = dict()
     json_data['cols'] = [{'id': xcol,
-                          'label': unicode(labels[xcol]),
+                          'label': as_unicode(labels[xcol]),
                           'type': 'string'}]
     for ycol in ycols:
         json_data['cols'].append({'id': ycol,
-                                  'label': unicode(labels[ycol]),
+                                  'label': as_unicode(labels[ycol]),
                                   'type': 'number'})
     json_data['rows'] = []
     for value in value_columns:

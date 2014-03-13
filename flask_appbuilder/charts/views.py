@@ -163,7 +163,7 @@ class DirectChartView(BaseSimpleDirectChartView):
         count, lst = self.datamodel.query(filters=self._filters)
         value_columns = self.datamodel.get_values(lst, list(direct))
         value_columns = jsontools.dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)
-        log.debug("CHART: {0}".format(value_columns))
+        log.debug("CHART: {0}".format(self.get_group_by_columns()))
 
         widgets = self._get_chart_widget(value_columns=value_columns)
         widgets = self._get_search_widget(form=form, widgets=widgets)

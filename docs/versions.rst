@@ -20,6 +20,7 @@ Improvements and Bug fixes on 0.7.0
 - New, DirectChartView to present database queries on numeric columns with multiple series.
 - Fix, Adds all missing permissions to the role admin. Allways
 - Fix, Removed User.active from possible search.
+- New, unicode review for future python 3 support.
 
 Improvements and Bug fixes on 0.6.14
 ------------------------------------

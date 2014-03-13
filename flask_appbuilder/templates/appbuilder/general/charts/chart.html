@@ -14,7 +14,11 @@
     <label>{{_('Group by fields') }}:</label>
     {% for group_by in group_by_columns %}
         <a href="{{url_for('.chart',group_by=group_by)}}" class="btn btn-sm btn-primary">
-        {{label_columns[group_by]}}
+        {% if label_columns[group_by] %}
+            {{ label_columns[group_by] }}
+        {% else %}
+            {{ group_by }}
+        {% endif %}
         </a>
     {% endfor %}
     </div>

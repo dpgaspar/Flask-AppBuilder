@@ -6,6 +6,8 @@ Created on Oct 12, 2013
 
 import logging
 from flask.globals import _request_ctx_stack
+from flask_appbuilder._compat import as_unicode
+
 
 log = logging.getLogger(__name__)
 
@@ -59,9 +61,9 @@ class SearchWidget(FormWidget):
         search_filters = {}
         dict_filters = self.filters.get_search_filters()
         for col in self.template_args['include_cols']:
-            label_columns[col] = unicode(self.template_args['form'][col].label.text)
+            label_columns[col] = as_unicode(self.template_args['form'][col].label.text)
             form_fields[col] = self.template_args['form'][col]()
-            search_filters[col] = [unicode(flt.name) for flt in dict_filters[col]]                
+            search_filters[col] = [as_unicode(flt.name) for flt in dict_filters[col]]
 
         kwargs['label_columns'] = label_columns
         kwargs['form_fields'] = form_fields
