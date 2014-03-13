@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 
 def dict_to_json(xcol, ycols, labels, value_columns):
     """
@@ -15,11 +17,11 @@ def dict_to_json(xcol, ycols, labels, value_columns):
     """
     json_data = dict()
     json_data['cols'] = [{'id': xcol,
-                          'label': labels[xcol],
+                          'label': unicode(labels[xcol]),
                           'type': 'string'}]
     for ycol in ycols:
         json_data['cols'].append({'id': ycol,
-                                  'label': labels[ycol],
+                                  'label': unicode(labels[ycol]),
                                   'type': 'number'})
     json_data['rows'] = []
     for value in value_columns:
