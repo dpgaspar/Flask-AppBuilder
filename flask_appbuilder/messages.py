@@ -8,7 +8,7 @@ Just use it to automate Babel extraction
 auto_translations_import = [
 _("Security"),
 _("List Users"),
-_("User's Statistics")
+_("User's Statistics"),
 _("Base Permissions"),
 _("Views/Menus"),
 _("Permission on Views/Menus"),
