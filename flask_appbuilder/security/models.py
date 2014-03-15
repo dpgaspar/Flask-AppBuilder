@@ -1,11 +1,10 @@
 import datetime
 from flask import g
 from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime, ForeignKey
-from sqlalchemy.orm import relationship, column_property, backref
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declared_attr
 from flask.ext.appbuilder import Base
-from flask.ext.appbuilder.models.mixins import AuditMixin
-
+from .._compat import as_unicode
 
 class Permission(Base):
     __tablename__ = 'ab_permission'
@@ -130,7 +129,7 @@ class User(Base):
         return False
 
     def get_id(self):
-        return unicode(self.id)
+        return as_unicode(self.id)
 
     def get_full_name(self):
         return u'{0} {1}'.format(self.first_name, self.last_name)
