@@ -144,26 +144,32 @@ class TimeChartView(BaseSimpleGroupByChartView):
 
 class DirectChartView(BaseSimpleDirectChartView):
     """
-        This class is responsible for displaying a chart with
-        direct model values. No group by is processed.
+        This class is responsible for displaying a Google chart with
+        direct model values. No group by is processed, example::
+
+            class StatsChartView(DirectChartView):
+                datamodel = SQLAModel(Stats)
+                chart_title = lazy_gettext('Statistics')
+                direct_columns = {'Some Stats': ('stat1', 'col1', 'col2'),
+                                  'Other Stats': ('stat2', 'col3')}
+
     """
     chart_type = 'ColumnChart'
 
     chart_widget = DirectChartWidget
 
-    @expose('/chart/<direct_key>')
+    @expose('/chart/<group_by>')
     @expose('/chart/')
     @has_access
-    def chart(self, direct_key=''):
+    def chart(self, group_by=''):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
 
-        direct_key = direct_key or self.direct_columns.keys()[0]
+        direct_key = group_by or self.direct_columns.keys()[0]
         direct = self.direct_columns.get(direct_key)
         count, lst = self.datamodel.query(filters=self._filters)
         value_columns = self.datamodel.get_values(lst, list(direct))
         value_columns = jsontools.dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)
-        log.debug("CHART: {0}".format(self.get_group_by_columns()))
 
         widgets = self._get_chart_widget(value_columns=value_columns)
         widgets = self._get_search_widget(form=form, widgets=widgets)
