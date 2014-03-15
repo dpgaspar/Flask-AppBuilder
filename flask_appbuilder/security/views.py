@@ -1,3 +1,4 @@
+import datetime
 from ..fieldwidgets import BS3PasswordFieldWidget
 from flask_wtf import validators
 from flask import render_template, flash, redirect, session, url_for, request, g
@@ -233,8 +234,9 @@ class UserDBGeneralView(UserGeneralView):
 
 
     def pre_update(self, item):
-        print "HHH {0} {1}".format(item.changed_by_fk, item.changed_by)
-        item.password = generate_password_hash(item.password)
+        item.changed_on = datetime.datetime.now()
+        item.changed_by_fk = g.user.id
+        #item.password = generate_password_hash(item.password)
 
     def pre_add(self, item):
         item.password = generate_password_hash(item.password)

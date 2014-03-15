@@ -1,5 +1,6 @@
 import logging
 from flask.ext.babelpkg import lazy_gettext
+from .._compat import as_unicode
 
 log = logging.getLogger(__name__)
 
@@ -255,7 +256,7 @@ class Filters(object):
                 return value
 
     def get_filters_values_tojson(self):
-        return [(flt.column_name, unicode(flt.name), value) for flt, value in zip(self.filters, self.values)]
+        return [(flt.column_name, as_unicode(flt.name), value) for flt, value in zip(self.filters, self.values)]
 
     def apply_all(self, query):
         for flt, value in zip(self.filters, self.values):
