@@ -13,7 +13,7 @@ from group import GroupByDateYear, GroupByDateMonth, GroupByCol
 
 from mixins import FileColumn, ImageColumn
 from ..filemanager import FileManager, ImageManager
-
+from .._compat import as_unicode
 log = logging.getLogger(__name__)
 
 
@@ -167,7 +167,7 @@ class SQLAModel(DataModel):
         group = GroupByCol(group_by, 'Group by')
         return group.apply(query_result)
 
-
+    # still not in use
     def query_group(self, group_bys, filters=None):
         query = self.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
@@ -265,15 +265,15 @@ class SQLAModel(DataModel):
         try:
             self.session.add(item)
             self.session.commit()
-            flash(unicode(self.add_row_message), 'success')
+            flash(as_unicode(self.add_row_message), 'success')
             return True
         except IntegrityError as e:
-            flash(unicode(self.add_integrity_error_message), 'warning')
+            flash(as_unicode(self.add_integrity_error_message), 'warning')
             log.warning("Add record integrity error: {0}".format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
-            flash(unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            flash(as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception("Add record error: {0}".format(str(e)))
             self.session.rollback()
             return False
@@ -282,15 +282,15 @@ class SQLAModel(DataModel):
         try:
             self.session.merge(item)
             self.session.commit()
-            flash(unicode(self.edit_row_message), 'success')
+            flash(as_unicode(self.edit_row_message), 'success')
             return True
         except IntegrityError as e:
-            flash(unicode(self.edit_integrity_error_message), 'warning')
+            flash(as_unicode(self.edit_integrity_error_message), 'warning')
             log.warning("Edit record integrity error: {0}".format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
-            flash(unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            flash(as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception("Edit record error: {0}".format(str(e)))
             self.session.rollback()
             return False
@@ -301,15 +301,15 @@ class SQLAModel(DataModel):
             self._delete_files(item)
             self.session.delete(item)
             self.session.commit()
-            flash(unicode(self.delete_row_message), 'success')
+            flash(as_unicode(self.delete_row_message), 'success')
             return True
         except IntegrityError as e:
-            flash(unicode(self.delete_integrity_error_message), 'warning')
+            flash(as_unicode(self.delete_integrity_error_message), 'warning')
             log.warning("Delete record integrity error: {0}".format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
-            flash(unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            flash(as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception("Delete record error: {0}".format(str(e)))
             self.session.rollback()
             return False

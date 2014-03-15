@@ -11,7 +11,7 @@
 	{% endblock %}
 
     <div class="well well-sm">
-    <label>{{_('Group by fields') }}:</label>
+    <label>{{ group_by_label }}:</label>
     {% for group_by in group_by_columns %}
         <a href="{{url_for('.chart',group_by=group_by)}}" class="btn btn-sm btn-primary">
         {% if label_columns[group_by] %}

@@ -57,6 +57,35 @@
             
   <div class="section" id="versions">
 <h1>Versions<a class="headerlink" href="#versions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="improvements-and-bug-fixes-on-0-7-0">
+<h2>Improvements and Bug fixes on 0.7.0<a class="headerlink" href="#improvements-and-bug-fixes-on-0-7-0" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>New, ListBlock with pagination.</li>
+<li>New, Menu separator raises exception if it does not have a correct category.</li>
+<li>New, ShowBlockWidget different show detail presentation.</li>
+<li>Fix, login failed was not displaying error message.</li>
+<li>New, password is saved hashed on database.</li>
+<li>New, better database exceptions on security module</li>
+<li>New, User model columns: last_login, login_count, fail_login_count.</li>
+<li>New, User model column AuditMixin columns (created_on, changed_on, created_by_fk, changed_by_fk).</li>
+<li>New, AuditMixin allows null on FK columns.</li>
+<li>Fix, Add user on non sqlite db, failed if no email provided. Unique db constraint.</li>
+<li>Fix, form convert field exception handling (for method fields).</li>
+<li>New, support for &#8220;one to one&#8221; relations and &#8220;one to many&#8221;, on forms, and filters (beta).</li>
+<li>Fix, ChartView unicode correction.</li>
+<li>New, DirectChartView to present database queries on numeric columns with multiple series.</li>
+<li>Fix, Adds all missing permissions to the role admin. Allways</li>
+<li>Fix, Removed User.active from possible search.</li>
+<li>New, unicode review for future python 3 support.</li>
+</ul>
+</div>
+<div class="section" id="improvements-and-bug-fixes-on-0-6-14">
+<h2>Improvements and Bug fixes on 0.6.14<a class="headerlink" href="#improvements-and-bug-fixes-on-0-6-14" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Fix, url on time chart views to allow search on every group by column.</li>
+<li>New, support for float database type.</li>
+</ul>
+</div>
 <div class="section" id="improvements-and-bug-fixes-on-0-6-13">
 <h2>Improvements and Bug fixes on 0.6.13<a class="headerlink" href="#improvements-and-bug-fixes-on-0-6-13" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -352,6 +381,8 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Versions</a><ul>
+<li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-7-0">Improvements and Bug fixes on 0.7.0</a></li>
+<li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-6-14">Improvements and Bug fixes on 0.6.14</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-6-13">Improvements and Bug fixes on 0.6.13</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-6-11-0-6-12">Improvements and Bug fixes on 0.6.11, 0.6.12</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-6-10">Improvements and Bug fixes on 0.6.10</a></li>

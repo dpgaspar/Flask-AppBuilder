@@ -6,7 +6,7 @@ The Authentication methods
 
 You have three types of authentication methods
 
-	- Database type authentications: username and password style that is queried from the database to match, attention this framework does not encrypt (yet...) the passwords.
+	- Database type authentications: username and password style that is queried from the database to match. Passwords are kept hashed on the database.
 	
 	- Open ID: Uses the user's email field to authenticate on Gmail, Yahoo etc...
 
@@ -55,24 +55,27 @@ These base permission will be associated with your view, so if you create a view
 If you extend your view with some exposed method via the @expose decorator::
 
 	class MyGeneralView(GeneralView):
-    		datamodel = SQLAModel(Group, db.session)
+        datamodel = SQLAModel(Group, db.session)
     	
-    		list_columns = ['name']
-    		show_columns = ['name']
-    		order_columns = ['name']
-    		search_columns = ['name']
-    	
-    		@expose('/mymethod/')
-		@has_access
-		def mymethod(self):
-			# do something
-			pass
-    	
+
+        @expose('/mymethod/')
+        @has_access
+        def mymethod(self):
+            # do something
+            pass
+
 The framework will create the following access:
 
 	- can mymethod on MyGeneralView
 	
 And the decorator @has_access will prevent any unwanted access
+
+Auditing
+--------
+
+All user's creation and modification are audited, on the show detail for each user you can check who created the user and when and who has last changed it and when
+
+You can check also a total login count (successful login), and the last failed logins (these are reset if a successful login then occurred).
 
 Some images:
 

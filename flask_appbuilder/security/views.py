@@ -1,11 +1,11 @@
 from ..fieldwidgets import BS3PasswordFieldWidget
 from flask_wtf import validators
 from flask import render_template, flash, redirect, session, url_for, request, g
-from werkzeug.security import generate_password_hash, check_password_hash
-from openid.consumer import discover
+from werkzeug.security import generate_password_hash
+#from openid.consumer import discover
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
-from openid.extensions import ax
-from openid.extensions.sreg import SRegRequest, SRegResponse
+#from openid.extensions import ax
+#from openid.extensions.sreg import SRegRequest, SRegResponse
 from flask.ext.openid import SessionWrapper, OpenIDResponse
 from flask_wtf import EqualTo, PasswordField
 from flask.ext.babelpkg import gettext, lazy_gettext
@@ -15,6 +15,7 @@ from flask_appbuilder.models.datamodel import SQLAModel
 from flask_appbuilder.views import BaseView, GeneralView, SimpleFormView, expose
 from flask_appbuilder.charts.views import DirectChartView
 from ..actions import action
+from .._compat import as_unicode
 from forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
 from models import User, Permission, PermissionView, Role, ViewMenu
 from decorators import has_access
@@ -76,7 +77,7 @@ class ResetMyPasswordView(SimpleFormView):
 
     def form_post(self, form):
         self.baseapp.sm.reset_password(g.user.id, form.password.data)
-        flash(unicode(self.message), 'info')
+        flash(as_unicode(self.message), 'info')
 
 
 class ResetPasswordView(SimpleFormView):
@@ -95,7 +96,7 @@ class ResetPasswordView(SimpleFormView):
     def form_post(self, form):
         pk = request.args.get('pk')
         self.baseapp.sm.reset_password(pk, form.password.data)
-        flash(unicode(self.message), 'info')
+        flash(as_unicode(self.message), 'info')
 
 
 class UserGeneralView(GeneralView):
@@ -294,7 +295,7 @@ class AuthDBView(AuthView):
         if form.validate_on_submit():
             user = self.baseapp.sm.auth_user_db(form.username.data, form.password.data)
             if not user:
-                flash(unicode(self.invalid_login_message), 'warning')
+                flash(as_unicode(self.invalid_login_message), 'warning')
                 return redirect('/login')
             login_user(user, remember=False)
             return redirect('/')
@@ -316,7 +317,7 @@ class AuthLDAPView(AuthView):
         if form.validate_on_submit():
             user = self.baseapp.sm.auth_user_ldap(form.username.data, form.password.data)
             if not user:
-                flash(unicode(self.invalid_login_message), 'warning')
+                flash(as_unicode(self.invalid_login_message), 'warning')
                 return redirect('/login')
             login_user(user, remember=False)
             return redirect('/')
@@ -362,11 +363,11 @@ class AuthOIDView(AuthView):
 
     def after_login(self, resp):
         if resp.email is None or resp.email == "":
-            flash(unicode(self.invalid_login_message), 'warning')
+            flash(as_unicode(self.invalid_login_message), 'warning')
             return redirect('appbuilder/general/security/login_oid.html')
         user = self.baseapp.sm.auth_user_oid(resp.email)
         if user is None:
-            flash(unicode(self.invalid_login_message), 'warning')
+            flash(as_unicode(self.invalid_login_message), 'warning')
             return redirect('appbuilder/general/security/login_oid.html')
         remember_me = False
         if 'remember_me' in session:

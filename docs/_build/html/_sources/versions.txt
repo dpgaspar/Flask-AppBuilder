@@ -1,6 +1,33 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.7.0
+-----------------------------------
+
+- New, ListBlock with pagination.
+- New, Menu separator raises exception if it does not have a correct category.
+- New, ShowBlockWidget different show detail presentation.
+- Fix, login failed was not displaying error message.
+- New, password is saved hashed on database.
+- New, better database exceptions on security module
+- New, User model columns: last_login, login_count, fail_login_count.
+- New, User model column AuditMixin columns (created_on, changed_on, created_by_fk, changed_by_fk).
+- New, AuditMixin allows null on FK columns.
+- Fix, Add user on non sqlite db, failed if no email provided. Unique db constraint.
+- Fix, form convert field exception handling (for method fields).
+- New, support for "one to one" relations and "one to many", on forms, and filters (beta).
+- Fix, ChartView unicode correction.
+- New, DirectChartView to present database queries on numeric columns with multiple series.
+- Fix, Adds all missing permissions to the role admin. Allways
+- Fix, Removed User.active from possible search.
+- New, unicode review for future python 3 support.
+
+Improvements and Bug fixes on 0.6.14
+------------------------------------
+
+- Fix, url on time chart views to allow search on every group by column.
+- New, support for float database type.
+
 Improvements and Bug fixes on 0.6.13
 ------------------------------------
 

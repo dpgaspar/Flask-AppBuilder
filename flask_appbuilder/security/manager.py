@@ -217,9 +217,10 @@ class SecurityManager(object):
         if user is None or (not user.is_active()):
             return None
         elif check_password_hash(user.password, password):
-            self._update_user_auth_stat(user)
+            self._update_user_auth_stat(user, True)
             return user
         else:
+            self._update_user_auth_stat(user, False)
             return None
 
     def auth_user_ldap(self, username, password):
@@ -241,7 +242,7 @@ class SecurityManager(object):
                     self._update_user_auth_stat(user)
                     return user
                 except ldap.INVALID_CREDENTIALS:
-                    log.warning("Invalid Credentials {0} {1}".format(username, password))
+                    self._update_user_auth_stat(user, False)
                     return None
             except ldap.LDAPError, e:
                 if type(e.message) == dict and e.message.has_key('desc'):
@@ -258,13 +259,16 @@ class SecurityManager(object):
             :type self: User model
         """
         user = self.session.query(User).filter_by(email=email).first()
-        if user is None or (not user.is_active()):
+        if user is None:
+            self._update_user_auth_stat(user, False)
+            return None
+        elif not user.is_active():
             return None
         else:
             self._update_user_auth_stat(user)
             return user
 
-    def _update_user_auth_stat(self, user):
+    def _update_user_auth_stat(self, user, success=True):
         """
             Update authentication successful to user.
 
@@ -273,10 +277,14 @@ class SecurityManager(object):
         """
         try:
             if not user.login_count:
-                user.login_count = 1
-            else:
+                user.login_count = 0
+            elif not user.fail_login_count:
+                user.fail_login_count = 0
+            if success:
                 user.login_count += 1
-            user.fail_login_count = 0
+                user.fail_login_count = 0
+            else:
+                user.fail_login_count += 1
             user.last_login = datetime.datetime.now()
             self.session.merge(user)
             self.session.commit()

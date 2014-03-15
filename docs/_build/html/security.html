@@ -66,7 +66,7 @@
 <p>You have three types of authentication methods</p>
 <blockquote>
 <div><ul class="simple">
-<li>Database type authentications: username and password style that is queried from the database to match, attention this framework does not encrypt (yet...) the passwords.</li>
+<li>Database type authentications: username and password style that is queried from the database to match. Passwords are kept hashed on the database.</li>
 <li>Open ID: Uses the user&#8217;s email field to authenticate on Gmail, Yahoo etc...</li>
 <li>LDAP: Authentication against an LDAP server, like Microsoft Active Directory.</li>
 </ul>
@@ -112,19 +112,15 @@
 </ul>
 </div></blockquote>
 <p>If you extend your view with some exposed method via the &#64;expose decorator:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-        <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre>class MyGeneralView(GeneralView):
+datamodel = SQLAModel(Group, db.session)
 
-        <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
-        <span class="n">show_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
-        <span class="n">order_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
-        <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
 
-        <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/mymethod/&#39;</span><span class="p">)</span>
-        <span class="nd">@has_access</span>
-        <span class="k">def</span> <span class="nf">mymethod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-                <span class="c"># do something</span>
-                <span class="k">pass</span>
+@expose(&#39;/mymethod/&#39;)
+@has_access
+def mymethod(self):
+    # do something
+    pass
 </pre></div>
 </div>
 <p>The framework will create the following access:</p>
@@ -134,6 +130,11 @@
 </ul>
 </div></blockquote>
 <p>And the decorator &#64;has_access will prevent any unwanted access</p>
+</div>
+<div class="section" id="auditing">
+<h2>Auditing<a class="headerlink" href="#auditing" title="Permalink to this headline">¶</a></h2>
+<p>All user&#8217;s creation and modification are audited, on the show detail for each user you can check who created the user and when and who has last changed it and when</p>
+<p>You can check also a total login count (successful login), and the last failed logins (these are reset if a successful login then occurred).</p>
 <p>Some images:</p>
 <a class="reference internal image-reference" href="_images/security.png"><img alt="_images/security.png" src="_images/security.png" style="width: 100%;" /></a>
 </div>
@@ -151,6 +152,7 @@
 <li><a class="reference internal" href="#the-authentication-methods">The Authentication methods</a></li>
 <li><a class="reference internal" href="#role-based">Role based</a></li>
 <li><a class="reference internal" href="#permissions">Permissions</a></li>
+<li><a class="reference internal" href="#auditing">Auditing</a></li>
 </ul>
 </li>
 </ul>

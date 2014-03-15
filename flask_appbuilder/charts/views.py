@@ -1,6 +1,7 @@
 import logging
 import jsontools
 from flask import render_template
+from flask.ext.babelpkg import lazy_gettext
 from widgets import ChartWidget, DirectChartWidget, MultipleChartWidget
 from ..widgets import SearchWidget
 from ..security.decorators import has_access
@@ -26,6 +27,9 @@ class BaseChartView(BaseModelView):
 
     chart_title = 'Chart'
     """ A title to be displayed on the chart """
+    group_by_label = lazy_gettext('Group by')
+    """ The label that is displayed for the chart selection """
+
     default_view = 'chart'
 
     chart_type = 'PieChart'
@@ -103,6 +107,7 @@ class ChartView(BaseSimpleGroupByChartView):
                                title=self.chart_title,
                                label_columns=self.label_columns,
                                group_by_columns=self.group_by_columns,
+                               group_by_label=self.group_by_label,
                                height=self.height,
                                widgets=widgets,
                                baseapp=self.baseapp)
@@ -137,6 +142,7 @@ class TimeChartView(BaseSimpleGroupByChartView):
                                title=self.chart_title,
                                label_columns=self.label_columns,
                                group_by_columns=self.group_by_columns,
+                               group_by_label=self.group_by_label,
                                height=self.height,
                                widgets=widgets,
                                baseapp=self.baseapp)
@@ -145,7 +151,8 @@ class TimeChartView(BaseSimpleGroupByChartView):
 class DirectChartView(BaseSimpleDirectChartView):
     """
         This class is responsible for displaying a Google chart with
-        direct model values. No group by is processed, example::
+        direct model values. Chart widget uses json.
+        No group by is processed, example::
 
             class StatsChartView(DirectChartView):
                 datamodel = SQLAModel(Stats)
@@ -177,6 +184,7 @@ class DirectChartView(BaseSimpleDirectChartView):
                                title=self.chart_title,
                                label_columns=self.label_columns,
                                group_by_columns=self.get_group_by_columns(),
+                               group_by_label=self.group_by_label,
                                height=self.height,
                                widgets=widgets,
                                baseapp=self.baseapp)
@@ -202,6 +210,7 @@ class MultipleChartView(BaseChartView):
                                title=self.chart_title,
                                label_columns=self.label_columns,
                                group_by_columns=self.group_by_columns,
+                               group_by_label=self.group_by_label,
                                height=self.height,
                                widgets=widgets,
                                baseapp=self.baseapp)
