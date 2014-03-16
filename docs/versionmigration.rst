@@ -1,6 +1,13 @@
 Version Migration
 =================
 
+Migrating from 0.6.X to 0.7.X
+-----------------------------
+
+This new version has some new breaking features. You don't have to change any code, but the security models have changed.
+
+
+
 Migrating from 0.5.X to 0.6.X
 -----------------------------
 
