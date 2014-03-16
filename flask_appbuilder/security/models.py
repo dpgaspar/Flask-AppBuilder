@@ -83,8 +83,7 @@ class User(Base):
 
     created_on = Column(DateTime, default=datetime.datetime.now, nullable=True)
 
-    changed_on = Column(DateTime, default=datetime.datetime.now,
-                      nullable=True)
+    changed_on = Column(DateTime, default=datetime.datetime.now, nullable=True)
 
     @declared_attr
     def created_by_fk(self):

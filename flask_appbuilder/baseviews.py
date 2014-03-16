@@ -560,16 +560,17 @@ class BaseCRUDView(BaseModelView):
         return widgets
 
 
-    def _get_show_widget(self, id, widgets=None, actions=None):
+    def _get_show_widget(self, id, widgets=None, actions=None, show_fieldsets=None):
         widgets = widgets or {}
         actions = actions or self.actions
+        show_fieldsets = show_fieldsets or self.show_fieldsets
         item = self.datamodel.get(id)
         widgets['show'] = self.show_widget(pk=id,
                                            label_columns=self.label_columns,
                                            include_columns=self.show_columns,
                                            value_columns=self.datamodel.get_values_item(item, self.show_columns),
                                            actions=actions,
-                                           fieldsets=self.show_fieldsets,
+                                           fieldsets=show_fieldsets,
                                            generalview_name=self.__class__.__name__
         )
         return widgets

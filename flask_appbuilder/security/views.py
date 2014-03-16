@@ -149,6 +149,13 @@ class UserGeneralView(GeneralView):
                         'created_by', 'changed_on', 'changed_by'], 'expanded': False}),
     ]
 
+    user_show_fieldsets = [
+        ('User info',
+            {'fields': ['username', 'active', 'role', 'login_count']}),
+        ('Personal Info',
+            {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
+    ]
+
     order_columns = ['first_name', 'last_name', 'username', 'email']
     search_columns = ['first_name', 'last_name', 'username', 'email', 'role', 
                     'created_by', 'changed_by', 'changed_on','changed_by', 'login_count']
@@ -217,7 +224,7 @@ class UserDBGeneralView(UserGeneralView):
     def userinfo(self):
         actions = {}
         actions['resetmypassword'] = self.actions.get('resetmypassword')
-        widgets = self._get_show_widget(g.user.id, actions=actions)
+        widgets = self._get_show_widget(g.user.id, actions=actions, show_fieldsets=self.user_show_fieldsets)
         return render_template(self.show_template,
                                title=self.user_info_title,
                                widgets=widgets,
