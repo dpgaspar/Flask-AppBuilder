@@ -107,6 +107,13 @@ TimeChartView
     .. autoclass:: TimeChartView
         :members:
 
+DirectChartView
+-------------
+
+    .. autoclass:: DirectChartView
+        :members:
+
+
 flask.ext.appbuilder.models.mixins
 ==================================
 

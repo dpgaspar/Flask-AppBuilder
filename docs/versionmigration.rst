@@ -31,7 +31,7 @@ This new version has some breaking features. You don't have to change any code, 
         1 - *Backup your DB*.
 
         2 - If you haven't already, upgrade to flask-appbuilder 0.7.0.
-        
+
         3 - issue the corresponding DDL commands to:
 
         ALTER TABLE ab_user MODIFY COLUMN password VARCHAR(256)
