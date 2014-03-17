@@ -61,9 +61,65 @@
             
   <div class="section" id="version-migration">
 <h1>Version Migration<a class="headerlink" href="#version-migration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="migrating-from-0-6-x-to-0-7-x">
+<h2>Migrating from 0.6.X to 0.7.X<a class="headerlink" href="#migrating-from-0-6-x-to-0-7-x" title="Permalink to this headline">¶</a></h2>
+<p>This new version has some breaking features. You don&#8217;t have to change any code, main breaking changes are:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">The security models schema have changed.</p>
+<blockquote>
+<div><p>If you are using sqlite, mysql or pgsql, use the following procedure:</p>
+<blockquote>
+<div><p>1 - Backup your DB.
+2 - If you haven&#8217;t already, upgrade to flask-appbuilder 0.7.0.
+3 - Issue the following commands, on your project folder where config.py exists:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd /your-main-project-folder/
+wget https://raw.github.com/dpgaspar/Flask-AppBuilder/master/bin/migrate_db_0.7.py
+python migrate_db_0.7.py
+wget https://raw.github.com/dpgaspar/Flask-AppBuilder/master/bin/hash_db_password.py
+python hash_db_password.py
+</pre></div>
+</div>
+<p>4 - Test and Run (if you have a run.py for development)</p>
+<div class="highlight-python"><div class="highlight"><pre>python run.py
+</pre></div>
+</div>
+</div></blockquote>
+<p>If not (DB is not sqlite, mysql or pgsql), you will have to alter the schema your self. use the following procedure:</p>
+<blockquote>
+<div><p>1 - Backup your DB.
+2 - If you haven&#8217;t already, upgrade to flask-appbuilder 0.7.0.
+3 - issue the corresponding DDL commands to:</p>
+<p>ALTER TABLE ab_user MODIFY COLUMN password VARCHAR(256)
+ALTER TABLE ab_user ADD COLUMN login_count INTEGER
+ALTER TABLE ab_user ADD COLUMN created_on DATETIME
+ALTER TABLE ab_user ADD COLUMN changed_on DATETIME
+ALTER TABLE ab_user ADD COLUMN created_by_fk INTEGER
+ALTER TABLE ab_user ADD COLUMN changed_by_fk INTEGER
+ALTER TABLE ab_user ADD COLUMN last_login DATETIME
+ALTER TABLE ab_user ADD COLUMN fail_login_count INTEGER</p>
+<p>4 - Then hash your passwords:</p>
+<div class="highlight-python"><div class="highlight"><pre>wget https://raw.github.com/dpgaspar/Flask-AppBuilder/master/bin/hash_db_password.py
+python hash_db_password.py
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p class="first">All passwords are kept on the database hashed, so all your passwords will be hashed by the framework.</p>
+</li>
+<li><dl class="first docutils">
+<dt>Please <em>backup</em> your DB before altering the schema,  if you feel lost please post an issue on github</dt>
+<dd><p class="first last"><a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open">https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open</a></p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</div>
 <div class="section" id="migrating-from-0-5-x-to-0-6-x">
 <h2>Migrating from 0.5.X to 0.6.X<a class="headerlink" href="#migrating-from-0-5-x-to-0-6-x" title="Permalink to this headline">¶</a></h2>
-<p>This new version has some new breaking features, that i hope will be easily changeable on your code.</p>
+<p>This new version has some breaking features, that i hope will be easily changeable on your code.</p>
 <p>If you feel lost please post an issue on github: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open">https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open</a></p>
 <p>If your using the <strong>related_views</strong> attribute on GeneralView classes, you must not instantiate the related classes. This is the correct form, it will be less memory and cpu resource consuming.</p>
 <p>From this:</p>
@@ -84,7 +140,7 @@
 <p>This new version (0.3.X) has many internal changes, if you feel lost please post an issue on github
 <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open">https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open</a></p>
 <p>All direct imports from your &#8216;app&#8217; directory were removed, so there is no obligation in using the base AppBuilder-Skeleton.</p>
-<p>Security tables have changed their names, AppBuilder will automaticaly migrate all your data to the new tables.</p>
+<p>Security tables have changed their names, AppBuilder will automatically migrate all your data to the new tables.</p>
 <p>1 - Change your BaseApp initialization (views.py)</p>
 <p>From this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
@@ -146,6 +202,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Version Migration</a><ul>
+<li><a class="reference internal" href="#migrating-from-0-6-x-to-0-7-x">Migrating from 0.6.X to 0.7.X</a></li>
 <li><a class="reference internal" href="#migrating-from-0-5-x-to-0-6-x">Migrating from 0.5.X to 0.6.X</a></li>
 <li><a class="reference internal" href="#migrating-from-0-2-x-to-0-3-x">Migrating from 0.2.X to 0.3.X</a></li>
 <li><a class="reference internal" href="#migrating-from-0-1-x-to-0-2-x">Migrating from 0.1.X to 0.2.X</a></li>
