@@ -76,7 +76,7 @@ Define your Views (views.py)
 Now we are going to define our view for *Group* table
 
 ::
-  
+
     class GroupGeneralView(GeneralView):
         datamodel = SQLAModel(Group, db.session)
         related_views = [ContactGeneralView]
