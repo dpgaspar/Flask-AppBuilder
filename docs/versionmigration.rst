@@ -10,7 +10,7 @@ This new version has some breaking features. You don't have to change any code, 
 
     If you are using sqlite, mysql or pgsql, use the following procedure:
 
-        1 - Backup your DB.
+        1 - *Backup your DB*.
         2 - If you haven't already, upgrade to flask-appbuilder 0.7.0.
         3 - Issue the following commands, on your project folder where config.py exists::
 
@@ -26,7 +26,7 @@ This new version has some breaking features. You don't have to change any code, 
 
     If not (DB is not sqlite, mysql or pgsql), you will have to alter the schema your self. use the following procedure:
 
-        1 - Backup your DB.
+        1 - *Backup your DB*.
         2 - If you haven't already, upgrade to flask-appbuilder 0.7.0.
         3 - issue the corresponding DDL commands to:
 
