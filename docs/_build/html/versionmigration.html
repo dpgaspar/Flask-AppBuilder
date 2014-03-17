@@ -70,7 +70,7 @@
 <blockquote>
 <div><p>If you are using sqlite, mysql or pgsql, use the following procedure:</p>
 <blockquote>
-<div><p>1 - Backup your DB.
+<div><p>1 - <em>Backup your DB</em>.
 2 - If you haven&#8217;t already, upgrade to flask-appbuilder 0.7.0.
 3 - Issue the following commands, on your project folder where config.py exists:</p>
 <div class="highlight-python"><div class="highlight"><pre>cd /your-main-project-folder/
@@ -87,7 +87,7 @@ python hash_db_password.py
 </div></blockquote>
 <p>If not (DB is not sqlite, mysql or pgsql), you will have to alter the schema your self. use the following procedure:</p>
 <blockquote>
-<div><p>1 - Backup your DB.
+<div><p>1 - <em>Backup your DB</em>.
 2 - If you haven&#8217;t already, upgrade to flask-appbuilder 0.7.0.
 3 - issue the corresponding DDL commands to:</p>
 <p>ALTER TABLE ab_user MODIFY COLUMN password VARCHAR(256)
