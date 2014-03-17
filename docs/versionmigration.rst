@@ -35,12 +35,19 @@ This new version has some breaking features. You don't have to change any code, 
         3 - issue the corresponding DDL commands to:
 
         ALTER TABLE ab_user MODIFY COLUMN password VARCHAR(256)
+
         ALTER TABLE ab_user ADD COLUMN login_count INTEGER
+
         ALTER TABLE ab_user ADD COLUMN created_on DATETIME
+
         ALTER TABLE ab_user ADD COLUMN changed_on DATETIME
+
         ALTER TABLE ab_user ADD COLUMN created_by_fk INTEGER
+
         ALTER TABLE ab_user ADD COLUMN changed_by_fk INTEGER
+
         ALTER TABLE ab_user ADD COLUMN last_login DATETIME
+
         ALTER TABLE ab_user ADD COLUMN fail_login_count INTEGER
 
         4 - Then hash your passwords::
