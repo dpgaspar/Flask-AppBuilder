@@ -4,14 +4,27 @@ Version Migration
 Migrating from 0.6.X to 0.7.X
 -----------------------------
 
-This new version has some new breaking features. You don't have to change any code, but the security models have changed.
+This new version has some breaking features. You don't have to change any code, main breaking changes are:
 
+ - The security models schema has changed.
 
+ If you are using sqlite, mysql or pgsql, F.A.B. will alter the schema for you. If not, you will have to alter the schema your self. issue the corresponding DDL commands to:
+
+ ALTER TABLE ab_user MODIFY COLUMN password VARCHAR(256)
+ ALTER TABLE ab_user ADD COLUMN login_count INTEGER
+ ALTER TABLE ab_user ADD COLUMN created_on DATETIME
+ ALTER TABLE ab_user ADD COLUMN changed_on DATETIME
+ ALTER TABLE ab_user ADD COLUMN created_by_fk INTEGER
+ ALTER TABLE ab_user ADD COLUMN changed_by_fk INTEGER
+ ALTER TABLE ab_user ADD COLUMN last_login DATETIME
+ ALTER TABLE ab_user ADD COLUMN fail_login_count INTEGER
+
+ - All passwords are kept on the database hashed, so all your passwords will be hashed automatically by the framework.
 
 Migrating from 0.5.X to 0.6.X
 -----------------------------
 
-This new version has some new breaking features, that i hope will be easily changeable on your code.
+This new version has some breaking features, that i hope will be easily changeable on your code.
 
 If you feel lost please post an issue on github: https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open
 
@@ -41,7 +54,7 @@ https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open
 
 All direct imports from your 'app' directory were removed, so there is no obligation in using the base AppBuilder-Skeleton.
 
-Security tables have changed their names, AppBuilder will automaticaly migrate all your data to the new tables.
+Security tables have changed their names, AppBuilder will automatically migrate all your data to the new tables.
 
 1 - Change your BaseApp initialization (views.py)
 
