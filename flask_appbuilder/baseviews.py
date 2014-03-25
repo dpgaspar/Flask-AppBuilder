@@ -226,6 +226,17 @@ class BaseModelView(BaseView):
                                 ['name', FilterStartsWith, 'a']]
     
     """
+
+    base_order = None
+    """
+        Use this property to set default ordering for lists ('col_name','asc|desc')::
+
+            class MyView(GeneralView):
+                datamodel = SQLAModel(MyTable, db.session)
+                base_order = ('my_column_name','asc')
+
+    """
+
     _base_filters = None
     """ Internal base Filter from class Filters will always filter view """
     _filters = None
@@ -309,15 +320,6 @@ class BaseCRUDView(BaseModelView):
     page_size = 10
     """ 
         Use this property to change default page size 
-    """
-    base_order = None
-    """ 
-        Use this property to set default ordering for lists ('col_name','asc|desc')::
-    
-            class MyView(GeneralView):
-                datamodel = SQLAModel(MyTable, db.session)
-                base_order = ('my_column_name','asc')
-        
     """
 
     show_fieldsets = None
