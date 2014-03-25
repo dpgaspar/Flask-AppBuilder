@@ -181,6 +181,8 @@ class DirectChartView(BaseSimpleDirectChartView):
 
         if self.base_order:
             order_column, order_direction = self.base_order
+        else:
+            order_column, order_direction = '', ''
         count, lst = self.datamodel.query(filters=self._filters,
                                           order_column=order_column,
                                           order_direction=order_direction)

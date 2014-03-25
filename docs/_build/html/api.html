@@ -277,6 +277,17 @@ Customize GeneralView and ChartView overriding this properties</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="flask.ext.appbuilder.baseviews.BaseModelView.base_order">
+<tt class="descname">base_order</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.base_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this property to set default ordering for lists (&#8216;col_name&#8217;,&#8217;asc|desc&#8217;):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">base_order</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;my_column_name&#39;</span><span class="p">,</span><span class="s">&#39;asc&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseModelView.datamodel">
 <tt class="descname">datamodel</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.datamodel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Your sqla model you must initialize it like:</p>
@@ -385,17 +396,6 @@ Add a custom filter to form related fields:</p>
 <tt class="descname">add_widget</tt><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.add_widget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add widget override</p>
 <p>alias of <tt class="xref py py-class docutils literal"><span class="pre">FormWidget</span></tt></p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.base_order">
-<tt class="descname">base_order</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.base_order" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use this property to set default ordering for lists (&#8216;col_name&#8217;,&#8217;asc|desc&#8217;):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
-    <span class="n">base_order</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;my_column_name&#39;</span><span class="p">,</span><span class="s">&#39;asc&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="attribute">
