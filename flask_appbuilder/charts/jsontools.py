@@ -27,11 +27,11 @@ def dict_to_json(xcol, ycols, labels, value_columns):
     json_data['rows'] = []
     for value in value_columns:
         row = {'c': []}
+        if isinstance(value[xcol], datetime.date):
+            row['c'].append({'v': (str(value[xcol]))})
+        else:
+            row['c'].append({'v': (value[xcol])})
         for ycol in ycols:
-            if isinstance(value[xcol], datetime.date):
-                row['c'].append({'v': (str(value[xcol]))})
-            else:
-                row['c'].append({'v': (value[xcol])})
             if value[ycol]:
                 row['c'].append({'v': int(value[ycol])})
             else:

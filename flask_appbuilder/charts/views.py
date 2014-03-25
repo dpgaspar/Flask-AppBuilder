@@ -61,7 +61,8 @@ class BaseSimpleGroupByChartView(BaseChartView):
     def __init__(self, **kwargs):
         if not self.group_by_columns:
             raise Exception('Base Chart View property <group_by_columns> must not be empty')
-        else: super(BaseChartView, self).__init__(**kwargs)
+        else:
+            super(BaseChartView, self).__init__(**kwargs)
 
 
 class BaseSimpleDirectChartView(BaseChartView):
@@ -71,10 +72,12 @@ class BaseSimpleDirectChartView(BaseChartView):
         chart_columns = {'chart label 1':('X column','Y1 Column','Y2 Column, ...),
                         'chart label 2': ('X Column','Y1 Column',...),...}
     """
+
     def __init__(self, **kwargs):
         if not self.direct_columns:
             raise Exception('Base Chart View property <direct_columns> must not be empty')
-        else: super(BaseChartView, self).__init__(**kwargs)
+        else:
+            super(BaseChartView, self).__init__(**kwargs)
 
 
     def get_group_by_columns(self):
@@ -83,6 +86,7 @@ class BaseSimpleDirectChartView(BaseChartView):
             Used in template, so that user can choose from options
         """
         return self.direct_columns.keys()
+
 
 class ChartView(BaseSimpleGroupByChartView):
     """
@@ -174,7 +178,12 @@ class DirectChartView(BaseSimpleDirectChartView):
 
         direct_key = group_by or self.direct_columns.keys()[0]
         direct = self.direct_columns.get(direct_key)
-        count, lst = self.datamodel.query(filters=self._filters)
+
+        if self.base_order:
+            order_column, order_direction = self.base_order
+        count, lst = self.datamodel.query(filters=self._filters,
+                                          order_column=order_column,
+                                          order_direction=order_direction)
         value_columns = self.datamodel.get_values(lst, list(direct))
         value_columns = jsontools.dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)
 

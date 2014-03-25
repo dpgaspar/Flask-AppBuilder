@@ -5,6 +5,7 @@ Improvements and Bug fixes on 0.7.1
 -----------------------------------
 
 - New, DirectChart support for xcol datetime.date type (Date or DateTime Model type).
+- Fix, base_order property for DirectChartView.
 
 Improvements and Bug fixes on 0.7.0
 -----------------------------------
