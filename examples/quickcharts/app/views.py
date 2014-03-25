@@ -15,9 +15,10 @@ class CountryStatsGeneralView(GeneralView):
 
 class CountryStatsDirectChart(DirectChartView):
     chart_title = 'Grouped contacts'
-    direct_columns = {'General Stats': ('stat_date', 'population')}
+    chart_type = 'LineChart'
+    direct_columns = {'General Stats': ('stat_date', 'population','unenployed','college')}
     datamodel = SQLAModel(CountryStats, db.session)
-    base_order = ('stat_date', 'asc')
+    base_order = ('stat_date', 'desc')
 
 fixed_translations_import = [
     _("List Country Stats"),
