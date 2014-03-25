@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.7.1
+-----------------------------------
+
+- New, DirectChart support for xcol datetime.date type (Date or DateTime Model type).
+
 Improvements and Bug fixes on 0.7.0
 -----------------------------------
 

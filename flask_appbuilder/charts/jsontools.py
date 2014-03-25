@@ -1,3 +1,4 @@
+import datetime
 from flask_appbuilder._compat import as_unicode
 
 def dict_to_json(xcol, ycols, labels, value_columns):
@@ -15,6 +16,7 @@ def dict_to_json(xcol, ycols, labels, value_columns):
             A list of dicts with the values to convert
     """
     json_data = dict()
+
     json_data['cols'] = [{'id': xcol,
                           'label': as_unicode(labels[xcol]),
                           'type': 'string'}]
@@ -26,7 +28,10 @@ def dict_to_json(xcol, ycols, labels, value_columns):
     for value in value_columns:
         row = {'c': []}
         for ycol in ycols:
-            row['c'].append({'v': (value[xcol])})
+            if isinstance(value[xcol], datetime.date):
+                row['c'].append({'v': (str(value[xcol]))})
+            else:
+                row['c'].append({'v': (value[xcol])})
             if value[ycol]:
                 row['c'].append({'v': int(value[ycol])})
             else:
