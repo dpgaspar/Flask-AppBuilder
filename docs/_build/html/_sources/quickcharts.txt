@@ -61,6 +61,8 @@ This dictionary is composed by key and a tuple: {'KEY LABEL FOR X COL':('X COL',
 
 Remember 'X COL', 'Ys COL' are identifying columns from the data model.
 
+Take look at a more detailed examples on `quickcharts <http://flask.pocoo.org/>`_.
+
 Register (views.py)
 -------------------
 

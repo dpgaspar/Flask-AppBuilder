@@ -847,6 +847,26 @@ to customise your charts</p>
 
 </div></blockquote>
 </div>
+<div class="section" id="directchartview">
+<h3>DirectChartView<a class="headerlink" href="#directchartview" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="class">
+<dt id="flask.ext.appbuilder.charts.views.DirectChartView">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">DirectChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.DirectChartView" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is responsible for displaying a Google chart with
+direct model values. Chart widget uses json.
+No group by is processed, example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">StatsChartView</span><span class="p">(</span><span class="n">DirectChartView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Stats</span><span class="p">)</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Statistics&#39;</span><span class="p">)</span>
+    <span class="n">direct_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;Some Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;stat1&#39;</span><span class="p">,</span> <span class="s">&#39;col1&#39;</span><span class="p">,</span> <span class="s">&#39;col2&#39;</span><span class="p">),</span>
+                      <span class="s">&#39;Other Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;stat2&#39;</span><span class="p">,</span> <span class="s">&#39;col3&#39;</span><span class="p">)}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div></blockquote>
+</div>
 </div>
 <div class="section" id="module-flask.ext.appbuilder.models.mixins">
 <span id="flask-ext-appbuilder-models-mixins"></span><h2>flask.ext.appbuilder.models.mixins<a class="headerlink" href="#module-flask.ext.appbuilder.models.mixins" title="Permalink to this headline">¶</a></h2>
@@ -951,6 +971,7 @@ will create the following columns:</p>
 <li><a class="reference internal" href="#basechartview">BaseChartView</a></li>
 <li><a class="reference internal" href="#chartview">ChartView</a></li>
 <li><a class="reference internal" href="#timechartview">TimeChartView</a></li>
+<li><a class="reference internal" href="#directchartview">DirectChartView</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.models.mixins">flask.ext.appbuilder.models.mixins</a><ul>

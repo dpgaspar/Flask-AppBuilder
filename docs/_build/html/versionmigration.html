@@ -90,14 +90,14 @@ python hash_db_password.py
 <div><p>1 - <em>Backup your DB</em>.</p>
 <p>2 - If you haven&#8217;t already, upgrade to flask-appbuilder 0.7.0.</p>
 <p>3 - issue the corresponding DDL commands to:</p>
-<p>ALTER TABLE ab_user MODIFY COLUMN password VARCHAR(256)
-ALTER TABLE ab_user ADD COLUMN login_count INTEGER
-ALTER TABLE ab_user ADD COLUMN created_on DATETIME
-ALTER TABLE ab_user ADD COLUMN changed_on DATETIME
-ALTER TABLE ab_user ADD COLUMN created_by_fk INTEGER
-ALTER TABLE ab_user ADD COLUMN changed_by_fk INTEGER
-ALTER TABLE ab_user ADD COLUMN last_login DATETIME
-ALTER TABLE ab_user ADD COLUMN fail_login_count INTEGER</p>
+<p>ALTER TABLE ab_user MODIFY COLUMN password VARCHAR(256)</p>
+<p>ALTER TABLE ab_user ADD COLUMN login_count INTEGER</p>
+<p>ALTER TABLE ab_user ADD COLUMN created_on DATETIME</p>
+<p>ALTER TABLE ab_user ADD COLUMN changed_on DATETIME</p>
+<p>ALTER TABLE ab_user ADD COLUMN created_by_fk INTEGER</p>
+<p>ALTER TABLE ab_user ADD COLUMN changed_by_fk INTEGER</p>
+<p>ALTER TABLE ab_user ADD COLUMN last_login DATETIME</p>
+<p>ALTER TABLE ab_user ADD COLUMN fail_login_count INTEGER</p>
 <p>4 - Then hash your passwords:</p>
 <div class="highlight-python"><div class="highlight"><pre>wget https://raw.github.com/dpgaspar/Flask-AppBuilder/master/bin/hash_db_password.py
 python hash_db_password.py
