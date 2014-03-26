@@ -126,12 +126,12 @@ class SQLAModel(DataModel):
         query_count = self.session.query(func.count('*')).select_from(self.obj)
 
         query_count = self._get_base_query(query=query_count,
-                                           filters=filters,
-                                           order_column=order_column,
-                                           order_direction=order_direction)
+                                           filters=filters)
 
         query = self._get_base_query(query=query,
-                                     filters=filters)
+                                     filters=filters,
+                                     order_column=order_column,
+                                     order_direction=order_direction)
 
         count = query_count.scalar()
 
