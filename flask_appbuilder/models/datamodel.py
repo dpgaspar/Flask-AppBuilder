@@ -131,9 +131,7 @@ class SQLAModel(DataModel):
                                            order_direction=order_direction)
 
         query = self._get_base_query(query=query,
-                                     filters=filters,
-                                     order_column=order_column,
-                                     order_direction=order_direction)
+                                     filters=filters)
 
         count = query_count.scalar()
 
