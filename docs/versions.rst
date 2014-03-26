@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.7.2
+-----------------------------------
+
+- Fix, reported issue #15. Order by causes error on postgresql.
+
 Improvements and Bug fixes on 0.7.1
 -----------------------------------
 
