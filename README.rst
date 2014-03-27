@@ -9,7 +9,7 @@ Take a look at installation, quick how to tutorials, API reference etc: `Documen
 Package Version
 ---------------
 
-*New 0.7.N* with bug fixes, and new features. If your already using F.A.B. read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.
+*New 0.7.N* with bug fixes, and new features. If you're already using F.A.B. read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.
 
 Also read the `Versions <http://flask-appbuilder.readthedocs.org/en/latest/versions.html>`_ for further detail on what changed.
 

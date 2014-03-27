@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.7.3
+-----------------------------------
+
+- Fix, removed forced cast to int on json conversion for DirectChartView. Better support for float.
+
 Improvements and Bug fixes on 0.7.2
 -----------------------------------
 

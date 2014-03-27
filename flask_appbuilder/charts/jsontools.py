@@ -33,7 +33,7 @@ def dict_to_json(xcol, ycols, labels, value_columns):
             row['c'].append({'v': (value[xcol])})
         for ycol in ycols:
             if value[ycol]:
-                row['c'].append({'v': int(value[ycol])})
+                row['c'].append({'v': (value[ycol])})
             else:
                 row['c'].append({'v': 0})
         json_data['rows'].append(row)
