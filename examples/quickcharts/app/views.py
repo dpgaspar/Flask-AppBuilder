@@ -13,8 +13,9 @@ class CountryStatsGeneralView(GeneralView):
     datamodel = SQLAModel(CountryStats, db.session)
     list_columns = ['stat_date','population','unenployed','college']
 
+
 class CountryStatsDirectChart(DirectChartView):
-    chart_title = 'Grouped contacts'
+    chart_title = 'Statistics'
     chart_type = 'LineChart'
     direct_columns = {'General Stats': ('stat_date', 'population','unenployed','college')}
     datamodel = SQLAModel(CountryStats, db.session)
