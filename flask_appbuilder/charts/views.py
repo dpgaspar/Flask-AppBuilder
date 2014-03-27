@@ -161,8 +161,8 @@ class DirectChartView(BaseSimpleDirectChartView):
             class StatsChartView(DirectChartView):
                 datamodel = SQLAModel(Stats)
                 chart_title = lazy_gettext('Statistics')
-                direct_columns = {'Some Stats': ('stat1', 'col1', 'col2'),
-                                  'Other Stats': ('stat2', 'col3')}
+                direct_columns = {'Some Stats': ('X_col_1', 'stat_col_1', 'stat_col_2'),
+                                  'Other Stats': ('X_col2', 'stat_col_3')}
 
     """
     chart_type = 'ColumnChart'

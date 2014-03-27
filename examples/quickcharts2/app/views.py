@@ -4,12 +4,15 @@ from flask.ext.appbuilder.views import GeneralView
 from flask_appbuilder.charts.views import DirectChartView
 
 from app import app, db
-from models import CountryStats
+from models import CountryStats, Country
 
 
 class CountryStatsGeneralView(GeneralView):
     datamodel = SQLAModel(CountryStats, db.session)
-    list_columns = ['stat_date', 'population', 'unemployed', 'college']
+    list_columns = ['country', 'stat_date', 'population', 'unemployed', 'college']
+
+class CountryGeneralView(GeneralView):
+    datamodel = SQLAModel(Country, db.session)
 
 
 class CountryStatsDirectChart(DirectChartView):
@@ -21,6 +24,7 @@ class CountryStatsDirectChart(DirectChartView):
 
 
 genapp = BaseApp(app, db)
+genapp.add_view(CountryGeneralView(), "List Countries", icon="fa-folder-open-o", category="Statistics")
 genapp.add_view(CountryStatsGeneralView(), "List Country Stats", icon="fa-folder-open-o", category="Statistics")
 genapp.add_separator("Statistics")
 genapp.add_view(CountryStatsDirectChart(), "Show Country Chart", icon="fa-dashboard", category="Statistics")
