@@ -8,23 +8,22 @@ from app import app, db
 from models import CountryStats
 
 
-
 class CountryStatsGeneralView(GeneralView):
     datamodel = SQLAModel(CountryStats, db.session)
-    list_columns = ['stat_date','population','unenployed','college']
+    list_columns = ['stat_date', 'population', 'unemployed', 'college']
 
 
 class CountryStatsDirectChart(DirectChartView):
     chart_title = 'Statistics'
     chart_type = 'LineChart'
-    direct_columns = {'General Stats': ('stat_date', 'population','unenployed','college')}
+    direct_columns = {'General Stats': ('stat_date', 'population', 'unenployed', 'college')}
     datamodel = SQLAModel(CountryStats, db.session)
     base_order = ('stat_date', 'asc')
+
 
 fixed_translations_import = [
     _("List Country Stats"),
     _("Show Country Chart")]
-
 
 genapp = BaseApp(app, db)
 genapp.add_view(CountryStatsGeneralView(), "List Country Stats", icon="fa-folder-open-o", category="Statistics")

@@ -14,7 +14,7 @@ class CountryStats(BaseMixin, Base):
     id = Column(Integer, primary_key=True)
     stat_date = Column(Date, nullable=True)
     population = Column(Float)
-    unenployed = Column(Float)
+    unemployed = Column(Float)
     college = Column(Float)
 
     def __repr__(self):
