@@ -4,10 +4,10 @@
 {% block content %}
 {{ lib.panel_begin(title) }}
 
-        <div class="col-md-4">
+        <div class="col-lg-1">
        	    {{ widgets.get('list')()|safe }}
         </div>
-        <div class="col-md-8">
+        <div class="col-lg-11">
             {% for view in related_views %}
 		        {{ widgets.get('related_lists')[loop.index - 1](pk = pk)|safe }}
             {% endfor %}
