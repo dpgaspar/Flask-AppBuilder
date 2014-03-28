@@ -1,10 +1,11 @@
 import logging
-from flask import render_template, flash, redirect, url_for, request, send_file
+from flask import render_template, flash, redirect, send_file
 from .filemanager import uuid_originalname
 from .security.decorators import has_access
 from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
-from .actions import action
 from .baseviews import expose, BaseView, BaseCRUDView
+from urltools import *
+
 
 log = logging.getLogger(__name__)
 
