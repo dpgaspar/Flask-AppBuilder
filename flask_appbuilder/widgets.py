@@ -111,6 +111,10 @@ class ListWidget(RenderTemplateWidget):
     template = 'appbuilder/general/widgets/list.html'
     
 
+class ListMasterWidget(ListWidget):
+    template = 'appbuilder/general/widgets/list_master.html'
+
+
 class ListAddWidget(ListWidget):
     template = 'appbuilder/general/widgets/list_add.html'
 

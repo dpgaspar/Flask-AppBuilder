@@ -13,3 +13,4 @@ class CountryStats(BaseMixin, Base):
 
     def __repr__(self):
         return str(self.stat_date)
+

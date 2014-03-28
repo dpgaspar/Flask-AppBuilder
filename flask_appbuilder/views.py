@@ -2,7 +2,7 @@ import logging
 from flask import render_template, flash, redirect, url_for, request, send_file
 from .filemanager import uuid_originalname
 from .security.decorators import has_access
-from .widgets import FormWidget, GroupFormListWidget
+from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
 from .actions import action
 from .baseviews import expose, BaseView, BaseCRUDView
 
@@ -226,6 +226,36 @@ class GeneralView(BaseCRUDView):
         else:
             flash("Access is Denied %s %s" % (name, self.__class__.__name__), "danger")
             return redirect('.')
+
+
+class MasterDetailView(BaseCRUDView):
+    """
+        Implements behaviour for controlling two CRUD views
+        linked by PK and FK, in a master/detail type with
+        two lists.
+    """
+
+    list_template = 'appbuilder/general/model/left_master_detail.html'
+    list_widget = ListMasterWidget
+
+    @expose('/list/')
+    @expose('/list/<pk>')
+    @has_access
+    def list(self, pk = None):
+
+        pages = get_page_args()
+        page_sizes = get_page_size_args()
+        orders = get_order_args()
+
+        widgets = self._list()
+        item = self.datamodel.get(pk)
+        widgets =  self._get_related_list_widgets(item, orders=orders,
+                                              pages=pages, page_sizes=page_sizes, widgets=widgets)
+
+        return render_template(self.list_template,
+                               title=self.list_title,
+                               widgets=widgets,
+                               baseapp=self.baseapp)
 
 
 class CompactCRUDMixin(BaseCRUDView):
