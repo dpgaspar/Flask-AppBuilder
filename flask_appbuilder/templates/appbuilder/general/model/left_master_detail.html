@@ -1,0 +1,16 @@
+{% extends "appbuilder/base.html" %}
+{% import 'appbuilder/general/lib.html' as lib %}
+
+{% block content %}
+{{ lib.panel_begin(title) }}
+
+       	{{ widgets.get('list')()|safe }}
+
+        {% for view in related_views %}
+		    {{ widgets.get('related_lists')[loop.index - 1](pk = pk)|safe }}
+        {% endfor %}
+
+{{ lib.panel_end() }}
+
+{% endblock %}
+

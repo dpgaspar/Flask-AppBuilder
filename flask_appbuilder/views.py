@@ -242,20 +242,24 @@ class MasterDetailView(BaseCRUDView):
     @expose('/list/')
     @expose('/list/<pk>')
     @has_access
-    def list(self, pk = None):
-
+    def list(self, pk=None):
         pages = get_page_args()
         page_sizes = get_page_size_args()
         orders = get_order_args()
 
         widgets = self._list()
-        item = self.datamodel.get(pk)
-        widgets =  self._get_related_list_widgets(item, orders=orders,
-                                              pages=pages, page_sizes=page_sizes, widgets=widgets)
+        if pk:
+            item = self.datamodel.get(pk)
+            widgets = self._get_related_list_widgets(item, orders=orders,
+                                                 pages=pages, page_sizes=page_sizes, widgets=widgets)
+            related_views = self._related_views
+        else:
+            related_views = []
 
         return render_template(self.list_template,
                                title=self.list_title,
                                widgets=widgets,
+                               related_views=related_views,
                                baseapp=self.baseapp)
 
 
