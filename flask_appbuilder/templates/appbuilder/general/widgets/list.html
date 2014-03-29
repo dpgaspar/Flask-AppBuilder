@@ -26,8 +26,10 @@
 	<table class="table table-bordered table-hover">
 	<thead>
 	<tr>
-	<th class="col-md-1 col-lg-1 col-sm-1" ></th>
-    
+    <div class="container">
+    <th class="col-md-1 col-lg-1 col-sm-1" ></th>
+    </div>
+
 	{% for item in include_columns %}
 		{% if item in order_columns %}
 			{% set res = item | get_link_order(generalview_name) %}
