@@ -2,17 +2,19 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 
 {% block content %}
-{{ lib.panel_begin(title) }}
 
-        <div class="col-lg-1 col-md-1 container">
-       	    {{ widgets.get('list')()|safe }}
+        <div class="col-lg-1 col-md-1 container-fluid">
+            {{ lib.panel_begin(title) }}
+       	        {{ widgets.get('list')()|safe }}
+            {{ lib.panel_end() }}
         </div>
-        <div class="col-lg-11 col-md-11 container">
             {% for view in related_views %}
-		        {{ widgets.get('related_lists')[loop.index - 1](pk = pk)|safe }}
+                <div class="col-lg-11 col-md-11 container">
+                {{ lib.panel_begin(view.list_title) }}
+                    {{ widgets.get('related_lists')[loop.index - 1](pk = pk)|safe }}
+                {{ lib.panel_end() }}
+                </div>
             {% endfor %}
-        </div>
-{{ lib.panel_end() }}
 
 {% endblock %}
 
