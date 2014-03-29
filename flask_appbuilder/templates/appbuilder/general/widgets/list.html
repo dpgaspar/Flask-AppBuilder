@@ -26,7 +26,9 @@
 	<table class="table table-bordered table-hover">
 	<thead>
 	<tr>
-    <th class="col-md-1 col-lg-1 col-sm-1" ></th>
+    {% if can_show or can_edit or can_delete %}
+        <th class="col-md-1 col-lg-1 col-sm-1" ></th>
+    {% endif %}
 
 	{% for item in include_columns %}
 		{% if item in order_columns %}
@@ -51,8 +53,9 @@
 	{% for item in value_columns %}
 	    <tr>
 		{% set outer_loop = loop %}
+        {% if can_show or can_edit or can_delete %}
 		<td><center>
-			<div class="btn-group btn-group-xs">
+			<div class="btn-group btn-group-xs" style="display: flex;">
 			{% if can_show %}
 				{% set path = url_for(generalview_name + '.show',pk=pks[loop.index-1],next=request.path) %}
 				{% set path = path | set_link_filters(filters) %}
@@ -68,6 +71,7 @@
 			{% endif %}
 			</div>
 		</center></td>
+        {% endif %}
 		{% for value in include_columns %}
 			<td> {{ item[value]|safe }}</td>
 		{% endfor %}

@@ -21,7 +21,7 @@ class ContactGeneralView(GeneralView):
     datamodel = SQLAModel(Contact, db.session)
 
     label_columns = {'group': 'Contacts Group'}
-    list_columns = ['name', 'personal_celphone', 'group']
+    list_columns = ['name', 'personal_phone', 'group']
 
     base_order = ('name', 'asc')
 

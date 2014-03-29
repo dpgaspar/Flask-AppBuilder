@@ -11,7 +11,9 @@
             {% for view in related_views %}
                 <div class="col-lg-11 col-md-11 container">
                 {{ lib.panel_begin(view.list_title) }}
-                    {{ widgets.get('related_lists')[loop.index - 1](pk = pk)|safe }}
+                    <div>
+                        {{ widgets.get('related_lists')[loop.index - 1](pk = pk)|safe }}
+                    </div>
                 {{ lib.panel_end() }}
                 </div>
             {% endfor %}
