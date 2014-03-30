@@ -3,13 +3,13 @@
 
 {% block content %}
 
-        <div class="col-lg-1 col-md-1 container-fluid">
+        <div class="col-lg-2 col-md-2 container">
             {{ lib.panel_begin(title) }}
        	        {{ widgets.get('list')()|safe }}
             {{ lib.panel_end() }}
         </div>
             {% for view in related_views %}
-                <div class="col-lg-11 col-md-11 container">
+                <div class="col-lg-10 col-md-10 container">
                 {{ lib.panel_begin(view.list_title) }}
                     <div>
                         {{ widgets.get('related_lists')[loop.index - 1](pk = pk)|safe }}
@@ -19,4 +19,3 @@
             {% endfor %}
 
 {% endblock %}
-

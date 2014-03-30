@@ -47,7 +47,11 @@ class ContactGeneralView(GeneralView):
     ]
 
 
-class GroupGeneralView(MasterDetailView):
+class GroupMasterView(MasterDetailView):
+    datamodel = SQLAModel(Group, db.session)
+    related_views = [ContactGeneralView]
+
+class GroupGeneralView(GeneralView):
     datamodel = SQLAModel(Group, db.session)
     related_views = [ContactGeneralView]
 
@@ -69,6 +73,7 @@ class ContactTimeChartView(TimeChartView):
 
 fixed_translations_import = [
     _("List Groups"),
+    _("Manage Groups"),
     _("List Contacts"),
     _("Contacts Chart"),
     _("Contacts Birth Chart")]
@@ -76,7 +81,9 @@ fixed_translations_import = [
 
 fill_gender()
 genapp = BaseApp(app, db)
-genapp.add_view(GroupGeneralView(), "List Groups", icon="fa-folder-open-o", category="Contacts")
+genapp.add_view(GroupMasterView(), "List Groups", icon="fa-folder-open-o", category="Contacts")
+genapp.add_separator("Contacts")
+genapp.add_view(GroupGeneralView(), "Manage Groups", icon="fa-folder-open-o", category="Contacts")
 genapp.add_view(ContactGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")
 genapp.add_separator("Contacts")
 genapp.add_view(ContactChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")
