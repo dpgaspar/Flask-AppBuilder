@@ -261,7 +261,7 @@ class MasterDetailView(BaseCRUDView):
         if pk:
             item = self.datamodel.get(pk)
             widgets = self._get_related_list_widgets(item, orders=orders,
-                                                 pages=pages, page_sizes=page_sizes, widgets=widgets)
+                                                     pages=pages, page_sizes=page_sizes, widgets=widgets)
             related_views = self._related_views
         else:
             related_views = []
