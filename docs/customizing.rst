@@ -202,3 +202,31 @@ Take a look at the example: https://github.com/dpgaspar/Flask-appBuilder/tree/ma
 .. image:: ./images/list_compact_inline.png
     :width: 100%
 
+Next we will take a look at a different view behaviour. A master detail style view, master is a view associated with a database table that is linked to the detail view.
+
+Let's assume our quick how to example, a simple contacts applications. We have *Contact* table related with *Group* table.
+
+So we are using master detail view, first we will define the detail view (this view can be customized like the examples above)::
+
+    class ContactGeneralView(GeneralView):
+        datamodel = SQLAModel(Contact, db.session)
+
+
+Then we define the master detail view, where master is the one side of the 1-N relation::
+
+    class GroupMasterView(MasterDetailView):
+        datamodel = SQLAModel(Group, db.session)
+        related_views = [ContactGeneralView]
+
+
+Finally and register everything::
+
+    genapp = BaseApp(app, db)
+    genapp.add_view(GroupMasterView(), "List Groups", icon="fa-folder-open-o", category="Contacts")
+    genapp.add_separator("Contacts")
+    genapp.add_view(ContactGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")
+
+
+.. image:: ./images/list_master_detail.png
+    :width: 100%
+

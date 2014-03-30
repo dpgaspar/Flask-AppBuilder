@@ -234,6 +234,16 @@ class MasterDetailView(BaseCRUDView):
         Implements behaviour for controlling two CRUD views
         linked by PK and FK, in a master/detail type with
         two lists.
+
+        Master view will behave like a left menu::
+
+            class DetailView(GeneralView):
+                datamodel = SQLAModel(DetailTable, db.session)
+
+            class MasterView(MasterDetailView):
+                datamodel = SQLAModel(MasterTable, db.session)
+                related_views = [DetailView]
+
     """
 
     list_template = 'appbuilder/general/model/left_master_detail.html'

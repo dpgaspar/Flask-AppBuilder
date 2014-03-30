@@ -687,6 +687,28 @@ Inherit from this view to provide some base processing for your customized form 
 
 </div></blockquote>
 </div>
+<div class="section" id="masterdetailview">
+<h3>MasterDetailView<a class="headerlink" href="#masterdetailview" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="class">
+<dt id="flask.ext.appbuilder.views.MasterDetailView">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">MasterDetailView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.MasterDetailView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements behaviour for controlling two CRUD views
+linked by PK and FK, in a master/detail type with
+two lists.</p>
+<p>Master view will behave like a left menu:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">DetailView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">DetailTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MasterView</span><span class="p">(</span><span class="n">MasterDetailView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MasterTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">DetailView</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div></blockquote>
+</div>
 <div class="section" id="compactcrudmixin">
 <h3>CompactCRUDMixin<a class="headerlink" href="#compactcrudmixin" title="Permalink to this headline">¶</a></h3>
 <blockquote>
@@ -859,8 +881,8 @@ No group by is processed, example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">StatsChartView</span><span class="p">(</span><span class="n">DirectChartView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Stats</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Statistics&#39;</span><span class="p">)</span>
-    <span class="n">direct_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;Some Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;stat1&#39;</span><span class="p">,</span> <span class="s">&#39;col1&#39;</span><span class="p">,</span> <span class="s">&#39;col2&#39;</span><span class="p">),</span>
-                      <span class="s">&#39;Other Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;stat2&#39;</span><span class="p">,</span> <span class="s">&#39;col3&#39;</span><span class="p">)}</span>
+    <span class="n">direct_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;Some Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;X_col_1&#39;</span><span class="p">,</span> <span class="s">&#39;stat_col_1&#39;</span><span class="p">,</span> <span class="s">&#39;stat_col_2&#39;</span><span class="p">),</span>
+                      <span class="s">&#39;Other Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;X_col2&#39;</span><span class="p">,</span> <span class="s">&#39;stat_col_3&#39;</span><span class="p">)}</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -962,6 +984,7 @@ will create the following columns:</p>
 <li><a class="reference internal" href="#indexview">IndexView</a></li>
 <li><a class="reference internal" href="#simpleformview">SimpleFormView</a></li>
 <li><a class="reference internal" href="#generalview">GeneralView</a></li>
+<li><a class="reference internal" href="#masterdetailview">MasterDetailView</a></li>
 <li><a class="reference internal" href="#compactcrudmixin">CompactCRUDMixin</a></li>
 </ul>
 </li>

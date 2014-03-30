@@ -50,7 +50,7 @@ Finally we will define a direct data chart
 ::
 
     class StatsChartView(DirectChartView):
-        datamodel = SQLAModel(Stats)
+        datamodel = SQLAModel(Stats, db.session)
         chart_title = lazy_gettext('Statistics')
         direct_columns = {'Some Stats': ('stat1', 'col1', 'col2'),
                         'Other Stats': ('stat2', 'col3')}

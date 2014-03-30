@@ -233,6 +233,27 @@
 <p>Of course you could use the mixin on <em>MyView</em> also, use it only on GeneralView classes.</p>
 <p>Take a look at the example: <a class="reference external" href="https://github.com/dpgaspar/Flask-appBuilder/tree/master/examples/quickfiles">https://github.com/dpgaspar/Flask-appBuilder/tree/master/examples/quickfiles</a></p>
 <a class="reference internal image-reference" href="_images/list_compact_inline.png"><img alt="_images/list_compact_inline.png" src="_images/list_compact_inline.png" style="width: 100%;" /></a>
+<p>Next we will take a look at a different view behaviour. A master detail style view, master is a view associated with a database table that is linked to the detail view.</p>
+<p>Let&#8217;s assume our quick how to example, a simple contacts applications. We have <em>Contact</em> table related with <em>Group</em> table.</p>
+<p>So we are using master detail view, first we will define the detail view (this view can be customized like the examples above):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then we define the master detail view, where master is the one side of the 1-N relation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupMasterView</span><span class="p">(</span><span class="n">MasterDetailView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Finally and register everything:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">genapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupMasterView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-folder-open-o&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_separator</span><span class="p">(</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/list_master_detail.png"><img alt="_images/list_master_detail.png" src="_images/list_master_detail.png" style="width: 100%;" /></a>
 </div>
 </div>
 

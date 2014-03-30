@@ -62,7 +62,13 @@ GeneralView
 
     .. autoclass:: GeneralView
         :members:
-        
+
+MasterDetailView
+----------------
+
+    .. autoclass:: MasterDetailView
+        :members:
+
 CompactCRUDMixin
 ----------------
 
