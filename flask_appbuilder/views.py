@@ -248,6 +248,10 @@ class MasterDetailView(BaseCRUDView):
 
     list_template = 'appbuilder/general/model/left_master_detail.html'
     list_widget = ListMasterWidget
+    master_div_width = 2
+    """
+        Set to configure bootstrap class for master grid size
+    """
 
     @expose('/list/')
     @expose('/list/<pk>')
@@ -270,6 +274,7 @@ class MasterDetailView(BaseCRUDView):
                                title=self.list_title,
                                widgets=widgets,
                                related_views=related_views,
+                               master_div_width = self.master_div_width,
                                baseapp=self.baseapp)
 
 
@@ -284,12 +289,11 @@ class CompactCRUDMixin(BaseCRUDView):
     def _get_list_widget(self, **args):
         """ get joined base filter and current active filter for query """
         widgets = super(CompactCRUDMixin, self)._get_list_widget(**args)
-        ret_widget = {}
-        ret_widget['list'] = GroupFormListWidget(list_widget=widgets.get('list'),
-                                                 form_widget=self._session_form_widget,
-                                                 form_action=self._session_form_action,
-                                                 form_title=self._session_form_title)
-        return ret_widget
+        return {'list': GroupFormListWidget(list_widget=widgets.get('list'),
+                                            form_widget=self._session_form_widget,
+                                            form_action=self._session_form_action,
+                                            form_title=self._session_form_title)}
+
 
     @expose('/list/', methods=['GET', 'POST'])
     @has_access

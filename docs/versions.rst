@@ -8,6 +8,7 @@ Improvements and Bug fixes on 0.7.3
 - New, List for simple master detail, master works like a menu on the left side.
 - Fix, fixed buttons size for show, edit, delete on lists. Buttons will not adapt to vertical.
 - Fix, if no permissions for show, edit, delete, no empty cell is shown <th> or <td>.
+- New, internal change, crud buttons on lib.
 
 Improvements and Bug fixes on 0.7.2
 -----------------------------------
