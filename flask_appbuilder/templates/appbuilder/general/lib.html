@@ -216,29 +216,21 @@
 {% endmacro %}
 
 {% macro btn_crud(can_show, can_edit, can_delete, pk, generalview_name, filters) %}
-    {% if can_show or can_edit or can_delete %}
-    <td>
-        <center>
-            <div class="btn-group btn-group-xs" style="display: flex;">
-                {% if can_show %}
-                {% set path = url_for(generalview_name + '.show',pk=pk,next=request.path) %}
-                {% set path = path | set_link_filters(filters) %}
-                {{ lnk_show(path) }}
-                {% endif %}
-                {% if can_edit %}
-                {% set path = url_for(generalview_name + '.edit',pk=pk,next=request.path) %}
-                {% set path = path | set_link_filters(filters) %}
-                {{ lnk_edit(path) }}
-                {% endif %}
-                {% if can_delete %}
-                {{ lnk_delete(url_for(generalview_name + '.delete',pk=pk,next=request.path)) }}
-                {% endif %}
-            </div>
-        </center>
-    </td>
-    {% endif %}
-</div>
-<div class="panel-group">
+    <div class="btn-group btn-group-xs" style="display: flex;">
+        {% if can_show %}
+            {% set path = url_for(generalview_name + '.show',pk=pk,next=request.path) %}
+            {% set path = path | set_link_filters(filters) %}
+            {{ lnk_show(path) }}
+        {% endif %}
+        {% if can_edit %}
+            {% set path = url_for(generalview_name + '.edit',pk=pk,next=request.path) %}
+            {% set path = path | set_link_filters(filters) %}
+            {{ lnk_edit(path) }}
+        {% endif %}
+        {% if can_delete %}
+            {{ lnk_delete(url_for(generalview_name + '.delete',pk=pk,next=request.path)) }}
+        {% endif %}
+    </div>
 {% endmacro %}
 
     {% macro btn_search() %}

@@ -26,35 +26,20 @@
         {% for item in value_columns %}
         	<div class="col-sm-12 col-md-6 col-lg-6">
                 <div class="thumbnail">
-                {% set outer_loop = loop %}
-                        <div class="btn-group btn-group-xs">
-                        {% if can_show %}
-                                {% set path = url_for(generalview_name + '.show',pk=pks[loop.index-1],next=request.path) %}
-                                {% set path = path | set_link_filters(filters) %}
-                                {{ lib.lnk_show(path) }}
-                        {% endif %}
-                        {% if can_edit %}
-                                {% set path = url_for(generalview_name + '.edit',pk=pks[loop.index-1],next=request.path) %}
-                                {% set path = path | set_link_filters(filters) %}
-                                {{ lib.lnk_edit(path) }}
-                        {% endif %}
-                        {% if can_delete %}
-                                {{ lib.lnk_delete(url_for(generalview_name + '.delete',pk=pks[loop.index-1],next=request.path)) }}
-                        {% endif %}
-                        </div>
+                {% set pk = pks[loop.index-1] %}
+                {{ lib.btn_crud(can_show, can_edit, can_delete, pk, generalview_name, filters) }}
                 {% for value in include_columns %}
                         <dl class="dl-horizontal">
-                        		<dt>{{label_columns.get(include_columns[loop.index -1])}}</dt>
-                                <dd>{{ item[value]|safe }}</dd>                
+                        	<dt>{{label_columns.get(include_columns[loop.index -1])}}</dt>
+                            <dd>{{ item[value]|safe }}</dd>
                         </dl>                        
                 {% endfor %}
                 
                 </div>
-        		</div>
-        		
+        	</div>
         {% endfor %}                        
-        </div>
-        </div>
-        {% else %}
-        <b> {{_("No records found")}}</b>
-        {% endif %}
+    </div>
+   </div>
+{% else %}
+    <b> {{_("No records found")}}</b>
+{% endif %}
