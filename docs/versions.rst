@@ -4,7 +4,7 @@ Versions
 Improvements and Bug fixes on 0.7.4
 -----------------------------------
 
-
+- New, internal change, list functional header on lib.
 
 Improvements and Bug fixes on 0.7.3
 -----------------------------------

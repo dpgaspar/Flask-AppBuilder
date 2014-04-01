@@ -6,20 +6,8 @@
     {% set can_edit = "can_edit" | is_item_visible(generalview_name) %}
 	{% set can_delete = "can_delete" | is_item_visible(generalview_name) %}
     
-	<div class="well well-sm">
-		{{ lib.render_pagination(page, page_size, count, generalview_name) }}
-		{% if can_add %}
-			{% set path = url_for(generalview_name + '.add',next=request.path) %}
-			{% set path = path | set_link_filters(filters) %}
-			{{ lib.lnk_add(path) }}
-		{% endif %}
-		{{ lib.lnk_back() }}
-		
-		<div class="pull-right">
-	  	<strong>{{ _('Record Count') }}:</strong> {{ count }}
-		</div>
-  </div>	
-	
+	{{ lib.render_list_header(can_add, page, page_size, count, filters, generalview_name) }}
+
 	{% if value_columns %}
 	
 	

@@ -333,4 +333,4 @@ class CompactCRUDMixin(BaseCRUDView):
             self._session_form_action = request.url
             self._session_form_title = self.edit_title
             return redirect(self._get_redirect())
-            
+
