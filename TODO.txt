@@ -5,8 +5,6 @@
  - Add table with global, and db version key.
  - Diferent UI to add permissions to roles.
  - Solution to migrate/alter framework tables.
- - Add new cols to user table. Number of logins, date of last login. Date of last pwd change. AuditMixin
- - Encrypt db passwords.
  - Search with boolean fields.
  - Improve FileColumn support. Remove UUID from file name to user.
  - Improve ImageColumn support, update, remove, etc.
