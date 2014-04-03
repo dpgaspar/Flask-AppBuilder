@@ -243,4 +243,5 @@ class BaseApp(object):
                                 view._related_views.append(v)
         except:
             raise Exception('Use related_views with classes, not instances')
-        
+
+
