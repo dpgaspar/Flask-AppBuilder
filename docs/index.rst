@@ -28,10 +28,10 @@ Contents:
    quickminimal
    quickcharts
    quickfiles
+   config
    customizing
    actions
    i18n
-   config
    security
    api
    versionmigration
