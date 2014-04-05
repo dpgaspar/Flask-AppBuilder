@@ -5,6 +5,7 @@ Improvements and Bug fixes on 0.7.4
 -----------------------------------
 
 - New, internal change, list functional header on lib.
+- Fix, removed audit columns from user info view. Only shown on security admin.
 
 Improvements and Bug fixes on 0.7.3
 -----------------------------------

@@ -170,8 +170,7 @@ class UserOIDGeneralView(UserGeneralView):
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
-        widgets = self._get_show_widget(g.user.id)
-
+        widgets = self._get_show_widget(g.user.id, show_fieldsets=self.user_show_fieldsets)
         return render_template(self.show_template,
                                title=self.user_info_title,
                                widgets=widgets,
@@ -182,8 +181,7 @@ class UserLDAPGeneralView(UserGeneralView):
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
-        widgets = self._get_show_widget(g.user.id)
-
+        widgets = self._get_show_widget(g.user.id, show_fieldsets=self.user_show_fieldsets)
         return render_template(self.show_template,
                                title=self.user_info_title,
                                widgets=widgets,
