@@ -46,12 +46,6 @@ class ContactGeneralView(GeneralView):
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
-
-class GroupGeneralView(GeneralView):
-    datamodel = SQLAModel(Group, db.session)
-    related_views = [ContactGeneralView]
-
-
 class ContactChartView(ChartView):
     chart_title = 'Grouped contacts'
     label_columns = ContactGeneralView.label_columns
@@ -65,6 +59,11 @@ class ContactTimeChartView(TimeChartView):
     label_columns = ContactGeneralView.label_columns
     group_by_columns = ['birthday']
     datamodel = SQLAModel(Contact, db.session)
+
+
+class GroupGeneralView(GeneralView):
+    datamodel = SQLAModel(Group, db.session)
+    related_views = [ContactGeneralView]
 
 
 fixed_translations_import = [

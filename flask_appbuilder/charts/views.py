@@ -49,38 +49,24 @@ class BaseChartView(BaseModelView):
 
 
     def _get_related_view_widget(self, item, related_view,
-                                 order_column='', order_direction='',
-                                 page=None, page_size=None):
+                                 **args):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
         filters = Filters().add_filter_related_view(fk, FilterRelationOneToManyEqual,
                                                     related_view.datamodel, self.datamodel.get_pk_value(item))
         return related_view._get_chart_widget(filters=filters,
-                                              order_column=order_column,
-                                              order_direction=order_direction,
-                                              page=page, page_size=page_size)
+                                              **args)
 
-    def _get_related_views_widgets(self, item, orders=None,
-                                   pages=None, page_sizes=None,
+    def _get_related_views_widgets(self, item,
                                    widgets=None, **args):
         widgets = widgets or {}
         widgets['related_views'] = []
-        for view in self._related_views:
-            if orders.get(view.__class__.__name__):
-                order_column, order_direction = orders.get(view.__class__.__name__)
-            else:
-                order_column, order_direction = '', ''
         widgets['related_views'].append(self._get_related_view_widget(item, view,
-                                                                      order_column, order_direction,
-                                                                      page=pages.get(view.__class__.__name__),
-                                                                      page_size=page_sizes.get(
-                                                                          view.__class__.__name__)).get('chart'))
+                                                                      **args).get('chart'))
         return widgets
 
 
-    def _get_chart_widget(self, filters=None, group_by=None,
-                          order_column='',
-                          order_direction='',
+    def _get_chart_widget(self, filters=None,
                           widgets=None, **args):
         pass
 
@@ -171,7 +157,7 @@ class ChartView(BaseSimpleGroupByChartView):
         get_filter_args(self._filters)
 
         group_by = group_by or self.group_by_columns[0]
-        
+
         widgets = self._get_chart_widget(filters = self._filters, group_by = group_by)
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return render_template(self.chart_template, route_base=self.route_base,
@@ -194,6 +180,29 @@ class TimeChartView(BaseSimpleGroupByChartView):
     chart_template = 'appbuilder/general/charts/chart_time.html'
     chart_type = 'ColumnChart'
 
+
+    def _get_chart_widget(self, filters=None,
+                          order_column='',
+                          order_direction='',
+                          widgets=None,
+                          group_by=None,
+                          period=None, **args):
+
+        widgets = widgets or dict()
+        group_by = group_by or self.group_by_columns[0]
+        if period == 'month' or not period:
+            value_columns = self.datamodel.query_month_group(group_by, filters=self._filters)
+        elif period == 'year':
+            value_columns = self.datamodel.query_year_group(group_by, filters=self._filters)
+
+        widgets['chart'] = self.chart_widget(route_base=self.route_base,
+                                             chart_title=self.chart_title,
+                                             chart_type=self.chart_type,
+                                             chart_3d=self.chart_3d,
+                                             value_columns=value_columns, **args)
+        return widgets
+
+
     @expose('/chart/<group_by>/<period>')
     @expose('/chart/')
     @has_access
@@ -203,11 +212,9 @@ class TimeChartView(BaseSimpleGroupByChartView):
 
         group_by = group_by or self.group_by_columns[0]
 
-        if period == 'month' or not period:
-            value_columns = self.datamodel.query_month_group(group_by, filters=self._filters)
-        elif period == 'year':
-            value_columns = self.datamodel.query_year_group(group_by, filters=self._filters)
-        widgets = self._get_chart_widget(value_columns=value_columns)
+        widgets = self._get_chart_widget(filters = self._filters,
+                                         group_by = group_by,
+                                         period = period)
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,
@@ -250,13 +257,11 @@ class DirectChartView(BaseSimpleDirectChartView):
             order_column, order_direction = self.base_order
         else:
             order_column, order_direction = '', ''
-        count, lst = self.datamodel.query(filters=self._filters,
-                                          order_column=order_column,
-                                          order_direction=order_direction)
-        value_columns = self.datamodel.get_values(lst, list(direct))
-        value_columns = jsontools.dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)
 
-        widgets = self._get_chart_widget(value_columns=value_columns)
+        widgets = self._get_chart_widget(filter = self._filters,
+                                         order_column = order_column,
+                                         order_direction = order_direction,
+                                         direct = direct)
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,

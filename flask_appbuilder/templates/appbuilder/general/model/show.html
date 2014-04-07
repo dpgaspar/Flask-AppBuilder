@@ -17,8 +17,7 @@
     <div class="tab-content">
     {% for view in related_views %}
         <div id="{{view.__class__.__name__}}" class="tab-pane">
-            {{ widgets.get('related_views') }}
-		    {{ widgets.get('related_views')[loop.index - 1](pk = pk)|safe }}
+            {{ widgets.get('related_views')[loop.index - 1](pk = pk)|safe }}
         </div>
     {% endfor %}
 {% endif %}
