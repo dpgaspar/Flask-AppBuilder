@@ -39,11 +39,23 @@
 <body>
 
 {% block navbar %}
-{{ baselib.navbar_block(baseapp.menu, baseapp.languages) }}
+	<header class="top" role="header">
+	{{ baselib.navbar_block(baseapp.menu, baseapp.languages) }}
+	</header>
 {% endblock %}
 
 {% block body %}
 {% endblock %}
+
+
+{% block footer %}
+	<div class="bottom">
+        	<div class="container">
+        		{% include 'appbuilder/footer.html' %}
+        	</div>
+        </div>
+{% endblock %}
+
 
 {% block tail_js %}
 	
