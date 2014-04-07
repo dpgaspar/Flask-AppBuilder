@@ -305,6 +305,7 @@ class BaseCRUDView(BaseModelView):
     """ Add Title , if not configured the default is 'Add ' with pretty model name """
     edit_title = ""
     """ Edit Title , if not configured the default is 'Edit ' with pretty model name """
+    title = list_title
 
     list_columns = None
     """ Include Columns for lists view """
@@ -522,7 +523,7 @@ class BaseCRUDView(BaseModelView):
                 order_column, order_direction = orders.get(view.__class__.__name__)
             else:
                 order_column, order_direction = '', ''
-            widgets['related_views'].append(self._get_related_views_widget(item, view,
+            widgets['related_views'].append(self._get_related_view_widget(item, view,
                                                                           order_column, order_direction,
                                                                           page=pages.get(view.__class__.__name__),
                                                                           page_size=page_sizes.get(

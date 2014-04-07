@@ -8,7 +8,7 @@
 	<ul class="nav nav-tabs">  
 	<li class="active"><a href="#Home" data-toggle="tab">Detail</a> </li>
         {% for view in related_views %}
-		<li><a href="#{{view.__class__.__name__}}" data-toggle="tab">{{view.list_title}}</a></li>
+		<li><a href="#{{view.__class__.__name__}}" data-toggle="tab">{{view.title}}</a></li>
         {% endfor %}
         </ul>
         
