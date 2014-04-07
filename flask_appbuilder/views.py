@@ -150,6 +150,7 @@ class GeneralView(BaseCRUDView):
     def show(self, pk):
 
         widgets = self._show(pk)
+        log.debug("WIDGET {0}".format(widgets))
         return render_template(self.show_template,
                                pk=pk,
                                title=self.show_title,

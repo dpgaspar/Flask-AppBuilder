@@ -54,7 +54,6 @@ class GroupGeneralView(GeneralView):
 
 class ContactChartView(ChartView):
     chart_title = 'Grouped contacts'
-    chart_type = 'Gauge'
     label_columns = ContactGeneralView.label_columns
     group_by_columns = ['group', 'gender']
     datamodel = SQLAModel(Contact, db.session)

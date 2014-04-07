@@ -10,7 +10,7 @@
         {% for view in related_views %}
         	{% call lib.accordion_tag(view.__class__.__name__,view.title, False) %}
 				{{ widgets.get('related_views')[loop.index - 1](pk = pk)|safe }}
-	    	{% endcall %} 
+	    	{% endcall %}
 	{% endfor %}
 {% endif %}
 

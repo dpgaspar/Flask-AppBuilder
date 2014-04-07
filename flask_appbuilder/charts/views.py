@@ -5,6 +5,7 @@ from flask.ext.babelpkg import lazy_gettext
 from widgets import ChartWidget, DirectChartWidget, MultipleChartWidget
 from ..widgets import SearchWidget
 from ..security.decorators import has_access
+from ..models.filters import Filters, FilterRelationOneToManyEqual
 from ..baseviews import BaseModelView, expose
 from ..urltools import *
 
@@ -43,14 +44,49 @@ class BaseChartView(BaseModelView):
     group_bys = {}
     """ New for 0.6.4, on test, don't use yet """
 
+    def _init_titles(self):
+        self.title = self.chart_title
+
+
+    def _get_related_view_widget(self, item, related_view,
+                                 order_column='', order_direction='',
+                                 page=None, page_size=None):
+
+        fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
+        filters = Filters().add_filter_related_view(fk, FilterRelationOneToManyEqual,
+                                                    related_view.datamodel, self.datamodel.get_pk_value(item))
+        return related_view._get_chart_widget(filters=filters,
+                                              order_column=order_column,
+                                              order_direction=order_direction,
+                                              page=page, page_size=page_size)
+
+    def _get_related_views_widgets(self, item, orders=None,
+                                   pages=None, page_sizes=None,
+                                   widgets=None, **args):
+        widgets = widgets or {}
+        widgets['related_views'] = []
+        for view in self._related_views:
+            if orders.get(view.__class__.__name__):
+                order_column, order_direction = orders.get(view.__class__.__name__)
+            else:
+                listlist
+            order_column, order_direction = '', ''
+        widgets['related_views'].append(self._get_related_view_widget(item, view,
+                                                                      order_column, order_direction,
+                                                                      page=pages.get(view.__class__.__name__),
+                                                                      page_size=page_sizes.get(
+                                                                          view.__class__.__name__)).get('chart'))
+
+        return widgets
+
 
     def _get_chart_widget(self, value_columns=None, widgets=None, **args):
         widgets = widgets or dict()
         widgets['chart'] = self.chart_widget(route_base=self.route_base,
-                                             chart_title=self.chart_title,
-                                             chart_type=self.chart_type,
-                                             chart_3d=self.chart_3d,
-                                             value_columns=value_columns, **args)
+                                            chart_title=self.chart_title,
+                                            chart_type=self.chart_type,
+                                            chart_3d=self.chart_3d,
+                                            value_columns=value_columns, **args)
         return widgets
 
 

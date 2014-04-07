@@ -188,6 +188,9 @@ class BaseModelView(BaseView):
             class MyView(GeneralView):
                 datamodel = SQLAModel(MyTable, db.session)
     """
+
+    title = 'Title'
+
     search_columns = None
     """ 
         List with allowed search columns, if not provided all possible search columns will be used 
@@ -250,6 +253,8 @@ class BaseModelView(BaseView):
         self._base_model_init_forms()
         super(BaseModelView, self).__init__(**kwargs)
 
+    def _init_titles(self):
+        pass
 
     def _base_model_init_vars(self):
         self.label_columns = self.label_columns or {}
@@ -305,7 +310,6 @@ class BaseCRUDView(BaseModelView):
     """ Add Title , if not configured the default is 'Add ' with pretty model name """
     edit_title = ""
     """ Edit Title , if not configured the default is 'Edit ' with pretty model name """
-    title = list_title
 
     list_columns = None
     """ Include Columns for lists view """
@@ -460,6 +464,7 @@ class BaseCRUDView(BaseModelView):
             self.edit_title = 'Edit ' + self._prettify_name(self.datamodel.obj.__name__)
         if not self.show_title:
             self.show_title = 'Show ' + self._prettify_name(self.datamodel.obj.__name__)
+        self.title = self.list_title
 
     def _init_properties(self):
         self.related_views = self.related_views or []
@@ -513,9 +518,10 @@ class BaseCRUDView(BaseModelView):
                                              order_direction=order_direction,
                                              page=page, page_size=page_size)
 
+
     def _get_related_views_widgets(self, item, orders=None,
-                                  pages=None, page_sizes=None,
-                                  widgets=None, **args):
+                                   pages=None, page_sizes=None,
+                                   widgets=None, **args):
         widgets = widgets or {}
         widgets['related_views'] = []
         for view in self._related_views:
@@ -641,7 +647,7 @@ class BaseCRUDView(BaseModelView):
         item = self.datamodel.get(pk)
 
         return self._get_related_views_widgets(item, orders=orders,
-                                              pages=pages, page_sizes=page_sizes, widgets=widgets)
+                                               pages=pages, page_sizes=page_sizes, widgets=widgets)
 
 
     def _add(self):
@@ -698,7 +704,7 @@ class BaseCRUDView(BaseModelView):
             form = form.refresh(obj=item)
         widgets = self._get_edit_widget(form=form, exclude_cols=exclude_cols)
         widgets = self._get_related_views_widgets(item, filters={},
-                                                 orders=orders, pages=pages, page_sizes=page_sizes, widgets=widgets)
+                                                  orders=orders, pages=pages, page_sizes=page_sizes, widgets=widgets)
         return widgets
 
 
