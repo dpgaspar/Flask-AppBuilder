@@ -3,7 +3,6 @@
 
 {% block body %}
 
-<div class="wrap">
 <div class="container">
   <div class="row">
     <div class="span12">
@@ -13,14 +12,14 @@
     <div>
     
   </div>
-</div>
-          {% block footer %}
-		<div class="bottom fixed-footer">
-        		<div class="container">
-        			{% include 'appbuilder/footer.html' %}
-        		</div>
+
+{% block footer %}
+	<div class="bottom fixed-footer img-rounded">
+        	<div class="container">
+        		{% include 'appbuilder/footer.html' %}
         	</div>
-	  {% endblock %}
+        </div>
+{% endblock %}
 
 	
 {% endblock %}
