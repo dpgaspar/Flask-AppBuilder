@@ -3,13 +3,17 @@
 
 {% block body %}
 
+<div id="wrap">
 <div class="container">
   <div class="row">
     <div class="span12">
 	  {% include 'appbuilder/flash.html' %}
           {% block content %}
           {% endblock %}
-          
+    <div>
+    
+  </div>
+</div>
           {% block footer %}
 		<div class="bottom footer">
         		<div class="container">
@@ -19,9 +23,5 @@
 	  {% endblock %}
 
 	
-    </div>
-  </div>
-</div>
-
 {% endblock %}
 
