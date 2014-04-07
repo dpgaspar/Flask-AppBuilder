@@ -516,7 +516,7 @@ class BaseCRUDView(BaseModelView):
                                   pages=None, page_sizes=None,
                                   widgets=None, **args):
         widgets = widgets or {}
-        widgets['related_lists'] = []
+        widgets['related_views'] = []
         for view in self._related_views:
             if orders.get(view.__class__.__name__):
                 order_column, order_direction = orders.get(view.__class__.__name__)
