@@ -7,7 +7,17 @@
   <div class="row">
     <div class="span12">
 	  {% include 'appbuilder/flash.html' %}
-          {% block content %}{% endblock %}
+          {% block content %}
+          {% endblock %}
+          
+          {% block footer %}
+		<div class="bottom">
+        		<div class="container">
+        			{% include 'appbuilder/footer.html' %}
+        		</div>
+        	</div>
+	  {% endblock %}
+
 	
     </div>
   </div>
