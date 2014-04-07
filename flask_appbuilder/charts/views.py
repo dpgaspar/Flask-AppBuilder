@@ -69,25 +69,20 @@ class BaseChartView(BaseModelView):
             if orders.get(view.__class__.__name__):
                 order_column, order_direction = orders.get(view.__class__.__name__)
             else:
-                listlist
-            order_column, order_direction = '', ''
+                order_column, order_direction = '', ''
         widgets['related_views'].append(self._get_related_view_widget(item, view,
                                                                       order_column, order_direction,
                                                                       page=pages.get(view.__class__.__name__),
                                                                       page_size=page_sizes.get(
                                                                           view.__class__.__name__)).get('chart'))
-
         return widgets
 
 
-    def _get_chart_widget(self, value_columns=None, widgets=None, **args):
-        widgets = widgets or dict()
-        widgets['chart'] = self.chart_widget(route_base=self.route_base,
-                                            chart_title=self.chart_title,
-                                            chart_type=self.chart_type,
-                                            chart_3d=self.chart_3d,
-                                            value_columns=value_columns, **args)
-        return widgets
+    def _get_chart_widget(self, filters=None, group_by=None,
+                          order_column='',
+                          order_direction='',
+                          widgets=None, **args):
+        pass
 
 
 class BaseSimpleGroupByChartView(BaseChartView):
@@ -99,6 +94,23 @@ class BaseSimpleGroupByChartView(BaseChartView):
             raise Exception('Base Chart View property <group_by_columns> must not be empty')
         else:
             super(BaseChartView, self).__init__(**kwargs)
+
+    def _get_chart_widget(self, filters=None,
+                          order_column='',
+                          order_direction='',
+                          widgets=None, group_by=None, **args):
+
+        widgets = widgets or dict()
+        group_by = group_by or self.group_by_columns[0]
+        value_columns = self.datamodel.query_simple_group(group_by, filters=self._filters)
+
+        widgets['chart'] = self.chart_widget(route_base=self.route_base,
+                                             chart_title=self.chart_title,
+                                             chart_type=self.chart_type,
+                                             chart_3d=self.chart_3d,
+                                             value_columns=value_columns, **args)
+        return widgets
+
 
 
 class BaseSimpleDirectChartView(BaseChartView):
@@ -124,6 +136,26 @@ class BaseSimpleDirectChartView(BaseChartView):
         return self.direct_columns.keys()
 
 
+    def _get_chart_widget(self, filters=None,
+                          order_column='',
+                          order_direction='',
+                          widgets=None, direct=None, **args):
+
+        widgets = widgets or dict()
+        count, lst = self.datamodel.query(filters=filters,
+                                          order_column=order_column,
+                                          order_direction=order_direction)
+        value_columns = self.datamodel.get_values(lst, list(direct))
+        value_columns = jsontools.dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)
+
+        widgets['chart'] = self.chart_widget(route_base=self.route_base,
+                                             chart_title=self.chart_title,
+                                             chart_type=self.chart_type,
+                                             chart_3d=self.chart_3d,
+                                             value_columns=value_columns, **args)
+        return widgets
+
+
 class ChartView(BaseSimpleGroupByChartView):
     """
         Provides a simple (and hopefully nice) way to draw charts on your application.
@@ -139,9 +171,8 @@ class ChartView(BaseSimpleGroupByChartView):
         get_filter_args(self._filters)
 
         group_by = group_by or self.group_by_columns[0]
-        value_columns = self.datamodel.query_simple_group(group_by, filters=self._filters)
-
-        widgets = self._get_chart_widget(value_columns=value_columns)
+        
+        widgets = self._get_chart_widget(filters = self._filters, group_by = group_by)
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,
