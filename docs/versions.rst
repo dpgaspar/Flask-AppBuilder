@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.7.5
+-----------------------------------
+
+- New, charts can be included has related views, can use it has tab, collapse and master-detail templates.
+
 Improvements and Bug fixes on 0.7.4
 -----------------------------------
 
