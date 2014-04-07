@@ -500,7 +500,7 @@ class BaseCRUDView(BaseModelView):
     -----------------------------------------------------        
     """
 
-    def _get_related_list_widget(self, item, related_view,
+    def _get_related_view_widget(self, item, related_view,
                                  order_column='', order_direction='',
                                  page=None, page_size=None):
 
@@ -512,7 +512,7 @@ class BaseCRUDView(BaseModelView):
                                              order_direction=order_direction,
                                              page=page, page_size=page_size)
 
-    def _get_related_list_widgets(self, item, orders=None,
+    def _get_related_views_widgets(self, item, orders=None,
                                   pages=None, page_sizes=None,
                                   widgets=None, **args):
         widgets = widgets or {}
@@ -522,7 +522,7 @@ class BaseCRUDView(BaseModelView):
                 order_column, order_direction = orders.get(view.__class__.__name__)
             else:
                 order_column, order_direction = '', ''
-            widgets['related_lists'].append(self._get_related_list_widget(item, view,
+            widgets['related_views'].append(self._get_related_views_widget(item, view,
                                                                           order_column, order_direction,
                                                                           page=pages.get(view.__class__.__name__),
                                                                           page_size=page_sizes.get(
@@ -639,7 +639,7 @@ class BaseCRUDView(BaseModelView):
         widgets = self._get_show_widget(pk)
         item = self.datamodel.get(pk)
 
-        return self._get_related_list_widgets(item, orders=orders,
+        return self._get_related_views_widgets(item, orders=orders,
                                               pages=pages, page_sizes=page_sizes, widgets=widgets)
 
 
@@ -696,7 +696,7 @@ class BaseCRUDView(BaseModelView):
             form = self.edit_form(obj=item)
             form = form.refresh(obj=item)
         widgets = self._get_edit_widget(form=form, exclude_cols=exclude_cols)
-        widgets = self._get_related_list_widgets(item, filters={},
+        widgets = self._get_related_views_widgets(item, filters={},
                                                  orders=orders, pages=pages, page_sizes=page_sizes, widgets=widgets)
         return widgets
 

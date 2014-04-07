@@ -12,7 +12,7 @@
                 <div class="col-lg-{{ 12 - master_div_width}} col-md-{{ 12 - master_div_width}} container">
                 {{ lib.panel_begin(view.list_title) }}
                     <div>
-                        {{ widgets.get('related_lists')[loop.index - 1](pk = pk)|safe }}
+                        {{ widgets.get('related_views')[loop.index - 1](pk = pk)|safe }}
                     </div>
                 {{ lib.panel_end() }}
                 </div>

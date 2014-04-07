@@ -162,7 +162,6 @@ class UserGeneralView(GeneralView):
 
     add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
     edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
-
     user_info_title = lazy_gettext("Your user information")
 
 
