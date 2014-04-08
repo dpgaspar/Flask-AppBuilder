@@ -178,7 +178,7 @@ class TimeChartView(BaseSimpleGroupByChartView):
 
         widgets = widgets or dict()
         group_by = group_by or self.group_by_columns[0]
-        log.debug("FF {0}".format(filters))
+        log.info("FF {0}".format(filters))
         joined_filters = filters.get_joined_filters(self._base_filters)
 
         if period == 'month' or not period:
