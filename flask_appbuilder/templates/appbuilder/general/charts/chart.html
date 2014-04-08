@@ -23,9 +23,7 @@
     {% endfor %}
     </div>
 
-    <div id="chart" style="height: {{height}};">
     {{ widgets.get('chart')()|safe }}
-    </div>
 
 {{ lib.panel_end() }}
 {% endblock %}

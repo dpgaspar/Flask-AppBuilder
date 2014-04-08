@@ -72,19 +72,24 @@ class BaseSimpleGroupByChartView(BaseChartView):
     def _get_chart_widget(self, filters=None,
                           order_column='',
                           order_direction='',
-                          widgets=None, group_by=None, **args):
+                          widgets=None,
+                          group_by=None,
+                          height=None,
+                          **args):
 
+        height = height or self.height
         widgets = widgets or dict()
         group_by = group_by or self.group_by_columns[0]
-        value_columns = self.datamodel.query_simple_group(group_by, filters=self._filters)
+        joined_filters = filters.get_joined_filters(self._base_filters)
+        value_columns = self.datamodel.query_simple_group(group_by, filters=joined_filters)
 
         widgets['chart'] = self.chart_widget(route_base=self.route_base,
                                              chart_title=self.chart_title,
                                              chart_type=self.chart_type,
                                              chart_3d=self.chart_3d,
+                                             height=height,
                                              value_columns=value_columns, **args)
         return widgets
-
 
 
 class BaseSimpleDirectChartView(BaseChartView):
@@ -113,10 +118,15 @@ class BaseSimpleDirectChartView(BaseChartView):
     def _get_chart_widget(self, filters=None,
                           order_column='',
                           order_direction='',
-                          widgets=None, direct=None, **args):
+                          widgets=None,
+                          direct=None,
+                          height=None,
+                          **args):
 
+        height = height or self.height
         widgets = widgets or dict()
-        count, lst = self.datamodel.query(filters=filters,
+        joined_filters = filters.get_joined_filters(self._base_filters)
+        count, lst = self.datamodel.query(filters=joined_filters,
                                           order_column=order_column,
                                           order_direction=order_direction)
         value_columns = self.datamodel.get_values(lst, list(direct))
@@ -126,6 +136,7 @@ class BaseSimpleDirectChartView(BaseChartView):
                                              chart_title=self.chart_title,
                                              chart_type=self.chart_type,
                                              chart_3d=self.chart_3d,
+                                             height=height,
                                              value_columns=value_columns, **args)
         return widgets
 
@@ -146,7 +157,7 @@ class ChartView(BaseSimpleGroupByChartView):
 
         group_by = group_by or self.group_by_columns[0]
 
-        widgets = self._get_chart_widget(filters = self._filters, group_by = group_by)
+        widgets = self._get_chart_widget(filters=self._filters, group_by=group_by)
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,
@@ -174,11 +185,13 @@ class TimeChartView(BaseSimpleGroupByChartView):
                           order_direction='',
                           widgets=None,
                           group_by=None,
-                          period=None, **args):
+                          period=None,
+                          height=None,
+                          **args):
 
+        height = height or self.height
         widgets = widgets or dict()
         group_by = group_by or self.group_by_columns[0]
-        log.info("FF {0}".format(filters))
         joined_filters = filters.get_joined_filters(self._base_filters)
 
         if period == 'month' or not period:
@@ -190,6 +203,7 @@ class TimeChartView(BaseSimpleGroupByChartView):
                                              chart_title=self.chart_title,
                                              chart_type=self.chart_type,
                                              chart_3d=self.chart_3d,
+                                             height=height,
                                              value_columns=value_columns, **args)
         return widgets
 
@@ -203,16 +217,17 @@ class TimeChartView(BaseSimpleGroupByChartView):
 
         group_by = group_by or self.group_by_columns[0]
 
-        widgets = self._get_chart_widget(filters = self._filters,
-                                         group_by = group_by,
-                                         period = period)
+        widgets = self._get_chart_widget(filters=self._filters,
+                                         group_by=group_by,
+                                         period=period,
+                                         height=self.height)
+
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,
                                label_columns=self.label_columns,
                                group_by_columns=self.group_by_columns,
                                group_by_label=self.group_by_label,
-                               height=self.height,
                                widgets=widgets,
                                baseapp=self.baseapp)
 
@@ -249,10 +264,10 @@ class DirectChartView(BaseSimpleDirectChartView):
         else:
             order_column, order_direction = '', ''
 
-        widgets = self._get_chart_widget(filter = self._filters,
-                                         order_column = order_column,
-                                         order_direction = order_direction,
-                                         direct = direct)
+        widgets = self._get_chart_widget(filters=self._filters,
+                                         order_column=order_column,
+                                         order_direction=order_direction,
+                                         direct=direct)
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,

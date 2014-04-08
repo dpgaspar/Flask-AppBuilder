@@ -14,7 +14,7 @@
 					
 			{% for item in fieldset_item[1].get('fields') %}
 				<tr>
-				<th class="col-lg-2">{{label_columns.get(item)}}</th>
+				<th class="col-lg-2 col-md-2 col-sm-2">{{label_columns.get(item)}}</th>
 				<td><span style="white-space: pre-line">{{value_columns[include_columns.index(item)]}}</span></td>
 				</tr>
 			{% endfor %}
@@ -28,7 +28,7 @@
 	
 		{% for item in include_columns %}
 			<tr>
-			<th class="col-lg-2">{{label_columns.get(item)}}</th>
+			<th class="col-lg-2 col-md-2 col-sm-2">{{label_columns.get(item)}}</th>
 			<td><span style="white-space: pre-line">{{value_columns[loop.index-1]}}</span></td>
 			</tr>
 		{% endfor %}
