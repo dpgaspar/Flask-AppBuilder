@@ -63,7 +63,7 @@ class ContactTimeChartView(TimeChartView):
 
 class GroupGeneralView(GeneralView):
     datamodel = SQLAModel(Group, db.session)
-    related_views = [ContactGeneralView]
+    related_views = [ContactGeneralView, ContactTimeChartView]
 
 
 fixed_translations_import = [

@@ -47,28 +47,16 @@ class BaseChartView(BaseModelView):
     def _init_titles(self):
         self.title = self.chart_title
 
-
-    def _get_related_view_widget(self, item, related_view,
-                                 **args):
-
-        fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
-        filters = Filters().add_filter_related_view(fk, FilterRelationOneToManyEqual,
-                                                    related_view.datamodel, self.datamodel.get_pk_value(item))
-        return related_view._get_chart_widget(filters=filters,
-                                              **args)
-
-    def _get_related_views_widgets(self, item,
-                                   widgets=None, **args):
-        widgets = widgets or {}
-        widgets['related_views'] = []
-        widgets['related_views'].append(self._get_related_view_widget(item, view,
-                                                                      **args).get('chart'))
-        return widgets
-
-
     def _get_chart_widget(self, filters=None,
                           widgets=None, **args):
         pass
+
+    def _get_view_widget(self, **kwargs):
+        """
+            :return:
+                Returns a widget
+        """
+        return self._get_chart_widget(*kwargs).get('chart')
 
 
 class BaseSimpleGroupByChartView(BaseChartView):
@@ -190,10 +178,13 @@ class TimeChartView(BaseSimpleGroupByChartView):
 
         widgets = widgets or dict()
         group_by = group_by or self.group_by_columns[0]
+        log.debug("FF {0}".format(filters))
+        joined_filters = filters.get_joined_filters(self._base_filters)
+
         if period == 'month' or not period:
-            value_columns = self.datamodel.query_month_group(group_by, filters=self._filters)
+            value_columns = self.datamodel.query_month_group(group_by, filters=joined_filters)
         elif period == 'year':
-            value_columns = self.datamodel.query_year_group(group_by, filters=self._filters)
+            value_columns = self.datamodel.query_year_group(group_by, filters=joined_filters)
 
         widgets['chart'] = self.chart_widget(route_base=self.route_base,
                                              chart_title=self.chart_title,

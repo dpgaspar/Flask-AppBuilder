@@ -513,7 +513,7 @@ class BaseCRUDView(BaseModelView):
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
         filters = Filters().add_filter_related_view(fk, FilterRelationOneToManyEqual,
                                                     related_view.datamodel, self.datamodel.get_pk_value(item))
-        return related_view._get_list_widget(filters=filters,
+        return related_view._get_view_widget(filters=filters,
                                              order_column=order_column,
                                              order_direction=order_direction,
                                              page=page, page_size=page_size)
@@ -533,8 +533,15 @@ class BaseCRUDView(BaseModelView):
                                                                           order_column, order_direction,
                                                                           page=pages.get(view.__class__.__name__),
                                                                           page_size=page_sizes.get(
-                                                                              view.__class__.__name__)).get('list'))
+                                                                              view.__class__.__name__)))
         return widgets
+
+    def _get_view_widget(self, **kwargs):
+        """
+            :return:
+                Returns a widget
+        """
+        return self._get_list_widget(**kwargs).get('list')
 
     def _get_list_widget(self, filters,
                          actions=None,
