@@ -541,7 +541,8 @@ class BaseCRUDView(BaseModelView):
             :return:
                 Returns a widget
         """
-        return self._get_list_widget(**kwargs).get('list')
+        log.debug("KWARGS {0}".format(**kwargs)
+        return self._get_list_widget(kwargs).get('list')
 
     def _get_list_widget(self, filters,
                          actions=None,
