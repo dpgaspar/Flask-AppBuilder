@@ -56,7 +56,7 @@ class BaseChartView(BaseModelView):
             :return:
                 Returns a widget
         """
-        return self._get_chart_widget(*kwargs).get('chart')
+        return self._get_chart_widget(**kwargs).get('chart')
 
 
 class BaseSimpleGroupByChartView(BaseChartView):
