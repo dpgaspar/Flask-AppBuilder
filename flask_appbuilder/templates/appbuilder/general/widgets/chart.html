@@ -1,5 +1,4 @@
-<div id="chart" style="height: {{height}};">
-    {{ height }}
+<div id="chart" style="height: {{height}}; display:block; ">
 </div>
 
 <script type="text/javascript" src="{{url_for('baseapp.static',filename='js/google_charts.js')}}"></script>
@@ -32,8 +31,12 @@
                 //define options for visualization
                 var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
 
-                //draw our chart
-                chart.draw(dataTable, options);
+                $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
+                    //draw our chart
+                    chart.draw(dataTable, options);
+                });
+
+
 
             }
 </script>
