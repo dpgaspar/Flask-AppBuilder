@@ -31,6 +31,11 @@
                 //define options for visualization
                 var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
 
+		$(function() {
+  			$('#chart').isvisible(function() {
+    			alert("do something");
+  			});
+		});
 
 		chart.draw(dataTable, options);
 		
