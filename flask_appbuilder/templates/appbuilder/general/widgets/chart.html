@@ -31,19 +31,25 @@
                 //define options for visualization
                 var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
 
-		function() {
-			var ev = new $.Event('display'),
-        		orig = $.fn.css;
-    			$.fn.css = function() {
-        			orig.apply(this, arguments);
-        			$(this).trigger(ev);
-    			}
-		})();
+		var visible = true;
+		setInterval(
+    			function()
+    			{
+        			if(visible)
+            				if($('#element').not(':hidden'))
+            				{
+                				visible = false;
+                				alert('NOP');
+            				}
+        			else
+            				if($('#element').is(':hidden'))
+            				{
+                				visible = true;
+                				alert('NOP');
+            				}
+    			}, 1000);
 
-		$('#chart').bind('display', function(e) {
-    			alert( "display has changed to :"+$(this).attr('style') );
-    			chart.draw(dataTable, options);
-		});
+		chart.draw(dataTable, options);
 		
 
             }
