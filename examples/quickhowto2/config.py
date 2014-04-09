@@ -12,7 +12,7 @@ OPENID_PROVIDERS = [
     { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }]
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
-#SQLALCHEMY_DATABASE_URI = 'mysql://myapp@localhost/myapp'
+#SQLALCHEMY_DATABASE_URI = 'mysql://root:password@localhost/quickhowto'
 #SQLALCHEMY_DATABASE_URI = 'postgresql://scott:tiger@localhost:5432/myapp'
 #SQLALCHEMY_ECHO = True
 
@@ -33,6 +33,7 @@ UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_URL = '/static/uploads/'
 AUTH_TYPE = 1
+#AUTH_LDAP_SERVER = "ldap://dc.domain.net"
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
 APP_NAME = "F.A.B. Example"
