@@ -28,19 +28,9 @@
                 //instantiate our chart object
                 var chart = new google.visualization.{{chart_type}}(document.getElementById('chart'));
 
-                (function ($) {
-      			$.each(['show', 'hide'], function (i, ev) {
-        		var el = $.fn[ev];
-        		$.fn[ev] = function () {
-          			this.trigger(ev);
-          			return el.apply(this, arguments);
-        		};
-      			});
-    		})(jQuery);
-		
-		$('#chart').on('show', function() {
-		   alert('#foo is now visible');
-		});
+                 $("#chart").focus(function(){
+                 	alert("FOCUS");	
+                 });
 		
 		var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
 		chart.draw(dataTable, options);
