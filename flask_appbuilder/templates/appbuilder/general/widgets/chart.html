@@ -1,4 +1,4 @@
-<div id="chart" style="height: {{height}}; display:block; ">
+<div id="chart" style="height: {{height}};">
 </div>
 
 <script type="text/javascript" src="{{url_for('baseapp.static',filename='js/google_charts.js')}}"></script>
@@ -27,13 +27,28 @@
 				
                 //instantiate our chart object
                 var chart = new google.visualization.{{chart_type}}(document.getElementById('chart'));
+                var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
 
-                 $("#chart").focus(function(){
-                 	alert("FOCUS");	
-                 });
-		
-		var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
-		chart.draw(dataTable, options);
+                var $tab_el = $('a[data-toggle="tab"]');
+                $tab_el.on('shown.bs.tab', function () {
+                    // Redraws the chart when the tab is activated, so that chart size on tab
+                    // won't be too small.
+                    $curr_tab_id = ($(this).attr('href'));
+                    $curr_tab = $($curr_tab_id);
+                    if ($curr_tab.children('div').attr('id')=='chart')
+                    {
+                        chart.draw(dataTable, options);
+                    }
+                });
+
+                var $accordion_el = $('.panel-collapse');
+		        $accordion_el.on('shown.bs.collapse', function(){
+                    // Redraws the chart when the tab is activated, so that chart size on tab
+                    // won't be too small.
+                    chart.draw(dataTable, options);
+                });
+
+		        chart.draw(dataTable, options);
 		
 
             }

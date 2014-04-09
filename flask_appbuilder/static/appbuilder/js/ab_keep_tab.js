@@ -21,5 +21,30 @@ else
 // Set the first tab if cookie do not exist
     $('a[data-toggle="tab"]:first').tab('show');
 }
+
+//---------------------------------------
+// Function for keeping tab focus
+// after page reload, uses cookies
+//---------------------------------------
+
+$('.panel-collapse').on('shown.bs.collapse', function () {
+//save the latest accordion; use cookies if you like 'em better:
+    localStorage.setItem('lastAccordion', $(this).attr('id'));
 });
+
+$('.panel-collapse').on('hidden.bs.collapse', function () {
+//remove the latest accordion; use cookies if you like 'em better:
+    localStorage.removeItem('lastAccordion');
+});
+
+
+//go to the latest accordion, if it exists:
+var lastAccordion = localStorage.getItem('lastAccordion');
+if (lastAccordion) {
+    $('#' + lastAccordion).collapse('show');
+}
+
+
+});
+
 

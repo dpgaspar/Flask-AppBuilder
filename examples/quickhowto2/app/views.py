@@ -64,7 +64,7 @@ class ContactTimeChartView(TimeChartView):
 class GroupGeneralView(GeneralView):
     datamodel = SQLAModel(Group, db.session)
     related_views = [ContactGeneralView, ContactTimeChartView]
-
+    #show_template = 'appbuilder/general/model/show_cascade.html'
 
 fixed_translations_import = [
     _("List Groups"),

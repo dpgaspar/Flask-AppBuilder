@@ -7,6 +7,8 @@ Improvements and Bug fixes on 0.7.5
 - New, charts can be included has related views, can use it has tab, collapse and master-detail templates.
 - Fix, login ldap, double message login failed correction.
 - Fix, search responsive correction.
+- New, accordion related view will record last choice on cookie.
+- New, footer page, this can be overridden.
 
 Improvements and Bug fixes on 0.7.4
 -----------------------------------
