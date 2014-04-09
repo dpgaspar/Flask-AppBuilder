@@ -31,17 +31,12 @@
                 //define options for visualization
                 var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
 
-		$('#chart').show(0, onDivShow);
-                function onDivShow() { 
+		
+		$( "#chart" ).on( "click", function() {
                     alert('SHOW');
                     chart.draw(dataTable, options);
-                }
+		});
 
-		$('#chart').hide(0, onDivHide);
-                function onDivHide() { 
-                    alert('HIDE');
-                    
-                }
 
             }
 </script>
