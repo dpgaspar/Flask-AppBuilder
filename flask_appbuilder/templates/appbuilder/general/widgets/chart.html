@@ -31,12 +31,11 @@
                 //define options for visualization
                 var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
 
-                $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
-                    //draw our chart
+		$('#chart').show(0, onDivShow);
+                function onDivShow() { 
+                    alert('SHOW');
                     chart.draw(dataTable, options);
-                });
-
-
+                }
 
             }
 </script>
