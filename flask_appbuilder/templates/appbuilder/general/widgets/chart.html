@@ -32,7 +32,7 @@
                 var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
 
 		
-		$( "#chart" ).on( "click", function() {
+		$( "#chart" ).on( "show", function() {
                     alert('SHOW');
                     chart.draw(dataTable, options);
 		});
