@@ -28,10 +28,19 @@
                 //instantiate our chart object
                 var chart = new google.visualization.{{chart_type}}(document.getElementById('chart'));
 
-                //define options for visualization
-                $('#chart').on('shown.bs.collapse', function () {
-  			alert('SHOW');
-		})
+                (function ($) {
+      			$.each(['show', 'hide'], function (i, ev) {
+        		var el = $.fn[ev];
+        		$.fn[ev] = function () {
+          			this.trigger(ev);
+          			return el.apply(this, arguments);
+        		};
+      			});
+    		})(jQuery);
+		
+		$('#chart').on('show', function() {
+		   alert('#foo is now visible');
+		});
 		
 		chart.draw(dataTable, options);
 		
