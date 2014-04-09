@@ -37,10 +37,10 @@
                     chart.draw(dataTable, options);
                 }
 
-		$('#chart').hide(0, onDivShow);
-                function onDivShow() { 
+		$('#chart').hide(0, onDivHide);
+                function onDivHide() { 
                     alert('HIDE');
-                    chart.draw(dataTable, options);
+                    
                 }
 
             }
