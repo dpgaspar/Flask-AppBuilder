@@ -31,23 +31,6 @@
                 //define options for visualization
                 var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
 
-		var visible = true;
-		setInterval(
-    			function()
-    			{
-        			if(visible)
-            				if($('#element').not(':hidden'))
-            				{
-                				visible = false;
-                				alert('ON');
-            				}
-        			else
-            				if($('#element').is(':hidden'))
-            				{
-                				visible = true;
-                				alert('OFF');
-            				}
-    			}, 100);
 
 		chart.draw(dataTable, options);
 		
