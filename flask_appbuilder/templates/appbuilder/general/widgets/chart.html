@@ -31,12 +31,20 @@
                 //define options for visualization
                 var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
 
-		
-		$( "#chart" ).on( "beforeShow", function() {
-                    alert('SHOW');
-                    chart.draw(dataTable, options);
-		});
+		function() {
+			var ev = new $.Event('display'),
+        		orig = $.fn.css;
+    			$.fn.css = function() {
+        			orig.apply(this, arguments);
+        			$(this).trigger(ev);
+    			}
+		})();
 
+		$('#chart').bind('display', function(e) {
+    			alert( "display has changed to :"+$(this).attr('style') );
+    			chart.draw(dataTable, options);
+		});
+		
 
             }
 </script>
