@@ -29,11 +29,9 @@
                 var chart = new google.visualization.{{chart_type}}(document.getElementById('chart'));
 
                 //define options for visualization
-                var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
-
-			$('#chart').isvisible(function() {
-    			alert("do something");
-  			});
+                $('#chart').on('shown.bs.collapse', function () {
+  			alert('SHOW');
+		})
 		
 		chart.draw(dataTable, options);
 		
