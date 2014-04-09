@@ -39,15 +39,15 @@
             				if($('#element').not(':hidden'))
             				{
                 				visible = false;
-                				alert('NOP');
+                				alert('ON');
             				}
         			else
             				if($('#element').is(':hidden'))
             				{
                 				visible = true;
-                				alert('NOP');
+                				alert('OFF');
             				}
-    			}, 1000);
+    			}, 100);
 
 		chart.draw(dataTable, options);
 		
