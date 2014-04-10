@@ -19,9 +19,9 @@
                     // won't be too small.
                     $curr_tab_id = ($(this).attr('href'));
                     $curr_tab = $($curr_tab_id);
-                    alert($curr_tab_id);
                     if ($curr_tab.children('div').attr('id')=='chart')
                     {
+                    	alert($curr_tab_id);
                         chart.draw(dataTable, options);
                     }
                 });
