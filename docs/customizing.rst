@@ -61,6 +61,19 @@ Define a special and simple view inherit from IndexView::
 
     baseapp = BaseApp(app, db, indexview = MyIndexView)
 
+
+Changing the Footer
+------------------
+
+The index can be easily develop your own footer. You must develop your template, to override the existing one.
+
+Develop your jinja2 template and place it on the following relative path to override the F.A.B footer.
+
+./your_root_project_path/app/templates/appbuilder/footer.html
+
+Actually you can override any given F.A.B. template.
+
+
 Changing Menu Construction
 --------------------------
 
