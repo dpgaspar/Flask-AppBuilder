@@ -47,9 +47,18 @@ class ContactGeneralView(GeneralView):
     ]
 
 
+class ContactTimeChartView(TimeChartView):
+    chart_title = 'Grouped Birth contacts'
+    chart_type = 'AreaChart'
+    label_columns = ContactGeneralView.label_columns
+    group_by_columns = ['birthday']
+    datamodel = SQLAModel(Contact, db.session)
+
+
 class GroupMasterView(MasterDetailView):
     datamodel = SQLAModel(Group, db.session)
     related_views = [ContactGeneralView]
+
 
 class GroupGeneralView(GeneralView):
     datamodel = SQLAModel(Group, db.session)
@@ -60,14 +69,6 @@ class ContactChartView(ChartView):
     chart_title = 'Grouped contacts'
     label_columns = ContactGeneralView.label_columns
     group_by_columns = ['group', 'gender']
-    datamodel = SQLAModel(Contact, db.session)
-
-
-class ContactTimeChartView(TimeChartView):
-    chart_title = 'Grouped Birth contacts'
-    chart_type = 'AreaChart'
-    label_columns = ContactGeneralView.label_columns
-    group_by_columns = ['birthday']
     datamodel = SQLAModel(Contact, db.session)
 
 
