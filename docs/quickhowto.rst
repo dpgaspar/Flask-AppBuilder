@@ -90,7 +90,7 @@ Must have properties:
 
 Optional properties:
 
-:related_views: if you want a master/detail view on the show and edit.
+:related_views: if you want a master/detail view on the show and edit. F.A.B. will relate 1/N relations automatically, it will display a show or edit view with tab (or accordion) with a list related record. You can relate charts also.
 
 There are many more properties you can override to customize your views. you can define descriptions for columns, your own validators for form fields, base filters etc
 

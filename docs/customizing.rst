@@ -219,9 +219,28 @@ Then we define the master detail view, where master is the one side of the 1-N r
         related_views = [ContactGeneralView]
 
 
-Finally and register everything::
+Remember you can use charts has related views, you can use it like this::
+
+    class ContactTimeChartView(TimeChartView):
+        datamodel = SQLAModel(Contact, db.session)
+        chart_title = 'Grouped Birth contacts'
+        chart_type = 'AreaChart'
+        label_columns = ContactGeneralView.label_columns
+        group_by_columns = ['birthday']
+
+    class GroupMasterView(MasterDetailView):
+        datamodel = SQLAModel(Group, db.session)
+        related_views = [ContactGeneralView, ContactTimeChartView]
+
+This will show a left side menu with the *groups* and a right side list with contacts, and a time chart with the number of birthdays during time by the selected group.
+
+
+Finally register everything::
 
     genapp = BaseApp(app, db)
+    // if Using the above example with related chart
+    genapp.add_view_no_memnu(ContactTimeChartView())
+
     genapp.add_view(GroupMasterView(), "List Groups", icon="fa-folder-open-o", category="Contacts")
     genapp.add_separator("Contacts")
     genapp.add_view(ContactGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")

@@ -28,6 +28,8 @@ class BaseChartView(BaseModelView):
 
     chart_title = 'Chart'
     """ A title to be displayed on the chart """
+    title = 'Title'
+
     group_by_label = lazy_gettext('Group by')
     """ The label that is displayed for the chart selection """
 
@@ -43,6 +45,12 @@ class BaseChartView(BaseModelView):
 
     group_bys = {}
     """ New for 0.6.4, on test, don't use yet """
+
+
+    def __init__(self, **kwargs):
+        self._init_titles()
+        super(BaseModelView, self).__init__(**kwargs)
+
 
     def _init_titles(self):
         self.title = self.chart_title
