@@ -13,6 +13,7 @@
             // Attach listener for tab open event
             //-----------------------------------
             function attachRedrawForTab(dataTable, options) {
+            	alert("1");
                 var $tab_el = $('a[data-toggle="tab"]');
                 $tab_el.on('shown.bs.tab', function () {
                     // Redraws the chart when the tab is activated, so that chart size on tab
@@ -30,6 +31,7 @@
             // Attach listener for Accordion open event
             //------------------------------------------
             function attachRedrawForAccord(dataTable, options) {
+            	alert("1");
                 var $accordion_el = $('.panel-collapse');
 		        $accordion_el.on('shown.bs.collapse', function(){
                     // Redraws the chart when the tab is activated, so that chart size on tab
