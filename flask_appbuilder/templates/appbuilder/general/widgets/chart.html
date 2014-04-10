@@ -12,7 +12,7 @@
             //-----------------------------------
             // Attach listener for tab open event
             //-----------------------------------
-            function attachRedrawForTab(dataTable, options) {
+            function attachRedrawForTab(chart, dataTable, options) {
             	var $tab_el = $('a[data-toggle="tab"]');
                 $tab_el.on('shown.bs.tab', function () {
                     // Redraws the chart when the tab is activated, so that chart size on tab
@@ -21,8 +21,7 @@
                     $curr_tab = $($curr_tab_id);
                     if ($curr_tab.children('div').attr('id')=='chart')
                     {
-                    	alert($curr_tab_id);
-                        chart.draw(dataTable, options);
+                    	chart.draw(dataTable, options);
                     }
                 });
             }
@@ -30,7 +29,7 @@
             //------------------------------------------
             // Attach listener for Accordion open event
             //------------------------------------------
-            function attachRedrawForAccord(dataTable, options) {
+            function attachRedrawForAccord(chart, dataTable, options) {
             	alert("1");
                 var $accordion_el = $('.panel-collapse');
 		        $accordion_el.on('shown.bs.collapse', function(){
@@ -55,19 +54,19 @@
                 dataTable.addColumn('string','x1');
                 dataTable.addColumn('number', 'Count');
 				
-				dataTable.addRows([
-				{%- for str_r, str_v in value_columns %}                
-	          		['{{str_r}}', {{str_v}}],    	      
-				{%- endfor %}
-				]);
+		dataTable.addRows([
+		{%- for str_r, str_v in value_columns %}                
+	        	['{{str_r}}', {{str_v}}],    	      
+		{%- endfor %}
+		]);
 				
                 //instantiate our chart object
                 var chart = new google.visualization.{{chart_type}}(document.getElementById('chart'));
                 var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
 
-                attachRedrawForTab(dataTable, options);
-                attachRedrawForAccord(dataTable, options);
+                attachRedrawForTab(chart, dataTable, options);
+                attachRedrawForAccord(chart, dataTable, options);
 
-		        chart.draw(dataTable, options);
+		chart.draw(dataTable, options);
             }
 </script>
