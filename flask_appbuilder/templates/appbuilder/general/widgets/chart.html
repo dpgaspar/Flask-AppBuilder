@@ -30,9 +30,8 @@
             // Attach listener for Accordion open event
             //------------------------------------------
             function attachRedrawForAccord(chart, dataTable, options) {
-            	alert("1");
-                var $accordion_el = $('.panel-collapse');
-		        $accordion_el.on('shown.bs.collapse', function(){
+            	var $accordion_el = $('.panel-collapse');
+		$accordion_el.on('shown.bs.collapse', function(){
                     // Redraws the chart when the tab is activated, so that chart size on tab
                     // won't be too small.
                     $curr_tab_id = ($(this).attr('href'));
