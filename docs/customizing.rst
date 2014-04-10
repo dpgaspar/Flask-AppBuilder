@@ -156,6 +156,8 @@ If you want to change the above example, and change the way the server disks are
         search_columns = ['name', 'serial']
 
 
+We have overridden the list_widget property with the ListBlock Class. This will look like this.
+
 .. image:: ./images/list_cascade_block.png
     :width: 100%
 
