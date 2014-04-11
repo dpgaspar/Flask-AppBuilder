@@ -117,7 +117,7 @@ class GroupByDateMonth(BaseGroupBy):
     def get_group_col(self, item):
         value = getattr(item, self.column_name)
         if value:
-            return value.month, value.year
+            return value.year, value.month 
 
     def get_format_group_col(self, item):
         return calendar.month_name[item[0]] + ' ' + str(item[1])
