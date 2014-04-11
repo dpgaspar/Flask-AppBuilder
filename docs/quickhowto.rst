@@ -137,6 +137,8 @@ Take a look at the :doc:`api` for add_view method.
 
 You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto
 
+Live quickhowto `Demo <http://flaskappbuilder.pythonanywhere.com/>`_
+
 Some images:
 
 .. image:: ./images/login.png
