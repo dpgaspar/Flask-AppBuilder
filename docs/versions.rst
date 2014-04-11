@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.7.6
+-----------------------------------
+
+- Fix, TimeChartView not ordering dates correctly.
+
 Improvements and Bug fixes on 0.7.5
 -----------------------------------
 
