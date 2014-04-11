@@ -6,7 +6,7 @@ includes detailed security, auto form generation, google charts and much more.
 
 Take a look at installation, quick how to tutorials, API reference etc: `Documentation <http://flask-appbuilder.readthedocs.org/en/latest/>`_
 
-Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples`_ and a live quickhowto `Demo <http://flaskappbuilder.pythonanywhere.com/>`_
+Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples>`_ and a live quickhowto `Demo <http://flaskappbuilder.pythonanywhere.com/>`_
 
 Package Version
 ---------------
