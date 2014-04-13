@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.7.7
+-----------------------------------
+
+- Fix, removed unnecessary log output.
+
 Improvements and Bug fixes on 0.7.6
 -----------------------------------
 

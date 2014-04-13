@@ -178,9 +178,4 @@ class DynamicForm(Form):
         form = self(obj=obj)
         return form
 
-    @classmethod
-    def debug(self):
-        print self.__class__.__name__
-        for item in self():
-            print item.name
 

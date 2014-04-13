@@ -79,10 +79,3 @@ class Menu(object):
             menu_item.childs.append(MenuItem("-"))
         else:
             raise Exception("Menu separator does not have correct category {}".format(category))
-        
-    def debug(self):
-        for i in self.menu:
-            print i
-            for j in i.childs:
-                print "-", j
-

@@ -100,7 +100,6 @@ class ImageManager(FileManager):
         if not base_path:
             raise Exception('Config key IMG_UPLOAD_FOLDER is mandatory')
 
-        log.debug('IM %s %s' % (relative_path, base_path))
         self.thumbnail_fn = thumbgen or thumbgen_filename
         self.thumbnail_size = thumbnail_size
         self.image = None

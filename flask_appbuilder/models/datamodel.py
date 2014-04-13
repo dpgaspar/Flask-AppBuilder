@@ -472,6 +472,3 @@ class SQLAModel(DataModel):
             if col.primary_key:
                 return getattr(item, col.name)
 
-    def printdebug(self):
-        for item in list(self.obj.__mapper__.columns):
-            print item.name, ' ', item.type, item.primary_key, item.nullable
