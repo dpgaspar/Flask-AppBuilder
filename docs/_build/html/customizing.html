@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Actions" href="actions.html" />
-    <link rel="prev" title="Quick Files and Images" href="quickfiles.html" />
+    <link rel="prev" title="Base Configuration" href="config.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -48,7 +48,7 @@
           <a href="actions.html" title="Actions"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="quickfiles.html" title="Quick Files and Images"
+          <a href="config.html" title="Base Configuration"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -113,6 +113,13 @@
 <div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">indexview</span> <span class="o">=</span> <span class="n">MyIndexView</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="changing-the-footer">
+<h2>Changing the Footer<a class="headerlink" href="#changing-the-footer" title="Permalink to this headline">¶</a></h2>
+<p>The default footer can be easily develop your own footer. You must develop your template, to override the existing one.</p>
+<p>Develop your jinja2 template and place it on the following relative path to override the F.A.B footer.</p>
+<p>./your_root_project_path/app/templates/appbuilder/footer.html</p>
+<p>Actually you can override any given F.A.B. template.</p>
 </div>
 <div class="section" id="changing-menu-construction">
 <h2>Changing Menu Construction<a class="headerlink" href="#changing-menu-construction" title="Permalink to this headline">¶</a></h2>
@@ -190,6 +197,7 @@
     <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;serial&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
+<p>We have overridden the list_widget property with the ListBlock Class. This will look like this.</p>
 <a class="reference internal image-reference" href="_images/list_cascade_block.png"><img alt="_images/list_cascade_block.png" src="_images/list_cascade_block.png" style="width: 100%;" /></a>
 <p>You have the following widgets already available</p>
 <ul class="simple">
@@ -246,11 +254,28 @@
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Finally and register everything:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">genapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
-<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupMasterView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-folder-open-o&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">genapp</span><span class="o">.</span><span class="n">add_separator</span><span class="p">(</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<p>Remember you can use charts has related views, you can use it like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactTimeChartView</span><span class="p">(</span><span class="n">TimeChartView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped Birth contacts&#39;</span>
+    <span class="n">chart_type</span> <span class="o">=</span> <span class="s">&#39;AreaChart&#39;</span>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactGeneralView</span><span class="o">.</span><span class="n">label_columns</span>
+    <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;birthday&#39;</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">GroupMasterView</span><span class="p">(</span><span class="n">MasterDetailView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">,</span> <span class="n">ContactTimeChartView</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This will show a left side menu with the <em>groups</em> and a right side list with contacts, and a time chart with the number of birthdays during time by the selected group.</p>
+<p>Finally register everything:</p>
+<div class="highlight-python"><div class="highlight"><pre>genapp = BaseApp(app, db)
+// if Using the above example with related chart
+genapp.add_view_no_memnu(ContactTimeChartView())
+
+genapp.add_view(GroupMasterView(), &quot;List Groups&quot;, icon=&quot;fa-folder-open-o&quot;, category=&quot;Contacts&quot;)
+genapp.add_separator(&quot;Contacts&quot;)
+genapp.add_view(ContactGeneralView(), &quot;List Contacts&quot;, icon=&quot;fa-envelope&quot;, category=&quot;Contacts&quot;)
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="_images/list_master_detail.png"><img alt="_images/list_master_detail.png" src="_images/list_master_detail.png" style="width: 100%;" /></a>
@@ -268,6 +293,7 @@
 <li><a class="reference internal" href="#">Customizing</a><ul>
 <li><a class="reference internal" href="#changing-themes">Changing themes</a></li>
 <li><a class="reference internal" href="#changing-the-index">Changing the index</a></li>
+<li><a class="reference internal" href="#changing-the-footer">Changing the Footer</a></li>
 <li><a class="reference internal" href="#changing-menu-construction">Changing Menu Construction</a></li>
 <li><a class="reference internal" href="#changing-widgets-and-templates">Changing Widgets and Templates</a></li>
 <li><a class="reference internal" href="#change-default-view-behaviour">Change Default View Behaviour</a></li>
@@ -277,7 +303,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="quickfiles.html" title="previous chapter">Quick Files and Images</a></li>
+      <li>Previous: <a href="config.html" title="previous chapter">Base Configuration</a></li>
       <li>Next: <a href="actions.html" title="next chapter">Actions</a></li>
   </ul></li>
 </ul>

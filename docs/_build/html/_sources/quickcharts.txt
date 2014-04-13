@@ -75,6 +75,8 @@ You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/
 
 Take a look at the :doc:`api`. For additional customization
 
+.. note::
+    You can use charts has related views also, just add them on your related_views properties.
 
 Some images:
 

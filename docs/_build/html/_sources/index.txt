@@ -6,6 +6,8 @@ Flask-AppBuilder
 Simple and rapid Application builder, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto form generation, google charts and much more.
 
+Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples>`_ and a live quickhowto `Demo <http://flaskappbuilder.pythonanywhere.com/>`_ (login has guest/welcome).
+
 Fixes, bugs and contributions
 -----------------------------
 
@@ -28,10 +30,10 @@ Contents:
    quickminimal
    quickcharts
    quickfiles
+   config
    customizing
    actions
    i18n
-   config
    security
    api
    versionmigration
