@@ -1,6 +1,8 @@
+from flask import render_template
 from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import GeneralView
+from flask.ext.appbuilder.views import GeneralView, IndexView
+from flask.ext.appbuilder.baseviews import expose
 from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
 from flask.ext.babelpkg import lazy_gettext as _
 
@@ -15,6 +17,21 @@ def fill_gender():
         db.session.commit()
     except:
         db.session.rollback()
+
+
+class FABView(IndexView):
+    """
+        A simple view that implements the index for the site
+    """
+    index_template = 'index.html'
+
+
+class ContactUsView(IndexView):
+    route_base = "/contacts"
+    index_template = 'contactus.html'
+    @expose('/')
+    def index(self):
+        return render_template(self.index_template, baseapp = self.baseapp)
 
 
 class ContactGeneralView(GeneralView):
@@ -74,7 +91,7 @@ fixed_translations_import = [
 
 
 fill_gender()
-genapp = BaseApp(app, db)
+genapp = BaseApp(app, db, indexview = FABView)
 genapp.add_view(GroupGeneralView(), "List Groups", icon="fa-folder-open-o", category="Contacts")
 genapp.add_view(ContactGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")
 genapp.add_separator("Contacts")

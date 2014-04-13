@@ -1,0 +1,43 @@
+<!-- extend base layout -->
+{% extends "appbuilder/base.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+      <div class="container">
+        <h1>Flask App Builder</h1>
+        <p>{{_("Application Builder is a rapid application development framework. It was built with strong and detailed security on mind. Mobile first philosophy from bootstrap.")}}</p>
+        <p><a class="btn btn-primary btn-lg" href="https://github.com/dpgaspar/Flask-AppBuilder/star" role="button">{{_("Star it")}} &raquo;</a></p>
+      </div>
+</div>
+
+<div class="container">
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-md-4">
+          <h2>{{_("Free and Open Source")}}</h2>
+          <p>{{_("Use it any way you like, it's free to use, contribute to it, post questions, propose new features")}}</p>
+          <p><a class="btn btn-default" href="https://github.com/dpgaspar/Flask-AppBuilder/issues" role="button">{{_("Issues")}} &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+          <h2>{{_("Documentation")}}</h2>
+          <p>{{_("Every feature is documented. I wold apreciate some help on this thow")}}</p>
+          <p><a class="btn btn-default" href="http://flaskappbuilder.readthedocs.org/en/latest/" role="button">{{_("Documentation")}} &raquo;</a></p>
+       </div>
+       <div class="col-md-4">
+          <h2>{{_("Live Demo")}}</h2>
+          <p>{{_("Login and get a hold on the quick how to example, with a simple contacts app. This will show the basic features of the framework. Feel free to login using user 'guest' password 'welcome'")}}</p>
+          <p><a class="btn btn-default"  href="login" role="button">{{_("Login")}} &raquo;</a></p>
+       </div>
+      </div>
+
+      <hr>
+
+      <footer>
+        <p>&copy; F.A.B. 2014</p>
+      </footer>
+</div> <!-- /container -->
+
+
+{% endblock %}
+
