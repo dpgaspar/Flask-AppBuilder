@@ -1,7 +1,7 @@
 from flask import render_template
 from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import GeneralView, IndexView
+from flask.ext.appbuilder.views import MasterDetailView, GeneralView, IndexView
 from flask.ext.appbuilder.baseviews import expose
 from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
 from flask.ext.babelpkg import lazy_gettext as _
@@ -83,6 +83,11 @@ class GroupGeneralView(GeneralView):
     related_views = [ContactGeneralView]
     #show_template = 'appbuilder/general/model/show_cascade.html'
 
+
+class GroupMasterView(MasterDetailView):
+    datamodel = SQLAModel(Group, db.session)
+    related_views = [ContactGeneralView]
+
 fixed_translations_import = [
     _("List Groups"),
     _("List Contacts"),
@@ -93,6 +98,7 @@ fixed_translations_import = [
 fill_gender()
 genapp = BaseApp(app, db, indexview = FABView)
 genapp.add_view(GroupGeneralView(), "List Groups", icon="fa-folder-open-o", category="Contacts")
+genapp.add_view(GroupMasterView(), "Master Detail Groups", icon="fa-folder-open-o", category="Contacts")
 genapp.add_view(ContactGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")
 genapp.add_separator("Contacts")
 genapp.add_view(ContactChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")
