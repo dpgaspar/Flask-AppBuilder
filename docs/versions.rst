@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.7.8
+-----------------------------------
+
+- New, login form style.
+
 Improvements and Bug fixes on 0.7.7
 -----------------------------------
 
