@@ -6,10 +6,13 @@
 {% block content %}
 
 <div class="container">
-<div class="col-lg-3">
-</div>
-<div class="well col-lg-6">
-    <h3>{{title}}</h3>
+        <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+            <div class="panel panel-info" >
+                    <div class="panel-heading">
+                        <div class="panel-title">{{ title }}</div>
+                    </div>
+                    <div style="padding-top:30px" class="panel-body" >
+
 
         <form class="form" action="" method="post" name="login">
             {{form.hidden_tag()}}
@@ -44,5 +47,6 @@
             </div>
         </form>
 </div>
+    </div>
     </div>
 {% endblock %}
