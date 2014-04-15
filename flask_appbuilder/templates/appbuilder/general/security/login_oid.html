@@ -18,12 +18,14 @@ function set_openid(openid, pr)
 </script>
 
 
-{% include 'appbuilder/flash.html' %}
 <div class="container">
-<div class="col-md-3">
-</div>
-<div class="well col-md-6">
-    <h3>{{title}}</h3>
+        <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+            <div class="panel panel-info" >
+                    <div class="panel-heading">
+                        <div class="panel-title">{{ title }}</div>
+                    </div>
+                    <div style="padding-top:30px" class="panel-body" >
+
     <form class="form" action="" method="post" name="login">
         {{form.hidden_tag()}}
         <div class="help-block">{{_("Click on your OpenID provider below")}}:</div>
@@ -51,5 +53,5 @@ function set_openid(openid, pr)
                 <input class="btn btn-primary btn-block" type="submit" value="Sign In">
     </form>
 </div>
-</div>
+</div></div>
 {% endblock %}
