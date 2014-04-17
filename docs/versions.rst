@@ -6,6 +6,7 @@ Improvements and Bug fixes on 0.7.8
 
 - New, login form style.
 - Fix, Auto creation of user's models from Base.
+- Fix, Removed double flash message on reset password form.
 
 Improvements and Bug fixes on 0.7.7
 -----------------------------------
