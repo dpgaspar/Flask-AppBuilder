@@ -1,37 +1,49 @@
+{% macro menu_item(item) %}
+	<a tabindex="-1" href="{{item.get_url()}}">
+   	<i class="fa {{item.icon}}"></i> {{_(item.label)}}</a>
+{% endmacro %}
+
+{% macro menu_debug(menu) %}
+    {% for item1 in menu.get_list() %}
+        {{ item1.label }} {{ item1.href }}
+            {% for item2 in item1.childs %}
+		        {{ item2.label }} {{ item2.href }}
+        	{% endfor %}
+	{% endfor %}
+{% endmacro %}
+
+
 {% macro menu_block(menu) %}
 	{% for item1 in menu.get_list() %}
 		{% if item1 | is_menu_visible %}
 			{% if item1.childs %}
 				<li class="dropdown">
 				<a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
-				{{_(item1.name)}}<b class="caret"></b></a>
+                {% if item1.icon %}
+                    <i class="fa {{item1.icon}}"></i>
+                {% endif %}
+				{{_(item1.label)}}<b class="caret"></b></a>
 		        <ul class="dropdown-menu">
 				{% for item2 in item1.childs %}
-					{% if item2.childs %}
-						<li class="dropdown">
-                        	        <a tabindex="-1" href="{{item2.get_url()}}">
-                        	        <i class="fa {{item2.icon}}"></i> - {{_(item2.name)}}</a>
-						</li>
-					{% else %}
-						{% if item2.name == '-' %}
-                       		<li class="divider"></li>
-                    	{% else %}
-							{% if item2 | is_menu_visible %}
-								<li><a tabindex="-1" href="{{item2.get_url()}}">
-								<i class="fa {{item2.icon}}"></i> - {{_(item2.name)}}</a></li>
-							{% endif %}
-						{% endif %}
+					{% if item2.name == '-' %}
+                        <li class="divider"></li>
+                    {% else %}
+                            {% if item2 | is_menu_visible %}
+					        <li>
+                                {{ menu_item(item2) }}
+                            </li>
+                            {% endif %}
 					{% endif %}
 				{% endfor %}
 				</ul></li>
 			{% else %}
-				<li>			
-				<a tabindex="-1" href="{{item1.get_url()}}">
-            	<i class="fa {{item1.icon}}"></i> - {{_(item1.name)}}</a>
-            	</li>
+				<li>
+                    {{ menu_item(item1) }}
+				</li>
         	{% endif %}
         {% endif %}
     {% endfor %}
+
 {% endmacro %}
 
 {% macro locale_menu(languages) %}

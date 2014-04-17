@@ -77,20 +77,20 @@ class SecurityManager(object):
         baseapp.add_view_no_menu(self.auth_view)
 
         baseapp.add_view(user_view, "List Users"
-                         , "/users/list", "fa-user",
-                         "Security")
+                         , href="/users/list", icon="fa-user",
+                         category="Security", category_icon="fa-cogs")
 
         role_view = baseapp._init_view_session(RoleGeneralView)
-        baseapp.add_view(role_view, "List Roles", "/roles/list", "fa-group", "Security")
+        baseapp.add_view(role_view, "List Roles", href="/roles/list", icon="fa-group", category="Security", category_icon="fa-cogs")
         role_view.related_views = [user_view.__class__]
         baseapp.add_view(baseapp._init_view_session(UserStatsChartView), "User's Statistics", icon="fa-bar-chart-o", category="Security")
         baseapp.menu.add_separator("Security")
-        baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView), "Base Permissions", "/permissions/list",
-                         "fa-lock", "Security")
-        baseapp.add_view(baseapp._init_view_session(ViewMenuGeneralView), "Views/Menus", "/viewmenus/list",
-                         "fa-list-alt", "Security")
+        baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView), "Base Permissions", href="/permissions/list",
+                         icon="fa-lock", category="Security")
+        baseapp.add_view(baseapp._init_view_session(ViewMenuGeneralView), "Views/Menus", href="/viewmenus/list",
+                         icon="fa-list-alt", category="Security")
         baseapp.add_view(baseapp._init_view_session(PermissionGeneralView), "Permission on Views/Menus",
-                         "/permissionviews/list", "fa-link", "Security")
+                         href="/permissionviews/list", icon="fa-link", category="Security")
 
 
     def load_user(self, pk):

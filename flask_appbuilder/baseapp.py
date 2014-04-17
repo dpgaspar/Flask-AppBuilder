@@ -149,7 +149,7 @@ class BaseApp(object):
             for item in category.childs:
                 self._add_permissions_menu(item.name)
 
-    def add_view(self, baseview, name, href="", icon="", category=""):
+    def add_view(self, baseview, name, href="", icon="", label="", category="", category_icon="", category_label=""):
         """
             Add your views associated with menus using this method.
             
@@ -181,9 +181,11 @@ class BaseApp(object):
             self._process_ref_related_views()
             self.register_blueprint(baseview)
             self._add_permission(baseview)
-        self.add_link(name=name, href=href, icon=icon, category=category, baseview=baseview)
+        self.add_link(name=name, href=href, icon=icon, label=label,
+                      category=category, category_icon=category_icon,
+                      category_label=category_label, baseview=baseview)
 
-    def add_link(self, name, href, icon="", category="", baseview=None):
+    def add_link(self, name, href, icon="", label="", category="", category_icon="", category_label="", baseview=None):
         """
             Add your own links to menu using this method
             
@@ -196,8 +198,9 @@ class BaseApp(object):
             :param category:
                 The menu category where the menu will be included        
         """
-        self.menu.add_link(name=name, href=href, icon=icon,
-                           category=category, baseview=baseview)
+        self.menu.add_link(name=name, href=href, icon=icon, label=label,
+                           category=category, category_icon=category_icon,
+                           category_label=category_label, baseview=baseview)
         self._add_permissions_menu(name)
         if category:
             self._add_permissions_menu(category)
