@@ -7,6 +7,9 @@ Improvements and Bug fixes on 0.7.8
 - New, login form style.
 - Fix, Auto creation of user's models from Base.
 - Fix, Removed double flash message on reset password form.
+- New, support for icons on menu categories.
+- New, remove "-" bettwen icons and menu labels.
+- New, added optional parameter "label" and "category_label" for menu items. better security and i18n.
 
 Improvements and Bug fixes on 0.7.7
 -----------------------------------
