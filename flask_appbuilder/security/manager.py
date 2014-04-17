@@ -9,8 +9,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager
 from flask_openid import OpenID
+from flask_babelpkg import lazy_gettext as _
 
 from flask_appbuilder import Base
+
 from models import User, Role, PermissionView, Permission, ViewMenu, \
     assoc_permissionview_role
 from views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, \
@@ -77,20 +79,26 @@ class SecurityManager(object):
         baseapp.add_view_no_menu(self.auth_view)
 
         baseapp.add_view(user_view, "List Users"
-                         , href="/users/list", icon="fa-user",
-                         category="Security", category_icon="fa-cogs")
+                         , href="/users/list", icon="fa-user", label=_("List Users"),
+                         category="Security", category_icon="fa-cogs", category_label=_('Security'))
 
         role_view = baseapp._init_view_session(RoleGeneralView)
-        baseapp.add_view(role_view, "List Roles", href="/roles/list", icon="fa-group", category="Security", category_icon="fa-cogs")
+        baseapp.add_view(role_view, "List Roles", href="/roles/list", icon="fa-group", label=_('List Roles'),
+                         category="Security", category_icon="fa-cogs")
         role_view.related_views = [user_view.__class__]
-        baseapp.add_view(baseapp._init_view_session(UserStatsChartView), "User's Statistics", icon="fa-bar-chart-o", category="Security")
+        baseapp.add_view(baseapp._init_view_session(UserStatsChartView),
+                         "User's Statistics", icon="fa-bar-chart-o", label=_("User's Statistics"),
+                         category="Security")
         baseapp.menu.add_separator("Security")
-        baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView), "Base Permissions", href="/permissions/list",
-                         icon="fa-lock", category="Security")
-        baseapp.add_view(baseapp._init_view_session(ViewMenuGeneralView), "Views/Menus", href="/viewmenus/list",
-                         icon="fa-list-alt", category="Security")
+        baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView),
+                         "Base Permissions", href="/permissions/list", icon="fa-lock",
+                         label=_("Base Permissions"), category="Security")
+        baseapp.add_view(baseapp._init_view_session(ViewMenuGeneralView),
+                         "Views/Menus", href="/viewmenus/list", icon="fa-list-alt",
+                         label=_('Views/Menus'), category="Security")
         baseapp.add_view(baseapp._init_view_session(PermissionGeneralView), "Permission on Views/Menus",
-                         href="/permissionviews/list", icon="fa-link", category="Security")
+                         href="/permissionviews/list", icon="fa-link", label=_('Permission on Views/Menus'),
+                         category="Security")
 
 
     def load_user(self, pk):

@@ -161,16 +161,24 @@ class BaseApp(object):
                 Override the generated href for the menu. if non provided default_view from view will be set as href.
             :param icon:
                 Font-Awesome icon name, optional.
+            :param label:
+                The label that will be displayed on the menu, if absent param name will be used
             :param category:
                 The menu category where the menu will be included, if non provided the view will be acessible as a top menu.
-                
+            :param category_icon:
+                Font-Awesome icon name for the category, optional.
+            
             Examples::
             
                 baseapp = BaseApp(app, db)
-                # Register a view, rendering a top menu without icon
-                baseapp.add_view(MyGeneralView, "My View")
-                # Register a view, a submenu "Other View" from "Other" with a phone icon
-                baseapp.add_view(MyOtherGeneralView, "Other View", icon='fa-phone', category="Others")
+                # Register a view, rendering a top menu without icon.
+                baseapp.add_view(MyGeneralView(), "My View")
+                # Register a view, a submenu "Other View" from "Other" with a phone icon.
+                baseapp.add_view(MyOtherGeneralView(), "Other View", icon='fa-phone', category="Others")
+                $ Regiter a view, with category icon and translation.
+                baseapp.add_view(YetOtherGeneralView(), "Other View", icon='fa-phone',
+                                label=_('Other View'), category="Others", category_icon='fa-envelop',
+                                category_label=_('Other View'))
                 # Add a link
                 baseapp.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
@@ -195,8 +203,12 @@ class BaseApp(object):
                 Override the generated href for the menu.
             :param icon:
                 Bootstrap included icon name
+            :param label:
+                The label that will be displayed on the menu, if absent param name will be used
             :param category:
-                The menu category where the menu will be included        
+                The menu category where the menu will be included, if non provided the view will be acessible as a top menu.
+            :param category_icon:
+                Font-Awesome icon name for the category, optional.
         """
         self.menu.add_link(name=name, href=href, icon=icon, label=label,
                            category=category, category_icon=category_icon,
