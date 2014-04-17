@@ -6,6 +6,7 @@ from flask import Blueprint
 from flask.ext.babelpkg import gettext as _gettext, lazy_gettext
 from flask.ext.appbuilder.babel.manager import BabelManager
 from flask.ext.appbuilder import translations
+from flask.ext.appbuilder import Base
 from .security.manager import SecurityManager
 from menu import Menu
 
@@ -94,7 +95,8 @@ class BaseApp(object):
 
         # Creating Developer's models
         self.db.create_all()
-
+        engine = self.db.session.get_bind(mapper=None, clause=None)
+        Base.metadata.create_all(engine)
 
     def _init_config_parameters(self):
         if 'APP_NAME' in self.app.config:

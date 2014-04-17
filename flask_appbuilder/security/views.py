@@ -1,6 +1,5 @@
 import datetime
 from ..fieldwidgets import BS3PasswordFieldWidget
-from flask_wtf import validators
 from flask import render_template, flash, redirect, session, url_for, request, g
 from werkzeug.security import generate_password_hash
 #from openid.consumer import discover
@@ -8,7 +7,7 @@ from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
 #from openid.extensions import ax
 #from openid.extensions.sreg import SRegRequest, SRegResponse
 from flask.ext.openid import SessionWrapper, OpenIDResponse
-from flask_wtf import EqualTo, PasswordField
+from flask_wtf import EqualTo, PasswordField, validators
 from flask.ext.babelpkg import gettext, lazy_gettext
 from flask_login import login_user, logout_user
 
