@@ -126,7 +126,7 @@ Register everything, to present the models and create the menu
 ::
 
         genapp = BaseApp(app, db)
-        genapp.add_view(GroupGeneralView(), "List Groups",icon = ""fa-folder-open-o"",category = "Contacts",
+        genapp.add_view(GroupGeneralView(), "List Groups",icon = "fa-folder-open-o",category = "Contacts",
                         category_icon = "fa-envelope")
         genapp.add_view(ContactGeneralView(), "List Contacts",icon = "fa-envelope",category = "Contacts")
 
