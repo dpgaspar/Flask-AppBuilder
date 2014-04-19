@@ -142,7 +142,7 @@ Live quickhowto `Demo <http://flaskappbuilder.pythonanywhere.com/>`_ (login with
 
 Some images:
 
-.. image:: ./images/login.png
+.. image:: ./images/login_db.png
     :width: 100%
 
 .. image:: ./images/group_list.png

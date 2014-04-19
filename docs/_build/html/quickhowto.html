@@ -177,10 +177,10 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
 <p>Register everything, to present the models and create the menu</p>
-<div class="highlight-python"><div class="highlight"><pre>genapp = BaseApp(app, db)
-genapp.add_view(GroupGeneralView(), &quot;List Groups&quot;,icon = &quot;&quot;fa-folder-open-o&quot;&quot;,category = &quot;Contacts&quot;,
-                category_icon = &quot;fa-envelope&quot;)
-genapp.add_view(ContactGeneralView(), &quot;List Contacts&quot;,icon = &quot;fa-envelope&quot;,category = &quot;Contacts&quot;)
+<div class="highlight-python"><div class="highlight"><pre><span class="n">genapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-folder-open-o&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">,</span>
+                <span class="n">category_icon</span> <span class="o">=</span> <span class="s">&quot;fa-envelope&quot;</span><span class="p">)</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a> for add_view method.</p>
@@ -191,7 +191,7 @@ genapp.add_view(ContactGeneralView(), &quot;List Contacts&quot;,icon = &quot;fa-
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>
 <p>Live quickhowto <a class="reference external" href="http://flaskappbuilder.pythonanywhere.com/">Demo</a> (login with guest/welcome).</p>
 <p>Some images:</p>
-<a class="reference internal image-reference" href="_images/login.png"><img alt="_images/login.png" src="_images/login.png" style="width: 100%;" /></a>
+<a class="reference internal image-reference" href="_images/login_db.png"><img alt="_images/login_db.png" src="_images/login_db.png" style="width: 100%;" /></a>
 <a class="reference internal image-reference" href="_images/group_list.png"><img alt="_images/group_list.png" src="_images/group_list.png" style="width: 100%;" /></a>
 <a class="reference internal image-reference" href="_images/contact_list.png"><img alt="_images/contact_list.png" src="_images/contact_list.png" style="width: 100%;" /></a>
 </div>
