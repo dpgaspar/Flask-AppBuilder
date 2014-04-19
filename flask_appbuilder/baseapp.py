@@ -156,7 +156,7 @@ class BaseApp(object):
             :param baseview:
                 A BaseView type class instantiated.
             :param name:
-                The string name that will be displayed on the menu.
+                The string name that identifies the menu.
             :param href:
                 Override the generated href for the menu. if non provided default_view from view will be set as href.
             :param icon:
@@ -167,7 +167,9 @@ class BaseApp(object):
                 The menu category where the menu will be included, if non provided the view will be acessible as a top menu.
             :param category_icon:
                 Font-Awesome icon name for the category, optional.
-            
+            :param category_label:
+                The label that will be displayed on the menu, if absent param name will be used
+
             Examples::
             
                 baseapp = BaseApp(app, db)
@@ -198,7 +200,7 @@ class BaseApp(object):
             Add your own links to menu using this method
             
             :param name:
-                The string name that will be displayed on the menu.
+                The string name that identifies the menu.
             :param href:
                 Override the generated href for the menu.
             :param icon:
@@ -209,6 +211,9 @@ class BaseApp(object):
                 The menu category where the menu will be included, if non provided the view will be acessible as a top menu.
             :param category_icon:
                 Font-Awesome icon name for the category, optional.
+            :param category_label:
+                The label that will be displayed on the menu, if absent param name will be used
+
         """
         self.menu.add_link(name=name, href=href, icon=icon, label=label,
                            category=category, category_icon=category_icon,
