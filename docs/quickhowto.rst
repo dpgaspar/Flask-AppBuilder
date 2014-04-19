@@ -73,7 +73,7 @@ The *Contacts* table.
 Define your Views (views.py)
 ----------------------------
 
-Now we are going to define our view for *Group* table
+Now we are going to define our view for *Group* table. This view will setup functionality for create, remove, update and show primitives for model's definition.
 
 ::
 
@@ -126,13 +126,14 @@ Register everything, to present the models and create the menu
 ::
 
         genapp = BaseApp(app, db)
-        genapp.add_view(GroupGeneralView(), "List Groups",icon = ""fa-folder-open-o"",category = "Contacts")
+        genapp.add_view(GroupGeneralView(), "List Groups",icon = ""fa-folder-open-o"",category = "Contacts",
+                        category_icon = "fa-envelope")
         genapp.add_view(ContactGeneralView(), "List Contacts",icon = "fa-envelope",category = "Contacts")
 
 Take a look at the :doc:`api` for add_view method.
 
 .. note::
-	The icons for the menu on this examples are from font-awesome, take a look at the `icons <http://fontawesome.io/icons/>`_ names. Font-Awesome is already included and you can use any icon you like on menus and actions
+	The icons for the menu on this examples are from font-awesome, take a look at the `Icons <http://fontawesome.io/icons/>`_ names. Font-Awesome is already included and you can use any icon you like on menus and actions
 	
 
 You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto

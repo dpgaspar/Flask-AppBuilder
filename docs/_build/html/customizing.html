@@ -116,7 +116,7 @@
 </div>
 <div class="section" id="changing-the-footer">
 <h2>Changing the Footer<a class="headerlink" href="#changing-the-footer" title="Permalink to this headline">¶</a></h2>
-<p>The default footer can be easily develop your own footer. You must develop your template, to override the existing one.</p>
+<p>The default footer can be easily changed by your own. You must develop your template, to override the existing one.</p>
 <p>Develop your jinja2 template and place it on the following relative path to override the F.A.B footer.</p>
 <p>./your_root_project_path/app/templates/appbuilder/footer.html</p>
 <p>Actually you can override any given F.A.B. template.</p>
@@ -138,6 +138,9 @@
 <span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView</span><span class="p">,</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
 <span class="c"># Register a view, a submenu &quot;Other View&quot; from &quot;Other&quot; with a phone icon</span>
 <span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">)</span>
+<span class="c"># Register a view, with label for babel support (internationalization), setup an icon for the category.</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Other View&#39;</span><span class="p">),</span>
+                <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">,</span> <span class="n">category_label</span><span class="o">=</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Other&#39;</span><span class="p">),</span> <span class="n">category_label</span><span class="o">=</span><span class="s">&#39;fa-envelope&#39;</span><span class="p">)</span>
 <span class="c"># Add a link</span>
 <span class="n">baseapp</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;google&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-google-plus&quot;</span><span class="p">)</span>
 </pre></div>
@@ -155,6 +158,8 @@
 </li>
 </ul>
 </div></blockquote>
+<p>Using <em>label</em> argument is optional for view name or category, but it&#8217;s advised for internationalization, if you use it with Babel&#8217;s <em>lazy_gettext</em> function it will automate translation&#8217;s extraction.</p>
+<p>Category icon and label can be setup only for the first time. Internally F.A.B. has already stored it, next references will be made by name.</p>
 </div>
 <div class="section" id="changing-widgets-and-templates">
 <h2>Changing Widgets and Templates<a class="headerlink" href="#changing-widgets-and-templates" title="Permalink to this headline">¶</a></h2>
@@ -233,7 +238,7 @@
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyInlineView</span><span class="p">]</span>
 
 <span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">(),</span> <span class="s">&quot;List My View&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-table&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">(),</span> <span class="s">&quot;List My View&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-table&quot;</span><span class="p">,</span> <span class="n">category</span> <span class="o">=</span> <span class="s">&quot;My Views&quot;</span><span class="p">)</span>
 <span class="n">baseapp</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="n">MyInlineView</span><span class="p">())</span>
 </pre></div>
 </div>

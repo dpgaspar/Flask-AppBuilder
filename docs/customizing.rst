@@ -63,7 +63,7 @@ Define a special and simple view inherit from IndexView::
 
 
 Changing the Footer
-------------------
+-------------------
 
 The default footer can be easily changed by your own. You must develop your template, to override the existing one.
 
@@ -92,6 +92,9 @@ By default menu is constructed based on your classes and in a reversed navbar. L
 		baseapp.add_view(MyGeneralView, "My View")
 		# Register a view, a submenu "Other View" from "Other" with a phone icon
 		baseapp.add_view(MyOtherGeneralView, "Other View", icon='fa-phone', category="Others")
+		# Register a view, with label for babel support (internationalization), setup an icon for the category.
+		baseapp.add_view(MyOtherGeneralView, "Other View", icon='fa-phone', label=lazy_gettext('Other View'),
+		                category="Others", category_label=lazy_gettext('Other'), category_label='fa-envelope')
 		# Add a link
 		baseapp.add_link("google", href="www.google.com", icon = "fa-google-plus")
 		
@@ -104,6 +107,10 @@ By default menu is constructed based on your classes and in a reversed navbar. L
 		baseapp.add_separator("My Views")
 		baseapp.add_view(MyGeneralView3, "My View 3", category="My Views")
 		
+
+Using *label* argument is optional for view name or category, but it's advised for internationalization, if you use it with Babel's *lazy_gettext* function it will automate translation's extraction.
+
+Category icon and label can be setup only for the first time. Internally F.A.B. has already stored it, next references will be made by name.
 
 Changing Widgets and Templates
 ------------------------------
@@ -203,7 +210,7 @@ All you have to do is to mix *CompactCRUDMixin* class with the *GeneralView* cla
         related_views = [MyInlineView]
 
     baseapp = BaseApp(app, db)
-    baseapp.add_view(MyView(), "List My View",icon = "fa-table",category = "My Views")
+    baseapp.add_view(MyView(), "List My View",icon = "fa-table", category = "My Views")
     baseapp.add_view_no_menu(MyInlineView())
 
 

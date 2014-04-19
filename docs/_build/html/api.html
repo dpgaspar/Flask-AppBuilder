@@ -101,7 +101,7 @@ Will hold your flask app object, all your views, and security classes.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseapp.BaseApp.add_link">
-<tt class="descname">add_link</tt><big>(</big><em>name</em>, <em>href</em>, <em>icon=''</em>, <em>category=''</em>, <em>baseview=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.add_link" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add_link</tt><big>(</big><em>name</em>, <em>href</em>, <em>icon=''</em>, <em>label=''</em>, <em>category=''</em>, <em>category_icon=''</em>, <em>category_label=''</em>, <em>baseview=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.add_link" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add your own links to menu using this method</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -111,7 +111,9 @@ Will hold your flask app object, all your views, and security classes.</p>
 <li><strong>name</strong> &#8211; The string name that will be displayed on the menu.</li>
 <li><strong>href</strong> &#8211; Override the generated href for the menu.</li>
 <li><strong>icon</strong> &#8211; Bootstrap included icon name</li>
-<li><strong>category</strong> &#8211; The menu category where the menu will be included</li>
+<li><strong>label</strong> &#8211; The label that will be displayed on the menu, if absent param name will be used</li>
+<li><strong>category</strong> &#8211; The menu category where the menu will be included, if non provided the view will be acessible as a top menu.</li>
+<li><strong>category_icon</strong> &#8211; Font-Awesome icon name for the category, optional.</li>
 </ul>
 </td>
 </tr>
@@ -135,7 +137,7 @@ Will hold your flask app object, all your views, and security classes.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseapp.BaseApp.add_view">
-<tt class="descname">add_view</tt><big>(</big><em>baseview</em>, <em>name</em>, <em>href=''</em>, <em>icon=''</em>, <em>category=''</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.add_view" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add_view</tt><big>(</big><em>baseview</em>, <em>name</em>, <em>href=''</em>, <em>icon=''</em>, <em>label=''</em>, <em>category=''</em>, <em>category_icon=''</em>, <em>category_label=''</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.add_view" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add your views associated with menus using this method.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -146,20 +148,26 @@ Will hold your flask app object, all your views, and security classes.</p>
 <li><strong>name</strong> &#8211; The string name that will be displayed on the menu.</li>
 <li><strong>href</strong> &#8211; Override the generated href for the menu. if non provided default_view from view will be set as href.</li>
 <li><strong>icon</strong> &#8211; Font-Awesome icon name, optional.</li>
+<li><strong>label</strong> &#8211; The label that will be displayed on the menu, if absent param name will be used</li>
 <li><strong>category</strong> &#8211; The menu category where the menu will be included, if non provided the view will be acessible as a top menu.</li>
+<li><strong>category_icon</strong> &#8211; Font-Awesome icon name for the category, optional.</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
 <p>Examples:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
-<span class="c"># Register a view, rendering a top menu without icon</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView</span><span class="p">,</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
-<span class="c"># Register a view, a submenu &quot;Other View&quot; from &quot;Other&quot; with a phone icon</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">)</span>
-<span class="c"># Add a link</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;google&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-google-plus&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre>baseapp = BaseApp(app, db)
+# Register a view, rendering a top menu without icon.
+baseapp.add_view(MyGeneralView(), &quot;My View&quot;)
+# Register a view, a submenu &quot;Other View&quot; from &quot;Other&quot; with a phone icon.
+baseapp.add_view(MyOtherGeneralView(), &quot;Other View&quot;, icon=&#39;fa-phone&#39;, category=&quot;Others&quot;)
+$ Regiter a view, with category icon and translation.
+baseapp.add_view(YetOtherGeneralView(), &quot;Other View&quot;, icon=&#39;fa-phone&#39;,
+                label=_(&#39;Other View&#39;), category=&quot;Others&quot;, category_icon=&#39;fa-envelop&#39;,
+                category_label=_(&#39;Other View&#39;))
+# Add a link
+baseapp.add_link(&quot;google&quot;, href=&quot;www.google.com&quot;, icon = &quot;fa-google-plus&quot;)
 </pre></div>
 </div>
 </dd></dl>

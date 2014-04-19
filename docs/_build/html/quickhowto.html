@@ -121,7 +121,7 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
 </div>
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
-<p>Now we are going to define our view for <em>Group</em> table</p>
+<p>Now we are going to define our view for <em>Group</em> table. This view will setup functionality for create, remove, update and show primitives for model&#8217;s definition.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">]</span>
@@ -178,14 +178,15 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
 <p>Register everything, to present the models and create the menu</p>
 <div class="highlight-python"><div class="highlight"><pre>genapp = BaseApp(app, db)
-genapp.add_view(GroupGeneralView(), &quot;List Groups&quot;,icon = &quot;&quot;fa-folder-open-o&quot;&quot;,category = &quot;Contacts&quot;)
+genapp.add_view(GroupGeneralView(), &quot;List Groups&quot;,icon = &quot;&quot;fa-folder-open-o&quot;&quot;,category = &quot;Contacts&quot;,
+                category_icon = &quot;fa-envelope&quot;)
 genapp.add_view(ContactGeneralView(), &quot;List Contacts&quot;,icon = &quot;fa-envelope&quot;,category = &quot;Contacts&quot;)
 </pre></div>
 </div>
 <p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a> for add_view method.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The icons for the menu on this examples are from font-awesome, take a look at the <a class="reference external" href="http://fontawesome.io/icons/">icons</a> names. Font-Awesome is already included and you can use any icon you like on menus and actions</p>
+<p class="last">The icons for the menu on this examples are from font-awesome, take a look at the <a class="reference external" href="http://fontawesome.io/icons/">Icons</a> names. Font-Awesome is already included and you can use any icon you like on menus and actions</p>
 </div>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>
 <p>Live quickhowto <a class="reference external" href="http://flaskappbuilder.pythonanywhere.com/">Demo</a> (login with guest/welcome).</p>

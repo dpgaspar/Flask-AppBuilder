@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
-    <link rel="next" title="Base Configuration" href="config.html" />
+    <link rel="next" title="Security" href="security.html" />
     <link rel="prev" title="Actions" href="actions.html" />
    
   
@@ -45,7 +45,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="config.html" title="Base Configuration"
+          <a href="security.html" title="Security"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="actions.html" title="Actions"
@@ -102,12 +102,10 @@ pybabel init -i ./babel/messages.pot -d app/translations -l de
 
                 label_columns = {&#39;name&#39;:_(&#39;Name&#39;)}
 
-        fixed_translations_import = [
-        _(&quot;List Groups&quot;),
-        _(&quot;List Contacts&quot;)
-
-genapp.add_view(GroupGeneralView(), &quot;List Groups&quot;,icon = &quot;th-large&quot;,category = &quot;Contacts&quot;)
-genapp.add_view(ContactGeneralView(), &quot;List Contacts&quot;,icon = &quot;earphone&quot;,category = &quot;Contacts&quot;)
+genapp.add_view(GroupGeneralView(), &quot;List Groups&quot;,icon = &quot;th-large&quot;, label=_(&#39;List Groups&#39;),
+                category = &quot;Contacts&quot;, category_icon=&#39;fa-envelope&#39;, category_label=_(&#39;Contacts&#39;))
+genapp.add_view(ContactGeneralView(), &quot;List Contacts&quot;,icon = &quot;earphone&quot;, label=_(&#39;List Contacts&#39;),
+                category = &quot;Contacts&quot;)
 </pre></div>
 </div>
 <p>1 - Run the folowing extraction script:</p>
@@ -194,7 +192,7 @@ msgstr &quot;Lista de Contactos&quot;
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="actions.html" title="previous chapter">Actions</a></li>
-      <li>Next: <a href="config.html" title="next chapter">Base Configuration</a></li>
+      <li>Next: <a href="security.html" title="next chapter">Security</a></li>
   </ul></li>
 </ul>
   <h3>This Page</h3>
