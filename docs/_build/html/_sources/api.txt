@@ -114,7 +114,7 @@ TimeChartView
         :members:
 
 DirectChartView
--------------
+---------------
 
     .. autoclass:: DirectChartView
         :members:
