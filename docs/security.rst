@@ -73,7 +73,7 @@ And the decorator @has_access will prevent any unwanted access
 Auditing
 --------
 
-All user's creation and modification are audited, on the show detail for each user you can check who created the user and when and who has last changed it and when
+All user's creation and modification are audited, on the show detail for each user you can check who created the user and when and who has last changed it.
 
 You can check also a total login count (successful login), and the last failed logins (these are reset if a successful login then occurred).
 
