@@ -43,6 +43,7 @@ Define your Views (views.py)
 
 Notice:
 
+<<<<<<< HEAD
 We are overriding the *list_widget*, the widget that is normally used by GeneralView. This will display a thumbnail list, excellent for displaying images.
 
 Notice that we are not using the *image* column but the method *photo_img* we have created. This method will display the image and link it to the show view.
@@ -52,6 +53,11 @@ And that's it! images will be saved on the server. Their file names will result 
 .. note::
     Control image resizing using configuration key *IMG_SIZE*
 
+=======
+We are overriding the list_widget, the widget that is normally used by GeneralView. This will display a thumbnail list excellent for displaying images.
+
+And that's it! Images will be saved on the server and has UUID's and will be resized for optimization.
+>>>>>>> bc007e9eb4d18105b0aae8f4a7d75e50e6293bf1
 
 Next step
 ---------

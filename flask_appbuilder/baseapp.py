@@ -177,7 +177,7 @@ class BaseApp(object):
                 baseapp.add_view(MyGeneralView(), "My View")
                 # Register a view, a submenu "Other View" from "Other" with a phone icon.
                 baseapp.add_view(MyOtherGeneralView(), "Other View", icon='fa-phone', category="Others")
-                $ Regiter a view, with category icon and translation.
+                # Register a view, with category icon and translation.
                 baseapp.add_view(YetOtherGeneralView(), "Other View", icon='fa-phone',
                                 label=_('Other View'), category="Others", category_icon='fa-envelop',
                                 category_label=_('Other View'))

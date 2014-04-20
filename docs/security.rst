@@ -32,7 +32,7 @@ Of course you can create any additional role you want and configure them as you 
 Permissions
 -----------
 
-The framework you automatically create all the possible existing permissions on your views or menus, by "inspection" your code. 
+The framework automatically creates for you all the possible existing permissions on your views or menus, by "inspection" your code. 
 
 Each time you create a new view based on a model (inherit from GeneralView) it will create the following permissions:
 
