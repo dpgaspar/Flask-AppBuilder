@@ -56,8 +56,7 @@ And that's it! images will be saved on the server. Their file names will result 
 =======
 We are overriding the list_widget, the widget that is normally used by GeneralView. This will display a thumbnail list excellent for displaying images.
 
-And that's it! Images will be saved on the server and has UUID's and will be resized for optimization.
->>>>>>> bc007e9eb4d18105b0aae8f4a7d75e50e6293bf1
+And that's it! Images will be saved on the server with their filename concatenated by a UUID's. Aditionally will be resized for optimization.
 
 Next step
 ---------
