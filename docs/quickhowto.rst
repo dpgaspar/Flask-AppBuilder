@@ -42,6 +42,7 @@ Define your models (models.py)
 The *Group* table.
 
 ::
+
     from sqlalchemy import Column, Integer, String, ForeignKey, Date
     from sqlalchemy.orm import relationship
     from flask.ext.appbuilder.models.mixins import BaseMixin
