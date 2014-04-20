@@ -75,7 +75,7 @@ The *Contacts* table.
 Define your Views (views.py)
 ----------------------------
 
-Now we are going to define our view for *Group* table. This view will setup functionality for create, remove, update and show primitives for model's definition.
+Now we are going to define our view for *Group* table. This view will setup functionality for create, remove, update and show primitives for your model's definition.
 
 ::
 
@@ -117,7 +117,7 @@ Let's define it::
 Some explanation:
 
 :label_columns: defines the labels for your columns. The framework will define the missing ones for you, with a pretty version of your column names.
-:show_fieldsets: A fieldset (Django style).
+:show_fieldsets: A fieldset (Django style). This is allow you to customize the add, show and edit views independently.
 
 
 Register (views.py)
