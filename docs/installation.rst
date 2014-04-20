@@ -11,7 +11,7 @@ Using pip
 Skeleton Application
 --------------------
 
-If you want a simple and quick start, you can use one of the examples, or clone the base skeleton application::
+If you want a simple quick start, you can use one of the examples, or clone the base skeleton application::
 
     git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
     cd Flask-AppBuilder-Skeleton

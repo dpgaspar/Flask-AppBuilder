@@ -1,6 +1,9 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.7.9
+-----------------------------------
+
 Improvements and Bug fixes on 0.7.8
 -----------------------------------
 
