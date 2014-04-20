@@ -1,7 +1,7 @@
 Quick Files and Images
 ======================
 
-You can implement views with images or files embedded on the model definition
+You can implement views with images or files embedded on the model's definition
 
 Define your model (models.py)
 -----------------------------
