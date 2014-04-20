@@ -41,19 +41,15 @@ Define your Views (views.py)
         list_columns = ['photo_img', 'name']
         show_columns = ['photo_img','name']
 
-Notice:
+Notice that we are overriding the *list_widget*, the widget that is normally used by GeneralView. This will display a thumbnail list, excellent for displaying images.
 
-<<<<<<< HEAD
-We are overriding the *list_widget*, the widget that is normally used by GeneralView. This will display a thumbnail list, excellent for displaying images.
-
-Notice that we are not using the *image* column but the method *photo_img* we have created. This method will display the image and link it to the show view.
+We are not using the *image* column but the method *photo_img* we have created. This method will display the image and link it to the show view.
 
 And that's it! images will be saved on the server. Their file names will result in the concatenation of UUID with their original name. They will be resized for optimization.
 
 .. note::
-    Control image resizing using configuration key *IMG_SIZE*
+    You can define image resizing using configuration key *IMG_SIZE*
 
-=======
 We are overriding the list_widget, the widget that is normally used by GeneralView. This will display a thumbnail list excellent for displaying images.
 
 And that's it! Images will be saved on the server with their filename concatenated by a UUID's. Aditionally will be resized for optimization.
