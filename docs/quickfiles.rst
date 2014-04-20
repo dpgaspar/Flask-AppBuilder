@@ -20,7 +20,7 @@ Define your model (models.py)
             else:
                 return Markup('<a href="' + url_for('PersonGeneralView.show',pk=str(self.id)) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
         
-Create an additional method in this case *photo_img*, to inject your own custom HTML, to show your saved images. In this example we are showing the images, and linking them with the show view.
+Create an additional method in this case *photo_img*, to inject your own custom HTML, to show your saved images. In this example the customized method is showing the images, and linking them with the show view.
 
 Later reference this method like it's a column on your view.
 
