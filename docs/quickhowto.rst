@@ -4,7 +4,7 @@ Quick How to
 The Base Skeleton Application
 -----------------------------
 
-If your working with the base skeleton application :doc:`installation`
+If your working with the base skeleton application (take a look at the :doc:`installation` chapter).
 
 you now have the following directory structure::
 
@@ -25,18 +25,16 @@ Please take a look at github `examples <https://github.com/dpgaspar/Flask-AppBui
 Simple contacts application
 ---------------------------
 
-Lets create a very simple contacts application.
+Let's create a very simple contacts application. F.A.B uses of the excellent SQLAlchemy ORM package, you should be familiar with it's declarative syntax to define your database models on F.A.B.
 
-First we are going to create a *Group* table, to group our contacts
+On our example application we are going to define two tables, a *Contact's* table that will hold the contacts detailed information, and a *Group* table to group our contacts or classify them.
+We could additionally define a *Gender* table, to serve the role of enumerated values for 'Male' and 'Female'.
 
-.. note::
-	Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a different declarative model from the security tables of AppBuilder.
-	If you want to use AuditMixin :doc:`api` or include a relation to a User or login User, you must be on the same declarative base.
-	Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, import::
+Although your not obliged to, i advise you to inherit your model classes from *Base* and *BaseMixin*. You can of course inherit from *db.Model* normal Flask-SQLAlchemy. The reason for this is that *Base* is on the same declarative space of F.A.B. and using it will allow you do define relations to User's.
 
-		flask.ext.appbuilder import Base
-	
-	This "Base" is the same declarative model of F.A.B.
+You can add automatic *Audit* triggered columns to your models, by inherit them from *AuditMixin* also. (see :doc:`api`)
+
+So, first we are going to create a *Group* table, to group our contacts
 
 Define your models (models.py)
 ------------------------------
@@ -44,6 +42,10 @@ Define your models (models.py)
 The *Group* table.
 
 ::
+    from sqlalchemy import Column, Integer, String, ForeignKey, Date
+    from sqlalchemy.orm import relationship
+    from flask.ext.appbuilder.models.mixins import BaseMixin
+    from flask.ext.appbuilder import Base
 
     class Group(BaseMixin, Base):
         id = Column(Integer, primary_key=True)
