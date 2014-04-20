@@ -25,12 +25,12 @@ Please take a look at github `examples <https://github.com/dpgaspar/Flask-AppBui
 Simple contacts application
 ---------------------------
 
-Let's create a very simple contacts application. F.A.B uses of the excellent SQLAlchemy ORM package, you should be familiar with it's declarative syntax to define your database models on F.A.B.
+Let's create a very simple contacts application. F.A.B uses the excellent SQLAlchemy ORM package, you should be familiar with it's declarative syntax to define your database models on F.A.B.
 
 On our example application we are going to define two tables, a *Contact's* table that will hold the contacts detailed information, and a *Group* table to group our contacts or classify them.
 We could additionally define a *Gender* table, to serve the role of enumerated values for 'Male' and 'Female'.
 
-Although your not obliged to, i advise you to inherit your model classes from *Base* and *BaseMixin*. You can of course inherit from *db.Model* normal Flask-SQLAlchemy. The reason for this is that *Base* is on the same declarative space of F.A.B. and using it will allow you do define relations to User's.
+Although your not obliged to, i advise you to inherit your model classes from *Base* and *BaseMixin*. You can of course inherit from *db.Model* normal Flask-SQLAlchemy. The reason for this is that *Base* is on the same declarative space of F.A.B. and using it will allow you to define relations to User's.
 
 You can add automatic *Audit* triggered columns to your models, by inherit them from *AuditMixin* also. (see :doc:`api`)
 
