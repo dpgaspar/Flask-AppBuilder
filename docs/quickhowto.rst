@@ -78,6 +78,10 @@ Define your Views (views.py)
 
 Now we are going to define our view for *Group* table. This view will setup functionality for create, remove, update and show primitives for your model's definition.
 
+Inherit from *GeneralView* class that will inherit from *BaseCRUDView* that inherits from *BaseModelView*, so you can override all their public properties to configure many details for your CRUD primitives. take a look at **Advanced Configuration** on this page.
+
+Take a look at the :doc:`api`.
+
 ::
 
     class GroupGeneralView(GeneralView):
@@ -95,10 +99,7 @@ Optional properties:
 
 :related_views: if you want a master/detail view on the show and edit. F.A.B. will relate 1/N relations automatically, it will display a show or edit view with tab (or accordion) with a list related record. You can relate charts also.
 
-There are many more properties you can override to customize your views. you can define descriptions for columns, your own validators for form fields, base filters etc
-
-Take a look at the :doc:`api`.
-
+This is the most basic configuration (with an added related view).
 
 But where is ContactGeneralView ? (that was a reference in *related_views* list) 
 
@@ -136,8 +137,10 @@ Register everything, to present the models and create the menu
 Take a look at the :doc:`api` for add_view method.
 
 .. note::
-	The icons for the menu on this examples are from font-awesome, take a look at the `Icons <http://fontawesome.io/icons/>`_ names. Font-Awesome is already included and you can use any icon you like on menus and actions
+	The icons for the menu on this examples are from font-awesome, Checkout fontAwesome `Icons <http://fontawesome.io/icons/>`_ names. Font-Awesome is already included and you can use any icon you like on menus and actions
 	
+With this very few lines of code (and could be fewer), you now have a web application with detailed security for each CRUD primitives and Menu options, authentication, and form field validation. Yet you can extensively change many details, add your own triggers before or after CRUD primitives, develop your own web views and integrate them.
+
 
 You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto
 
