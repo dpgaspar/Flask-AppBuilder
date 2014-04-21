@@ -26,6 +26,7 @@ Contents:
 
    intro
    installation
+   views
    quickhowto
    quickminimal
    quickcharts
