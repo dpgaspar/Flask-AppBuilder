@@ -4,9 +4,9 @@ i18n Translations
 Introduction
 ------------
 
-F.A.B. has three language support, English, Portuguese and Spanish (planning for some more). This means that all messages, views and menus generated from the framework can be translated to these languages.
+F.A.B. has support for three language, English, Portuguese and Spanish (planning for some more). This means that all messages, views and menus generated from the framework can be translated to these languages.
 
-You can add your own translations for your application, using Flask-BabelPkg, this is a fork from Flask-Babel, created because it wast not possible to separate a package translations from the applications translations.
+You can add your own translations for your application, using Flask-BabelPkg, this is a fork from Flask-Babel, created because it wast not possible to separate package translations from the applications translations.
 
 You can add your own translations, and your own language support. Take a look at `Flask-Babel <http://pythonhosted.org/Flask-Babel>`_ for setup an babel initial configuration.  
 
