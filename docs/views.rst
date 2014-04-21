@@ -1,7 +1,7 @@
 Views
 =====
 
-Views are the base concept of F.A.B. it works like a class that represent a concept and present's the views and methods to implement it.
+Views are the base concept of F.A.B. they works like a class that represent a concept and present the views and methods to implement it.
 
 Each view is a Flask blueprint, this will be created for you automatically by the framework, in a simple but powerfull concept. You will map your method to routing points, and each method will be registered as a possible security permission if you want to.
 
