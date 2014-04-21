@@ -41,11 +41,12 @@ Decorate your url routing methods with @expose. additionally add @has_access dec
     genapp.add_view_no_menu(ConfigView())
     
 
-This simple example will register your view with two routing urls on, no menu will be created for this:
+This simple example will register your view with two routing urls on:
 
     - /myview/method1/<string:param1>
     - /myview/method2/<string:param1>
     
+No menu will be created for this, no security permissions will be created also.
     
 SimpleFormView
 --------------
