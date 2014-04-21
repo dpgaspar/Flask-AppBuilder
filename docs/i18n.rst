@@ -70,6 +70,9 @@ Let's work with the contacts application example, so you want to add translation
     	msgid "Name"
         msgstr ""
     	    
+    	msgid "Contacts"    
+    	msgstr ""
+    	
         msgid "List Groups"
         msgstr ""
 
@@ -78,8 +81,11 @@ Let's work with the contacts application example, so you want to add translation
 
     - Translate them::
     
-    	msgid "Nome"
-        msgstr ""
+    	msgid "Name"
+        msgstr "Nome"
+    	    
+    	msgid "Contacts"    
+    	msgstr "Contactos"
     	    
         msgid "List Groups"
         msgstr "Lista de Grupos"
