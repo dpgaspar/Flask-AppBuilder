@@ -46,18 +46,56 @@ This simple example will register your view with two routing urls on:
     - /myview/method1/<string:param1>
     - /myview/method2/<string:param1>
     
-No menu will be created for this, no security permissions will be created also.
+No menu will be created for this, no security permissions will be created also, if you want to enable detailed security access for your methods just add @has_access decorator to them.
     
 SimpleFormView
 --------------
 
-Derive from this view to provide some base processing for your costumized form views.
+Inherit from this view to provide base processing for your customized form views. To create a custom form view, first define your WTF form fields, but inherit them from F.A.B. *DynamicForm*.
 
-Notice that this class derives from *BaseView* so all properties from the parent class can be overriden also.
+::
+
+    from flask.ext.wtf import Form, TextField, BooleanField, TextAreaField, PasswordField
+    from flask.ext.appbuilder.forms import DynamicForm
+
+    class MyForm(DynamicForm):
+        field1 = TextField('Field1'),
+            description=('Your field number one!'),
+            validators = [Required()])
+        field2 = TextField('Field2'),
+            description=('Your field number two!'))
+
+
+Now define your form view to expose urls, create a menu entry, create security accesses, define pre and post processing.
 
 Implement *form_get* and *form_post* to implement your form pre-processing and post-processing
 
-Most importante Base Properties:
+::
+    from flask_appbuilder.views import SimpleFormView
+    from flask.ext.babelpkg import lazy_gettext as _
+
+
+    class MyFormView(SimpleFormView):
+        route_base = '/myform'
+
+        form = MyForm
+        redirect_url = '/myform'
+        form_title = 'This is my first form view'
+
+        message = 'My form submitted'
+
+        def form_post(self, form):
+            # process form
+            flash(as_unicode(self.message), 'info')
+
+    baseapp.add_view(MyFormView, "My form View", href="/myform", icon="fa-group", label=_('My form View'),
+                         category="My Forms", category_icon="fa-cogs")
+
+
+Notice that this class derives from *BaseView* so all properties from the parent class can be overridden also.
+Notice also how label uses babel's lazy_gettext as _('text') function so that your menu item can be translated.
+
+Most important Base Properties:
 
 :form_title: The title to be presented (this is mandatory)
 :form_columns: The form column names to include
