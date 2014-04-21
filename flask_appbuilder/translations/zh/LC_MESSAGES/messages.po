@@ -56,84 +56,84 @@ msgstr "没有找到记录"
 
 #: flask_appbuilder/upload.py:133 flask_appbuilder/upload.py:181
 msgid "Invalid file extension"
-msgstr ""
+msgstr "无效的文件扩展名"
 
 #: flask_appbuilder/validators.py:31
 msgid "Already exists."
-msgstr ""
+msgstr "已经存在。"
 
 #: flask_appbuilder/charts/views.py:33
 msgid "Group by"
-msgstr ""
+msgstr "集团"
 
 #: flask_appbuilder/models/datamodel.py:24
 msgid "Added Row"
-msgstr ""
+msgstr "添加的行"
 
 #: flask_appbuilder/models/datamodel.py:25
 msgid "Changed Row"
-msgstr ""
+msgstr "更改的行"
 
 #: flask_appbuilder/models/datamodel.py:26
 msgid "Deleted Row"
-msgstr ""
+msgstr "删除的行"
 
 #: flask_appbuilder/models/datamodel.py:27
 msgid "Associated data exists, please delete them first"
-msgstr ""
+msgstr "相关数据存在，请先将其删除"
 
 #: flask_appbuilder/models/datamodel.py:28
 #: flask_appbuilder/models/datamodel.py:29
 msgid "Integrity error, probably unique constraint"
-msgstr ""
+msgstr "完整性错误，可能是唯一约束"
 
 #: flask_appbuilder/models/datamodel.py:30
 msgid "General Error"
-msgstr ""
+msgstr "一般错误"
 
 #: flask_appbuilder/models/filters.py:46
 msgid "Starts with"
-msgstr ""
+msgstr "与开始"
 
 #: flask_appbuilder/models/filters.py:53
 msgid "Not Starts with"
-msgstr ""
+msgstr "不带启动"
 
 #: flask_appbuilder/models/filters.py:60
 msgid "Ends with"
-msgstr ""
+msgstr "结尾为"
 
 #: flask_appbuilder/models/filters.py:67
 msgid "Not Ends with"
-msgstr ""
+msgstr "不带结束"
 
 #: flask_appbuilder/models/filters.py:74
 msgid "Contains"
-msgstr ""
+msgstr "包含"
 
 #: flask_appbuilder/models/filters.py:81
 msgid "Not Contains"
-msgstr ""
+msgstr "不包含"
 
 #: flask_appbuilder/models/filters.py:88
 msgid "Equal to"
-msgstr ""
+msgstr "等于"
 
 #: flask_appbuilder/models/filters.py:95
 msgid "Not Equal to"
-msgstr ""
+msgstr "不等于"
 
 #: flask_appbuilder/models/filters.py:102
 msgid "Greater than"
-msgstr ""
+msgstr "大于"
 
 #: flask_appbuilder/models/filters.py:109
 msgid "Smaller than"
-msgstr ""
+msgstr "小于"
 
 #: flask_appbuilder/models/filters.py:120
 msgid "Relation"
-msgstr ""
+msgstr "关系"
 
 #: flask_appbuilder/models/filters.py:128
 msgid "No Relation"
@@ -141,11 +141,11 @@ msgstr ""
 
 #: flask_appbuilder/models/filters.py:136
 msgid "Relation as Many"
-msgstr ""
+msgstr "没有关系"
 
 #: flask_appbuilder/security/forms.py:9
 msgid "openid"
-msgstr ""
+msgstr "开放的id"
 
 #: flask_appbuilder/security/forms.py:10
 msgid "remember_me"
@@ -153,7 +153,7 @@ msgstr ""
 
 #: flask_appbuilder/security/forms.py:13 flask_appbuilder/security/views.py:114
 msgid "User Name"
-msgstr ""
+msgstr "用户名"
 
 #: flask_appbuilder/security/forms.py:14 flask_appbuilder/security/forms.py:18
 #: flask_appbuilder/security/views.py:115
@@ -161,7 +161,7 @@ msgstr ""
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:31
 #: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:27
 msgid "Password"
-msgstr ""
+msgstr "密码"
 
 #: flask_appbuilder/security/forms.py:19 flask_appbuilder/security/views.py:131
 #: flask_appbuilder/security/views.py:191
@@ -169,23 +169,25 @@ msgid ""
 "Please use a good password policy, this application does not check this "
 "for you"
 msgstr ""
+"请用一个好的密码策略，这样应用程序没有检查这个 "
+"你"
 
 #: flask_appbuilder/security/forms.py:22 flask_appbuilder/security/views.py:195
 msgid "Confirm Password"
-msgstr ""
+msgstr "确认密码"
 
 #: flask_appbuilder/security/forms.py:23
 msgid "Please rewrite the password to confirm"
-msgstr ""
+msgstr "请重写密码以确认"
 
 #: flask_appbuilder/security/forms.py:24 flask_appbuilder/security/views.py:198
 msgid "Passwords must match"
-msgstr ""
+msgstr "密码必须匹配"
 
 #: flask_appbuilder/security/manager.py:82
 #: flask_appbuilder/security/views.py:106
 msgid "List Users"
-msgstr ""
+msgstr "用户列表"
 
 #: flask_appbuilder/security/manager.py:83
 msgid "Security"
@@ -194,60 +196,60 @@ msgstr "安全"
 #: flask_appbuilder/security/manager.py:86
 #: flask_appbuilder/security/views.py:262
 msgid "List Roles"
-msgstr ""
+msgstr "列出角色"
 
 #: flask_appbuilder/security/manager.py:90
 msgid "User's Statistics"
-msgstr ""
+msgstr "用户统计"
 
 #: flask_appbuilder/security/manager.py:95
 msgid "Base Permissions"
-msgstr ""
+msgstr "基地权限"
 
 #: flask_appbuilder/security/manager.py:98
 msgid "Views/Menus"
-msgstr ""
+msgstr "查看/菜单"
 
 #: flask_appbuilder/security/manager.py:100
 msgid "Permission on Views/Menus"
-msgstr ""
+msgstr "权限查看/菜单"
 
 #: flask_appbuilder/security/views.py:29
 msgid "List Base Permissions"
-msgstr ""
+msgstr "列表中相应权限"
 
 #: flask_appbuilder/security/views.py:30
 msgid "Show Base Permission"
-msgstr ""
+msgstr "展会基本权限"
 
 #: flask_appbuilder/security/views.py:31
 msgid "Add Base Permission"
-msgstr ""
+msgstr "添加权限基地"
 
 #: flask_appbuilder/security/views.py:32
 msgid "Edit Base Permission"
-msgstr ""
+msgstr "编辑基本权限"
 
 #: flask_appbuilder/security/views.py:34 flask_appbuilder/security/views.py:47
 #: flask_appbuilder/security/views.py:267
 msgid "Name"
-msgstr ""
+msgstr "名称"
 
 #: flask_appbuilder/security/views.py:42
 msgid "List View Menus"
-msgstr ""
+msgstr "列表视图菜单"
 
 #: flask_appbuilder/security/views.py:43
 msgid "Show View Menu"
-msgstr ""
+msgstr "显示视图菜单"
 
 #: flask_appbuilder/security/views.py:44
 msgid "Add View Menu"
-msgstr ""
+msgstr "添加视图菜单"
 
 #: flask_appbuilder/security/views.py:45
 msgid "Edit View Menu"
-msgstr ""
+msgstr "编辑视图菜单"
 
 #: flask_appbuilder/security/views.py:55
 msgid "List Permissions on Views/Menus"
