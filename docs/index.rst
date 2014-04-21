@@ -36,6 +36,10 @@ Contents:
    actions
    i18n
    security
+   
+.. toctree::
+   :maxdepth: 1
+   
    api
    versionmigration
    versions
