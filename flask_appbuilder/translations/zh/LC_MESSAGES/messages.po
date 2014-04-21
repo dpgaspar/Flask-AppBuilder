@@ -23,26 +23,26 @@ msgstr ""
 #: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:10
 #: flask_appbuilder/templates/appbuilder/general/model/list.html:8
 msgid "Search"
-msgstr ""
+msgstr "搜索"
 
 #: flask_appbuilder/messages.py:10
 #: flask_appbuilder/templates/appbuilder/general/lib.html:259
 #: flask_appbuilder/templates/appbuilder/general/lib.html:264
 msgid "Back"
-msgstr ""
+msgstr "后面"
 
 #: flask_appbuilder/messages.py:11
 #: flask_appbuilder/templates/appbuilder/general/lib.html:212
 msgid "Save"
-msgstr ""
+msgstr "节省"
 
 #: flask_appbuilder/messages.py:12
 msgid "This field is required."
-msgstr ""
+msgstr "此字段是必需的。"
 
 #: flask_appbuilder/messages.py:13
 msgid "Not a valid date value"
-msgstr ""
+msgstr "不是有效的日期值"
 
 #: flask_appbuilder/messages.py:14
 #: flask_appbuilder/templates/appbuilder/general/widgets/list.html:56
@@ -52,7 +52,7 @@ msgstr ""
 #: flask_appbuilder/templates/appbuilder/general/widgets/list_master.html:18
 #: flask_appbuilder/templates/appbuilder/general/widgets/list_thumbnail.html:32
 msgid "No records found"
-msgstr ""
+msgstr "没有找到记录"
 
 #: flask_appbuilder/upload.py:133 flask_appbuilder/upload.py:181
 msgid "Invalid file extension"
@@ -189,7 +189,7 @@ msgstr ""
 
 #: flask_appbuilder/security/manager.py:83
 msgid "Security"
-msgstr ""
+msgstr "安全"
 
 #: flask_appbuilder/security/manager.py:86
 #: flask_appbuilder/security/views.py:262
