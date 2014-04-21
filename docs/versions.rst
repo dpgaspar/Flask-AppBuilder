@@ -4,6 +4,9 @@ Versions
 Improvements and Bug fixes on 0.7.9
 -----------------------------------
 
+- New, Simplified Chinese support.
+- Fix, various translations.
+
 Improvements and Bug fixes on 0.7.8
 -----------------------------------
 
