@@ -50,9 +50,9 @@ Let's work with the contacts application example, so you want to add translation
 
         label_columns = {'name':_('Name')}
 
-   genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large", label=_('List Groups'),
+    genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large", label=_('List Groups'),
                         category = "Contacts", category_icon='fa-envelope', category_label=_('Contacts'))
-   genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone", label=_('List Contacts'),
+    genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone", label=_('List Contacts'),
                         category = "Contacts")
 
 1 - Run the folowing extraction script::
