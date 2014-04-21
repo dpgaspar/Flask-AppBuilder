@@ -3,12 +3,12 @@ Views
 
 Views are the base concept of F.A.B. they works like a class that represent a concept and present the views and methods to implement it.
 
-Each view is a Flask blueprint that will be created for you automatically by the framework, in a simple but powerfull concept. You will map your method to routing points, and each method will be registered as a possible security permission if you want to.
+Each view is a Flask blueprint that will be created for you automatically by the framework. This is a simple but powerfull concept. You will map your methods to routing points, and each method will be registered as a possible security permission if you want to.
 
 BaseView
 --------
 
-All views derive from this class. it's constructor will register your exposed urls on flask as a Blueprint.
+All views derive from this class. it's constructor will register your exposed urls on flask as a Blueprint, as well as all security permissions that need to be defined and protected.
 
 Generally you will not implement your views deriving from this class, unless your implementing a new base appbuilder view with your own custom methods.
 
