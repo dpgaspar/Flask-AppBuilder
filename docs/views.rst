@@ -8,7 +8,7 @@ Each view is a Flask blueprint that will be created for you automatically by the
 BaseView
 --------
 
-All views derive from this class. it's constructor will register your exposed urls on flask as a Blueprint, as well as all security permissions that need to be defined and protected.
+All views inherit from this class. it's constructor will register your exposed urls on flask as a Blueprint, as well as all security permissions that need to be defined and protected.
 
 Generally you will not implement your views deriving from this class, unless your implementing a new base appbuilder view with your own custom methods.
 
