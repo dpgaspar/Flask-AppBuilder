@@ -4,7 +4,9 @@ i18n Translations
 Introduction
 ------------
 
-Since version 0.5 translations from F.A.B. are independent from your application's translations. This means you no longer need to use flask-appbuilder-skeleton and don't have to merge your translations with the ones from the framework.
+F.A.B. has three language support, English, Portuguese and Spanish (planning for some more). This means that all messages, views and menus generated from the framework can be translated to these languages.
+
+You can add your own translations for your application, using Flask-BabelPkg, this is a fork from Flask-Babel, created because it wast not possible to separate a package translations from the applications translations.
 
 You can add your own translations, and your own language support. Take a look at `Flask-Babel <http://pythonhosted.org/Flask-Babel>`_ for setup an babel initial configuration.  
 
