@@ -78,9 +78,7 @@ Define your Views (views.py)
 
 Now we are going to define our view for *Group* table. This view will setup functionality for create, remove, update and show primitives for your model's definition.
 
-Inherit from *GeneralView* class that will inherit from *BaseCRUDView* that inherits from *BaseModelView*, so you can override all their public properties to configure many details for your CRUD primitives. take a look at **Advanced Configuration** on this page.
-
-Take a look at the :doc:`api`.
+Inherit from *GeneralView* class that inherits from *BaseCRUDView* that inherits from *BaseModelView*, so you can override all their public properties to configure many details for your CRUD primitives. take a look at **Advanced Configuration** on this page.
 
 ::
 
