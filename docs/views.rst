@@ -59,10 +59,10 @@ Inherit from this view to provide base processing for your customized form views
     from flask.ext.appbuilder.forms import DynamicForm
 
     class MyForm(DynamicForm):
-        field1 = TextField('Field1'),
+        field1 = TextField(('Field1'),
             description=('Your field number one!'),
             validators = [Required()])
-        field2 = TextField('Field2'),
+        field2 = TextField(('Field2'),
             description=('Your field number two!'))
 
 
@@ -71,6 +71,7 @@ Now define your form view to expose urls, create a menu entry, create security a
 Implement *form_get* and *form_post* to implement your form pre-processing and post-processing
 
 ::
+
     from flask_appbuilder.views import SimpleFormView
     from flask.ext.babelpkg import lazy_gettext as _
 
