@@ -187,15 +187,15 @@ class UserLDAPGeneralView(UserGeneralView):
 
 
 class UserDBGeneralView(UserGeneralView):
-    add_form_extra_fields = {'password': PasswordField(gettext('Password'),
-                                                       description=gettext(
+    add_form_extra_fields = {'password': PasswordField(lazy_gettext('Password'),
+                                                       description=lazy_gettext(
                                                            'Please use a good password policy, this application does not check this for you'),
                                                        validators=[validators.Required()],
                                                        widget=BS3PasswordFieldWidget()),
-                             'conf_password': PasswordField(gettext('Confirm Password'),
-                                                            description=gettext(
+                             'conf_password': PasswordField(lazy_gettext('Confirm Password'),
+                                                            description=lazy_gettext(
                                                                 'Please rewrite the users password to confirm'),
-                                                            validators=[EqualTo('password', message=gettext(
+                                                            validators=[EqualTo('password', message=lazy_gettext(
                                                                 'Passwords must match'))],
                                                             widget=BS3PasswordFieldWidget())}
 
