@@ -4,8 +4,13 @@ Versions
 Improvements and Bug fixes on 0.7.9
 -----------------------------------
 
+<<<<<<< HEAD
 - New, Simplified Chinese support.
 - Fix, various translations.
+=======
+- New, Simplified chinese support. Babel translations.
+- Fix, various translation fixes.
+>>>>>>> 50b1835b1a09a2c9a40d18e3dbe9dd5ccabddfc6
 
 Improvements and Bug fixes on 0.7.8
 -----------------------------------
