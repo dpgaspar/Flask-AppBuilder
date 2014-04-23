@@ -4,7 +4,9 @@ i18n Translations
 Introduction
 ------------
 
-Since version 0.5 translations from F.A.B. are independent from your application's translations. This means you no longer need to use flask-appbuilder-skeleton and don't have to merge your translations with the ones from the framework.
+F.A.B. has support for three language, English, Portuguese and Spanish (planning for some more). This means that all messages, views and menus generated from the framework can be translated to these languages.
+
+You can add your own translations for your application, using Flask-BabelPkg, this is a fork from Flask-Babel, created because it was not possible to separate package translations from the application translations.
 
 You can add your own translations, and your own language support. Take a look at `Flask-Babel <http://pythonhosted.org/Flask-Babel>`_ for setup an babel initial configuration.  
 
@@ -40,17 +42,17 @@ Let's work with the contacts application example, so you want to add translation
 
 ::
 
-		from flask.ext.babelpkg import lazy_gettext as _
+    from flask.ext.babelpkg import lazy_gettext as _
 
-		class GroupGeneralView(GeneralView):
-    		datamodel = SQLAModel(Group, db.session)
-    		related_views = [ContactGeneralView()]
+    class GroupGeneralView(GeneralView):
+        datamodel = SQLAModel(Group, db.session)
+        related_views = [ContactGeneralView()]
 
-			label_columns = {'name':_('Name')}
+        label_columns = {'name':_('Name')}
 
-        genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large", label=_('List Groups'),
+    genapp.add_view(GroupGeneralView(), "List Groups",icon = "th-large", label=_('List Groups'),
                         category = "Contacts", category_icon='fa-envelope', category_label=_('Contacts'))
-        genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone", label=_('List Contacts'),
+    genapp.add_view(ContactGeneralView(), "List Contacts",icon = "earphone", label=_('List Contacts'),
                         category = "Contacts")
 
 1 - Run the folowing extraction script::
@@ -68,6 +70,9 @@ Let's work with the contacts application example, so you want to add translation
     	msgid "Name"
         msgstr ""
     	    
+    	msgid "Contacts"    
+    	msgstr ""
+    	
         msgid "List Groups"
         msgstr ""
 
@@ -76,8 +81,11 @@ Let's work with the contacts application example, so you want to add translation
 
     - Translate them::
     
-    	msgid "Nome"
-        msgstr ""
+    	msgid "Name"
+        msgstr "Nome"
+    	    
+    	msgid "Contacts"    
+    	msgstr "Contactos"
     	    
         msgid "List Groups"
         msgstr "Lista de Grupos"

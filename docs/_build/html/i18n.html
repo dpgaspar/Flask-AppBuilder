@@ -63,7 +63,8 @@
 <h1>i18n Translations<a class="headerlink" href="#i18n-translations" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>Since version 0.5 translations from F.A.B. are independent from your application&#8217;s translations. This means you no longer need to use flask-appbuilder-skeleton and don&#8217;t have to merge your translations with the ones from the framework.</p>
+<p>F.A.B. has support for three language, English, Portuguese and Spanish (planning for some more). This means that all messages, views and menus generated from the framework can be translated to these languages.</p>
+<p>You can add your own translations for your application, using Flask-BabelPkg, this is a fork from Flask-Babel, created because it was not possible to separate package translations from the application translations.</p>
 <p>You can add your own translations, and your own language support. Take a look at <a class="reference external" href="http://pythonhosted.org/Flask-Babel">Flask-Babel</a> for setup an babel initial configuration.</p>
 </div>
 <div class="section" id="babel-quick-how-to-config">
@@ -94,18 +95,18 @@ pybabel init -i ./babel/messages.pot -d app/translations -l de
 <div class="section" id="quick-how-to">
 <h2>Quick How to<a class="headerlink" href="#quick-how-to" title="Permalink to this headline">¶</a></h2>
 <p>Let&#8217;s work with the contacts application example, so you want to add translations for the menus &#8220;List Groups&#8221; and &#8220;List Contacts&#8221;.</p>
-<div class="highlight-python"><div class="highlight"><pre>        from flask.ext.babelpkg import lazy_gettext as _
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.babelpkg</span> <span class="kn">import</span> <span class="n">lazy_gettext</span> <span class="k">as</span> <span class="n">_</span>
 
-        class GroupGeneralView(GeneralView):
-        datamodel = SQLAModel(Group, db.session)
-        related_views = [ContactGeneralView()]
+<span class="k">class</span> <span class="nc">GroupGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">()]</span>
 
-                label_columns = {&#39;name&#39;:_(&#39;Name&#39;)}
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Name&#39;</span><span class="p">)}</span>
 
-genapp.add_view(GroupGeneralView(), &quot;List Groups&quot;,icon = &quot;th-large&quot;, label=_(&#39;List Groups&#39;),
-                category = &quot;Contacts&quot;, category_icon=&#39;fa-envelope&#39;, category_label=_(&#39;Contacts&#39;))
-genapp.add_view(ContactGeneralView(), &quot;List Contacts&quot;,icon = &quot;earphone&quot;, label=_(&#39;List Contacts&#39;),
-                category = &quot;Contacts&quot;)
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;th-large&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;List Groups&#39;</span><span class="p">),</span>
+                    <span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s">&#39;fa-envelope&#39;</span><span class="p">,</span> <span class="n">category_label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Contacts&#39;</span><span class="p">))</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;earphone&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;List Contacts&#39;</span><span class="p">),</span>
+                    <span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>1 - Run the folowing extraction script:</p>
@@ -123,6 +124,9 @@ genapp.add_view(ContactGeneralView(), &quot;List Contacts&quot;,icon = &quot;ear
 <div class="highlight-python"><div class="highlight"><pre>msgid &quot;Name&quot;
 msgstr &quot;&quot;
 
+msgid &quot;Contacts&quot;
+msgstr &quot;&quot;
+
 msgid &quot;List Groups&quot;
 msgstr &quot;&quot;
 
@@ -132,8 +136,11 @@ msgstr &quot;&quot;
 </div>
 </li>
 <li><p class="first">Translate them:</p>
-<div class="highlight-python"><div class="highlight"><pre>msgid &quot;Nome&quot;
-msgstr &quot;&quot;
+<div class="highlight-python"><div class="highlight"><pre>msgid &quot;Name&quot;
+msgstr &quot;Nome&quot;
+
+msgid &quot;Contacts&quot;
+msgstr &quot;Contactos&quot;
 
 msgid &quot;List Groups&quot;
 msgstr &quot;Lista de Grupos&quot;

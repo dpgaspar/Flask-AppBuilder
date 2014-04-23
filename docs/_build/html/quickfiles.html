@@ -61,7 +61,7 @@
             
   <div class="section" id="quick-files-and-images">
 <h1>Quick Files and Images<a class="headerlink" href="#quick-files-and-images" title="Permalink to this headline">¶</a></h1>
-<p>You can implement views with images or files embedded on the model definition</p>
+<p>You can implement views with images or files embedded on the model&#8217;s definition</p>
 <div class="section" id="define-your-model-models-py">
 <h2>Define your model (models.py)<a class="headerlink" href="#define-your-model-models-py" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
@@ -77,7 +77,7 @@
             <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonGeneralView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Create an additional method in this case <em>photo_img</em>, to inject your own custom HTML, to show your saved images. In this example we are showing the images, and linking them with the show view.</p>
+<p>Create an additional method in this case <em>photo_img</em>, to inject your own custom HTML, to show your saved images. In this example the customized method is showing the images, and linking them with the show view.</p>
 <p>Later reference this method like it&#8217;s a column on your view.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -96,14 +96,15 @@
     <span class="n">show_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;photo_img&#39;</span><span class="p">,</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Notice:</p>
-<p>We are overriding the <em>list_widget</em>, the widget that is normally used by GeneralView. This will display a thumbnail list, excellent for displaying images.</p>
-<p>Notice that we are not using the <em>image</em> column but the method <em>photo_img</em> we have created. This method will display the image and link it to the show view.</p>
+<p>Notice that we are overriding the <em>list_widget</em>, the widget that is normally used by GeneralView. This will display a thumbnail list, excellent for displaying images.</p>
+<p>We are not using the <em>image</em> column but the method <em>photo_img</em> we have created. This method will display the image and link it to the show view.</p>
 <p>And that&#8217;s it! images will be saved on the server. Their file names will result in the concatenation of UUID with their original name. They will be resized for optimization.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Control image resizing using configuration key <em>IMG_SIZE</em></p>
+<p class="last">You can define image resizing using configuration key <em>IMG_SIZE</em></p>
 </div>
+<p>We are overriding the list_widget, the widget that is normally used by GeneralView. This will display a thumbnail list excellent for displaying images.</p>
+<p>And that&#8217;s it! Images will be saved on the server with their filename concatenated by a UUID&#8217;s. Aditionally will be resized for optimization.</p>
 </div>
 <div class="section" id="next-step">
 <h2>Next step<a class="headerlink" href="#next-step" title="Permalink to this headline">¶</a></h2>

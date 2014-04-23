@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Quick Minimal Application" href="quickminimal.html" />
-    <link rel="prev" title="Installation" href="installation.html" />
+    <link rel="prev" title="Views" href="views.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -48,7 +48,7 @@
           <a href="quickminimal.html" title="Quick Minimal Application"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="installation.html" title="Installation"
+          <a href="views.html" title="Views"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -63,7 +63,7 @@
 <h1>Quick How to<a class="headerlink" href="#quick-how-to" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="the-base-skeleton-application">
 <h2>The Base Skeleton Application<a class="headerlink" href="#the-base-skeleton-application" title="Permalink to this headline">¶</a></h2>
-<p>If your working with the base skeleton application <a class="reference internal" href="installation.html"><em>Installation</em></a></p>
+<p>If your working with the base skeleton application (take a look at the <a class="reference internal" href="installation.html"><em>Installation</em></a> chapter).</p>
 <p>you now have the following directory structure:</p>
 <div class="highlight-python"><div class="highlight"><pre>&lt;your project name&gt;/
     config.py : All the application&#39;s configuration
@@ -79,23 +79,22 @@
 </div>
 <div class="section" id="simple-contacts-application">
 <h2>Simple contacts application<a class="headerlink" href="#simple-contacts-application" title="Permalink to this headline">¶</a></h2>
-<p>Lets create a very simple contacts application.</p>
-<p>First we are going to create a <em>Group</em> table, to group our contacts</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p>Since version 0.3.9 i advise not using Flask-SqlAlchemy to define your tables, because you will be in a different declarative model from the security tables of AppBuilder.
-If you want to use AuditMixin <a class="reference internal" href="api.html"><em>API Reference</em></a> or include a relation to a User or login User, you must be on the same declarative base.
-Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and inherit also from Base, import:</p>
-<div class="highlight-python"><div class="highlight"><pre>flask.ext.appbuilder import Base
-</pre></div>
-</div>
-<p class="last">This &#8220;Base&#8221; is the same declarative model of F.A.B.</p>
-</div>
+<p>Let&#8217;s create a very simple contacts application. F.A.B uses the excellent SQLAlchemy ORM package, you should be familiar with it&#8217;s declarative syntax to define your database models on F.A.B.</p>
+<p>On our example application we are going to define two tables, a <em>Contact&#8217;s</em> table that will hold the contacts detailed information, and a <em>Group</em> table to group our contacts or classify them.
+We could additionally define a <em>Gender</em> table, to serve the role of enumerated values for &#8216;Male&#8217; and &#8216;Female&#8217;.</p>
+<p>Although your not obliged to, i advise you to inherit your model classes from <em>Base</em> and <em>BaseMixin</em>. You can of course inherit from <em>db.Model</em> normal Flask-SQLAlchemy. The reason for this is that <em>Base</em> is on the same declarative space of F.A.B. and using it will allow you to define relations to User&#8217;s.</p>
+<p>You can add automatic <em>Audit</em> triggered columns to your models, by inherit them from <em>AuditMixin</em> also. (see <a class="reference internal" href="api.html"><em>API Reference</em></a>)</p>
+<p>So, first we are going to create a <em>Group</em> table, to group our contacts</p>
 </div>
 <div class="section" id="define-your-models-models-py">
 <h2>Define your models (models.py)<a class="headerlink" href="#define-your-models-models-py" title="Permalink to this headline">¶</a></h2>
 <p>The <em>Group</em> table.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">Date</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.mixins</span> <span class="kn">import</span> <span class="n">BaseMixin</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">Base</span>
+
+<span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
@@ -121,7 +120,8 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
 </div>
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
-<p>Now we are going to define our view for <em>Group</em> table. This view will setup functionality for create, remove, update and show primitives for model&#8217;s definition.</p>
+<p>Now we are going to define our view for <em>Group</em> table. This view will setup functionality for create, remove, update and show primitives for your model&#8217;s definition.</p>
+<p>Inherit from <em>GeneralView</em> class that inherits from <em>BaseCRUDView</em> that inherits from <em>BaseModelView</em>, so you can override all their public properties to configure many details for your CRUD primitives. take a look at <strong>Advanced Configuration</strong> on this page.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">]</span>
@@ -146,8 +146,7 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
 </tr>
 </tbody>
 </table>
-<p>There are many more properties you can override to customize your views. you can define descriptions for columns, your own validators for form fields, base filters etc</p>
-<p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>.</p>
+<p>This is the most basic configuration (with an added related view).</p>
 <p>But where is ContactGeneralView ? (that was a reference in <em>related_views</em> list)</p>
 <p>Let&#8217;s define it:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
@@ -169,7 +168,7 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">label_columns:</th><td class="field-body">defines the labels for your columns. The framework will define the missing ones for you, with a pretty version of your column names.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">show_fieldsets:</th><td class="field-body">A fieldset (Django style).</td>
+<tr class="field-even field"><th class="field-name">show_fieldsets:</th><td class="field-body">A fieldset (Django style). This is allow you to customize the add, show and edit views independently.</td>
 </tr>
 </tbody>
 </table>
@@ -186,8 +185,9 @@ Use BaseMixin to have automatic table name baptism like in Flask-SqlAlchemy, and
 <p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a> for add_view method.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The icons for the menu on this examples are from font-awesome, take a look at the <a class="reference external" href="http://fontawesome.io/icons/">Icons</a> names. Font-Awesome is already included and you can use any icon you like on menus and actions</p>
+<p class="last">The icons for the menu on this examples are from font-awesome, Checkout fontAwesome <a class="reference external" href="http://fontawesome.io/icons/">Icons</a> names. Font-Awesome is already included and you can use any icon you like on menus and actions</p>
 </div>
+<p>With this very few lines of code (and could be fewer), you now have a web application with detailed security for each CRUD primitives and Menu options, authentication, and form field validation. Yet you can extensively change many details, add your own triggers before or after CRUD primitives, develop your own web views and integrate them.</p>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>
 <p>Live quickhowto <a class="reference external" href="http://flaskappbuilder.pythonanywhere.com/">Demo</a> (login with guest/welcome).</p>
 <p>Some images:</p>
@@ -325,7 +325,7 @@ If you want to filter multiple related fields just add tuples to the list, remem
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+      <li>Previous: <a href="views.html" title="previous chapter">Views</a></li>
       <li>Next: <a href="quickminimal.html" title="next chapter">Quick Minimal Application</a></li>
   </ul></li>
 </ul>

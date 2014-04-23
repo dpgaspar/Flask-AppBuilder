@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-21 15:29+0000\n"
+"POT-Creation-Date: 2014-04-23 18:02+0100\n"
 "PO-Revision-Date: 2013-10-08 17:56+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: pt <LL@li.org>\n"
@@ -143,19 +143,19 @@ msgstr "Sem Relação"
 msgid "Relation as Many"
 msgstr "Relação multipla"
 
-#: flask_appbuilder/security/forms.py:9
+#: flask_appbuilder/security/forms.py:10
 msgid "openid"
 msgstr "Id Aberto (OpenID)"
 
-#: flask_appbuilder/security/forms.py:10
+#: flask_appbuilder/security/forms.py:11
 msgid "remember_me"
 msgstr ""
 
-#: flask_appbuilder/security/forms.py:13 flask_appbuilder/security/views.py:114
+#: flask_appbuilder/security/forms.py:15 flask_appbuilder/security/views.py:114
 msgid "User Name"
 msgstr "Utilizador"
 
-#: flask_appbuilder/security/forms.py:14 flask_appbuilder/security/forms.py:18
+#: flask_appbuilder/security/forms.py:16 flask_appbuilder/security/forms.py:20
 #: flask_appbuilder/security/views.py:115
 #: flask_appbuilder/security/views.py:190
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:31
@@ -163,7 +163,7 @@ msgstr "Utilizador"
 msgid "Password"
 msgstr "Palavra Passe"
 
-#: flask_appbuilder/security/forms.py:19 flask_appbuilder/security/views.py:131
+#: flask_appbuilder/security/forms.py:21 flask_appbuilder/security/views.py:131
 #: flask_appbuilder/security/views.py:191
 msgid ""
 "Please use a good password policy, this application does not check this "
@@ -172,15 +172,15 @@ msgstr ""
 "Por favor utilize uma boa politica de password, esta aplicação não "
 "efectua a verificação da mesma por si"
 
-#: flask_appbuilder/security/forms.py:22 flask_appbuilder/security/views.py:195
+#: flask_appbuilder/security/forms.py:25 flask_appbuilder/security/views.py:195
 msgid "Confirm Password"
 msgstr "Confirme a palavra passe"
 
-#: flask_appbuilder/security/forms.py:23
+#: flask_appbuilder/security/forms.py:26
 msgid "Please rewrite the password to confirm"
 msgstr "Por favor reescreva a password para confirmar"
 
-#: flask_appbuilder/security/forms.py:24 flask_appbuilder/security/views.py:198
+#: flask_appbuilder/security/forms.py:27 flask_appbuilder/security/views.py:198
 msgid "Passwords must match"
 msgstr "Palavras passe têm que ser iguais"
 
@@ -415,6 +415,9 @@ msgid "Invalid login. Please try again."
 msgstr "Autenticação Inválida. Volte a tentar."
 
 #: flask_appbuilder/security/views.py:280
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:45
+#: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:40
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:53
 msgid "Sign In"
 msgstr "Entrar (Autenticar)"
 

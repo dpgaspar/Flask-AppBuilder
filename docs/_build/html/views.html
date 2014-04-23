@@ -24,6 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
+    <link rel="next" title="Quick How to" href="quickhowto.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -42,6 +44,12 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="quickhowto.html" title="Quick How to"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
     </div>  
@@ -53,33 +61,87 @@
             
   <div class="section" id="views">
 <h1>Views<a class="headerlink" href="#views" title="Permalink to this headline">¶</a></h1>
+<p>Views are the base concept of F.A.B. they works like a class that represent a concept and present the views and methods to implement it.</p>
+<p>Each view is a Flask blueprint that will be created for you automatically by the framework. This is a simple but powerfull concept. You will map your methods to routing points, and each method will be registered as a possible security permission if you want to.</p>
 <div class="section" id="baseview">
 <h2>BaseView<a class="headerlink" href="#baseview" title="Permalink to this headline">¶</a></h2>
-<p>All views derive from this class. it&#8217;s constructor will register your exposed urls on flask as a Blueprint.</p>
-<p>Generally you will not implement your views deriving from this class, unless your implementing a new base appbuilder view.</p>
-<p>This class does not expose any url&#8217;s, but provides a common base for all views.</p>
-<p>Most importante Base Properties:</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">route_base:</th><td class="field-body">The root base of your view</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">template_folder:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body">The base template folder</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">base_permissions:</th></tr>
-<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">The forced base permissions for your views, if not provided it will infer the permissions from the exposed methods and actions</td>
-</tr>
-</tbody>
-</table>
+<p>All views inherit from this class. it&#8217;s constructor will register your exposed urls on flask as a Blueprint, as well as all security permissions that need to be defined and protected.</p>
+<p>Generally you will not implement your views deriving from this class, unless your implementing a new base appbuilder view with your own custom methods.</p>
+<p>Decorate your url routing methods with &#64;expose. additionally add &#64;has_access decorator to tell flask that this is a security protected method.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">redirect</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseviews</span> <span class="kn">import</span> <span class="n">BaseView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseviews</span> <span class="kn">import</span> <span class="n">expose</span>
+
+<span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">BaseView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s">&quot;/myview&quot;</span>
+
+    <span class="n">index_template</span> <span class="o">=</span> <span class="s">&quot;method2.html&quot;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/method1/&lt;string:param1&gt;&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">method1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param1</span><span class="p">):</span>
+        <span class="c"># do something with param1</span>
+        <span class="c"># and return to previous page or index</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_redirect</span><span class="p">())</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/method2/&lt;string:param1&gt;&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">method2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param1</span><span class="p">):</span>
+        <span class="c"># do something with param1</span>
+        <span class="c"># and render template with param</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_template</span><span class="p">,</span> <span class="n">param1</span><span class="o">=</span><span class="n">param1</span><span class="p">,</span> <span class="n">baseapp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">baseapp</span><span class="p">)</span>
+
+<span class="n">genapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="n">ConfigView</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>This simple example will register your view with two routing urls on:</p>
+<blockquote>
+<div><ul class="simple">
+<li>/myview/method1/&lt;string:param1&gt;</li>
+<li>/myview/method2/&lt;string:param1&gt;</li>
+</ul>
+</div></blockquote>
+<p>No menu will be created for this, no security permissions will be created also, if you want to enable detailed security access for your methods just add &#64;has_access decorator to them.</p>
 </div>
 <div class="section" id="simpleformview">
 <h2>SimpleFormView<a class="headerlink" href="#simpleformview" title="Permalink to this headline">¶</a></h2>
-<p>Derive from this view to provide some base processing for your costumized form views.</p>
-<p>Notice that this class derives from <em>BaseView</em> so all properties from the parent class can be overrided also.</p>
+<p>Inherit from this view to provide base processing for your customized form views. To create a custom form view, first define your WTF form fields, but inherit them from F.A.B. <em>DynamicForm</em>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.wtf</span> <span class="kn">import</span> <span class="n">Form</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">BooleanField</span><span class="p">,</span> <span class="n">TextAreaField</span><span class="p">,</span> <span class="n">PasswordField</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.forms</span> <span class="kn">import</span> <span class="n">DynamicForm</span>
+
+<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">DynamicForm</span><span class="p">):</span>
+    <span class="n">field1</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">((</span><span class="s">&#39;Field1&#39;</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;Your field number one!&#39;</span><span class="p">),</span>
+        <span class="n">validators</span> <span class="o">=</span> <span class="p">[</span><span class="n">Required</span><span class="p">()])</span>
+    <span class="n">field2</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">((</span><span class="s">&#39;Field2&#39;</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;Your field number two!&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Now define your form view to expose urls, create a menu entry, create security accesses, define pre and post processing.</p>
 <p>Implement <em>form_get</em> and <em>form_post</em> to implement your form pre-processing and post-processing</p>
-<p>Most importante Base Properties:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.views</span> <span class="kn">import</span> <span class="n">SimpleFormView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.babelpkg</span> <span class="kn">import</span> <span class="n">lazy_gettext</span> <span class="k">as</span> <span class="n">_</span>
+
+
+<span class="k">class</span> <span class="nc">MyFormView</span><span class="p">(</span><span class="n">SimpleFormView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s">&#39;/myform&#39;</span>
+
+    <span class="n">form</span> <span class="o">=</span> <span class="n">MyForm</span>
+    <span class="n">redirect_url</span> <span class="o">=</span> <span class="s">&#39;/myform&#39;</span>
+    <span class="n">form_title</span> <span class="o">=</span> <span class="s">&#39;This is my first form view&#39;</span>
+
+    <span class="n">message</span> <span class="o">=</span> <span class="s">&#39;My form submitted&#39;</span>
+
+    <span class="k">def</span> <span class="nf">form_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="c"># process form</span>
+        <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">),</span> <span class="s">&#39;info&#39;</span><span class="p">)</span>
+
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyFormView</span><span class="p">,</span> <span class="s">&quot;My form View&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;/myform&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-group&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;My form View&#39;</span><span class="p">),</span>
+                     <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Forms&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s">&quot;fa-cogs&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Notice that this class derives from <em>BaseView</em> so all properties from the parent class can be overridden also.
+Notice also how label uses babel&#8217;s lazy_gettext as _(&#8216;text&#8217;) function so that your menu item can be translated.</p>
+<p>Most important Base Properties:</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -92,203 +154,6 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="generalview">
-<h2>GeneralView<a class="headerlink" href="#generalview" title="Permalink to this headline">¶</a></h2>
-<p>This is the most important view. If you want to automatically implement create, edit, delete, show, and search
-form your database tables, derive your views from this class.</p>
-<p>Notice that this class derives from <em>BaseView</em> so all properties from the parent class can be overrided also.</p>
-<p>Most importante Base Properties:</p>
-<blockquote>
-<div><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">datamodel:</th><td class="field-body">SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)</td>
-</tr>
-</tbody>
-</table>
-<ul class="simple">
-<li>Titles</li>
-</ul>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">list_title:</th><td class="field-body">Title for list view</td>
-</tr>
-<tr class="field-even field"><th class="field-name">show_title:</th><td class="field-body">Title for show view</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">add_title:</th><td class="field-body">Title for add view</td>
-</tr>
-<tr class="field-even field"><th class="field-name">edit_title:</th><td class="field-body">Title for edit view</td>
-</tr>
-</tbody>
-</table>
-<ul class="simple">
-<li>Include Columns: lists of column names for the views</li>
-</ul>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">list_columns:</th><td class="field-body">The columns to show on list (this is mandatory)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">show_columns:</th><td class="field-body">The columns to show on show view</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">add_columns:</th><td class="field-body">The columns to show on add form, and also what will be added</td>
-</tr>
-<tr class="field-even field"><th class="field-name">edit_columns:</th><td class="field-body">The columns to show on edit form, and also what will be edited</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">order_columns:</th><td class="field-body">The columns allowed to order on lists</td>
-</tr>
-<tr class="field-even field"><th class="field-name">search_columns:</th><td class="field-body">The search form to filter the list</td>
-</tr>
-</tbody>
-</table>
-<ul class="simple">
-<li>Properties for Labels and descriptions</li>
-</ul>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">label_columns:</th><td class="field-body">The labels to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL LABEL&gt;&#8217;, ....}</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">description_columns:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body">The description to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL DESCRIPTION&gt;&#8217;, ....}</td>
-</tr>
-</tbody>
-</table>
-<ul class="simple">
-<li>Optional Field set&#8217;s, inspired on DJANGO field sets:</li>
-</ul>
-<p>fieldsets  [(&lt;&#8217;TITLE&#8217;<a href="#id1"><span class="problematic" id="id2">|</span></a>None&gt;, {&#8216;fields&#8217;:[&lt;F1&gt;,&lt;F2&gt;,...]}),....]</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">show_fieldsets:</th><td class="field-body">A list</td>
-</tr>
-<tr class="field-even field"><th class="field-name">add_fieldsets:</th><td class="field-body">A list</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">edit_fieldsets:</th><td class="field-body">A list</td>
-</tr>
-</tbody>
-</table>
-<ul class="simple">
-<li>Properties for overriding auto form creation with your own defined forms (WTFORM)</li>
-</ul>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">add_form:</th><td class="field-body">Override this to override the add form auto creation</td>
-</tr>
-<tr class="field-even field"><th class="field-name">edit_form:</th><td class="field-body">Override this to override the edit form auto creation</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">search_form:</th><td class="field-body">: Override this to override the search form auto creation</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">validators_columns:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Override this to implement your special validations for form columns
-{&#8216;&lt;COL NAME&gt;&#8217;: &lt;WTForm Validator&gt; }</td>
-</tr>
-</tbody>
-</table>
-<ul class="simple">
-<li>Templates: override these to implement your own templates, AppBuilder has some variations</li>
-</ul>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">list_template:</th><td class="field-body">(default) &#8216;appbuilder/general/model/list.html&#8217;</td>
-</tr>
-<tr class="field-even field"><th class="field-name">edit_template:</th><td class="field-body">(default) &#8216;appbuilder/general/model/edit.html&#8217;</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">add_template:</th><td class="field-body">(default) &#8216;appbuilder/general/model/add.html&#8217;</td>
-</tr>
-<tr class="field-even field"><th class="field-name">show_template:</th><td class="field-body">(default) &#8216;appbuilder/general/model/show.html&#8217;</td>
-</tr>
-</tbody>
-</table>
-<ul class="simple">
-<li>Widgets: override these to change the default display for the views implemented on this class. AppBuilder has some variations on these.</li>
-</ul>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">list_widget:</th><td class="field-body">(default) ListWidget</td>
-</tr>
-<tr class="field-even field"><th class="field-name">edit_widget:</th><td class="field-body">(default) FormWidget</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">add_widget:</th><td class="field-body">(default) FormWidget</td>
-</tr>
-<tr class="field-even field"><th class="field-name">show_widget:</th><td class="field-body">(default) ShowWidget</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">search_widget:</th><td class="field-body">(default) SearchWidget</td>
-</tr>
-</tbody>
-</table>
-</div></blockquote>
-</div>
-<div class="section" id="chartview">
-<h2>ChartView<a class="headerlink" href="#chartview" title="Permalink to this headline">¶</a></h2>
-<p>Provides a simple (and hopefully nice) way to draw charts on your application.</p>
-<p>This will show Google Charts based on group by of your tables.</p>
-<p>Most importante Base Properties:</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">datamodel:</th><td class="field-body">SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">chart_title:</th><td class="field-body">Your Chart Title</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">chart_type:</th><td class="field-body">&#8216;PieChart&#8217; or &#8216;ColumnChart&#8217;</td>
-</tr>
-<tr class="field-even field"><th class="field-name">chart_3d:</th><td class="field-body">&#8216;true&#8217; or &#8216;false&#8217;</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">height:</th><td class="field-body">The height for you chart default is: &#8216;400px&#8217;</td>
-</tr>
-<tr class="field-even field"><th class="field-name">label_columns:</th><td class="field-body">: The labels to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL LABEL&gt;&#8217;, ....} (this is mandatory)</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">group_by_columns:</th></tr>
-<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">A list for your possible group by&#8217;s for your table (select * from &lt;TABLE&gt; group by [...])</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="timechartview">
-<h2>TimeChartView<a class="headerlink" href="#timechartview" title="Permalink to this headline">¶</a></h2>
-<p>Provides a simple way to draw some time charts on your application.</p>
-<p>This will show Google Charts based on count and group by month and year for your tables.</p>
-<p>Most importante Base Properties:</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">datamodel:</th><td class="field-body">SQLAModel (flask.ext.appbuilder.models.datamodel), take a look at quick start. (this is mandatory)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">chart_title:</th><td class="field-body">Your Chart Title</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">chart_type:</th><td class="field-body">&#8216;PieChart&#8217; or &#8216;ColumnChart&#8217;</td>
-</tr>
-<tr class="field-even field"><th class="field-name">chart_3d:</th><td class="field-body">&#8216;true&#8217; or &#8216;false&#8217;</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">height:</th><td class="field-body">The height for you chart default is: &#8216;400px&#8217;</td>
-</tr>
-<tr class="field-even field"><th class="field-name">label_columns:</th><td class="field-body">: The labels to be shown for columns {&#8216;&lt;COL NAME&gt;&#8217;: &#8216;&lt;COL LABEL&gt;&#8217;, ....} (this is mandatory).</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">group_by_columns:</th></tr>
-<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">A list for your possible group by&#8217;s for your table, only select date columns.</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="widgets">
-<h2>Widgets<a class="headerlink" href="#widgets" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -303,16 +168,14 @@ form your database tables, derive your views from this class.</p>
 <li><a class="reference internal" href="#">Views</a><ul>
 <li><a class="reference internal" href="#baseview">BaseView</a></li>
 <li><a class="reference internal" href="#simpleformview">SimpleFormView</a></li>
-<li><a class="reference internal" href="#generalview">GeneralView</a></li>
-<li><a class="reference internal" href="#chartview">ChartView</a></li>
-<li><a class="reference internal" href="#timechartview">TimeChartView</a></li>
-<li><a class="reference internal" href="#widgets">Widgets</a></li>
 </ul>
 </li>
 </ul>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="quickhowto.html" title="next chapter">Quick How to</a></li>
   </ul></li>
 </ul>
   <h3>This Page</h3>

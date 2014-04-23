@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-21 15:29+0000\n"
+"POT-Creation-Date: 2014-04-23 18:02+0100\n"
 "PO-Revision-Date: 2013-12-07 19:49+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -143,19 +143,19 @@ msgstr "Sin Relación"
 msgid "Relation as Many"
 msgstr "Relación múltiple"
 
-#: flask_appbuilder/security/forms.py:9
+#: flask_appbuilder/security/forms.py:10
 msgid "openid"
 msgstr ""
 
-#: flask_appbuilder/security/forms.py:10
+#: flask_appbuilder/security/forms.py:11
 msgid "remember_me"
 msgstr ""
 
-#: flask_appbuilder/security/forms.py:13 flask_appbuilder/security/views.py:114
+#: flask_appbuilder/security/forms.py:15 flask_appbuilder/security/views.py:114
 msgid "User Name"
 msgstr "Nombre de usuario"
 
-#: flask_appbuilder/security/forms.py:14 flask_appbuilder/security/forms.py:18
+#: flask_appbuilder/security/forms.py:16 flask_appbuilder/security/forms.py:20
 #: flask_appbuilder/security/views.py:115
 #: flask_appbuilder/security/views.py:190
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:31
@@ -163,7 +163,7 @@ msgstr "Nombre de usuario"
 msgid "Password"
 msgstr "Contraseña"
 
-#: flask_appbuilder/security/forms.py:19 flask_appbuilder/security/views.py:131
+#: flask_appbuilder/security/forms.py:21 flask_appbuilder/security/views.py:131
 #: flask_appbuilder/security/views.py:191
 msgid ""
 "Please use a good password policy, this application does not check this "
@@ -172,15 +172,15 @@ msgstr ""
 "Utilice una buena política de contraseñas, esta aplicación no comprueba "
 "este por vosotros"
 
-#: flask_appbuilder/security/forms.py:22 flask_appbuilder/security/views.py:195
+#: flask_appbuilder/security/forms.py:25 flask_appbuilder/security/views.py:195
 msgid "Confirm Password"
 msgstr "confirmar Contraseña"
 
-#: flask_appbuilder/security/forms.py:23
+#: flask_appbuilder/security/forms.py:26
 msgid "Please rewrite the password to confirm"
 msgstr "Por favor, vuelva a escribir la contraseña para confirmarla"
 
-#: flask_appbuilder/security/forms.py:24 flask_appbuilder/security/views.py:198
+#: flask_appbuilder/security/forms.py:27 flask_appbuilder/security/views.py:198
 msgid "Passwords must match"
 msgstr "Las contraseñas deben coincidir"
 
@@ -423,6 +423,9 @@ msgid "Invalid login. Please try again."
 msgstr "Inicio de sesión no válido. Por favor, inténtelo de nuevo."
 
 #: flask_appbuilder/security/views.py:280
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:45
+#: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:40
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:53
 msgid "Sign In"
 msgstr "Ingresar"
 
