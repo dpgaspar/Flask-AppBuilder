@@ -220,7 +220,7 @@
         {{ render_pagination(page, page_size, count, generalview_name) }}
         {{ render_set_page_size(page, page_size, count, generalview_name) }}
     	{% if can_add %}
-			{% set path = url_for(generalview_name + '.add',next=request.path) %}
+			{% set path = url_for(generalview_name + '.add',next=request.script_root + request.path) %}
 			{% set path = path | set_link_filters(filters) %}
 			&nbsp;{{ lnk_add(path) }}
 		{% endif %}
@@ -234,17 +234,17 @@
 {% macro btn_crud(can_show, can_edit, can_delete, pk, generalview_name, filters) %}
     <div class="btn-group btn-group-xs" style="display: flex;">
         {% if can_show %}
-            {% set path = url_for(generalview_name + '.show',pk=pk,next=request.path) %}
+            {% set path = url_for(generalview_name + '.show',pk=pk,next=request.script_root + request.path) %}
             {% set path = path | set_link_filters(filters) %}
             {{ lnk_show(path) }}
         {% endif %}
         {% if can_edit %}
-            {% set path = url_for(generalview_name + '.edit',pk=pk,next=request.path) %}
+            {% set path = url_for(generalview_name + '.edit',pk=pk,next=request.script_root + request.path) %}
             {% set path = path | set_link_filters(filters) %}
             {{ lnk_edit(path) }}
         {% endif %}
         {% if can_delete %}
-            {{ lnk_delete(url_for(generalview_name + '.delete',pk=pk,next=request.path)) }}
+            {{ lnk_delete(url_for(generalview_name + '.delete',pk=pk,next=request.script_root + request.path)) }}
         {% endif %}
     </div>
 {% endmacro %}
