@@ -62,7 +62,7 @@
 	<li class="dropdown">
 		{% for lang in languages %}
 			{% if lang != locale %}
-        		<a tabindex="-1" href="/lang/{{lang}}?next={{request.path}}">
+        		<a tabindex="-1" href="{{baseapp.get_url_for_locale(lang)}}">
         		<ul class="f16"><li class="flag {{languages[lang].get('flag')}}"></li> - {{languages[lang].get('name')}}</ul>
         		</a>
         		{% endif %}
@@ -86,12 +86,12 @@
                     <span class="icon-bar"></span>
                 </button>
                 {% if baseapp.app_icon %}
-                	<a class="brand" href="{{url_for('%s.%s' % (baseapp.indexview.endpoint, baseapp.indexview.default_view))}}">
+                	<a class="brand" href="{{baseapp.get_url_for_index}}">
                 	<img src="{{baseapp.app_icon}}" height="50px" width="100%">
                 	</a>
                 {% else %}
                 	<span class="navbar-brand">
-                	<a href="{{url_for('%s.%s' % (baseapp.indexview.endpoint, baseapp.indexview.default_view))}}">
+                	<a href="{{baseapp.get_url_for_index}}">
                 	{{ baseapp.app_name }}
                 	</a>
                 	</span>
@@ -104,10 +104,13 @@
                 <ul class="nav navbar-nav navbar-right">
                 {{ locale_menu(languages) }}
                 {% if not current_user.is_anonymous() %}
-				<li><a href="/logout"><i class="fa fa-sign-out"></i>{{_("Logout")}}</a></li>
-                                <li><a class="pull-right" href="/users/userinfo"><i class="fa fa-user"></i> {{g.user.get_full_name()}}</a></li>
+				    <li><a href="{{baseapp.get_url_for_logout}}">
+                    <i class="fa fa-sign-out"></i>{{_("Logout")}}</a></li>
+                    <li><a class="pull-right" href="{{baseapp.get_url_for_userinfo}}">
+                    <i class="fa fa-user"></i> {{g.user.get_full_name()}}</a></li>
                 {% else %}
-                                <li><a href="/login"><i class="fa fa-sign-in"></i>{{_("Login")}}</a></li>
+                    <li><a href="{{baseapp.get_url_for_login}}">
+                    <i class="fa fa-sign-in"></i>{{_("Login")}}</a></li>
                 {% endif %}
                 </ul>
         </div>

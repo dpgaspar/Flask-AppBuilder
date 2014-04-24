@@ -139,19 +139,19 @@ class UserGeneralView(GeneralView):
     list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'role']
 
     show_fieldsets = [
-        ('User info',
+        (lazy_gettext('User info'),
             {'fields': ['username', 'active', 'role', 'login_count']}),
-        ('Personal Info',
+        (lazy_gettext('Personal Info'),
             {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
-        ('Audit Info',
+        (lazy_gettext('Audit Info'),
             {'fields': ['last_login', 'fail_login_count', 'created_on',
                         'created_by', 'changed_on', 'changed_by'], 'expanded': False}),
     ]
 
     user_show_fieldsets = [
-        ('User info',
+        (lazy_gettext('User info'),
             {'fields': ['username', 'active', 'role', 'login_count']}),
-        ('Personal Info',
+        (lazy_gettext('Personal Info'),
             {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
     ]
 
@@ -286,7 +286,7 @@ class AuthView(BaseView):
     @expose('/logout/')
     def logout(self):
         logout_user()
-        return redirect('/')
+        return redirect(self.baseapp.get_url_for_index)
 
 
 class AuthDBView(AuthView):
@@ -301,9 +301,9 @@ class AuthDBView(AuthView):
             user = self.baseapp.sm.auth_user_db(form.username.data, form.password.data)
             if not user:
                 flash(as_unicode(self.invalid_login_message), 'warning')
-                return redirect('/login')
+                return redirect(self.baseapp.get_url_for_login)
             login_user(user, remember=False)
-            return redirect('/')
+            return redirect(self.baseapp.get_url_for_index)
         return render_template(self.login_template,
                                title=self.title,
                                form=form,
@@ -317,15 +317,15 @@ class AuthLDAPView(AuthView):
     @expose('/login/', methods=['GET', 'POST'])
     def login(self):
         if g.user is not None and g.user.is_authenticated():
-            return redirect('/')
+            return redirect(self.baseapp.get_url_for_index)
         form = LoginForm_db()
         if form.validate_on_submit():
             user = self.baseapp.sm.auth_user_ldap(form.username.data, form.password.data)
             if not user:
                 flash(as_unicode(self.invalid_login_message), 'warning')
-                return redirect('/login')
+                return redirect(self.baseapp.get_url_for_login)
             login_user(user, remember=False)
-            return redirect('/')
+            return redirect(self.baseapp.get_url_for_index)
         return render_template(self.login_template,
                                title=self.title,
                                form=form,
@@ -380,7 +380,7 @@ class AuthOIDView(AuthView):
             session.pop('remember_me', None)
 
         login_user(user, remember=remember_me)
-        return redirect('/')
+        return redirect(self.baseapp.get_url_for_index)
 
 
 

@@ -7,15 +7,16 @@ class BabelManager(object):
 
     babel = None
     babel_default_locale = ''
+    locale_view = None
 
     def __init__(self, app, pkg_translations):
         self.babel = Babel(app, pkg_translations)
         self.babel_default_locale = self._get_default_locale(app)
         self.babel.locale_selector_func = self.get_locale
 
-    @staticmethod
-    def register_views(baseapp):
-        baseapp.add_view_no_menu(LocaleView())
+    def register_views(self, baseapp):
+        self.locale_view = LocaleView()
+        baseapp.add_view_no_menu(self.locale_view)
 
     @staticmethod
     def _get_default_locale(app):

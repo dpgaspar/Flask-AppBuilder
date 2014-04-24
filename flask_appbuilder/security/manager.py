@@ -33,6 +33,7 @@ class SecurityManager(object):
     auth_role_admin = ""
     auth_role_public = ""
     auth_view = None
+    user_view = None
     auth_ldap_server = ""
     lm = None
     oid = None
@@ -66,26 +67,26 @@ class SecurityManager(object):
         baseapp.add_view_no_menu(ResetMyPasswordView())
 
         if self._get_auth_type(baseapp.app) == AUTH_DB:
-            user_view = baseapp._init_view_session(UserDBGeneralView)
+            self.user_view = baseapp._init_view_session(UserDBGeneralView)
             self.auth_view = AuthDBView()
         elif self._get_auth_type(baseapp.app) == AUTH_LDAP:
-            user_view = baseapp._init_view_session(UserLDAPGeneralView)
+            self.user_view = baseapp._init_view_session(UserLDAPGeneralView)
             self.auth_view = AuthLDAPView()
         else:
-            user_view = baseapp._init_view_session(UserOIDGeneralView)
+            self.user_view = baseapp._init_view_session(UserOIDGeneralView)
             self.auth_view = AuthOIDView()
             self.oid.after_login_func = self.auth_view.after_login
 
         baseapp.add_view_no_menu(self.auth_view)
 
-        baseapp.add_view(user_view, "List Users"
+        baseapp.add_view(self.user_view, "List Users"
                          , icon="fa-user", label=_("List Users"),
                          category="Security", category_icon="fa-cogs", category_label=_('Security'))
 
         role_view = baseapp._init_view_session(RoleGeneralView)
         baseapp.add_view(role_view, "List Roles", icon="fa-group", label=_('List Roles'),
                          category="Security", category_icon="fa-cogs")
-        role_view.related_views = [user_view.__class__]
+        role_view.related_views = [self.user_view.__class__]
         baseapp.add_view(baseapp._init_view_session(UserStatsChartView),
                          "User's Statistics", icon="fa-bar-chart-o", label=_("User's Statistics"),
                          category="Security")

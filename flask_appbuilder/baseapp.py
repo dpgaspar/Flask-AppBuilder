@@ -2,7 +2,7 @@ import logging
 
 from .views import IndexView
 from filters import TemplateFilters
-from flask import Blueprint
+from flask import Blueprint, url_for
 from flask.ext.babelpkg import gettext as _gettext, lazy_gettext
 from flask.ext.appbuilder.babel.manager import BabelManager
 from flask.ext.appbuilder import translations
@@ -245,6 +245,26 @@ class BaseApp(object):
             self._process_ref_related_views()
             self.register_blueprint(baseview, endpoint=endpoint, static_folder=static_folder)
             self._add_permission(baseview)
+
+    @property
+    def get_url_for_login(self):
+        return url_for('%s.%s' % (self.sm.auth_view.endpoint, 'login'))
+
+    @property
+    def get_url_for_logout(self):
+        return url_for('%s.%s' % (self.sm.auth_view.endpoint, 'logout'))
+
+    @property
+    def get_url_for_index(self):
+        return url_for('%s.%s' % (self.indexview.endpoint, self.indexview.default_view))
+
+    @property
+    def get_url_for_userinfo(self):
+        return url_for('%s.%s' % (self.sm.user_view.endpoint, 'userinfo'))
+
+    def get_url_for_locale(self, lang):
+        return url_for('%s.%s' % (self.bm.locale_view.endpoint, self.bm.locale_view.default_view), lang= lang)
+
 
     def _add_permission(self, baseview):
         try:

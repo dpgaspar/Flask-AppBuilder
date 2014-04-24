@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-23 18:02+0100\n"
+"POT-Creation-Date: 2014-04-23 18:47+0100\n"
 "PO-Revision-Date: 2013-10-08 17:56+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: pt <LL@li.org>\n"
@@ -377,6 +377,20 @@ msgstr "A Função de segurança, está associada a uma lista de permissões"
 #: flask_appbuilder/security/views.py:196
 msgid "Please rewrite the users password to confirm"
 msgstr "Por favor reescreva a password para confirmar"
+
+#: flask_appbuilder/security/views.py:142
+#: flask_appbuilder/security/views.py:152
+msgid "User info"
+msgstr "Informação de Utilizador"
+
+#: flask_appbuilder/security/views.py:144
+#: flask_appbuilder/security/views.py:154
+msgid "Personal Info"
+msgstr "Informação Pessoal"
+
+#: flask_appbuilder/security/views.py:146
+msgid "Audit Info"
+msgstr "Informação de Auditoria"
 
 #: flask_appbuilder/security/views.py:164
 msgid "Your user information"

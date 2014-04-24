@@ -6,6 +6,8 @@ from ..baseviews import BaseView, expose
 class LocaleView(BaseView):
     route_base = '/lang'
 
+    default_view = 'index'
+
     @expose('/<string:locale>')
     def index(self, locale):
         session['locale'] = locale
