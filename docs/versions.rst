@@ -1,11 +1,12 @@
 Versions
 ========
 
-Improvements and Bug fixes on 0.7.9
+Improvements and Bug fixes on 0.8.0
 -----------------------------------
 
 - New, Language, Simplified Chinese support.
 - New, Language, Russian support.
+- New, Language, German support.
 - Fix, various translations.
 - Fix,New support for virtual directory no need to install on root url, relative urls fixes.
 

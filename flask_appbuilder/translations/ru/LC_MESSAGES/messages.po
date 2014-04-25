@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-23 18:47+0100\n"
+"POT-Creation-Date: 2014-04-25 14:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -184,33 +184,33 @@ msgstr "Пожалуйста переписать пароль для подтв
 msgid "Passwords must match"
 msgstr "Пароли должны совпадать"
 
-#: flask_appbuilder/security/manager.py:82
+#: flask_appbuilder/security/manager.py:83
 #: flask_appbuilder/security/views.py:106
 msgid "List Users"
 msgstr "Список пользователей"
 
-#: flask_appbuilder/security/manager.py:83
+#: flask_appbuilder/security/manager.py:84
 msgid "Security"
 msgstr "безопасность"
 
-#: flask_appbuilder/security/manager.py:86
+#: flask_appbuilder/security/manager.py:87
 #: flask_appbuilder/security/views.py:262
 msgid "List Roles"
 msgstr "Список Роли"
 
-#: flask_appbuilder/security/manager.py:90
+#: flask_appbuilder/security/manager.py:91
 msgid "User's Statistics"
 msgstr "Статистика пользователя"
 
-#: flask_appbuilder/security/manager.py:95
+#: flask_appbuilder/security/manager.py:96
 msgid "Base Permissions"
 msgstr "Базовые Разрешения"
 
-#: flask_appbuilder/security/manager.py:98
+#: flask_appbuilder/security/manager.py:99
 msgid "Views/Menus"
 msgstr "Просмотров / меню"
 
-#: flask_appbuilder/security/manager.py:100
+#: flask_appbuilder/security/manager.py:101
 msgid "Permission on Views/Menus"
 msgstr "Разрешение на просмотров / меню"
 
@@ -444,11 +444,11 @@ msgstr "Неверный Войти . "
 msgid "Sign In"
 msgstr "Вход"
 
-#: flask_appbuilder/templates/appbuilder/baselib.html:107
+#: flask_appbuilder/templates/appbuilder/baselib.html:108
 msgid "Logout"
 msgstr "Выход"
 
-#: flask_appbuilder/templates/appbuilder/baselib.html:110
+#: flask_appbuilder/templates/appbuilder/baselib.html:113
 msgid "Login"
 msgstr "Войти"
 

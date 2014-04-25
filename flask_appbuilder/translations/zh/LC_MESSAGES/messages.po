@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-23 18:47+0100\n"
+"POT-Creation-Date: 2014-04-25 14:54+0100\n"
 "PO-Revision-Date: 2014-04-21 15:20+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: zh <LL@li.org>\n"
@@ -182,33 +182,33 @@ msgstr "请重写密码以确认"
 msgid "Passwords must match"
 msgstr "密码必须匹配"
 
-#: flask_appbuilder/security/manager.py:82
+#: flask_appbuilder/security/manager.py:83
 #: flask_appbuilder/security/views.py:106
 msgid "List Users"
 msgstr "用户列表"
 
-#: flask_appbuilder/security/manager.py:83
+#: flask_appbuilder/security/manager.py:84
 msgid "Security"
 msgstr "安全"
 
-#: flask_appbuilder/security/manager.py:86
+#: flask_appbuilder/security/manager.py:87
 #: flask_appbuilder/security/views.py:262
 msgid "List Roles"
 msgstr "列出角色"
 
-#: flask_appbuilder/security/manager.py:90
+#: flask_appbuilder/security/manager.py:91
 msgid "User's Statistics"
 msgstr "用户统计"
 
-#: flask_appbuilder/security/manager.py:95
+#: flask_appbuilder/security/manager.py:96
 msgid "Base Permissions"
 msgstr "基地权限"
 
-#: flask_appbuilder/security/manager.py:98
+#: flask_appbuilder/security/manager.py:99
 msgid "Views/Menus"
 msgstr "查看/菜单"
 
-#: flask_appbuilder/security/manager.py:100
+#: flask_appbuilder/security/manager.py:101
 msgid "Permission on Views/Menus"
 msgstr "权限查看/菜单"
 
@@ -434,11 +434,11 @@ msgstr "无效的登录。请再试一次。"
 msgid "Sign In"
 msgstr "登录"
 
-#: flask_appbuilder/templates/appbuilder/baselib.html:107
+#: flask_appbuilder/templates/appbuilder/baselib.html:108
 msgid "Logout"
 msgstr "注销"
 
-#: flask_appbuilder/templates/appbuilder/baselib.html:110
+#: flask_appbuilder/templates/appbuilder/baselib.html:113
 msgid "Login"
 msgstr "注册"
 
