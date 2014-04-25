@@ -15,11 +15,14 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 #SQLALCHEMY_DATABASE_URI = 'mysql://myapp@localhost/myapp'
 
 BABEL_DEFAULT_LOCALE = 'en'
-
+BABEL_DEFAULT_FOLDER = 'translations'
 LANGUAGES = {
     'en': {'flag':'gb', 'name':'English'},
-    'pt': {'flag':'pt', 'name':'Portugal'},
-    'es': {'flag':'es', 'name':'Spain'}
+    'pt': {'flag':'pt', 'name':'Portuguese'},
+    'es': {'flag':'es', 'name':'Spanish'},
+    'de': {'flag':'de', 'name':'German'},
+    'zh': {'flag':'cn', 'name':'Chinese'},
+    'ru': {'flag':'ru', 'name':'Russian'}
 }
 
 
