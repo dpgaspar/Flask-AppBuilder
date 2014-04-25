@@ -10,7 +10,7 @@ BaseView
 
 All views inherit from this class. it's constructor will register your exposed urls on flask as a Blueprint, as well as all security permissions that need to be defined and protected.
 
-Generally you will not implement your views deriving from this class, unless your implementing a new base appbuilder view with your own custom methods.
+You can use use this kind of view to implement your own custom pages, attached to a menu or linked from any point of your site.
 
 Decorate your url routing methods with @expose. additionally add @has_access decorator to tell flask that this is a security protected method.
 
