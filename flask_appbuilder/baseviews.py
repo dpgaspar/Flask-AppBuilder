@@ -740,17 +740,6 @@ class BaseCRUDView(BaseModelView):
             field.data = rel_obj
 
 
-    def debug(self):
-
-        print self.__class__.__name__, "SHOW FS", self.show_fieldsets
-        print self.__class__.__name__, "SHOW COL", self.show_columns
-        print self.__class__.__name__, "ADD FS", self.add_fieldsets
-        print self.__class__.__name__, "ADD COL", self.add_columns
-        print self.__class__.__name__, "EDIT FS", self.edit_fieldsets
-        print self.__class__.__name__, "EDIT COL", self.edit_columns
-        print self.__class__.__name__, "LIST COL", self.list_columns
-
-
     def pre_update(self, item):
         """
             Override this, will be called before update
