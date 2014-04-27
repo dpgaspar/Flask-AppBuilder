@@ -5,6 +5,7 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.appbuilder.baseapp import BaseApp
 
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 """
