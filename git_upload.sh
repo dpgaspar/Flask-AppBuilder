@@ -16,5 +16,6 @@ git add ./babel -A
 git add ./docs -A
 git add ./docs/_static -A
 git add ./examples -A
+git add ./tests -A
 git commit -m "$1"
 git push origin master

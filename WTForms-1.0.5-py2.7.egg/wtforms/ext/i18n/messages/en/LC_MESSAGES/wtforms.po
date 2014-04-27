@@ -1,0 +1,180 @@
+# English (United States) translations for WTForms.
+# Copyright (C) 2013 WTForms Team
+# This file is distributed under the same license as the WTForms project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: WTForms 1.0.4\n"
+"Report-Msgid-Bugs-To: wtforms@simplecodes.com\n"
+"POT-Creation-Date: 2013-04-28 15:30-0600\n"
+"PO-Revision-Date: 2013-04-28 15:36-0700\n"
+"Last-Translator: James Crasta <james+i18n@simplecodes.com>\n"
+"Language-Team: en_US <james+i18n@simplecodes.com>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 0.9.6\n"
+
+#: wtforms/validators.py:55
+#, python-format
+msgid "Invalid field name '%s'."
+msgstr "Invalid field name '%s'."
+
+#: wtforms/validators.py:62
+#, python-format
+msgid "Field must be equal to %(other_name)s."
+msgstr "Field must be equal to %(other_name)s."
+
+#: wtforms/validators.py:94
+#, python-format
+msgid "Field must be at least %(min)d character long."
+msgid_plural "Field must be at least %(min)d characters long."
+msgstr[0] "Field must be at least %(min)d character long."
+msgstr[1] "Field must be at least %(min)d characters long."
+
+#: wtforms/validators.py:97
+#, python-format
+msgid "Field cannot be longer than %(max)d character."
+msgid_plural "Field cannot be longer than %(max)d characters."
+msgstr[0] "Field cannot be longer than %(max)d character."
+msgstr[1] "Field cannot be longer than %(max)d characters."
+
+#: wtforms/validators.py:100
+#, python-format
+msgid "Field must be between %(min)d and %(max)d characters long."
+msgstr "Field must be between %(min)d and %(max)d characters long."
+
+#: wtforms/validators.py:135
+#, python-format
+msgid "Number must be at least %(min)s."
+msgstr "Number must be at least %(min)s."
+
+#: wtforms/validators.py:137
+#, python-format
+msgid "Number must be at most %(max)s."
+msgstr "Number must be at most %(max)s."
+
+#: wtforms/validators.py:139
+#, python-format
+msgid "Number must be between %(min)s and %(max)s."
+msgstr "Number must be between %(min)s and %(max)s."
+
+#: wtforms/validators.py:188 wtforms/validators.py:221
+msgid "This field is required."
+msgstr "This field is required."
+
+#: wtforms/validators.py:249
+msgid "Invalid input."
+msgstr "Invalid input."
+
+#: wtforms/validators.py:268
+msgid "Invalid email address."
+msgstr "Invalid email address."
+
+#: wtforms/validators.py:298
+msgid "Invalid IP address."
+msgstr "Invalid IP address."
+
+#: wtforms/validators.py:346
+msgid "Invalid Mac address."
+msgstr "Invalid MAC address."
+
+#: wtforms/validators.py:371
+msgid "Invalid URL."
+msgstr "Invalid URL."
+
+#: wtforms/validators.py:389
+msgid "Invalid UUID."
+msgstr "Invalid UUID."
+
+#: wtforms/validators.py:416
+#, python-format
+msgid "Invalid value, must be one of: %(values)s."
+msgstr "Invalid value, must be one of: %(values)s."
+
+#: wtforms/validators.py:443
+#, python-format
+msgid "Invalid value, can't be any of: %(values)s."
+msgstr "Invalid value, can't be any of: %(values)s."
+
+#: wtforms/ext/appengine/fields.py:91 wtforms/ext/appengine/fields.py:173
+#: wtforms/ext/appengine/fields.py:175 wtforms/ext/django/fields.py:89
+#: wtforms/ext/sqlalchemy/fields.py:126 wtforms/ext/sqlalchemy/fields.py:128
+#: wtforms/ext/sqlalchemy/fields.py:178 wtforms/ext/sqlalchemy/fields.py:183
+#: wtforms/fields/core.py:436
+msgid "Not a valid choice"
+msgstr "Not a valid choice"
+
+#: wtforms/ext/appengine/fields.py:194
+msgid "Not a valid list"
+msgstr "Not a valid list"
+
+#: wtforms/ext/appengine/fields.py:213
+#, fuzzy
+msgid "Not a valid integer list"
+msgstr "Not a valid integer list"
+
+#: wtforms/ext/csrf/form.py:47
+msgid "Invalid CSRF Token"
+msgstr "Invalid CSRF Token"
+
+#: wtforms/ext/csrf/session.py:57
+msgid "CSRF token missing"
+msgstr "CSRF token missing"
+
+#: wtforms/ext/csrf/session.py:65
+msgid "CSRF failed"
+msgstr "CSRF failed"
+
+#: wtforms/ext/csrf/session.py:70
+msgid "CSRF token expired"
+msgstr "CSRF token expired"
+
+#: wtforms/ext/dateutil/fields.py:50
+msgid "Please input a date/time value"
+msgstr "Please input a date/time value"
+
+#: wtforms/ext/dateutil/fields.py:62
+msgid "Invalid date/time input"
+msgstr "Invalid date/time input"
+
+#: wtforms/ext/sqlalchemy/validators.py:33
+msgid "Already exists."
+msgstr "Already exists."
+
+#: wtforms/fields/core.py:429
+msgid "Invalid Choice: could not coerce"
+msgstr "Invalid Choice: could not coerce"
+
+#: wtforms/fields/core.py:462
+msgid "Invalid choice(s): one or more data inputs could not be coerced"
+msgstr "Invalid choice(s): one or more data inputs could not be coerced"
+
+#: wtforms/fields/core.py:469
+#, python-format
+msgid "'%(value)s' is not a valid choice for this field"
+msgstr "'%(value)s' is not a valid choice for this field"
+
+#: wtforms/fields/core.py:524
+msgid "Not a valid integer value"
+msgstr "Not a valid integer value"
+
+#: wtforms/fields/core.py:574
+msgid "Not a valid decimal value"
+msgstr "Not a valid decimal value"
+
+#: wtforms/fields/core.py:601
+msgid "Not a valid float value"
+msgstr "Not a valid float value"
+
+#: wtforms/fields/core.py:652
+#, fuzzy
+msgid "Not a valid datetime value"
+msgstr "Not a valid datetime value"
+
+#: wtforms/fields/core.py:669
+#, fuzzy
+msgid "Not a valid date value"
+msgstr "Not a valid date value"
+
