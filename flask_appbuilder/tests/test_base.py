@@ -1,11 +1,14 @@
 from nose.tools import eq_, ok_, raises
 
 import os
+import logging
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.appbuilder.baseapp import BaseApp
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
+logging.getLogger().setLevel(logging.DEBUG)
 
 app = Flask(__name__)
 """
