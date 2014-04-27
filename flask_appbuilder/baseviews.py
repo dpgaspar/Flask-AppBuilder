@@ -2,7 +2,7 @@ import logging
 from flask import Blueprint
 from flask.globals import _app_ctx_stack, _request_ctx_stack
 from werkzeug.urls import url_parse
-from forms import GeneralModelConverter
+from .forms import GeneralModelConverter
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
 from .models.filters import Filters, FilterRelationOneToManyEqual
 from .actions import ActionItem
