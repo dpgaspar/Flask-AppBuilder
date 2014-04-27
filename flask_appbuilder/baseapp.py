@@ -132,7 +132,7 @@ class BaseApp(object):
         self.sm.register_views(self)
 
     def _init_view_session(self, baseview_class):
-        if baseview_class.datamodel.session == None:
+        if baseview_class.datamodel.session is None:
             baseview_class.datamodel.session = self.db.session
         return baseview_class()
 

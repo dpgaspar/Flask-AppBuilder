@@ -6,27 +6,23 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.appbuilder.baseapp import BaseApp
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
-logging.getLogger().setLevel(logging.DEBUG)
+def setup():
 
-app = Flask(__name__)
-"""
-    Your database connection String
-"""
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
-app.config['CSRF_ENABLED'] = True
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
+    logging.getLogger().setLevel(logging.DEBUG)
 
-"""
-    Secret key for authentication cookies
-"""
-app.config['SECRET_KEY'] = 'thisismyscretkey'
-"""
-    The Flask-SQLAlchemy object initialization with the SQLALCHEMY_DATABASE_URI string you have setup
-"""
-db = SQLAlchemy(app)
+    app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
+    app.config['CSRF_ENABLED'] = True
+    app.config['SECRET_KEY'] = 'thisismyscretkey'
+    db = SQLAlchemy(app)
+    return db, app
 
-"""
-    The Base Flask-AppBuilder object initialization
-"""
-genapp = BaseApp(app, db)
+
+def test_base_init():
+    db, app = setup()
+    genapp = BaseApp(app, db)
+    ok_(len(genapp.baseviews) > 0) # current minimal views are 11
+
+
