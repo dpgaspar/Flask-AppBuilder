@@ -1,6 +1,9 @@
 Flask App Builder
 =================
 
+.. image:: https://travis-ci.org/dpgaspar/Flask-AppBuilder.png?branch=master
+	:target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
+
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto form generation, google charts and much more.
 
