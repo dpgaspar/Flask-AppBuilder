@@ -1,7 +1,9 @@
 from nose.tools import eq_, ok_, raises
 
+import os
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.appbuilder.baseapp import BaseApp
 
 
 app = Flask(__name__)
