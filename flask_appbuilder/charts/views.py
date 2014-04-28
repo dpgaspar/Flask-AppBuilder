@@ -2,7 +2,7 @@ import logging
 from flask import render_template
 from flask.ext.babelpkg import lazy_gettext
 from widgets import ChartWidget, DirectChartWidget, MultipleChartWidget
-import .jsontools
+from .jsontools import dict_to_json
 from ..widgets import SearchWidget
 from ..security.decorators import has_access
 from ..models.filters import Filters, FilterRelationOneToManyEqual
@@ -138,7 +138,7 @@ class BaseSimpleDirectChartView(BaseChartView):
                                           order_column=order_column,
                                           order_direction=order_direction)
         value_columns = self.datamodel.get_values(lst, list(direct))
-        value_columns = jsontools.dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)
+        value_columns = dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)
 
         widgets['chart'] = self.chart_widget(route_base=self.route_base,
                                              chart_title=self.chart_title,
