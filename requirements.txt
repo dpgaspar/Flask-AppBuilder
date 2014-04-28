@@ -3,6 +3,6 @@ Flask-BabelPkg>=0.9
 Flask-Login>=0.2.0
 Flask-OpenID>=1.2.0
 Flask-SQLAlchemy>=0.16
-Flask-WTF==0.8.3
+Flask-WTF>=0.9.1
 
 
