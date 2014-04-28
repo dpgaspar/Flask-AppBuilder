@@ -7,8 +7,8 @@ from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
 #from openid.extensions import ax
 #from openid.extensions.sreg import SRegRequest, SRegResponse
 from flask.ext.openid import SessionWrapper, OpenIDResponse
-from wtforms import validators
-from wtforms.validators import EqualTo, PasswordField
+from wtforms import validators, PasswordField
+from wtforms.validators import EqualTo
 from flask.ext.babelpkg import gettext, lazy_gettext
 from flask_login import login_user, logout_user
 
