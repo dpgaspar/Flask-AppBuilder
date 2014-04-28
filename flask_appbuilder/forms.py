@@ -8,18 +8,20 @@ from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectF
 
 from wtforms import validators
 #from flask_wtf import validators
-from upload import (BS3FileUploadFieldWidget,
-                    BS3ImageUploadFieldWidget,
-                    FileUploadField,
-                    ImageUploadField)
-from validators import Unique
-from fieldwidgets import (BS3TextAreaFieldWidget,
+from .fieldwidgets import (BS3TextAreaFieldWidget,
                           BS3TextFieldWidget,
                           DatePickerWidget,
                           DateTimePickerWidget,
                           Select2Widget,
                           Select2ManyWidget)
 from .models.filters import Filters
+from .upload import (BS3FileUploadFieldWidget,
+                    BS3ImageUploadFieldWidget,
+                    FileUploadField,
+                    ImageUploadField)
+from .validators import Unique
+
+
 
 log = logging.getLogger(__name__)
 
