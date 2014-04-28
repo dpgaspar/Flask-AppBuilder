@@ -6,7 +6,7 @@ from .forms import GeneralModelConverter
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
 from .models.filters import Filters, FilterRelationOneToManyEqual
 from .actions import ActionItem
-from urltools import *
+from .urltools import *
 
 log = logging.getLogger(__name__)
 
