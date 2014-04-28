@@ -8,7 +8,7 @@ from flask.ext.appbuilder.babel.manager import BabelManager
 from flask.ext.appbuilder import translations
 from flask.ext.appbuilder import Base
 from .security.manager import SecurityManager
-from menu import Menu
+from .menu import Menu
 
 log = logging.getLogger(__name__)
 
