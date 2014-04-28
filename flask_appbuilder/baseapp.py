@@ -1,14 +1,14 @@
 import logging
 
-from .views import IndexView
-from filters import TemplateFilters
 from flask import Blueprint, url_for
 from flask.ext.babelpkg import gettext as _gettext, lazy_gettext
 from flask.ext.appbuilder.babel.manager import BabelManager
 from flask.ext.appbuilder import translations
 from flask.ext.appbuilder import Base
-from .security.manager import SecurityManager
+from .views import IndexView
+from .filters import TemplateFilters
 from .menu import Menu
+from .security.manager import SecurityManager
 
 log = logging.getLogger(__name__)
 
