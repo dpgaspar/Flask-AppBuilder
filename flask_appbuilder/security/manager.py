@@ -253,7 +253,7 @@ class SecurityManager(object):
                 except ldap.INVALID_CREDENTIALS:
                     self._update_user_auth_stat(user, False)
                     return None
-            except ldap.LDAPError, e:
+            except ldap.LDAPError as e:
                 if type(e.message) == dict and e.message.has_key('desc'):
                     log.error("LDAP Error {0}".format(e.message['desc']))
                     return None
