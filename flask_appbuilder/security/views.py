@@ -1,5 +1,4 @@
 import datetime
-from ..fieldwidgets import BS3PasswordFieldWidget
 from flask import render_template, flash, redirect, session, url_for, request, g
 from werkzeug.security import generate_password_hash
 #from openid.consumer import discover
@@ -15,11 +14,13 @@ from flask_login import login_user, logout_user
 from flask_appbuilder.models.datamodel import SQLAModel
 from flask_appbuilder.views import BaseView, GeneralView, SimpleFormView, expose
 from flask_appbuilder.charts.views import DirectChartView
+
+from ..fieldwidgets import BS3PasswordFieldWidget
 from ..actions import action
 from .._compat import as_unicode
-from forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
-from models import User, Permission, PermissionView, Role, ViewMenu
-from decorators import has_access
+from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
+from .models import User, Permission, PermissionView, Role, ViewMenu
+from .decorators import has_access
 
 
 class PermissionGeneralView(GeneralView):
