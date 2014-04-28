@@ -137,7 +137,7 @@ class SecurityManager(object):
         engine = self.session.get_bind(mapper=None, clause=None)
         inspector = Inspector.from_engine(engine)
         if 'user' in inspector.get_table_names() and 'role' in inspector.get_table_names() and 'permission' in inspector.get_table_names():
-            print "Found previous security tables, migrating..."
+            log.info("Found previous security tables, migrating...")
 
             metadata = MetaData(engine)
 
@@ -148,22 +148,22 @@ class SecurityManager(object):
             old_view_menu = Table('view_menu', metadata, autoload=True)
             old_permission_view_role = Table('permission_view_role', metadata, autoload=True)
 
-            print "Migrating Views and Menus"
+            log.info("Migrating Views and Menus")
             self.migrate_obj(old_view_menu, ViewMenu)
 
-            print "Migrating Permissions"
+            log.info("Migrating Permissions")
             self.migrate_obj(old_permission, Permission)
 
-            print "Migrating Permissions on Views"
+            log.info("Migrating Permissions on Views")
             self.migrate_obj(old_permission_view, PermissionView)
 
-            print "Migrating Roles"
+            log.info("Migrating Roles")
             self.migrate_obj(old_role, Role)
 
-            print "Migrating Roles to Permissions on Views"
+            log.info("Migrating Roles to Permissions on Views")
             self.migrate_obj(old_permission_view_role, self.quick_mapper(assoc_permissionview_role))
 
-            print "Migrating Users"
+            log.info("Migrating Users")
             self.migrate_obj(old_user, User)
 
 
