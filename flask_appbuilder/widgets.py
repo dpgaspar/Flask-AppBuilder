@@ -6,7 +6,7 @@ Created on Oct 12, 2013
 
 import logging
 from flask.globals import _request_ctx_stack
-from flask_appbuilder._compat import as_unicode
+from ._compat import as_unicode
 
 
 log = logging.getLogger(__name__)
