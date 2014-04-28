@@ -43,7 +43,7 @@ def create_models(db):
         def __repr__(self):
             return self.field_string
 
-
+    return Model1, Model2
 
 def test_base_init():
     """
@@ -76,8 +76,9 @@ def test_base_views():
     from flask.ext.appbuilder.views import GeneralView
 
     db, app = setup()
-    create_models(db)
+    Model1, Model2 = create_models(db)
     genapp = BaseApp(app, db)
+    
 
     class Model1View(GeneralView):
         datamodel = SQLAModel(Model1, db.session)
