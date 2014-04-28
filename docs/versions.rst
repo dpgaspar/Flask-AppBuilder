@@ -1,6 +1,12 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.8.1
+-----------------------------------
+
+- New, Python 3 support.
+- Fix, Removed Flask-wtf requirement version limitation.
+
 Improvements and Bug fixes on 0.8.0
 -----------------------------------
 
