@@ -32,7 +32,7 @@ setup(
         'Flask-Login>=0.2.0',
         'Flask-OpenID>=1.1.0',
         'Flask-SQLAlchemy>=0.16',
-        'Flask-WTF=>0.9.1',
+        'Flask-WTF>=0.9.1',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
