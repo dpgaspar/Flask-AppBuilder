@@ -1,8 +1,9 @@
 import logging
 
-from flask_wtf import (Form, BooleanField, TextField,
-                       TextAreaField, IntegerField, FloatField, DateField, QuerySelectField,
-                       QuerySelectMultipleField)
+from wtforms import (Form, BooleanField, TextField,
+                       TextAreaField, IntegerField, FloatField, DateField)
+
+from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 
 from flask_wtf import validators
 from upload import (BS3FileUploadFieldWidget,
