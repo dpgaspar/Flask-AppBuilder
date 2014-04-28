@@ -4,7 +4,7 @@ from .filemanager import uuid_originalname
 from .security.decorators import has_access
 from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
 from .baseviews import expose, BaseView, BaseCRUDView
-from urltools import *
+from .urltools import *
 
 
 log = logging.getLogger(__name__)
