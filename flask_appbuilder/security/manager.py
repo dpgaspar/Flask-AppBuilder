@@ -13,9 +13,9 @@ from flask_babelpkg import lazy_gettext as _
 
 from flask_appbuilder import Base
 
-from models import User, Role, PermissionView, Permission, ViewMenu, \
+from .models import User, Role, PermissionView, Permission, ViewMenu, \
     assoc_permissionview_role
-from views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, \
+from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, \
     ResetPasswordView, UserDBGeneralView, UserLDAPGeneralView, UserOIDGeneralView, RoleGeneralView, \
     PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, UserStatsChartView
 
