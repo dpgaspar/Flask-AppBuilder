@@ -1,6 +1,6 @@
-from flask.ext.babelpkg import Babel
 from flask import session
-from views import LocaleView
+from flask.ext.babelpkg import Babel
+from .views import LocaleView
 
 
 class BabelManager(object):
