@@ -9,11 +9,11 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
 
-from group import GroupByDateYear, GroupByDateMonth, GroupByCol
-
+from .group import GroupByDateYear, GroupByDateMonth, GroupByCol
 from .mixins import FileColumn, ImageColumn
 from ..filemanager import FileManager, ImageManager
 from .._compat import as_unicode
+
 log = logging.getLogger(__name__)
 
 
