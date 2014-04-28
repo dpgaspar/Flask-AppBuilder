@@ -1,7 +1,7 @@
 import logging
 from flask import render_template
 from flask.ext.babelpkg import lazy_gettext
-from widgets import ChartWidget, DirectChartWidget, MultipleChartWidget
+from .widgets import ChartWidget, DirectChartWidget, MultipleChartWidget
 from .jsontools import dict_to_json
 from ..widgets import SearchWidget
 from ..security.decorators import has_access
