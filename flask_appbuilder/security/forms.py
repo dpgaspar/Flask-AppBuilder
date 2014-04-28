@@ -2,7 +2,8 @@ from flask.ext.wtf import Form
 from wtforms import TextField, BooleanField, TextAreaField, PasswordField
 from flask.ext.babelpkg import lazy_gettext
 from wtforms.ext.sqlalchemy.orm import model_form
-from wtforms.validators import Required, Length, validators, EqualTo
+from wtforms import validators
+from wtforms.validators import Required, Length, EqualTo
 #from flask.ext.wtf import Required, Length, validators, EqualTo
 from flask.ext.appbuilder.fieldwidgets import BS3PasswordFieldWidget
 from flask.ext.appbuilder.forms import DynamicForm
