@@ -24,8 +24,8 @@ class RenderTemplateWidget(object):
         jinja_env = ctx.app.jinja_env
         
         template = jinja_env.get_template(self.template)
-        args = dict(list(self.template_args.items()) + list(kwargs.items()))
-
+        args = self.template_args.copy()
+        args.update(kwargs)
         return template.render(args)
 
 
