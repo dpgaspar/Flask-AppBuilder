@@ -105,5 +105,5 @@ def test_base_views():
     t = app.test_client()
     resp = t.get('/')
     data = resp.data.decode('utf-8')
-    ok_(DEFAULT_INDEX_STRING in resp.data)
+    ok_(DEFAULT_INDEX_STRING in data)
     
