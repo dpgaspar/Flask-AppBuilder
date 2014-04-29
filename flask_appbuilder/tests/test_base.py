@@ -102,10 +102,10 @@ def test_base_views():
     db, app = setup()
 
     setup_simple_app1(app, db)
-    t = app.test_client()
+    client = app.test_client()
     
     # Check for Welcome Message    
-    resp = t.get('/')
+    resp = client.get('/')
     data = resp.data.decode('utf-8')
     ok_(DEFAULT_INDEX_STRING in data)
     
