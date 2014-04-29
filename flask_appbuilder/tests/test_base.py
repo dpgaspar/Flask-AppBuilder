@@ -105,8 +105,8 @@ def test_base_views():
     client = app.test_client()
     
     # Check for Welcome Message    
-    resp = client.get('/')
-    data = resp.data.decode('utf-8')
+    rv = client.get('/')
+    data = rv.data.decode('utf-8')
     ok_(DEFAULT_INDEX_STRING in data)
     
     # Try List and Redirect to Login
@@ -120,6 +120,9 @@ def test_base_views():
     ), follow_redirects=True)
     data = rv.data.decode('utf-8')
     log.debug(data)
+    rv = client.get('/model1view/list/')
+    eq_(rv.status_code, 200)
+    
 
     """
     rv = client.get('/model1view/add/')
