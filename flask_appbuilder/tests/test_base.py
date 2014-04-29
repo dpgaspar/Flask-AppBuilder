@@ -119,7 +119,7 @@ def test_base_views():
         password='general'
     ), follow_redirects=True)
 
-    log.info(rv.data)
+    log.debug(rv.data)
 
     """
     rv = client.get('/model1view/add/')
