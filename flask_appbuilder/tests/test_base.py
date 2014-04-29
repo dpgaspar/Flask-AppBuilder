@@ -113,7 +113,7 @@ def test_base_views():
     rv = client.get('/model1view/list/')
     eq_(rv.status_code, 302)
     
-    
+    """
     rv = client.get('/login/')
     rv = client.post('/login', data=dict(
         username='admin',
@@ -122,10 +122,13 @@ def test_base_views():
     data = rv.data.decode('utf-8')
     log.debug(data)
     rv = client.get('/model1view/list/')
+    
+    data = rv.data.decode('utf-8')
+    log.debug(data)
     eq_(rv.status_code, 200)
     
 
-    """
+    
     rv = client.get('/model1view/add/')
     eq_(rv.status_code, 200)
 
