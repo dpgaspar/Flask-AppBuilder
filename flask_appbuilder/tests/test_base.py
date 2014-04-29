@@ -5,7 +5,7 @@ import logging
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.appbuilder.baseapp import BaseApp
-
+from flask.ext.appbuilder.security.forms import LoginForm_db
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
@@ -16,8 +16,9 @@ DEFAULT_INDEX_STRING = 'Welcome'
 def setup():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
-    app.config['CSRF_ENABLED'] = True
+    app.config['CSRF_ENABLED'] = False
     app.config['SECRET_KEY'] = 'thisismyscretkey'
+    app.config['WTF_CSRF_ENABLED'] = False
     db = SQLAlchemy(app)
     return db, app
 
@@ -113,7 +114,8 @@ def test_base_views():
     rv = client.get('/model1view/list/')
     eq_(rv.status_code, 302)
     
-    """
+    
+    
     rv = client.get('/login/')
     rv = client.post('/login', data=dict(
         username='admin',
@@ -128,7 +130,7 @@ def test_base_views():
     eq_(rv.status_code, 200)
     
 
-    
+    """
     rv = client.get('/model1view/add/')
     eq_(rv.status_code, 200)
 
