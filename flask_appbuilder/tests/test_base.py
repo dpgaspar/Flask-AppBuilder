@@ -7,14 +7,13 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.appbuilder.baseapp import BaseApp
 
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
+logging.getLogger().setLevel(logging.DEBUG)
+
 DEFAULT_INDEX_STRING = 'Welcome'
 
 def setup():
-
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
-    logging.getLogger().setLevel(logging.DEBUG)
-
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
     app.config['CSRF_ENABLED'] = True
