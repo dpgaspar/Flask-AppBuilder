@@ -104,5 +104,6 @@ def test_base_views():
     setup_simple_app1(app, db)
     t = app.test_client()
     resp = t.get('/')
-    assert(DEFAULT_INDEX_STRING in resp.data)
-
+    data = resp.data.decode('utf-8')
+    ok_(DEFAULT_INDEX_STRING in resp.data)
+    
