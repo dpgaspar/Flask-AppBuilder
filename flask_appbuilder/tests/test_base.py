@@ -123,11 +123,6 @@ def test_base_views():
     ), follow_redirects=True)
     data = rv.data.decode('utf-8')
     log.debug(data)
-    rv = client.get('/model1view/list/')
-    
-    data = rv.data.decode('utf-8')
-    log.debug(data)
-    eq_(rv.status_code, 200)
     
 
     """
