@@ -111,10 +111,9 @@ def test_base_views():
     ok_(DEFAULT_INDEX_STRING in data)
     
     # Try List and Redirect to Login
-    rv = client.get('/model1view/list/', follow_redirects=True)
-    log.info(rv.data)
-
-    #eq_(rv.status_code, 302)
+    rv = client.get('/model1view/list/')
+    eq_(rv.status_code, 302)
+    
     
     rv = client.post('/login', data=dict(
         username='admin',
