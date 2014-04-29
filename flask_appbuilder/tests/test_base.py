@@ -118,8 +118,8 @@ def test_base_views():
         username='admin',
         password='general'
     ), follow_redirects=True)
-
-    log.debug(rv.data)
+    data = rv.data.decode('utf-8')
+    log.debug(data)
 
     """
     rv = client.get('/model1view/add/')
