@@ -112,6 +112,8 @@ def test_base_views():
     
     # Try List and Redirect to Login
     rv = client.get('/model1view/list/', follow_redirects=True)
+    log.info(rv.data)
+
     #eq_(rv.status_code, 302)
     
     rv = client.post('/login', data=dict(
@@ -119,7 +121,7 @@ def test_base_views():
         password='general'
     ), follow_redirects=True)
 
-    log.debug(rv.data)
+    log.info(rv.data)
 
     """
     rv = client.get('/model1view/add/')
