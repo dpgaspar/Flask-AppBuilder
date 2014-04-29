@@ -114,6 +114,7 @@ def test_base_views():
     eq_(rv.status_code, 302)
     
     
+    rv = client.get('/login/')
     rv = client.post('/login', data=dict(
         username='admin',
         password='general'
