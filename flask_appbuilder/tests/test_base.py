@@ -110,7 +110,8 @@ def test_base_views():
     ok_(DEFAULT_INDEX_STRING in data)
     
     # list test
-    rv = client.get('/model1view/list/')
+    rv = client.get('/model1view/list/', follow_redirects=True)
+    log.debug(rv.data)
     eq_(rv.status_code, 200)
 
     rv = client.get('/model1view/add/')
