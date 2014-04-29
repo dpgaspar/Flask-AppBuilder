@@ -7,6 +7,8 @@ Flask App Builder
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto form generation, google charts and much more.
 
+Keeping on mind that it must be possible to develop directly on Flask/Jinja2 to integrate custom pages or flows, that painlessly integrate the framework. But the framework it self should go further then an admin scaffolding package. It should have builtin presentation alternatives, and behaviour. Should be highly configurable, and should have extra goodies.
+
 Take a look at installation, quick how to tutorials, API reference etc: `Documentation <http://flask-appbuilder.readthedocs.org/en/latest/>`_
 
 Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples>`_ and a live quickhowto `Demo <http://flaskappbuilder.pythonanywhere.com/>`_ (login has guest/welcome) from the docs.
