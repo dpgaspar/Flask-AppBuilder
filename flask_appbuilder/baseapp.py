@@ -13,6 +13,7 @@ from .security.manager import SecurityManager
 log = logging.getLogger(__name__)
 
 
+
 class BaseApp(object):
     """
         This is the base class for the all framework.

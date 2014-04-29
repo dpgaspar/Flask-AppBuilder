@@ -3,9 +3,9 @@ Introduction
 
 The main goal for this project is to provide a simple development framework that handles the main problems any web application or site encounters.
 
-It's half way between a scaffolding package on Bootstrap 3 and a full development framework, it has some goodies built in like image and file handling on forms, and google charts
+Keeping on mind that it must be possible to develop directly on Flask/Jinja2 to integrate custom pages or flows, painlessly integrating the framework. But the framework it self should go further then an admin scaffolding package. It should have builtin presentation alternatives, and behaviour. Should be highly configurable, and should have extra goodies.
 
-This will lower errors, bugs, project's time to deliver. It's intended to be a rapid application development tool.
+It's intended to lower errors, bugs and project's time to deliver.
 
 This package has some CSS and JS batteries included:
 
