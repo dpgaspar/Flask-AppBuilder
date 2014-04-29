@@ -103,7 +103,25 @@ def test_base_views():
 
     setup_simple_app1(app, db)
     t = app.test_client()
+    
+    # Check for Welcome Message    
     resp = t.get('/')
     data = resp.data.decode('utf-8')
     ok_(DEFAULT_INDEX_STRING in data)
+    
+    # list test
+    rv = client.get('/model1view/list/')
+    eq_(rv.status_code, 200)
+
+    rv = client.get('/model1view/add/')
+    eq_(rv.status_code, 200)
+
+    rv = client.post('/model1view/add?next=%2Fmodel1view%2Flist%2F',
+                     data=dict(field_string='test1', field_integer=1))
+    eq_(rv.status_code, 302)
+
+    model = db.session.query(Model1).first()
+    eq_(model.field_string, u'test1')
+    eq_(model.field_integer, u'test2')
+    
     
