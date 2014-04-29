@@ -99,6 +99,7 @@ def test_base_views():
         Test F.A.B. Basic views creation
     """
 
+    log = logging.getLogger(__name__)
     db, app = setup()
 
     setup_simple_app1(app, db)
