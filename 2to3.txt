@@ -93,35 +93,6 @@
          if 'name_' in kwargs:
              field.name = kwargs['name_']
          return super(Select2ManyWidget, self).__call__(field, **kwargs)
---- flask_appbuilder/filters.py	(original)
-+++ flask_appbuilder/filters.py	(refactored)
-@@ -39,7 +39,7 @@
-         else:
-             args['_oc_' + generalview_name] = column
-             args['_od_' + generalview_name] = 'asc'
--        return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
-+        return url_for(request.endpoint,**dict(list(new_args.items()) + list(args.to_dict().items())))
- 
- 
-     @app_template_filter('link_page')
-@@ -50,7 +50,7 @@
-         new_args = request.view_args.copy()
-         args = request.args.copy()
-         args['page_' + generalview_name] = page
--        return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
-+        return url_for(request.endpoint,**dict(list(new_args.items()) + list(args.to_dict().items())))
- 
- 
-     @app_template_filter('link_page_size')
-@@ -61,7 +61,7 @@
-         new_args = request.view_args.copy()
-         args = request.args.copy()
-         args['psize_' + generalview_name] = page_size
--        return url_for(request.endpoint,**dict(new_args.items() + args.to_dict().items()))
-+        return url_for(request.endpoint,**dict(list(new_args.items()) + list(args.to_dict().items())))
-                 
- 
-     @app_template_filter('get_link_next')
 --- flask_appbuilder/validators.py	(original)
 +++ flask_appbuilder/validators.py	(refactored)
 @@ -28,6 +28,6 @@
@@ -132,37 +103,6 @@
 +                    self.message = field.gettext('Already exists.')
                  raise ValidationError(self.message)
          
---- flask_appbuilder/widgets.py	(original)
-+++ flask_appbuilder/widgets.py	(refactored)
-@@ -24,7 +24,7 @@
-         jinja_env = ctx.app.jinja_env
-         
-         template = jinja_env.get_template(self.template)
--        args = dict(self.template_args.items() + kwargs.items())
-+        args = dict(list(self.template_args.items()) + list(kwargs.items()))
-         return template.render(args)
- 
- 
---- flask_appbuilder/charts/views.py	(original)
-+++ flask_appbuilder/charts/views.py	(refactored)
-@@ -120,7 +120,7 @@
-             returns the keys from direct_columns
-             Used in template, so that user can choose from options
-         """
--        return self.direct_columns.keys()
-+        return list(self.direct_columns.keys())
- 
- 
-     def _get_chart_widget(self, filters=None,
-@@ -264,7 +264,7 @@
-         form = self.search_form.refresh()
-         get_filter_args(self._filters)
- 
--        direct_key = group_by or self.direct_columns.keys()[0]
-+        direct_key = group_by or list(self.direct_columns.keys())[0]
-         direct = self.direct_columns.get(direct_key)
- 
-         if self.base_order:
 --- flask_appbuilder/models/group.py	(original)
 +++ flask_appbuilder/models/group.py	(refactored)
 @@ -1,4 +1,4 @@
@@ -171,26 +111,6 @@
  import calendar
  import logging
  from itertools import groupby
---- flask_appbuilder/security/manager.py	(original)
-+++ flask_appbuilder/security/manager.py	(refactored)
-@@ -110,7 +110,7 @@
-         g.user = current_user
- 
-     def migrate_get_new_obj(self, old_obj, new_obj):
--        for col in old_obj.keys():
-+        for col in list(old_obj.keys()):
-             setattr(new_obj, col, getattr(old_obj, col))
-         return new_obj
- 
-@@ -254,7 +254,7 @@
-                     self._update_user_auth_stat(user, False)
-                     return None
-             except ldap.LDAPError as e:
--                if type(e.message) == dict and e.message.has_key('desc'):
-+                if type(e.message) == dict and 'desc' in e.message:
-                     log.error("LDAP Error {0}".format(e.message['desc']))
-                     return None
-                 else:
 --- flask_appbuilder/security/models.py	(original)
 +++ flask_appbuilder/security/models.py	(refactored)
 @@ -137,7 +137,7 @@

@@ -110,7 +110,7 @@ class SecurityManager(object):
         g.user = current_user
 
     def migrate_get_new_obj(self, old_obj, new_obj):
-        for col in old_obj.keys():
+        for col in list(old_obj.keys()):
             setattr(new_obj, col, getattr(old_obj, col))
         return new_obj
 
@@ -254,7 +254,7 @@ class SecurityManager(object):
                     self._update_user_auth_stat(user, False)
                     return None
             except ldap.LDAPError as e:
-                if type(e.message) == dict and e.message.has_key('desc'):
+                if type(e.message) == dict and 'desc' in e.message:
                     log.error("LDAP Error {0}".format(e.message['desc']))
                     return None
                 else:

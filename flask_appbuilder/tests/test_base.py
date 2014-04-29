@@ -6,6 +6,9 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.appbuilder.baseapp import BaseApp
 
+
+DEFAULT_INDEX_STRING = 'Welcome'
+
 def setup():
 
     basedir = os.path.abspath(os.path.dirname(__file__))
@@ -18,6 +21,7 @@ def setup():
     app.config['SECRET_KEY'] = 'thisismyscretkey'
     db = SQLAlchemy(app)
     return db, app
+
 
 def create_models(db):
     from sqlalchemy import Column, Integer, String, ForeignKey, Date
@@ -45,13 +49,33 @@ def create_models(db):
 
     return Model1, Model2
 
+
+def setup_simple_app1(app, db):
+    from flask.ext.appbuilder.models.datamodel import SQLAModel
+    from flask.ext.appbuilder.views import GeneralView
+
+    Model1, Model2 = create_models(db)
+    genapp = BaseApp(app, db)
+
+    class Model1View(GeneralView):
+        datamodel = SQLAModel(Model1, db.session)
+
+    class Model2View(GeneralView):
+        datamodel = SQLAModel(Model2, db.session)
+        related_views = [Model1View]
+
+    genapp.add_view(Model1View(), "Model1")
+    genapp.add_view(Model2View(), "Model2")
+    return genapp
+
+
 def test_base_init():
     """
         Test F.A.B. initialization
     """
     db, app = setup()
     genapp = BaseApp(app, db)
-    ok_(len(genapp.baseviews) > 0) # current minimal views are 11
+    ok_(len(genapp.baseviews) > 9) # current minimal views are 11
 
 
 def test_base_models():
@@ -65,25 +89,20 @@ def test_base_models():
     genapp = BaseApp(app, db)
     engine = db.session.get_bind(mapper=None, clause=None)
     inspector = Inspector.from_engine(engine)
+    # Check if tables exist
     ok_('model1' in inspector.get_table_names())
     ok_('model2' in inspector.get_table_names())
+
 
 def test_base_views():
     """
         Test F.A.B. Basic views creation
     """
-    from flask.ext.appbuilder.models.datamodel import SQLAModel
-    from flask.ext.appbuilder.views import GeneralView
 
     db, app = setup()
-    Model1, Model2 = create_models(db)
-    genapp = BaseApp(app, db)
-    
 
-    class Model1View(GeneralView):
-        datamodel = SQLAModel(Model1, db.session)
-
-    class Model2View(GeneralView):
-        datamodel = SQLAModel(Model2, db.session)
-        related_views = [Model1View]
+    setup_simple_app1(app, db)
+    t = app.test_client()
+    resp = t.get('/')
+    assert(DEFAULT_INDEX_STRING in resp.data)
 

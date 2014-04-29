@@ -120,8 +120,7 @@ class BaseSimpleDirectChartView(BaseChartView):
             returns the keys from direct_columns
             Used in template, so that user can choose from options
         """
-        return self.direct_columns.keys()
-
+        return list(self.direct_columns.keys())
 
     def _get_chart_widget(self, filters=None,
                           order_column='',
@@ -264,7 +263,8 @@ class DirectChartView(BaseSimpleDirectChartView):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
 
-        direct_key = group_by or self.direct_columns.keys()[0]
+        direct_key = group_by or list(self.direct_columns.keys())[0]
+
         direct = self.direct_columns.get(direct_key)
 
         if self.base_order:
