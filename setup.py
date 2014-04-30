@@ -1,5 +1,6 @@
 import os
 import sys
+import multiprocessing
 from setuptools import setup, find_packages
 
 def fpath(name):
@@ -34,6 +35,9 @@ setup(
         'Flask-SQLAlchemy>=0.16',
         'Flask-WTF>=0.9.1',
     ],
+    tests_require=[
+        'nose>=1.0',
+    ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
@@ -43,5 +47,5 @@ setup(
         'Programming Language :: Python',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
-    test_suite=''
+    test_suite='nose.collector'
 )
