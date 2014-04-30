@@ -8,7 +8,7 @@ Using pip
 
 	$ pip install flask-appbuilder
 
-- Advised Virtual Env Install::
+- Advised Virtual Env Install
 
     Virtual env is highly advisable because the more projects you have, the more likely it is that you will be working with different versions of Python itself, or at least different versions of Python libraries. Let’s face it: quite often libraries break backwards compatibility, and it’s unlikely that any serious application will have zero dependencies. So what do you do if two or more of your projects have conflicting dependencies?
 
