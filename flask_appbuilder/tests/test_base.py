@@ -1,29 +1,15 @@
 from nose.tools import eq_, ok_, raises
 
-import os
 import logging
-from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.appbuilder.baseapp import BaseApp
-from flask.ext.appbuilder.security.forms import LoginForm_db
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
-logging.getLogger().setLevel(logging.DEBUG)
+from . import setup
 
 DEFAULT_INDEX_STRING = 'Welcome'
 
-def setup():
-    app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
-    app.config['CSRF_ENABLED'] = False
-    app.config['SECRET_KEY'] = 'thisismyscretkey'
-    app.config['WTF_CSRF_ENABLED'] = False
-    db = SQLAlchemy(app)
-    return db, app
+log = logging.getLogger(__name__)
 
 
-def create_models(db):
+def define_models():
     from sqlalchemy import Column, Integer, String, ForeignKey, Date
     from sqlalchemy.orm import relationship
     from flask.ext.appbuilder.models.mixins import BaseMixin
@@ -53,8 +39,9 @@ def create_models(db):
 def setup_simple_app1(app, db):
     from flask.ext.appbuilder.models.datamodel import SQLAModel
     from flask.ext.appbuilder.views import GeneralView
+    from flask.ext.appbuilder.baseapp import BaseApp
 
-    Model1, Model2 = create_models(db)
+    Model1, Model2 = define_models()
     genapp = BaseApp(app, db)
 
     class Model1View(GeneralView):
@@ -70,22 +57,26 @@ def setup_simple_app1(app, db):
 
 
 def test_base_init():
+    from flask.ext.appbuilder.baseapp import BaseApp
+
     """
         Test F.A.B. initialization
     """
     db, app = setup()
-    genapp = BaseApp(app, db)
-    ok_(len(genapp.baseviews) > 9) # current minimal views are 11
+    baseapp = BaseApp(app, db)
+    ok_(len(baseapp.baseviews) > 9) # current minimal views are 11
 
 
-def test_base_models():
+def test_model_creation():
+    from flask.ext.appbuilder.baseapp import BaseApp
+
     """
         Test F.A.B. Model creation
     """
     from sqlalchemy.engine.reflection import Inspector
 
     db, app = setup()
-    create_models(db)
+    define_models()
     genapp = BaseApp(app, db)
     engine = db.session.get_bind(mapper=None, clause=None)
     inspector = Inspector.from_engine(engine)
@@ -99,7 +90,6 @@ def test_base_views():
         Test F.A.B. Basic views creation
     """
 
-    log = logging.getLogger(__name__)
     db, app = setup()
 
     baseapp, Model1, Model2 = setup_simple_app1(app, db)
@@ -139,4 +129,4 @@ def test_base_views():
     eq_(model.field_string, u'test1')
     eq_(model.field_integer, 1)
 
-    
+
