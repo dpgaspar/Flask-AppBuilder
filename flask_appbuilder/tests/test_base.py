@@ -66,7 +66,7 @@ def setup_simple_app1(app, db):
 
     genapp.add_view(Model1View(), "Model1")
     genapp.add_view(Model2View(), "Model2")
-    return genapp
+    return genapp, Model1, Model2
 
 
 def test_base_init():
@@ -102,7 +102,7 @@ def test_base_views():
     log = logging.getLogger(__name__)
     db, app = setup()
 
-    setup_simple_app1(app, db)
+    baseapp, Model1, Model2 = setup_simple_app1(app, db)
     client = app.test_client()
     
     # Check for Welcome Message    
@@ -113,28 +113,29 @@ def test_base_views():
     # Try List and Redirect to Login
     rv = client.get('/model1view/list/')
     eq_(rv.status_code, 302)
-    
-    
-    
-    rv = client.get('/login/')
-    rv = client.post('/login', data=dict(
+    rv = client.get('/model2view/list/')
+    eq_(rv.status_code, 302)
+
+    # Login with default admin
+    client.post('/login/', data=dict(
         username='admin',
         password='general'
     ), follow_redirects=True)
-    data = rv.data.decode('utf-8')
-    log.debug(data)
-    
+    # Test access to authorized views
+    rv = client.get('/model1view/list/')
+    eq_(rv.status_code, 200)
+    rv = client.get('/model2view/list/')
+    eq_(rv.status_code, 200)
 
-    """
-    rv = client.get('/model1view/add/')
+    rv = client.get('/model1view/add')
     eq_(rv.status_code, 200)
 
     rv = client.post('/model1view/add?next=%2Fmodel1view%2Flist%2F',
-                     data=dict(field_string='test1', field_integer=1))
-    eq_(rv.status_code, 302)
+                     data=dict(field_string='test1', field_integer='1'))
+    eq_(rv.status_code, 200)
 
     model = db.session.query(Model1).first()
     eq_(model.field_string, u'test1')
-    eq_(model.field_integer, u'test2')
-    """
+    eq_(model.field_integer, 1)
+
     

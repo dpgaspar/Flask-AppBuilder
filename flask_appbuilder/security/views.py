@@ -1,7 +1,7 @@
 import datetime
+import logging
 from flask import render_template, flash, redirect, session, url_for, request, g
 from werkzeug.security import generate_password_hash
-#from openid.consumer import discover
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
 #from openid.extensions import ax
 #from openid.extensions.sreg import SRegRequest, SRegResponse
@@ -21,6 +21,8 @@ from .._compat import as_unicode
 from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
 from .models import User, Permission, PermissionView, Role, ViewMenu
 from .decorators import has_access
+
+log = logging.getLogger(__name__)
 
 
 class PermissionGeneralView(GeneralView):
