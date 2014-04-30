@@ -14,30 +14,31 @@ This package has some CSS and JS batteries included:
 	- BootsWatch Themes
 	- Font-Awesome CSS and Fonts
 
-Includes
---------
+Includes:
+---------
 
   - Security
-        - Auto permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.
-        - Inserts on the Database all the detailed permissions possible on your application.
-        - Public (no authentication needed) and Private permissions.
-        - Role based permissions.
-        - Authentication based on OpenID, Database and LDAP.
+      - Automatic permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.
+      - Inserts on the Database all the detailed permissions possible on your application.
+      - Public (no authentication needed) and Private permissions.
+      - Role based permissions.
+      - Authentication support for OpenID, Database and LDAP.
   - Views and Widgets
-	- Auto menu generator.
-	- Various view widgets: lists, master-detail, list of thumbnails etc
-	- Select2, Datepicker, DateTimePicker
-	- Menu with icons
-	- Google charts with automatic group by.
+      - Automatic menu generation.
+      - Automatic CRUD generation.
+      - Big variety of filters for your lists.
+      - Various view widgets: lists, master-detail, list of thumbnails etc
+      - Select2, Datepicker, DateTimePicker
+      - Google charts with automatic group by or direct values and filters.
   - Forms
-	- Auto Create, Remove, Add, Edit and Show from Database Models
-	- Labels and descriptions for each field.
-	- Automatic base validators from model definition.
-	- Custom validators, extra fields, custom filters for related dropdown lists.
-	- Image and File support for upload and database field association. It will handle everything for you.
-	- Field sets for Form's (Django style).
+      - Auto Create, Remove, Add, Edit and Show from Database Models
+      - Labels and descriptions for each field.
+      - Automatic base validators from model definition.
+      - Custom validators, extra fields, custom filters for related dropdown lists.
+      - Image and File support for upload and database field association. It will handle everything for you.
+      - Field sets for Form's (Django style).
   - i18n
-	- Support for multi-language via Babel
+      - Support for multi-language via Babel
   - Bootstrap 3.0.3 CSS and js, with Select2 and DatePicker
   - Font-Awesome icons, for menu icons and actions.
 
