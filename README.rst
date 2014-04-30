@@ -11,7 +11,7 @@ Extensive configuration of all functionality, easily integrate with normal Flask
 
 Take a look at installation, quick how to tutorials, API reference etc: `Documentation <http://flask-appbuilder.readthedocs.org/en/latest/>`_
 
-Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples>`_ and a live quickhowto `Demo <http://flaskappbuilder.pythonanywhere.com/>`_ (login has guest/welcome) from the docs.
+Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples>`_ and a live quick how to `Demo from the docs <http://flaskappbuilder.pythonanywhere.com/>`_ (login has guest/welcome).
 
 Package Version
 ---------------
