@@ -3,7 +3,7 @@ Introduction
 
 The main goal for this project is to provide a simple development framework that handles the main problems any web application or site encounters.
 
-Keeping on mind that it must be possible to develop directly on Flask/Jinja2 to integrate custom pages or flows, that painlessly integrate the framework. But the framework it self should go further then an admin scaffolding package. It should have builtin presentation alternatives, and behaviour. Should be highly configurable, and should have extra goodies.
+Keeping on mind that it must be possible to develop directly on Flask/Jinja2 for custom pages or flows, that painlessly integrate the framework. But the framework it self should go further then an admin scaffolding package. It should have builtin presentation alternatives, and behaviour. Should be highly configurable, and should have extra goodies.
 
 It's intended to lower errors, bugs and project's time to deliver.
 
