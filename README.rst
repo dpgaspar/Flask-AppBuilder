@@ -5,7 +5,9 @@ Flask App Builder
 	:target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
-includes detailed security, auto form generation, google charts and much more.
+includes detailed security, auto CRUD generation for your models, google charts and much more.
+
+Extensive configuration of all functionality, easily integrate with normal Flask/Jinja2 development.
 
 Take a look at installation, quick how to tutorials, API reference etc: `Documentation <http://flask-appbuilder.readthedocs.org/en/latest/>`_
 
@@ -33,17 +35,18 @@ Includes:
 ---------
 
   - Security
-      - Auto permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.
+      - Automatic permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.
       - Inserts on the Database all the detailed permissions possible on your application.
       - Public (no authentication needed) and Private permissions.
       - Role based permissions.
-      - Authentication based on OpenID, Database and LDAP.
+      - Authentication support for OpenID, Database and LDAP.
   - Views and Widgets
-      - Auto menu generator.
+      - Automatic menu generation.
+      - Automatic CRUD generation.
+      - Big variety of filters for your lists.
       - Various view widgets: lists, master-detail, list of thumbnails etc
       - Select2, Datepicker, DateTimePicker
-      - Menu with icons
-      - Google charts with automatic group by.
+      - Google charts with automatic group by or direct values and filters.
   - Forms
       - Auto Create, Remove, Add, Edit and Show from Database Models
       - Labels and descriptions for each field.
