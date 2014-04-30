@@ -4,8 +4,9 @@ Versions
 Improvements and Bug fixes on 0.8.1
 -----------------------------------
 
-- New, Python 3 support.
+- New, Python 3 partial support (babel will not work, caused by the babel package itself).
 - Fix, Removed Flask-wtf requirement version limitation.
+- New, test suite with nose.
 
 Improvements and Bug fixes on 0.8.0
 -----------------------------------
