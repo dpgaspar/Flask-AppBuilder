@@ -52,15 +52,17 @@ Using pip
 Skeleton Application
 --------------------
 
-If you want a simple quick start, you can use one of the examples, or clone the base skeleton application::
+After instaling F.A.B. You probably want a simple quick start, you can use one of the examples, or clone the base skeleton application::
 
-    git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
-    cd Flask-AppBuilder-Skeleton
-    python run.py
+    $ git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
+    $ cd Flask-AppBuilder-Skeleton
+    $ python run.py
 
 That's it!!
 
-The git clone is not actually needed for you to run AppBuilder. but it's a good way to start.
+You now have a running development server on http://localhost:8080.
+
+The git clone of the skeleton is not actually needed for you to run AppBuilder. but it's a good way to start.
 
 Initialization
 --------------
