@@ -4,7 +4,8 @@ Versions
 Improvements and Bug fixes on 0.8.2
 -----------------------------------
 
-- Fix, possible to register different links to the same view class.
+- Fix, possible to register on the menu different links to the same view class.
+- Fix, init of baseapp missing init of baseviews list.
 
 Improvements and Bug fixes on 0.8.1
 -----------------------------------

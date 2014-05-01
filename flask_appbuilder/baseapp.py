@@ -13,7 +13,6 @@ from .security.manager import SecurityManager
 log = logging.getLogger(__name__)
 
 
-
 class BaseApp(object):
     """
         This is the base class for the all framework.
@@ -72,6 +71,7 @@ class BaseApp(object):
             :param static_url_path:
                 optional, your override for the global static url path
         """
+        self.baseviews = []
         self.app = app
         self.db = db
 
@@ -186,8 +186,7 @@ class BaseApp(object):
                 baseapp.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
         log.info("Registering class %s on menu %s.%s" % (baseview.__class__.__name__, category, name))
-        #if not self._view_exists(baseview):
-        if baseview not in  self.baseviews:
+        if not self._view_exists(baseview):
             baseview.baseapp = self
             self.baseviews.append(baseview)
             self._process_ref_related_views()
@@ -241,12 +240,14 @@ class BaseApp(object):
                 A BaseView type class instantiated.
                     
         """
-        if baseview not in  self.baseviews:
+        if not self._view_exists(baseview):
             baseview.baseapp = self
             self.baseviews.append(baseview)
             self._process_ref_related_views()
             self.register_blueprint(baseview, endpoint=endpoint, static_folder=static_folder)
             self._add_permission(baseview)
+        else:
+            log.warning("View alreary exists {0} ignoring".format(baseview.__class__.__name__))
 
     @property
     def get_url_for_login(self):

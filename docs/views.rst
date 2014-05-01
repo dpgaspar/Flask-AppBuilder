@@ -85,12 +85,20 @@ Has you can see this methods are public, let's change this example to::
         def method2(self, param1):
             # do something with param1
             # and render template with param
-            param1 = 'Good by %s' % (param1)
+            param1 = 'Goodbye %s' % (param1)
             return param1
 
     genapp = BaseApp(app, db)
     genapp.add_view(MyView(), "Method1", category='My View')
     genapp.add_view(MyView(), "Method2", href='/myview/method2/jonh', category='My View')
+
+
+You can find this example on https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2
+
+This will create the following menu
+
+.. image:: ./images/simpleview2.png
+    :width: 100%
 
 
 SimpleFormView

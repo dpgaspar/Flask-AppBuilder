@@ -1,16 +1,11 @@
 from nose.tools import eq_, ok_, raises
 import unittest
 import os
-from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from flask.ext.appbuilder.models.mixins import BaseMixin
 from flask.ext.appbuilder import Base
-from flask.ext.appbuilder.baseapp import BaseApp
-
-from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import GeneralView
 
 import logging
 
@@ -43,7 +38,13 @@ class Model2(BaseMixin, Base):
 
 
 class FlaskTestCase(unittest.TestCase):
+
     def setUp(self):
+        from flask import Flask
+        from flask.ext.appbuilder.baseapp import BaseApp
+        from flask.ext.appbuilder.models.datamodel import SQLAModel
+        from flask.ext.appbuilder.views import GeneralView
+
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'
@@ -63,9 +64,13 @@ class FlaskTestCase(unittest.TestCase):
         self.baseapp = BaseApp(self.app, self.db)
         self.baseapp.add_view(Model1View(), "Model1")
         self.baseapp.add_view(Model2View(), "Model2")
+        self.baseapp.add_view(Model2View(), "Model2 Add", href='/model2view/add')
 
 
     def tearDown(self):
+        self.baseapp = None
+        self.app = None
+        self.db = None
         log.debug("TEAR DOWN")
 
 
@@ -84,7 +89,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        ok_(len(self.baseapp.baseviews) > 9)  # current minimal views are 11
+        eq_(len(self.baseapp.baseviews), 13)  # current minimal views are 11
 
 
     def test_model_creation(self):

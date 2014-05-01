@@ -4,7 +4,6 @@ from flask.ext.appbuilder.baseviews import expose
 from flask.ext.appbuilder.security.decorators import has_access
 from app import app, db
 
-
 class MyView(BaseView):
 
     default_view = 'method1'
@@ -21,12 +20,13 @@ class MyView(BaseView):
     def method2(self, param1):
         # do something with param1
         # and render template with param
-        param1 = 'Good by %s' % (param1)
+        param1 = 'Goodbye %s' % (param1)
         return param1
 
 
 genapp = BaseApp(app, db)
 genapp.add_view(MyView(), "Method1", category='My View')
-genapp.add_view(MyView(), "Method2", href='/myview/method2/jonh', category='My View')
-
+#genapp.add_view(MyView(), "Method2", href='/myview/method2/jonh', category='My View')
+# Use add link instead there is no need to create MyView twice.
+genapp.add_link("Method2", href='/myview/method2/jonh', category='My View')
 
