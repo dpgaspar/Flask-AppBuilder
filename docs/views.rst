@@ -44,7 +44,11 @@ Using the Flask-AppBuilder-Skeleton (take a look at the :doc:`installation` chap
     genapp.add_view_no_menu(MyView())
     
 
-You can find this example on https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1
+You can find this example on:
+
+ https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1
+
+look at the file app/views.py
 
 This simple example will register your view with two routing urls on:
 
@@ -64,7 +68,7 @@ http://localhost:8080/myview/method1/john
 
 http://localhost:8080/myview/method2/john
 
-Has you can see this methods are public, let's change this example to::
+Has you can see this methods are public, let's change this example, edit views.py and change it to::
 
     from flask.ext.appbuilder.baseapp import BaseApp
     from flask.ext.appbuilder.baseviews import BaseView
