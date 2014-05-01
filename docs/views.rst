@@ -90,7 +90,7 @@ Has you can see this methods are public, let's change this example to::
 
     genapp = BaseApp(app, db)
     genapp.add_view(MyView(), "Method1", category='My View')
-    genapp.add_view(MyView(), "Method2", href='/myview/method2/jonh', category='My View')
+    genapp.add_link("Method2", href='/myview/method2/jonh', category='My View')
 
 
 You can find this example on https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2
