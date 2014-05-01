@@ -186,7 +186,8 @@ class BaseApp(object):
                 baseapp.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
         log.info("Registering class %s on menu %s.%s" % (baseview.__class__.__name__, category, name))
-        if not self._view_exists(baseview):
+        #if not self._view_exists(baseview):
+        if baseview not in  self.baseviews:
             baseview.baseapp = self
             self.baseviews.append(baseview)
             self._process_ref_related_views()
@@ -240,7 +241,7 @@ class BaseApp(object):
                 A BaseView type class instantiated.
                     
         """
-        if not self._view_exists(baseview):
+        if baseview not in  self.baseviews:
             baseview.baseapp = self
             self.baseviews.append(baseview)
             self._process_ref_related_views()

@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.8.2
+-----------------------------------
+
+- Fix, possible to register different links to the same view class.
+
 Improvements and Bug fixes on 0.8.1
 -----------------------------------
 
