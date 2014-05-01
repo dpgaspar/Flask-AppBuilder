@@ -19,7 +19,7 @@ setup(
     license='BSD',
     author='Daniel Vaz Gaspar',
     author_email='danielvazgaspar@gmail.com',
-    description='Simple and rapid Application builder, includes detailed security, auto form generation, google charts and much more.',
+    description='Simple and rapid application development framework, built on top of Flask. includes detailed security, auto CRUD generation for your models, google charts and much more.',
     long_description=desc(),
     packages=find_packages(),
     package_data={'': ['LICENSE']},
