@@ -14,32 +14,34 @@ You can use use this kind of view to implement your own custom pages, attached t
 
 Decorate your url routing methods with @expose. additionally add @has_access decorator to tell flask that this is a security protected method.
 
-::
+Using the Flask-AppBuilder-Skeleton (take a look at the :doc:`installation` chapter). Edit views.py file and add::
 
-    from flask import render_template, redirect
+    from flask.ext.appbuilder.baseapp import BaseApp
     from flask.ext.appbuilder.baseviews import BaseView
     from flask.ext.appbuilder.baseviews import expose
+    from app import app, db
 
     class MyView(BaseView):
         route_base = "/myview"
 
-        index_template = "method2.html"
-
         @expose('/method1/<string:param1>')
         def method1(self, param1):
             # do something with param1
-            # and return to previous page or index
-            return redirect(self._get_redirect())
+            # and return it
+            return param1
 
         @expose('/method2/<string:param1>')
         def method2(self, param1):
             # do something with param1
-            # and render template with param
-            return render_template(self.index_template, param1=param1, baseapp=self.baseapp)
+            # and render it
+            param1 = 'Hello %s' % (param1)
+            return param1
 
     genapp = BaseApp(app, db)
-    genapp.add_view_no_menu(ConfigView())
+    genapp.add_view_no_menu(MyView())
     
+
+You can find this example on https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1
 
 This simple example will register your view with two routing urls on:
 
@@ -47,7 +49,50 @@ This simple example will register your view with two routing urls on:
     - /myview/method2/<string:param1>
     
 No menu will be created for this, no security permissions will be created also, if you want to enable detailed security access for your methods just add @has_access decorator to them.
-    
+
+Now run this example
+::
+
+    $ python run.py
+
+You can test your methods using the following url's:
+
+http://localhost:8080/myview/method1/john
+http://localhost:8080/myview/method2/john
+
+Has you can see this methods are public, let's change this example to::
+
+    from flask.ext.appbuilder.baseapp import BaseApp
+    from flask.ext.appbuilder.baseviews import BaseView
+    from flask.ext.appbuilder.baseviews import expose
+    from flask.ext.appbuilder.security.decorators import has_access
+    from app import app, db
+
+
+    class MyView(BaseView):
+
+        default_view = 'method1'
+
+        @expose('/method1/')
+        @has_access
+        def method1(self):
+            # do something with param1
+            # and return to previous page or index
+            return 'Hello'
+
+        @expose('/method2/<string:param1>')
+        @has_access
+        def method2(self, param1):
+            # do something with param1
+            # and render template with param
+            param1 = 'Good by %s' % (param1)
+            return param1
+
+    genapp = BaseApp(app, db)
+    genapp.add_view(MyView(), "Method1", category='My View')
+    genapp.add_view(MyView(), "Method2", href='/myview/method2/jonh', category='My View')
+
+
 SimpleFormView
 --------------
 

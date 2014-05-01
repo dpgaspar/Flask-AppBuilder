@@ -186,7 +186,7 @@ class BaseApp(object):
                 baseapp.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
         log.info("Registering class %s on menu %s.%s" % (baseview.__class__.__name__, category, name))
-        if baseview not in self.baseviews:
+        if not self._view_exists(baseview):
             baseview.baseapp = self
             self.baseviews.append(baseview)
             self._process_ref_related_views()
@@ -240,7 +240,7 @@ class BaseApp(object):
                 A BaseView type class instantiated.
                     
         """
-        if baseview not in self.baseviews:
+        if not self._view_exists(baseview):
             baseview.baseapp = self
             self.baseviews.append(baseview)
             self._process_ref_related_views()
@@ -275,6 +275,12 @@ class BaseApp(object):
 
     def register_blueprint(self, baseview, endpoint=None, static_folder=None):
         self.app.register_blueprint(baseview.create_blueprint(self, endpoint=endpoint, static_folder=static_folder))
+
+    def _view_exists(self, view):
+        for baseview in self.baseviews:
+            if baseview.__class__ == view.__class__:
+                return True
+        return False
 
     def _process_ref_related_views(self):
         try:
