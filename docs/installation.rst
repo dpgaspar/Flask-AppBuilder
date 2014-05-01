@@ -24,7 +24,7 @@ Using pip
 
         $ sudo pip install virtualenv
 
-    One of these will probably install virtualenv on your system. Maybe it’s even in your package manager. If you use Ubuntu, try:
+    One of these will probably install virtualenv on your system. Maybe it’s even in your package manager. If you use a debian system (like Ubuntu), try:
 
     ::
 
@@ -46,7 +46,7 @@ Using pip
 
     ::
 
-        $ pip install flask-appbuilder
+        (venv)$ pip install flask-appbuilder
 
 
 Skeleton Application
@@ -56,9 +56,13 @@ After installing F.A.B. You probably want a simple quick start, you can use one 
 
     $ git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
     $ cd Flask-AppBuilder-Skeleton
+
+
+This is a running boilerplate, you can run it on a development server, simply like this::
+
     $ python run.py
 
-That's it!!
+That's it!! When you run the development server you can notice the log, it's telling you it is creating all the needed security tables, creating the initial 'admin' user, and roles, has well has all the minimal permissions.
 
 You now have a running development server on http://localhost:8080.
 

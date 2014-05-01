@@ -1,7 +1,7 @@
 Introduction
 ============
 
-The main goal for this project is to provide a simple development framework that handles the main problems any web application or site encounters.
+The main goal for this project is to provide a simple development framework that handles the main problems any web application or site encounters. It will help you adhere to the DRY (Don't repat yourself) principle.
 
 Keeping on mind that it must be possible to develop directly on Flask/Jinja2 for custom pages or flows, that painlessly integrate the framework. But the framework it self should go further then an admin scaffolding package. It should have builtin presentation alternatives, and behaviour. Should be highly configurable, and should have extra goodies.
 
@@ -17,7 +17,7 @@ This package has some CSS and JS batteries included:
 Includes:
 ---------
 
-  - Security
+- Security
       - Automatic permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.
       - Inserts on the Database all the detailed permissions possible on your application.
       - Public (no authentication needed) and Private permissions.
@@ -31,9 +31,9 @@ Includes:
       - Select2, Datepicker, DateTimePicker
       - Google charts with automatic group by or direct values and filters.
   - Forms
-      - Auto Create, Remove, Add, Edit and Show from Database Models
+      - Automatic, Add, Edit and Show from Database Models
       - Labels and descriptions for each field.
-      - Automatic base validators from model definition.
+      - Automatic base validators from model's definition.
       - Custom validators, extra fields, custom filters for related dropdown lists.
       - Image and File support for upload and database field association. It will handle everything for you.
       - Field sets for Form's (Django style).

@@ -48,9 +48,9 @@ Includes:
       - Select2, Datepicker, DateTimePicker
       - Google charts with automatic group by or direct values and filters.
   - Forms
-      - Auto Create, Remove, Add, Edit and Show from Database Models
+      - Automatic, Add, Edit and Show from Database Models
       - Labels and descriptions for each field.
-      - Automatic base validators from model definition.
+      - Automatic base validators from model's definition.
       - Custom validators, extra fields, custom filters for related dropdown lists.
       - Image and File support for upload and database field association. It will handle everything for you.
       - Field sets for Form's (Django style).
