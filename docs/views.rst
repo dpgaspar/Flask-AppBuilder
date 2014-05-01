@@ -1,9 +1,12 @@
 Views
 =====
 
-Views are the base concept of F.A.B. they work like a class that represent a concept and present the views and methods to implement it.
+Views are the base concept of F.A.B.
+they work like a class that represent a concept and present the views and methods to implement it.
 
-Each view is a Flask blueprint that will be created for you automatically by the framework. This is a simple but powerful concept. You will map your methods to routing points, and each method will be registered as a possible security permission if you want to.
+Each view is a Flask blueprint that will be created for you automatically by the framework.
+This is a simple but powerful concept.
+You will map your methods to routing points, and each method will be registered as a possible security permission if you want to.
 
 BaseView
 --------
@@ -58,6 +61,7 @@ Now run this example
 You can test your methods using the following url's:
 
 http://localhost:8080/myview/method1/john
+
 http://localhost:8080/myview/method2/john
 
 Has you can see this methods are public, let's change this example to::
