@@ -17,7 +17,7 @@ This package has some CSS and JS batteries included:
 Includes:
 ---------
 
-- Security
+  - Security
       - Automatic permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.
       - Inserts on the Database all the detailed permissions possible on your application.
       - Public (no authentication needed) and Private permissions.

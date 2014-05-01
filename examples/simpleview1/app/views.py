@@ -17,7 +17,7 @@ class MyView(BaseView):
     def method2(self, param1):
         # do something with param1
         # and render template with param
-        param1 = 'Good by %s' % (param1)
+        param1 = 'Goodbye %s' % (param1)
         return param1
 
 genapp = BaseApp(app, db)

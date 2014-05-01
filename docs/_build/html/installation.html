@@ -64,23 +64,58 @@
 <div class="section" id="using-pip">
 <h2>Using pip<a class="headerlink" href="#using-pip" title="Permalink to this headline">¶</a></h2>
 <ul>
-<li><p class="first">Install it:</p>
-<div class="highlight-python"><div class="highlight"><pre>pip install flask-appbuilder
+<li><p class="first">Simple Install:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ pip install flask-appbuilder
 </pre></div>
 </div>
+</li>
+<li><p class="first">Advised Virtual Env Install</p>
+<blockquote>
+<div><p>Virtual env is highly advisable because the more projects you have, the more likely it is that you will be working with different versions of Python itself, or at least different versions of Python libraries. Let’s face it: quite often libraries break backwards compatibility, and it’s unlikely that any serious application will have zero dependencies. So what do you do if two or more of your projects have conflicting dependencies?</p>
+<p>If you are on Mac OS X or Linux, chances are that one of the following two commands will work for you:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo easy_install virtualenv
+</pre></div>
+</div>
+<p>or even better:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo pip install virtualenv
+</pre></div>
+</div>
+<p>One of these will probably install virtualenv on your system. Maybe it’s even in your package manager. If you use a debian system (like Ubuntu), try:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get install python-virtualenv
+</pre></div>
+</div>
+<p>Once you have virtualenv installed, :</p>
+<div class="highlight-python"><div class="highlight"><pre>$ mkdir myproject
+$ cd myproject
+$ virtualenv venv
+New python executable in venv/bin/python
+Installing distribute............done.
+$ . venv/bin/activate
+(venv)$
+</pre></div>
+</div>
+<p>Now install F.A.B on the virtual env, it will install all the dependencies and these will be isolated from your system&#8217;s python packages</p>
+<div class="highlight-python"><div class="highlight"><pre>(venv)$ pip install flask-appbuilder
+</pre></div>
+</div>
+</div></blockquote>
 </li>
 </ul>
 </div>
 <div class="section" id="skeleton-application">
 <h2>Skeleton Application<a class="headerlink" href="#skeleton-application" title="Permalink to this headline">¶</a></h2>
-<p>If you want a simple quick start, you can use one of the examples, or clone the base skeleton application:</p>
-<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
-cd Flask-AppBuilder-Skeleton
-python run.py
+<p>After installing F.A.B. You probably want a simple quick start, you can use one of the examples, or clone the base skeleton application:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
+$ cd Flask-AppBuilder-Skeleton
 </pre></div>
 </div>
-<p>That&#8217;s it!!</p>
-<p>The git clone is not actually needed for you to run AppBuilder. but it&#8217;s a good way to start.</p>
+<p>This is a running boilerplate, you can run it on a development server, simply like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python run.py
+</pre></div>
+</div>
+<p>That&#8217;s it!! When you run the development server you can notice the log, it&#8217;s telling you it is creating all the needed security tables, creating the initial &#8216;admin&#8217; user, and roles, has well has all the minimal permissions.</p>
+<p>You now have a running development server on <a class="reference external" href="http://localhost:8080">http://localhost:8080</a>.</p>
+<p>The git clone of the skeleton is not actually needed for you to run AppBuilder. but it&#8217;s a good way to start.</p>
 </div>
 <div class="section" id="initialization">
 <h2>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h2>

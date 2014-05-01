@@ -61,38 +61,40 @@
             
   <div class="section" id="views">
 <h1>Views<a class="headerlink" href="#views" title="Permalink to this headline">¶</a></h1>
-<p>Views are the base concept of F.A.B. they works like a class that represent a concept and present the views and methods to implement it.</p>
-<p>Each view is a Flask blueprint that will be created for you automatically by the framework. This is a simple but powerfull concept. You will map your methods to routing points, and each method will be registered as a possible security permission if you want to.</p>
+<p>Views are the base concept of F.A.B. they work like a class that represent a concept and present the views and methods to implement it.</p>
+<p>Each view is a Flask blueprint that will be created for you automatically by the framework. This is a simple but powerful concept. You will map your methods to routing points, and each method will be registered as a possible security permission if you want to.</p>
 <div class="section" id="baseview">
 <h2>BaseView<a class="headerlink" href="#baseview" title="Permalink to this headline">¶</a></h2>
 <p>All views inherit from this class. it&#8217;s constructor will register your exposed urls on flask as a Blueprint, as well as all security permissions that need to be defined and protected.</p>
-<p>Generally you will not implement your views deriving from this class, unless your implementing a new base appbuilder view with your own custom methods.</p>
+<p>You can use use this kind of view to implement your own custom pages, attached to a menu or linked from any point of your site.</p>
 <p>Decorate your url routing methods with &#64;expose. additionally add &#64;has_access decorator to tell flask that this is a security protected method.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">redirect</span>
+<p>Using the Flask-AppBuilder-Skeleton (take a look at the <a class="reference internal" href="installation.html"><em>Installation</em></a> chapter). Edit views.py file and add:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseapp</span> <span class="kn">import</span> <span class="n">BaseApp</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseviews</span> <span class="kn">import</span> <span class="n">BaseView</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseviews</span> <span class="kn">import</span> <span class="n">expose</span>
+<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">app</span><span class="p">,</span> <span class="n">db</span>
 
 <span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">BaseView</span><span class="p">):</span>
     <span class="n">route_base</span> <span class="o">=</span> <span class="s">&quot;/myview&quot;</span>
 
-    <span class="n">index_template</span> <span class="o">=</span> <span class="s">&quot;method2.html&quot;</span>
-
     <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/method1/&lt;string:param1&gt;&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">method1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param1</span><span class="p">):</span>
         <span class="c"># do something with param1</span>
-        <span class="c"># and return to previous page or index</span>
-        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_redirect</span><span class="p">())</span>
+        <span class="c"># and return it</span>
+        <span class="k">return</span> <span class="n">param1</span>
 
     <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/method2/&lt;string:param1&gt;&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">method2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param1</span><span class="p">):</span>
         <span class="c"># do something with param1</span>
-        <span class="c"># and render template with param</span>
-        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_template</span><span class="p">,</span> <span class="n">param1</span><span class="o">=</span><span class="n">param1</span><span class="p">,</span> <span class="n">baseapp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">baseapp</span><span class="p">)</span>
+        <span class="c"># and render it</span>
+        <span class="n">param1</span> <span class="o">=</span> <span class="s">&#39;Hello </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">param1</span>
 
 <span class="n">genapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
-<span class="n">genapp</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="n">ConfigView</span><span class="p">())</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="n">MyView</span><span class="p">())</span>
 </pre></div>
 </div>
+<p>You can find this example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1</a></p>
 <p>This simple example will register your view with two routing urls on:</p>
 <blockquote>
 <div><ul class="simple">
@@ -101,6 +103,48 @@
 </ul>
 </div></blockquote>
 <p>No menu will be created for this, no security permissions will be created also, if you want to enable detailed security access for your methods just add &#64;has_access decorator to them.</p>
+<p>Now run this example</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python run.py
+</pre></div>
+</div>
+<p>You can test your methods using the following url&#8217;s:</p>
+<p><a class="reference external" href="http://localhost:8080/myview/method1/john">http://localhost:8080/myview/method1/john</a>
+<a class="reference external" href="http://localhost:8080/myview/method2/john">http://localhost:8080/myview/method2/john</a></p>
+<p>Has you can see this methods are public, let&#8217;s change this example to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseapp</span> <span class="kn">import</span> <span class="n">BaseApp</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseviews</span> <span class="kn">import</span> <span class="n">BaseView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseviews</span> <span class="kn">import</span> <span class="n">expose</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.decorators</span> <span class="kn">import</span> <span class="n">has_access</span>
+<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">app</span><span class="p">,</span> <span class="n">db</span>
+
+
+<span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">BaseView</span><span class="p">):</span>
+
+    <span class="n">default_view</span> <span class="o">=</span> <span class="s">&#39;method1&#39;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/method1/&#39;</span><span class="p">)</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">method1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># do something with param1</span>
+        <span class="c"># and return to previous page or index</span>
+        <span class="k">return</span> <span class="s">&#39;Hello&#39;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/method2/&lt;string:param1&gt;&#39;</span><span class="p">)</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">method2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param1</span><span class="p">):</span>
+        <span class="c"># do something with param1</span>
+        <span class="c"># and render template with param</span>
+        <span class="n">param1</span> <span class="o">=</span> <span class="s">&#39;Goodbye </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">param1</span>
+
+<span class="n">genapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">(),</span> <span class="s">&quot;Method1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">(),</span> <span class="s">&quot;Method2&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method2/jonh&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can find this example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2</a></p>
+<p>This will create the following menu</p>
+<a class="reference internal image-reference" href="_images/simpleview2.png"><img alt="_images/simpleview2.png" src="_images/simpleview2.png" style="width: 100%;" /></a>
 </div>
 <div class="section" id="simpleformview">
 <h2>SimpleFormView<a class="headerlink" href="#simpleformview" title="Permalink to this headline">¶</a></h2>

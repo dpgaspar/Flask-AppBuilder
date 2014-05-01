@@ -4,22 +4,69 @@ Installation
 Using pip
 ---------
 
-- Install it::
+- Simple Install::
 
-	pip install flask-appbuilder
-	
+	$ pip install flask-appbuilder
+
+- Advised Virtual Env Install
+
+    Virtual env is highly advisable because the more projects you have, the more likely it is that you will be working with different versions of Python itself, or at least different versions of Python libraries. Let’s face it: quite often libraries break backwards compatibility, and it’s unlikely that any serious application will have zero dependencies. So what do you do if two or more of your projects have conflicting dependencies?
+
+    If you are on Mac OS X or Linux, chances are that one of the following two commands will work for you:
+
+    ::
+
+        $ sudo easy_install virtualenv
+
+    or even better:
+
+    ::
+
+        $ sudo pip install virtualenv
+
+    One of these will probably install virtualenv on your system. Maybe it’s even in your package manager. If you use a debian system (like Ubuntu), try:
+
+    ::
+
+        $ sudo apt-get install python-virtualenv
+
+    Once you have virtualenv installed, :
+
+    ::
+
+        $ mkdir myproject
+        $ cd myproject
+        $ virtualenv venv
+        New python executable in venv/bin/python
+        Installing distribute............done.
+        $ . venv/bin/activate
+        (venv)$
+
+    Now install F.A.B on the virtual env, it will install all the dependencies and these will be isolated from your system's python packages
+
+    ::
+
+        (venv)$ pip install flask-appbuilder
+
+
 Skeleton Application
 --------------------
 
-If you want a simple quick start, you can use one of the examples, or clone the base skeleton application::
+After installing F.A.B. You probably want a simple quick start, you can use one of the examples, or clone the base skeleton application::
 
-    git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
-    cd Flask-AppBuilder-Skeleton
-    python run.py
+    $ git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
+    $ cd Flask-AppBuilder-Skeleton
 
-That's it!!
 
-The git clone is not actually needed for you to run AppBuilder. but it's a good way to start.
+This is a running boilerplate, you can run it on a development server, simply like this::
+
+    $ python run.py
+
+That's it!! When you run the development server you can notice the log, it's telling you it is creating all the needed security tables, creating the initial 'admin' user, and roles, has well has all the minimal permissions.
+
+You now have a running development server on http://localhost:8080.
+
+The git clone of the skeleton is not actually needed for you to run AppBuilder. but it's a good way to start.
 
 Initialization
 --------------

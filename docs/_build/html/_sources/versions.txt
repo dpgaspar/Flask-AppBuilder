@@ -1,12 +1,27 @@
 Versions
 ========
 
-Improvements and Bug fixes on 0.7.9
+Improvements and Bug fixes on 0.8.2
+-----------------------------------
+
+- Fix, possible to register on the menu different links to the same view class.
+- Fix, init of baseapp missing init of baseviews list.
+
+Improvements and Bug fixes on 0.8.1
+-----------------------------------
+
+- New, Python 3 partial support (babel will not work, caused by the babel package itself).
+- Fix, Removed Flask-wtf requirement version limitation.
+- New, test suite with nose.
+
+Improvements and Bug fixes on 0.8.0
 -----------------------------------
 
 - New, Language, Simplified Chinese support.
 - New, Language, Russian support.
+- New, Language, German support.
 - Fix, various translations.
+- Fix,New support for virtual directory no need to install on root url, relative urls fixes.
 
 Improvements and Bug fixes on 0.7.8
 -----------------------------------

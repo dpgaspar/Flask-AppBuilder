@@ -61,9 +61,9 @@
             
   <div class="section" id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>The main goal for this project is to provide a simple development framework that handles the main problems any web application or site encounters.</p>
-<p>It&#8217;s half way between a scaffolding package on Bootstrap 3 and a full development framework, it has some goodies built in like image and file handling on forms, and google charts</p>
-<p>This will lower errors, bugs, project&#8217;s time to deliver. It&#8217;s intended to be a rapid application development tool.</p>
+<p>The main goal for this project is to provide a simple development framework that handles the main problems any web application or site encounters. It will help you adhere to the DRY (Don&#8217;t repat yourself) principle.</p>
+<p>Keeping on mind that it must be possible to develop directly on Flask/Jinja2 for custom pages or flows, that painlessly integrate the framework. But the framework it self should go further then an admin scaffolding package. It should have builtin presentation alternatives, and behaviour. Should be highly configurable, and should have extra goodies.</p>
+<p>It&#8217;s intended to lower errors, bugs and project&#8217;s time to deliver.</p>
 <p>This package has some CSS and JS batteries included:</p>
 <blockquote>
 <div><ul class="simple">
@@ -74,17 +74,17 @@
 </ul>
 </div></blockquote>
 <div class="section" id="includes">
-<h2>Includes<a class="headerlink" href="#includes" title="Permalink to this headline">¶</a></h2>
+<h2>Includes:<a class="headerlink" href="#includes" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul>
 <li><dl class="first docutils">
 <dt>Security</dt>
 <dd><ul class="first last simple">
-<li>Auto permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.</li>
+<li>Automatic permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.</li>
 <li>Inserts on the Database all the detailed permissions possible on your application.</li>
 <li>Public (no authentication needed) and Private permissions.</li>
 <li>Role based permissions.</li>
-<li>Authentication based on OpenID, Database and LDAP.</li>
+<li>Authentication support for OpenID, Database and LDAP.</li>
 </ul>
 </dd>
 </dl>
@@ -92,11 +92,12 @@
 <li><dl class="first docutils">
 <dt>Views and Widgets</dt>
 <dd><ul class="first last simple">
-<li>Auto menu generator.</li>
+<li>Automatic menu generation.</li>
+<li>Automatic CRUD generation.</li>
+<li>Big variety of filters for your lists.</li>
 <li>Various view widgets: lists, master-detail, list of thumbnails etc</li>
 <li>Select2, Datepicker, DateTimePicker</li>
-<li>Menu with icons</li>
-<li>Google charts with automatic group by.</li>
+<li>Google charts with automatic group by or direct values and filters.</li>
 </ul>
 </dd>
 </dl>
@@ -104,9 +105,9 @@
 <li><dl class="first docutils">
 <dt>Forms</dt>
 <dd><ul class="first last simple">
-<li>Auto Create, Remove, Add, Edit and Show from Database Models</li>
+<li>Automatic, Add, Edit and Show from Database Models</li>
 <li>Labels and descriptions for each field.</li>
-<li>Automatic base validators from model definition.</li>
+<li>Automatic base validators from model&#8217;s definition.</li>
 <li>Custom validators, extra fields, custom filters for related dropdown lists.</li>
 <li>Image and File support for upload and database field association. It will handle everything for you.</li>
 <li>Field sets for Form&#8217;s (Django style).</li>
@@ -140,7 +141,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Introduction</a><ul>
-<li><a class="reference internal" href="#includes">Includes</a></li>
+<li><a class="reference internal" href="#includes">Includes:</a></li>
 </ul>
 </li>
 </ul>
