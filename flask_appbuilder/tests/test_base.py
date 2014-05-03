@@ -11,8 +11,12 @@ import logging
 
 DEFAULT_INDEX_STRING = 'Welcome'
 INVALID_LOGIN_STRING = 'Invalid login'
+ACCESS_IS_DENIED = "Access is Denied"
 UNIQUE_VALIDATION_STRING = 'Already exists'
 NOTNULL_VALIDATION_STRING = 'This field is required'
+DEFAULT_ADMIN_USER = 'admin'
+DEFAULT_ADMIN_PASSWORD = 'general'
+
 
 log = logging.getLogger(__name__)
 
@@ -117,7 +121,7 @@ class FlaskTestCase(unittest.TestCase):
 
     def test_sec_login(self):
         """
-            Test Security Login, Logout
+            Test Security Login, Logout, invalid login, invalid access
         """
         client = self.app.test_client()
 
@@ -128,7 +132,7 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 302)
 
         # Login and list with admin
-        self.login(client, 'admin', 'general')
+        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         rv = client.get('/model1view/list/')
         eq_(rv.status_code, 200)
         rv = client.get('/model2view/list/')
@@ -142,16 +146,44 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 302)
 
         # Invalid Login
-        rv = self.login(client, 'admin', 'badpassword')
+        rv = self.login(client, DEFAULT_ADMIN_USER, 'password')
         data = rv.data.decode('utf-8')
         ok_(INVALID_LOGIN_STRING in data)
+
+    def test_sec_reset_password(self):
+        """
+            Test Security reset password
+        """
+        client = self.app.test_client()
+
+        # Try Reset My password
+        rv = client.get('/users/action/resetmypassword/1', follow_redirects=True)
+        data = rv.data.decode('utf-8')
+        ok_(ACCESS_IS_DENIED in data)
+
+        #Reset My password
+        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = client.get('/users/action/resetmypassword/1', follow_redirects=True)
+        data = rv.data.decode('utf-8')
+        ok_("Reset Password Form" in data)
+        rv = client.post('/resetmypassword/form',
+                         data=dict(password='password', conf_password='password'), follow_redirects=True)
+        eq_(rv.status_code, 200)
+        self.logout(client)
+        self.login(client, DEFAULT_ADMIN_USER, 'password')
+        rv = client.post('/resetmypassword/form',
+                         data=dict(password=DEFAULT_ADMIN_PASSWORD, conf_password=DEFAULT_ADMIN_PASSWORD),
+                         follow_redirects=True)
+        eq_(rv.status_code, 200)
+
+
 
     def test_model_crud(self):
         """
             Test Model add, delete, edit
         """
         client = self.app.test_client()
-        self.login(client, 'admin', 'general')
+        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
         rv = client.post('/model1view/add',
                          data=dict(field_string='test1', field_integer='1'), follow_redirects=True)
