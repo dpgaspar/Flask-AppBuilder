@@ -11,14 +11,15 @@ How to setup a minimal Application
     from flask.ext.sqlalchemy import SQLAlchemy
     from flask.ext.appbuilder.baseapp import BaseApp
 
+    # init Flask
+    app = Flask(__name__)
+
     # Basic config with security for forms and session cookie
     basedir = os.path.abspath(os.path.dirname(__file__))
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
     app.config['CSRF_ENABLED'] = True
     app.config['SECRET_KEY'] = 'thisismyscretkey'
 
-    # init Flask
-    app = Flask(__name__)
     # Init SQLAlchemy
     db = SQLAlchemy(app)
     # Init F.A.B.
