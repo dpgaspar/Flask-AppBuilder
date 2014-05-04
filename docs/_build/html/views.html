@@ -61,8 +61,11 @@
             
   <div class="section" id="views">
 <h1>Views<a class="headerlink" href="#views" title="Permalink to this headline">¶</a></h1>
-<p>Views are the base concept of F.A.B. they work like a class that represent a concept and present the views and methods to implement it.</p>
-<p>Each view is a Flask blueprint that will be created for you automatically by the framework. This is a simple but powerful concept. You will map your methods to routing points, and each method will be registered as a possible security permission if you want to.</p>
+<p>Views are the base concept of F.A.B.
+they work like a class that represent a concept and present the views and methods to implement it.</p>
+<p>Each view is a Flask blueprint that will be created for you automatically by the framework.
+This is a simple but powerful concept.
+You will map your methods to routing points, and each method will be registered as a possible security permission if you want to.</p>
 <div class="section" id="baseview">
 <h2>BaseView<a class="headerlink" href="#baseview" title="Permalink to this headline">¶</a></h2>
 <p>All views inherit from this class. it&#8217;s constructor will register your exposed urls on flask as a Blueprint, as well as all security permissions that need to be defined and protected.</p>
@@ -94,7 +97,10 @@
 <span class="n">genapp</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="n">MyView</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>You can find this example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1</a></p>
+<p>You can find this example on:</p>
+<blockquote>
+<div><a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1</a></div></blockquote>
+<p>look at the file app/views.py</p>
 <p>This simple example will register your view with two routing urls on:</p>
 <blockquote>
 <div><ul class="simple">
@@ -108,9 +114,9 @@
 </pre></div>
 </div>
 <p>You can test your methods using the following url&#8217;s:</p>
-<p><a class="reference external" href="http://localhost:8080/myview/method1/john">http://localhost:8080/myview/method1/john</a>
-<a class="reference external" href="http://localhost:8080/myview/method2/john">http://localhost:8080/myview/method2/john</a></p>
-<p>Has you can see this methods are public, let&#8217;s change this example to:</p>
+<p><a class="reference external" href="http://localhost:8080/myview/method1/john">http://localhost:8080/myview/method1/john</a></p>
+<p><a class="reference external" href="http://localhost:8080/myview/method2/john">http://localhost:8080/myview/method2/john</a></p>
+<p>Has you can see this methods are public, let&#8217;s change this example, edit views.py and change it to:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseapp</span> <span class="kn">import</span> <span class="n">BaseApp</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseviews</span> <span class="kn">import</span> <span class="n">BaseView</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseviews</span> <span class="kn">import</span> <span class="n">expose</span>
@@ -139,7 +145,7 @@
 
 <span class="n">genapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
 <span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">(),</span> <span class="s">&quot;Method1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
-<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">(),</span> <span class="s">&quot;Method2&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method2/jonh&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;Method2&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method2/jonh&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can find this example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2</a></p>
@@ -184,7 +190,7 @@
 </pre></div>
 </div>
 <p>Notice that this class derives from <em>BaseView</em> so all properties from the parent class can be overridden also.
-Notice also how label uses babel&#8217;s lazy_gettext as _(&#8216;text&#8217;) function so that your menu item can be translated.</p>
+Notice also how label uses babel&#8217;s lazy_gettext as _(&#8216;text&#8217;) function so that your menu items can be translated.</p>
 <p>Most important Base Properties:</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

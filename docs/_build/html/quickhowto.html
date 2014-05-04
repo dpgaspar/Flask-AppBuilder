@@ -61,6 +61,10 @@
             
   <div class="section" id="quick-how-to">
 <h1>Quick How to<a class="headerlink" href="#quick-how-to" title="Permalink to this headline">¶</a></h1>
+<p>On this chapter we will create a very simple contacts application you can find a
+<a class="reference external" href="http://flaskappbuilder.pythonanywhere.com/">Live Demo</a> (login with guest/welcome).</p>
+<p>And the source code for this chapter on
+<a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">examples</a></p>
 <div class="section" id="the-base-skeleton-application">
 <h2>The Base Skeleton Application<a class="headerlink" href="#the-base-skeleton-application" title="Permalink to this headline">¶</a></h2>
 <p>If your working with the base skeleton application (take a look at the <a class="reference internal" href="installation.html"><em>Installation</em></a> chapter).</p>
@@ -79,10 +83,17 @@
 </div>
 <div class="section" id="simple-contacts-application">
 <h2>Simple contacts application<a class="headerlink" href="#simple-contacts-application" title="Permalink to this headline">¶</a></h2>
-<p>Let&#8217;s create a very simple contacts application. F.A.B uses the excellent SQLAlchemy ORM package, you should be familiar with it&#8217;s declarative syntax to define your database models on F.A.B.</p>
-<p>On our example application we are going to define two tables, a <em>Contact&#8217;s</em> table that will hold the contacts detailed information, and a <em>Group</em> table to group our contacts or classify them.
+<p>Let&#8217;s create a very simple contacts application.
+F.A.B uses the excellent SQLAlchemy ORM package,
+you should be familiar with it&#8217;s declarative syntax to define your database models on F.A.B.</p>
+<p>On our example application we are going to define two tables,
+a <em>Contact&#8217;s</em> table that will hold the contacts detailed information,
+and a <em>Group</em> table to group our contacts or classify them.
 We could additionally define a <em>Gender</em> table, to serve the role of enumerated values for &#8216;Male&#8217; and &#8216;Female&#8217;.</p>
-<p>Although your not obliged to, i advise you to inherit your model classes from <em>Base</em> and <em>BaseMixin</em>. You can of course inherit from <em>db.Model</em> normal Flask-SQLAlchemy. The reason for this is that <em>Base</em> is on the same declarative space of F.A.B. and using it will allow you to define relations to User&#8217;s.</p>
+<p>Although your not obliged to, i advise you to inherit your model classes from <em>Base</em> and <em>BaseMixin</em>.
+You can of course inherit from <em>db.Model</em> normal Flask-SQLAlchemy.
+The reason for this is that <em>Base</em> is on the same declarative space of F.A.B.
+and using it will allow you to define relations to User&#8217;s.</p>
 <p>You can add automatic <em>Audit</em> triggered columns to your models, by inherit them from <em>AuditMixin</em> also. (see <a class="reference internal" href="api.html"><em>API Reference</em></a>)</p>
 <p>So, first we are going to create a <em>Group</em> table, to group our contacts</p>
 </div>
@@ -142,7 +153,8 @@ We could additionally define a <em>Gender</em> table, to serve the role of enume
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">related_views:</th><td class="field-body">if you want a master/detail view on the show and edit. F.A.B. will relate 1/N relations automatically, it will display a show or edit view with tab (or accordion) with a list related record. You can relate charts also.</td>
+<tr class="field-odd field"><th class="field-name">related_views:</th><td class="field-body">if you want a master/detail view on the show and edit. F.A.B.
+will relate 1/N relations automatically, it will display a show or edit view with tab (or accordion) with a list related record. You can relate charts also.</td>
 </tr>
 </tbody>
 </table>
@@ -208,7 +220,10 @@ We could additionally define a <em>Gender</em> table, to serve the role of enume
     <span class="n">base_permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;can_add&#39;</span><span class="p">,</span><span class="s">&#39;can_delete&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>With this initial config, the framework will only create &#8216;can_add&#8217; and &#8216;can_edit&#8217; permissions on GroupGeneralView as the only allowed. So users and even administrator of the application will not have the possibility to add delete permission on Group table view.</p>
+<p>With this initial config, the framework will only create &#8216;can_add&#8217; and &#8216;can_delete&#8217;
+permissions on GroupGeneralView as the only allowed. So users and even the administrator
+of the application will not have the possibility to add list or show permissions on Group table view.
+Base available permission are: can_add, can_edit, can_delete, can_list, can_show. More detailed info on <a class="reference internal" href="security.html"><em>Security</em></a></p>
 <blockquote>
 <div><ul class="simple">
 <li><strong>Base Filtering</strong></li>
@@ -272,15 +287,20 @@ If you want to filter multiple related fields just add tuples to the list, remem
 </pre></div>
 </div>
 </li>
-<li><p class="first">You can define what columns will be included on Add or Edit forms, for example if you have automatic fields like user or date, you can remove this from the Add Form:</p>
+<li><p class="first">You can define what columns will be included on Add or Edit forms,</p>
+</li>
+</ul>
+<p>for example if you have automatic fields like user or date, you can remove this from the Add Form:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">add_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;my_field1&#39;</span><span class="p">,</span><span class="s">&#39;my_field2&#39;</span><span class="p">]</span>
     <span class="n">edit_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;my_field1&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-</li>
-<li><p class="first">You can contribute with any additional field that are not on a table/model, for example a confirmation field:</p>
+<ul class="simple">
+<li>You can contribute with any additional field that are not on a table/model,</li>
+</ul>
+<p>for example a confirmation field:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">add_form_extra_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;extra&#39;</span><span class="p">:</span> <span class="n">TextField</span><span class="p">(</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;Extra Field&#39;</span><span class="p">),</span>
@@ -288,8 +308,11 @@ If you want to filter multiple related fields just add tuples to the list, remem
                     <span class="n">widget</span><span class="o">=</span><span class="n">BS3TextFieldWidget</span><span class="p">())}</span>
 </pre></div>
 </div>
-</li>
-<li><p class="first">You can contribute with your own additional form validations rules. Remember the framework will automatically validate any field that is defined on the database with <em>Not Null</em> (Required) or Unique constraints:</p>
+<ul class="simple">
+<li>You can contribute with your own additional form validations rules.</li>
+</ul>
+<p>Remember the framework will automatically validate any field that is defined on the database
+with <em>Not Null</em> (Required) or Unique constraints:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">validators_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;my_field1&#39;</span><span class="p">:[</span><span class="n">EqualTo</span><span class="p">(</span><span class="s">&#39;my_field2&#39;</span><span class="p">,</span>
@@ -298,8 +321,6 @@ If you want to filter multiple related fields just add tuples to the list, remem
     <span class="p">}</span>
 </pre></div>
 </div>
-</li>
-</ul>
 <p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>. Experiment with <em>add_form</em>, <em>edit_form</em>, <em>add_columns</em>, <em>edit_columns</em>, <em>validators_columns</em>, <em>add_form_extra_fields</em>, <em>edit_form_extra_fields</em></p>
 </div>
 </div>

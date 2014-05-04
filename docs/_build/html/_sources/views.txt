@@ -1,9 +1,12 @@
 Views
 =====
 
-Views are the base concept of F.A.B. they work like a class that represent a concept and present the views and methods to implement it.
+Views are the base concept of F.A.B.
+they work like a class that represent a concept and present the views and methods to implement it.
 
-Each view is a Flask blueprint that will be created for you automatically by the framework. This is a simple but powerful concept. You will map your methods to routing points, and each method will be registered as a possible security permission if you want to.
+Each view is a Flask blueprint that will be created for you automatically by the framework.
+This is a simple but powerful concept.
+You will map your methods to routing points, and each method will be registered as a possible security permission if you want to.
 
 BaseView
 --------
@@ -41,7 +44,11 @@ Using the Flask-AppBuilder-Skeleton (take a look at the :doc:`installation` chap
     genapp.add_view_no_menu(MyView())
     
 
-You can find this example on https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1
+You can find this example on:
+
+ https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1
+
+look at the file app/views.py
 
 This simple example will register your view with two routing urls on:
 
@@ -58,9 +65,10 @@ Now run this example
 You can test your methods using the following url's:
 
 http://localhost:8080/myview/method1/john
+
 http://localhost:8080/myview/method2/john
 
-Has you can see this methods are public, let's change this example to::
+Has you can see this methods are public, let's change this example, edit views.py and change it to::
 
     from flask.ext.appbuilder.baseapp import BaseApp
     from flask.ext.appbuilder.baseviews import BaseView
@@ -90,7 +98,7 @@ Has you can see this methods are public, let's change this example to::
 
     genapp = BaseApp(app, db)
     genapp.add_view(MyView(), "Method1", category='My View')
-    genapp.add_view(MyView(), "Method2", href='/myview/method2/jonh', category='My View')
+    genapp.add_link("Method2", href='/myview/method2/jonh', category='My View')
 
 
 You can find this example on https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2
@@ -147,7 +155,7 @@ Implement *form_get* and *form_post* to implement your form pre-processing and p
 
 
 Notice that this class derives from *BaseView* so all properties from the parent class can be overridden also.
-Notice also how label uses babel's lazy_gettext as _('text') function so that your menu item can be translated.
+Notice also how label uses babel's lazy_gettext as _('text') function so that your menu items can be translated.
 
 Most important Base Properties:
 

@@ -10,7 +10,12 @@ Using pip
 
 - Advised Virtual Env Install
 
-    Virtual env is highly advisable because the more projects you have, the more likely it is that you will be working with different versions of Python itself, or at least different versions of Python libraries. Let’s face it: quite often libraries break backwards compatibility, and it’s unlikely that any serious application will have zero dependencies. So what do you do if two or more of your projects have conflicting dependencies?
+    Virtual env is highly advisable because the more projects you have,
+    the more likely it is that you will be working with
+    different versions of Python itself, or at least different versions of Python libraries.
+    Let’s face it: quite often libraries break backwards compatibility,
+    and it’s unlikely that any serious application will have zero dependencies.
+    So what do you do if two or more of your projects have conflicting dependencies?
 
     If you are on Mac OS X or Linux, chances are that one of the following two commands will work for you:
 
@@ -24,7 +29,8 @@ Using pip
 
         $ sudo pip install virtualenv
 
-    One of these will probably install virtualenv on your system. Maybe it’s even in your package manager. If you use a debian system (like Ubuntu), try:
+    One of these will probably install virtualenv on your system.
+    Maybe it’s even in your package manager. If you use a debian system (like Ubuntu), try:
 
     ::
 
@@ -42,7 +48,8 @@ Using pip
         $ . venv/bin/activate
         (venv)$
 
-    Now install F.A.B on the virtual env, it will install all the dependencies and these will be isolated from your system's python packages
+    Now install F.A.B on the virtual env,
+    it will install all the dependencies and these will be isolated from your system's python packages
 
     ::
 
@@ -52,7 +59,8 @@ Using pip
 Skeleton Application
 --------------------
 
-After installing F.A.B. You probably want a simple quick start, you can use one of the examples, or clone the base skeleton application::
+After installing F.A.B. You probably want a simple quick start,
+you can use one of the examples, or clone the base skeleton application::
 
     $ git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
     $ cd Flask-AppBuilder-Skeleton
@@ -62,7 +70,9 @@ This is a running boilerplate, you can run it on a development server, simply li
 
     $ python run.py
 
-That's it!! When you run the development server you can notice the log, it's telling you it is creating all the needed security tables, creating the initial 'admin' user, and roles, has well has all the minimal permissions.
+That's it!! When you run the development server you can notice the log,
+it's telling you it is creating all the needed security tables,
+creating the initial 'admin' user, and roles, has well has all the minimal permissions.
 
 You now have a running development server on http://localhost:8080.
 
@@ -71,7 +81,8 @@ The git clone of the skeleton is not actually needed for you to run AppBuilder. 
 Initialization
 --------------
 
-When starting your application for the first time, all your models and AppBuilder security tables will be created for you.
+When starting your application for the first time,
+all your models and AppBuilder security tables will be created for you.
 
 **The 'admin' user password will be 'general'**. Change it on your first access using the application.
 (Click the username on the navigation bar, then choose 'Reset Password')
@@ -79,15 +90,15 @@ When starting your application for the first time, all your models and AppBuilde
 What requirements were instaled
 -------------------------------
 
-pip installations installs all the requirements for you.
+pip installs all the requirements for you.
 
 Flask App Builder dependes on
 
-    - flask : The web framework, this is what were extending
+    - flask : The web framework, this is what we're extending
     - flask-sqlalchemy : DB access see SQLAlchemy, This requirement is optional
     - flask-login : Login, session on flask.
     - flask-openid : Open ID authentication
-    - flask-wtform
+    - flask-wtform : Web forms.
     - flask-BabelPkg : For internationalization, fork from flask-babel
 
 If you plan to use Image on database, you will need to install PIL::

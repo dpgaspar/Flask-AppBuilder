@@ -71,7 +71,12 @@
 </li>
 <li><p class="first">Advised Virtual Env Install</p>
 <blockquote>
-<div><p>Virtual env is highly advisable because the more projects you have, the more likely it is that you will be working with different versions of Python itself, or at least different versions of Python libraries. Let’s face it: quite often libraries break backwards compatibility, and it’s unlikely that any serious application will have zero dependencies. So what do you do if two or more of your projects have conflicting dependencies?</p>
+<div><p>Virtual env is highly advisable because the more projects you have,
+the more likely it is that you will be working with
+different versions of Python itself, or at least different versions of Python libraries.
+Let’s face it: quite often libraries break backwards compatibility,
+and it’s unlikely that any serious application will have zero dependencies.
+So what do you do if two or more of your projects have conflicting dependencies?</p>
 <p>If you are on Mac OS X or Linux, chances are that one of the following two commands will work for you:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ sudo easy_install virtualenv
 </pre></div>
@@ -80,7 +85,8 @@
 <div class="highlight-python"><div class="highlight"><pre>$ sudo pip install virtualenv
 </pre></div>
 </div>
-<p>One of these will probably install virtualenv on your system. Maybe it’s even in your package manager. If you use a debian system (like Ubuntu), try:</p>
+<p>One of these will probably install virtualenv on your system.
+Maybe it’s even in your package manager. If you use a debian system (like Ubuntu), try:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get install python-virtualenv
 </pre></div>
 </div>
@@ -94,7 +100,8 @@ $ . venv/bin/activate
 (venv)$
 </pre></div>
 </div>
-<p>Now install F.A.B on the virtual env, it will install all the dependencies and these will be isolated from your system&#8217;s python packages</p>
+<p>Now install F.A.B on the virtual env,
+it will install all the dependencies and these will be isolated from your system&#8217;s python packages</p>
 <div class="highlight-python"><div class="highlight"><pre>(venv)$ pip install flask-appbuilder
 </pre></div>
 </div>
@@ -104,7 +111,8 @@ $ . venv/bin/activate
 </div>
 <div class="section" id="skeleton-application">
 <h2>Skeleton Application<a class="headerlink" href="#skeleton-application" title="Permalink to this headline">¶</a></h2>
-<p>After installing F.A.B. You probably want a simple quick start, you can use one of the examples, or clone the base skeleton application:</p>
+<p>After installing F.A.B. You probably want a simple quick start,
+you can use one of the examples, or clone the base skeleton application:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
 $ cd Flask-AppBuilder-Skeleton
 </pre></div>
@@ -113,27 +121,30 @@ $ cd Flask-AppBuilder-Skeleton
 <div class="highlight-python"><div class="highlight"><pre>$ python run.py
 </pre></div>
 </div>
-<p>That&#8217;s it!! When you run the development server you can notice the log, it&#8217;s telling you it is creating all the needed security tables, creating the initial &#8216;admin&#8217; user, and roles, has well has all the minimal permissions.</p>
+<p>That&#8217;s it!! When you run the development server you can notice the log,
+it&#8217;s telling you it is creating all the needed security tables,
+creating the initial &#8216;admin&#8217; user, and roles, has well has all the minimal permissions.</p>
 <p>You now have a running development server on <a class="reference external" href="http://localhost:8080">http://localhost:8080</a>.</p>
 <p>The git clone of the skeleton is not actually needed for you to run AppBuilder. but it&#8217;s a good way to start.</p>
 </div>
 <div class="section" id="initialization">
 <h2>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h2>
-<p>When starting your application for the first time, all your models and AppBuilder security tables will be created for you.</p>
+<p>When starting your application for the first time,
+all your models and AppBuilder security tables will be created for you.</p>
 <p><strong>The &#8216;admin&#8217; user password will be &#8216;general&#8217;</strong>. Change it on your first access using the application.
 (Click the username on the navigation bar, then choose &#8216;Reset Password&#8217;)</p>
 </div>
 <div class="section" id="what-requirements-were-instaled">
 <h2>What requirements were instaled<a class="headerlink" href="#what-requirements-were-instaled" title="Permalink to this headline">¶</a></h2>
-<p>pip installations installs all the requirements for you.</p>
+<p>pip installs all the requirements for you.</p>
 <p>Flask App Builder dependes on</p>
 <blockquote>
 <div><ul class="simple">
-<li>flask : The web framework, this is what were extending</li>
+<li>flask : The web framework, this is what we&#8217;re extending</li>
 <li>flask-sqlalchemy : DB access see SQLAlchemy, This requirement is optional</li>
 <li>flask-login : Login, session on flask.</li>
 <li>flask-openid : Open ID authentication</li>
-<li>flask-wtform</li>
+<li>flask-wtform : Web forms.</li>
 <li>flask-BabelPkg : For internationalization, fork from flask-babel</li>
 </ul>
 </div></blockquote>

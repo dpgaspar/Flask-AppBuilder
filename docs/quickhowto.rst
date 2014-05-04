@@ -43,7 +43,7 @@ We could additionally define a *Gender* table, to serve the role of enumerated v
 Although your not obliged to, i advise you to inherit your model classes from *Base* and *BaseMixin*.
 You can of course inherit from *db.Model* normal Flask-SQLAlchemy.
 The reason for this is that *Base* is on the same declarative space of F.A.B.
- and using it will allow you to define relations to User's.
+and using it will allow you to define relations to User's.
 
 You can add automatic *Audit* triggered columns to your models, by inherit them from *AuditMixin* also. (see :doc:`api`)
 
