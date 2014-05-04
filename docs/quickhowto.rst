@@ -25,12 +25,19 @@ Please take a look at github `examples <https://github.com/dpgaspar/Flask-AppBui
 Simple contacts application
 ---------------------------
 
-Let's create a very simple contacts application. F.A.B uses the excellent SQLAlchemy ORM package, you should be familiar with it's declarative syntax to define your database models on F.A.B.
+Let's create a very simple contacts application.
+F.A.B uses the excellent SQLAlchemy ORM package,
+you should be familiar with it's declarative syntax to define your database models on F.A.B.
 
-On our example application we are going to define two tables, a *Contact's* table that will hold the contacts detailed information, and a *Group* table to group our contacts or classify them.
+On our example application we are going to define two tables,
+a *Contact's* table that will hold the contacts detailed information,
+and a *Group* table to group our contacts or classify them.
 We could additionally define a *Gender* table, to serve the role of enumerated values for 'Male' and 'Female'.
 
-Although your not obliged to, i advise you to inherit your model classes from *Base* and *BaseMixin*. You can of course inherit from *db.Model* normal Flask-SQLAlchemy. The reason for this is that *Base* is on the same declarative space of F.A.B. and using it will allow you to define relations to User's.
+Although your not obliged to, i advise you to inherit your model classes from *Base* and *BaseMixin*.
+You can of course inherit from *db.Model* normal Flask-SQLAlchemy.
+The reason for this is that *Base* is on the same declarative space of F.A.B.
+ and using it will allow you to define relations to User's.
 
 You can add automatic *Audit* triggered columns to your models, by inherit them from *AuditMixin* also. (see :doc:`api`)
 
@@ -95,7 +102,8 @@ Must have properties:
 
 Optional properties:
 
-:related_views: if you want a master/detail view on the show and edit. F.A.B. will relate 1/N relations automatically, it will display a show or edit view with tab (or accordion) with a list related record. You can relate charts also.
+:related_views: if you want a master/detail view on the show and edit. F.A.B.
+    will relate 1/N relations automatically, it will display a show or edit view with tab (or accordion) with a list related record. You can relate charts also.
 
 This is the most basic configuration (with an added related view).
 
@@ -168,7 +176,10 @@ To block or set the allowed permissions on a view, just set the *base_permission
         datamodel = SQLAModel(Group, db.session)
         base_permissions = ['can_add','can_delete']
             
-With this initial config, the framework will only create 'can_add' and 'can_edit' permissions on GroupGeneralView as the only allowed. So users and even administrator of the application will not have the possibility to add delete permission on Group table view.
+With this initial config, the framework will only create 'can_add' and 'can_delete'
+permissions on GroupGeneralView as the only allowed. So users and even the administrator
+of the application will not have the possibility to add list or show permissions on Group table view.
+Base available permission are: can_add, can_edit, can_delete, can_list, can_show. More detailed info on :doc `security`
 
     - **Base Filtering**
     
