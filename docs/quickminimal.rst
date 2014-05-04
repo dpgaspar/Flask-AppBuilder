@@ -4,6 +4,10 @@ Quick Minimal Application
 How to setup a minimal Application
 ----------------------------------
 
+This is the most basic example, using the minimal code needed to setup a running application with F.A.B.
+Will use sqlite for the database no need to install anything. I do advise using the skeleton application
+as described on the :doc `installation`
+
 ::
 
     import os
@@ -29,10 +33,10 @@ How to setup a minimal Application
     app.run(host='0.0.0.0', port=8080, debug=True)
 
 
-If you run this, notice that your database will be created with two roles 'Admin' and 'Public', as well has all the security detailed permissions.
+If you run this, notice that your database will be created with two roles 'Admin' and 'Public',
+as well has all the security detailed permissions.
 
-The default authentication method will be database, you can take a look of all your application options on :doc:`config`
-
-The downside of using a minimal configuration like this, is that you loose all the translations (Babel) of the security views and menus setuped initialy by AppBuilder
+The default authentication method will be database,
+you can take a look of all your application options on :doc:`config`
 
 Please take a look at github `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples>`_
