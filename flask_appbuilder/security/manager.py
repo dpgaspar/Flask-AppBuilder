@@ -26,6 +26,12 @@ AUTH_OID = 0
 AUTH_DB = 1
 AUTH_LDAP = 2
 
+ADMIN_USER_NAME = 'admin'
+ADMIN_USER_PASSWORD = 'general'
+ADMIN_USER_EMAIL = 'admin@fab.org'
+ADMIN_USER_FIRST_NAME = 'Admin'
+ADMIN_USER_LAST_NAME = 'User'
+
 
 class SecurityManager(object):
     session = None
@@ -191,11 +197,11 @@ class SecurityManager(object):
                 log.info("Inserted Role for public access %s" % (self.auth_role_public))
             if not self.session.query(User).all():
                 user = User()
-                user.first_name = 'Admin'
-                user.last_name = 'User'
-                user.username = 'admin'
-                user.password = generate_password_hash('general')
-                user.email = 'admin@fab.org'
+                user.first_name = ADMIN_USER_FIRST_NAME
+                user.last_name = ADMIN_USER_LAST_NAME
+                user.username = ADMIN_USER_NAME
+                user.password = generate_password_hash(ADMIN_USER_PASSWORD)
+                user.email = ADMIN_USER_EMAIL
                 user.active = True
                 user.role = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
                 self.session.add(user)
