@@ -5,8 +5,10 @@ How to setup a minimal Application
 ----------------------------------
 
 This is the most basic example, using the minimal code needed to setup a running application with F.A.B.
-Will use sqlite for the database no need to install anything. I do advise using the skeleton application
-as described on the :doc:`installation`
+
+Will use sqlite for the database no need to install anything.
+
+I do advise using the skeleton application as described on the :doc:`installation`
 
 ::
 
@@ -37,6 +39,6 @@ If you run this, notice that your database will be created with two roles 'Admin
 as well has all the security detailed permissions.
 
 The default authentication method will be database, and you can initially login with **'admin'/'general'**.
-you can take a look of all your application options on :doc:`config`
+you can take a look at all your configuration options on :doc:`config`
 
 Take a look at this `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickminimal>`_ on Github
