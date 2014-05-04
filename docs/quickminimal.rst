@@ -36,7 +36,7 @@ as described on the :doc `installation`
 If you run this, notice that your database will be created with two roles 'Admin' and 'Public',
 as well has all the security detailed permissions.
 
-The default authentication method will be database,
+The default authentication method will be database, and you can initially login with **'admin'/'general'**.
 you can take a look of all your application options on :doc:`config`
 
 Take a look at this `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickminimal>`_ on Github
