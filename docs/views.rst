@@ -155,7 +155,7 @@ Implement *form_get* and *form_post* to implement your form pre-processing and p
 
 
 Notice that this class derives from *BaseView* so all properties from the parent class can be overridden also.
-Notice also how label uses babel's lazy_gettext as _('text') function so that your menu item can be translated.
+Notice also how label uses babel's lazy_gettext as _('text') function so that your menu items can be translated.
 
 Most important Base Properties:
 
