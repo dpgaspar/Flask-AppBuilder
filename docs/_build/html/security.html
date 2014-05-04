@@ -112,15 +112,15 @@
 </ul>
 </div></blockquote>
 <p>If you extend your view with some exposed method via the &#64;expose decorator:</p>
-<div class="highlight-python"><div class="highlight"><pre>class MyGeneralView(GeneralView):
-datamodel = SQLAModel(Group, db.session)
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 
 
-@expose(&#39;/mymethod/&#39;)
-@has_access
-def mymethod(self):
-    # do something
-    pass
+    <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/mymethod/&#39;</span><span class="p">)</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">mymethod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># do something</span>
+        <span class="k">pass</span>
 </pre></div>
 </div>
 <p>The framework will create the following access:</p>
