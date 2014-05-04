@@ -6,7 +6,7 @@ How to setup a minimal Application
 
 This is the most basic example, using the minimal code needed to setup a running application with F.A.B.
 Will use sqlite for the database no need to install anything. I do advise using the skeleton application
-as described on the :doc `installation`
+as described on the :doc:`installation`
 
 ::
 

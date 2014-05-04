@@ -1,6 +1,12 @@
 Quick How to
 ============
 
+On this chapter we will create a very simple contacts application you can find a
+`Live Demo <http://flaskappbuilder.pythonanywhere.com/>`_ (login with guest/welcome).
+
+And the source code for this chapter on
+`examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto>`_
+
 The Base Skeleton Application
 -----------------------------
 
