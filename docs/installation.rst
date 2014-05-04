@@ -79,11 +79,11 @@ When starting your application for the first time, all your models and AppBuilde
 What requirements were instaled
 -------------------------------
 
-pip installations installs all the requirements for you.
+pip installs all the requirements for you.
 
 Flask App Builder dependes on
 
-    - flask : The web framework, this is what were extending
+    - flask : The web framework, this is what we're extending
     - flask-sqlalchemy : DB access see SQLAlchemy, This requirement is optional
     - flask-login : Login, session on flask.
     - flask-openid : Open ID authentication
