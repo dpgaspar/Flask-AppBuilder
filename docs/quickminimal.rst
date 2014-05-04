@@ -39,4 +39,4 @@ as well has all the security detailed permissions.
 The default authentication method will be database,
 you can take a look of all your application options on :doc:`config`
 
-Please take a look at github `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples>`_
+Take a look at this `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickminimal>`_ on Github
