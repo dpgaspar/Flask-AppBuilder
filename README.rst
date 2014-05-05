@@ -4,6 +4,7 @@ Flask App Builder
 .. image:: https://travis-ci.org/dpgaspar/Flask-AppBuilder.png?branch=master
 	:target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
 .. image:: https://pypip.in/version/Flask-AppBuilder/badge.png
+
 .. image:: https://pypip.in/download/Flask-AppBuilder/badge.png
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
