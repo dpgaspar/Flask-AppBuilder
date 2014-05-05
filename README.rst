@@ -4,10 +4,10 @@ Flask App Builder
 .. image:: https://travis-ci.org/dpgaspar/Flask-AppBuilder.png?branch=master
 	:target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
 .. image:: https://pypip.in/version/Flask-AppBuilder/badge.png
-	:target: https://pypip.in/version/Flask-AppBuilder
+	:target: https://pypi.python.org/pypi/Flask-AppBuilder
 	:alt: Verion
 .. image:: https://pypip.in/download/Flask-AppBuilder/badge.png
-	:target: https://pypip.in/version/Flask-AppBuilder
+	:target: https://pypi.python.org/pypi/Flask-AppBuilder
 	:alt: Downloads
 
 
