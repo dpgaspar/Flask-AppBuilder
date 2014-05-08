@@ -4,9 +4,10 @@ i18n Translations
 Introduction
 ------------
 
-F.A.B. has support for six languages (planning for some more):
+F.A.B. has support for seven languages (planning for some more):
  - English
  - Portuguese
+ - Portuguese Brazil
  - Spanish
  - Chinese
  - Russian
@@ -115,7 +116,10 @@ Let's work with the contacts application example, so you want to add translation
 
 5 - Add your language support to the framework
 
-     - On config tell the framework the languages you support. With this you will have a menu with the corresponding languages country flags::
+     - On config tell the framework the languages you support.
+     With this you will render a menu with the corresponding country flags.
+     use the config var 'LANGUAGES' with a dict whose first key is a string with the corresponding babel language code,
+     the value is another dict with two keys 'flag' and 'name', with the country flag code, and text to be displayed::
 
         LANGUAGES = {
            'en': {'flag':'gb', 'name':'English'},
