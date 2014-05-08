@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-25 14:54+0100\n"
+"POT-Creation-Date: 2014-05-08 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -143,28 +143,28 @@ msgstr "Нет связь"
 msgid "Relation as Many"
 msgstr "Связь как многие"
 
-#: flask_appbuilder/security/forms.py:10
+#: flask_appbuilder/security/forms.py:13
 msgid "openid"
 msgstr "OpenID"
 
-#: flask_appbuilder/security/forms.py:11
+#: flask_appbuilder/security/forms.py:14
 msgid "remember_me"
 msgstr "remember_me"
 
-#: flask_appbuilder/security/forms.py:15 flask_appbuilder/security/views.py:114
+#: flask_appbuilder/security/forms.py:18 flask_appbuilder/security/views.py:118
 msgid "User Name"
 msgstr "имя пользователя"
 
-#: flask_appbuilder/security/forms.py:16 flask_appbuilder/security/forms.py:20
-#: flask_appbuilder/security/views.py:115
-#: flask_appbuilder/security/views.py:190
+#: flask_appbuilder/security/forms.py:19 flask_appbuilder/security/forms.py:23
+#: flask_appbuilder/security/views.py:119
+#: flask_appbuilder/security/views.py:194
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:31
 #: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:27
 msgid "Password"
 msgstr "пароль"
 
-#: flask_appbuilder/security/forms.py:21 flask_appbuilder/security/views.py:131
-#: flask_appbuilder/security/views.py:191
+#: flask_appbuilder/security/forms.py:24 flask_appbuilder/security/views.py:135
+#: flask_appbuilder/security/views.py:195
 msgid ""
 "Please use a good password policy, this application does not check this "
 "for you"
@@ -172,208 +172,208 @@ msgstr ""
 "Пожалуйста, используйте надежная политика паролей , это приложение не "
 "проверяет этотдля вас"
 
-#: flask_appbuilder/security/forms.py:25 flask_appbuilder/security/views.py:195
+#: flask_appbuilder/security/forms.py:28 flask_appbuilder/security/views.py:199
 msgid "Confirm Password"
 msgstr "Подтвердите пароль"
 
-#: flask_appbuilder/security/forms.py:26
+#: flask_appbuilder/security/forms.py:29
 msgid "Please rewrite the password to confirm"
 msgstr "Пожалуйста переписать пароль для подтверждения"
 
-#: flask_appbuilder/security/forms.py:27 flask_appbuilder/security/views.py:198
+#: flask_appbuilder/security/forms.py:30 flask_appbuilder/security/views.py:202
 msgid "Passwords must match"
 msgstr "Пароли должны совпадать"
 
-#: flask_appbuilder/security/manager.py:83
-#: flask_appbuilder/security/views.py:106
+#: flask_appbuilder/security/manager.py:89
+#: flask_appbuilder/security/views.py:110
 msgid "List Users"
 msgstr "Список пользователей"
 
-#: flask_appbuilder/security/manager.py:84
+#: flask_appbuilder/security/manager.py:90
 msgid "Security"
 msgstr "безопасность"
 
-#: flask_appbuilder/security/manager.py:87
-#: flask_appbuilder/security/views.py:262
+#: flask_appbuilder/security/manager.py:93
+#: flask_appbuilder/security/views.py:266
 msgid "List Roles"
 msgstr "Список Роли"
 
-#: flask_appbuilder/security/manager.py:91
+#: flask_appbuilder/security/manager.py:97
 msgid "User's Statistics"
 msgstr "Статистика пользователя"
 
-#: flask_appbuilder/security/manager.py:96
+#: flask_appbuilder/security/manager.py:102
 msgid "Base Permissions"
 msgstr "Базовые Разрешения"
 
-#: flask_appbuilder/security/manager.py:99
+#: flask_appbuilder/security/manager.py:105
 msgid "Views/Menus"
 msgstr "Просмотров / меню"
 
-#: flask_appbuilder/security/manager.py:101
+#: flask_appbuilder/security/manager.py:107
 msgid "Permission on Views/Menus"
 msgstr "Разрешение на просмотров / меню"
 
-#: flask_appbuilder/security/views.py:29
+#: flask_appbuilder/security/views.py:33
 msgid "List Base Permissions"
 msgstr "Список базовых прав доступа"
 
-#: flask_appbuilder/security/views.py:30
+#: flask_appbuilder/security/views.py:34
 msgid "Show Base Permission"
 msgstr "Показать База Введено"
 
-#: flask_appbuilder/security/views.py:31
+#: flask_appbuilder/security/views.py:35
 msgid "Add Base Permission"
 msgstr "Добавить базы введенное"
 
-#: flask_appbuilder/security/views.py:32
+#: flask_appbuilder/security/views.py:36
 msgid "Edit Base Permission"
 msgstr "Редактировать База Введено"
 
-#: flask_appbuilder/security/views.py:34 flask_appbuilder/security/views.py:47
-#: flask_appbuilder/security/views.py:267
+#: flask_appbuilder/security/views.py:38 flask_appbuilder/security/views.py:51
+#: flask_appbuilder/security/views.py:271
 msgid "Name"
 msgstr "название"
 
-#: flask_appbuilder/security/views.py:42
+#: flask_appbuilder/security/views.py:46
 msgid "List View Menus"
 msgstr "Список меню"
 
-#: flask_appbuilder/security/views.py:43
+#: flask_appbuilder/security/views.py:47
 msgid "Show View Menu"
 msgstr "Показать панель меню"
 
-#: flask_appbuilder/security/views.py:44
+#: flask_appbuilder/security/views.py:48
 msgid "Add View Menu"
 msgstr "Добавить Просмотреть меню"
 
-#: flask_appbuilder/security/views.py:45
+#: flask_appbuilder/security/views.py:49
 msgid "Edit View Menu"
 msgstr "Изменить вид меню"
 
-#: flask_appbuilder/security/views.py:55
+#: flask_appbuilder/security/views.py:59
 msgid "List Permissions on Views/Menus"
 msgstr "Список разрешений на просмотров / меню"
 
-#: flask_appbuilder/security/views.py:56
+#: flask_appbuilder/security/views.py:60
 msgid "Show Permission on Views/Menus"
 msgstr "Показать Разрешение на Views / Menus"
 
-#: flask_appbuilder/security/views.py:57
+#: flask_appbuilder/security/views.py:61
 msgid "Add Permission on Views/Menus"
 msgstr "Добавить разрешение на просмотров / меню"
 
-#: flask_appbuilder/security/views.py:58
+#: flask_appbuilder/security/views.py:62
 msgid "Edit Permission on Views/Menus"
 msgstr "Редактировать Разрешение на просмотров / меню"
 
-#: flask_appbuilder/security/views.py:60
+#: flask_appbuilder/security/views.py:64
 msgid "Permission"
 msgstr "разрешение"
 
-#: flask_appbuilder/security/views.py:60
+#: flask_appbuilder/security/views.py:64
 msgid "View/Menu"
 msgstr "Посмотреть / Меню"
 
-#: flask_appbuilder/security/views.py:73 flask_appbuilder/security/views.py:91
+#: flask_appbuilder/security/views.py:77 flask_appbuilder/security/views.py:95
 msgid "Reset Password Form"
 msgstr "Очистить форму Пароль"
 
-#: flask_appbuilder/security/views.py:76 flask_appbuilder/security/views.py:94
+#: flask_appbuilder/security/views.py:80 flask_appbuilder/security/views.py:98
 msgid "Password Changed"
 msgstr "Пароль изменен"
 
-#: flask_appbuilder/security/views.py:107
+#: flask_appbuilder/security/views.py:111
 msgid "Show User"
 msgstr "Показать Пользователь"
 
-#: flask_appbuilder/security/views.py:108
+#: flask_appbuilder/security/views.py:112
 msgid "Add User"
 msgstr "Добавить пользователя"
 
-#: flask_appbuilder/security/views.py:109
+#: flask_appbuilder/security/views.py:113
 msgid "Edit User"
 msgstr "Редактировать Пользователь"
 
-#: flask_appbuilder/security/views.py:111
+#: flask_appbuilder/security/views.py:115
 msgid "Full Name"
 msgstr "Полное имя"
 
-#: flask_appbuilder/security/views.py:112
+#: flask_appbuilder/security/views.py:116
 msgid "First Name"
 msgstr "Имя"
 
-#: flask_appbuilder/security/views.py:113
+#: flask_appbuilder/security/views.py:117
 msgid "Last Name"
 msgstr "Фамилия"
 
-#: flask_appbuilder/security/views.py:116
+#: flask_appbuilder/security/views.py:120
 msgid "Is Active?"
 msgstr "Активен ?"
 
-#: flask_appbuilder/security/views.py:117
+#: flask_appbuilder/security/views.py:121
 msgid "EMail"
 msgstr "Электронная почта"
 
-#: flask_appbuilder/security/views.py:118
+#: flask_appbuilder/security/views.py:122
 msgid "Role"
 msgstr "роль"
 
-#: flask_appbuilder/security/views.py:119
+#: flask_appbuilder/security/views.py:123
 msgid "Last login"
 msgstr "Последний Войти"
 
-#: flask_appbuilder/security/views.py:120
+#: flask_appbuilder/security/views.py:124
 msgid "Login count"
 msgstr "Вход Количество"
 
-#: flask_appbuilder/security/views.py:121
+#: flask_appbuilder/security/views.py:125
 msgid "Failed login count"
 msgstr "Не удалось Количество Войти"
 
-#: flask_appbuilder/security/views.py:122
+#: flask_appbuilder/security/views.py:126
 msgid "Created on"
 msgstr "Создан"
 
-#: flask_appbuilder/security/views.py:123
+#: flask_appbuilder/security/views.py:127
 msgid "Created by"
 msgstr "Создано"
 
-#: flask_appbuilder/security/views.py:124
+#: flask_appbuilder/security/views.py:128
 msgid "Changed on"
 msgstr "Изменен на"
 
-#: flask_appbuilder/security/views.py:125
+#: flask_appbuilder/security/views.py:129
 msgid "Changed by"
 msgstr "Изменяется"
 
-#: flask_appbuilder/security/views.py:127
+#: flask_appbuilder/security/views.py:131
 msgid "Write the user first name or names"
 msgstr "Написать первое имя пользователя или имена"
 
-#: flask_appbuilder/security/views.py:128
+#: flask_appbuilder/security/views.py:132
 msgid "Write the user last name"
 msgstr "Написать пользователю фамилию"
 
-#: flask_appbuilder/security/views.py:129
+#: flask_appbuilder/security/views.py:133
 msgid "Username valid for authentication on DB or LDAP, unused for OID auth"
 msgstr ""
 "Имя действительны для авторизации на БД или LDAP , не используется в "
 "течение OID аутентификации"
 
-#: flask_appbuilder/security/views.py:133
+#: flask_appbuilder/security/views.py:137
 msgid "Its not a good policy to remove a user, just make it inactive"
 msgstr ""
 "Его не очень хорошая политика, чтобы удалить пользователя , просто "
 "сделать его неактивным"
 
-#: flask_appbuilder/security/views.py:134
+#: flask_appbuilder/security/views.py:138
 msgid "The users email, this will also be used for OID auth"
 msgstr ""
 "Пользователи электронной почты, это также будет использоваться для OID "
 "аутентификации"
 
-#: flask_appbuilder/security/views.py:135
+#: flask_appbuilder/security/views.py:139
 msgid ""
 "The user role on the application, this will associate with a list of "
 "permissions"
@@ -381,63 +381,63 @@ msgstr ""
 "Роль пользователя от приложения, это будет ассоциировать со "
 "спискомразрешения"
 
-#: flask_appbuilder/security/views.py:137
-#: flask_appbuilder/security/views.py:196
+#: flask_appbuilder/security/views.py:141
+#: flask_appbuilder/security/views.py:200
 msgid "Please rewrite the users password to confirm"
 msgstr "Пожалуйста переписать пароль пользователей , чтобы подтвердить"
 
-#: flask_appbuilder/security/views.py:142
-#: flask_appbuilder/security/views.py:152
+#: flask_appbuilder/security/views.py:146
+#: flask_appbuilder/security/views.py:156
 #, fuzzy
 msgid "User info"
 msgstr "Ваша информация пользователя"
 
-#: flask_appbuilder/security/views.py:144
-#: flask_appbuilder/security/views.py:154
+#: flask_appbuilder/security/views.py:148
+#: flask_appbuilder/security/views.py:158
 msgid "Personal Info"
 msgstr ""
 
-#: flask_appbuilder/security/views.py:146
+#: flask_appbuilder/security/views.py:150
 msgid "Audit Info"
 msgstr ""
 
-#: flask_appbuilder/security/views.py:164
+#: flask_appbuilder/security/views.py:168
 msgid "Your user information"
 msgstr "Ваша информация пользователя"
 
-#: flask_appbuilder/security/views.py:230
+#: flask_appbuilder/security/views.py:234
 msgid "Reset my password"
 msgstr "Сброс пароль"
 
-#: flask_appbuilder/security/views.py:234
+#: flask_appbuilder/security/views.py:238
 msgid "Reset Password"
 msgstr "Сброс пароля"
 
-#: flask_appbuilder/security/views.py:250
+#: flask_appbuilder/security/views.py:254
 msgid "User Statistics"
 msgstr "Статистика пользователя"
 
-#: flask_appbuilder/security/views.py:263
+#: flask_appbuilder/security/views.py:267
 msgid "Show Role"
 msgstr "Показать роль"
 
-#: flask_appbuilder/security/views.py:264
+#: flask_appbuilder/security/views.py:268
 msgid "Add Role"
 msgstr "Добавить роль"
 
-#: flask_appbuilder/security/views.py:265
+#: flask_appbuilder/security/views.py:269
 msgid "Edit Role"
 msgstr "Редактировать Роль"
 
-#: flask_appbuilder/security/views.py:267
+#: flask_appbuilder/security/views.py:271
 msgid "Permissions"
 msgstr "Разрешения"
 
-#: flask_appbuilder/security/views.py:278
+#: flask_appbuilder/security/views.py:282
 msgid "Invalid login. Please try again."
 msgstr "Неверный Войти . "
 
-#: flask_appbuilder/security/views.py:280
+#: flask_appbuilder/security/views.py:284
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:45
 #: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:40
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:53
