@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
@@ -141,7 +140,7 @@ msgstr "Sem relação"
 
 #: flask_appbuilder/models/filters.py:136
 msgid "Relation as Many"
-msgstr "Relaçãi para muitos"
+msgstr "Relação para muitos"
 
 #: flask_appbuilder/security/forms.py:13
 msgid "openid"
