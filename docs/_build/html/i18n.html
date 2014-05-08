@@ -64,10 +64,11 @@
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
-<dt>F.A.B. has support for six languages (planning for some more):</dt>
+<dt>F.A.B. has support for seven languages (planning for some more):</dt>
 <dd><ul class="first last simple">
 <li>English</li>
 <li>Portuguese</li>
+<li>Portuguese Brazil</li>
 <li>Spanish</li>
 <li>Chinese</li>
 <li>Russian</li>
@@ -178,7 +179,10 @@ msgstr &quot;Lista de Contactos&quot;
 <p>5 - Add your language support to the framework</p>
 <blockquote>
 <div><ul>
-<li><p class="first">On config tell the framework the languages you support. With this you will have a menu with the corresponding languages country flags:</p>
+<li><p class="first">On config tell the framework the languages you support.
+With this you will render a menu with the corresponding country flags.
+use the config var &#8216;LANGUAGES&#8217; with a dict whose first key is a string with the corresponding babel language code,
+the value is another dict with two keys &#8216;flag&#8217; and &#8216;name&#8217;, with the country flag code, and text to be displayed:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">LANGUAGES</span> <span class="o">=</span> <span class="p">{</span>
    <span class="s">&#39;en&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;flag&#39;</span><span class="p">:</span><span class="s">&#39;gb&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;English&#39;</span><span class="p">},</span>
    <span class="s">&#39;pt&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;flag&#39;</span><span class="p">:</span><span class="s">&#39;pt&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;Portuguese&#39;</span><span class="p">}</span>
