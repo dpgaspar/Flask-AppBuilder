@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.8.3
+-----------------------------------
+
+- Portuguese Brazil translations
+
 Improvements and Bug fixes on 0.8.2
 -----------------------------------
 
