@@ -4,6 +4,13 @@ python:
   - "2.7"
   - "2.6"
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: "pip install -r requirements.txt"
+install: 
+  "pip install -r requirements.txt"
+  "pip install coveralls"
 # command to run tests, e.g. python setup.py test
-script:  nosetests -v flask_appbuilder/tests
+script:  
+  nosetests -v flask_appbuilder/tests
+
+after_success:
+  # Send coverage statistics to Coveralls
+  coveralls
