@@ -1,11 +1,13 @@
 from nose.tools import eq_, ok_, raises
 import unittest
 import os
+import string
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from flask.ext.appbuilder.models.mixins import BaseMixin
 from flask.ext.appbuilder import Base
+from flask_appbuilder.models.filters import FilterStartsWith, FilterEqual
 
 import logging
 
@@ -65,8 +67,20 @@ class FlaskTestCase(unittest.TestCase):
             datamodel = SQLAModel(Model2, self.db.session)
             related_views = [Model1View]
 
+        class Model1Filtered1View(GeneralView):
+            datamodel = SQLAModel(Model1, self.db.session)
+            base_filters = [['field_string', FilterStartsWith, 'a']]
+
+        class Model1Filtered2View(GeneralView):
+            datamodel = SQLAModel(Model1, self.db.session)
+            base_filters = [['field_integer', FilterEqual, 0]]
+
+
         self.baseapp = BaseApp(self.app, self.db)
         self.baseapp.add_view(Model1View(), "Model1")
+        self.baseapp.add_view(Model1Filtered1View(), "Model1Filtered1")
+        self.baseapp.add_view(Model1Filtered2View(), "Model1Filtered2")
+
         self.baseapp.add_view(Model2View(), "Model2")
         self.baseapp.add_view(Model2View(), "Model2 Add", href='/model2view/add')
 
@@ -78,6 +92,10 @@ class FlaskTestCase(unittest.TestCase):
         log.debug("TEAR DOWN")
 
 
+    """ ---------------------------------
+            TEST HELPER FUNCTIONS
+        ---------------------------------
+    """
     def login(self, client, username, password):
         # Login with default admin
         return client.post('/login/', data=dict(
@@ -88,12 +106,18 @@ class FlaskTestCase(unittest.TestCase):
     def logout(self, client):
         return client.get('/logout/')
 
+    def insert_data(self):
+        for x,i in zip(string.lowercase[:23], range(23)):
+            model = Model1(field_string="%stest" % (x), field_integer=i)
+            self.db.session.add(model)
+            self.db.session.commit()
+
 
     def test_fab_views(self):
         """
             Test views creation and registration
         """
-        eq_(len(self.baseapp.baseviews), 13)  # current minimal views are 11
+        eq_(len(self.baseapp.baseviews), 15)  # current minimal views are 11
 
 
     def test_model_creation(self):
@@ -257,3 +281,26 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
         ok_(NOTNULL_VALIDATION_STRING in data)
+
+    def test_model_base_filter(self):
+        """
+            Test Model base filtered views
+        """
+        client = self.app.test_client()
+        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.insert_data()
+        models = self.db.session.query(Model1).all()
+        eq_(len(models), 23)
+
+        # Base filter string starts with
+        rv = client.get('/model1filtered1view/list/')
+        data = rv.data.decode('utf-8')
+        ok_('atest' in data)
+        ok_('btest' not in data)
+
+        # Base filter integer equals
+        rv = client.get('/model1filtered2view/list/')
+        data = rv.data.decode('utf-8')
+        ok_('atest' in data)
+        ok_('btest' not in data)
+

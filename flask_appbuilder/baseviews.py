@@ -632,7 +632,6 @@ class BaseCRUDView(BaseModelView):
         page = get_page_args().get(self.__class__.__name__)
         page_size = get_page_size_args().get(self.__class__.__name__)
         get_filter_args(self._filters)
-
         widgets = self._get_list_widget(filters=self._filters,
                                         order_column=order_column,
                                         order_direction=order_direction,
