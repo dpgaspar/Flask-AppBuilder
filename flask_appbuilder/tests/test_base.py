@@ -107,7 +107,7 @@ class FlaskTestCase(unittest.TestCase):
         return client.get('/logout/')
 
     def insert_data(self):
-        for x,i in zip(string.lowercase[:23], range(23)):
+        for x,i in zip(string.ascii_letters[:23], range(23)):
             model = Model1(field_string="%stest" % (x), field_integer=i)
             self.db.session.add(model)
             self.db.session.commit()
@@ -303,4 +303,3 @@ class FlaskTestCase(unittest.TestCase):
         data = rv.data.decode('utf-8')
         ok_('atest' in data)
         ok_('btest' not in data)
-
