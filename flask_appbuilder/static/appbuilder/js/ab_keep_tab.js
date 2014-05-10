@@ -23,7 +23,7 @@ $(function()
     }
 
 //---------------------------------------
-// Function for keeping tab focus
+// Function for keeping accordion focus
 // after page reload, uses cookies
 //---------------------------------------
 
@@ -31,6 +31,7 @@ $(function()
         //save the latest accordion; use cookies if you like 'em better:
         localStorage.setItem('lastAccordion', $(this).attr('id'));
     });
+
 
     $('.panel-collapse').on('hidden.bs.collapse', function () {
         //remove the latest accordion; use cookies if you like 'em better:
@@ -41,7 +42,10 @@ $(function()
     //go to the latest accordion, if it exists:
     var lastAccordion = localStorage.getItem('lastAccordion');
     if (lastAccordion) {
-        $('#' + lastAccordion).collapse('show');
+        if (!($('#' + lastAccordion).hasClass('collapse in')))
+        {
+            $('#' + lastAccordion).collapse('show');
+        }
     }
 
 });

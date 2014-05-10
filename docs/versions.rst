@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.8.4
+-----------------------------------
+
+- Fix, js for remembering latest accordion was working like toggle (bs bug?).
+
 Improvements and Bug fixes on 0.8.3
 -----------------------------------
 
