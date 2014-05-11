@@ -17,5 +17,6 @@ git add ./docs -A
 git add ./docs/_static -A
 git add ./examples -A
 git add ./tests -A
+git add .travis.yml
 git commit -m "$1"
 git push origin master
