@@ -1,3 +1,4 @@
+ - Security clean up method.
  - Add easy wizard flow generation.
  - Add tree list with multiple views.
  - Charts Time and normal, with multiple group by's, JSON output to template
@@ -6,5 +7,4 @@
  - Diferent UI to add permissions to roles.
  - Solution to migrate/alter framework tables.
  - Search with boolean fields.
- - Improve FileColumn support. Remove UUID from file name to user.
  - Improve ImageColumn support, update, remove, etc.

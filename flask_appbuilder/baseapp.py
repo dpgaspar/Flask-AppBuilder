@@ -249,6 +249,20 @@ class BaseApp(object):
         else:
             log.warning("View alreary exists {0} ignoring".format(baseview.__class__.__name__))
 
+    def security_cleanup(self):
+        """
+            This method is useful if you have changed menu's names or
+            views classes name, this will leave behind permissions that are
+            not associated with anything.
+
+             You can use it always or just sometimes to
+            perform a security cleanup. Warning this will delete any permission
+            that is no longer part of any registered view or menu.
+
+            Remember invoke ONLY AFTER YOU HAVE REGISTERED ALL VIEWS
+        """
+        self.sm.security_cleanup(self.baseviews, self.menu)
+
     @property
     def get_url_for_login(self):
         return url_for('%s.%s' % (self.sm.auth_view.endpoint, 'login'))

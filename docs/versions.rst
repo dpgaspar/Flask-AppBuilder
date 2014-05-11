@@ -4,7 +4,7 @@ Versions
 Improvements and Bug fixes on 0.8.5
 -----------------------------------
 
-
+- New, security cleanup method, useful if you have changed a menu's name or view class name.
 
 Improvements and Bug fixes on 0.8.4
 -----------------------------------

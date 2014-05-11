@@ -594,3 +594,24 @@ class SecurityManager(object):
             except Exception as e:
                 log.error("Del Permission to Role Error: {0}".format(str(e)))
                 self.session.rollback()
+
+    def security_cleanup(self, baseviews, menus):
+        viewsmenus = self.session.query(ViewMenu).all()
+        roles = self.session.query(Role).all()
+        for viewmenu in viewsmenus:
+            found = False
+            for baseview in baseviews:
+                if viewmenu.name == baseview.__class__.__name__:
+                    found = True
+                    break
+            if menus.find_category(viewmenu.name):
+                found = True
+            if not found:
+                permissions = self.session.query(PermissionView).filter_by(view_menu_id=viewmenu.id).all()
+                for permission in permissions:
+                    for role in roles:
+                        self.del_permission_role(role, permission)
+                    self._del_permission_view_menu(permission.permission.name, viewmenu.name)
+                self.session.delete(viewmenu)
+                self.session.commit()
+
