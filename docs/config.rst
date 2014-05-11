@@ -57,11 +57,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 Using config.py
 ---------------
  
- My favorite way, and the one i advise if you are building a medium to large size application is to place all you configuration key on a config.py file
+My favorite way, and the one i advise if you are building a medium to large size application
+is to place all your configuration keys on a config.py file
  
- next you only have to import them to the Flask app object, like this::
- 
- 	app = Flask(__name__)
- 	app.config.from_object('config')
- 
- Take a look at the skeleton `config.py <https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py>`_
+next you only have to import them to the Flask app object, like this
+::
+
+    app = Flask(__name__)
+    app.config.from_object('config')
+
+Take a look at the skeleton `config.py <https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py>`_
