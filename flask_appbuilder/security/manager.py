@@ -97,13 +97,13 @@ class SecurityManager(object):
                          "User's Statistics", icon="fa-bar-chart-o", label=_("User's Statistics"),
                          category="Security")
         baseapp.menu.add_separator("Security")
-        baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView),
+        baseapp.add_view(baseapp._init_view_session(PermissionGeneralView),
                          "Base Permissions", icon="fa-lock",
                          label=_("Base Permissions"), category="Security")
         baseapp.add_view(baseapp._init_view_session(ViewMenuGeneralView),
                          "Views/Menus", icon="fa-list-alt",
                          label=_('Views/Menus'), category="Security")
-        baseapp.add_view(baseapp._init_view_session(PermissionGeneralView), "Permission on Views/Menus",
+        baseapp.add_view(baseapp._init_view_session(PermissionViewGeneralView), "Permission on Views/Menus",
                          icon="fa-link", label=_('Permission on Views/Menus'),
                          category="Security")
 
@@ -115,75 +115,14 @@ class SecurityManager(object):
     def before_request():
         g.user = current_user
 
-    def migrate_get_new_obj(self, old_obj, new_obj):
-        for col in list(old_obj.keys()):
-            setattr(new_obj, col, getattr(old_obj, col))
-        return new_obj
-
-    def migrate_obj(self, old_table, new_class):
-        old_objs = self.session.query(old_table).all()
-        for old_obj in old_objs:
-            new_obj = self.migrate_get_new_obj(old_obj, new_class())
-            self.session.add(new_obj)
-            self.session.commit()
-
-    def quick_mapper(self, table):
-        Base = declarative_base()
-
-        class GenericMapper(Base):
-            __table__ = table
-
-        return GenericMapper
-
-
-    def migrate_db(self):
-        """
-            Migrate security tables from Flask-AppBuilder 0.2.X to 0.3.X
-        """
-        engine = self.session.get_bind(mapper=None, clause=None)
-        inspector = Inspector.from_engine(engine)
-        if 'user' in inspector.get_table_names() and 'role' in inspector.get_table_names() and 'permission' in inspector.get_table_names():
-            log.info("Found previous security tables, migrating...")
-
-            metadata = MetaData(engine)
-
-            old_user = Table('user', metadata, autoload=True)
-            old_role = Table('role', metadata, autoload=True)
-            old_permission = Table('permission', metadata, autoload=True)
-            old_permission_view = Table('permission_view', metadata, autoload=True)
-            old_view_menu = Table('view_menu', metadata, autoload=True)
-            old_permission_view_role = Table('permission_view_role', metadata, autoload=True)
-
-            log.info("Migrating Views and Menus")
-            self.migrate_obj(old_view_menu, ViewMenu)
-
-            log.info("Migrating Permissions")
-            self.migrate_obj(old_permission, Permission)
-
-            log.info("Migrating Permissions on Views")
-            self.migrate_obj(old_permission_view, PermissionView)
-
-            log.info("Migrating Roles")
-            self.migrate_obj(old_role, Role)
-
-            log.info("Migrating Roles to Permissions on Views")
-            self.migrate_obj(old_permission_view_role, self.quick_mapper(assoc_permissionview_role))
-
-            log.info("Migrating Users")
-            self.migrate_obj(old_user, User)
-
-
     def init_db(self):
         try:
             engine = self.session.get_bind(mapper=None, clause=None)
 
-            inspector = Inspector.from_engine(engine)
-            if 'ab_user' not in inspector.get_table_names():
-                log.info("Security DB not found Creating")
-                Base.metadata.create_all(engine)
-                log.info("Security DB Created")
-                self.migrate_db()
-            if self.session.query(Role).filter_by(name=self.auth_role_admin).first() is None:
+            log.info("Security DB not found Creating")
+            Base.metadata.create_all(engine)
+            log.info("Security DB Created")
+            if not self.session.query(Role).filter_by(name=self.auth_role_admin).first():
                 role = Role()
                 role.name = self.auth_role_admin
                 self.session.add(role)
@@ -207,7 +146,7 @@ class SecurityManager(object):
                 self.session.add(user)
                 self.session.commit()
                 log.info("Inserted initial Admin user")
-                log.info("Login using Admin/general")
+                log.info("Login using {0}/{1}".format(ADMIN_USER_NAME, ADMIN_USER_PASSWORD))
         except Exception as e:
             log.error("DB Creation and initialization failed, if just upgraded to 0.7.X you must migrate the DB. {0}".format(str(e)))
 
@@ -239,6 +178,16 @@ class SecurityManager(object):
             return None
 
     def auth_user_ldap(self, username, password):
+        """
+            Method for authenticating user, auth LDAP style.
+            depends on ldap module that is not mandatory requirement
+            for F.A.B.
+
+            :param username:
+                The username
+            :param password:
+                The password
+        """
         if username is None or username == "":
             return None
         user = self.session.query(User).filter_by(username=username).first()
@@ -602,9 +551,7 @@ class SecurityManager(object):
             :param view_menu:
                 name of the view or menu to add
         """
-        view_menu_db = self.session.query(ViewMenu).filter_by(name=view_menu).first()
-        if view_menu_db is None:
-            view_menu_db = self._add_view_menu(view_menu)
+        view_menu_db = self._add_view_menu(view_menu)
         perm_views = self.session.query(PermissionView).filter_by(view_menu_id=view_menu_db.id).all()
 
         if not perm_views:
@@ -625,7 +572,7 @@ class SecurityManager(object):
                 if perm_view.permission.name not in base_permissions:
                     # perm to delete
                     roles = self.session.query(Role).all()
-                    perm = self.session.query(Permission).filter_by(name=perm_view.permission.name).first()
+                    perm = self._find_permission(perm_view.permission.name)
                     # del permission from all roles
                     for role in roles:
                         self.del_permission_role(role, perm)
@@ -642,9 +589,9 @@ class SecurityManager(object):
             :param view_menu_name:
                 The menu name
         """
-        view_menu = self._add_view_menu(view_menu_name)
-        lst = self.session.query(PermissionView).filter_by(view_menu_id=view_menu.id).all()
-        if not lst:
+        self._add_view_menu(view_menu_name)
+        pv = self._find_permission_view_menu('menu_access', view_menu_name)
+        if not pv:
             pv = self._add_permission_view_menu('menu_access', view_menu_name)
             role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
             self.add_permission_role(role_admin, pv)
@@ -659,7 +606,7 @@ class SecurityManager(object):
                 if viewmenu.name == baseview.__class__.__name__:
                     found = True
                     break
-            if menus.find_category(viewmenu.name):
+            if menus.find(viewmenu.name):
                 found = True
             if not found:
                 permissions = self.session.query(PermissionView).filter_by(view_menu_id=viewmenu.id).all()
