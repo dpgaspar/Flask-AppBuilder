@@ -403,15 +403,21 @@ class SecurityManager(object):
             PERMISSION MANAGEMENT
         ----------------------------------------
     """
+    def _find_permission(self, name):
+        """
+            Finds and returns a Permission by name
+        """
+        return self.session.query(Permission).filter_by(name=name).first()
+
 
     def _add_permission(self, name):
         """
             Adds a permission to the backend, model permission
             
             :param name:
-                name of the permission to add: 'can_add','can_edit' etc...
+                name of the permission: 'can_add','can_edit' etc...
         """
-        perm = self.session.query(Permission).filter_by(name=name).first()
+        perm = self._find_permission(name)
         if perm is None:
             try:
                 perm = Permission()
@@ -424,18 +430,40 @@ class SecurityManager(object):
                 self.session.rollback()
         return perm
 
+    def _del_permission(self, name):
+        """
+            Deletes a permission from the backend, model permission
 
-    def _add_view_menu(self, view_name):
+            :param name:
+                name of the permission: 'can_add','can_edit' etc...
+        """
+        perm = self._find_permission(name)
+        if perm:
+            try:
+                self.session.delete(perm)
+                self.session.commit()
+            except Exception as e:
+                log.error("Del Permission Error: {0}".format(str(e)))
+                self.session.rollback()
+
+
+    def _find_view_menu(self, name):
+        """
+            Finds and returns a ViewMenu by name
+        """
+        return self.session.query(ViewMenu).filter_by(name=name).first()
+
+    def _add_view_menu(self, name):
         """
             Adds a view or menu to the backend, model view_menu
             param name:
                 name of the view menu to add
         """
-        view_menu = self.session.query(ViewMenu).filter_by(name=view_name).first()
+        view_menu = self._find_view_menu(name)
         if view_menu is None:
             try:
                 view_menu = ViewMenu()
-                view_menu.name = view_name
+                view_menu.name = name
                 self.session.add(view_menu)
                 self.session.commit()
                 return view_menu
@@ -443,6 +471,23 @@ class SecurityManager(object):
                 log.error("Add View Menu Error: {0}".format(str(e)))
                 self.session.rollback()
         return view_menu
+
+    def _del_view_menu(self, name):
+        """
+            Deletes a ViewMenu from the backend
+
+            :param name:
+                name of the ViewMenu
+        """
+        obj = self._find_view_menu(name)
+        if obj:
+            try:
+                self.session.delete(obj)
+                self.session.commit()
+            except Exception as e:
+                log.error("Del Permission Error: {0}".format(str(e)))
+                self.session.rollback()
+
 
     def _add_permission_view_menu(self, permission_name, view_menu_name):
         """
@@ -486,7 +531,7 @@ class SecurityManager(object):
             self.session.rollback()
 
 
-    def _find_permission(self, lst, item):
+    def _find_permission_on_views(self, lst, item):
         for i in lst:
             if i.permission.name == item:
                 return True
@@ -523,7 +568,7 @@ class SecurityManager(object):
             role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
             for permission in base_permissions:
                 # Check if base view permissions exist
-                if not self._find_permission(perm_views, permission):
+                if not self._find_permission_on_views(perm_views, permission):
                     pv = self._add_permission_view_menu(permission, view_menu)
                     self.add_permission_role(role_admin, pv)
             for perm_view in perm_views:
