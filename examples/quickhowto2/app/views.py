@@ -64,7 +64,7 @@ class ContactTimeChartView(TimeChartView):
 class GroupGeneralView(GeneralView):
     datamodel = SQLAModel(Group, db.session)
     related_views = [ContactGeneralView]
-
+    #base_permissions = ['can_list']
 
 fixed_translations_import = [
     _("List Groups"),

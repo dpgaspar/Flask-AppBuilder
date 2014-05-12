@@ -446,7 +446,9 @@ class SecurityManager(object):
                 log.error("Del Permission Error: {0}".format(str(e)))
                 self.session.rollback()
 
-
+    #----------------------------------------------
+    #       PERMITIVES VIEW MENU
+    #----------------------------------------------
     def _find_view_menu(self, name):
         """
             Finds and returns a ViewMenu by name
@@ -488,6 +490,17 @@ class SecurityManager(object):
                 log.error("Del Permission Error: {0}".format(str(e)))
                 self.session.rollback()
 
+    #----------------------------------------------
+    #          PERMISSION VIEW MENU
+    #----------------------------------------------
+    def _find_permission_view_menu(self, permission_name, view_menu_name):
+        """
+            Finds and returns a PermissionView by names
+        """
+        permission = self._find_permission(permission_name)
+        view_menu = self._find_view_menu(view_menu_name)
+        return self.session.query(PermissionView).filter_by(permission=permission, view_menu=view_menu).first()
+
 
     def _add_permission_view_menu(self, permission_name, view_menu_name):
         """
@@ -505,7 +518,7 @@ class SecurityManager(object):
         try:
             self.session.add(pv)
             self.session.commit()
-            log.info("Added Permission View %s" % (str(pv)))
+            log.info("Added Permission View: %s" % (str(pv)))
             return pv
         except Exception as e:
             log.error("Add Permission to View Error: {0}".format(str(e)))
@@ -514,18 +527,15 @@ class SecurityManager(object):
 
     def _del_permission_view_menu(self, permission_name, view_menu_name):
         try:
-            perm = self.session.query(Permission).filter_by(name=permission_name).first()
-            vm = self.session.query(ViewMenu).filter_by(name=view_menu_name).first()
-            pv = self.session.query(PermissionView).filter_by(permission=perm, view_menu=vm).first()
+            pv = self._find_permission_view_menu(permission_name, view_menu_name)
             # delete permission on view
             self.session.delete(pv)
             self.session.commit()
-            # if last permission delete permission
-            pv = self.session.query(PermissionView).filter_by(permission=perm).all()
+            # if no more permission on permission view, delete permission
+            pv = self.session.query(PermissionView).filter_by(permission=pv.permission).all()
             if not pv:
-                self.session.delete(perm)
-                self.session.commit()
-            log.info("Removed Permission View %s" % (str(permission_name)))
+                self._del_permission(pv.permission.name)
+            log.info("Removed Permission View: %s" % (str(permission_name)))
         except Exception as e:
             log.error("Del Permission from View Error: {0}".format(str(e)))
             self.session.rollback()
