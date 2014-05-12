@@ -553,10 +553,50 @@ class SecurityManager(object):
                 return True
         return False
 
+    def add_permission_role(self, role, perm_view):
+        """
+            Add permission-ViewMenu object to Role
+            
+            :param role:
+                The role object
+            :param perm_view:
+                The PermissionViewMenu object
+        """
+        if perm_view not in role.permissions:
+            try:
+                role.permissions.append(perm_view)
+                self.session.merge(role)
+                self.session.commit()
+                log.info("Added Permission %s to role %s" % (str(perm_view), role.name))
+            except Exception as e:
+                log.error("Add Permission to Role Error: {0}".format(str(e)))
+                self.session.rollback()
+
+
+    def del_permission_role(self, role, perm_view):
+        """
+            Remove permission-ViewMenu object to Role
+            
+            :param role:
+                The role object
+            :param perm_view:
+                The PermissionViewMenu object
+        """
+        if perm_view in role.permissions:
+            try:
+                role.permissions.remove(perm_view)
+                self.session.merge(role)
+                self.session.commit()
+                log.info("Removed Permission %s to role %s" % (str(perm_view), role.name))
+            except Exception as e:
+                log.error("Del Permission to Role Error: {0}".format(str(e)))
+                self.session.rollback()
+
+
     def add_permissions_view(self, base_permissions, view_menu):
         """
             Adds a permission on a view menu to the backend
-            
+
             :param base_permissions:
                 list of permissions from view (all exposed methods): 'can_add','can_edit' etc...
             :param view_menu:
@@ -598,57 +638,17 @@ class SecurityManager(object):
     def add_permissions_menu(self, view_menu_name):
         """
             Adds menu_access to menu on permission_view_menu
-            
+
             :param view_menu_name:
                 The menu name
         """
-        view_menu = self.session.query(ViewMenu).filter_by(name=view_menu_name).first()
-        if view_menu is None:
-            view_menu = self._add_view_menu(view_menu_name)
+        view_menu = self._add_view_menu(view_menu_name)
         lst = self.session.query(PermissionView).filter_by(view_menu_id=view_menu.id).all()
         if not lst:
             pv = self._add_permission_view_menu('menu_access', view_menu_name)
             role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
             self.add_permission_role(role_admin, pv)
 
-    def add_permission_role(self, role, perm_view):
-        """
-            Add permission-ViewMenu object to Role
-            
-            :param role:
-                The role object
-            :param perm_view:
-                The PermissionViewMenu object
-        """
-        if perm_view not in role.permissions:
-            try:
-                role.permissions.append(perm_view)
-                self.session.merge(role)
-                self.session.commit()
-                log.info("Added Permission %s to role %s" % (str(perm_view), role.name))
-            except Exception as e:
-                log.error("Add Permission to Role Error: {0}".format(str(e)))
-                self.session.rollback()
-
-
-    def del_permission_role(self, role, perm_view):
-        """
-            Remove permission-ViewMenu object to Role
-            
-            :param role:
-                The role object
-            :param perm_view:
-                The PermissionViewMenu object
-        """
-        if perm_view in role.permissions:
-            try:
-                role.permissions.remove(perm_view)
-                self.session.merge(role)
-                self.session.commit()
-                log.info("Removed Permission %s to role %s" % (str(perm_view), role.name))
-            except Exception as e:
-                log.error("Del Permission to Role Error: {0}".format(str(e)))
-                self.session.rollback()
 
     def security_cleanup(self, baseviews, menus):
         viewsmenus = self.session.query(ViewMenu).all()
