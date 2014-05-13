@@ -96,9 +96,11 @@ class BaseApp(object):
         engine = self.db.session.get_bind(mapper=None, clause=None)
         Base.metadata.create_all(engine)
 
+    @property
     def get_app(self):
         return self.app
 
+    @property
     def get_session(self):
         return self.db.session
 
@@ -132,8 +134,8 @@ class BaseApp(object):
     def _add_admin_views(self):
         self.indexview = self.indexview()
         self.add_view_no_menu(self.indexview)
-        self.bm.register_views(self)
-        self.sm.register_views(self)
+        self.bm.register_views()
+        self.sm.register_views()
 
     def init_view_session(self, baseview_class):
         if baseview_class.datamodel.session is None:

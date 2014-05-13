@@ -18,7 +18,7 @@ from .models import User, Role, PermissionView, Permission, ViewMenu, \
 from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, \
     ResetPasswordView, UserDBGeneralView, UserLDAPGeneralView, UserOIDGeneralView, RoleGeneralView, \
     PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, UserStatsChartView
-
+from ..basemanager import BaseManager
 
 log = logging.getLogger(__name__)
 
@@ -33,9 +33,7 @@ ADMIN_USER_FIRST_NAME = 'Admin'
 ADMIN_USER_LAST_NAME = 'User'
 
 
-class SecurityManager(object):
-
-    baseapp = None
+class SecurityManager(BaseManager):
     session = None
     auth_type = 1
     auth_role_admin = ""
@@ -54,9 +52,9 @@ class SecurityManager(object):
             param session:
                 the database session for security tables, passed to BaseApp
         """
-        self.baseapp = baseapp
-        self.session = baseapp.get_session()
-        app = self.baseapp.get_app()
+        super(SecurityManager, self).__init__(baseapp)
+        self.session = baseapp.get_session
+        app = self.baseapp.get_app
         self.auth_type = self._get_auth_type(app)
         self.auth_role_admin = self._get_auth_role_admin(app)
         self.auth_role_public = self._get_auth_role_public(app)
@@ -72,44 +70,44 @@ class SecurityManager(object):
         self.lm.user_loader(self.load_user)
         self.init_db()
 
-    def register_views(self, baseapp):
-        baseapp.add_view_no_menu(ResetPasswordView())
-        baseapp.add_view_no_menu(ResetMyPasswordView())
+    def register_views(self):
+        self.baseapp.add_view_no_menu(ResetPasswordView())
+        self.baseapp.add_view_no_menu(ResetMyPasswordView())
 
-        if self._get_auth_type(baseapp.app) == AUTH_DB:
-            self.user_view = baseapp.init_view_session(UserDBGeneralView)
+        if self._get_auth_type(self.baseapp.get_app) == AUTH_DB:
+            self.user_view = self.baseapp.init_view_session(UserDBGeneralView)
             self.auth_view = AuthDBView()
-        elif self._get_auth_type(baseapp.app) == AUTH_LDAP:
-            self.user_view = baseapp.init_view_session(UserLDAPGeneralView)
+        elif self._get_auth_type(self.baseapp.get_app) == AUTH_LDAP:
+            self.user_view = self.baseapp.init_view_session(UserLDAPGeneralView)
             self.auth_view = AuthLDAPView()
         else:
-            self.user_view = baseapp.init_view_session(UserOIDGeneralView)
+            self.user_view = self.baseapp.init_view_session(UserOIDGeneralView)
             self.auth_view = AuthOIDView()
             self.oid.after_login_func = self.auth_view.after_login
 
-        baseapp.add_view_no_menu(self.auth_view)
+        self.baseapp.add_view_no_menu(self.auth_view)
 
-        baseapp.add_view(self.user_view, "List Users"
-                         , icon="fa-user", label=_("List Users"),
-                         category="Security", category_icon="fa-cogs", category_label=_('Security'))
+        self.baseapp.add_view(self.user_view, "List Users",
+                              icon="fa-user", label=_("List Users"),
+                              category="Security", category_icon="fa-cogs", category_label=_('Security'))
 
-        role_view = baseapp.init_view_session(RoleGeneralView)
-        baseapp.add_view(role_view, "List Roles", icon="fa-group", label=_('List Roles'),
-                         category="Security", category_icon="fa-cogs")
+        role_view = self.baseapp.init_view_session(RoleGeneralView)
+        self.baseapp.add_view(role_view, "List Roles", icon="fa-group", label=_('List Roles'),
+                              category="Security", category_icon="fa-cogs")
         role_view.related_views = [self.user_view.__class__]
-        baseapp.add_view(baseapp.init_view_session(UserStatsChartView),
-                         "User's Statistics", icon="fa-bar-chart-o", label=_("User's Statistics"),
-                         category="Security")
-        baseapp.menu.add_separator("Security")
-        baseapp.add_view(baseapp.init_view_session(PermissionGeneralView),
-                         "Base Permissions", icon="fa-lock",
-                         label=_("Base Permissions"), category="Security")
-        baseapp.add_view(baseapp.init_view_session(ViewMenuGeneralView),
-                         "Views/Menus", icon="fa-list-alt",
-                         label=_('Views/Menus'), category="Security")
-        baseapp.add_view(baseapp.init_view_session(PermissionViewGeneralView), "Permission on Views/Menus",
-                         icon="fa-link", label=_('Permission on Views/Menus'),
-                         category="Security")
+        self.baseapp.add_view(self.baseapp.init_view_session(UserStatsChartView),
+                              "User's Statistics", icon="fa-bar-chart-o", label=_("User's Statistics"),
+                              category="Security")
+        self.baseapp.menu.add_separator("Security")
+        self.baseapp.add_view(self.baseapp.init_view_session(PermissionGeneralView),
+                              "Base Permissions", icon="fa-lock",
+                              label=_("Base Permissions"), category="Security")
+        self.baseapp.add_view(self.baseapp.init_view_session(ViewMenuGeneralView),
+                              "Views/Menus", icon="fa-list-alt",
+                              label=_('Views/Menus'), category="Security")
+        self.baseapp.add_view(self.baseapp.init_view_session(PermissionViewGeneralView),
+                              "Permission on Views/Menus", icon="fa-link",
+                              label=_('Permission on Views/Menus'), category="Security")
 
 
     def load_user(self, pk):
@@ -152,7 +150,9 @@ class SecurityManager(object):
                 log.info("Inserted initial Admin user")
                 log.info("Login using {0}/{1}".format(ADMIN_USER_NAME, ADMIN_USER_PASSWORD))
         except Exception as e:
-            log.error("DB Creation and initialization failed, if just upgraded to 0.7.X you must migrate the DB. {0}".format(str(e)))
+            log.error(
+                "DB Creation and initialization failed, if just upgraded to 0.7.X you must migrate the DB. {0}".format(
+                    str(e)))
 
 
     """
@@ -160,6 +160,7 @@ class SecurityManager(object):
         AUTHENTICATION METHODS
     ----------------------------------------
     """
+
     def auth_user_db(self, username, password):
         """
             Method for authenticating user, auth db style
@@ -350,12 +351,12 @@ class SecurityManager(object):
         return False
 
 
-
     """
         ----------------------------------------
             PERMISSION MANAGEMENT
         ----------------------------------------
     """
+
     def _find_permission(self, name):
         """
             Finds and returns a Permission by name

@@ -1,7 +1,9 @@
 
-class BaseManager(class):
+class BaseManager(object):
 
     def __init__(self, baseapp):
-        pass
+        self.baseapp = baseapp
 
+    def register_views(self):
+        pass
 
