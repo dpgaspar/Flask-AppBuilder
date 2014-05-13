@@ -1,9 +1,7 @@
 import logging
 
 from flask import Blueprint, url_for
-from flask.ext.babelpkg import gettext as _gettext, lazy_gettext
 from flask.ext.appbuilder.babel.manager import BabelManager
-from flask.ext.appbuilder import translations
 from flask.ext.appbuilder import Base
 from .views import IndexView
 from .filters import TemplateFilters
@@ -48,7 +46,6 @@ class BaseApp(object):
 
     languages = None
     admin = None
-    _gettext = _gettext
 
     def __init__(self, app, db,
                  menu=None,
@@ -75,8 +72,8 @@ class BaseApp(object):
         self.app = app
         self.db = db
 
-        self.sm = SecurityManager(app, db.session)
-        self.bm = BabelManager(app, pkg_translations=translations)
+        self.sm = SecurityManager(self)
+        self.bm = BabelManager(self)
 
         if menu:
             self.menu = menu
@@ -98,6 +95,12 @@ class BaseApp(object):
         self.db.create_all()
         engine = self.db.session.get_bind(mapper=None, clause=None)
         Base.metadata.create_all(engine)
+
+    def get_app(self):
+        return self.app
+
+    def get_session(self):
+        return self.db.session
 
     def _init_config_parameters(self):
         if 'APP_NAME' in self.app.config:
@@ -132,7 +135,7 @@ class BaseApp(object):
         self.bm.register_views(self)
         self.sm.register_views(self)
 
-    def _init_view_session(self, baseview_class):
+    def init_view_session(self, baseview_class):
         if baseview_class.datamodel.session is None:
             baseview_class.datamodel.session = self.db.session
         return baseview_class()
@@ -247,7 +250,18 @@ class BaseApp(object):
             self.register_blueprint(baseview, endpoint=endpoint, static_folder=static_folder)
             self._add_permission(baseview)
         else:
-            log.warning("View alreary exists {0} ignoring".format(baseview.__class__.__name__))
+            log.warning("View already exists {0} ignoring".format(baseview.__class__.__name__))
+
+    def init_view_session(self, baseview_class):
+        """
+            Initialize a view with the security model sessions
+
+            :param baseview_class:
+                The baseview as a class, not instantiated.
+        """
+        if baseview_class.datamodel.session is None:
+            baseview_class.datamodel.session = self.db.session
+        return baseview_class()
 
     def security_cleanup(self):
         """

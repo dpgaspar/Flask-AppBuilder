@@ -1,5 +1,6 @@
 from flask import session
 from flask.ext.babelpkg import Babel
+from flask.ext.appbuilder import translations
 from .views import LocaleView
 
 
@@ -9,9 +10,9 @@ class BabelManager(object):
     babel_default_locale = ''
     locale_view = None
 
-    def __init__(self, app, pkg_translations):
-        self.babel = Babel(app, pkg_translations)
-        self.babel_default_locale = self._get_default_locale(app)
+    def __init__(self, baseapp):
+        self.babel = Babel(baseapp.get_app(), translations)
+        self.babel_default_locale = self._get_default_locale(baseapp.get_app())
         self.babel.locale_selector_func = self.get_locale
 
     def register_views(self, baseapp):
