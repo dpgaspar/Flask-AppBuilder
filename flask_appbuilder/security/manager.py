@@ -75,39 +75,39 @@ class SecurityManager(BaseManager):
         self.baseapp.add_view_no_menu(ResetMyPasswordView())
 
         if self._get_auth_type(self.baseapp.get_app) == AUTH_DB:
-            self.user_view = self.baseapp.init_view_session(UserDBGeneralView)
+            self.user_view = UserDBGeneralView
             self.auth_view = AuthDBView()
         elif self._get_auth_type(self.baseapp.get_app) == AUTH_LDAP:
-            self.user_view = self.baseapp.init_view_session(UserLDAPGeneralView)
+            self.user_view = UserLDAPGeneralView
             self.auth_view = AuthLDAPView()
         else:
-            self.user_view = self.baseapp.init_view_session(UserOIDGeneralView)
+            self.user_view = UserOIDGeneralView
             self.auth_view = AuthOIDView()
             self.oid.after_login_func = self.auth_view.after_login
 
         self.baseapp.add_view_no_menu(self.auth_view)
 
-        self.baseapp.add_view(self.user_view, "List Users",
-                              icon="fa-user", label=_("List Users"),
-                              category="Security", category_icon="fa-cogs", category_label=_('Security'))
+        self.user_view=self.baseapp.add_view_session(self.user_view, "List Users",
+                                      icon="fa-user", label=_("List Users"),
+                                      category="Security", category_icon="fa-cogs", category_label=_('Security'))
 
         role_view = self.baseapp.init_view_session(RoleGeneralView)
         self.baseapp.add_view(role_view, "List Roles", icon="fa-group", label=_('List Roles'),
                               category="Security", category_icon="fa-cogs")
         role_view.related_views = [self.user_view.__class__]
-        self.baseapp.add_view(self.baseapp.init_view_session(UserStatsChartView),
-                              "User's Statistics", icon="fa-bar-chart-o", label=_("User's Statistics"),
-                              category="Security")
+        self.baseapp.add_view_session(UserStatsChartView,
+                                      "User's Statistics", icon="fa-bar-chart-o", label=_("User's Statistics"),
+                                      category="Security")
         self.baseapp.menu.add_separator("Security")
-        self.baseapp.add_view(self.baseapp.init_view_session(PermissionGeneralView),
-                              "Base Permissions", icon="fa-lock",
-                              label=_("Base Permissions"), category="Security")
-        self.baseapp.add_view(self.baseapp.init_view_session(ViewMenuGeneralView),
-                              "Views/Menus", icon="fa-list-alt",
-                              label=_('Views/Menus'), category="Security")
-        self.baseapp.add_view(self.baseapp.init_view_session(PermissionViewGeneralView),
-                              "Permission on Views/Menus", icon="fa-link",
-                              label=_('Permission on Views/Menus'), category="Security")
+        self.baseapp.add_view_session(PermissionGeneralView,
+                                      "Base Permissions", icon="fa-lock",
+                                      label=_("Base Permissions"), category="Security")
+        self.baseapp.add_view_session(ViewMenuGeneralView,
+                                      "Views/Menus", icon="fa-list-alt",
+                                      label=_('Views/Menus'), category="Security")
+        self.baseapp.add_view_session(PermissionViewGeneralView,
+                                      "Permission on Views/Menus", icon="fa-link",
+                                      label=_('Permission on Views/Menus'), category="Security")
 
 
     def load_user(self, pk):

@@ -137,11 +137,6 @@ class BaseApp(object):
         self.bm.register_views()
         self.sm.register_views()
 
-    def init_view_session(self, baseview_class):
-        if baseview_class.datamodel.session is None:
-            baseview_class.datamodel.session = self.db.session
-        return baseview_class()
-
     def _add_permissions_menu(self, name):
         try:
             self.sm.add_permissions_menu(name)
@@ -154,6 +149,45 @@ class BaseApp(object):
             self._add_permissions_menu(category.name)
             for item in category.childs:
                 self._add_permissions_menu(item.name)
+
+    def add_view_session(self, baseview_class, name, href="", icon="",
+                         label="", category="", category_icon="", category_label=""):
+        """
+            Add your views associated with menus using this method.
+            Use this method if you views were not 'configured' with session SQLAModel(TableName)
+
+            :param baseview_class:
+                A BaseView type class instantiated.
+            :param name:
+                The string name that identifies the menu.
+            :param href:
+                Override the generated href for the menu. if non provided default_view from view will be set as href.
+            :param icon:
+                Font-Awesome icon name, optional.
+            :param label:
+                The label that will be displayed on the menu, if absent param name will be used
+            :param category:
+                The menu category where the menu will be included, if non provided the view will be acessible as a top menu.
+            :param category_icon:
+                Font-Awesome icon name for the category, optional.
+            :param category_label:
+                The label that will be displayed on the menu, if absent param name will be used
+
+            Examples::
+
+                baseapp = BaseApp(app, db)
+                # Register a view, rendering a top menu without icon.
+                baseapp.add_view_session(MyGeneralView, "My View")
+                baseapp.add_view_session(MyOtherGeneralView, "Other View", icon='fa-phone', category="Others")
+                # Register a view, with category icon and translation.
+        """
+        if baseview_class.datamodel.session is None:
+            baseview_class.datamodel.session = self.db.session
+        baseview = baseview_class()
+        self.add_view(baseview, name,
+                      href=href, icon=icon, label=label,
+                      category=category, category_icon=category_icon, category_label=category_label)
+        return baseview
 
     def add_view(self, baseview, name, href="", icon="", label="", category="", category_icon="", category_label=""):
         """
