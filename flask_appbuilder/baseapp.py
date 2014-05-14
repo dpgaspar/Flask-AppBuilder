@@ -150,6 +150,17 @@ class BaseApp(object):
             for item in category.childs:
                 self._add_permissions_menu(item.name)
 
+    def _check_and_init(self, baseview):
+        # If class if not instantiated, instantiate it and add security db session.
+        if hasattr(baseview, '__call__'):
+            if hasattr(baseview, 'datamodel'):
+                if baseview.datamodel.session is None:
+                    baseview.datamodel.session = self.db.session
+            baseview = baseview()
+        return baseview
+
+
+
     def add_view_session(self, baseview_class, name, href="", icon="",
                          label="", category="", category_icon="", category_label=""):
         """
@@ -195,7 +206,7 @@ class BaseApp(object):
             Add your views associated with menus using this method.
             
             :param baseview:
-                A BaseView type class instantiated.
+                A BaseView type class instantiated or not.
             :param name:
                 The string name that identifies the menu.
             :param href:
@@ -225,7 +236,9 @@ class BaseApp(object):
                 # Add a link
                 baseapp.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
+        baseview = self._check_and_init(baseview)
         log.info("Registering class %s on menu %s.%s" % (baseview.__class__.__name__, category, name))
+
         if not self._view_exists(baseview):
             baseview.baseapp = self
             self.baseviews.append(baseview)
@@ -235,6 +248,7 @@ class BaseApp(object):
         self.add_link(name=name, href=href, icon=icon, label=label,
                       category=category, category_icon=category_icon,
                       category_label=category_label, baseview=baseview)
+        return baseview
 
     def add_link(self, name, href, icon="", label="", category="", category_icon="", category_label="", baseview=None):
         """
@@ -280,6 +294,9 @@ class BaseApp(object):
                 A BaseView type class instantiated.
                     
         """
+        baseview = self._check_and_init(baseview)
+        log.info("Registering class %s" % (baseview.__class__.__name__))
+
         if not self._view_exists(baseview):
             baseview.baseapp = self
             self.baseviews.append(baseview)
@@ -288,6 +305,7 @@ class BaseApp(object):
             self._add_permission(baseview)
         else:
             log.warning("View already exists {0} ignoring".format(baseview.__class__.__name__))
+        return baseview
 
     def init_view_session(self, baseview_class):
         """

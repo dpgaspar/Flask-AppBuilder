@@ -87,25 +87,25 @@ class SecurityManager(BaseManager):
 
         self.baseapp.add_view_no_menu(self.auth_view)
 
-        self.user_view=self.baseapp.add_view_session(self.user_view, "List Users",
+        self.user_view = self.baseapp.add_view(self.user_view, "List Users",
                                       icon="fa-user", label=_("List Users"),
                                       category="Security", category_icon="fa-cogs", category_label=_('Security'))
 
-        role_view = self.baseapp.init_view_session(RoleGeneralView)
-        self.baseapp.add_view(role_view, "List Roles", icon="fa-group", label=_('List Roles'),
+
+        role_view = self.baseapp.add_view(RoleGeneralView, "List Roles", icon="fa-group", label=_('List Roles'),
                               category="Security", category_icon="fa-cogs")
         role_view.related_views = [self.user_view.__class__]
-        self.baseapp.add_view_session(UserStatsChartView,
+        self.baseapp.add_view(UserStatsChartView,
                                       "User's Statistics", icon="fa-bar-chart-o", label=_("User's Statistics"),
                                       category="Security")
         self.baseapp.menu.add_separator("Security")
-        self.baseapp.add_view_session(PermissionGeneralView,
+        self.baseapp.add_view(PermissionGeneralView,
                                       "Base Permissions", icon="fa-lock",
                                       label=_("Base Permissions"), category="Security")
-        self.baseapp.add_view_session(ViewMenuGeneralView,
+        self.baseapp.add_view(ViewMenuGeneralView,
                                       "Views/Menus", icon="fa-list-alt",
                                       label=_('Views/Menus'), category="Security")
-        self.baseapp.add_view_session(PermissionViewGeneralView,
+        self.baseapp.add_view(PermissionViewGeneralView,
                                       "Permission on Views/Menus", icon="fa-link",
                                       label=_('Permission on Views/Menus'), category="Security")
 
