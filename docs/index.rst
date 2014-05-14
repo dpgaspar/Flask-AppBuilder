@@ -32,6 +32,7 @@ Contents:
    quickcharts
    quickfiles
    config
+   advanced
    customizing
    actions
    i18n
