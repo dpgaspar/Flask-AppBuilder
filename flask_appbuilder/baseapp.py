@@ -154,7 +154,8 @@ class BaseApp(object):
                          label="", category="", category_icon="", category_label=""):
         """
             Add your views associated with menus using this method.
-            Use this method if you views were not 'configured' with session SQLAModel(TableName)
+            Use this method if your views were not 'configured' with session
+            SQLAModel(TableName, db.sessions).
 
             :param baseview_class:
                 A BaseView type class instantiated.
@@ -301,11 +302,10 @@ class BaseApp(object):
 
     def security_cleanup(self):
         """
-            This method is useful if you have changed menu's names or
-            views classes name, this will leave behind permissions that are
-            not associated with anything.
+            This method is useful if you have changed the name of your menus or classes,
+            changing them will leave behind permissions that are not associated with anything.
 
-             You can use it always or just sometimes to
+            You can use it always or just sometimes to
             perform a security cleanup. Warning this will delete any permission
             that is no longer part of any registered view or menu.
 

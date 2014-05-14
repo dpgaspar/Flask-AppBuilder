@@ -5,14 +5,17 @@ Improvements and Bug fixes on 0.8.5
 -----------------------------------
 
 - New, security cleanup method, useful if you have changed a menu's name or view class name.
+- Fix, internal security management optimization.
+- New, security management method security_cleanup, will remove unused permissions, views and menus.
+- Fix, removed automatic migration from version 0.3.
+- New, method for adding views has classes without configuring the views db.session, session will
+    be the same has the security tables.
+- Fix, Security menu with wrong label and view association on 'Permission Views/Menu'.
 
 Improvements and Bug fixes on 0.8.4
 -----------------------------------
 
 - Fix, js for remembering latest accordion was working like toggle (bs bug?).
-- Fix, internal security management optimization.
-- New, security management method security_cleanup, will remove unused permissions, views and menus.
-- Fix, removed automatic migration from version 0.3.
 
 Improvements and Bug fixes on 0.8.3
 -----------------------------------
