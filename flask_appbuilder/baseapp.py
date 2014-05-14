@@ -29,9 +29,8 @@ class BaseApp(object):
     db = None
 
     sm = None
-    """ Security Manager """
     bm = None
-    """ Babel Manager """
+
     app_name = ""
     app_theme = ''
     app_icon = None
