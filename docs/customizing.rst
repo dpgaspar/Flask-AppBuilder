@@ -251,7 +251,7 @@ Remember you can use charts has related views, you can use it like this::
         group_by_columns = ['birthday']
 
     class GroupMasterView(MasterDetailView):
-        datamodel = SQLAModel(Group, db.session)
+        datamodel = SQLAModel(Group)
         related_views = [ContactGeneralView, ContactTimeChartView]
 
 This will show a left side menu with the *groups* and a right side list with contacts, and a time chart with the number of birthdays during time by the selected group.
