@@ -33,7 +33,7 @@ Define your Views (views.py)
 ::
 
     class PersonGeneralView(GeneralView):
-        datamodel = SQLAModel(Person, db.session)
+        datamodel = SQLAModel(Person)
 
         list_widget = ListThumbnail
 

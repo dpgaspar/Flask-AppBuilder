@@ -122,12 +122,12 @@ All views have templates that will display widgets in a certain layout. For exam
 ::
 
     class ServerDiskTypeGeneralView(GeneralView):
-        datamodel = SQLAModel(ServerDiskType, db.session)
+        datamodel = SQLAModel(ServerDiskType)
         list_columns = ['quantity', 'disktype']
 
 
     class ServerGeneralView(GeneralView):
-        datamodel = SQLAModel(Server, db.session)
+        datamodel = SQLAModel(Server)
         related_views = [ServerDiskTypeGeneralView]
 
         show_template = 'appbuilder/general/model/show_cascade.html'
@@ -147,12 +147,12 @@ The above example will override the show and edit templates that will change the
 If you want to change the above example, and change the way the server disks are displayed has a list just use the available widgets::
 
     class ServerDiskTypeGeneralView(GeneralView):
-        datamodel = SQLAModel(ServerDiskType, db.session)
+        datamodel = SQLAModel(ServerDiskType)
         list_columns = ['quantity', 'disktype']
         list_widget = ListBlock
 
     class ServerGeneralView(GeneralView):
-        datamodel = SQLAModel(Server, db.session)
+        datamodel = SQLAModel(Server)
         related_views = [ServerDiskTypeGeneralView]
 
         show_template = 'appbuilder/general/model/show_cascade.html'
@@ -203,15 +203,15 @@ All you have to do is to mix *CompactCRUDMixin* class with the *GeneralView* cla
 
 
     class MyInlineView(CompactCRUDMixin, GeneralView):
-        datamodel = SQLAModel(MyInlineTable, db.session)
+        datamodel = SQLAModel(MyInlineTable)
 
     class MyView(GeneralView):
-        datamodel = SQLAModel(MyViewTable, db.session)
+        datamodel = SQLAModel(MyViewTable)
         related_views = [MyInlineView]
 
     baseapp = BaseApp(app, db)
-    baseapp.add_view(MyView(), "List My View",icon = "fa-table", category = "My Views")
-    baseapp.add_view_no_menu(MyInlineView())
+    baseapp.add_view(MyView, "List My View",icon = "fa-table", category = "My Views")
+    baseapp.add_view_no_menu(MyInlineView)
 
 
 Notice the class mixin, with this configuration you will have a *Master View* with the inline view *MyInlineView* where you can Add and Edit on the same page.
@@ -231,20 +231,20 @@ Let's assume our quick how to example, a simple contacts applications. We have *
 So we are using master detail view, first we will define the detail view (this view can be customized like the examples above)::
 
     class ContactGeneralView(GeneralView):
-        datamodel = SQLAModel(Contact, db.session)
+        datamodel = SQLAModel(Contact)
 
 
 Then we define the master detail view, where master is the one side of the 1-N relation::
 
     class GroupMasterView(MasterDetailView):
-        datamodel = SQLAModel(Group, db.session)
+        datamodel = SQLAModel(Group)
         related_views = [ContactGeneralView]
 
 
 Remember you can use charts has related views, you can use it like this::
 
     class ContactTimeChartView(TimeChartView):
-        datamodel = SQLAModel(Contact, db.session)
+        datamodel = SQLAModel(Contact)
         chart_title = 'Grouped Birth contacts'
         chart_type = 'AreaChart'
         label_columns = ContactGeneralView.label_columns
@@ -261,11 +261,11 @@ Finally register everything::
 
     genapp = BaseApp(app, db)
     // if Using the above example with related chart
-    genapp.add_view_no_memnu(ContactTimeChartView())
+    genapp.add_view_no_memnu(ContactTimeChartView)
 
-    genapp.add_view(GroupMasterView(), "List Groups", icon="fa-folder-open-o", category="Contacts")
+    genapp.add_view(GroupMasterView, "List Groups", icon="fa-folder-open-o", category="Contacts")
     genapp.add_separator("Contacts")
-    genapp.add_view(ContactGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")
+    genapp.add_view(ContactGeneralView, "List Contacts", icon="fa-envelope", category="Contacts")
 
 
 .. image:: ./images/list_master_detail.png

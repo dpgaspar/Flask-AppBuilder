@@ -61,14 +61,14 @@ class FlaskTestCase(unittest.TestCase):
         self.db = SQLAlchemy(self.app)
 
         class Model1View(GeneralView):
-            datamodel = SQLAModel(Model1, self.db.session)
+            datamodel = SQLAModel(Model1)
 
         class Model2View(GeneralView):
-            datamodel = SQLAModel(Model2, self.db.session)
+            datamodel = SQLAModel(Model2)
             related_views = [Model1View]
 
         class Model1Filtered1View(GeneralView):
-            datamodel = SQLAModel(Model1, self.db.session)
+            datamodel = SQLAModel(Model1)
             base_filters = [['field_string', FilterStartsWith, 'a']]
 
         class Model1Filtered2View(GeneralView):
@@ -77,12 +77,12 @@ class FlaskTestCase(unittest.TestCase):
 
 
         self.baseapp = BaseApp(self.app, self.db)
-        self.baseapp.add_view(Model1View(), "Model1")
-        self.baseapp.add_view(Model1Filtered1View(), "Model1Filtered1")
-        self.baseapp.add_view(Model1Filtered2View(), "Model1Filtered2")
+        self.baseapp.add_view(Model1View, "Model1")
+        self.baseapp.add_view(Model1Filtered1View, "Model1Filtered1")
+        self.baseapp.add_view(Model1Filtered2View, "Model1Filtered2")
 
-        self.baseapp.add_view(Model2View(), "Model2")
-        self.baseapp.add_view(Model2View(), "Model2 Add", href='/model2view/add')
+        self.baseapp.add_view(Model2View, "Model2")
+        self.baseapp.add_view(Model2View, "Model2 Add", href='/model2view/add')
 
 
     def tearDown(self):

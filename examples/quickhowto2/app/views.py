@@ -50,7 +50,7 @@ class ContactChartView(ChartView):
     chart_title = 'Grouped contacts'
     label_columns = ContactGeneralView.label_columns
     group_by_columns = ['group', 'gender']
-    datamodel = SQLAModel(Contact, db.session)
+    datamodel = SQLAModel(Contact)
 
 
 class ContactTimeChartView(TimeChartView):
@@ -58,7 +58,7 @@ class ContactTimeChartView(TimeChartView):
     chart_type = 'AreaChart'
     label_columns = ContactGeneralView.label_columns
     group_by_columns = ['birthday']
-    datamodel = SQLAModel(Contact, db.session)
+    datamodel = SQLAModel(Contact)
 
 
 class GroupGeneralView(GeneralView):
@@ -78,7 +78,7 @@ genapp = BaseApp(app, db)
 genapp.add_view(GroupGeneralView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
 genapp.add_view(ContactGeneralView, "List Contacts", icon="fa-envelope", category="Contacts")
 genapp.add_separator("Contacts")
-genapp.add_view(ContactChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")
-genapp.add_view(ContactTimeChartView(), "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
+genapp.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
+genapp.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
 
 genapp.security_cleanup()

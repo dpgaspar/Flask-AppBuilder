@@ -81,7 +81,7 @@
 <h2>Define your Chart Views (views.py)<a class="headerlink" href="#define-your-chart-views-views-py" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactChartView</span><span class="p">(</span><span class="n">ChartView</span><span class="p">):</span>
     <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped contacts&#39;</span>
     <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactGeneralView</span><span class="o">.</span><span class="n">label_columns</span>
     <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
@@ -111,14 +111,14 @@ If you want a column chart just define:</p>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped Birth contacts&#39;</span>
     <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactGeneralView</span><span class="o">.</span><span class="n">label_columns</span>
     <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;birthday&#39;</span><span class="p">]</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>this will produce a column chart, with the number of contacts that were born on a particular month or year.
 Notice that the label_columns are from and already defined <em>ContactGeneralView</em> take a look at the <a class="reference internal" href="quickhowto.html"><em>Quick How to</em></a></p>
 <p>Finally we will define a direct data chart</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">StatsChartView</span><span class="p">(</span><span class="n">DirectChartView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Stats</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Stats</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Statistics&#39;</span><span class="p">)</span>
     <span class="n">direct_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;Some Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;stat1&#39;</span><span class="p">,</span> <span class="s">&#39;col1&#39;</span><span class="p">,</span> <span class="s">&#39;col2&#39;</span><span class="p">),</span>
                     <span class="s">&#39;Other Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;stat2&#39;</span><span class="p">,</span> <span class="s">&#39;col3&#39;</span><span class="p">)}</span>
@@ -132,8 +132,8 @@ Notice that the label_columns are from and already defined <em>ContactGeneralVie
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
 <p>Register everything, to present your charts and create the menu:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonChartView</span><span class="p">(),</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-dashboard&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactTimeChartView</span><span class="p">,</span> <span class="s">&quot;Contacts Birth Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactChartView</span><span class="p">,</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-dashboard&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>

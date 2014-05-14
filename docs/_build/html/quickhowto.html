@@ -131,10 +131,13 @@ and using it will allow you to define relations to User&#8217;s.</p>
 </div>
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
-<p>Now we are going to define our view for <em>Group</em> table. This view will setup functionality for create, remove, update and show primitives for your model&#8217;s definition.</p>
-<p>Inherit from <em>GeneralView</em> class that inherits from <em>BaseCRUDView</em> that inherits from <em>BaseModelView</em>, so you can override all their public properties to configure many details for your CRUD primitives. take a look at <strong>Advanced Configuration</strong> on this page.</p>
+<p>Now we are going to define our view for <em>Group</em> table.
+This view will setup functionality for create, remove, update and show primitives for your model&#8217;s definition.</p>
+<p>Inherit from <em>GeneralView</em> class that inherits from <em>BaseCRUDView</em> that inherits from <em>BaseModelView</em>,
+so you can override all their public properties to configure many details for your CRUD primitives.
+take a look at <strong>Advanced Configuration</strong> on this page.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -144,7 +147,7 @@ and using it will allow you to define relations to User&#8217;s.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">datamodel:</th><td class="field-body">is the db abstraction layer. Initialize it with your model and sqlalchemy session</td>
+<tr class="field-odd field"><th class="field-name">datamodel:</th><td class="field-body">is the db abstraction layer. Initialize it with your view&#8217;s model.</td>
 </tr>
 </tbody>
 </table>
@@ -159,10 +162,18 @@ will relate 1/N relations automatically, it will display a show or edit view wit
 </tbody>
 </table>
 <p>This is the most basic configuration (with an added related view).</p>
+<p>If you want to add a view associated with an alternative backend (you can have views from multiple backends)
+you can define it like this</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">other_db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>You must pass this view to <em>add_view</em> method instantiated.</p>
 <p>But where is ContactGeneralView ? (that was a reference in <em>related_views</em> list)</p>
 <p>Let&#8217;s define it:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 
     <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;group&#39;</span><span class="p">:</span><span class="s">&#39;Contacts Group&#39;</span><span class="p">}</span>
     <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s">&#39;birthday&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
@@ -189,9 +200,9 @@ will relate 1/N relations automatically, it will display a show or edit view wit
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
 <p>Register everything, to present the models and create the menu</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">genapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
-<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-folder-open-o&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">,</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">,</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-folder-open-o&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">,</span>
                 <span class="n">category_icon</span> <span class="o">=</span> <span class="s">&quot;fa-envelope&quot;</span><span class="p">)</span>
-<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactGeneralView</span><span class="p">,</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a> for add_view method.</p>
@@ -216,7 +227,7 @@ will relate 1/N relations automatically, it will display a show or edit view wit
 </div></blockquote>
 <p>To block or set the allowed permissions on a view, just set the <em>base_permissions</em> property with the base permissions</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
     <span class="n">base_permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;can_add&#39;</span><span class="p">,</span><span class="s">&#39;can_delete&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -236,7 +247,7 @@ Base available permission are: can_add, can_edit, can_delete, can_list, can_show
     <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span>
 
 <span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
     <span class="n">base_filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s">&#39;created_by&#39;</span><span class="p">,</span> <span class="n">FilterEqualFunction</span><span class="p">,</span> <span class="n">get_user</span><span class="p">],</span>
                     <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="n">FilterStartsWith</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">]]</span>
 </pre></div>
@@ -246,7 +257,7 @@ Base available permission are: can_add, can_edit, can_delete, can_list, can_show
 </ul>
 <p>Use a default order on your lists, this can be overridden by the user on the UI. Data structure (&#8216;col_name&#8217;:&#8217;asc|desc&#8217;)</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
     <span class="n">base_order</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;my_col_to_be_ordered&#39;</span><span class="p">,</span><span class="s">&#39;asc&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -255,7 +266,7 @@ Base available permission are: can_add, can_edit, can_delete, can_list, can_show
 </li>
 <li><p class="first">You can create a custom query filter for all related columns like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
     <span class="n">add_form_query_rel_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;group&#39;</span><span class="p">,</span>
                 <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
                 <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;W&#39;</span><span class="p">]]</span>
@@ -267,7 +278,7 @@ Base available permission are: can_add, can_edit, can_delete, can_list, can_show
 <p>This will filter list combo on Contact&#8217;s model related with Group model. The combo will be filtered with entries that start with W. You can define individual filters for add and edit. Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>
 If you want to filter multiple related fields just add tuples to the list, remember you can add multiple filters for each field also, take a look at the <em>base_filter</em> property:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
     <span class="n">add_form_query_rel_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;group&#39;</span><span class="p">,</span>
                 <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
                 <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;W&#39;</span><span class="p">]]</span>
@@ -282,45 +293,61 @@ If you want to filter multiple related fields just add tuples to the list, remem
 <ul>
 <li><p class="first">You can define your own Add, Edit forms to override the automatic form creation:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
     <span class="n">add_form</span> <span class="o">=</span> <span class="n">AddFormWTF</span>
 </pre></div>
 </div>
 </li>
-<li><p class="first">You can define what columns will be included on Add or Edit forms,</p>
+<li><dl class="first docutils">
+<dt>You can define what columns will be included on Add or Edit forms,</dt>
+<dd><p class="first">for example if you have automatic fields like user or date, you can remove this from the Add Form:</p>
+<dl class="last docutils">
+<dt>class MyView(GeneralView):</dt>
+<dd><p class="first last">datamodel = SQLAModel(MyModel)
+add_columns = [&#8216;my_field1&#8217;,&#8217;my_field2&#8217;]
+edit_columns = [&#8216;my_field1&#8217;]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>You can contribute with any additional field that are not on a table/model,</dt>
+<dd><p class="first">for example a confirmation field:</p>
+<dl class="last docutils">
+<dt>class ContactGeneralView(GeneralView):</dt>
+<dd><p class="first">datamodel = SQLAModel(Contact)
+add_form_extra_fields = {&#8216;extra&#8217;: TextField(gettext(&#8216;Extra Field&#8217;),</p>
+<blockquote class="last">
+<div><p>description=gettext(&#8216;Extra Field description&#8217;),
+widget=BS3TextFieldWidget())}</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>You can contribute with your own additional form validations rules.</dt>
+<dd><p class="first">Remember the framework will automatically validate any field that is defined on the database
+with <em>Not Null</em> (Required) or Unique constraints:</p>
+<dl class="last docutils">
+<dt>class MyView(GeneralView):</dt>
+<dd><p class="first">datamodel = SQLAModel(MyModel)
+validators_columns = {&#8216;my_field1&#8217;:[EqualTo(&#8216;my_field2&#8217;,</p>
+<blockquote>
+<div><blockquote>
+<div><p>message=gettext(&#8216;fields must match&#8217;))</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p class="last">}</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </li>
 </ul>
-<p>for example if you have automatic fields like user or date, you can remove this from the Add Form:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
-    <span class="n">add_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;my_field1&#39;</span><span class="p">,</span><span class="s">&#39;my_field2&#39;</span><span class="p">]</span>
-    <span class="n">edit_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;my_field1&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li>You can contribute with any additional field that are not on a table/model,</li>
-</ul>
-<p>for example a confirmation field:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
-    <span class="n">add_form_extra_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;extra&#39;</span><span class="p">:</span> <span class="n">TextField</span><span class="p">(</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;Extra Field&#39;</span><span class="p">),</span>
-                    <span class="n">description</span><span class="o">=</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;Extra Field description&#39;</span><span class="p">),</span>
-                    <span class="n">widget</span><span class="o">=</span><span class="n">BS3TextFieldWidget</span><span class="p">())}</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li>You can contribute with your own additional form validations rules.</li>
-</ul>
-<p>Remember the framework will automatically validate any field that is defined on the database
-with <em>Not Null</em> (Required) or Unique constraints:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
-    <span class="n">validators_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;my_field1&#39;</span><span class="p">:[</span><span class="n">EqualTo</span><span class="p">(</span><span class="s">&#39;my_field2&#39;</span><span class="p">,</span>
-                                        <span class="n">message</span><span class="o">=</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;fields must match&#39;</span><span class="p">))</span>
-                                      <span class="p">]</span>
-    <span class="p">}</span>
-</pre></div>
-</div>
 <p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>. Experiment with <em>add_form</em>, <em>edit_form</em>, <em>add_columns</em>, <em>edit_columns</em>, <em>validators_columns</em>, <em>add_form_extra_fields</em>, <em>edit_form_extra_fields</em></p>
 </div>
 </div>

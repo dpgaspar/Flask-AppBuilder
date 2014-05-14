@@ -8,7 +8,7 @@ Improvements and Bug fixes on 0.8.5
 - Fix, internal security management optimization.
 - New, security management method security_cleanup, will remove unused permissions, views and menus.
 - Fix, removed automatic migration from version 0.3.
-- New, method for adding views has classes without configuring the views db.session, session will
+- New, adding views has classes without configuring the views db.session, session will
     be the same has the security tables.
 - Fix, Security menu with wrong label and view association on 'Permission Views/Menu'.
 

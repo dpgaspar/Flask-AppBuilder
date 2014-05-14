@@ -11,8 +11,8 @@ You can setup your actions for records on the show page. Just use the @action de
     from flask.ext.appbuilder.actions import action  
 
     class GroupGeneralView(GeneralView):
-        datamodel = SQLAModel(Group, db.session)
-        related_views = [ContactGeneralView()]
+        datamodel = SQLAModel(Group)
+        related_views = [ContactGeneralView]
 	
         @action("myaction","Do something on this record","","fa-rocket")
         def myaction(self, item):

@@ -7,7 +7,7 @@ from app import app, db
 
 
 class ProjectFilesGeneralView(GeneralView):
-    datamodel = SQLAModel(ProjectFiles, db.session)
+    datamodel = SQLAModel(ProjectFiles)
 
     label_columns = {'file_name': 'File Name', 'download': 'Download'}
     add_columns = ['file', 'description','project']
@@ -17,7 +17,7 @@ class ProjectFilesGeneralView(GeneralView):
 
 
 class ProjectGeneralView(CompactCRUDMixin, GeneralView):
-    datamodel = SQLAModel(Project, db.session)
+    datamodel = SQLAModel(Project)
     related_views = [ProjectFilesGeneralView]
 
     show_template = 'appbuilder/general/model/show_cascade.html'
@@ -33,5 +33,5 @@ class ProjectGeneralView(CompactCRUDMixin, GeneralView):
 
 
 baseapp = BaseApp(app, db)
-baseapp.add_view(ProjectGeneralView(), "List Projects", icon="fa-table", category="Projects")
-baseapp.add_view_no_menu(ProjectFilesGeneralView())
+baseapp.add_view(ProjectGeneralView, "List Projects", icon="fa-table", category="Projects")
+baseapp.add_view_no_menu(ProjectFilesGeneralView)

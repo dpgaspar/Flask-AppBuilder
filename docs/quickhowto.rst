@@ -89,14 +89,17 @@ The *Contacts* table.
 Define your Views (views.py)
 ----------------------------
 
-Now we are going to define our view for *Group* table. This view will setup functionality for create, remove, update and show primitives for your model's definition.
+Now we are going to define our view for *Group* table.
+This view will setup functionality for create, remove, update and show primitives for your model's definition.
 
-Inherit from *GeneralView* class that inherits from *BaseCRUDView* that inherits from *BaseModelView*, so you can override all their public properties to configure many details for your CRUD primitives. take a look at **Advanced Configuration** on this page.
+Inherit from *GeneralView* class that inherits from *BaseCRUDView* that inherits from *BaseModelView*,
+so you can override all their public properties to configure many details for your CRUD primitives.
+take a look at **Advanced Configuration** on this page.
 
 ::
 
     class GroupGeneralView(GeneralView):
-        datamodel = SQLAModel(Group, db.session)
+        datamodel = SQLAModel(Group)
         related_views = [ContactGeneralView]
 
 
@@ -104,7 +107,7 @@ I hope this was easy enough! Some questions may arise...
 
 Must have properties:
 
-:datamodel: is the db abstraction layer. Initialize it with your model and sqlalchemy session
+:datamodel: is the db abstraction layer. Initialize it with your view's model.
 
 Optional properties:
 
@@ -113,12 +116,23 @@ Optional properties:
 
 This is the most basic configuration (with an added related view).
 
+If you want to add a view associated with an alternative backend (you can have views from multiple backends)
+you can define it like this
+
+::
+
+    class GroupGeneralView(GeneralView):
+        datamodel = SQLAModel(Group, other_db.session)
+        related_views = [ContactGeneralView]
+
+You must pass this view to *add_view* method instantiated.
+
 But where is ContactGeneralView ? (that was a reference in *related_views* list) 
 
 Let's define it::
 
     class ContactGeneralView(GeneralView):
-        datamodel = SQLAModel(Contact, db.session)
+        datamodel = SQLAModel(Contact)
 
         label_columns = {'group':'Contacts Group'}
         list_columns = ['name','personal_celphone','birthday','group']
@@ -142,9 +156,9 @@ Register everything, to present the models and create the menu
 ::
 
         genapp = BaseApp(app, db)
-        genapp.add_view(GroupGeneralView(), "List Groups",icon = "fa-folder-open-o",category = "Contacts",
+        genapp.add_view(GroupGeneralView, "List Groups",icon = "fa-folder-open-o",category = "Contacts",
                         category_icon = "fa-envelope")
-        genapp.add_view(ContactGeneralView(), "List Contacts",icon = "fa-envelope",category = "Contacts")
+        genapp.add_view(ContactGeneralView, "List Contacts",icon = "fa-envelope",category = "Contacts")
 
 Take a look at the :doc:`api` for add_view method.
 
@@ -179,7 +193,7 @@ To block or set the allowed permissions on a view, just set the *base_permission
 ::
 
     class GroupGeneralView(GeneralView):
-        datamodel = SQLAModel(Group, db.session)
+        datamodel = SQLAModel(Group)
         base_permissions = ['can_add','can_delete']
             
 With this initial config, the framework will only create 'can_add' and 'can_delete'
@@ -201,7 +215,7 @@ It's very flexible, you can apply multiple filters with static values, or values
         return g.user
         
     class MyView(GeneralView):
-        datamodel = SQLAModel(MyTable, db.session)
+        datamodel = SQLAModel(MyTable)
         base_filters = [['created_by', FilterEqualFunction, get_user],
                         ['name', FilterStartsWith, 'a']]
 
@@ -213,7 +227,7 @@ Use a default order on your lists, this can be overridden by the user on the UI.
 ::
 
     class MyView(GeneralView):
-        datamodel = SQLAModel(MyTable, db.session)
+        datamodel = SQLAModel(MyTable)
         base_order = ('my_col_to_be_ordered','asc')
 
 
@@ -222,7 +236,7 @@ Use a default order on your lists, this can be overridden by the user on the UI.
 - You can create a custom query filter for all related columns like this::
 
     class ContactGeneralView(GeneralView):
-        datamodel = SQLAModel(Contact, db.session)
+        datamodel = SQLAModel(Contact)
         add_form_query_rel_fields = [('group',
                     SQLAModel(Group, db.session),
                     [['name',FilterStartsWith,'W']]
@@ -233,7 +247,7 @@ This will filter list combo on Contact's model related with Group model. The com
 If you want to filter multiple related fields just add tuples to the list, remember you can add multiple filters for each field also, take a look at the *base_filter* property::
 
     class ContactGeneralView(GeneralView):
-        datamodel = SQLAModel(Contact, db.session)
+        datamodel = SQLAModel(Contact)
         add_form_query_rel_fields = [('group',
                     SQLAModel(Group, db.session),
                     [['name',FilterStartsWith,'W']]
@@ -248,34 +262,34 @@ If you want to filter multiple related fields just add tuples to the list, remem
 - You can define your own Add, Edit forms to override the automatic form creation::
 
     class MyView(GeneralView):
-        datamodel = SQLAModel(MyModel, db.session)
+        datamodel = SQLAModel(MyModel)
         add_form = AddFormWTF
 
 
 - You can define what columns will be included on Add or Edit forms,
-for example if you have automatic fields like user or date, you can remove this from the Add Form::
+    for example if you have automatic fields like user or date, you can remove this from the Add Form::
 
     class MyView(GeneralView):
-        datamodel = SQLAModel(MyModel, db.session)
+        datamodel = SQLAModel(MyModel)
         add_columns = ['my_field1','my_field2']
         edit_columns = ['my_field1']
 
 - You can contribute with any additional field that are not on a table/model,
-for example a confirmation field::
+    for example a confirmation field::
 
     class ContactGeneralView(GeneralView):
-        datamodel = SQLAModel(Contact, db.session)
+        datamodel = SQLAModel(Contact)
         add_form_extra_fields = {'extra': TextField(gettext('Extra Field'),
                         description=gettext('Extra Field description'),
                         widget=BS3TextFieldWidget())}
 
 
 - You can contribute with your own additional form validations rules.
-Remember the framework will automatically validate any field that is defined on the database
-with *Not Null* (Required) or Unique constraints::
+    Remember the framework will automatically validate any field that is defined on the database
+    with *Not Null* (Required) or Unique constraints::
 
     class MyView(GeneralView):
-        datamodel = SQLAModel(MyModel, db.session)
+        datamodel = SQLAModel(MyModel)
         validators_columns = {'my_field1':[EqualTo('my_field2',
                                             message=gettext('fields must match'))
                                           ]

@@ -97,7 +97,7 @@ Has you can see this methods are public, let's change this example, edit views.p
             return param1
 
     genapp = BaseApp(app, db)
-    genapp.add_view(MyView(), "Method1", category='My View')
+    genapp.add_view(MyView, "Method1", category='My View')
     genapp.add_link("Method2", href='/myview/method2/jonh', category='My View')
 
 

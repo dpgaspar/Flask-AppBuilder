@@ -145,12 +145,15 @@ Will hold your flask app object, all your views, and security classes.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>baseview</strong> &#8211; A BaseView type class instantiated.</li>
+<li><strong>baseview</strong> &#8211; A BaseView type class instantiated or not.
+This method will instantiate the class for you if needed.</li>
 <li><strong>name</strong> &#8211; The string name that identifies the menu.</li>
-<li><strong>href</strong> &#8211; Override the generated href for the menu. if non provided default_view from view will be set as href.</li>
+<li><strong>href</strong> &#8211; Override the generated href for the menu.
+if non provided default_view from view will be set as href.</li>
 <li><strong>icon</strong> &#8211; Font-Awesome icon name, optional.</li>
 <li><strong>label</strong> &#8211; The label that will be displayed on the menu, if absent param name will be used</li>
-<li><strong>category</strong> &#8211; The menu category where the menu will be included, if non provided the view will be acessible as a top menu.</li>
+<li><strong>category</strong> &#8211; The menu category where the menu will be included,
+if non provided the view will be acessible as a top menu.</li>
 <li><strong>category_icon</strong> &#8211; Font-Awesome icon name for the category, optional.</li>
 <li><strong>category_label</strong> &#8211; The label that will be displayed on the menu, if absent param name will be used</li>
 </ul>
@@ -162,8 +165,10 @@ Will hold your flask app object, all your views, and security classes.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
 <span class="c"># Register a view, rendering a top menu without icon.</span>
 <span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView</span><span class="p">(),</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
+<span class="c"># or not instantiated</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView</span><span class="p">,</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
 <span class="c"># Register a view, a submenu &quot;Other View&quot; from &quot;Other&quot; with a phone icon.</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">(),</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">)</span>
 <span class="c"># Register a view, with category icon and translation.</span>
 <span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">YetOtherGeneralView</span><span class="p">(),</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span>
                 <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Other View&#39;</span><span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s">&#39;fa-envelop&#39;</span><span class="p">,</span>
@@ -192,6 +197,17 @@ Will hold your flask app object, all your views, and security classes.</p>
 <dt id="flask.ext.appbuilder.baseapp.BaseApp.bm">
 <tt class="descname">bm</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.bm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Babel Manager</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.baseapp.BaseApp.security_cleanup">
+<tt class="descname">security_cleanup</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.security_cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is useful if you have changed the name of your menus or classes,
+changing them will leave behind permissions that are not associated with anything.</p>
+<p>You can use it always or just sometimes to
+perform a security cleanup. Warning this will delete any permission
+that is no longer part of any registered view or menu.</p>
+<p>Remember invoke ONLY AFTER YOU HAVE REGISTERED ALL VIEWS</p>
 </dd></dl>
 
 <dl class="attribute">

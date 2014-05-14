@@ -70,6 +70,31 @@ The framework will create the following access:
 	
 And the decorator @has_access will prevent any unwanted access
 
+Automatic Cleanup
+-----------------
+
+All your permissions and views are added automatically to the backend and associated with the 'Admin' *role*.
+The same applies to removing them, to some extent. But, if you change the name of a view or menu the framework
+will add the new *Views* and *Menus* names to the backend, but, will not delete the old ones. This can generate unwanted
+names on the security basically *garbage*. To clean it use the *security_cleanup* method,
+use it after you have registered all your views
+
+::
+
+    genapp = BaseApp(app, db)
+    genapp.add_view(GroupGeneralView(), "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
+    genapp.add_view(ContactGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")
+    genapp.add_separator("Contacts")
+    genapp.add_view(ContactChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")
+    genapp.add_view(ContactTimeChartView(), "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
+
+    genapp.security_cleanup()
+
+
+You can always use it and everything will be painlessly automatic. But if you use it only when needed
+(change class name, add to *security_cleanup* to your code, the *garbage* names are removed, then remove the method)
+no overhead is added when starting your site.
+
 Auditing
 --------
 

@@ -9,7 +9,7 @@ from app import app, db
 
 
 class ProductPubView(GeneralView):
-    datamodel = SQLAModel(Product, db.session)
+    datamodel = SQLAModel(Product)
     base_permissions = ['can_list', 'can_show']
     list_widget = ListBlock
     show_widget = ShowBlockWidget
@@ -27,17 +27,17 @@ class ProductPubView(GeneralView):
     ]
 
 class ProductView(GeneralView):
-    datamodel = SQLAModel(Product, db.session)
+    datamodel = SQLAModel(Product)
 
 class ProductTypeView(GeneralView):
-    datamodel = SQLAModel(ProductType, db.session)
+    datamodel = SQLAModel(ProductType)
     related_views = [ProductView]
 
 
 baseapp = BaseApp(app, db)
 
-baseapp.add_view(ProductPubView(), "Our Products", icon="fa-folder-open-o")
-baseapp.add_view(ProductView(), "List Products", icon="fa-folder-open-o", category="Management")
+baseapp.add_view(ProductPubView, "Our Products", icon="fa-folder-open-o")
+baseapp.add_view(ProductView, "List Products", icon="fa-folder-open-o", category="Management")
 baseapp.add_separator("Management")
-baseapp.add_view(ProductTypeView(), "List Product Types", icon="fa-envelope", category="Management")
+baseapp.add_view(ProductTypeView, "List Product Types", icon="fa-envelope", category="Management")
 

@@ -14,7 +14,7 @@ Define your Chart Views (views.py)
 
     class ContactChartView(ChartView):
         search_columns = ['name','group']
-        datamodel = SQLAModel(Contact, db.session)
+        datamodel = SQLAModel(Contact)
         chart_title = 'Grouped contacts'
         label_columns = ContactGeneralView.label_columns
         group_by_columns = ['group']
@@ -40,7 +40,7 @@ Let's define a chart grouped by a time frame?
         chart_title = 'Grouped Birth contacts'
         label_columns = ContactGeneralView.label_columns
         group_by_columns = ['birthday']
-        datamodel = SQLAModel(Contact, db.session)
+        datamodel = SQLAModel(Contact)
 
 this will produce a column chart, with the number of contacts that were born on a particular month or year.
 Notice that the label_columns are from and already defined *ContactGeneralView* take a look at the :doc:`quickhowto`
@@ -50,7 +50,7 @@ Finally we will define a direct data chart
 ::
 
     class StatsChartView(DirectChartView):
-        datamodel = SQLAModel(Stats, db.session)
+        datamodel = SQLAModel(Stats)
         chart_title = lazy_gettext('Statistics')
         direct_columns = {'Some Stats': ('stat1', 'col1', 'col2'),
                         'Other Stats': ('stat2', 'col3')}
@@ -68,8 +68,8 @@ Register (views.py)
 
 Register everything, to present your charts and create the menu::
 
-    baseapp.add_view(PersonGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")
-    baseapp.add_view(PersonChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")
+    baseapp.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-envelope", category="Contacts")
+    baseapp.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
 
 You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto
 
