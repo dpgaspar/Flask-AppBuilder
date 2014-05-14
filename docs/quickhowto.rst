@@ -267,7 +267,7 @@ If you want to filter multiple related fields just add tuples to the list, remem
 
 
 - You can define what columns will be included on Add or Edit forms,
-    for example if you have automatic fields like user or date, you can remove this from the Add Form::
+for example if you have automatic fields like user or date, you can remove this from the Add Form::
 
     class MyView(GeneralView):
         datamodel = SQLAModel(MyModel)
@@ -275,7 +275,7 @@ If you want to filter multiple related fields just add tuples to the list, remem
         edit_columns = ['my_field1']
 
 - You can contribute with any additional field that are not on a table/model,
-    for example a confirmation field::
+for example a confirmation field::
 
     class ContactGeneralView(GeneralView):
         datamodel = SQLAModel(Contact)
@@ -285,8 +285,8 @@ If you want to filter multiple related fields just add tuples to the list, remem
 
 
 - You can contribute with your own additional form validations rules.
-    Remember the framework will automatically validate any field that is defined on the database
-    with *Not Null* (Required) or Unique constraints::
+Remember the framework will automatically validate any field that is defined on the database
+with *Not Null* (Required) or Unique constraints::
 
     class MyView(GeneralView):
         datamodel = SQLAModel(MyModel)
