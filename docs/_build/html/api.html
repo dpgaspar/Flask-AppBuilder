@@ -61,26 +61,26 @@
             
   <div class="section" id="api-reference">
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="flask-ext-appbuilder-baseapp">
-<h2>flask.ext.appbuilder.baseapp<a class="headerlink" href="#flask-ext-appbuilder-baseapp" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="module-flask.ext.appbuilder.baseapp">
-<span id="baseapp"></span><h3>BaseApp<a class="headerlink" href="#module-flask.ext.appbuilder.baseapp" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="flask-ext-appbuilder">
+<h2>flask.ext.appbuilder<a class="headerlink" href="#flask-ext-appbuilder" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-flask.ext.appbuilder.base">
+<span id="appbuilder"></span><h3>AppBuilder<a class="headerlink" href="#module-flask.ext.appbuilder.base" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="flask.ext.appbuilder.baseapp.BaseApp">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.baseapp.</tt><tt class="descname">BaseApp</tt><big>(</big><em>app</em>, <em>db</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp" title="Permalink to this definition">¶</a></dt>
+<dt id="flask.ext.appbuilder.base.AppBuilder">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.base.</tt><tt class="descname">AppBuilder</tt><big>(</big><em>app</em>, <em>db</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the base class for the all framework.
 Will hold your flask app object, all your views, and security classes.</p>
 <p>initialize your application like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">SQLAlchemy</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-<span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+<span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="method">
-<dt id="flask.ext.appbuilder.baseapp.BaseApp.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>app</em>, <em>db</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>BaseApp constructor</p>
+<dt id="flask.ext.appbuilder.base.AppBuilder.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>app</em>, <em>db</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>AppBuilder constructor</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -100,8 +100,8 @@ Will hold your flask app object, all your views, and security classes.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="flask.ext.appbuilder.baseapp.BaseApp.add_link">
-<tt class="descname">add_link</tt><big>(</big><em>name</em>, <em>href</em>, <em>icon=''</em>, <em>label=''</em>, <em>category=''</em>, <em>category_icon=''</em>, <em>category_label=''</em>, <em>baseview=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.add_link" title="Permalink to this definition">¶</a></dt>
+<dt id="flask.ext.appbuilder.base.AppBuilder.add_link">
+<tt class="descname">add_link</tt><big>(</big><em>name</em>, <em>href</em>, <em>icon=''</em>, <em>label=''</em>, <em>category=''</em>, <em>category_icon=''</em>, <em>category_label=''</em>, <em>baseview=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.add_link" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add your own links to menu using this method</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -123,8 +123,8 @@ Will hold your flask app object, all your views, and security classes.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="flask.ext.appbuilder.baseapp.BaseApp.add_separator">
-<tt class="descname">add_separator</tt><big>(</big><em>category</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.add_separator" title="Permalink to this definition">¶</a></dt>
+<dt id="flask.ext.appbuilder.base.AppBuilder.add_separator">
+<tt class="descname">add_separator</tt><big>(</big><em>category</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.add_separator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a separator to the menu, you will sequentially create the menu</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -137,8 +137,8 @@ Will hold your flask app object, all your views, and security classes.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="flask.ext.appbuilder.baseapp.BaseApp.add_view">
-<tt class="descname">add_view</tt><big>(</big><em>baseview</em>, <em>name</em>, <em>href=''</em>, <em>icon=''</em>, <em>label=''</em>, <em>category=''</em>, <em>category_icon=''</em>, <em>category_label=''</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.add_view" title="Permalink to this definition">¶</a></dt>
+<dt id="flask.ext.appbuilder.base.AppBuilder.add_view">
+<tt class="descname">add_view</tt><big>(</big><em>baseview</em>, <em>name</em>, <em>href=''</em>, <em>icon=''</em>, <em>label=''</em>, <em>category=''</em>, <em>category_icon=''</em>, <em>category_label=''</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.add_view" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add your views associated with menus using this method.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -162,26 +162,26 @@ if non provided the view will be acessible as a top menu.</li>
 </tbody>
 </table>
 <p>Examples:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
 <span class="c"># Register a view, rendering a top menu without icon.</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView</span><span class="p">(),</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView</span><span class="p">(),</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
 <span class="c"># or not instantiated</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView</span><span class="p">,</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView</span><span class="p">,</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
 <span class="c"># Register a view, a submenu &quot;Other View&quot; from &quot;Other&quot; with a phone icon.</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">)</span>
 <span class="c"># Register a view, with category icon and translation.</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">YetOtherGeneralView</span><span class="p">(),</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">YetOtherGeneralView</span><span class="p">(),</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span>
                 <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Other View&#39;</span><span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s">&#39;fa-envelop&#39;</span><span class="p">,</span>
                 <span class="n">category_label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Other View&#39;</span><span class="p">))</span>
 <span class="c"># Add a link</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;google&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-google-plus&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;google&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-google-plus&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
-<dt id="flask.ext.appbuilder.baseapp.BaseApp.add_view_no_menu">
-<tt class="descname">add_view_no_menu</tt><big>(</big><em>baseview</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.add_view_no_menu" title="Permalink to this definition">¶</a></dt>
+<dt id="flask.ext.appbuilder.base.AppBuilder.add_view_no_menu">
+<tt class="descname">add_view_no_menu</tt><big>(</big><em>baseview</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.add_view_no_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add your views without creating a menu.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -193,27 +193,15 @@ if non provided the view will be acessible as a top menu.</li>
 </table>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.baseapp.BaseApp.bm">
-<tt class="descname">bm</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.bm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Babel Manager</p>
-</dd></dl>
-
 <dl class="method">
-<dt id="flask.ext.appbuilder.baseapp.BaseApp.security_cleanup">
-<tt class="descname">security_cleanup</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.security_cleanup" title="Permalink to this definition">¶</a></dt>
+<dt id="flask.ext.appbuilder.base.AppBuilder.security_cleanup">
+<tt class="descname">security_cleanup</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.security_cleanup" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is useful if you have changed the name of your menus or classes,
 changing them will leave behind permissions that are not associated with anything.</p>
 <p>You can use it always or just sometimes to
 perform a security cleanup. Warning this will delete any permission
 that is no longer part of any registered view or menu.</p>
 <p>Remember invoke ONLY AFTER YOU HAVE REGISTERED ALL VIEWS</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.baseapp.BaseApp.sm">
-<tt class="descname">sm</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseapp.BaseApp.sm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Security Manager</p>
 </dd></dl>
 
 </dd></dl>
@@ -251,16 +239,16 @@ that is no longer part of any registered view or menu.</p>
 <p>Extend this class if you want to expose methods for your own templates</p>
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseView.create_blueprint">
-<tt class="descname">create_blueprint</tt><big>(</big><em>baseapp</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.create_blueprint" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">create_blueprint</tt><big>(</big><em>appbuilder</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.create_blueprint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create Flask blueprint. You will generally not use it</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>baseapp</strong> &#8211; the BaseApp application</li>
+<li><strong>appbuilder</strong> &#8211; the AppBuilder object</li>
 <li><strong>endpoint</strong> &#8211; endpoint override for this blueprint, will assume class name if not provided</li>
-<li><strong>static_folder</strong> &#8211; the relative override for static folder, if ommited application will use the baseapp static</li>
+<li><strong>static_folder</strong> &#8211; the relative override for static folder, if ommited application will use the appbuilder static</li>
 </ul>
 </td>
 </tr>
@@ -1002,8 +990,8 @@ will create the following columns:</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">API Reference</a><ul>
-<li><a class="reference internal" href="#flask-ext-appbuilder-baseapp">flask.ext.appbuilder.baseapp</a><ul>
-<li><a class="reference internal" href="#module-flask.ext.appbuilder.baseapp">BaseApp</a></li>
+<li><a class="reference internal" href="#flask-ext-appbuilder">flask.ext.appbuilder</a><ul>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.base">AppBuilder</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.baseviews">flask.ext.appbuilder.baseviews</a><ul>

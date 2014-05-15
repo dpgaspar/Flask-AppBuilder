@@ -2,15 +2,15 @@
 API Reference
 =============
 
-flask.ext.appbuilder.baseapp
-============================
+flask.ext.appbuilder
+====================
 
-BaseApp
--------
+AppBuilder
+----------
 
-.. automodule:: flask.ext.appbuilder.baseapp
+.. automodule:: flask.ext.appbuilder.base
 
-    .. autoclass:: BaseApp
+    .. autoclass:: AppBuilder
         :members:
         
         .. automethod:: __init__

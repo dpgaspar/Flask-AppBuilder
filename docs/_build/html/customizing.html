@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Actions" href="actions.html" />
-    <link rel="prev" title="Base Configuration" href="config.html" />
+    <link rel="prev" title="Advanced Configuration" href="advanced.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -48,7 +48,7 @@
           <a href="actions.html" title="Actions"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="config.html" title="Base Configuration"
+          <a href="advanced.html" title="Advanced Configuration"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -82,7 +82,8 @@
 </div>
 <div class="section" id="changing-the-index">
 <h2>Changing the index<a class="headerlink" href="#changing-the-index" title="Permalink to this headline">¶</a></h2>
-<p>The index can be easily overridden by your own. You must develop your template, then define it in a IndexView and pass it to BaseApp</p>
+<p>The index can be easily overridden by your own.
+You must develop your template, then define it in a IndexView and pass it to AppBuilder</p>
 <p>The default index template is very simple, you can create your own like this:</p>
 <p>1 - Develop your template (on your &lt;PROJECT_NAME&gt;/app/templates/my_index.html):</p>
 <div class="highlight-python"><div class="highlight"><pre>{% extends &quot;appbuilder/base.html&quot; %}
@@ -110,7 +111,7 @@
 </pre></div>
 </div>
 <p>3 - Tell F.A.B to use your index view:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">indexview</span> <span class="o">=</span> <span class="n">MyIndexView</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">indexview</span> <span class="o">=</span> <span class="n">MyIndexView</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -127,32 +128,30 @@
 <p>By default menu is constructed based on your classes and in a reversed navbar. Let&#8217;s take a quick look on how to easily change this</p>
 <blockquote>
 <div><ul>
-<li><p class="first">Change the reversed navbar style, on baseapp initialization:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">Menu</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+<li><p class="first">Change the reversed navbar style, on AppBuilder initialization:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">Menu</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Add your own menu links, on a default reversed navbar:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
-<span class="c"># Register a view, rendering a top menu without icon</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView</span><span class="p">,</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Register a view, rendering a top menu without icon</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView</span><span class="p">,</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
 <span class="c"># Register a view, a submenu &quot;Other View&quot; from &quot;Other&quot; with a phone icon</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">)</span>
 <span class="c"># Register a view, with label for babel support (internationalization), setup an icon for the category.</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Other View&#39;</span><span class="p">),</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Other View&#39;</span><span class="p">),</span>
                 <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">,</span> <span class="n">category_label</span><span class="o">=</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Other&#39;</span><span class="p">),</span> <span class="n">category_label</span><span class="o">=</span><span class="s">&#39;fa-envelope&#39;</span><span class="p">)</span>
 <span class="c"># Add a link</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;google&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-google-plus&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;google&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-google-plus&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Add separators:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
-<span class="c"># Register a view, rendering a top menu without icon</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView1</span><span class="p">,</span> <span class="s">&quot;My View 1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView2</span><span class="p">,</span> <span class="s">&quot;My View 2&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_separator</span><span class="p">(</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView3</span><span class="p">,</span> <span class="s">&quot;My View 3&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Register a view, rendering a top menu without icon</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView1</span><span class="p">,</span> <span class="s">&quot;My View 1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView2</span><span class="p">,</span> <span class="s">&quot;My View 2&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_separator</span><span class="p">(</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView3</span><span class="p">,</span> <span class="s">&quot;My View 3&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
@@ -223,11 +222,10 @@
 <h2>Change Default View Behaviour<a class="headerlink" href="#change-default-view-behaviour" title="Permalink to this headline">¶</a></h2>
 <p>If you want to have Add, edit and list on the same page, this can be done. This could be very helpful on master/detail lists (inline) on views based on tables with very few columns.</p>
 <p>All you have to do is to mix <em>CompactCRUDMixin</em> class with the <em>GeneralView</em> class.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseapp</span> <span class="kn">import</span> <span class="n">BaseApp</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.datamodel</span> <span class="kn">import</span> <span class="n">SQLAModel</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.datamodel</span> <span class="kn">import</span> <span class="n">SQLAModel</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.views</span> <span class="kn">import</span> <span class="n">GeneralView</span><span class="p">,</span> <span class="n">CompactCRUDMixin</span>
 <span class="kn">from</span> <span class="nn">app.models</span> <span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ProjectFiles</span>
-<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">app</span><span class="p">,</span> <span class="n">db</span>
+<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">appbuilder</span>
 
 
 <span class="k">class</span> <span class="nc">MyInlineView</span><span class="p">(</span><span class="n">CompactCRUDMixin</span><span class="p">,</span> <span class="n">GeneralView</span><span class="p">):</span>
@@ -237,9 +235,8 @@
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyViewTable</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyInlineView</span><span class="p">]</span>
 
-<span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">,</span> <span class="s">&quot;List My View&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-table&quot;</span><span class="p">,</span> <span class="n">category</span> <span class="o">=</span> <span class="s">&quot;My Views&quot;</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="n">MyInlineView</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">,</span> <span class="s">&quot;List My View&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-table&quot;</span><span class="p">,</span> <span class="n">category</span> <span class="o">=</span> <span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="n">MyInlineView</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Notice the class mixin, with this configuration you will have a <em>Master View</em> with the inline view <em>MyInlineView</em> where you can Add and Edit on the same page.</p>
@@ -274,13 +271,12 @@
 </div>
 <p>This will show a left side menu with the <em>groups</em> and a right side list with contacts, and a time chart with the number of birthdays during time by the selected group.</p>
 <p>Finally register everything:</p>
-<div class="highlight-python"><div class="highlight"><pre>genapp = BaseApp(app, db)
-// if Using the above example with related chart
-genapp.add_view_no_memnu(ContactTimeChartView)
+<div class="highlight-python"><div class="highlight"><pre>// if Using the above example with related chart
+appbuilder.add_view_no_menu(ContactTimeChartView)
 
-genapp.add_view(GroupMasterView, &quot;List Groups&quot;, icon=&quot;fa-folder-open-o&quot;, category=&quot;Contacts&quot;)
-genapp.add_separator(&quot;Contacts&quot;)
-genapp.add_view(ContactGeneralView, &quot;List Contacts&quot;, icon=&quot;fa-envelope&quot;, category=&quot;Contacts&quot;)
+appbuilder.add_view(GroupMasterView, &quot;List Groups&quot;, icon=&quot;fa-folder-open-o&quot;, category=&quot;Contacts&quot;)
+appbuilder.add_separator(&quot;Contacts&quot;)
+appbuilder.add_view(ContactGeneralView, &quot;List Contacts&quot;, icon=&quot;fa-envelope&quot;, category=&quot;Contacts&quot;)
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="_images/list_master_detail.png"><img alt="_images/list_master_detail.png" src="_images/list_master_detail.png" style="width: 100%;" /></a>
@@ -308,7 +304,7 @@ genapp.add_view(ContactGeneralView, &quot;List Contacts&quot;, icon=&quot;fa-env
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="config.html" title="previous chapter">Base Configuration</a></li>
+      <li>Previous: <a href="advanced.html" title="previous chapter">Advanced Configuration</a></li>
       <li>Next: <a href="actions.html" title="next chapter">Actions</a></li>
   </ul></li>
 </ul>

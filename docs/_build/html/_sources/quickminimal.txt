@@ -15,7 +15,7 @@ I do advise using the skeleton application as described on the :doc:`installatio
     import os
     from flask import Flask
     from flask.ext.sqlalchemy import SQLAlchemy
-    from flask.ext.appbuilder.baseapp import BaseApp
+    from flask.ext.appbuilder import AppBuilder
 
     # init Flask
     app = Flask(__name__)
@@ -29,7 +29,7 @@ I do advise using the skeleton application as described on the :doc:`installatio
     # Init SQLAlchemy
     db = SQLAlchemy(app)
     # Init F.A.B.
-    genapp = BaseApp(app, db)
+    appbuilder = AppBuilder(app, db)
 
     # Run the development server
     app.run(host='0.0.0.0', port=8080, debug=True)

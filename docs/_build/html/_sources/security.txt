@@ -81,14 +81,13 @@ use it after you have registered all your views
 
 ::
 
-    genapp = BaseApp(app, db)
-    genapp.add_view(GroupGeneralView(), "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-    genapp.add_view(ContactGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")
-    genapp.add_separator("Contacts")
-    genapp.add_view(ContactChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")
-    genapp.add_view(ContactTimeChartView(), "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
+    appbuilder.add_view(GroupGeneralView(), "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
+    appbuilder.add_view(ContactGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")
+    appbuilder.add_separator("Contacts")
+    appbuilder.add_view(ContactChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")
+    appbuilder.add_view(ContactTimeChartView(), "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
 
-    genapp.security_cleanup()
+    appbuilder.security_cleanup()
 
 
 You can always use it and everything will be painlessly automatic. But if you use it only when needed
