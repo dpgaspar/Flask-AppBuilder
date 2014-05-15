@@ -3,7 +3,7 @@ from flask import g
 from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declared_attr
-from flask.ext.appbuilder import Base
+from .. import Base
 from .._compat import as_unicode
 
 
