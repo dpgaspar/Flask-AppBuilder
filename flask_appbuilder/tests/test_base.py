@@ -47,7 +47,7 @@ class FlaskTestCase(unittest.TestCase):
 
     def setUp(self):
         from flask import Flask
-        from flask.ext.appbuilder.baseapp import BaseApp
+        from flask.ext.appbuilder import AppBuilder
         from flask.ext.appbuilder.models.datamodel import SQLAModel
         from flask.ext.appbuilder.views import GeneralView
 
@@ -59,6 +59,7 @@ class FlaskTestCase(unittest.TestCase):
         self.app.config['WTF_CSRF_ENABLED'] = False
 
         self.db = SQLAlchemy(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db)
 
         class Model1View(GeneralView):
             datamodel = SQLAModel(Model1)
@@ -75,18 +76,16 @@ class FlaskTestCase(unittest.TestCase):
             datamodel = SQLAModel(Model1, self.db.session)
             base_filters = [['field_integer', FilterEqual, 0]]
 
+        self.appbuilder.add_view(Model1View, "Model1")
+        self.appbuilder.add_view(Model1Filtered1View, "Model1Filtered1")
+        self.appbuilder.add_view(Model1Filtered2View, "Model1Filtered2")
 
-        self.baseapp = BaseApp(self.app, self.db)
-        self.baseapp.add_view(Model1View, "Model1")
-        self.baseapp.add_view(Model1Filtered1View, "Model1Filtered1")
-        self.baseapp.add_view(Model1Filtered2View, "Model1Filtered2")
-
-        self.baseapp.add_view(Model2View, "Model2")
-        self.baseapp.add_view(Model2View, "Model2 Add", href='/model2view/add')
+        self.appbuilder.add_view(Model2View, "Model2")
+        self.appbuilder.add_view(Model2View, "Model2 Add", href='/model2view/add')
 
 
     def tearDown(self):
-        self.baseapp = None
+        self.appbuilder = None
         self.app = None
         self.db = None
         log.debug("TEAR DOWN")
@@ -117,7 +116,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.baseapp.baseviews), 15)  # current minimal views are 11
+        eq_(len(self.appbuilder.baseviews), 15)  # current minimal views are 11
 
 
     def test_model_creation(self):

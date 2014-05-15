@@ -19,10 +19,9 @@ Decorate your url routing methods with @expose. additionally add @has_access dec
 
 Using the Flask-AppBuilder-Skeleton (take a look at the :doc:`installation` chapter). Edit views.py file and add::
 
-    from flask.ext.appbuilder.baseapp import BaseApp
+    from flask.ext.appbuilder import AppBuilder, expose
     from flask.ext.appbuilder.baseviews import BaseView
-    from flask.ext.appbuilder.baseviews import expose
-    from app import app, db
+    from app import appbuilder
 
     class MyView(BaseView):
         route_base = "/myview"
@@ -40,8 +39,7 @@ Using the Flask-AppBuilder-Skeleton (take a look at the :doc:`installation` chap
             param1 = 'Hello %s' % (param1)
             return param1
 
-    genapp = BaseApp(app, db)
-    genapp.add_view_no_menu(MyView())
+    appbuilder.add_view_no_menu(MyView())
     
 
 You can find this example on:
@@ -70,11 +68,10 @@ http://localhost:8080/myview/method2/john
 
 Has you can see this methods are public, let's change this example, edit views.py and change it to::
 
-    from flask.ext.appbuilder.baseapp import BaseApp
+    from flask.ext.appbuilder import AppBuilder, expose
     from flask.ext.appbuilder.baseviews import BaseView
-    from flask.ext.appbuilder.baseviews import expose
     from flask.ext.appbuilder.security.decorators import has_access
-    from app import app, db
+    from app import appbuilder
 
 
     class MyView(BaseView):
@@ -96,9 +93,8 @@ Has you can see this methods are public, let's change this example, edit views.p
             param1 = 'Goodbye %s' % (param1)
             return param1
 
-    genapp = BaseApp(app, db)
-    genapp.add_view(MyView, "Method1", category='My View')
-    genapp.add_link("Method2", href='/myview/method2/jonh', category='My View')
+    appbuilder.add_view(MyView, "Method1", category='My View')
+    appbuilder.add_link("Method2", href='/myview/method2/jonh', category='My View')
 
 
 You can find this example on https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2
@@ -150,7 +146,7 @@ Implement *form_get* and *form_post* to implement your form pre-processing and p
             # process form
             flash(as_unicode(self.message), 'info')
 
-    baseapp.add_view(MyFormView, "My form View", href="/myform", icon="fa-group", label=_('My form View'),
+    appbuilder.add_view(MyFormView, "My form View", href="/myform", icon="fa-group", label=_('My form View'),
                          category="My Forms", category_icon="fa-cogs")
 
 

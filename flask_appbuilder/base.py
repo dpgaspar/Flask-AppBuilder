@@ -52,7 +52,7 @@ class AppBuilder(object):
                  static_folder='static/appbuilder',
                  static_url_path='/appbuilder'):
         """
-            BaseApp constructor
+            AppBuilder constructor
             
             :param app:
                 The flask app object
@@ -125,7 +125,7 @@ class AppBuilder(object):
         self.template_filters = TemplateFilters(self.app, self.sm)
 
     def _add_global_static(self):
-        bp = Blueprint('baseapp', __name__, url_prefix='/static',
+        bp = Blueprint('appbuilder', __name__, url_prefix='/static',
                        template_folder='templates', static_folder=self.static_folder,
                        static_url_path=self.static_url_path)
         self.app.register_blueprint(bp)
@@ -184,25 +184,25 @@ class AppBuilder(object):
 
             Examples::
             
-                baseapp = BaseApp(app, db)
+                appbuilder = AppBuilder(app, db)
                 # Register a view, rendering a top menu without icon.
-                baseapp.add_view(MyGeneralView(), "My View")
+                appbuilder.add_view(MyGeneralView(), "My View")
                 # or not instantiated
-                baseapp.add_view(MyGeneralView, "My View")
+                appbuilder.add_view(MyGeneralView, "My View")
                 # Register a view, a submenu "Other View" from "Other" with a phone icon.
-                baseapp.add_view(MyOtherGeneralView, "Other View", icon='fa-phone', category="Others")
+                appbuilder.add_view(MyOtherGeneralView, "Other View", icon='fa-phone', category="Others")
                 # Register a view, with category icon and translation.
-                baseapp.add_view(YetOtherGeneralView(), "Other View", icon='fa-phone',
+                appbuilder.add_view(YetOtherGeneralView(), "Other View", icon='fa-phone',
                                 label=_('Other View'), category="Others", category_icon='fa-envelop',
                                 category_label=_('Other View'))
                 # Add a link
-                baseapp.add_link("google", href="www.google.com", icon = "fa-google-plus")
+                appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
         baseview = self._check_and_init(baseview)
         log.info("Registering class %s on menu %s.%s" % (baseview.__class__.__name__, category, name))
 
         if not self._view_exists(baseview):
-            baseview.baseapp = self
+            baseview.appbuilder = self
             self.baseviews.append(baseview)
             self._process_ref_related_views()
             self.register_blueprint(baseview)
@@ -260,7 +260,7 @@ class AppBuilder(object):
         log.info("Registering class %s" % (baseview.__class__.__name__))
 
         if not self._view_exists(baseview):
-            baseview.baseapp = self
+            baseview.appbuilder = self
             self.baseviews.append(baseview)
             self._process_ref_related_views()
             self.register_blueprint(baseview, endpoint=endpoint, static_folder=static_folder)

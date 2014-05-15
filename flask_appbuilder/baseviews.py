@@ -39,7 +39,7 @@ class BaseView(object):
         Extend this class if you want to expose methods for your own templates        
     """
 
-    baseapp = None
+    appbuilder = None
     blueprint = None
     endpoint = None
 
@@ -64,21 +64,21 @@ class BaseView(object):
             ]
 
 
-    def create_blueprint(self, baseapp,
+    def create_blueprint(self, appbuilder,
                          endpoint=None,
                          static_folder=None):
         """
             Create Flask blueprint. You will generally not use it
             
-            :param baseapp:
-               the BaseApp application
+            :param appbuilder:
+               the AppBuilder object
             :param endpoint:
                endpoint override for this blueprint, will assume class name if not provided
             :param static_folder:
-               the relative override for static folder, if ommited application will use the baseapp static
+               the relative override for static folder, if ommited application will use the appbuilder static
         """
-        # Store BaseApp instance
-        self.baseapp = baseapp
+        # Store appbuilder instance
+        self.appbuilder = appbuilder
 
         # If endpoint name is not provided, get it from the class name
         self.endpoint = endpoint or self.__class__.__name__
@@ -172,7 +172,7 @@ class BaseView(object):
             try:
                 return url_for('%s.%s' % (self.endpoint, self.default_view), **request.args)
             except:
-                return url_for('%s.%s' % (self.baseapp.indexview.endpoint, self.baseapp.indexview.default_view))
+                return url_for('%s.%s' % (self.appbuilder.indexview.endpoint, self.appbuilder.indexview.default_view))
 
 
 class BaseModelView(BaseView):

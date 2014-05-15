@@ -1,8 +1,7 @@
-from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.baseviews import BaseView
 from flask.ext.appbuilder.baseviews import expose
 from flask.ext.appbuilder.security.decorators import has_access
-from app import app, db
+from app import appbuilder
 
 class MyView(BaseView):
 
@@ -24,9 +23,8 @@ class MyView(BaseView):
         return param1
 
 
-genapp = BaseApp(app, db)
-genapp.add_view(MyView(), "Method1", category='My View')
-#genapp.add_view(MyView(), "Method2", href='/myview/method2/jonh', category='My View')
+appbuilder.add_view(MyView(), "Method1", category='My View')
+#appbuilder.add_view(MyView(), "Method2", href='/myview/method2/jonh', category='My View')
 # Use add link instead there is no need to create MyView twice.
-genapp.add_link("Method2", href='/myview/method2/jonh', category='My View')
+appbuilder.add_link("Method2", href='/myview/method2/jonh', category='My View')
 

@@ -8,9 +8,9 @@ def has_access(f):
         """
  
         def wraps(self, *args, **kwargs):
-            if self.baseapp.sm.has_access("can_" + f.__name__, self.__class__.__name__):
+            if self.appbuilder.sm.has_access("can_" + f.__name__, self.__class__.__name__):
                 return f(self, *args, **kwargs)
             else:
                 flash("Access is Denied %s %s" % (f.__name__, self.__class__.__name__), "danger")
-            return redirect(url_for(self.baseapp.sm.auth_view.__class__.__name__ + ".login"))
+            return redirect(url_for(self.appbuilder.sm.auth_view.__class__.__name__ + ".login"))
         return wraps

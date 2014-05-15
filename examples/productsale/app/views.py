@@ -1,11 +1,10 @@
 from models import Product, ProductType, Sale
-from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.views import GeneralView, BaseView
 from flask.ext.appbuilder.charts.views import ChartView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.widgets import ListBlock, ShowBlockWidget
 
-from app import app, db
+from app import appbuilder
 
 
 class ProductPubView(GeneralView):
@@ -34,10 +33,9 @@ class ProductTypeView(GeneralView):
     related_views = [ProductView]
 
 
-baseapp = BaseApp(app, db)
 
-baseapp.add_view(ProductPubView, "Our Products", icon="fa-folder-open-o")
-baseapp.add_view(ProductView, "List Products", icon="fa-folder-open-o", category="Management")
-baseapp.add_separator("Management")
-baseapp.add_view(ProductTypeView, "List Product Types", icon="fa-envelope", category="Management")
+appbuilder.add_view(ProductPubView, "Our Products", icon="fa-folder-open-o")
+appbuilder.add_view(ProductView, "List Products", icon="fa-folder-open-o", category="Management")
+appbuilder.add_separator("Management")
+appbuilder.add_view(ProductTypeView, "List Product Types", icon="fa-envelope", category="Management")
 

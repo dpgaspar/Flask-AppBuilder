@@ -21,7 +21,7 @@ class IndexView(BaseView):
 
     @expose('/')
     def index(self):
-        return render_template(self.index_template, baseapp=self.baseapp)
+        return render_template(self.index_template, appbuilder=self.appbuilder)
 
 
 class SimpleFormView(BaseView):
@@ -69,7 +69,7 @@ class SimpleFormView(BaseView):
         return render_template(self.form_template,
                                title=self.form_title,
                                widgets=widgets,
-                               baseapp=self.baseapp
+                               appbuilder=self.appbuilder
         )
 
     def form_get(self, form):
@@ -93,7 +93,7 @@ class SimpleFormView(BaseView):
                 self.form_template,
                 title=self.form_title,
                 widgets=widgets,
-                baseapp=self.baseapp
+                appbuilder=self.appbuilder
             )
 
     def form_post(self, form):
@@ -137,7 +137,7 @@ class GeneralView(BaseCRUDView):
         return render_template(self.list_template,
                                title=self.list_title,
                                widgets=widgets,
-                               baseapp=self.baseapp)
+                               appbuilder=self.appbuilder)
 
     """
     --------------------------------
@@ -154,7 +154,7 @@ class GeneralView(BaseCRUDView):
                                pk=pk,
                                title=self.show_title,
                                widgets=widgets,
-                               baseapp=self.baseapp,
+                               appbuilder=self.appbuilder,
                                related_views=self._related_views)
 
 
@@ -175,7 +175,7 @@ class GeneralView(BaseCRUDView):
             return render_template(self.add_template,
                                    title=self.add_title,
                                    widgets=widget,
-                                   baseapp=self.baseapp)
+                                   appbuilder=self.appbuilder)
 
     """
     ---------------------------
@@ -193,7 +193,7 @@ class GeneralView(BaseCRUDView):
             return render_template(self.edit_template,
                                    title=self.edit_title,
                                    widgets=widgets,
-                                   baseapp=self.baseapp,
+                                   appbuilder=self.appbuilder,
                                    related_views=self._related_views)
 
 
@@ -213,7 +213,7 @@ class GeneralView(BaseCRUDView):
     @expose('/download/<string:filename>')
     @has_access
     def download(self, filename):
-        return send_file(self.baseapp.app.config['UPLOAD_FOLDER'] + filename,
+        return send_file(self.appbuilder.app.config['UPLOAD_FOLDER'] + filename,
                          attachment_filename=uuid_originalname(filename),
                          as_attachment=True)
 
@@ -221,7 +221,7 @@ class GeneralView(BaseCRUDView):
     @expose('/action/<string:name>/<pk>')
     @has_access
     def action(self, name, pk):
-        if self.baseapp.sm.has_access(name, self.__class__.__name__):
+        if self.appbuilder.sm.has_access(name, self.__class__.__name__):
             action = self.actions.get(name)
             return action.func(self.datamodel.get(pk))
         else:
@@ -275,7 +275,7 @@ class MasterDetailView(BaseCRUDView):
                                widgets=widgets,
                                related_views=related_views,
                                master_div_width=self.master_div_width,
-                               baseapp=self.baseapp)
+                               appbuilder=self.appbuilder)
 
 
 class MasterDetailChart(BaseCRUDView):
@@ -324,7 +324,7 @@ class MasterDetailChart(BaseCRUDView):
                                widgets=widgets,
                                related_views=related_views,
                                master_div_width=self.master_div_width,
-                               baseapp=self.baseapp)
+                               appbuilder=self.appbuilder)
 
 
 class CompactCRUDMixin(BaseCRUDView):
@@ -351,7 +351,7 @@ class CompactCRUDMixin(BaseCRUDView):
         return render_template(self.list_template,
                                title=self.list_title,
                                widgets=list_widgets,
-                               baseapp=self.baseapp)
+                               appbuilder=self.appbuilder)
 
     @expose('/add/', methods=['GET', 'POST'])
     @has_access

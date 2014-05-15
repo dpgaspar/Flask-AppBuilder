@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.appbuilder.baseapp import BaseApp
+from flask.ext.appbuilder import AppBuilder
 
 app = Flask(__name__)
 
@@ -11,6 +11,6 @@ app.config['CSRF_ENABLED'] = True
 app.config['SECRET_KEY'] = 'thisismyscretkey'
 
 db = SQLAlchemy(app)
-genapp = BaseApp(app, db)
+appbuilder = AppBuilder(app, db)
 
 app.run(host='0.0.0.0', port=8080, debug=True)

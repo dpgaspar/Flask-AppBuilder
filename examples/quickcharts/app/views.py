@@ -1,9 +1,8 @@
-from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.views import GeneralView
 from flask_appbuilder.charts.views import DirectChartView
 
-from app import app, db
+from app import appbuilder
 from models import CountryStats
 
 
@@ -20,8 +19,7 @@ class CountryStatsDirectChart(DirectChartView):
     base_order = ('stat_date', 'asc')
 
 
-genapp = BaseApp(app, db)
-genapp.add_view(CountryStatsGeneralView, "List Country Stats", icon="fa-folder-open-o", category="Statistics")
-genapp.add_separator("Statistics")
-genapp.add_view(CountryStatsDirectChart, "Show Country Chart", icon="fa-dashboard", category="Statistics")
+appbuilder.add_view(CountryStatsGeneralView, "List Country Stats", icon="fa-folder-open-o", category="Statistics")
+appbuilder.add_separator("Statistics")
+appbuilder.add_view(CountryStatsDirectChart, "Show Country Chart", icon="fa-dashboard", category="Statistics")
 

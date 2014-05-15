@@ -80,7 +80,7 @@ class ResetMyPasswordView(SimpleFormView):
     message = lazy_gettext('Password Changed')
 
     def form_post(self, form):
-        self.baseapp.sm.reset_password(g.user.id, form.password.data)
+        self.appbuilder.sm.reset_password(g.user.id, form.password.data)
         flash(as_unicode(self.message), 'info')
 
 
@@ -99,7 +99,7 @@ class ResetPasswordView(SimpleFormView):
 
     def form_post(self, form):
         pk = request.args.get('pk')
-        self.baseapp.sm.reset_password(pk, form.password.data)
+        self.appbuilder.sm.reset_password(pk, form.password.data)
         flash(as_unicode(self.message), 'info')
 
 
@@ -176,7 +176,7 @@ class UserOIDGeneralView(UserGeneralView):
         return render_template(self.show_template,
                                title=self.user_info_title,
                                widgets=widgets,
-                               baseapp=self.baseapp)
+                               appbuilder=self.appbuilder)
 
 
 class UserLDAPGeneralView(UserGeneralView):
@@ -187,7 +187,7 @@ class UserLDAPGeneralView(UserGeneralView):
         return render_template(self.show_template,
                                title=self.user_info_title,
                                widgets=widgets,
-                               baseapp=self.baseapp)
+                               appbuilder=self.appbuilder)
 
 
 class UserDBGeneralView(UserGeneralView):
@@ -215,7 +215,7 @@ class UserDBGeneralView(UserGeneralView):
                                pk=pk,
                                title=self.show_title,
                                widgets=widgets,
-                               baseapp=self.baseapp,
+                               appbuilder=self.appbuilder,
                                related_views=self._related_views)
 
 
@@ -228,7 +228,7 @@ class UserDBGeneralView(UserGeneralView):
         return render_template(self.show_template,
                                title=self.user_info_title,
                                widgets=widgets,
-                               baseapp=self.baseapp,
+                               appbuilder=self.appbuilder,
         )
 
     @action('resetmypassword', lazy_gettext("Reset my password"), "", "fa-lock")
@@ -290,7 +290,7 @@ class AuthView(BaseView):
     @expose('/logout/')
     def logout(self):
         logout_user()
-        return redirect(self.baseapp.get_url_for_index)
+        return redirect(self.appbuilder.get_url_for_index)
 
 
 class AuthDBView(AuthView):
@@ -302,16 +302,16 @@ class AuthDBView(AuthView):
             return redirect('/')
         form = LoginForm_db()
         if form.validate_on_submit():
-            user = self.baseapp.sm.auth_user_db(form.username.data, form.password.data)
+            user = self.appbuilder.sm.auth_user_db(form.username.data, form.password.data)
             if not user:
                 flash(as_unicode(self.invalid_login_message), 'warning')
-                return redirect(self.baseapp.get_url_for_login)
+                return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
-            return redirect(self.baseapp.get_url_for_index)
+            return redirect(self.appbuilder.get_url_for_index)
         return render_template(self.login_template,
                                title=self.title,
                                form=form,
-                               baseapp=self.baseapp)
+                               appbuilder=self.appbuilder)
 
 
 class AuthLDAPView(AuthView):
@@ -321,19 +321,19 @@ class AuthLDAPView(AuthView):
     @expose('/login/', methods=['GET', 'POST'])
     def login(self):
         if g.user is not None and g.user.is_authenticated():
-            return redirect(self.baseapp.get_url_for_index)
+            return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_db()
         if form.validate_on_submit():
-            user = self.baseapp.sm.auth_user_ldap(form.username.data, form.password.data)
+            user = self.appbuilder.sm.auth_user_ldap(form.username.data, form.password.data)
             if not user:
                 flash(as_unicode(self.invalid_login_message), 'warning')
-                return redirect(self.baseapp.get_url_for_login)
+                return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
-            return redirect(self.baseapp.get_url_for_index)
+            return redirect(self.appbuilder.get_url_for_index)
         return render_template(self.login_template,
                                title=self.title,
                                form=form,
-                               baseapp=self.baseapp)
+                               appbuilder=self.appbuilder)
 
 
 class AuthOIDView(AuthView):
@@ -342,18 +342,18 @@ class AuthOIDView(AuthView):
     @expose('/login/', methods=['GET', 'POST'])
     def login(self, flag=True):
         if flag:
-            self.oid_login_handler(self.login, self.baseapp.sm.oid)
+            self.oid_login_handler(self.login, self.appbuilder.sm.oid)
         if g.user is not None and g.user.is_authenticated():
             return redirect('/')
         form = LoginForm_oid()
         if form.validate_on_submit():
             session['remember_me'] = form.remember_me.data
-            return self.baseapp.sm.oid.try_login(form.openid.data, ask_for=['email'])
+            return self.appbuilder.sm.oid.try_login(form.openid.data, ask_for=['email'])
         return render_template(self.login_template,
                                title=self.title,
                                form=form,
-                               providers=self.baseapp.app.config['OPENID_PROVIDERS'],
-                               baseapp=self.baseapp
+                               providers=self.appbuilder.app.config['OPENID_PROVIDERS'],
+                               appbuilder=self.appbuilder
         )
 
     def oid_login_handler(self, f, oid):
@@ -374,7 +374,7 @@ class AuthOIDView(AuthView):
         if resp.email is None or resp.email == "":
             flash(as_unicode(self.invalid_login_message), 'warning')
             return redirect('appbuilder/general/security/login_oid.html')
-        user = self.baseapp.sm.auth_user_oid(resp.email)
+        user = self.appbuilder.sm.auth_user_oid(resp.email)
         if user is None:
             flash(as_unicode(self.invalid_login_message), 'warning')
             return redirect('appbuilder/general/security/login_oid.html')
@@ -384,7 +384,7 @@ class AuthOIDView(AuthView):
             session.pop('remember_me', None)
 
         login_user(user, remember=remember_me)
-        return redirect(self.baseapp.get_url_for_index)
+        return redirect(self.appbuilder.get_url_for_index)
 
 
 

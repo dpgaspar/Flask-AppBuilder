@@ -173,7 +173,7 @@ class ChartView(BaseSimpleGroupByChartView):
                                group_by_label=self.group_by_label,
                                height=self.height,
                                widgets=widgets,
-                               baseapp=self.baseapp)
+                               appbuilder=self.appbuilder)
 
 
 class TimeChartView(BaseSimpleGroupByChartView):
@@ -236,7 +236,7 @@ class TimeChartView(BaseSimpleGroupByChartView):
                                group_by_columns=self.group_by_columns,
                                group_by_label=self.group_by_label,
                                widgets=widgets,
-                               baseapp=self.baseapp)
+                               appbuilder=self.appbuilder)
 
 
 class DirectChartView(BaseSimpleDirectChartView):
@@ -284,7 +284,7 @@ class DirectChartView(BaseSimpleDirectChartView):
                                group_by_label=self.group_by_label,
                                height=self.height,
                                widgets=widgets,
-                               baseapp=self.baseapp)
+                               appbuilder=self.appbuilder)
 
 
 class MultipleChartView(BaseChartView):
@@ -310,4 +310,4 @@ class MultipleChartView(BaseChartView):
                                group_by_label=self.group_by_label,
                                height=self.height,
                                widgets=widgets,
-                               baseapp=self.baseapp)
+                               appbuilder=self.appbuilder)

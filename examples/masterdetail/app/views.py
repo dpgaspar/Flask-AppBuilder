@@ -1,10 +1,9 @@
-from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.views import GeneralView, MasterDetailView
 from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
 from flask.ext.babelpkg import lazy_gettext as _
 
-from app import app, db
+from app import db, appbuilder
 from models import Group, Gender, Contact
 
 
@@ -81,12 +80,11 @@ fixed_translations_import = [
 
 
 fill_gender()
-genapp = BaseApp(app, db)
-genapp.add_view(GroupMasterView, "List Groups", icon="fa-folder-open-o", category="Contacts")
-genapp.add_separator("Contacts")
-genapp.add_view(GroupGeneralView, "Manage Groups", icon="fa-folder-open-o", category="Contacts")
-genapp.add_view(ContactGeneralView, "List Contacts", icon="fa-envelope", category="Contacts")
-genapp.add_separator("Contacts")
-genapp.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
-genapp.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
+appbuilder.add_view(GroupMasterView, "List Groups", icon="fa-folder-open-o", category="Contacts")
+appbuilder.add_separator("Contacts")
+appbuilder.add_view(GroupGeneralView, "Manage Groups", icon="fa-folder-open-o", category="Contacts")
+appbuilder.add_view(ContactGeneralView, "List Contacts", icon="fa-envelope", category="Contacts")
+appbuilder.add_separator("Contacts")
+appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
+appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
 

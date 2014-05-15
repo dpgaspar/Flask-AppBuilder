@@ -1,7 +1,6 @@
-from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.baseviews import BaseView
 from flask.ext.appbuilder.baseviews import expose
-from app import app, db
+from app import appbuilder
 
 class MyView(BaseView):
     route_base = "/myview"
@@ -20,7 +19,6 @@ class MyView(BaseView):
         param1 = 'Goodbye %s' % (param1)
         return param1
 
-genapp = BaseApp(app, db)
-genapp.add_view_no_menu(MyView())
+appbuilder.add_view_no_menu(MyView())
 
 

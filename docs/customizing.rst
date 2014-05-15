@@ -24,7 +24,8 @@ You can choose from the folowing `themes <https://github.com/dpgaspar/Flask-AppB
 Changing the index
 ------------------
 
-The index can be easily overridden by your own. You must develop your template, then define it in a IndexView and pass it to BaseApp
+The index can be easily overridden by your own.
+You must develop your template, then define it in a IndexView and pass it to AppBuilder
 
 The default index template is very simple, you can create your own like this:
 
@@ -59,7 +60,7 @@ Define a special and simple view inherit from IndexView::
 
 3 - Tell F.A.B to use your index view::
 
-    baseapp = BaseApp(app, db, indexview = MyIndexView)
+    appbuilder = AppBuilder(app, db, indexview = MyIndexView)
 
 
 Changing the Footer
@@ -81,31 +82,29 @@ You can change the way the menu is constructed adding your own links, separators
 
 By default menu is constructed based on your classes and in a reversed navbar. Let's take a quick look on how to easily change this
 
-	- Change the reversed navbar style, on baseapp initialization::
+	- Change the reversed navbar style, on AppBuilder initialization::
 	
-		baseapp = BaseApp(app, db, menu=Menu(reverse=False))
+		appbuilder = AppBuilder(app, db, menu=Menu(reverse=False))
 		
 	- Add your own menu links, on a default reversed navbar::
 	
-		baseapp = BaseApp(app, db)
 		# Register a view, rendering a top menu without icon
-		baseapp.add_view(MyGeneralView, "My View")
+		appbuilder.add_view(MyGeneralView, "My View")
 		# Register a view, a submenu "Other View" from "Other" with a phone icon
-		baseapp.add_view(MyOtherGeneralView, "Other View", icon='fa-phone', category="Others")
+		appbuilder.add_view(MyOtherGeneralView, "Other View", icon='fa-phone', category="Others")
 		# Register a view, with label for babel support (internationalization), setup an icon for the category.
-		baseapp.add_view(MyOtherGeneralView, "Other View", icon='fa-phone', label=lazy_gettext('Other View'),
+		appbuilder.add_view(MyOtherGeneralView, "Other View", icon='fa-phone', label=lazy_gettext('Other View'),
 		                category="Others", category_label=lazy_gettext('Other'), category_label='fa-envelope')
 		# Add a link
-		baseapp.add_link("google", href="www.google.com", icon = "fa-google-plus")
+		appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
 		
 	- Add separators::
 	
-		baseapp = BaseApp(app, db)
 		# Register a view, rendering a top menu without icon
-		baseapp.add_view(MyGeneralView1, "My View 1", category="My Views")
-		baseapp.add_view(MyGeneralView2, "My View 2", category="My Views")
-		baseapp.add_separator("My Views")
-		baseapp.add_view(MyGeneralView3, "My View 3", category="My Views")
+		appbuilder.add_view(MyGeneralView1, "My View 1", category="My Views")
+		appbuilder.add_view(MyGeneralView2, "My View 2", category="My Views")
+		appbuilder.add_separator("My Views")
+		appbuilder.add_view(MyGeneralView3, "My View 3", category="My Views")
 		
 
 Using *label* argument is optional for view name or category, but it's advised for internationalization, if you use it with Babel's *lazy_gettext* function it will automate translation's extraction.
@@ -195,11 +194,10 @@ All you have to do is to mix *CompactCRUDMixin* class with the *GeneralView* cla
 
 ::
 
-    from flask.ext.appbuilder.baseapp import BaseApp
     from flask.ext.appbuilder.models.datamodel import SQLAModel
     from flask.ext.appbuilder.views import GeneralView, CompactCRUDMixin
     from app.models import Project, ProjectFiles
-    from app import app, db
+    from app import appbuilder
 
 
     class MyInlineView(CompactCRUDMixin, GeneralView):
@@ -209,9 +207,8 @@ All you have to do is to mix *CompactCRUDMixin* class with the *GeneralView* cla
         datamodel = SQLAModel(MyViewTable)
         related_views = [MyInlineView]
 
-    baseapp = BaseApp(app, db)
-    baseapp.add_view(MyView, "List My View",icon = "fa-table", category = "My Views")
-    baseapp.add_view_no_menu(MyInlineView)
+    appbuilder.add_view(MyView, "List My View",icon = "fa-table", category = "My Views")
+    appbuilder.add_view_no_menu(MyInlineView)
 
 
 Notice the class mixin, with this configuration you will have a *Master View* with the inline view *MyInlineView* where you can Add and Edit on the same page.
@@ -259,13 +256,12 @@ This will show a left side menu with the *groups* and a right side list with con
 
 Finally register everything::
 
-    genapp = BaseApp(app, db)
     // if Using the above example with related chart
-    genapp.add_view_no_memnu(ContactTimeChartView)
+    appbuilder.add_view_no_menu(ContactTimeChartView)
 
-    genapp.add_view(GroupMasterView, "List Groups", icon="fa-folder-open-o", category="Contacts")
-    genapp.add_separator("Contacts")
-    genapp.add_view(ContactGeneralView, "List Contacts", icon="fa-envelope", category="Contacts")
+    appbuilder.add_view(GroupMasterView, "List Groups", icon="fa-folder-open-o", category="Contacts")
+    appbuilder.add_separator("Contacts")
+    appbuilder.add_view(ContactGeneralView, "List Contacts", icon="fa-envelope", category="Contacts")
 
 
 .. image:: ./images/list_master_detail.png

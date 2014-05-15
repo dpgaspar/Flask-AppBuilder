@@ -1,11 +1,10 @@
 from models import Person, Group
-from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.views import GeneralView, BaseView
 from flask.ext.appbuilder.charts.views import ChartView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.widgets import ListThumbnail
 
-from app import app, db
+from app import app, db, appbuilder
 
 
 class PersonGeneralView(GeneralView):
@@ -71,7 +70,6 @@ class PersonChartView(ChartView):
     search_columns = ['name', 'group']
 
 
-baseapp = BaseApp(app, db)
-baseapp.add_view(GroupGeneralView(), "List Groups", icon="fa-folder-open-o", category="Contacts")
-baseapp.add_view(PersonGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")
-baseapp.add_view(PersonChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")
+appbuilder.add_view(GroupGeneralView(), "List Groups", icon="fa-folder-open-o", category="Contacts")
+appbuilder.add_view(PersonGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")
+appbuilder.add_view(PersonChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")
