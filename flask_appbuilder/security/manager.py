@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager
 from flask_openid import OpenID
 from flask_babelpkg import lazy_gettext as _
+from sqlalchemy.engine.reflection import Inspector
 
 from .. import Base
 from ..basemanager import BaseManager
@@ -114,10 +115,11 @@ class SecurityManager(BaseManager):
     def init_db(self):
         try:
             engine = self.session.get_bind(mapper=None, clause=None)
-
-            log.info("Security DB not found Creating")
-            Base.metadata.create_all(engine)
-            log.info("Security DB Created")
+            inspector = Inspector.from_engine(engine)
+            if 'ab_user' not in inspector.get_table_names():
+                log.info("Security DB not found Creating all Models from Base")
+                Base.metadata.create_all(engine)
+                log.info("Security DB Created")
             if not self.session.query(Role).filter_by(name=self.auth_role_admin).first():
                 role = Role()
                 role.name = self.auth_role_admin
@@ -466,10 +468,10 @@ class SecurityManager(BaseManager):
         try:
             self.session.add(pv)
             self.session.commit()
-            log.info("Added Permission View: %s" % (str(pv)))
+            log.info("Created Permission View: %s" % (str(pv)))
             return pv
         except Exception as e:
-            log.error("Add Permission to View Error: {0}".format(str(e)))
+            log.error("Creation of Permission View Error: {0}".format(str(e)))
             self.session.rollback()
 
 
@@ -485,7 +487,7 @@ class SecurityManager(BaseManager):
                 self._del_permission(pv.permission.name)
             log.info("Removed Permission View: %s" % (str(permission_name)))
         except Exception as e:
-            log.error("Del Permission from View Error: {0}".format(str(e)))
+            log.error("Remove Permission from View Error: {0}".format(str(e)))
             self.session.rollback()
 
 
@@ -537,7 +539,7 @@ class SecurityManager(BaseManager):
                 self.session.commit()
                 log.info("Removed Permission %s to role %s" % (str(perm_view), role.name))
             except Exception as e:
-                log.error("Del Permission to Role Error: {0}".format(str(e)))
+                log.error("Remove Permission to Role Error: {0}".format(str(e)))
                 self.session.rollback()
 
 

@@ -90,11 +90,6 @@ class AppBuilder(object):
         self._add_global_static()
         self._add_global_filters()
 
-        # Creating Developer's models
-        self.db.create_all()
-        engine = self.db.session.get_bind(mapper=None, clause=None)
-        Base.metadata.create_all(engine)
-
     @property
     def get_app(self):
         return self.app
@@ -158,6 +153,10 @@ class AppBuilder(object):
             baseview = baseview()
         return baseview
 
+    def create_db(self):
+        engine = self.db.session.get_bind(mapper=None, clause=None)
+        Base.metadata.create_all(engine)
+        
     def add_view(self, baseview, name, href="", icon="", label="", category="", category_icon="", category_label=""):
         """
             Add your views associated with menus using this method.
