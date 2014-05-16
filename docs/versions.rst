@@ -6,6 +6,7 @@ Improvements and Bug fixes on 0.9.0
 
 - New, class name change BaseApp to AppBuilder, import like: from flask.ext.appbuilder import AppBuilder
 - New, can import expose decorator like: flask.ext.appbuilder import expose
+- New, AppBuilder.set_index_view you can set the default index has a method.
 
 Improvements and Bug fixes on 0.8.5
 -----------------------------------

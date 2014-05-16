@@ -158,15 +158,6 @@ class AppBuilder(object):
             baseview = baseview()
         return baseview
 
-    def set_index_view(self, indexview):
-        """
-            Change the default index view (Jinja2).
-
-            :param indexview:
-                The new default index page, inherit from IndexView.
-        """
-        self.indexview = indexview
-
     def add_view(self, baseview, name, href="", icon="", label="", category="", category_icon="", category_label=""):
         """
             Add your views associated with menus using this method.

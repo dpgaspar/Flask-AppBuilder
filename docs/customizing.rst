@@ -60,7 +60,7 @@ Define a special and simple view inherit from IndexView::
 
 3 - Tell F.A.B to use your index view::
 
-    appbuilder = AppBuilder(app, db, indexview = MyIndexView)
+    appbuilder.set_index_view(MyIndexView)
 
 
 Changing the Footer
