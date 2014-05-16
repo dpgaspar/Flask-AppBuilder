@@ -11,6 +11,9 @@ from flask_appbuilder.models.filters import FilterStartsWith, FilterEqual
 
 import logging
 
+"""
+    Constant english display string from framework
+"""
 DEFAULT_INDEX_STRING = 'Welcome'
 INVALID_LOGIN_STRING = 'Invalid login'
 ACCESS_IS_DENIED = "Access is Denied"
