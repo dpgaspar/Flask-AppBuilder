@@ -6,7 +6,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from flask.ext.appbuilder.models.mixins import BaseMixin
-from flask.ext.appbuilder import Base
+from flask.ext.appbuilder import Model
 from flask_appbuilder.models.filters import FilterStartsWith, FilterEqual
 
 import logging
@@ -23,7 +23,7 @@ DEFAULT_ADMIN_PASSWORD = 'general'
 log = logging.getLogger(__name__)
 
 
-class Model1(BaseMixin, Base):
+class Model1(Model):
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     field_integer = Column(Integer())
@@ -33,7 +33,7 @@ class Model1(BaseMixin, Base):
         return self.field_string
 
 
-class Model2(BaseMixin, Base):
+class Model2(Model):
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     group_id = Column(Integer, ForeignKey('model1.id'), nullable=False)
@@ -73,7 +73,7 @@ class FlaskTestCase(unittest.TestCase):
             base_filters = [['field_string', FilterStartsWith, 'a']]
 
         class Model1Filtered2View(GeneralView):
-            datamodel = SQLAModel(Model1, self.db.session)
+            datamodel = SQLAModel(Model1)
             base_filters = [['field_integer', FilterEqual, 0]]
 
         self.appbuilder.add_view(Model1View, "Model1")

@@ -1,13 +1,10 @@
-__version__ = '0.8.6'
+__version__ = '0.9.0'
 __author__ = 'Daniel Vaz Gaspar'
 __email__ = 'danielvazgaspar@gmail.com'
 
-from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
-
+from .models import Model, Base
 from .base import AppBuilder
 from .baseviews import expose
 from .views import GeneralView, IndexView, FormWidget
-
 

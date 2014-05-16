@@ -1,6 +1,32 @@
 Version Migration
 =================
 
+Migrating from 0.8.X to 0.9.X
+-----------------------------
+
+You should have no breaking features, because internal retro compatibility was created, but many things have changed
+and you should eventually change your code also.
+
+1 - 'BaseApp' changed to 'AppBuilder'.
+2 - BaseApp or now AppBuilder will not automatically create your models, after declaring them just invoke create_db method::
+
+    appbuilder.create_db()
+
+3 - Change your models inheritance
+
+    from::
+
+        class MyModel(BaseMixin, Base):
+            id = Column(Integer, primary_key=True)
+            first_name = Column(String(64), nullable=False)
+
+    to::
+
+        class MyModel(Model):
+            id = Column(Integer, primary_key=True)
+            first_name = Column(String(64), nullable=False)
+
+
 Migrating from 0.6.X to 0.7.X
 -----------------------------
 

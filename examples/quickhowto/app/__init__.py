@@ -12,6 +12,7 @@ logging.getLogger().setLevel(logging.DEBUG)
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
+
 appbuilder = AppBuilder(app, db)
 
 """
@@ -26,5 +27,4 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 from app import views
 
-print "DB"
 appbuilder.create_db()
