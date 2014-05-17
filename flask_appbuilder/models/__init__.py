@@ -1,7 +1,7 @@
 import logging
 import re
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import as_declarative
 
 
 log = logging.getLogger(__name__)
@@ -9,7 +9,8 @@ log = logging.getLogger(__name__)
 _camelcase_re = re.compile(r'([A-Z]+)(?=[a-z0-9])')
 
 
-class BaseModel(object):
+@as_declarative(name='Model')
+class Model(object):
     """
         Use this class has a mixin for your models, it will define your tablenames automatically
         MyModel will be called my_model on the database.
@@ -37,7 +38,6 @@ class BaseModel(object):
 
         return _camelcase_re.sub(_join, cls.__name__).lstrip('_')
 
-Model = declarative_base(cls=BaseModel, name='Model')
 """
     This is for retro compatibility
 """
