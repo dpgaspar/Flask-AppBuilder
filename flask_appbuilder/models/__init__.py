@@ -13,15 +13,28 @@ log = logging.getLogger(__name__)
 _camelcase_re = re.compile(r'([A-Z]+)(?=[a-z0-9])')
 
 
-def create_scoped_session(app):
-    """Helper factory method that creates a scoped session.  It
-    internally calls :meth:`create_session`.
-    """
-    return scoped_session(partial(create_session, app))
+class BackEnd(object):
+
+    def __init__(self, app):
+        self.app = app
+        self.session = self.create_scoped_session()
+        teardown = app.teardown_appcontext
+
+        @teardown
+        def shutdown_session(response_or_exc):
+            log.debug("TEARDOWN Request")
+            self.session.remove()
+            return response_or_exc
 
 
-def create_session(app):
-    return SingleSession(app)
+    def create_scoped_session(self):
+        """Helper factory method that creates a scoped session.  It
+        internally calls :meth:`create_session`.
+        """
+        return scoped_session(partial(self.create_session))
+
+    def create_session(self):
+        return SingleSession(self.app)
 
 
 class SingleSession(Session):
