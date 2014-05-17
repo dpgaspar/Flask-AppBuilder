@@ -12,15 +12,15 @@ _camelcase_re = re.compile(r'([A-Z]+)(?=[a-z0-9])')
 @as_declarative(name='Model')
 class Model(object):
     """
-        Use this class has a mixin for your models, it will define your tablenames automatically
+        Use this class has the base for your models, it will define your tablenames automatically
         MyModel will be called my_model on the database.
 
         ::
 
             from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey, Date
-            from flask.ext.appbuilder import Base
+            from flask.ext.appbuilder import Model
 
-            class MyModel(BaseMixin, Base):
+            class MyModel(Model):
                 id = Column(Integer, primary_key=True)
                 name = Column(String(50), unique = True, nullable=False)
 
