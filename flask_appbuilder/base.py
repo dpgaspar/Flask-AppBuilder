@@ -46,7 +46,7 @@ class AppBuilder(object):
     languages = None
     admin = None
 
-    def __init__(self, app, db,
+    def __init__(self, app, session,
                  menu=None,
                  indexview=None,
                  static_folder='static/appbuilder',
@@ -69,7 +69,7 @@ class AppBuilder(object):
         """
         self.baseviews = []
         self.app = app
-        self.db = db
+        self.session = session
 
         self.sm = SecurityManager(self)
         self.bm = BabelManager(self)
@@ -96,7 +96,7 @@ class AppBuilder(object):
 
     @property
     def get_session(self):
-        return self.db.session
+        return self.session
 
     def _init_config_parameters(self):
         if 'APP_NAME' in self.app.config:
@@ -149,12 +149,12 @@ class AppBuilder(object):
         if hasattr(baseview, '__call__'):
             if hasattr(baseview, 'datamodel'):
                 if baseview.datamodel.session is None:
-                    baseview.datamodel.session = self.db.session
+                    baseview.datamodel.session = self.session
             baseview = baseview()
         return baseview
 
     def create_db(self):
-        engine = self.db.session.get_bind(mapper=None, clause=None)
+        engine = self.session.get_bind(mapper=None, clause=None)
         Base.metadata.create_all(engine)
         
     def add_view(self, baseview, name, href="", icon="", label="", category="", category_icon="", category_label=""):
