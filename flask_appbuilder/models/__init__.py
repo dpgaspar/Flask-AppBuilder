@@ -22,7 +22,7 @@ class BackEnd(object):
 
         @teardown
         def shutdown_session(response_or_exc):
-            log.debug("TEARDOWN Request")
+            log.debug("Teardown Request")
             self.session.remove()
             return response_or_exc
 
@@ -34,15 +34,29 @@ class BackEnd(object):
         return scoped_session(partial(self.create_session))
 
     def create_session(self):
-        return SingleSession(self.app)
+        return RoutingSession(self.app)
 
 
-class SingleSession(Session):
+class RoutingSession(Session):
     def __init__(self, app, autocommit=False, autoflush=True, **options):
-        engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-        Session.__init__(self, autocommit=autocommit, autoflush=autoflush,
-                         bind=engine, **options)
+        self.engines = {}
+        self.engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 
+        binds = app.config['SQLALCHEMY_BINDS']
+        for bind in binds:
+            self.engines[bind] = create_engine(binds[bind])
+
+        Session.__init__(self, autocommit=autocommit, autoflush=autoflush,
+                         bind=self.engine, **options)
+
+    def get_bind(self, mapper=None, clause=None):
+        if mapper:
+            #log.info("Get BIND MAPPER {0} {1}".format(mapper, mapper.class_))
+            if hasattr(mapper.class_,'__bind_key__'):
+                log.info("ALTER BIND {0}".format(mapper.class_.__bind_key__))
+                return self.engines[mapper.class_.__bind_key__]
+            return self.engine
+        return self.engine
 
 @as_declarative(name='Model')
 class Model(object):

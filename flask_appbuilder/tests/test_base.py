@@ -62,7 +62,7 @@ class FlaskTestCase(unittest.TestCase):
         self.app.config['WTF_CSRF_ENABLED'] = False
 
         self.db = SQLAlchemy(self.app)
-        self.appbuilder = AppBuilder(self.app, self.db)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
 
         class Model1View(GeneralView):
             datamodel = SQLAModel(Model1)
