@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Views &mdash; Flask AppBuilder</title>
+    <title>Base Views &mdash; Flask AppBuilder</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
-    <link rel="next" title="Quick How to" href="quickhowto.html" />
+    <link rel="next" title="Model Views (Quick How to)" href="quickhowto.html" />
     <link rel="prev" title="Installation" href="installation.html" />
    
   
@@ -45,7 +45,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="quickhowto.html" title="Quick How to"
+          <a href="quickhowto.html" title="Model Views (Quick How to)"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="installation.html" title="Installation"
@@ -59,18 +59,28 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="views">
-<h1>Views<a class="headerlink" href="#views" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="base-views">
+<h1>Base Views<a class="headerlink" href="#base-views" title="Permalink to this headline">¶</a></h1>
 <p>Views are the base concept of F.A.B.
 they work like a class that represent a concept and present the views and methods to implement it.</p>
 <p>Each view is a Flask blueprint that will be created for you automatically by the framework.
 This is a simple but powerful concept.
-You will map your methods to routing points, and each method will be registered as a possible security permission if you want to.</p>
+You will map your methods to routing points, and each method will be registered
+as a possible security permission if you want to.</p>
+<p>So your methods will have automatic routing points much like Flask, but this time in a class.
+Additionally you can have granular security (method lock security) that can be associated with a user&#8217;s role
+(take a look at <a class="reference internal" href="security.html"><em>Security</em></a> for more detail).</p>
+<p>The views documented on this chapter are the building blocks of F.A.B, but the juicy part is on the next chapter
+with ModelView, ChartView and others.</p>
 <div class="section" id="baseview">
 <h2>BaseView<a class="headerlink" href="#baseview" title="Permalink to this headline">¶</a></h2>
-<p>All views inherit from this class. it&#8217;s constructor will register your exposed urls on flask as a Blueprint, as well as all security permissions that need to be defined and protected.</p>
-<p>You can use use this kind of view to implement your own custom pages, attached to a menu or linked from any point of your site.</p>
-<p>Decorate your url routing methods with &#64;expose. additionally add &#64;has_access decorator to tell flask that this is a security protected method.</p>
+<p>All views inherit from this class.
+it&#8217;s constructor will register your exposed urls on flask as a Blueprint,
+as well as all security permissions that need to be defined and protected.</p>
+<p>You can use use this kind of view to implement your own custom pages,
+attached to a menu or linked from any point of your site.</p>
+<p>Decorate your url routing methods with <strong>&#64;expose</strong>.
+additionally add <strong>&#64;has_access</strong> decorator to tell flask that this is a security protected method.</p>
 <p>Using the Flask-AppBuilder-Skeleton (take a look at the <a class="reference internal" href="installation.html"><em>Installation</em></a> chapter). Edit views.py file and add:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">AppBuilder</span><span class="p">,</span> <span class="n">expose</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseviews</span> <span class="kn">import</span> <span class="n">BaseView</span>
@@ -145,12 +155,41 @@ You will map your methods to routing points, and each method will be registered 
 </pre></div>
 </div>
 <p>You can find this example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2</a></p>
+<span class="target" id="module-flask.ext.appbuilder.baseviews"></span><dl class="function">
+<dt id="flask.ext.appbuilder.baseviews.expose">
+<tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">expose</tt><big>(</big><em>url='/'</em>, <em>methods=('GET'</em>, <em>)</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.expose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this decorator to expose views in your view classes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>url</strong> &#8211; Relative URL for the view</li>
+<li><strong>methods</strong> &#8211; Allowed HTTP methods. By default only GET is allowed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<span class="target" id="module-flask.ext.appbuilder.security.decorators"></span><dl class="function">
+<dt id="flask.ext.appbuilder.security.decorators.has_access">
+<tt class="descclassname">flask.ext.appbuilder.security.decorators.</tt><tt class="descname">has_access</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.decorators.has_access" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this decorator to allow access only to security 
+defined permissions, use it only on BaseView classes.</p>
+</dd></dl>
+
 <p>This will create the following menu</p>
 <a class="reference internal image-reference" href="_images/simpleview2.png"><img alt="_images/simpleview2.png" src="_images/simpleview2.png" style="width: 100%;" /></a>
 </div>
 <div class="section" id="simpleformview">
 <h2>SimpleFormView<a class="headerlink" href="#simpleformview" title="Permalink to this headline">¶</a></h2>
-<p>Inherit from this view to provide base processing for your customized form views. To create a custom form view, first define your WTF form fields, but inherit them from F.A.B. <em>DynamicForm</em>.</p>
+<p>Inherit from this view to provide base processing for your customized form views.</p>
+<p>In principle you will only need this kind of view to present forms that are not Database Model based,
+because when they do F.A.B. can automatically generate them and you can add or remove fields,
+as well as custom validators. For this you can use ModelView instead.</p>
+<p>To create a custom form view, first define your WTF form fields, but inherit them from F.A.B. <em>DynamicForm</em>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.wtf</span> <span class="kn">import</span> <span class="n">Form</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">BooleanField</span><span class="p">,</span> <span class="n">TextAreaField</span><span class="p">,</span> <span class="n">PasswordField</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.forms</span> <span class="kn">import</span> <span class="n">DynamicForm</span>
 
@@ -211,7 +250,7 @@ Notice also how label uses babel&#8217;s lazy_gettext as _(&#8216;text&#8217;) f
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Views</a><ul>
+<li><a class="reference internal" href="#">Base Views</a><ul>
 <li><a class="reference internal" href="#baseview">BaseView</a></li>
 <li><a class="reference internal" href="#simpleformview">SimpleFormView</a></li>
 </ul>
@@ -221,7 +260,7 @@ Notice also how label uses babel&#8217;s lazy_gettext as _(&#8216;text&#8217;) f
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
-      <li>Next: <a href="quickhowto.html" title="next chapter">Quick How to</a></li>
+      <li>Next: <a href="quickhowto.html" title="next chapter">Model Views (Quick How to)</a></li>
   </ul></li>
 </ul>
   <h3>This Page</h3>

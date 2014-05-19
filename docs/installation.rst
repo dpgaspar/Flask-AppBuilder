@@ -1,14 +1,23 @@
 Installation
 ============
 
+Installation is straightforward, it uses the normal python package install.
+I do advise you to additionally install the base skeleton application
+so that you can immediately have a running application (without any models yet) and an easy to grow boilerplate.
+
+.. note::
+    Remember the initial user is **'admin'** password **'general'**.
+
 Using pip
 ---------
 
-- Simple Install::
+- **Simple Install**
+
+    You can install the framework simply by::
 
 	$ pip install flask-appbuilder
 
-- Advised Virtual Env Install
+- **Advised Virtual Environment Install**
 
     Virtual env is highly advisable because the more projects you have,
     the more likely it is that you will be working with
@@ -82,9 +91,10 @@ Initialization
 --------------
 
 When starting your application for the first time,
-all your models and AppBuilder security tables will be created for you.
+all AppBuilder security tables will be created for you.
+All your models can easily be created too (optionally).
 
-**The 'admin' user password will be 'general'**. Change it on your first access using the application.
+**The initial 'admin' user password will be 'general'**. Change it on your first access using the application.
 (Click the username on the navigation bar, then choose 'Reset Password')
 
 What requirements were instaled
@@ -95,7 +105,7 @@ pip installs all the requirements for you.
 Flask App Builder dependes on
 
     - flask : The web framework, this is what we're extending
-    - flask-sqlalchemy : DB access see SQLAlchemy, This requirement is optional
+    - flask-sqlalchemy : DB access see SQLAlchemy.
     - flask-login : Login, session on flask.
     - flask-openid : Open ID authentication
     - flask-wtform : Web forms.

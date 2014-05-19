@@ -1,5 +1,5 @@
-Quick How to
-============
+Model Views (Quick How to)
+==========================
 
 On this chapter we will create a very simple contacts application you can find a
 `Live Demo <http://flaskappbuilder.pythonanywhere.com/>`_ (login with guest/welcome).

@@ -1,5 +1,5 @@
-Quick Charts
-============
+Chart Views (Quick How to)
+==========================
 
 To implement views with google charts, use all derived class from BaseChartView, these are:
 

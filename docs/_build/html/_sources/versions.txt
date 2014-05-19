@@ -4,8 +4,10 @@ Versions
 Improvements and Bug fixes on 0.9.0
 -----------------------------------
 
-- New, class name change BaseApp to AppBuilder, import like: from flask.ext.appbuilder import AppBuilder
+- New, class name change 'BaseApp' to 'AppBuilder', import like: from flask.ext.appbuilder import AppBuilder
 - New, can import expose decorator like: flask.ext.appbuilder import expose
+- New, Changed 'Base' declarative name to 'Model' no need to add BaseMixin.
+- New, No automatic dev's model creation, must invoke appbuilder.create_db()
 
 Improvements and Bug fixes on 0.8.5
 -----------------------------------

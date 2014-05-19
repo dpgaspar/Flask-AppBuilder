@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Quick Charts &mdash; Flask AppBuilder</title>
+    <title>Chart Views (Quick How to) &mdash; Flask AppBuilder</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
-    <link rel="next" title="Quick Files and Images" href="quickfiles.html" />
-    <link rel="prev" title="Quick Minimal Application" href="quickminimal.html" />
+    <link rel="next" title="Model Views (Files and Images)" href="quickfiles.html" />
+    <link rel="prev" title="Model Views (Quick How to)" href="quickhowto.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -45,10 +45,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="quickfiles.html" title="Quick Files and Images"
+          <a href="quickfiles.html" title="Model Views (Files and Images)"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="quickminimal.html" title="Quick Minimal Application"
+          <a href="quickhowto.html" title="Model Views (Quick How to)"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -59,8 +59,8 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="quick-charts">
-<h1>Quick Charts<a class="headerlink" href="#quick-charts" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="chart-views-quick-how-to">
+<h1>Chart Views (Quick How to)<a class="headerlink" href="#chart-views-quick-how-to" title="Permalink to this headline">¶</a></h1>
 <p>To implement views with google charts, use all derived class from BaseChartView, these are:</p>
 <blockquote>
 <div><table class="docutils field-list" frame="void" rules="none">
@@ -115,7 +115,7 @@ If you want a column chart just define:</p>
 </pre></div>
 </div>
 <p>this will produce a column chart, with the number of contacts that were born on a particular month or year.
-Notice that the label_columns are from and already defined <em>ContactGeneralView</em> take a look at the <a class="reference internal" href="quickhowto.html"><em>Quick How to</em></a></p>
+Notice that the label_columns are from and already defined <em>ContactGeneralView</em> take a look at the <a class="reference internal" href="quickhowto.html"><em>Model Views (Quick How to)</em></a></p>
 <p>Finally we will define a direct data chart</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">StatsChartView</span><span class="p">(</span><span class="n">DirectChartView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Stats</span><span class="p">)</span>
@@ -157,7 +157,7 @@ Notice that the label_columns are from and already defined <em>ContactGeneralVie
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Quick Charts</a><ul>
+<li><a class="reference internal" href="#">Chart Views (Quick How to)</a><ul>
 <li><a class="reference internal" href="#define-your-chart-views-views-py">Define your Chart Views (views.py)</a></li>
 <li><a class="reference internal" href="#register-views-py">Register (views.py)</a></li>
 </ul>
@@ -166,8 +166,8 @@ Notice that the label_columns are from and already defined <em>ContactGeneralVie
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="quickminimal.html" title="previous chapter">Quick Minimal Application</a></li>
-      <li>Next: <a href="quickfiles.html" title="next chapter">Quick Files and Images</a></li>
+      <li>Previous: <a href="quickhowto.html" title="previous chapter">Model Views (Quick How to)</a></li>
+      <li>Next: <a href="quickfiles.html" title="next chapter">Model Views (Files and Images)</a></li>
   </ul></li>
 </ul>
   <h3>This Page</h3>

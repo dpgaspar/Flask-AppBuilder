@@ -1,21 +1,33 @@
-Views
-=====
+Base Views
+==========
 
 Views are the base concept of F.A.B.
 they work like a class that represent a concept and present the views and methods to implement it.
 
 Each view is a Flask blueprint that will be created for you automatically by the framework.
 This is a simple but powerful concept.
-You will map your methods to routing points, and each method will be registered as a possible security permission if you want to.
+You will map your methods to routing points, and each method will be registered
+as a possible security permission if you want to.
+
+So your methods will have automatic routing points much like Flask, but this time in a class.
+Additionally you can have granular security (method lock security) that can be associated with a user's role
+(take a look at :doc:`security` for more detail).
+
+The views documented on this chapter are the building blocks of F.A.B, but the juicy part is on the next chapter
+with ModelView, ChartView and others.
 
 BaseView
 --------
 
-All views inherit from this class. it's constructor will register your exposed urls on flask as a Blueprint, as well as all security permissions that need to be defined and protected.
+All views inherit from this class.
+it's constructor will register your exposed urls on flask as a Blueprint,
+as well as all security permissions that need to be defined and protected.
 
-You can use use this kind of view to implement your own custom pages, attached to a menu or linked from any point of your site.
+You can use use this kind of view to implement your own custom pages,
+attached to a menu or linked from any point of your site.
 
-Decorate your url routing methods with @expose. additionally add @has_access decorator to tell flask that this is a security protected method.
+Decorate your url routing methods with **@expose**.
+additionally add **@has_access** decorator to tell flask that this is a security protected method.
 
 Using the Flask-AppBuilder-Skeleton (take a look at the :doc:`installation` chapter). Edit views.py file and add::
 
@@ -99,6 +111,15 @@ Has you can see this methods are public, let's change this example, edit views.p
 
 You can find this example on https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2
 
+.. automodule:: flask.ext.appbuilder.baseviews
+
+    .. autofunction:: expose
+
+.. automodule:: flask.ext.appbuilder.security.decorators
+
+    .. autofunction:: has_access
+
+
 This will create the following menu
 
 .. image:: ./images/simpleview2.png
@@ -108,7 +129,13 @@ This will create the following menu
 SimpleFormView
 --------------
 
-Inherit from this view to provide base processing for your customized form views. To create a custom form view, first define your WTF form fields, but inherit them from F.A.B. *DynamicForm*.
+Inherit from this view to provide base processing for your customized form views.
+
+In principle you will only need this kind of view to present forms that are not Database Model based,
+because when they do F.A.B. can automatically generate them and you can add or remove fields,
+as well as custom validators. For this you can use ModelView instead.
+
+To create a custom form view, first define your WTF form fields, but inherit them from F.A.B. *DynamicForm*.
 
 ::
 

@@ -67,7 +67,7 @@
 <span id="appbuilder"></span><h3>AppBuilder<a class="headerlink" href="#module-flask.ext.appbuilder.base" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="flask.ext.appbuilder.base.AppBuilder">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.base.</tt><tt class="descname">AppBuilder</tt><big>(</big><em>app</em>, <em>db</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.base.</tt><tt class="descname">AppBuilder</tt><big>(</big><em>app</em>, <em>session</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the base class for the all framework.
 Will hold your flask app object, all your views, and security classes.</p>
 <p>initialize your application like this:</p>
@@ -79,7 +79,7 @@ Will hold your flask app object, all your views, and security classes.</p>
 </div>
 <dl class="method">
 <dt id="flask.ext.appbuilder.base.AppBuilder.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>app</em>, <em>db</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.__init__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__init__</tt><big>(</big><em>app</em>, <em>session</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>AppBuilder constructor</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -87,7 +87,7 @@ Will hold your flask app object, all your views, and security classes.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>app</strong> &#8211; The flask app object</li>
-<li><strong>db</strong> &#8211; The SQLAlchemy db object</li>
+<li><strong>session</strong> &#8211; The SQLAlchemy session object</li>
 <li><strong>menu</strong> &#8211; optional, a previous contructed menu</li>
 <li><strong>indexview</strong> &#8211; optional, your customized indexview</li>
 <li><strong>static_folder</strong> &#8211; optional, your override for the global static folder</li>
@@ -915,17 +915,7 @@ No group by is processed, example:</p>
 <dl class="class">
 <dt id="flask.ext.appbuilder.models.mixins.BaseMixin">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.mixins.</tt><tt class="descname">BaseMixin</tt><a class="headerlink" href="#flask.ext.appbuilder.models.mixins.BaseMixin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use this class has a mixin for your models, it will define your tablenames automatically
-MyModel will be called my_model on the database.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Table</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">Date</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">Base</span>
-
-<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="class">
 <dt id="flask.ext.appbuilder.models.mixins.AuditMixin">

@@ -61,6 +61,31 @@
             
   <div class="section" id="version-migration">
 <h1>Version Migration<a class="headerlink" href="#version-migration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="migrating-from-0-8-x-to-0-9-x">
+<h2>Migrating from 0.8.X to 0.9.X<a class="headerlink" href="#migrating-from-0-8-x-to-0-9-x" title="Permalink to this headline">¶</a></h2>
+<p>You should have no breaking features, because internal retro compatibility was created, but many things have changed
+and you should eventually change your code also.</p>
+<p>1 - &#8216;BaseApp&#8217; changed to &#8216;AppBuilder&#8217;.
+2 - BaseApp or now AppBuilder will not automatically create your models, after declaring them just invoke create_db method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">create_db</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>3 - Change your models inheritance</p>
+<blockquote>
+<div><p>from:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">first_name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">first_name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
 <div class="section" id="migrating-from-0-6-x-to-0-7-x">
 <h2>Migrating from 0.6.X to 0.7.X<a class="headerlink" href="#migrating-from-0-6-x-to-0-7-x" title="Permalink to this headline">¶</a></h2>
 <p>This new version has some breaking features. You don&#8217;t have to change any code, main breaking changes are:</p>
@@ -202,6 +227,7 @@ python hash_db_password.py
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Version Migration</a><ul>
+<li><a class="reference internal" href="#migrating-from-0-8-x-to-0-9-x">Migrating from 0.8.X to 0.9.X</a></li>
 <li><a class="reference internal" href="#migrating-from-0-6-x-to-0-7-x">Migrating from 0.6.X to 0.7.X</a></li>
 <li><a class="reference internal" href="#migrating-from-0-5-x-to-0-6-x">Migrating from 0.5.X to 0.6.X</a></li>
 <li><a class="reference internal" href="#migrating-from-0-2-x-to-0-3-x">Migrating from 0.2.X to 0.3.X</a></li>
