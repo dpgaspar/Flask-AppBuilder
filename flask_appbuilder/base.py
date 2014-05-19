@@ -153,10 +153,6 @@ class AppBuilder(object):
             baseview = baseview()
         return baseview
 
-    def create_db(self):
-        engine = self.session.get_bind(mapper=None, clause=None)
-        Base.metadata.create_all(engine)
-        
     def add_view(self, baseview, name, href="", icon="", label="", category="", category_icon="", category_label=""):
         """
             Add your views associated with menus using this method.
