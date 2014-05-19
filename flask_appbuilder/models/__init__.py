@@ -68,12 +68,11 @@ class BackEnd(object):
         return RoutingSession(self)
 
 
-class _EngineDebuggingSignalEvents(object):
+class EngineSignalEvents(object):
     """Sets up handlers for two events that let us track the execution time of queries."""
 
-    def __init__(self, engine, import_name):
+    def __init__(self, engine):
         self.engine = engine
-        self.app_package = import_name
 
     def register(self):
         listen(self.engine, 'before_cursor_execute', self.before_cursor_execute)
@@ -81,10 +80,12 @@ class _EngineDebuggingSignalEvents(object):
 
     def before_cursor_execute(self, conn, cursor, statement,
                               parameters, context, executemany):
+        #log.info("BEFORE {0} {1}".format(statement, parameters))
         pass
 
     def after_cursor_execute(self, conn, cursor, statement,
-                              parameters, context, executemany):
+                             parameters, context, executemany):
+        #log.info("AFTER {0} {1}".format(statement, parameters))
         pass
 
 class RoutingSession(Session):
@@ -99,9 +100,14 @@ class RoutingSession(Session):
     def get_bind(self, mapper=None, clause=None):
         if mapper:
             if hasattr(mapper.class_, '__bind_key__'):
-                return self.db.engines[mapper.class_.__bind_key__]
-            return self.db.engine
-        return self.db.engine
+                return self.engine_attach_signals(self.db.engines[mapper.class_.__bind_key__])
+            return self.engine_attach_signals(self.db.engine)
+        return self.engine_attach_signals(self.db.engine)
+
+    @staticmethod
+    def engine_attach_signals(engine):
+        EngineSignalEvents(engine).register()
+        return engine
 
 
 class ModelDeclarativeMeta(DeclarativeMeta):
