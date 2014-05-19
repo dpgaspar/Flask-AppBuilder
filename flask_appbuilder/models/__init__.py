@@ -79,6 +79,13 @@ class _EngineDebuggingSignalEvents(object):
         listen(self.engine, 'before_cursor_execute', self.before_cursor_execute)
         listen(self.engine, 'after_cursor_execute', self.after_cursor_execute)
 
+    def before_cursor_execute(self, conn, cursor, statement,
+                              parameters, context, executemany):
+        pass
+
+    def after_cursor_execute(self, conn, cursor, statement,
+                              parameters, context, executemany):
+        pass
 
 class RoutingSession(Session):
     """
