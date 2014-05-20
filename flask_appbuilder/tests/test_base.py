@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship
 from flask.ext.appbuilder.models.mixins import BaseMixin
 from flask.ext.appbuilder import Model
 from flask_appbuilder.models.filters import FilterStartsWith, FilterEqual
+from flask_appbuilder.charts.views import ChartView, TimeChartView, DirectChartView
 
 import logging
 
@@ -30,6 +31,7 @@ class Model1(Model):
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     field_integer = Column(Integer())
+    field_float = Column(Integer())
     field_date = Column(Date())
 
     def __repr__(self):
@@ -79,12 +81,18 @@ class FlaskTestCase(unittest.TestCase):
             datamodel = SQLAModel(Model1)
             base_filters = [['field_integer', FilterEqual, 0]]
 
+        class Model1ChartView(ChartView):
+            datamodel = SQLAModel(Model1)
+            chart_title = 'Test Model1 Chart'
+            group_by_columns = 'field_integer'
+
         self.appbuilder.add_view(Model1View, "Model1")
         self.appbuilder.add_view(Model1Filtered1View, "Model1Filtered1")
         self.appbuilder.add_view(Model1Filtered2View, "Model1Filtered2")
 
         self.appbuilder.add_view(Model2View, "Model2")
         self.appbuilder.add_view(Model2View, "Model2 Add", href='/model2view/add')
+        self.appbuilder.add_view(Model1ChartView, "Model1 Chart", href='/model2view/add')
 
 
     def tearDown(self):
@@ -119,7 +127,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 15)  # current minimal views are 11
+        eq_(len(self.appbuilder.baseviews), 16)  # current minimal views are 11
 
 
     def test_model_creation(self):

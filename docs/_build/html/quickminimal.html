@@ -64,7 +64,9 @@
 <div class="section" id="how-to-setup-a-minimal-application">
 <h2>How to setup a minimal Application<a class="headerlink" href="#how-to-setup-a-minimal-application" title="Permalink to this headline">¶</a></h2>
 <p>This is the most basic example, using the minimal code needed to setup a running application with F.A.B.</p>
-<p>Will use sqlite for the database no need to install anything.</p>
+<p>Will use sqlite for the database no need to install anything.
+Notice the SQLA class this is just a child class from flask.ext.SQLAlchemy that overrides the declarative base
+to F.A.B. You can use every configuration and method from flask extension except the model&#8217;s direct query.</p>
 <p>I do advise using the skeleton application as described on the <a class="reference internal" href="installation.html"><em>Installation</em></a></p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
