@@ -4,7 +4,7 @@ from flask.ext.appbuilder.charts.views import ChartView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.widgets import ListBlock, ShowBlockWidget
 
-from app import appbuilder
+from app import appbuilder, db
 
 
 class ProductPubView(ModelView):
