@@ -1,5 +1,5 @@
 from models import Product, ProductType, Sale
-from flask.ext.appbuilder.views import GeneralView, BaseView
+from flask.ext.appbuilder.views import ModelView, BaseView
 from flask.ext.appbuilder.charts.views import ChartView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.widgets import ListBlock, ShowBlockWidget
@@ -7,7 +7,7 @@ from flask.ext.appbuilder.widgets import ListBlock, ShowBlockWidget
 from app import appbuilder
 
 
-class ProductPubView(GeneralView):
+class ProductPubView(ModelView):
     datamodel = SQLAModel(Product)
     base_permissions = ['can_list', 'can_show']
     list_widget = ListBlock
@@ -25,10 +25,10 @@ class ProductPubView(GeneralView):
             {'fields': ['description'], 'expanded': True}),
     ]
 
-class ProductView(GeneralView):
+class ProductView(ModelView):
     datamodel = SQLAModel(Product)
 
-class ProductTypeView(GeneralView):
+class ProductTypeView(ModelView):
     datamodel = SQLAModel(ProductType)
     related_views = [ProductView]
 
