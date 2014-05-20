@@ -33,7 +33,7 @@ class ProductTypeView(ModelView):
     related_views = [ProductView]
 
 
-
+db.create_all()
 appbuilder.add_view(ProductPubView, "Our Products", icon="fa-folder-open-o")
 appbuilder.add_view(ProductView, "List Products", icon="fa-folder-open-o", category="Management")
 appbuilder.add_separator("Management")
