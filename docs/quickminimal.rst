@@ -14,8 +14,7 @@ I do advise using the skeleton application as described on the :doc:`installatio
 
     import os
     from flask import Flask
-    from flask.ext.sqlalchemy import SQLAlchemy
-    from flask.ext.appbuilder import AppBuilder
+    from flask.ext.appbuilder import SQLA, AppBuilder
 
     # init Flask
     app = Flask(__name__)
@@ -27,9 +26,9 @@ I do advise using the skeleton application as described on the :doc:`installatio
     app.config['SECRET_KEY'] = 'thisismyscretkey'
 
     # Init SQLAlchemy
-    db = SQLAlchemy(app)
+    db = SQLA(app)
     # Init F.A.B.
-    appbuilder = AppBuilder(app, db)
+    appbuilder = AppBuilder(app, db.session)
 
     # Run the development server
     app.run(host='0.0.0.0', port=8080, debug=True)
