@@ -42,6 +42,10 @@ You're welcome to report bugs, propose new features, or even better contribute t
 Includes:
 ---------
 
+   - Database
+      - SQLAlchemy, multiple database support: sqlite, MySQL, ORACLE, MSSQL, DB2 etc.
+      - Multiple database connections support (Vertical partitioning).
+      - Easy mixin audit to models (created/changed by user, and timestamps).
   - Security
       - Automatic permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.
       - Inserts on the Database all the detailed permissions possible on your application.

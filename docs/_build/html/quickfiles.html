@@ -64,7 +64,7 @@
 <p>You can implement views with images or files embedded on the model&#8217;s definition</p>
 <div class="section" id="define-your-model-models-py">
 <h2>Define your model (models.py)<a class="headerlink" href="#define-your-model-models-py" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">photo</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">ImageColumn</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>

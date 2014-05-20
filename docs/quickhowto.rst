@@ -32,7 +32,7 @@ Simple contacts application
 ---------------------------
 
 Let's create a very simple contacts application.
-F.A.B uses the excellent SQLAlchemy ORM package,
+F.A.B uses the excellent SQLAlchemy ORM package, and it's Flask extension.
 you should be familiar with it's declarative syntax to define your database models on F.A.B.
 
 On our example application we are going to define two tables,
@@ -40,12 +40,14 @@ a *Contact's* table that will hold the contacts detailed information,
 and a *Group* table to group our contacts or classify them.
 We could additionally define a *Gender* table, to serve the role of enumerated values for 'Male' and 'Female'.
 
-Although your not obliged to, i advise you to inherit your model classes from *Base* and *BaseMixin*.
-You can of course inherit from *db.Model* normal Flask-SQLAlchemy.
-The reason for this is that *Base* is on the same declarative space of F.A.B.
+Although your not obliged to, i advise you to inherit your model classes from **Model** class.
+Model class is exactly the same has Flask-SQLALchemy **db.Model** but without the underlying connection.
+You can of course inherit from **db.Model** normal Flask-SQLAlchemy.
+The reason for this is that **Model** is on the same declarative space of F.A.B.
 and using it will allow you to define relations to User's.
 
-You can add automatic *Audit* triggered columns to your models, by inherit them from *AuditMixin* also. (see :doc:`api`)
+You can add automatic *Audit* triggered columns to your models,
+by inherit them from *AuditMixin* also. (see :doc:`api`)
 
 So, first we are going to create a *Group* table, to group our contacts
 
@@ -61,7 +63,7 @@ The *Group* table.
     from flask.ext.appbuilder.models.mixins import BaseMixin
     from flask.ext.appbuilder import Base
 
-    class Group(BaseMixin, Base):
+    class Group(Model):
         id = Column(Integer, primary_key=True)
         name = Column(String(50), unique = True, nullable=False)
 
@@ -72,7 +74,7 @@ The *Contacts* table.
 
 ::
 
-	class Contact(BaseMixin, Base):
+	class Contact(Model):
 	    id = Column(Integer, primary_key=True)
 	    name =  Column(String(150), unique = True, nullable=False)
 	    address =  Column(String(564))
@@ -94,7 +96,7 @@ This view will setup functionality for create, remove, update and show primitive
 
 Inherit from *ModelView* class that inherits from *BaseCRUDView* that inherits from *BaseModelView*,
 so you can override all their public properties to configure many details for your CRUD primitives.
-take a look at **Advanced Configuration** on this page.
+take a look at :doc:`advanced`.
 
 ::
 
@@ -134,16 +136,17 @@ Let's define it::
 Some explanation:
 
 :label_columns: defines the labels for your columns. The framework will define the missing ones for you, with a pretty version of your column names.
-:show_fieldsets: A fieldset (Django style). This is allow you to customize the add, show and edit views independently.
+:show_fieldsets: A fieldset (Django style). This will allow you to customize the add, show and edit views independently.
 
 
 Register (views.py)
 -------------------
 
-Register everything, to present the models and create the menu
+Register everything, to present the models and create the menu. Issue **create_all** to create your models also.
 
 ::
 
+        db.create_all()
         appbuilder.add_view(GroupModelView, "List Groups",icon = "fa-folder-open-o",category = "Contacts",
                         category_icon = "fa-envelope")
         appbuilder.add_view(ContactModelView, "List Contacts",icon = "fa-envelope",category = "Contacts")

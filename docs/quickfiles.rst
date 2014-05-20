@@ -8,7 +8,7 @@ Define your model (models.py)
 
 ::
 
-    class Person(BaseMixin, Base):
+    class Person(Model):
         id = Column(Integer, primary_key=True)
         name = Column(String(150), unique = True, nullable=False)    	
         photo = Column(ImageColumn, nullable=False )

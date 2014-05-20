@@ -84,17 +84,19 @@
 <div class="section" id="simple-contacts-application">
 <h2>Simple contacts application<a class="headerlink" href="#simple-contacts-application" title="Permalink to this headline">¶</a></h2>
 <p>Let&#8217;s create a very simple contacts application.
-F.A.B uses the excellent SQLAlchemy ORM package,
+F.A.B uses the excellent SQLAlchemy ORM package, and it&#8217;s Flask extension.
 you should be familiar with it&#8217;s declarative syntax to define your database models on F.A.B.</p>
 <p>On our example application we are going to define two tables,
 a <em>Contact&#8217;s</em> table that will hold the contacts detailed information,
 and a <em>Group</em> table to group our contacts or classify them.
 We could additionally define a <em>Gender</em> table, to serve the role of enumerated values for &#8216;Male&#8217; and &#8216;Female&#8217;.</p>
-<p>Although your not obliged to, i advise you to inherit your model classes from <em>Base</em> and <em>BaseMixin</em>.
-You can of course inherit from <em>db.Model</em> normal Flask-SQLAlchemy.
-The reason for this is that <em>Base</em> is on the same declarative space of F.A.B.
+<p>Although your not obliged to, i advise you to inherit your model classes from <strong>Model</strong> class.
+Model class is exactly the same has Flask-SQLALchemy <strong>db.Model</strong> but without the underlying connection.
+You can of course inherit from <strong>db.Model</strong> normal Flask-SQLAlchemy.
+The reason for this is that <strong>Model</strong> is on the same declarative space of F.A.B.
 and using it will allow you to define relations to User&#8217;s.</p>
-<p>You can add automatic <em>Audit</em> triggered columns to your models, by inherit them from <em>AuditMixin</em> also. (see <a class="reference internal" href="api.html"><em>API Reference</em></a>)</p>
+<p>You can add automatic <em>Audit</em> triggered columns to your models,
+by inherit them from <em>AuditMixin</em> also. (see <a class="reference internal" href="api.html"><em>API Reference</em></a>)</p>
 <p>So, first we are going to create a <em>Group</em> table, to group our contacts</p>
 </div>
 <div class="section" id="define-your-models-models-py">
@@ -105,7 +107,7 @@ and using it will allow you to define relations to User&#8217;s.</p>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.mixins</span> <span class="kn">import</span> <span class="n">BaseMixin</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">Base</span>
 
-<span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
@@ -114,7 +116,7 @@ and using it will allow you to define relations to User&#8217;s.</p>
 </pre></div>
 </div>
 <p>The <em>Contacts</em> table.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Contact</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Contact</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">address</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">564</span><span class="p">))</span>
@@ -135,7 +137,7 @@ and using it will allow you to define relations to User&#8217;s.</p>
 This view will setup functionality for create, remove, update and show primitives for your model&#8217;s definition.</p>
 <p>Inherit from <em>ModelView</em> class that inherits from <em>BaseCRUDView</em> that inherits from <em>BaseModelView</em>,
 so you can override all their public properties to configure many details for your CRUD primitives.
-take a look at <strong>Advanced Configuration</strong> on this page.</p>
+take a look at <a class="reference internal" href="advanced.html"><em>Advanced Configuration</em></a>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactModelView</span><span class="p">]</span>
@@ -183,15 +185,16 @@ will relate 1/N relations automatically, it will display a show or edit view wit
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">label_columns:</th><td class="field-body">defines the labels for your columns. The framework will define the missing ones for you, with a pretty version of your column names.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">show_fieldsets:</th><td class="field-body">A fieldset (Django style). This is allow you to customize the add, show and edit views independently.</td>
+<tr class="field-even field"><th class="field-name">show_fieldsets:</th><td class="field-body">A fieldset (Django style). This will allow you to customize the add, show and edit views independently.</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
-<p>Register everything, to present the models and create the menu</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupModelView</span><span class="p">,</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-folder-open-o&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">,</span>
+<p>Register everything, to present the models and create the menu. Issue <strong>create_all</strong> to create your models also.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">create_all</span><span class="p">()</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupModelView</span><span class="p">,</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-folder-open-o&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">,</span>
                 <span class="n">category_icon</span> <span class="o">=</span> <span class="s">&quot;fa-envelope&quot;</span><span class="p">)</span>
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactModelView</span><span class="p">,</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
 </pre></div>

@@ -23,7 +23,7 @@ Contents:
 ---------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    intro
    installation
@@ -36,6 +36,7 @@ Contents:
    advanced
    customizing
    actions
+   multipledbs
    i18n
    security
    

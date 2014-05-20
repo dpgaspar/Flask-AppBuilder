@@ -16,7 +16,7 @@ and you should eventually change your code also.
 
     from::
 
-        class MyModel(BaseMixin, Base):
+        class MyModel(Model):
             id = Column(Integer, primary_key=True)
             first_name = Column(String(64), nullable=False)
 
@@ -99,7 +99,7 @@ If your using the **related_views** attribute on ModelView classes, you must not
 From this::
 
 
-    class MyView(ModelView):
+    class MyView(GeneralView):
         datamodel = SQLAModel(Group, db.session)
         related_views = [MyOtherView()]
 
@@ -107,7 +107,7 @@ From this::
 Change to this::
 
   
-    class MyView(ModelView):
+    class MyView(GeneralView):
         datamodel = SQLAModel(Group, db.session)
         related_views = [MyOtherView]
 
@@ -162,15 +162,15 @@ Migrating from 0.1.X to 0.2.X
 It's very simple, change this::
 
 	baseapp = BaseApp(app)
-	baseapp.add_view(GroupModelView, "List Groups","/groups/list","th-large","Contacts")
-	baseapp.add_view(PersonModelView, "List Contacts","/persons/list","earphone","Contacts")
+	baseapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
+	baseapp.add_view(PersonGeneralView, "List Contacts","/persons/list","earphone","Contacts")
 	baseapp.add_view(PersonChartView, "Contacts Chart","/persons/chart","earphone","Contacts")
 	
 To this::
 
 	baseapp = BaseApp(app)
-	baseapp.add_view(GroupModelView(), "List Groups","/groups/list","th-large","Contacts")
-	baseapp.add_view(PersonModelView(), "List Contacts","/persons/list","earphone","Contacts")
+	baseapp.add_view(GroupGeneralView(), "List Groups","/groups/list","th-large","Contacts")
+	baseapp.add_view(PersonGeneralView(), "List Contacts","/persons/list","earphone","Contacts")
 	baseapp.add_view(PersonChartView(), "Contacts Chart","/persons/chart","earphone","Contacts")
 
 Small change you just have to instantiate your classes.
