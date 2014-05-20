@@ -6,5 +6,5 @@ __email__ = 'danielvazgaspar@gmail.com'
 from .models import Model, Base, SQLA
 from .base import AppBuilder
 from .baseviews import expose
-from .views import GeneralView, IndexView, FormWidget
+from .views import GeneralView, ModelView, IndexView, FormWidget
 

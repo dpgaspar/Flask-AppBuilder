@@ -1,7 +1,6 @@
 import os
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.appbuilder import AppBuilder
+from flask.ext.appbuilder import SQLA, AppBuilder
 
 app = Flask(__name__)
 
@@ -10,7 +9,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'ap
 app.config['CSRF_ENABLED'] = True
 app.config['SECRET_KEY'] = 'thisismyscretkey'
 
-db = SQLAlchemy(app)
-appbuilder = AppBuilder(app, db)
+db = SQLA(app)
+appbuilder = AppBuilder(app, db.session)
 
 app.run(host='0.0.0.0', port=8080, debug=True)

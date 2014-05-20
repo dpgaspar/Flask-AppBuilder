@@ -1,5 +1,5 @@
 from models import Person, Group
-from flask.ext.appbuilder.views import GeneralView, BaseView
+from flask.ext.appbuilder.views import ModelView, BaseView
 from flask.ext.appbuilder.charts.views import ChartView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.widgets import ListThumbnail
@@ -7,7 +7,7 @@ from flask.ext.appbuilder.widgets import ListThumbnail
 from app import app, db, appbuilder
 
 
-class PersonGeneralView(GeneralView):
+class PersonModelView(ModelView):
     datamodel = SQLAModel(Person, db.session)
 
     list_title = 'List Contacts'
@@ -53,9 +53,9 @@ class PersonGeneralView(GeneralView):
     ]
 
 
-class GroupGeneralView(GeneralView):
+class GroupModelView(ModelView):
     datamodel = SQLAModel(Group, db.session)
-    related_views = [PersonGeneralView]
+    related_views = [PersonModelView]
 
     label_columns = {'phone1': 'Phone (1)', 'phone2': 'Phone (2)', 'taxid': 'Tax ID'}
     list_columns = ['name', 'notes']
@@ -65,11 +65,12 @@ class PersonChartView(ChartView):
     route_base = '/persons'
     datamodel = SQLAModel(Person, db.session)
     chart_title = 'Grouped Persons'
-    label_columns = PersonGeneralView.label_columns
+    label_columns = PersonModelView.label_columns
     group_by_columns = ['group']
     search_columns = ['name', 'group']
 
 
-appbuilder.add_view(GroupGeneralView(), "List Groups", icon="fa-folder-open-o", category="Contacts")
-appbuilder.add_view(PersonGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")
+db.create_all()
+appbuilder.add_view(GroupModelView(), "List Groups", icon="fa-folder-open-o", category="Contacts")
+appbuilder.add_view(PersonModelView(), "List Contacts", icon="fa-envelope", category="Contacts")
 appbuilder.add_view(PersonChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")

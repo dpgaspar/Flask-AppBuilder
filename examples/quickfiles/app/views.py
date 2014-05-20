@@ -1,12 +1,10 @@
-from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import GeneralView, CompactCRUDMixin
+from flask.ext.appbuilder.views import ModelView, CompactCRUDMixin
 from app.models import Project, ProjectFiles
-from flask.ext.appbuilder import Base
-from app import app, db
+from app import appbuilder, db
 
 
-class ProjectFilesGeneralView(GeneralView):
+class ProjectFilesModelView(ModelView):
     datamodel = SQLAModel(ProjectFiles)
 
     label_columns = {'file_name': 'File Name', 'download': 'Download'}
@@ -16,9 +14,9 @@ class ProjectFilesGeneralView(GeneralView):
     show_columns = ['file_name', 'download']
 
 
-class ProjectGeneralView(CompactCRUDMixin, GeneralView):
+class ProjectModelView(CompactCRUDMixin, ModelView):
     datamodel = SQLAModel(Project)
-    related_views = [ProjectFilesGeneralView]
+    related_views = [ProjectFilesModelView]
 
     show_template = 'appbuilder/general/model/show_cascade.html'
     edit_template = 'appbuilder/general/model/edit_cascade.html'
@@ -32,6 +30,6 @@ class ProjectGeneralView(CompactCRUDMixin, GeneralView):
     ]
 
 
-baseapp = BaseApp(app, db)
-baseapp.add_view(ProjectGeneralView, "List Projects", icon="fa-table", category="Projects")
-baseapp.add_view_no_menu(ProjectFilesGeneralView)
+db.create_all()
+appbuilder.add_view(ProjectModelView, "List Projects", icon="fa-table", category="Projects")
+appbuilder.add_view_no_menu(ProjectFilesModelView)
