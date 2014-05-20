@@ -14,8 +14,8 @@ from ..basemanager import BaseManager
 
 from .models import User, Role, PermissionView, Permission, ViewMenu
 from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, \
-    ResetPasswordView, UserDBGeneralView, UserLDAPGeneralView, UserOIDGeneralView, RoleGeneralView, \
-    PermissionViewGeneralView, ViewMenuGeneralView, PermissionGeneralView, UserStatsChartView
+    ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, RoleModelView, \
+    PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
 
 log = logging.getLogger(__name__)
 
@@ -70,39 +70,39 @@ class SecurityManager(BaseManager):
         self.appbuilder.add_view_no_menu(ResetMyPasswordView())
 
         if self._get_auth_type(self.appbuilder.get_app) == AUTH_DB:
-            self.user_view = UserDBGeneralView
+            self.user_view = UserDBModelView
             self.auth_view = AuthDBView()
         elif self._get_auth_type(self.appbuilder.get_app) == AUTH_LDAP:
-            self.user_view = UserLDAPGeneralView
+            self.user_view = UserLDAPModelView
             self.auth_view = AuthLDAPView()
         else:
-            self.user_view = UserOIDGeneralView
+            self.user_view = UserOIDModelView
             self.auth_view = AuthOIDView()
             self.oid.after_login_func = self.auth_view.after_login
 
         self.appbuilder.add_view_no_menu(self.auth_view)
 
         self.user_view = self.appbuilder.add_view(self.user_view, "List Users",
-                                      icon="fa-user", label=_("List Users"),
-                                      category="Security", category_icon="fa-cogs", category_label=_('Security'))
+                                                  icon="fa-user", label=_("List Users"),
+                                                  category="Security", category_icon="fa-cogs",
+                                                  category_label=_('Security'))
 
-
-        role_view = self.appbuilder.add_view(RoleGeneralView, "List Roles", icon="fa-group", label=_('List Roles'),
-                              category="Security", category_icon="fa-cogs")
+        role_view = self.appbuilder.add_view(RoleModelView, "List Roles", icon="fa-group", label=_('List Roles'),
+                                             category="Security", category_icon="fa-cogs")
         role_view.related_views = [self.user_view.__class__]
         self.appbuilder.add_view(UserStatsChartView,
-                                      "User's Statistics", icon="fa-bar-chart-o", label=_("User's Statistics"),
-                                      category="Security")
+                                 "User's Statistics", icon="fa-bar-chart-o", label=_("User's Statistics"),
+                                 category="Security")
         self.appbuilder.menu.add_separator("Security")
-        self.appbuilder.add_view(PermissionGeneralView,
-                                      "Base Permissions", icon="fa-lock",
-                                      label=_("Base Permissions"), category="Security")
-        self.appbuilder.add_view(ViewMenuGeneralView,
-                                      "Views/Menus", icon="fa-list-alt",
-                                      label=_('Views/Menus'), category="Security")
-        self.appbuilder.add_view(PermissionViewGeneralView,
-                                      "Permission on Views/Menus", icon="fa-link",
-                                      label=_('Permission on Views/Menus'), category="Security")
+        self.appbuilder.add_view(PermissionModelView,
+                                 "Base Permissions", icon="fa-lock",
+                                 label=_("Base Permissions"), category="Security")
+        self.appbuilder.add_view(ViewMenuModelView,
+                                 "Views/Menus", icon="fa-list-alt",
+                                 label=_('Views/Menus'), category="Security")
+        self.appbuilder.add_view(PermissionViewModelView,
+                                 "Permission on Views/Menus", icon="fa-link",
+                                 label=_('Permission on Views/Menus'), category="Security")
 
 
     def load_user(self, pk):
@@ -112,6 +112,29 @@ class SecurityManager(BaseManager):
     def before_request():
         g.user = current_user
 
+    def _migrate_db(self):
+        """
+            Migrate from 0.8 to 0.9, change GeneralView to ModelView
+            on ViewMenus
+        """
+        sec_view_prefixes = ['Permission', 'ViewMenu', 'PermissionView',
+                             'UserOID', 'UserLDAP', 'UserDB',
+                             'Role']
+        sec_view_old_sufix = 'GeneralView'
+        sec_view_new_sufix = 'ModelView'
+        for sec_view_prefix in sec_view_prefixes:
+            sec_view = self._find_view_menu('{0}{1}'.format(sec_view_prefix, sec_view_old_sufix))
+            if sec_view:
+                try:
+                    log.info("Migrate from 0.8 to 0.9 Changing {0}{1}".format(sec_view_prefix, sec_view_old_sufix))
+                    sec_view.name = '{0}{1}'.format(sec_view_prefix, sec_view_new_sufix)
+                    self.session.merge(sec_view)
+                    self.session.commit()
+                except Exception as e:
+                    log.error("Update ViewMenu error: {0}".format(str(e)))
+                    self.session.rollback()
+
+
     def init_db(self):
         try:
             engine = self.session.get_bind(mapper=None, clause=None)
@@ -120,6 +143,8 @@ class SecurityManager(BaseManager):
                 log.info("Security DB not found Creating all Models from Base")
                 Base.metadata.create_all(engine)
                 log.info("Security DB Created")
+            else:
+                self._migrate_db()
             if not self.session.query(Role).filter_by(name=self.auth_role_admin).first():
                 role = Role()
                 role.name = self.auth_role_admin

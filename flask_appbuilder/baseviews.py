@@ -177,15 +177,15 @@ class BaseView(object):
 
 class BaseModelView(BaseView):
     """
-        The base class of GeneralView and ChartView, all properties are inherited
-        Customize GeneralView and ChartView overriding this properties
+        The base class of ModelView and ChartView, all properties are inherited
+        Customize ModelView and ChartView overriding this properties
     """
 
     datamodel = None
     """ 
         Your sqla model you must initialize it like::
         
-            class MyView(GeneralView):
+            class MyView(ModelView):
                 datamodel = SQLAModel(MyTable, db.session)
     """
 
@@ -196,7 +196,7 @@ class BaseModelView(BaseView):
         List with allowed search columns, if not provided all possible search columns will be used 
         If you want to limit the search (*filter*) columns possibilities, define it with a list of column names from your model::
         
-            class MyView(GeneralView):
+            class MyView(ModelView):
                 datamodel = SQLAModel(MyTable, db.session)
                 search_columns = ['name','address']
              
@@ -207,7 +207,7 @@ class BaseModelView(BaseView):
         
         example (will just override the label for name column)::
         
-            class MyView(GeneralView):
+            class MyView(ModelView):
                 datamodel = SQLAModel(MyTable, db.session)
                 label_columns = {'name':'My Name Label Override'}
         
@@ -223,7 +223,7 @@ class BaseModelView(BaseView):
             def get_user():
                 return g.user
         
-            class MyView(GeneralView):
+            class MyView(ModelView):
                 datamodel = SQLAModel(MyTable, db.session)
                 base_filters = [['created_by', FilterEqualFunction, get_user],
                                 ['name', FilterStartsWith, 'a']]
@@ -234,7 +234,7 @@ class BaseModelView(BaseView):
     """
         Use this property to set default ordering for lists ('col_name','asc|desc')::
 
-            class MyView(GeneralView):
+            class MyView(ModelView):
                 datamodel = SQLAModel(MyTable, db.session)
                 base_order = ('my_column_name','asc')
 
@@ -286,16 +286,16 @@ class BaseModelView(BaseView):
 
 class BaseCRUDView(BaseModelView):
     """
-        The base class for GeneralView, all properties are inherited
-        Customize GeneralView overriding this properties
+        The base class for ModelView, all properties are inherited
+        Customize ModelView overriding this properties
     """
 
     related_views = None
     """ 
-        List with GeneralView classes
+        List with ModelView classes
         Will be displayed related with this one using relationship sqlalchemy property::
 
-            class MyView(GeneralView):
+            class MyView(ModelView):
                 datamodel = SQLAModel(Group, db.session)
                 related_views = [MyOtherRelatedView]
                 
@@ -333,7 +333,7 @@ class BaseCRUDView(BaseModelView):
         
         ::
         
-            class MyView(GeneralView):
+            class MyView(ModelView):
                 datamodel = SQLAModel(MyTable, db.session)
 
                 show_fieldsets = [
@@ -355,7 +355,7 @@ class BaseCRUDView(BaseModelView):
     """ 
         Dictionary with column descriptions that will be shown on the forms::
         
-            class MyView(GeneralView):
+            class MyView(ModelView):
                 datamodel = SQLAModel(MyTable, db.session)
 
                 description_columns = {'name':'your models name column','address':'the address column'}
@@ -372,7 +372,7 @@ class BaseCRUDView(BaseModelView):
         Assign a list of tuples like ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
         Add a custom filter to form related fields::
 
-            class ContactGeneralView(GeneralView):
+            class ContactModelView(ModelView):
                 datamodel = SQLAModel(Contact, db.session)
                 add_form_query_rel_fields = [('group',
                         SQLAModel(Group, db.session),
@@ -386,7 +386,7 @@ class BaseCRUDView(BaseModelView):
         Assign a list of tuples like ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
         Add a custom filter to form related fields::
 
-            class ContactGeneralView(GeneralView):
+            class ContactModelView(ModelView):
                 datamodel = SQLAModel(Contact, db.session)
                 edit_form_query_rel_fields = [('group',
                         SQLAModel(Group, db.session),
@@ -572,7 +572,7 @@ class BaseCRUDView(BaseModelView):
                                            pks=pks,
                                            actions=actions,
                                            filters=filters,
-                                           generalview_name=self.__class__.__name__
+                                           modelview_name=self.__class__.__name__
         )
         return widgets
 
@@ -588,7 +588,7 @@ class BaseCRUDView(BaseModelView):
                                            value_columns=self.datamodel.get_values_item(item, self.show_columns),
                                            actions=actions,
                                            fieldsets=show_fieldsets,
-                                           generalview_name=self.__class__.__name__
+                                           modelview_name=self.__class__.__name__
         )
         return widgets
 

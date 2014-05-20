@@ -52,7 +52,7 @@ class FlaskTestCase(unittest.TestCase):
         from flask import Flask
         from flask.ext.appbuilder import AppBuilder
         from flask.ext.appbuilder.models.datamodel import SQLAModel
-        from flask.ext.appbuilder.views import GeneralView
+        from flask.ext.appbuilder.views import ModelView
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
@@ -64,18 +64,18 @@ class FlaskTestCase(unittest.TestCase):
         self.db = SQLAlchemy(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
-        class Model1View(GeneralView):
+        class Model1View(ModelView):
             datamodel = SQLAModel(Model1)
 
-        class Model2View(GeneralView):
+        class Model2View(ModelView):
             datamodel = SQLAModel(Model2)
             related_views = [Model1View]
 
-        class Model1Filtered1View(GeneralView):
+        class Model1Filtered1View(ModelView):
             datamodel = SQLAModel(Model1)
             base_filters = [['field_string', FilterStartsWith, 'a']]
 
-        class Model1Filtered2View(GeneralView):
+        class Model1Filtered2View(ModelView):
             datamodel = SQLAModel(Model1)
             base_filters = [['field_integer', FilterEqual, 0]]
 

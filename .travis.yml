@@ -5,5 +5,9 @@ python:
   - "2.6"
 install:
   - "pip install -r requirements.txt --use-mirrors"
+  - "pip install coveralls"
 script:
   - nosetests -v flask_appbuilder/tests
+  - coverage run --source flask_appbuilder setup.py test
+after_success:
+  coveralls

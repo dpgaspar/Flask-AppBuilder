@@ -24,42 +24,42 @@ class TemplateFilters(object):
 
 
     @app_template_filter('link_order')
-    def link_order_filter(self, column, generalview_name):
+    def link_order_filter(self, column, modelview_name):
         """
             Arguments are passed like: _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
         """
         new_args = request.view_args.copy()
         args = request.args.copy()
-        if ('_oc_' + generalview_name) in args:
-            args['_oc_' + generalview_name] = column
-            if args.get('_od_' + generalview_name) == 'asc':
-                args['_od_' + generalview_name] = 'desc'
+        if ('_oc_' + modelview_name) in args:
+            args['_oc_' + modelview_name] = column
+            if args.get('_od_' + modelview_name) == 'asc':
+                args['_od_' + modelview_name] = 'desc'
             else:
-                args['_od_' + generalview_name] = 'asc'
+                args['_od_' + modelview_name] = 'asc'
         else:
-            args['_oc_' + generalview_name] = column
-            args['_od_' + generalview_name] = 'asc'
+            args['_oc_' + modelview_name] = column
+            args['_od_' + modelview_name] = 'asc'
         return url_for(request.endpoint,**dict(list(new_args.items()) + list(args.to_dict().items())))
 
     @app_template_filter('link_page')
-    def link_page_filter(self, page, generalview_name):
+    def link_page_filter(self, page, modelview_name):
         """
             Arguments are passed like: page_<VIEW_NAME>=<PAGE_NUMBER>
         """
         new_args = request.view_args.copy()
         args = request.args.copy()
-        args['page_' + generalview_name] = page
+        args['page_' + modelview_name] = page
         return url_for(request.endpoint, **dict(list(new_args.items()) + list(args.to_dict().items())))
 
 
     @app_template_filter('link_page_size')
-    def link_page_size_filter(self, page_size, generalview_name):
+    def link_page_size_filter(self, page_size, modelview_name):
         """
         Arguments are passed like: psize_<VIEW_NAME>=<PAGE_NUMBER>
         """
         new_args = request.view_args.copy()
         args = request.args.copy()
-        args['psize_' + generalview_name] = page_size
+        args['psize_' + modelview_name] = page_size
         return url_for(request.endpoint, **dict(list(new_args.items()) + list(args.to_dict().items())))
 
 
@@ -82,9 +82,9 @@ class TemplateFilters(object):
         return lnkstr
 
     @app_template_filter('get_link_order')
-    def get_link_order_filter(self, column, generalview_name):
-        if request.args.get('_oc_' + generalview_name) == column:
-            if (request.args.get('_od_' + generalview_name) == 'asc'):
+    def get_link_order_filter(self, column, modelview_name):
+        if request.args.get('_oc_' + modelview_name) == column:
+            if (request.args.get('_od_' + modelview_name) == 'asc'):
                 return 2
             else:
                 return 1

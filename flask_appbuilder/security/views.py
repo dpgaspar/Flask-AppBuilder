@@ -12,7 +12,7 @@ from flask.ext.babelpkg import gettext, lazy_gettext
 from flask_login import login_user, logout_user
 
 from flask_appbuilder.models.datamodel import SQLAModel
-from flask_appbuilder.views import BaseView, GeneralView, SimpleFormView, expose
+from flask_appbuilder.views import BaseView, ModelView, SimpleFormView, expose
 from flask_appbuilder.charts.views import DirectChartView
 
 from ..fieldwidgets import BS3PasswordFieldWidget
@@ -25,7 +25,7 @@ from .decorators import has_access
 log = logging.getLogger(__name__)
 
 
-class PermissionGeneralView(GeneralView):
+class PermissionModelView(ModelView):
     route_base = '/permissions'
 
     datamodel = SQLAModel(Permission)
@@ -38,7 +38,7 @@ class PermissionGeneralView(GeneralView):
     label_columns = {'name': lazy_gettext('Name')}
 
 
-class ViewMenuGeneralView(GeneralView):
+class ViewMenuModelView(ModelView):
     route_base = '/viewmenus'
 
     datamodel = SQLAModel(ViewMenu)
@@ -51,7 +51,7 @@ class ViewMenuGeneralView(GeneralView):
     label_columns = {'name': lazy_gettext('Name')}
 
 
-class PermissionViewGeneralView(GeneralView):
+class PermissionViewModelView(ModelView):
     route_base = '/permissionviews'
 
     datamodel = SQLAModel(PermissionView)
@@ -103,7 +103,7 @@ class ResetPasswordView(SimpleFormView):
         flash(as_unicode(self.message), 'info')
 
 
-class UserGeneralView(GeneralView):
+class UserModelView(ModelView):
     route_base = '/users'
     datamodel = SQLAModel(User)
 
@@ -168,7 +168,7 @@ class UserGeneralView(GeneralView):
     user_info_title = lazy_gettext("Your user information")
 
 
-class UserOIDGeneralView(UserGeneralView):
+class UserOIDModelView(UserModelView):
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
@@ -179,7 +179,7 @@ class UserOIDGeneralView(UserGeneralView):
                                appbuilder=self.appbuilder)
 
 
-class UserLDAPGeneralView(UserGeneralView):
+class UserLDAPModelView(UserModelView):
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
@@ -190,7 +190,7 @@ class UserLDAPGeneralView(UserGeneralView):
                                appbuilder=self.appbuilder)
 
 
-class UserDBGeneralView(UserGeneralView):
+class UserDBModelView(UserModelView):
     add_form_extra_fields = {'password': PasswordField(lazy_gettext('Password'),
                                                        description=lazy_gettext(
                                                            'Please use a good password policy, this application does not check this for you'),
@@ -252,13 +252,13 @@ class UserDBGeneralView(UserGeneralView):
 class UserStatsChartView(DirectChartView):
     datamodel = SQLAModel(User)
     chart_title = lazy_gettext('User Statistics')
-    label_columns = UserGeneralView.label_columns
-    search_columns = UserGeneralView.search_columns
+    label_columns = UserModelView.label_columns
+    search_columns = UserModelView.search_columns
     direct_columns = {'Login Count': ('username', 'login_count'),
                       'Failed Login Count': ('username', 'fail_login_count')}
 
 
-class RoleGeneralView(GeneralView):
+class RoleModelView(ModelView):
     route_base = '/roles'
 
     datamodel = SQLAModel(Role)

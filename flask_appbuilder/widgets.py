@@ -84,7 +84,7 @@ class ShowWidget(RenderTemplateWidget):
         value_columns = []
         actions = None
         fieldsets = []
-        generalview_name = ''
+        modelview_name = ''
     """
     template = 'appbuilder/general/widgets/show.html'
 
@@ -107,7 +107,7 @@ class ListWidget(RenderTemplateWidget):
         pks = []
         actions = None
         filters = {}
-        generalview_name = ''
+        modelview_name = ''
     """
     template = 'appbuilder/general/widgets/list.html'
     

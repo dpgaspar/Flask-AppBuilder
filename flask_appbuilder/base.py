@@ -181,13 +181,13 @@ class AppBuilder(object):
             
                 appbuilder = AppBuilder(app, db)
                 # Register a view, rendering a top menu without icon.
-                appbuilder.add_view(MyGeneralView(), "My View")
+                appbuilder.add_view(MyModelView(), "My View")
                 # or not instantiated
-                appbuilder.add_view(MyGeneralView, "My View")
+                appbuilder.add_view(MyModelView, "My View")
                 # Register a view, a submenu "Other View" from "Other" with a phone icon.
-                appbuilder.add_view(MyOtherGeneralView, "Other View", icon='fa-phone', category="Others")
+                appbuilder.add_view(MyOtherModelView, "Other View", icon='fa-phone', category="Others")
                 # Register a view, with category icon and translation.
-                appbuilder.add_view(YetOtherGeneralView(), "Other View", icon='fa-phone',
+                appbuilder.add_view(YetOtherModelView(), "Other View", icon='fa-phone',
                                 label=_('Other View'), category="Others", category_icon='fa-envelop',
                                 category_label=_('Other View'))
                 # Add a link

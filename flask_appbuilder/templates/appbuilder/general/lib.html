@@ -7,10 +7,10 @@
 	{% endif %}
 {% endmacro %}
 
-{% macro render_action_links(actions, pk, generalview_name) %}
+{% macro render_action_links(actions, pk, modelview_name) %}
     {% for key in actions %}
         {%  set action = actions.get(key) %}
-        {% if action.name | is_item_visible(generalview_name) %}
+        {% if action.name | is_item_visible(modelview_name) %}
             <a href="{{url_for('.action', name = action.name, pk = pk)}}" class="btn btn-sm btn-primary"><i class="fa {{action.icon}}"></i>
                 {{_(action.text)}}
             </a>
@@ -18,7 +18,7 @@
     {% endfor %}
 {% endmacro %}
 
-{% macro render_actions(actions, generalview_name) %}
+{% macro render_actions(actions, modelview_name) %}
 {% if actions %}
 <div class="btn-group">
     <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
@@ -27,8 +27,8 @@
     <ul class="dropdown-menu" role="menu">
     	{% for action_key in actions %}
             {% set action = actions.get(action_key) %}
-            {% if action.name | is_item_visible(generalview_name) %}
-                <li><a href="{{url_for(generalview_name + '.action',name=action.name,pk=1)}}">{{action.text}}</a></li>
+            {% if action.name | is_item_visible(modelview_name) %}
+                <li><a href="{{url_for(modelview_name + '.action',name=action.name,pk=1)}}">{{action.text}}</a></li>
             {% endif %}
         {% endfor %}
     </ul>
@@ -36,7 +36,7 @@
 {% endif %}
 {% endmacro %}
 
-{% macro render_set_page_size(page, page_size, count, generalview_name) %}
+{% macro render_set_page_size(page, page_size, count, modelview_name) %}
 {% if not page %} {% set page = 0 %} {% endif %}
 {% set pages = ((count / page_size)|round(0,'ceil')|int)%}
 {% if pages > 1 %}
@@ -47,9 +47,9 @@
     <ul class="dropdown-menu" role="menu">
     	{% for sel_page_size in range(5,40,5) %}
     	{% if sel_page_size == page_size %}
-        	<li class="active"><a href="{{sel_page_size | link_page_size(generalview_name) }}">{{sel_page_size}}</a></li>
+        	<li class="active"><a href="{{sel_page_size | link_page_size(modelview_name) }}">{{sel_page_size}}</a></li>
         {% else %}
-        	<li><a href="{{sel_page_size | link_page_size(generalview_name) }}">{{sel_page_size}}</a></li>
+        	<li><a href="{{sel_page_size | link_page_size(modelview_name) }}">{{sel_page_size}}</a></li>
         {% endif %}
         {% endfor %}
     </ul>
@@ -58,7 +58,7 @@
 {% endmacro %}
 
 
-{% macro render_pagination(page, page_size, count, generalview_name) %}
+{% macro render_pagination(page, page_size, count, modelview_name) %}
 
     {% if not page %} {% set page = 0 %} {% endif %}
     {% set pages = ((count / page_size)|round(0,'ceil')|int)%}
@@ -85,7 +85,7 @@
 
     {% if min > 0 %}
     <li>
-        <a href="{{ init_page | link_page(generalview_name) }}">&laquo;</a>
+        <a href="{{ init_page | link_page(modelview_name) }}">&laquo;</a>
     </li>
     {% else %}
     <li class="disabled">
@@ -94,7 +94,7 @@
     {% endif %}
     {% if page > 0 %}
     <li>
-        <a href="{{ (page - 1) | link_page(generalview_name) }}">&lt;</a>
+        <a href="{{ (page - 1) | link_page(modelview_name) }}">&lt;</a>
     </li>
     {% else %}
     <li class="disabled">
@@ -109,14 +109,14 @@
         </li>
         {% else %}
         <li>
-            <a href="{{ p | link_page(generalview_name) }}">{{ p }}</a>
+            <a href="{{ p | link_page(modelview_name) }}">{{ p }}</a>
         </li>
         {% endif %}
     {% endfor %}
 
     {% if page + 1 < pages %}
         <li>
-            <a href="{{ (page + 1) | link_page(generalview_name) }}">&gt;</a>
+            <a href="{{ (page + 1) | link_page(modelview_name) }}">&gt;</a>
         </li>
     {% else %}
         <li class="disabled">
@@ -125,7 +125,7 @@
     {% endif %}
     {% if max < pages %}
         <li>
-            <a href="{{ (pages - 1) | link_page(generalview_name) }}">&raquo;</a>
+            <a href="{{ (pages - 1) | link_page(modelview_name) }}">&raquo;</a>
         </li>
     {% else %}
         <li class="disabled">
@@ -214,12 +214,12 @@
     </div>
 {% endmacro %}
 
-{% macro render_list_header(can_add, page, page_size, count, filters, generalview_name) %}
+{% macro render_list_header(can_add, page, page_size, count, filters, modelview_name) %}
     <div class="well well-sm">
-        {{ render_pagination(page, page_size, count, generalview_name) }}
-        {{ render_set_page_size(page, page_size, count, generalview_name) }}
+        {{ render_pagination(page, page_size, count, modelview_name) }}
+        {{ render_set_page_size(page, page_size, count, modelview_name) }}
     	{% if can_add %}
-			{% set path = url_for(generalview_name + '.add',next=request.script_root + request.path) %}
+			{% set path = url_for(modelview_name + '.add',next=request.script_root + request.path) %}
 			{% set path = path | set_link_filters(filters) %}
 			&nbsp;{{ lnk_add(path) }}
 		{% endif %}
@@ -230,20 +230,20 @@
     </div>
 {% endmacro %}
 
-{% macro btn_crud(can_show, can_edit, can_delete, pk, generalview_name, filters) %}
+{% macro btn_crud(can_show, can_edit, can_delete, pk, modelview_name, filters) %}
     <div class="btn-group btn-group-xs" style="display: flex;">
         {% if can_show %}
-            {% set path = url_for(generalview_name + '.show',pk=pk,next=request.script_root + request.path) %}
+            {% set path = url_for(modelview_name + '.show',pk=pk,next=request.script_root + request.path) %}
             {% set path = path | set_link_filters(filters) %}
             {{ lnk_show(path) }}
         {% endif %}
         {% if can_edit %}
-            {% set path = url_for(generalview_name + '.edit',pk=pk,next=request.script_root + request.path) %}
+            {% set path = url_for(modelview_name + '.edit',pk=pk,next=request.script_root + request.path) %}
             {% set path = path | set_link_filters(filters) %}
             {{ lnk_edit(path) }}
         {% endif %}
         {% if can_delete %}
-            {{ lnk_delete(url_for(generalview_name + '.delete',pk=pk,next=request.script_root + request.path)) }}
+            {{ lnk_delete(url_for(modelview_name + '.delete',pk=pk,next=request.script_root + request.path)) }}
         {% endif %}
     </div>
 {% endmacro %}

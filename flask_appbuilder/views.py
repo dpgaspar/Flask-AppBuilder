@@ -112,7 +112,7 @@ class SimpleFormView(BaseView):
         return widgets
 
 
-class GeneralView(BaseCRUDView):
+class ModelView(BaseCRUDView):
     """
         This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and list from your database tables, inherit your views from this class.
 
@@ -120,7 +120,7 @@ class GeneralView(BaseCRUDView):
     """
 
     def __init__(self, **kwargs):
-        super(GeneralView, self).__init__(**kwargs)
+        super(ModelView, self).__init__(**kwargs)
 
 
     """
@@ -237,7 +237,7 @@ class MasterDetailView(BaseCRUDView):
 
         Master view will behave like a left menu::
 
-            class DetailView(GeneralView):
+            class DetailView(ModelView):
                 datamodel = SQLAModel(DetailTable, db.session)
 
             class MasterView(MasterDetailView):
@@ -329,7 +329,7 @@ class MasterDetailChart(BaseCRUDView):
 
 class CompactCRUDMixin(BaseCRUDView):
     """
-        Mix with GeneralView to implement a list with add and edit on the same page.
+        Mix with ModelView to implement a list with add and edit on the same page.
     """
     _session_form_title = ''
     _session_form_widget = None
@@ -383,3 +383,7 @@ class CompactCRUDMixin(BaseCRUDView):
             self._session_form_title = self.edit_title
             return redirect(self._get_redirect())
 
+"""
+    This is for retro compatibility
+"""
+GeneralView = ModelView
