@@ -164,13 +164,13 @@ if non provided the view will be acessible as a top menu.</li>
 <p>Examples:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
 <span class="c"># Register a view, rendering a top menu without icon.</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView</span><span class="p">(),</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyModelView</span><span class="p">(),</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
 <span class="c"># or not instantiated</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView</span><span class="p">,</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyModelView</span><span class="p">,</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
 <span class="c"># Register a view, a submenu &quot;Other View&quot; from &quot;Other&quot; with a phone icon.</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherModelView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">)</span>
 <span class="c"># Register a view, with category icon and translation.</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">YetOtherGeneralView</span><span class="p">(),</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">YetOtherModelView</span><span class="p">(),</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span>
                 <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Other View&#39;</span><span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s">&#39;fa-envelop&#39;</span><span class="p">,</span>
                 <span class="n">category_label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Other View&#39;</span><span class="p">))</span>
 <span class="c"># Add a link</span>
@@ -272,8 +272,8 @@ that is no longer part of any registered view or menu.</p>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.baseviews.BaseModelView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">BaseModelView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView" title="Permalink to this definition">¶</a></dt>
-<dd><p>The base class of GeneralView and ChartView, all properties are inherited
-Customize GeneralView and ChartView overriding this properties</p>
+<dd><p>The base class of ModelView and ChartView, all properties are inherited
+Customize ModelView and ChartView overriding this properties</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseModelView.base_filters">
 <tt class="descname">base_filters</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.base_filters" title="Permalink to this definition">¶</a></dt>
@@ -282,7 +282,7 @@ Customize GeneralView and ChartView overriding this properties</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_user</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span>
 
-<span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">base_filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s">&#39;created_by&#39;</span><span class="p">,</span> <span class="n">FilterEqualFunction</span><span class="p">,</span> <span class="n">get_user</span><span class="p">],</span>
                     <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="n">FilterStartsWith</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">]]</span>
@@ -294,7 +294,7 @@ Customize GeneralView and ChartView overriding this properties</p>
 <dt id="flask.ext.appbuilder.baseviews.BaseModelView.base_order">
 <tt class="descname">base_order</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.base_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this property to set default ordering for lists (&#8216;col_name&#8217;,&#8217;asc|desc&#8217;):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">base_order</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;my_column_name&#39;</span><span class="p">,</span><span class="s">&#39;asc&#39;</span><span class="p">)</span>
 </pre></div>
@@ -305,7 +305,7 @@ Customize GeneralView and ChartView overriding this properties</p>
 <dt id="flask.ext.appbuilder.baseviews.BaseModelView.datamodel">
 <tt class="descname">datamodel</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.datamodel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Your sqla model you must initialize it like:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -316,7 +316,7 @@ Customize GeneralView and ChartView overriding this properties</p>
 <tt class="descname">label_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.label_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dictionary of labels for your columns, override this if you want diferent pretify labels</p>
 <p>example (will just override the label for name column):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;My Name Label Override&#39;</span><span class="p">}</span>
 </pre></div>
@@ -328,7 +328,7 @@ Customize GeneralView and ChartView overriding this properties</p>
 <tt class="descname">search_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.search_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>List with allowed search columns, if not provided all possible search columns will be used
 If you want to limit the search (<em>filter</em>) columns possibilities, define it with a list of column names from your model:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">]</span>
 </pre></div>
@@ -351,8 +351,8 @@ If you want to limit the search (<em>filter</em>) columns possibilities, define 
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">BaseCRUDView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView" title="Permalink to this definition">¶</a></dt>
-<dd><p>The base class for GeneralView, all properties are inherited
-Customize GeneralView overriding this properties</p>
+<dd><p>The base class for ModelView, all properties are inherited
+Customize ModelView overriding this properties</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.add_columns">
 <tt class="descname">add_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.add_columns" title="Permalink to this definition">¶</a></dt>
@@ -383,7 +383,7 @@ Customize GeneralView overriding this properties</p>
 <dd><p>Add Customized query for related fields on add form.
 Assign a list of tuples like (&#8216;relation col name&#8217;,SQLAModel,[[&#8216;Related model col&#8217;,FilterClass,&#8217;Filter Value&#8217;],...])
 Add a custom filter to form related fields:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">add_form_query_rel_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;group&#39;</span><span class="p">,</span>
             <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
@@ -416,7 +416,7 @@ Add a custom filter to form related fields:</p>
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.description_columns">
 <tt class="descname">description_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.description_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dictionary with column descriptions that will be shown on the forms:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 
     <span class="n">description_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;your models name column&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">:</span><span class="s">&#39;the address column&#39;</span><span class="p">}</span>
@@ -454,7 +454,7 @@ Add a custom filter to form related fields:</p>
 <dd><p>Add Customized query for related fields on edit form.
 Assign a list of tuples like (&#8216;relation col name&#8217;,SQLAModel,[[&#8216;Related model col&#8217;,FilterClass,&#8217;Filter Value&#8217;],...])
 Add a custom filter to form related fields:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">edit_form_query_rel_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;group&#39;</span><span class="p">,</span>
             <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
@@ -559,9 +559,9 @@ Add a custom filter to form related fields:</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.related_views">
 <tt class="descname">related_views</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.related_views" title="Permalink to this definition">¶</a></dt>
-<dd><p>List with GeneralView classes
+<dd><p>List with ModelView classes
 Will be displayed related with this one using relationship sqlalchemy property:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyOtherRelatedView</span><span class="p">]</span>
 </pre></div>
@@ -585,7 +585,7 @@ Will be displayed related with this one using relationship sqlalchemy property:<
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.show_fieldsets">
 <tt class="descname">show_fieldsets</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.show_fieldsets" title="Permalink to this definition">¶</a></dt>
 <dd><p>show fieldsets django style [(&lt;&#8217;TITLE&#8217;<a href="#id1"><span class="problematic" id="id2">|</span></a>None&gt;, {&#8216;fields&#8217;:[&lt;F1&gt;,&lt;F2&gt;,...]}),....]</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 
     <span class="n">show_fieldsets</span> <span class="o">=</span> <span class="p">[</span>
@@ -692,11 +692,10 @@ Inherit from this view to provide some base processing for your customized form 
 <div class="section" id="generalview">
 <h3>GeneralView<a class="headerlink" href="#generalview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
-<div><dl class="class">
+<div><dl class="attribute">
 <dt id="flask.ext.appbuilder.views.GeneralView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">GeneralView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.GeneralView" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and list from your database tables, inherit your views from this class.</p>
-<p>Notice that this class inherits from BaseCRUDView and BaseModelView so all properties from the parent class can be overriden.</p>
+<tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">GeneralView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.GeneralView" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">ModelView</span></tt></p>
 </dd></dl>
 
 </div></blockquote>
@@ -711,7 +710,7 @@ Inherit from this view to provide some base processing for your customized form 
 linked by PK and FK, in a master/detail type with
 two lists.</p>
 <p>Master view will behave like a left menu:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">DetailView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">DetailView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">DetailTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">MasterView</span><span class="p">(</span><span class="n">MasterDetailView</span><span class="p">):</span>
@@ -735,7 +734,7 @@ two lists.</p>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.views.CompactCRUDMixin">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">CompactCRUDMixin</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.CompactCRUDMixin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mix with GeneralView to implement a list with add and edit on the same page.</p>
+<dd><p>Mix with ModelView to implement a list with add and edit on the same page.</p>
 </dd></dl>
 
 </div></blockquote>
