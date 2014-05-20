@@ -1,10 +1,10 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.orm import relationship
 from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
-from flask.ext.appbuilder import Base
+from flask.ext.appbuilder import Model
 
 
-class CountryStats(BaseMixin, Base):
+class CountryStats(Model):
     id = Column(Integer, primary_key=True)
     stat_date = Column(Date, nullable=True)
     population = Column(Float)
