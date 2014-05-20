@@ -1,6 +1,4 @@
-from flask.ext.appbuilder.baseviews import BaseView
-from flask.ext.appbuilder.baseviews import expose
-from flask.ext.appbuilder.security.decorators import has_access
+from flask.ext.appbuilder import BaseView, expose, has_access
 from app import appbuilder
 
 class MyView(BaseView):

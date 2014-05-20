@@ -82,8 +82,7 @@ attached to a menu or linked from any point of your site.</p>
 <p>Decorate your url routing methods with <strong>&#64;expose</strong>.
 additionally add <strong>&#64;has_access</strong> decorator to tell flask that this is a security protected method.</p>
 <p>Using the Flask-AppBuilder-Skeleton (take a look at the <a class="reference internal" href="installation.html"><em>Installation</em></a> chapter). Edit views.py file and add:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">AppBuilder</span><span class="p">,</span> <span class="n">expose</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseviews</span> <span class="kn">import</span> <span class="n">BaseView</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">AppBuilder</span><span class="p">,</span> <span class="n">expose</span><span class="p">,</span> <span class="n">BaseView</span>
 <span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">appbuilder</span>
 
 <span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">BaseView</span><span class="p">):</span>
@@ -125,9 +124,7 @@ additionally add <strong>&#64;has_access</strong> decorator to tell flask that t
 <p><a class="reference external" href="http://localhost:8080/myview/method1/john">http://localhost:8080/myview/method1/john</a></p>
 <p><a class="reference external" href="http://localhost:8080/myview/method2/john">http://localhost:8080/myview/method2/john</a></p>
 <p>Has you can see this methods are public, let&#8217;s change this example, edit views.py and change it to:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">AppBuilder</span><span class="p">,</span> <span class="n">expose</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseviews</span> <span class="kn">import</span> <span class="n">BaseView</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.decorators</span> <span class="kn">import</span> <span class="n">has_access</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">AppBuilder</span><span class="p">,</span> <span class="n">BaseView</span><span class="p">,</span> <span class="n">expose</span><span class="p">,</span> <span class="n">has_access</span>
 <span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">appbuilder</span>
 
 

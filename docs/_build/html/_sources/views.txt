@@ -31,8 +31,7 @@ additionally add **@has_access** decorator to tell flask that this is a security
 
 Using the Flask-AppBuilder-Skeleton (take a look at the :doc:`installation` chapter). Edit views.py file and add::
 
-    from flask.ext.appbuilder import AppBuilder, expose
-    from flask.ext.appbuilder.baseviews import BaseView
+    from flask.ext.appbuilder import AppBuilder, expose, BaseView
     from app import appbuilder
 
     class MyView(BaseView):
@@ -80,9 +79,7 @@ http://localhost:8080/myview/method2/john
 
 Has you can see this methods are public, let's change this example, edit views.py and change it to::
 
-    from flask.ext.appbuilder import AppBuilder, expose
-    from flask.ext.appbuilder.baseviews import BaseView
-    from flask.ext.appbuilder.security.decorators import has_access
+    from flask.ext.appbuilder import AppBuilder, BaseView, expose, has_access
     from app import appbuilder
 
 
