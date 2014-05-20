@@ -10,9 +10,9 @@ You can setup your actions for records on the show page. Just use the @action de
 
     from flask.ext.appbuilder.actions import action  
 
-    class GroupGeneralView(GeneralView):
+    class GroupModelView(ModelView):
         datamodel = SQLAModel(Group)
-        related_views = [ContactGeneralView]
+        related_views = [ContactModelView]
 	
         @action("myaction","Do something on this record","","fa-rocket")
         def myaction(self, item):
@@ -23,4 +23,4 @@ You can setup your actions for records on the show page. Just use the @action de
    
 This will create the necessary permissions for the item, so that you can include them or remove them from a particular role.
 
-It will render a button for each action you define on the show page of *GeneralView*
+It will render a button for each action you define on the show page of *ModelView*

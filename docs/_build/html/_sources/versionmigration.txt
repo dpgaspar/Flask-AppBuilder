@@ -94,12 +94,12 @@ This new version has some breaking features, that i hope will be easily changeab
 
 If you feel lost please post an issue on github: https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open
 
-If your using the **related_views** attribute on GeneralView classes, you must not instantiate the related classes. This is the correct form, it will be less memory and cpu resource consuming.
+If your using the **related_views** attribute on ModelView classes, you must not instantiate the related classes. This is the correct form, it will be less memory and cpu resource consuming.
 
 From this::
 
 
-    class MyView(GeneralView):
+    class MyView(ModelView):
         datamodel = SQLAModel(Group, db.session)
         related_views = [MyOtherView()]
 
@@ -107,7 +107,7 @@ From this::
 Change to this::
 
   
-    class MyView(GeneralView):
+    class MyView(ModelView):
         datamodel = SQLAModel(Group, db.session)
         related_views = [MyOtherView]
 
@@ -162,15 +162,15 @@ Migrating from 0.1.X to 0.2.X
 It's very simple, change this::
 
 	baseapp = BaseApp(app)
-	baseapp.add_view(GroupGeneralView, "List Groups","/groups/list","th-large","Contacts")
-	baseapp.add_view(PersonGeneralView, "List Contacts","/persons/list","earphone","Contacts")
+	baseapp.add_view(GroupModelView, "List Groups","/groups/list","th-large","Contacts")
+	baseapp.add_view(PersonModelView, "List Contacts","/persons/list","earphone","Contacts")
 	baseapp.add_view(PersonChartView, "Contacts Chart","/persons/chart","earphone","Contacts")
 	
 To this::
 
 	baseapp = BaseApp(app)
-	baseapp.add_view(GroupGeneralView(), "List Groups","/groups/list","th-large","Contacts")
-	baseapp.add_view(PersonGeneralView(), "List Contacts","/persons/list","earphone","Contacts")
+	baseapp.add_view(GroupModelView(), "List Groups","/groups/list","th-large","Contacts")
+	baseapp.add_view(PersonModelView(), "List Contacts","/persons/list","earphone","Contacts")
 	baseapp.add_view(PersonChartView(), "Contacts Chart","/persons/chart","earphone","Contacts")
 
 Small change you just have to instantiate your classes.

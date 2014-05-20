@@ -92,15 +92,15 @@ Define your Views (views.py)
 Now we are going to define our view for *Group* table.
 This view will setup functionality for create, remove, update and show primitives for your model's definition.
 
-Inherit from *GeneralView* class that inherits from *BaseCRUDView* that inherits from *BaseModelView*,
+Inherit from *ModelView* class that inherits from *BaseCRUDView* that inherits from *BaseModelView*,
 so you can override all their public properties to configure many details for your CRUD primitives.
 take a look at **Advanced Configuration** on this page.
 
 ::
 
-    class GroupGeneralView(GeneralView):
+    class GroupModelView(ModelView):
         datamodel = SQLAModel(Group)
-        related_views = [ContactGeneralView]
+        related_views = [ContactModelView]
 
 
 I hope this was easy enough! Some questions may arise...
@@ -116,22 +116,11 @@ Optional properties:
 
 This is the most basic configuration (with an added related view).
 
-If you want to add a view associated with an alternative backend (you can have views from multiple backends)
-you can define it like this
-
-::
-
-    class GroupGeneralView(GeneralView):
-        datamodel = SQLAModel(Group, other_db.session)
-        related_views = [ContactGeneralView]
-
-You must pass this view to *add_view* method instantiated.
-
-But where is ContactGeneralView ? (that was a reference in *related_views* list) 
+But where is ContactModelView ? (that was a reference in *related_views* list)
 
 Let's define it::
 
-    class ContactGeneralView(GeneralView):
+    class ContactModelView(ModelView):
         datamodel = SQLAModel(Contact)
 
         label_columns = {'group':'Contacts Group'}
@@ -155,9 +144,9 @@ Register everything, to present the models and create the menu
 
 ::
 
-        appbuilder.add_view(GroupGeneralView, "List Groups",icon = "fa-folder-open-o",category = "Contacts",
+        appbuilder.add_view(GroupModelView, "List Groups",icon = "fa-folder-open-o",category = "Contacts",
                         category_icon = "fa-envelope")
-        appbuilder.add_view(ContactGeneralView, "List Contacts",icon = "fa-envelope",category = "Contacts")
+        appbuilder.add_view(ContactModelView, "List Contacts",icon = "fa-envelope",category = "Contacts")
 
 Take a look at the :doc:`api` for add_view method.
 

@@ -57,10 +57,10 @@ SimpleFormView
     .. autoclass:: SimpleFormView
         :members:
 
-GeneralView
+ModelView
 -----------
 
-    .. autoclass:: GeneralView
+    .. autoclass:: ModelView
         :members:
 
 MasterDetailView

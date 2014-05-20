@@ -16,12 +16,12 @@ Define your Chart Views (views.py)
         search_columns = ['name','group']
         datamodel = SQLAModel(Contact)
         chart_title = 'Grouped contacts'
-        label_columns = ContactGeneralView.label_columns
+        label_columns = ContactModelView.label_columns
         group_by_columns = ['group']
     	
 Notice that:
 
-:label_columns: Are the labels that will be displayed instead of the model's columns name. In this case they are the same labels from ContactGeneralView.
+:label_columns: Are the labels that will be displayed instead of the model's columns name. In this case they are the same labels from ContactModelView.
 :group_by_columns: Is a list of columns that you want to group.
 
 this will produce a Pie chart, with the percentage of contacts by group.
@@ -38,12 +38,12 @@ Let's define a chart grouped by a time frame?
     class ContactTimeChartView(TimeChartView):
         search_columns = ['name','group']
         chart_title = 'Grouped Birth contacts'
-        label_columns = ContactGeneralView.label_columns
+        label_columns = ContactModelView.label_columns
         group_by_columns = ['birthday']
         datamodel = SQLAModel(Contact)
 
 this will produce a column chart, with the number of contacts that were born on a particular month or year.
-Notice that the label_columns are from and already defined *ContactGeneralView* take a look at the :doc:`quickhowto`
+Notice that the label_columns are from and already defined *ContactModelView* take a look at the :doc:`quickhowto`
 
 Finally we will define a direct data chart
 

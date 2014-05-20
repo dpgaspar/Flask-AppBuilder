@@ -72,9 +72,9 @@
     <span class="k">def</span> <span class="nf">photo_img</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">ImageManager</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonGeneralView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;&#39;</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; alt=&quot;Photo&quot; class=&quot;img-rounded img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;&#39;</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; alt=&quot;Photo&quot; class=&quot;img-rounded img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonGeneralView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Create an additional method in this case <em>photo_img</em>, to inject your own custom HTML, to show your saved images. In this example the customized method is showing the images, and linking them with the show view.</p>
@@ -86,7 +86,7 @@
 </div>
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PersonGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PersonModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span>
 
     <span class="n">list_widget</span> <span class="o">=</span> <span class="n">ListThumbnail</span>
@@ -96,14 +96,14 @@
     <span class="n">show_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;photo_img&#39;</span><span class="p">,</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Notice that we are overriding the <em>list_widget</em>, the widget that is normally used by GeneralView. This will display a thumbnail list, excellent for displaying images.</p>
+<p>Notice that we are overriding the <em>list_widget</em>, the widget that is normally used by ModelView. This will display a thumbnail list, excellent for displaying images.</p>
 <p>We are not using the <em>image</em> column but the method <em>photo_img</em> we have created. This method will display the image and link it to the show view.</p>
 <p>And that&#8217;s it! images will be saved on the server. Their file names will result in the concatenation of UUID with their original name. They will be resized for optimization.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">You can define image resizing using configuration key <em>IMG_SIZE</em></p>
 </div>
-<p>We are overriding the list_widget, the widget that is normally used by GeneralView. This will display a thumbnail list excellent for displaying images.</p>
+<p>We are overriding the list_widget, the widget that is normally used by ModelView. This will display a thumbnail list excellent for displaying images.</p>
 <p>And that&#8217;s it! Images will be saved on the server with their filename concatenated by a UUID&#8217;s. Aditionally will be resized for optimization.</p>
 </div>
 <div class="section" id="next-step">

@@ -135,11 +135,11 @@ You must develop your template, then define it in a IndexView and pass it to App
 </li>
 <li><p class="first">Add your own menu links, on a default reversed navbar:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># Register a view, rendering a top menu without icon</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView</span><span class="p">,</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyModelView</span><span class="p">,</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
 <span class="c"># Register a view, a submenu &quot;Other View&quot; from &quot;Other&quot; with a phone icon</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherModelView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">)</span>
 <span class="c"># Register a view, with label for babel support (internationalization), setup an icon for the category.</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherGeneralView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Other View&#39;</span><span class="p">),</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherModelView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Other View&#39;</span><span class="p">),</span>
                 <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">,</span> <span class="n">category_label</span><span class="o">=</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Other&#39;</span><span class="p">),</span> <span class="n">category_label</span><span class="o">=</span><span class="s">&#39;fa-envelope&#39;</span><span class="p">)</span>
 <span class="c"># Add a link</span>
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;google&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-google-plus&quot;</span><span class="p">)</span>
@@ -148,10 +148,10 @@ You must develop your template, then define it in a IndexView and pass it to App
 </li>
 <li><p class="first">Add separators:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># Register a view, rendering a top menu without icon</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView1</span><span class="p">,</span> <span class="s">&quot;My View 1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView2</span><span class="p">,</span> <span class="s">&quot;My View 2&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyModelView1</span><span class="p">,</span> <span class="s">&quot;My View 1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyModelView2</span><span class="p">,</span> <span class="s">&quot;My View 2&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_separator</span><span class="p">(</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyGeneralView3</span><span class="p">,</span> <span class="s">&quot;My View 3&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyModelView3</span><span class="p">,</span> <span class="s">&quot;My View 3&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
@@ -164,14 +164,14 @@ You must develop your template, then define it in a IndexView and pass it to App
 <h2>Changing Widgets and Templates<a class="headerlink" href="#changing-widgets-and-templates" title="Permalink to this headline">¶</a></h2>
 <p>F.A.B. has a collection of widgets to change your views presentation, you can create your own and override, or (even better) create them and contribute to the project on git.</p>
 <p>All views have templates that will display widgets in a certain layout. For example you can display a record related lists on tab (default) or on the same page.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ServerDiskTypeGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ServerDiskTypeModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">ServerDiskType</span><span class="p">)</span>
     <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;quantity&#39;</span><span class="p">,</span> <span class="s">&#39;disktype&#39;</span><span class="p">]</span>
 
 
-<span class="k">class</span> <span class="nc">ServerGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ServerModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Server</span><span class="p">)</span>
-    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ServerDiskTypeGeneralView</span><span class="p">]</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ServerDiskTypeModelView</span><span class="p">]</span>
 
     <span class="n">show_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/show_cascade.html&#39;</span>
     <span class="n">edit_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/edit_cascade.html&#39;</span>
@@ -184,14 +184,14 @@ You must develop your template, then define it in a IndexView and pass it to App
 <p>The above example will override the show and edit templates that will change the related lists layout presentation.</p>
 <a class="reference internal image-reference" href="_images/list_cascade.png"><img alt="_images/list_cascade.png" src="_images/list_cascade.png" style="width: 100%;" /></a>
 <p>If you want to change the above example, and change the way the server disks are displayed has a list just use the available widgets:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ServerDiskTypeGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ServerDiskTypeModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">ServerDiskType</span><span class="p">)</span>
     <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;quantity&#39;</span><span class="p">,</span> <span class="s">&#39;disktype&#39;</span><span class="p">]</span>
     <span class="n">list_widget</span> <span class="o">=</span> <span class="n">ListBlock</span>
 
-<span class="k">class</span> <span class="nc">ServerGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ServerModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Server</span><span class="p">)</span>
-    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ServerDiskTypeGeneralView</span><span class="p">]</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ServerDiskTypeModelView</span><span class="p">]</span>
 
     <span class="n">show_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/show_cascade.html&#39;</span>
     <span class="n">edit_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/edit_cascade.html&#39;</span>
@@ -221,17 +221,17 @@ You must develop your template, then define it in a IndexView and pass it to App
 <div class="section" id="change-default-view-behaviour">
 <h2>Change Default View Behaviour<a class="headerlink" href="#change-default-view-behaviour" title="Permalink to this headline">¶</a></h2>
 <p>If you want to have Add, edit and list on the same page, this can be done. This could be very helpful on master/detail lists (inline) on views based on tables with very few columns.</p>
-<p>All you have to do is to mix <em>CompactCRUDMixin</em> class with the <em>GeneralView</em> class.</p>
+<p>All you have to do is to mix <em>CompactCRUDMixin</em> class with the <em>ModelView</em> class.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.datamodel</span> <span class="kn">import</span> <span class="n">SQLAModel</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.views</span> <span class="kn">import</span> <span class="n">GeneralView</span><span class="p">,</span> <span class="n">CompactCRUDMixin</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.views</span> <span class="kn">import</span> <span class="n">ModelView</span><span class="p">,</span> <span class="n">CompactCRUDMixin</span>
 <span class="kn">from</span> <span class="nn">app.models</span> <span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ProjectFiles</span>
 <span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">appbuilder</span>
 
 
-<span class="k">class</span> <span class="nc">MyInlineView</span><span class="p">(</span><span class="n">CompactCRUDMixin</span><span class="p">,</span> <span class="n">GeneralView</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MyInlineView</span><span class="p">(</span><span class="n">CompactCRUDMixin</span><span class="p">,</span> <span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyInlineTable</span><span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyViewTable</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyInlineView</span><span class="p">]</span>
 
@@ -240,20 +240,20 @@ You must develop your template, then define it in a IndexView and pass it to App
 </pre></div>
 </div>
 <p>Notice the class mixin, with this configuration you will have a <em>Master View</em> with the inline view <em>MyInlineView</em> where you can Add and Edit on the same page.</p>
-<p>Of course you could use the mixin on <em>MyView</em> also, use it only on GeneralView classes.</p>
+<p>Of course you could use the mixin on <em>MyView</em> also, use it only on ModelView classes.</p>
 <p>Take a look at the example: <a class="reference external" href="https://github.com/dpgaspar/Flask-appBuilder/tree/master/examples/quickfiles">https://github.com/dpgaspar/Flask-appBuilder/tree/master/examples/quickfiles</a></p>
 <a class="reference internal image-reference" href="_images/list_compact_inline.png"><img alt="_images/list_compact_inline.png" src="_images/list_compact_inline.png" style="width: 100%;" /></a>
 <p>Next we will take a look at a different view behaviour. A master detail style view, master is a view associated with a database table that is linked to the detail view.</p>
 <p>Let&#8217;s assume our quick how to example, a simple contacts applications. We have <em>Contact</em> table related with <em>Group</em> table.</p>
 <p>So we are using master detail view, first we will define the detail view (this view can be customized like the examples above):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Then we define the master detail view, where master is the one side of the 1-N relation:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupMasterView</span><span class="p">(</span><span class="n">MasterDetailView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
-    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">]</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactModelView</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Remember you can use charts has related views, you can use it like this:</p>
@@ -261,12 +261,12 @@ You must develop your template, then define it in a IndexView and pass it to App
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped Birth contacts&#39;</span>
     <span class="n">chart_type</span> <span class="o">=</span> <span class="s">&#39;AreaChart&#39;</span>
-    <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactGeneralView</span><span class="o">.</span><span class="n">label_columns</span>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactModelView</span><span class="o">.</span><span class="n">label_columns</span>
     <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;birthday&#39;</span><span class="p">]</span>
 
 <span class="k">class</span> <span class="nc">GroupMasterView</span><span class="p">(</span><span class="n">MasterDetailView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
-    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactGeneralView</span><span class="p">,</span> <span class="n">ContactTimeChartView</span><span class="p">]</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactModelView</span><span class="p">,</span> <span class="n">ContactTimeChartView</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>This will show a left side menu with the <em>groups</em> and a right side list with contacts, and a time chart with the number of birthdays during time by the selected group.</p>
@@ -276,7 +276,7 @@ appbuilder.add_view_no_menu(ContactTimeChartView)
 
 appbuilder.add_view(GroupMasterView, &quot;List Groups&quot;, icon=&quot;fa-folder-open-o&quot;, category=&quot;Contacts&quot;)
 appbuilder.add_separator(&quot;Contacts&quot;)
-appbuilder.add_view(ContactGeneralView, &quot;List Contacts&quot;, icon=&quot;fa-envelope&quot;, category=&quot;Contacts&quot;)
+appbuilder.add_view(ContactModelView, &quot;List Contacts&quot;, icon=&quot;fa-envelope&quot;, category=&quot;Contacts&quot;)
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="_images/list_master_detail.png"><img alt="_images/list_master_detail.png" src="_images/list_master_detail.png" style="width: 100%;" /></a>

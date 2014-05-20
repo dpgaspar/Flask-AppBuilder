@@ -89,11 +89,11 @@ By default menu is constructed based on your classes and in a reversed navbar. L
 	- Add your own menu links, on a default reversed navbar::
 	
 		# Register a view, rendering a top menu without icon
-		appbuilder.add_view(MyGeneralView, "My View")
+		appbuilder.add_view(MyModelView, "My View")
 		# Register a view, a submenu "Other View" from "Other" with a phone icon
-		appbuilder.add_view(MyOtherGeneralView, "Other View", icon='fa-phone', category="Others")
+		appbuilder.add_view(MyOtherModelView, "Other View", icon='fa-phone', category="Others")
 		# Register a view, with label for babel support (internationalization), setup an icon for the category.
-		appbuilder.add_view(MyOtherGeneralView, "Other View", icon='fa-phone', label=lazy_gettext('Other View'),
+		appbuilder.add_view(MyOtherModelView, "Other View", icon='fa-phone', label=lazy_gettext('Other View'),
 		                category="Others", category_label=lazy_gettext('Other'), category_label='fa-envelope')
 		# Add a link
 		appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
@@ -101,10 +101,10 @@ By default menu is constructed based on your classes and in a reversed navbar. L
 	- Add separators::
 	
 		# Register a view, rendering a top menu without icon
-		appbuilder.add_view(MyGeneralView1, "My View 1", category="My Views")
-		appbuilder.add_view(MyGeneralView2, "My View 2", category="My Views")
+		appbuilder.add_view(MyModelView1, "My View 1", category="My Views")
+		appbuilder.add_view(MyModelView2, "My View 2", category="My Views")
 		appbuilder.add_separator("My Views")
-		appbuilder.add_view(MyGeneralView3, "My View 3", category="My Views")
+		appbuilder.add_view(MyModelView3, "My View 3", category="My Views")
 		
 
 Using *label* argument is optional for view name or category, but it's advised for internationalization, if you use it with Babel's *lazy_gettext* function it will automate translation's extraction.
@@ -120,14 +120,14 @@ All views have templates that will display widgets in a certain layout. For exam
 
 ::
 
-    class ServerDiskTypeGeneralView(GeneralView):
+    class ServerDiskTypeModelView(ModelView):
         datamodel = SQLAModel(ServerDiskType)
         list_columns = ['quantity', 'disktype']
 
 
-    class ServerGeneralView(GeneralView):
+    class ServerModelView(ModelView):
         datamodel = SQLAModel(Server)
-        related_views = [ServerDiskTypeGeneralView]
+        related_views = [ServerDiskTypeModelView]
 
         show_template = 'appbuilder/general/model/show_cascade.html'
         edit_template = 'appbuilder/general/model/edit_cascade.html'
@@ -145,14 +145,14 @@ The above example will override the show and edit templates that will change the
 
 If you want to change the above example, and change the way the server disks are displayed has a list just use the available widgets::
 
-    class ServerDiskTypeGeneralView(GeneralView):
+    class ServerDiskTypeModelView(ModelView):
         datamodel = SQLAModel(ServerDiskType)
         list_columns = ['quantity', 'disktype']
         list_widget = ListBlock
 
-    class ServerGeneralView(GeneralView):
+    class ServerModelView(ModelView):
         datamodel = SQLAModel(Server)
-        related_views = [ServerDiskTypeGeneralView]
+        related_views = [ServerDiskTypeModelView]
 
         show_template = 'appbuilder/general/model/show_cascade.html'
         edit_template = 'appbuilder/general/model/edit_cascade.html'
@@ -190,20 +190,20 @@ Change Default View Behaviour
 
 If you want to have Add, edit and list on the same page, this can be done. This could be very helpful on master/detail lists (inline) on views based on tables with very few columns.
 
-All you have to do is to mix *CompactCRUDMixin* class with the *GeneralView* class.
+All you have to do is to mix *CompactCRUDMixin* class with the *ModelView* class.
 
 ::
 
     from flask.ext.appbuilder.models.datamodel import SQLAModel
-    from flask.ext.appbuilder.views import GeneralView, CompactCRUDMixin
+    from flask.ext.appbuilder.views import ModelView, CompactCRUDMixin
     from app.models import Project, ProjectFiles
     from app import appbuilder
 
 
-    class MyInlineView(CompactCRUDMixin, GeneralView):
+    class MyInlineView(CompactCRUDMixin, ModelView):
         datamodel = SQLAModel(MyInlineTable)
 
-    class MyView(GeneralView):
+    class MyView(ModelView):
         datamodel = SQLAModel(MyViewTable)
         related_views = [MyInlineView]
 
@@ -213,7 +213,7 @@ All you have to do is to mix *CompactCRUDMixin* class with the *GeneralView* cla
 
 Notice the class mixin, with this configuration you will have a *Master View* with the inline view *MyInlineView* where you can Add and Edit on the same page.
 
-Of course you could use the mixin on *MyView* also, use it only on GeneralView classes.
+Of course you could use the mixin on *MyView* also, use it only on ModelView classes.
 
 Take a look at the example: https://github.com/dpgaspar/Flask-appBuilder/tree/master/examples/quickfiles
 
@@ -227,7 +227,7 @@ Let's assume our quick how to example, a simple contacts applications. We have *
 
 So we are using master detail view, first we will define the detail view (this view can be customized like the examples above)::
 
-    class ContactGeneralView(GeneralView):
+    class ContactModelView(ModelView):
         datamodel = SQLAModel(Contact)
 
 
@@ -235,7 +235,7 @@ Then we define the master detail view, where master is the one side of the 1-N r
 
     class GroupMasterView(MasterDetailView):
         datamodel = SQLAModel(Group)
-        related_views = [ContactGeneralView]
+        related_views = [ContactModelView]
 
 
 Remember you can use charts has related views, you can use it like this::
@@ -244,12 +244,12 @@ Remember you can use charts has related views, you can use it like this::
         datamodel = SQLAModel(Contact)
         chart_title = 'Grouped Birth contacts'
         chart_type = 'AreaChart'
-        label_columns = ContactGeneralView.label_columns
+        label_columns = ContactModelView.label_columns
         group_by_columns = ['birthday']
 
     class GroupMasterView(MasterDetailView):
         datamodel = SQLAModel(Group)
-        related_views = [ContactGeneralView, ContactTimeChartView]
+        related_views = [ContactModelView, ContactTimeChartView]
 
 This will show a left side menu with the *groups* and a right side list with contacts, and a time chart with the number of birthdays during time by the selected group.
 
@@ -261,7 +261,7 @@ Finally register everything::
 
     appbuilder.add_view(GroupMasterView, "List Groups", icon="fa-folder-open-o", category="Contacts")
     appbuilder.add_separator("Contacts")
-    appbuilder.add_view(ContactGeneralView, "List Contacts", icon="fa-envelope", category="Contacts")
+    appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
 
 
 .. image:: ./images/list_master_detail.png

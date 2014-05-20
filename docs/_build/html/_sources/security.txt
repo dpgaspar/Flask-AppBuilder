@@ -34,7 +34,7 @@ Permissions
 
 The framework automatically creates for you all the possible existing permissions on your views or menus, by "inspection" your code. 
 
-Each time you create a new view based on a model (inherit from GeneralView) it will create the following permissions:
+Each time you create a new view based on a model (inherit from ModelView) it will create the following permissions:
 
 	- can list
 	- can show
@@ -43,18 +43,18 @@ Each time you create a new view based on a model (inherit from GeneralView) it w
 	- can delete
 	- can download
 	
-These base permission will be associated with your view, so if you create a view named "MyGeneralView" you can assign to any role these permissions:
+These base permission will be associated with your view, so if you create a view named "MyModelView" you can assign to any role these permissions:
 
-	- can list on MyGeneralView
-	- can show on MyGeneralView
-	- can add on MyGeneralView
-	- can edit on MyGeneralView
-	- can delete on MyGeneralView
-	- can doanload on MyGeneralView
+	- can list on MyModelView
+	- can show on MyModelView
+	- can add on MyModelView
+	- can edit on MyModelView
+	- can delete on MyModelView
+	- can doanload on MyModelView
 	
 If you extend your view with some exposed method via the @expose decorator::
 
-    class MyGeneralView(GeneralView):
+    class MyModelView(ModelView):
         datamodel = SQLAModel(Group, db.session)
     	
 
@@ -66,7 +66,7 @@ If you extend your view with some exposed method via the @expose decorator::
 
 The framework will create the following access:
 
-	- can mymethod on MyGeneralView
+	- can mymethod on MyModelView
 	
 And the decorator @has_access will prevent any unwanted access
 
@@ -81,8 +81,8 @@ use it after you have registered all your views
 
 ::
 
-    appbuilder.add_view(GroupGeneralView(), "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-    appbuilder.add_view(ContactGeneralView(), "List Contacts", icon="fa-envelope", category="Contacts")
+    appbuilder.add_view(GroupModelView(), "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
+    appbuilder.add_view(ContactModelView(), "List Contacts", icon="fa-envelope", category="Contacts")
     appbuilder.add_separator("Contacts")
     appbuilder.add_view(ContactChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")
     appbuilder.add_view(ContactTimeChartView(), "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")

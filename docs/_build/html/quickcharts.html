@@ -83,7 +83,7 @@
     <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped contacts&#39;</span>
-    <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactGeneralView</span><span class="o">.</span><span class="n">label_columns</span>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactModelView</span><span class="o">.</span><span class="n">label_columns</span>
     <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -92,7 +92,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">label_columns:</th><td class="field-body">Are the labels that will be displayed instead of the model&#8217;s columns name. In this case they are the same labels from ContactGeneralView.</td>
+<tr class="field-odd field"><th class="field-name">label_columns:</th><td class="field-body">Are the labels that will be displayed instead of the model&#8217;s columns name. In this case they are the same labels from ContactModelView.</td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">group_by_columns:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body">Is a list of columns that you want to group.</td>
@@ -109,13 +109,13 @@ If you want a column chart just define:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactTimeChartView</span><span class="p">(</span><span class="n">TimeChartView</span><span class="p">):</span>
     <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped Birth contacts&#39;</span>
-    <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactGeneralView</span><span class="o">.</span><span class="n">label_columns</span>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactModelView</span><span class="o">.</span><span class="n">label_columns</span>
     <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;birthday&#39;</span><span class="p">]</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>this will produce a column chart, with the number of contacts that were born on a particular month or year.
-Notice that the label_columns are from and already defined <em>ContactGeneralView</em> take a look at the <a class="reference internal" href="quickhowto.html"><em>Model Views (Quick How to)</em></a></p>
+Notice that the label_columns are from and already defined <em>ContactModelView</em> take a look at the <a class="reference internal" href="quickhowto.html"><em>Model Views (Quick How to)</em></a></p>
 <p>Finally we will define a direct data chart</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">StatsChartView</span><span class="p">(</span><span class="n">DirectChartView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Stats</span><span class="p">)</span>

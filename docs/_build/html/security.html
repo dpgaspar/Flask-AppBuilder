@@ -89,7 +89,7 @@
 <div class="section" id="permissions">
 <h2>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h2>
 <p>The framework automatically creates for you all the possible existing permissions on your views or menus, by &#8220;inspection&#8221; your code.</p>
-<p>Each time you create a new view based on a model (inherit from GeneralView) it will create the following permissions:</p>
+<p>Each time you create a new view based on a model (inherit from ModelView) it will create the following permissions:</p>
 <blockquote>
 <div><ul class="simple">
 <li>can list</li>
@@ -100,19 +100,19 @@
 <li>can download</li>
 </ul>
 </div></blockquote>
-<p>These base permission will be associated with your view, so if you create a view named &#8220;MyGeneralView&#8221; you can assign to any role these permissions:</p>
+<p>These base permission will be associated with your view, so if you create a view named &#8220;MyModelView&#8221; you can assign to any role these permissions:</p>
 <blockquote>
 <div><ul class="simple">
-<li>can list on MyGeneralView</li>
-<li>can show on MyGeneralView</li>
-<li>can add on MyGeneralView</li>
-<li>can edit on MyGeneralView</li>
-<li>can delete on MyGeneralView</li>
-<li>can doanload on MyGeneralView</li>
+<li>can list on MyModelView</li>
+<li>can show on MyModelView</li>
+<li>can add on MyModelView</li>
+<li>can edit on MyModelView</li>
+<li>can delete on MyModelView</li>
+<li>can doanload on MyModelView</li>
 </ul>
 </div></blockquote>
 <p>If you extend your view with some exposed method via the &#64;expose decorator:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyGeneralView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 
 
@@ -126,7 +126,7 @@
 <p>The framework will create the following access:</p>
 <blockquote>
 <div><ul class="simple">
-<li>can mymethod on MyGeneralView</li>
+<li>can mymethod on MyModelView</li>
 </ul>
 </div></blockquote>
 <p>And the decorator &#64;has_access will prevent any unwanted access</p>
@@ -138,8 +138,8 @@ The same applies to removing them, to some extent. But, if you change the name o
 will add the new <em>Views</em> and <em>Menus</em> names to the backend, but, will not delete the old ones. This can generate unwanted
 names on the security basically <em>garbage</em>. To clean it use the <em>security_cleanup</em> method,
 use it after you have registered all your views</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-folder-open-o&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s">&#39;fa-envelope&#39;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupModelView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-folder-open-o&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s">&#39;fa-envelope&#39;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactModelView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_separator</span><span class="p">(</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactChartView</span><span class="p">(),</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-dashboard&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactTimeChartView</span><span class="p">(),</span> <span class="s">&quot;Contacts Birth Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-dashboard&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>

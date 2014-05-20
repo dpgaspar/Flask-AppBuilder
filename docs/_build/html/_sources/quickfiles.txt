@@ -16,9 +16,9 @@ Define your model (models.py)
         def photo_img(self):
     	    im = ImageManager()
             if self.photo:
-                return Markup('<a href="' + url_for('PersonGeneralView.show',pk=str(self.id)) + '" class="thumbnail"><img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"></a>')
+                return Markup('<a href="' + url_for('PersonModelView.show',pk=str(self.id)) + '" class="thumbnail"><img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"></a>')
             else:
-                return Markup('<a href="' + url_for('PersonGeneralView.show',pk=str(self.id)) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
+                return Markup('<a href="' + url_for('PersonModelView.show',pk=str(self.id)) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
         
 Create an additional method in this case *photo_img*, to inject your own custom HTML, to show your saved images. In this example the customized method is showing the images, and linking them with the show view.
 
@@ -32,7 +32,7 @@ Define your Views (views.py)
 
 ::
 
-    class PersonGeneralView(GeneralView):
+    class PersonModelView(ModelView):
         datamodel = SQLAModel(Person)
 
         list_widget = ListThumbnail
@@ -41,7 +41,7 @@ Define your Views (views.py)
         list_columns = ['photo_img', 'name']
         show_columns = ['photo_img','name']
 
-Notice that we are overriding the *list_widget*, the widget that is normally used by GeneralView. This will display a thumbnail list, excellent for displaying images.
+Notice that we are overriding the *list_widget*, the widget that is normally used by ModelView. This will display a thumbnail list, excellent for displaying images.
 
 We are not using the *image* column but the method *photo_img* we have created. This method will display the image and link it to the show view.
 
@@ -50,7 +50,7 @@ And that's it! images will be saved on the server. Their file names will result 
 .. note::
     You can define image resizing using configuration key *IMG_SIZE*
 
-We are overriding the list_widget, the widget that is normally used by GeneralView. This will display a thumbnail list excellent for displaying images.
+We are overriding the list_widget, the widget that is normally used by ModelView. This will display a thumbnail list excellent for displaying images.
 
 And that's it! Images will be saved on the server with their filename concatenated by a UUID's. Aditionally will be resized for optimization.
 
