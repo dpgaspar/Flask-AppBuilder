@@ -4,15 +4,28 @@ Version Migration
 Migrating from 0.8.X to 0.9.X
 -----------------------------
 
-You should have no breaking features, because internal retro compatibility was created, but many things have changed
-and you should eventually change your code also.
+This new version has a breaking feature, the way you initialize AppBuilder (former BaseApp) has changed.
+internal retro compatibility was created, but many things have changed
 
-1 - 'BaseApp' changed to 'AppBuilder'.
-2 - BaseApp or now AppBuilder will not automatically create your models, after declaring them just invoke create_db method::
+1 - Initialization of AppBuilder (BaseApp) has changed, pass session not SQLAlchemy *db* object.
+this is the breaking feature.
+
+    from (__init__.py) ::
+
+        BaseApp(app, db)
+
+    to (__init__.py) ::
+
+        AppBuilder(app, db.session)
+
+
+2 - 'BaseApp' changed to 'AppBuilder'. Has you already noticed on 1.
+
+3 - BaseApp or now AppBuilder will not automatically create your models, after declaring them just invoke create_db method::
 
     appbuilder.create_db()
 
-3 - Change your models inheritance
+4 - Change your models inheritance
 
     from::
 
@@ -25,6 +38,32 @@ and you should eventually change your code also.
         class MyModel(Model):
             id = Column(Integer, primary_key=True)
             first_name = Column(String(64), nullable=False)
+
+5 - Although your not obligated, you should not directly use your flask.ext.sqlalchemy class SQLAlchemy.
+Use F.A.B. SQLA class instead, read the docs to know why.
+
+    from (__init__.py)::
+
+        from flask import Flask
+        from flask.ext.sqlalchemy import SQLAlchemy
+        from flask.ext.appbuilder.baseapp import BaseApp
+
+
+        app = Flask(__name__)
+        app.config.from_object('config')
+        db = SQLAlchemy(app)
+        baseapp = BaseApp(app, db)
+
+    to (__init__.py)::
+
+        from flask import Flask
+        from flask.ext.appbuilder import SQLA, AppBuilder
+
+        app = Flask(__name__)
+        app.config.from_object('config')
+        db = SQLA(app)
+        appbuilder = AppBuilder(app, db.session)
+
 
 
 Migrating from 0.6.X to 0.7.X
