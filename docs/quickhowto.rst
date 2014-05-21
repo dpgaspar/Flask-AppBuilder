@@ -60,8 +60,7 @@ The *Group* table.
 
     from sqlalchemy import Column, Integer, String, ForeignKey, Date
     from sqlalchemy.orm import relationship
-    from flask.ext.appbuilder.models.mixins import BaseMixin
-    from flask.ext.appbuilder import Base
+    from flask.ext.appbuilder import Model
 
     class Group(Model):
         id = Column(Integer, primary_key=True)
