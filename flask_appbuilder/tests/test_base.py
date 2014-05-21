@@ -2,11 +2,11 @@ from nose.tools import eq_, ok_, raises
 import unittest
 import os
 import string
-from flask.ext.sqlalchemy import SQLAlchemy
+import random
+import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship
-from flask.ext.appbuilder.models.mixins import BaseMixin
-from flask.ext.appbuilder import Model
+from flask.ext.appbuilder import Model, SQLA
 from flask_appbuilder.models.filters import FilterStartsWith, FilterEqual
 from flask_appbuilder.charts.views import ChartView, TimeChartView, DirectChartView
 
@@ -41,6 +41,8 @@ class Model1(Model):
 class Model2(Model):
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
+    field_integer = Column(Integer())
+    field_date = Column(Date())
     group_id = Column(Integer, ForeignKey('model1.id'), nullable=False)
     group = relationship("Model1")
 
@@ -63,7 +65,7 @@ class FlaskTestCase(unittest.TestCase):
         self.app.config['SECRET_KEY'] = 'thisismyscretkey'
         self.app.config['WTF_CSRF_ENABLED'] = False
 
-        self.db = SQLAlchemy(self.app)
+        self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
         class Model1View(ModelView):
@@ -81,10 +83,21 @@ class FlaskTestCase(unittest.TestCase):
             datamodel = SQLAModel(Model1)
             base_filters = [['field_integer', FilterEqual, 0]]
 
-        class Model1ChartView(ChartView):
-            datamodel = SQLAModel(Model1)
+        class Model2ChartView(ChartView):
+            datamodel = SQLAModel(Model2)
             chart_title = 'Test Model1 Chart'
-            group_by_columns = 'field_integer'
+            group_by_columns = 'field_string'
+
+        class Model2TimeChartView(TimeChartView):
+            datamodel = SQLAModel(Model2)
+            chart_title = 'Test Model1 Chart'
+            group_by_columns = 'field_date'
+
+        class Model2DirectChartView(DirectChartView):
+            datamodel = SQLAModel(Model2)
+            chart_title = 'Test Model1 Chart'
+            direct_columns = {'stat1': ('group', 'field_integer')}
+
 
         self.appbuilder.add_view(Model1View, "Model1")
         self.appbuilder.add_view(Model1Filtered1View, "Model1Filtered1")
@@ -92,7 +105,9 @@ class FlaskTestCase(unittest.TestCase):
 
         self.appbuilder.add_view(Model2View, "Model2")
         self.appbuilder.add_view(Model2View, "Model2 Add", href='/model2view/add')
-        self.appbuilder.add_view(Model1ChartView, "Model1 Chart", href='/model2view/add')
+        self.appbuilder.add_view(Model2ChartView, "Model2 Chart")
+        self.appbuilder.add_view(Model2TimeChartView, "Model2 Time Chart")
+        self.appbuilder.add_view(Model2DirectChartView, "Model2 Direct Chart")
 
 
     def tearDown(self):
@@ -122,12 +137,35 @@ class FlaskTestCase(unittest.TestCase):
             self.db.session.add(model)
             self.db.session.commit()
 
+    def insert_data2(self):
+        models1 = [Model1(field_string='G1'),
+                   Model1(field_string='G2'),
+                   Model1(field_string='G2')]
+        for model1 in models1:
+            try:
+                self.db.session.add(model1)
+                self.db.session.commit()
+                for x,i in zip(string.ascii_letters[:10], range(10)):
+                    model = Model2(field_string="%stest" % (x),
+                               field_integer=random.randint(1, 10),
+                               group = model1)
+                    year = random.choice(range(1900, 2012))
+                    month = random.choice(range(1, 12))
+                    day = random.choice(range(1, 28))
+                    model.field_date = datetime(year, month, day)
+
+                    self.db.session.add(model)
+                    self.db.session.commit()
+            except:
+                self.db.session.rollback()
+
+
 
     def test_fab_views(self):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 16)  # current minimal views are 11
+        eq_(len(self.appbuilder.baseviews), 18)  # current minimal views are 11
 
 
     def test_model_creation(self):
@@ -313,3 +351,18 @@ class FlaskTestCase(unittest.TestCase):
         data = rv.data.decode('utf-8')
         ok_('atest' in data)
         ok_('btest' not in data)
+
+    def test_charts_view(self):
+        """
+            Test Various Chart views
+        """
+        client = self.app.test_client()
+        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.insert_data2()
+        rv = client.get('/model2chartview/chart/')
+        eq_(rv.status_code, 200)
+        rv = client.get('/model2timechartview/chart/')
+        eq_(rv.status_code, 200)
+        rv = client.get('/model2directchartview/chart/')
+        eq_(rv.status_code, 200)
+
