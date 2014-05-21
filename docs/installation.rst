@@ -5,6 +5,8 @@ Installation is straightforward, it uses the normal python package install.
 I do advise you to additionally install the base skeleton application
 so that you can immediately have a running application (without any models yet) and an easy to grow boilerplate.
 
+Checkout installation video on `YouTube <http://youtu.be/ZrqFDroqqWE>`_
+
 .. note::
     Remember the initial user is **'admin'** password **'general'**.
 
