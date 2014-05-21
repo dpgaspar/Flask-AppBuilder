@@ -72,6 +72,7 @@ fixed_translations_import = [
     _("Contacts Birth Chart")]
 
 
+db.create_all()
 fill_gender()
 appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
 appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
