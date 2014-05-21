@@ -43,7 +43,7 @@ You're welcome to report bugs, propose new features, or even better contribute t
 Includes:
 ---------
 
-   - Database
+  - Database
       - SQLAlchemy, multiple database support: sqlite, MySQL, ORACLE, MSSQL, DB2 etc.
       - Multiple database connections support (Vertical partitioning).
       - Easy mixin audit to models (created/changed by user, and timestamps).
