@@ -46,7 +46,8 @@ class AppBuilder(object):
     languages = None
     admin = None
 
-    def __init__(self, app, session,
+    def __init__(self, app=None,
+                 session=None,
                  menu=None,
                  indexview=None,
                  static_folder='static/appbuilder',
@@ -68,27 +69,42 @@ class AppBuilder(object):
                 optional, your override for the global static url path
         """
         self.baseviews = []
-        self.app = app
-        self.session = session
 
-        self.sm = SecurityManager(self)
-        self.bm = BabelManager(self)
+        if app is not None:
+            self.init_app(app)
+            self.session = session
+            self.sm = SecurityManager(self)
+            self.bm = BabelManager(self)
 
-        if menu:
-            self.menu = menu
-            self._add_menu_permissions()
+            if menu:
+                self.menu = menu
+                self._add_menu_permissions()
+            else:
+                self.menu = Menu()
+
+            self.app.before_request(self.sm.before_request)
+
+            self._init_config_parameters()
+            self.indexview = indexview or IndexView
+            self.static_folder = static_folder
+            self.static_url_path = static_url_path
+            self._add_admin_views()
+            self._add_global_static()
+            self._add_global_filters()
+
         else:
-            self.menu = Menu()
+            self.app = None
 
-        self.app.before_request(self.sm.before_request)
 
-        self._init_config_parameters()
-        self.indexview = indexview or IndexView
-        self.static_folder = static_folder
-        self.static_url_path = static_url_path
-        self._add_admin_views()
-        self._add_global_static()
-        self._add_global_filters()
+    def init_app(self, app):
+        self.app = app
+        self._init_extension(app)
+
+    def _init_extension(self, app):
+        if not hasattr(app, 'extensions'):
+            app.extensions = {}
+        app.extensions['appbuilder'] = self
+
 
     @property
     def get_app(self):
