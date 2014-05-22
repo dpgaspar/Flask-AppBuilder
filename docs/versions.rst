@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.9.1
+-----------------------------------
+
+- New, Support for application factory *init_app* (Flask ext approved guide line).
+
 Improvements and Bug fixes on 0.9.0
 -----------------------------------
 

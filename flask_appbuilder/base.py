@@ -1,7 +1,6 @@
 import logging
 
-from flask import Blueprint, url_for
-from . import Base
+from flask import Blueprint, url_for, current_app
 from .views import IndexView
 from .filters import TemplateFilters
 from .menu import Menu
@@ -26,14 +25,9 @@ class AppBuilder(object):
     """
     baseviews = []
     app = None
-    db = None
-
+    session = None
     sm = None
     bm = None
-
-    app_name = ""
-    app_theme = ''
-    app_icon = None
 
     menu = None
     indexview = None
@@ -42,9 +36,6 @@ class AppBuilder(object):
     static_url_path = None
 
     template_filters = None
-
-    languages = None
-    admin = None
 
     def __init__(self, app=None,
                  session=None,
@@ -69,36 +60,38 @@ class AppBuilder(object):
                 optional, your override for the global static url path
         """
         self.baseviews = []
+        self.menu = Menu()
 
-        if app is not None:
-            self.init_app(app)
-            self.session = session
-            self.sm = SecurityManager(self)
-            self.bm = BabelManager(self)
+        if menu:
+            self.menu = menu
 
-            if menu:
-                self.menu = menu
-                self._add_menu_permissions()
-            else:
-                self.menu = Menu()
+        self.indexview = indexview or IndexView
+        self.static_folder = static_folder
+        self.static_url_path = static_url_path
 
-            self.app.before_request(self.sm.before_request)
-
-            self._init_config_parameters()
-            self.indexview = indexview or IndexView
-            self.static_folder = static_folder
-            self.static_url_path = static_url_path
-            self._add_admin_views()
-            self._add_global_static()
-            self._add_global_filters()
-
-        else:
-            self.app = None
-
-
-    def init_app(self, app):
         self.app = app
+        if app is not None:
+            self.init_app(app, session)
+
         self._init_extension(app)
+
+
+    def init_app(self, app, session):
+        app.config.setdefault('APP_NAME', 'F.A.B.')
+        app.config.setdefault('APP_THEME', '')
+        app.config.setdefault('APP_ICON', '')
+        app.config.setdefault('LANGUAGES',
+                              {'en': {'flag': 'gb', 'name': 'English'},})
+
+        self.session = session
+        self.sm = SecurityManager(self)
+        self.bm = BabelManager(self)
+        app.before_request(self.sm.before_request)
+        self._add_global_static()
+        self._add_global_filters()
+        self._add_menu_permissions()
+        self._add_admin_views()
+
 
     def _init_extension(self, app):
         if not hasattr(app, 'extensions'):
@@ -108,29 +101,31 @@ class AppBuilder(object):
 
     @property
     def get_app(self):
-        return self.app
+        if self.app:
+            return self.app
+        else:
+            return current_app
 
     @property
     def get_session(self):
         return self.session
 
-    def _init_config_parameters(self):
-        if 'APP_NAME' in self.app.config:
-            self.app_name = self.app.config['APP_NAME']
-        else:
-            self.app_name = 'F.A.B.'
-        if 'APP_ICON' in self.app.config:
-            self.app_icon = self.app.config['APP_ICON']
-        if 'APP_THEME' in self.app.config:
-            self.app_theme = self.app.config['APP_THEME']
-        else:
-            self.app_theme = ''
-        if 'LANGUAGES' in self.app.config:
-            self.languages = self.app.config['LANGUAGES']
-        else:
-            self.languages = {
-                'en': {'flag': 'gb', 'name': 'English'},
-            }
+    @property
+    def app_name(self):
+        return self.get_app.config['APP_NAME']
+
+    @property
+    def app_theme(self):
+        return self.get_app.config['APP_THEME']
+
+    @property
+    def app_icon(self):
+        return self.get_app.config['APP_ICON']
+
+    @property
+    def languages(self):
+        return self.get_app.config['LANGUAGES']
+
 
     def _add_global_filters(self):
         self.template_filters = TemplateFilters(self.app, self.sm)
@@ -139,7 +134,7 @@ class AppBuilder(object):
         bp = Blueprint('appbuilder', __name__, url_prefix='/static',
                        template_folder='templates', static_folder=self.static_folder,
                        static_url_path=self.static_url_path)
-        self.app.register_blueprint(bp)
+        self.get_app.register_blueprint(bp)
 
     def _add_admin_views(self):
         self.indexview = self.indexview()
@@ -320,7 +315,7 @@ class AppBuilder(object):
             log.error("Add Permission on View Error: {0}".format(str(e)))
 
     def register_blueprint(self, baseview, endpoint=None, static_folder=None):
-        self.app.register_blueprint(baseview.create_blueprint(self, endpoint=endpoint, static_folder=static_folder))
+        self.get_app.register_blueprint(baseview.create_blueprint(self, endpoint=endpoint, static_folder=static_folder))
 
     def _view_exists(self, view):
         for baseview in self.baseviews:

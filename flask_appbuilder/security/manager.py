@@ -63,7 +63,7 @@ class SecurityManager(BaseManager):
         self.lm.login_view = 'login'
         self.oid = OpenID(app)
         self.lm.user_loader(self.load_user)
-        self.init_db()
+        self.create_db()
 
     def register_views(self):
         self.appbuilder.add_view_no_menu(ResetPasswordView())
@@ -135,7 +135,7 @@ class SecurityManager(BaseManager):
                     self.session.rollback()
 
 
-    def init_db(self):
+    def create_db(self):
         try:
             engine = self.session.get_bind(mapper=None, clause=None)
             inspector = Inspector.from_engine(engine)
