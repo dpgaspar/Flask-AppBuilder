@@ -37,19 +37,19 @@ class SecurityManager(BaseManager):
     lm = None
     oid = None
 
-    def __init__(self, appbuilder):
+    def __init__(self, appbuilder, app=None):
         """
             SecurityManager contructor
             param appbuilder:
                 F.A.B AppBuilder main object
             """
         super(SecurityManager, self).__init__(appbuilder)
-        app = self.appbuilder.get_app
+        app = app or self.appbuilder.get_app
         app.config.setdefault('AUTH_ROLE_ADMIN', 'Admin')
         app.config.setdefault('AUTH_ROLE_PUBLIC', 'Public')
         app.config.setdefault('AUTH_TYPE', AUTH_DB)
 
-        if self.auth_type == AUTH_LDAP:
+        if app.config['AUTH_TYPE'] == AUTH_LDAP:
             if 'AUTH_LDAP_SERVER' not in app.config:
                 raise Exception("No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type.")
 
@@ -59,7 +59,8 @@ class SecurityManager(BaseManager):
         self.lm.user_loader(self.load_user)
         self.create_db()
 
-    
+
+
     @property
     def get_session(self):
         return self.appbuilder.get_session
@@ -80,14 +81,15 @@ class SecurityManager(BaseManager):
     def auth_ldap_server(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_SERVER']
 
-    def register_views(self):
+    def register_views(self, app):
         self.appbuilder.add_view_no_menu(ResetPasswordView())
         self.appbuilder.add_view_no_menu(ResetMyPasswordView())
 
-        if self.auth_type == AUTH_DB:
+        auth_type = app.config['AUTH_TYPE']
+        if auth_type == AUTH_DB:
             self.user_view = UserDBModelView
             self.auth_view = AuthDBView()
-        elif self.auth_type == AUTH_LDAP:
+        elif auth_type == AUTH_LDAP:
             self.user_view = UserLDAPModelView
             self.auth_view = AuthLDAPView()
         else:

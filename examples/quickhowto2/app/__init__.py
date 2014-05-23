@@ -1,17 +1,15 @@
 import os
 import logging
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.appbuilder import SQLA, AppBuilder
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
 
-
-app = Flask(__name__)
-app.config.from_object('config')
-db = SQLAlchemy(app)
-
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 logging.getLogger().setLevel(logging.DEBUG)
+
+db = SQLA()
+appbuilder = AppBuilder()
 
 
 """

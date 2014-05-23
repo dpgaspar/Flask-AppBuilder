@@ -60,10 +60,7 @@ class AppBuilder(object):
                 optional, your override for the global static url path
         """
         self.baseviews = []
-        self.menu = Menu()
-
-        if menu:
-            self.menu = menu
+        self.menu = menu or Menu()
 
         self.indexview = indexview or IndexView
         self.static_folder = static_folder
@@ -72,8 +69,7 @@ class AppBuilder(object):
         self.app = app
         if app is not None:
             self.init_app(app, session)
-
-        self._init_extension(app)
+            self._init_extension(app)
 
 
     def init_app(self, app, session):
@@ -84,13 +80,15 @@ class AppBuilder(object):
                               {'en': {'flag': 'gb', 'name': 'English'}})
 
         self.session = session
-        self.sm = SecurityManager(self)
-        self.bm = BabelManager(self)
+        self.sm = SecurityManager(self, app)
+        self.bm = BabelManager(self, app)
         app.before_request(self.sm.before_request)
-        self._add_global_static()
-        self._add_global_filters()
+        self._add_global_static(app)
+        self._add_global_filters(app)
         self._add_menu_permissions()
         self._add_admin_views()
+        if not self.app:
+            self._register_views(app)
 
 
     def _init_extension(self, app):
@@ -126,14 +124,16 @@ class AppBuilder(object):
         return self.get_app.config['LANGUAGES']
 
 
-    def _add_global_filters(self):
-        self.template_filters = TemplateFilters(self.app, self.sm)
+    def _add_global_filters(self, app=None):
+        app = app or self.app
+        self.template_filters = TemplateFilters(app, self.sm)
 
-    def _add_global_static(self):
+    def _add_global_static(self, app=None):
+        app = app or self.app
         bp = Blueprint('appbuilder', __name__, url_prefix='/static',
                        template_folder='templates', static_folder=self.static_folder,
                        static_url_path=self.static_url_path)
-        self.get_app.register_blueprint(bp)
+        app.register_blueprint(bp, app=app)
 
     def _add_admin_views(self):
         self.indexview = self.indexview()
@@ -153,6 +153,11 @@ class AppBuilder(object):
             self._add_permissions_menu(category.name)
             for item in category.childs:
                 self._add_permissions_menu(item.name)
+
+    def _register_views(self, app):
+        for baseview in self.baseviews:
+            self.register_blueprint(baseview)
+            self._add_permission(baseview)
 
     def _check_and_init(self, baseview):
         # If class if not instantiated, instantiate it and add security db session.
@@ -210,8 +215,9 @@ class AppBuilder(object):
             baseview.appbuilder = self
             self.baseviews.append(baseview)
             self._process_ref_related_views()
-            self.register_blueprint(baseview)
-            self._add_permission(baseview)
+            if self.app:
+                self.register_blueprint(baseview)
+                self._add_permission(baseview)
         self.add_link(name=name, href=href, icon=icon, label=label,
                       category=category, category_icon=category_icon,
                       category_label=category_label, baseview=baseview)
@@ -240,9 +246,10 @@ class AppBuilder(object):
         self.menu.add_link(name=name, href=href, icon=icon, label=label,
                            category=category, category_icon=category_icon,
                            category_label=category_label, baseview=baseview)
-        self._add_permissions_menu(name)
-        if category:
-            self._add_permissions_menu(category)
+        if self.app:
+            self._add_permissions_menu(name)
+            if category:
+                self._add_permissions_menu(category)
 
     def add_separator(self, category):
         """
@@ -268,8 +275,9 @@ class AppBuilder(object):
             baseview.appbuilder = self
             self.baseviews.append(baseview)
             self._process_ref_related_views()
-            self.register_blueprint(baseview, endpoint=endpoint, static_folder=static_folder)
-            self._add_permission(baseview)
+            if self.app:
+                self.register_blueprint(baseview, endpoint=endpoint, static_folder=static_folder)
+                self._add_permission(baseview)
         else:
             log.warning("View already exists {0} ignoring".format(baseview.__class__.__name__))
         return baseview
@@ -313,8 +321,9 @@ class AppBuilder(object):
         except Exception as e:
             log.error("Add Permission on View Error: {0}".format(str(e)))
 
-    def register_blueprint(self, baseview, endpoint=None, static_folder=None):
-        self.get_app.register_blueprint(baseview.create_blueprint(self, endpoint=endpoint, static_folder=static_folder))
+    def register_blueprint(self, baseview, endpoint=None, static_folder=None, app=None):
+        app = app or self.app
+        app.register_blueprint(baseview.create_blueprint(self, endpoint=endpoint, static_folder=static_folder))
 
     def _view_exists(self, view):
         for baseview in self.baseviews:

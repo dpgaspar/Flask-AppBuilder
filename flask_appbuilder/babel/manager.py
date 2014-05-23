@@ -10,10 +10,11 @@ class BabelManager(BaseManager):
     babel = None
     locale_view = None
 
-    def __init__(self, appbuilder):
+    def __init__(self, appbuilder, app=None):
         super(BabelManager, self).__init__(appbuilder)
-        appbuilder.get_app.config.setdefault('BABEL_DEFAULT_LOCALE', 'en')
-        self.babel = Babel(appbuilder.get_app, translations)
+        app = app or appbuilder.get_app
+        app.config.setdefault('BABEL_DEFAULT_LOCALE', 'en')
+        self.babel = Babel(app, translations)
         self.babel.locale_selector_func = self.get_locale
 
     def register_views(self):
