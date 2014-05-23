@@ -81,7 +81,8 @@ class SecurityManager(BaseManager):
     def auth_ldap_server(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_SERVER']
 
-    def register_views(self, app):
+    def register_views(self, app=None):
+        app = app or self.appbuilder.get_app
         self.appbuilder.add_view_no_menu(ResetPasswordView())
         self.appbuilder.add_view_no_menu(ResetMyPasswordView())
 
