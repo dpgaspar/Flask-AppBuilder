@@ -37,14 +37,14 @@ class SecurityManager(BaseManager):
     lm = None
     oid = None
 
-    def __init__(self, appbuilder, app=None):
+    def __init__(self, appbuilder):
         """
             SecurityManager contructor
             param appbuilder:
                 F.A.B AppBuilder main object
             """
         super(SecurityManager, self).__init__(appbuilder)
-        app = app or self.appbuilder.get_app
+        app = self.appbuilder.get_app
         app.config.setdefault('AUTH_ROLE_ADMIN', 'Admin')
         app.config.setdefault('AUTH_ROLE_PUBLIC', 'Public')
         app.config.setdefault('AUTH_TYPE', AUTH_DB)
@@ -58,8 +58,6 @@ class SecurityManager(BaseManager):
         self.oid = OpenID(app)
         self.lm.user_loader(self.load_user)
         self.create_db()
-
-
 
     @property
     def get_session(self):
@@ -81,16 +79,14 @@ class SecurityManager(BaseManager):
     def auth_ldap_server(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_SERVER']
 
-    def register_views(self, app=None):
-        app = app or self.appbuilder.get_app
+    def register_views(self):
         self.appbuilder.add_view_no_menu(ResetPasswordView())
         self.appbuilder.add_view_no_menu(ResetMyPasswordView())
 
-        auth_type = app.config['AUTH_TYPE']
-        if auth_type == AUTH_DB:
+        if self.auth_type == AUTH_DB:
             self.user_view = UserDBModelView
             self.auth_view = AuthDBView()
-        elif auth_type == AUTH_LDAP:
+        elif self.auth_type == AUTH_LDAP:
             self.user_view = UserLDAPModelView
             self.auth_view = AuthLDAPView()
         else:

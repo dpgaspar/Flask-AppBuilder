@@ -81,9 +81,3 @@ appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", cat
 appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
 
 
-app = Flask(__name__)
-app.config.from_object('config')
-db.init_app(app)
-appbuilder.init_app(app, db.session)
-fill_gender()
-appbuilder.security_cleanup()

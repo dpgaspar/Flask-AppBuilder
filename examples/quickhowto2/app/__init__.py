@@ -24,3 +24,12 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 from app import views
 
+def create_app(config='config'):
+    app = Flask(__name__)
+    app.config.from_object(config)
+    db.init_app(app)
+    with app.app_context():
+        views.fill_gender()
+        appbuilder.init_app(app, db.session)
+        appbuilder.security_cleanup()
+    return app

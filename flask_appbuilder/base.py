@@ -80,15 +80,19 @@ class AppBuilder(object):
                               {'en': {'flag': 'gb', 'name': 'English'}})
 
         self.session = session
-        self.sm = SecurityManager(self, app)
-        self.bm = BabelManager(self, app)
+        self.sm = SecurityManager(self)
+        self.bm = BabelManager(self)
         app.before_request(self.sm.before_request)
-        self._add_global_static(app)
-        self._add_global_filters(app)
-        self._add_menu_permissions()
+        self._add_global_static()
+        self._add_global_filters()
         self._add_admin_views()
+        self._add_menu_permissions()
         if not self.app:
-            self._register_views(app)
+            for baseview in self.baseviews:
+                self._check_and_init(baseview)
+                self.register_blueprint(baseview)
+                self._add_permission(baseview)
+
 
 
     def _init_extension(self, app):
@@ -124,16 +128,14 @@ class AppBuilder(object):
         return self.get_app.config['LANGUAGES']
 
 
-    def _add_global_filters(self, app=None):
-        app = app or self.app
-        self.template_filters = TemplateFilters(app, self.sm)
+    def _add_global_filters(self):
+        self.template_filters = TemplateFilters(self.get_app, self.sm)
 
-    def _add_global_static(self, app=None):
-        app = app or self.app
+    def _add_global_static(self):
         bp = Blueprint('appbuilder', __name__, url_prefix='/static',
                        template_folder='templates', static_folder=self.static_folder,
                        static_url_path=self.static_url_path)
-        app.register_blueprint(bp, app=app)
+        self.get_app.register_blueprint(bp)
 
     def _add_admin_views(self):
         self.indexview = self.indexview()
@@ -154,17 +156,13 @@ class AppBuilder(object):
             for item in category.childs:
                 self._add_permissions_menu(item.name)
 
-    def _register_views(self, app):
-        for baseview in self.baseviews:
-            self.register_blueprint(baseview)
-            self._add_permission(baseview)
 
     def _check_and_init(self, baseview):
         # If class if not instantiated, instantiate it and add security db session.
+        if hasattr(baseview, 'datamodel'):
+            if baseview.datamodel.session is None:
+                baseview.datamodel.session = self.session
         if hasattr(baseview, '__call__'):
-            if hasattr(baseview, 'datamodel'):
-                if baseview.datamodel.session is None:
-                    baseview.datamodel.session = self.session
             baseview = baseview()
         return baseview
 
@@ -321,9 +319,8 @@ class AppBuilder(object):
         except Exception as e:
             log.error("Add Permission on View Error: {0}".format(str(e)))
 
-    def register_blueprint(self, baseview, endpoint=None, static_folder=None, app=None):
-        app = app or self.app
-        app.register_blueprint(baseview.create_blueprint(self, endpoint=endpoint, static_folder=static_folder))
+    def register_blueprint(self, baseview, endpoint=None, static_folder=None):
+        self.get_app.register_blueprint(baseview.create_blueprint(self, endpoint=endpoint, static_folder=static_folder))
 
     def _view_exists(self, view):
         for baseview in self.baseviews:
