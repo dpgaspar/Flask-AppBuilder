@@ -31,13 +31,9 @@ ADMIN_USER_LAST_NAME = 'User'
 
 
 class SecurityManager(BaseManager):
-    session = None
-    auth_type = 1
-    auth_role_admin = ""
-    auth_role_public = ""
+
     auth_view = None
     user_view = None
-    auth_ldap_server = ""
     lm = None
     oid = None
 
@@ -48,15 +44,13 @@ class SecurityManager(BaseManager):
                 F.A.B AppBuilder main object
             """
         super(SecurityManager, self).__init__(appbuilder)
-        self.session = appbuilder.get_session
         app = self.appbuilder.get_app
-        self.auth_type = self._get_auth_type(app)
-        self.auth_role_admin = self._get_auth_role_admin(app)
-        self.auth_role_public = self._get_auth_role_public(app)
+        app.config.setdefault('AUTH_ROLE_ADMIN', 'Admin')
+        app.config.setdefault('AUTH_ROLE_PUBLIC', 'Public')
+        app.config.setdefault('AUTH_TYPE', AUTH_DB)
+
         if self.auth_type == AUTH_LDAP:
-            if 'AUTH_LDAP_SERVER' in app.config:
-                self.auth_ldap_server = app.config['AUTH_LDAP_SERVER']
-            else:
+            if 'AUTH_LDAP_SERVER' not in app.config:
                 raise Exception("No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type.")
 
         self.lm = LoginManager(app)
@@ -65,14 +59,35 @@ class SecurityManager(BaseManager):
         self.lm.user_loader(self.load_user)
         self.create_db()
 
+    
+    @property
+    def get_session(self):
+        return self.appbuilder.get_session
+
+    @property
+    def auth_type(self):
+        return self.appbuilder.get_app.config['AUTH_TYPE']
+
+    @property
+    def auth_role_admin(self):
+        return self.appbuilder.get_app.config['AUTH_ROLE_ADMIN']
+
+    @property
+    def auth_role_public(self):
+        return self.appbuilder.get_app.config['AUTH_ROLE_PUBLIC']
+
+    @property
+    def auth_ldap_server(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_SERVER']
+
     def register_views(self):
         self.appbuilder.add_view_no_menu(ResetPasswordView())
         self.appbuilder.add_view_no_menu(ResetMyPasswordView())
 
-        if self._get_auth_type(self.appbuilder.get_app) == AUTH_DB:
+        if self.auth_type == AUTH_DB:
             self.user_view = UserDBModelView
             self.auth_view = AuthDBView()
-        elif self._get_auth_type(self.appbuilder.get_app) == AUTH_LDAP:
+        elif self.auth_type == AUTH_LDAP:
             self.user_view = UserLDAPModelView
             self.auth_view = AuthLDAPView()
         else:
@@ -128,16 +143,16 @@ class SecurityManager(BaseManager):
                 try:
                     log.info("Migrate from 0.8 to 0.9 Changing {0}{1}".format(sec_view_prefix, sec_view_old_sufix))
                     sec_view.name = '{0}{1}'.format(sec_view_prefix, sec_view_new_sufix)
-                    self.session.merge(sec_view)
-                    self.session.commit()
+                    self.get_session.merge(sec_view)
+                    self.get_session.commit()
                 except Exception as e:
                     log.error("Update ViewMenu error: {0}".format(str(e)))
-                    self.session.rollback()
+                    self.get_session.rollback()
 
 
     def create_db(self):
         try:
-            engine = self.session.get_bind(mapper=None, clause=None)
+            engine = self.get_session.get_bind(mapper=None, clause=None)
             inspector = Inspector.from_engine(engine)
             if 'ab_user' not in inspector.get_table_names():
                 log.info("Security DB not found Creating all Models from Base")
@@ -145,19 +160,19 @@ class SecurityManager(BaseManager):
                 log.info("Security DB Created")
             else:
                 self._migrate_db()
-            if not self.session.query(Role).filter_by(name=self.auth_role_admin).first():
+            if not self.get_session.query(Role).filter_by(name=self.auth_role_admin).first():
                 role = Role()
                 role.name = self.auth_role_admin
-                self.session.add(role)
-                self.session.commit()
+                self.get_session.add(role)
+                self.get_session.commit()
                 log.info("Inserted Role for public access %s" % (self.auth_role_admin))
-            if not self.session.query(Role).filter_by(name=self.auth_role_public).first():
+            if not self.get_session.query(Role).filter_by(name=self.auth_role_public).first():
                 role = Role()
                 role.name = self.auth_role_public
-                self.session.add(role)
-                self.session.commit()
+                self.get_session.add(role)
+                self.get_session.commit()
                 log.info("Inserted Role for public access %s" % (self.auth_role_public))
-            if not self.session.query(User).all():
+            if not self.get_session.query(User).all():
                 user = User()
                 user.first_name = ADMIN_USER_FIRST_NAME
                 user.last_name = ADMIN_USER_LAST_NAME
@@ -165,9 +180,9 @@ class SecurityManager(BaseManager):
                 user.password = generate_password_hash(ADMIN_USER_PASSWORD)
                 user.email = ADMIN_USER_EMAIL
                 user.active = True
-                user.role = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
-                self.session.add(user)
-                self.session.commit()
+                user.role = self.get_session.query(Role).filter_by(name=self.auth_role_admin).first()
+                self.get_session.add(user)
+                self.get_session.commit()
                 log.info("Inserted initial Admin user")
                 log.info("Login using {0}/{1}".format(ADMIN_USER_NAME, ADMIN_USER_PASSWORD))
         except Exception as e:
@@ -193,7 +208,7 @@ class SecurityManager(BaseManager):
         """
         if username is None or username == "":
             return None
-        user = self.session.query(User).filter_by(username=username).first()
+        user = self.get_session.query(User).filter_by(username=username).first()
         if user is None or (not user.is_active()):
             return None
         elif check_password_hash(user.password, password):
@@ -216,7 +231,7 @@ class SecurityManager(BaseManager):
         """
         if username is None or username == "":
             return None
-        user = self.session.query(User).filter_by(username=username).first()
+        user = self.get_session.query(User).filter_by(username=username).first()
         if user is None or (not user.is_active()):
             return None
         else:
@@ -248,7 +263,7 @@ class SecurityManager(BaseManager):
 
             :type self: User model
         """
-        user = self.session.query(User).filter_by(email=email).first()
+        user = self.get_session.query(User).filter_by(email=email).first()
         if user is None:
             self._update_user_auth_stat(user, False)
             return None
@@ -276,45 +291,24 @@ class SecurityManager(BaseManager):
             else:
                 user.fail_login_count += 1
             user.last_login = datetime.datetime.now()
-            self.session.merge(user)
-            self.session.commit()
+            self.get_session.merge(user)
+            self.get_session.commit()
         except Exception as e:
             log.error("Update user login stat: {0}".format(str(e)))
-            self.session.rollback()
+            self.get_session.rollback()
 
 
     def reset_password(self, userid, password):
         try:
             user = self.get_user_by_id(userid)
             user.password = generate_password_hash(password)
-            self.session.commit()
+            self.get_session.commit()
         except Exception as e:
             log.error("Reset password: {0}".format(str(e)))
-            self.session.rollback()
+            self.get_session.rollback()
 
     def get_user_by_id(self, pk):
-        return self.session.query(User).get(pk)
-
-    def _get_auth_type(self, app):
-        if 'AUTH_TYPE' in app.config:
-            return app.config['AUTH_TYPE']
-        else:
-            return AUTH_DB
-
-    def _get_auth_role_admin(self, app):
-        if 'AUTH_ROLE_ADMIN' in app.config:
-            return app.config['AUTH_ROLE_ADMIN']
-        else:
-            return 'Admin'
-
-    def _get_auth_role_public(self, app):
-        """
-            To retrive the name of the public role
-        """
-        if 'AUTH_ROLE_PUBLIC' in app.config:
-            return app.config['AUTH_ROLE_PUBLIC']
-        else:
-            return 'Public'
+        return self.get_session.query(User).get(pk)
 
 
     """
@@ -332,8 +326,7 @@ class SecurityManager(BaseManager):
             :param view_name:
                 the name of the class view (child of BaseView)
         """
-
-        role = self.session.query(Role).filter_by(name=self.auth_role_public).first()
+        role = self.get_session.query(Role).filter_by(name=self.auth_role_public).first()
         lst = role.permissions
         if lst:
             for i in lst:
@@ -382,7 +375,7 @@ class SecurityManager(BaseManager):
         """
             Finds and returns a Permission by name
         """
-        return self.session.query(Permission).filter_by(name=name).first()
+        return self.get_session.query(Permission).filter_by(name=name).first()
 
 
     def _add_permission(self, name):
@@ -397,12 +390,12 @@ class SecurityManager(BaseManager):
             try:
                 perm = Permission()
                 perm.name = name
-                self.session.add(perm)
-                self.session.commit()
+                self.get_session.add(perm)
+                self.get_session.commit()
                 return perm
             except Exception as e:
                 log.error("Add Permission: {0}".format(str(e)))
-                self.session.rollback()
+                self.get_session.rollback()
         return perm
 
     def _del_permission(self, name):
@@ -415,11 +408,11 @@ class SecurityManager(BaseManager):
         perm = self._find_permission(name)
         if perm:
             try:
-                self.session.delete(perm)
-                self.session.commit()
+                self.get_session.delete(perm)
+                self.get_session.commit()
             except Exception as e:
                 log.error("Del Permission Error: {0}".format(str(e)))
-                self.session.rollback()
+                self.get_session.rollback()
 
     #----------------------------------------------
     #       PERMITIVES VIEW MENU
@@ -428,7 +421,7 @@ class SecurityManager(BaseManager):
         """
             Finds and returns a ViewMenu by name
         """
-        return self.session.query(ViewMenu).filter_by(name=name).first()
+        return self.get_session.query(ViewMenu).filter_by(name=name).first()
 
     def _add_view_menu(self, name):
         """
@@ -441,12 +434,12 @@ class SecurityManager(BaseManager):
             try:
                 view_menu = ViewMenu()
                 view_menu.name = name
-                self.session.add(view_menu)
-                self.session.commit()
+                self.get_session.add(view_menu)
+                self.get_session.commit()
                 return view_menu
             except Exception as e:
                 log.error("Add View Menu Error: {0}".format(str(e)))
-                self.session.rollback()
+                self.get_session.rollback()
         return view_menu
 
     def _del_view_menu(self, name):
@@ -459,11 +452,11 @@ class SecurityManager(BaseManager):
         obj = self._find_view_menu(name)
         if obj:
             try:
-                self.session.delete(obj)
-                self.session.commit()
+                self.get_session.delete(obj)
+                self.get_session.commit()
             except Exception as e:
                 log.error("Del Permission Error: {0}".format(str(e)))
-                self.session.rollback()
+                self.get_session.rollback()
 
     #----------------------------------------------
     #          PERMISSION VIEW MENU
@@ -474,7 +467,7 @@ class SecurityManager(BaseManager):
         """
         permission = self._find_permission(permission_name)
         view_menu = self._find_view_menu(view_menu_name)
-        return self.session.query(PermissionView).filter_by(permission=permission, view_menu=view_menu).first()
+        return self.get_session.query(PermissionView).filter_by(permission=permission, view_menu=view_menu).first()
 
 
     def _add_permission_view_menu(self, permission_name, view_menu_name):
@@ -491,29 +484,29 @@ class SecurityManager(BaseManager):
         pv = PermissionView()
         pv.view_menu_id, pv.permission_id = vm.id, perm.id
         try:
-            self.session.add(pv)
-            self.session.commit()
+            self.get_session.add(pv)
+            self.get_session.commit()
             log.info("Created Permission View: %s" % (str(pv)))
             return pv
         except Exception as e:
             log.error("Creation of Permission View Error: {0}".format(str(e)))
-            self.session.rollback()
+            self.get_session.rollback()
 
 
     def _del_permission_view_menu(self, permission_name, view_menu_name):
         try:
             pv = self._find_permission_view_menu(permission_name, view_menu_name)
             # delete permission on view
-            self.session.delete(pv)
-            self.session.commit()
+            self.get_session.delete(pv)
+            self.get_session.commit()
             # if no more permission on permission view, delete permission
-            pv = self.session.query(PermissionView).filter_by(permission=pv.permission).all()
+            pv = self.get_session.query(PermissionView).filter_by(permission=pv.permission).all()
             if not pv:
                 self._del_permission(pv.permission.name)
             log.info("Removed Permission View: %s" % (str(permission_name)))
         except Exception as e:
             log.error("Remove Permission from View Error: {0}".format(str(e)))
-            self.session.rollback()
+            self.get_session.rollback()
 
 
     def _find_permission_on_views(self, lst, item):
@@ -540,12 +533,12 @@ class SecurityManager(BaseManager):
         if perm_view not in role.permissions:
             try:
                 role.permissions.append(perm_view)
-                self.session.merge(role)
-                self.session.commit()
+                self.get_session.merge(role)
+                self.get_session.commit()
                 log.info("Added Permission %s to role %s" % (str(perm_view), role.name))
             except Exception as e:
                 log.error("Add Permission to Role Error: {0}".format(str(e)))
-                self.session.rollback()
+                self.get_session.rollback()
 
 
     def del_permission_role(self, role, perm_view):
@@ -560,12 +553,12 @@ class SecurityManager(BaseManager):
         if perm_view in role.permissions:
             try:
                 role.permissions.remove(perm_view)
-                self.session.merge(role)
-                self.session.commit()
+                self.get_session.merge(role)
+                self.get_session.commit()
                 log.info("Removed Permission %s to role %s" % (str(perm_view), role.name))
             except Exception as e:
                 log.error("Remove Permission to Role Error: {0}".format(str(e)))
-                self.session.rollback()
+                self.get_session.rollback()
 
 
     def add_permissions_view(self, base_permissions, view_menu):
@@ -578,17 +571,17 @@ class SecurityManager(BaseManager):
                 name of the view or menu to add
         """
         view_menu_db = self._add_view_menu(view_menu)
-        perm_views = self.session.query(PermissionView).filter_by(view_menu_id=view_menu_db.id).all()
+        perm_views = self.get_session.query(PermissionView).filter_by(view_menu_id=view_menu_db.id).all()
 
         if not perm_views:
             # No permissions yet on this view
             for permission in base_permissions:
                 pv = self._add_permission_view_menu(permission, view_menu)
-                role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
+                role_admin = self.get_session.query(Role).filter_by(name=self.auth_role_admin).first()
                 self.add_permission_role(role_admin, pv)
         else:
             # Permissions on this view exist but....
-            role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
+            role_admin = self.get_session.query(Role).filter_by(name=self.auth_role_admin).first()
             for permission in base_permissions:
                 # Check if base view permissions exist
                 if not self._find_permission_on_views(perm_views, permission):
@@ -597,7 +590,7 @@ class SecurityManager(BaseManager):
             for perm_view in perm_views:
                 if perm_view.permission.name not in base_permissions:
                     # perm to delete
-                    roles = self.session.query(Role).all()
+                    roles = self.get_session.query(Role).all()
                     perm = self._find_permission(perm_view.permission.name)
                     # del permission from all roles
                     for role in roles:
@@ -619,13 +612,13 @@ class SecurityManager(BaseManager):
         pv = self._find_permission_view_menu('menu_access', view_menu_name)
         if not pv:
             pv = self._add_permission_view_menu('menu_access', view_menu_name)
-            role_admin = self.session.query(Role).filter_by(name=self.auth_role_admin).first()
+            role_admin = self.get_session.query(Role).filter_by(name=self.auth_role_admin).first()
             self.add_permission_role(role_admin, pv)
 
 
     def security_cleanup(self, baseviews, menus):
-        viewsmenus = self.session.query(ViewMenu).all()
-        roles = self.session.query(Role).all()
+        viewsmenus = self.get_session.query(ViewMenu).all()
+        roles = self.get_session.query(Role).all()
         for viewmenu in viewsmenus:
             found = False
             for baseview in baseviews:
@@ -635,11 +628,11 @@ class SecurityManager(BaseManager):
             if menus.find(viewmenu.name):
                 found = True
             if not found:
-                permissions = self.session.query(PermissionView).filter_by(view_menu_id=viewmenu.id).all()
+                permissions = self.get_session.query(PermissionView).filter_by(view_menu_id=viewmenu.id).all()
                 for permission in permissions:
                     for role in roles:
                         self.del_permission_role(role, permission)
                     self._del_permission_view_menu(permission.permission.name, viewmenu.name)
-                self.session.delete(viewmenu)
-                self.session.commit()
+                self.get_session.delete(viewmenu)
+                self.get_session.commit()
 

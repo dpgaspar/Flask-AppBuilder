@@ -81,7 +81,7 @@ class AppBuilder(object):
         app.config.setdefault('APP_THEME', '')
         app.config.setdefault('APP_ICON', '')
         app.config.setdefault('LANGUAGES',
-                              {'en': {'flag': 'gb', 'name': 'English'},})
+                              {'en': {'flag': 'gb', 'name': 'English'}})
 
         self.session = session
         self.sm = SecurityManager(self)
@@ -97,7 +97,6 @@ class AppBuilder(object):
         if not hasattr(app, 'extensions'):
             app.extensions = {}
         app.extensions['appbuilder'] = self
-
 
     @property
     def get_app(self):
