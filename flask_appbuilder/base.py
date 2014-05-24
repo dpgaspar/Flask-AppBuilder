@@ -69,7 +69,6 @@ class AppBuilder(object):
         self.app = app
         if app is not None:
             self.init_app(app, session)
-            self._init_extension(app)
 
 
     def init_app(self, app, session):
@@ -80,11 +79,12 @@ class AppBuilder(object):
                               {'en': {'flag': 'gb', 'name': 'English'}})
 
         self.session = session
+
         self.sm = SecurityManager(self)
         self.bm = BabelManager(self)
-        app.before_request(self.sm.before_request)
         self._add_global_static()
         self._add_global_filters()
+        app.before_request(self.sm.before_request)
         self._add_admin_views()
         self._add_menu_permissions()
         if not self.app:
@@ -92,6 +92,7 @@ class AppBuilder(object):
                 self._check_and_init(baseview)
                 self.register_blueprint(baseview)
                 self._add_permission(baseview)
+        self._init_extension(app)
 
 
 
@@ -154,7 +155,9 @@ class AppBuilder(object):
         for category in self.menu.get_list():
             self._add_permissions_menu(category.name)
             for item in category.childs:
-                self._add_permissions_menu(item.name)
+                # dont add permission for menu separator
+                if item.name != '-':
+                    self._add_permissions_menu(item.name)
 
 
     def _check_and_init(self, baseview):
