@@ -4,7 +4,8 @@ import os
 import string
 import random
 import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, Date
+from StringIO import StringIO
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.orm import relationship
 from flask.ext.appbuilder import Model, SQLA
 from flask_appbuilder.models.filters import FilterStartsWith, FilterEqual
@@ -32,7 +33,7 @@ class Model1(Model):
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     field_integer = Column(Integer())
-    field_float = Column(Integer())
+    field_float = Column(Float())
     field_date = Column(Date())
     field_file = FileColumn()
     field_image = ImageColumn()
@@ -261,12 +262,15 @@ class FlaskTestCase(unittest.TestCase):
 
         rv = client.post('/model1view/add',
                          data=dict(field_string='test1', field_integer='1',
-                                   field_file='test_base.py',
+                                   field_float='0.12',
+                                   field_date='2014-01-01',
+                                   field_file=(StringIO('file test'), 'test_base.py'),
                                    field_image='groups.png'), follow_redirects=True)
         eq_(rv.status_code, 200)
 
         model = self.db.session.query(Model1).first()
-        print model.field_string, model.field_file, model.field_image
+        print(rv.data.decode('utf-8'))
+        print model.field_string, model.field_float, model.field_date, model.field_file, model.field_image
         eq_(model.field_string, u'test1')
         eq_(model.field_integer, 1)
 
