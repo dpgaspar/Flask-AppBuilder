@@ -8,6 +8,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from flask.ext.appbuilder import Model, SQLA
 from flask_appbuilder.models.filters import FilterStartsWith, FilterEqual
+from flask_appbuilder.models.mixins import FileColumn, ImageColumn
 from flask_appbuilder.charts.views import ChartView, TimeChartView, DirectChartView
 
 import logging
@@ -33,6 +34,8 @@ class Model1(Model):
     field_integer = Column(Integer())
     field_float = Column(Integer())
     field_date = Column(Date())
+    field_file = FileColumn()
+    field_image = ImageColumn()
 
     def __repr__(self):
         return self.field_string
@@ -249,7 +252,6 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
 
 
-
     def test_model_crud(self):
         """
             Test Model add, delete, edit
@@ -258,10 +260,13 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
         rv = client.post('/model1view/add',
-                         data=dict(field_string='test1', field_integer='1'), follow_redirects=True)
+                         data=dict(field_string='test1', field_integer='1',
+                                   field_file='test_base.py',
+                                   field_image='groups.png'), follow_redirects=True)
         eq_(rv.status_code, 200)
 
         model = self.db.session.query(Model1).first()
+        print model.field_string, model.field_file, model.field_image
         eq_(model.field_string, u'test1')
         eq_(model.field_integer, 1)
 
