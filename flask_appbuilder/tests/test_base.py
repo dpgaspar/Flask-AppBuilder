@@ -10,6 +10,7 @@ from sqlalchemy.orm import relationship
 from flask.ext.appbuilder import Model, SQLA
 from flask_appbuilder.models.filters import FilterStartsWith, FilterEqual
 from flask_appbuilder.models.mixins import FileColumn, ImageColumn
+from flask_appbuilder.views import MasterDetailView
 from flask_appbuilder.charts.views import ChartView, TimeChartView, DirectChartView
 
 import logging
@@ -24,7 +25,6 @@ UNIQUE_VALIDATION_STRING = 'Already exists'
 NOTNULL_VALIDATION_STRING = 'This field is required'
 DEFAULT_ADMIN_USER = 'admin'
 DEFAULT_ADMIN_PASSWORD = 'general'
-
 
 log = logging.getLogger(__name__)
 
@@ -55,7 +55,6 @@ class Model2(Model):
 
 
 class FlaskTestCase(unittest.TestCase):
-
     def setUp(self):
         from flask import Flask
         from flask.ext.appbuilder import AppBuilder
@@ -72,16 +71,21 @@ class FlaskTestCase(unittest.TestCase):
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
-        class Model1View(ModelView):
-            datamodel = SQLAModel(Model1)
-
         class Model2View(ModelView):
             datamodel = SQLAModel(Model2)
-            related_views = [Model1View]
+
+        class Model1View(ModelView):
+            datamodel = SQLAModel(Model1)
+            related_views = [Model2View]
+            list_columns = ['field_string','field_file']
 
         class Model1Filtered1View(ModelView):
             datamodel = SQLAModel(Model1)
             base_filters = [['field_string', FilterStartsWith, 'a']]
+
+        class Model1MasterView(MasterDetailView):
+            datamodel = SQLAModel(Model1)
+            related_views = [Model2View]
 
         class Model1Filtered2View(ModelView):
             datamodel = SQLAModel(Model1)
@@ -102,10 +106,20 @@ class FlaskTestCase(unittest.TestCase):
             chart_title = 'Test Model1 Chart'
             direct_columns = {'stat1': ('group', 'field_integer')}
 
+        class Model1MasterView(MasterDetailView):
+            datamodel = SQLAModel(Model1)
+            related_views = [Model2View]
 
-        self.appbuilder.add_view(Model1View, "Model1")
-        self.appbuilder.add_view(Model1Filtered1View, "Model1Filtered1")
-        self.appbuilder.add_view(Model1Filtered2View, "Model1Filtered2")
+        class Model1MasterChartView(MasterDetailView):
+            datamodel = SQLAModel(Model1)
+            related_views = [Model2ChartView]
+
+
+        self.appbuilder.add_view(Model1View, "Model1", category='Model1')
+        self.appbuilder.add_view(Model1MasterView, "Model1Master", category='Model1')
+        self.appbuilder.add_view(Model1MasterChartView, "Model1MasterChart", category='Model1')
+        self.appbuilder.add_view(Model1Filtered1View, "Model1Filtered1", category='Model1')
+        self.appbuilder.add_view(Model1Filtered2View, "Model1Filtered2", category='Model1')
 
         self.appbuilder.add_view(Model2View, "Model2")
         self.appbuilder.add_view(Model2View, "Model2 Add", href='/model2view/add')
@@ -125,6 +139,7 @@ class FlaskTestCase(unittest.TestCase):
             TEST HELPER FUNCTIONS
         ---------------------------------
     """
+
     def login(self, client, username, password):
         # Login with default admin
         return client.post('/login/', data=dict(
@@ -136,7 +151,7 @@ class FlaskTestCase(unittest.TestCase):
         return client.get('/logout/')
 
     def insert_data(self):
-        for x,i in zip(string.ascii_letters[:23], range(23)):
+        for x, i in zip(string.ascii_letters[:23], range(23)):
             model = Model1(field_string="%stest" % (x), field_integer=i)
             self.db.session.add(model)
             self.db.session.commit()
@@ -149,10 +164,10 @@ class FlaskTestCase(unittest.TestCase):
             try:
                 self.db.session.add(model1)
                 self.db.session.commit()
-                for x,i in zip(string.ascii_letters[:10], range(10)):
+                for x, i in zip(string.ascii_letters[:10], range(10)):
                     model = Model2(field_string="%stest" % (x),
-                               field_integer=random.randint(1, 10),
-                               group = model1)
+                                   field_integer=random.randint(1, 10),
+                                   group=model1)
                     year = random.choice(range(1900, 2012))
                     month = random.choice(range(1, 12))
                     day = random.choice(range(1, 28))
@@ -164,12 +179,11 @@ class FlaskTestCase(unittest.TestCase):
                 self.db.session.rollback()
 
 
-
     def test_fab_views(self):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 18)  # current minimal views are 11
+        eq_(len(self.appbuilder.baseviews), 20)  # current minimal views are 11
 
 
     def test_model_creation(self):
@@ -260,17 +274,14 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
+        #with open('test.txt', 'rb') as fp:
         rv = client.post('/model1view/add',
-                         data=dict(field_string='test1', field_integer='1',
-                                   field_float='0.12',
-                                   field_date='2014-01-01',
-                                   field_file=(StringIO('file test'), 'test_base.py'),
-                                   field_image='groups.png'), follow_redirects=True)
+                             data=dict(field_string='test1', field_integer='1',
+                                       field_float='0.12',
+                                       field_date='2014-01-01'), follow_redirects=True)
         eq_(rv.status_code, 200)
 
         model = self.db.session.query(Model1).first()
-        print(rv.data.decode('utf-8'))
-        print model.field_string, model.field_float, model.field_date, model.field_file, model.field_image
         eq_(model.field_string, u'test1')
         eq_(model.field_integer, 1)
 
@@ -324,9 +335,9 @@ class FlaskTestCase(unittest.TestCase):
         self.login(client, 'admin', 'general')
 
         client.post('/model1view/add',
-                         data=dict(field_string='test1', field_integer='1'), follow_redirects=True)
+                    data=dict(field_string='test1', field_integer='1'), follow_redirects=True)
         client.post('/model1view/add',
-                         data=dict(field_string='test2', field_integer='1'), follow_redirects=True)
+                    data=dict(field_string='test2', field_integer='1'), follow_redirects=True)
         rv = client.post('/model1view/edit/1',
                          data=dict(field_string='test2', field_integer='2'), follow_redirects=True)
         eq_(rv.status_code, 200)
@@ -375,3 +386,19 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.get('/model2directchartview/chart/')
         eq_(rv.status_code, 200)
 
+    def test_master_detail_view(self):
+        """
+            Test Master detail view
+        """
+        client = self.app.test_client()
+        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.insert_data2()
+        rv = client.get('/model1masterview/list/')
+        eq_(rv.status_code, 200)
+        rv = client.get('/model1masterview/list/1')
+        eq_(rv.status_code, 200)
+
+        rv = client.get('/model1masterchartview/list/')
+        eq_(rv.status_code, 200)
+        rv = client.get('/model1masterchartview/list/1')
+        eq_(rv.status_code, 200)
