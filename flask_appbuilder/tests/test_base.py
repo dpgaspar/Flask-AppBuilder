@@ -4,7 +4,6 @@ import os
 import string
 import random
 import datetime
-from StringIO import StringIO
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.orm import relationship
 from flask.ext.appbuilder import Model, SQLA
