@@ -154,6 +154,7 @@ class GroupByChartView(BaseChartView):
     # [{'column':'<COL NAME>','group_class':<CLASS>]
     aggregate_by_column = []
     # [{'aggr_func':<FUNC>,'column':'<COL NAME>'}]
+    chart_widget = DirectChartWidget
 
 
 
@@ -194,8 +195,6 @@ class TimeChartView(BaseSimpleGroupByChartView):
 
     chart_template = 'appbuilder/general/charts/chart_time.html'
     chart_type = 'ColumnChart'
-    chart_widget = DirectChartWidget
-
 
 
     def _get_chart_widget(self, filters=None,
