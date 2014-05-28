@@ -12,7 +12,7 @@ _camelcase_re = re.compile(r'([A-Z]+)(?=[a-z0-9])')
 class SQLA(SQLAlchemy):
     """
         This is a child class of flask.ext.SQLAlchemy
-        It's propose is to override the declarative base of the original
+        It's purpose is to override the declarative base of the original
         package. So that it is bound to F.A.B. Model class allowing the dev
         to be in the same namespace of the security tables (and others)
         and can use AuditMixin class alike.
