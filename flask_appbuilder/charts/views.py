@@ -148,6 +148,15 @@ class BaseSimpleDirectChartView(BaseChartView):
         return widgets
 
 
+class GroupByChartView(BaseChartView):
+
+    group_by_columns = []
+    # [{'column':'<COL NAME>','group_class':<CLASS>]
+    aggregate_by_column = []
+    # [{'aggr_func':<FUNC>,'column':'<COL NAME>'}]
+
+
+
 class ChartView(BaseSimpleGroupByChartView):
     """
         Provides a simple (and hopefully nice) way to draw charts on your application.
@@ -185,6 +194,8 @@ class TimeChartView(BaseSimpleGroupByChartView):
 
     chart_template = 'appbuilder/general/charts/chart_time.html'
     chart_type = 'ColumnChart'
+    chart_widget = DirectChartWidget
+
 
 
     def _get_chart_widget(self, filters=None,
