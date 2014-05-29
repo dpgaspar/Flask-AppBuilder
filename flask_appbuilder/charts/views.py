@@ -8,6 +8,7 @@ from ..security.decorators import has_access
 from ..models.filters import Filters, FilterRelationOneToManyEqual
 from ..baseviews import BaseModelView, expose
 from ..urltools import *
+from ..models.group import GroupBys
 
 log = logging.getLogger(__name__)
 
@@ -156,6 +157,22 @@ class GroupByChartView(BaseChartView):
     # [{'aggr_func':<FUNC>,'column':'<COL NAME>'}]
     chart_widget = DirectChartWidget
 
+    def __init__(self, **kwargs):
+        super(BaseChartView, self).__init__(**kwargs)
+
+
+    @expose('/chart/')
+    @has_access
+    def chart(self):
+        form = self.search_form.refresh()
+        get_filter_args(self._filters)
+
+        group = GroupBys(self.group_by_columns, self.aggregate_by_column)
+        joined_filters = self._filters.get_joined_filters(self._base_filters)
+
+        count, lst = self.datamodel.query(filters=joined_filters)
+        log.debug("Group Data1 {0}".format(lst))
+        log.debug("GROUP: {0}".format(group.apply(lst)))
 
 
 class ChartView(BaseSimpleGroupByChartView):

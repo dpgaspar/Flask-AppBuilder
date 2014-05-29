@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import calendar
 import logging
 from itertools import groupby
+from operator import itemgetter, attrgetter
 
 log = logging.getLogger(__name__)
 
@@ -11,10 +12,7 @@ def aggregate_count(items, col):
 
 
 def aggregate_sum(items, col):
-    value = 0
-    for item in items:
-        value = value + getattr(item, col)
-    return value
+    return sum(getattr(item, col) for item in items)
 
 
 def aggregate_avg(items, col):
@@ -65,12 +63,11 @@ class BaseGroupBy(object):
 
 
 class GroupByCol(BaseGroupBy):
-
     def _apply(self, data):
         data = sorted(data, key=self.get_group_col)
         json_data = dict()
         json_data['cols'] = [{'id': self.column_name,
-                             'label': self.column_name,
+                              'label': self.column_name,
                               'type': 'string'},
                              {'id': self.aggregate_func.__name__ + '_' + self.column_name,
                               'label': self.aggregate_func.__name__ + '_' + self.column_name,
@@ -117,18 +114,33 @@ class GroupByDateMonth(BaseGroupBy):
     def get_group_col(self, item):
         value = getattr(item, self.column_name)
         if value:
-            return value.year, value.month 
+            return value.year, value.month
 
     def get_format_group_col(self, item):
         return calendar.month_name[item[1]] + ' ' + str(item[0])
 
 
 class GroupBys(object):
-    group_bys = None
-    """
-        [['COLNAME',GROUP_CLASS, AGR_FUNC,'AGR_COLNAME'],]
-    """
+    group_bys_cols = None
+    # ['<COLNAME>',<FUNC>, ....]
+    aggr_by_cols = None
+    # [(<AGGR FUNC>),'<COLNAME>',...]
 
-    def __init__(self, group_bys):
-        self.group_bys = group_bys
+    def __init__(self, group_by_cols, aggr_by_cols):
+        self.group_bys_cols = group_by_cols
+        self.aggr_by_cols = aggr_by_cols
 
+    def get_group_col(self, item):
+        return getattr(item, self.column_name)
+
+
+    def apply(self, data):
+        data = sorted(data, key=attrgetter(*self.group_bys_cols))
+        result = []
+        for (grouped, items) in groupby(data, key=attrgetter(*self.group_bys_cols)):
+            items = list(items)
+            result_item = [grouped]
+            for aggr_by_col in self.aggr_by_cols:
+                result_item.append(aggr_by_col[0](items, aggr_by_col[1]))
+            result.append(result_item)
+        return result
