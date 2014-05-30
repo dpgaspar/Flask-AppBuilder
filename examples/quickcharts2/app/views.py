@@ -24,6 +24,14 @@ def fill_data():
             cs.population = random.randint(1, 1000000)
             cs.unemployed = random.randint(1, 100)
             cs.college = random.randint(1, 100)
+            year = random.choice(range(1900, 2012))
+            month = random.choice(range(1, 12))
+            day = random.choice(range(1, 28))
+            cs.statdate = datetime(year, month, day)
+            cs.country_id = random.randint(1, len(countries))
+            cs.political_type_id = random.randint(1, len(politicals))
+            db.session.add(cs)
+            db.session.commit()
     except Exception as e:
         log.error("Update ViewMenu error: {0}".format(str(e)))
         self.get_session.rollback()
@@ -60,6 +68,7 @@ class CountryGroupByChartView(GroupByChartView):
 
 
 db.create_all()
+fill_data()
 appbuilder.add_view(CountryModelView, "List Countries", icon="fa-folder-open-o", category="Statistics")
 appbuilder.add_view(PoliticalTypeModelView, "List Political Types", icon="fa-folder-open-o", category="Statistics")
 appbuilder.add_view(CountryStatsModelView, "List Country Stats", icon="fa-folder-open-o", category="Statistics")
