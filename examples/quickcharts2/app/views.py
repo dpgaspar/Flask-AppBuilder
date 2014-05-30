@@ -1,4 +1,4 @@
-from flask.ext.appbuilder.models.datamodel import SQLAModel
+    from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.views import ModelView
 from flask_appbuilder.charts.views import DirectChartView, GroupByChartView
 from models import CountryStats, Country, PoliticalType
@@ -10,20 +10,23 @@ import random
 def fill_data():
     countries = ['Portugal', 'Germany', 'Spain', 'France', 'USA', 'China','Russia','Japan']
     politicals = ['Democratic', 'Authorative']
-
-    for country in countries:
-        c = Country(name=country)
-        db.session.add(c)
-        db.session.commit()
-    for political in politicals:
-        c = PoliticalType(name=political)
-        db.session.add(c)
-        db.session.commit()
-    for x in range(1,100):
-        cs = CountryStats()
-        cs.population = random.randint(1, 1000000)
-        cs.unemployed = random.randint(1, 100)
-        cs.college = random.randint(1, 100)
+    try:
+        for country in countries:
+            c = Country(name=country)
+            db.session.add(c)
+            db.session.commit()
+        for political in politicals:
+            c = PoliticalType(name=political)
+            db.session.add(c)
+            db.session.commit()
+        for x in range(1,100):
+            cs = CountryStats()
+            cs.population = random.randint(1, 1000000)
+            cs.unemployed = random.randint(1, 100)
+            cs.college = random.randint(1, 100)
+    except Exception as e:
+        log.error("Update ViewMenu error: {0}".format(str(e)))
+        self.get_session.rollback()
 
 
 class CountryStatsModelView(ModelView):
