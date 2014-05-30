@@ -171,8 +171,9 @@ class GroupByChartView(BaseChartView):
         joined_filters = self._filters.get_joined_filters(self._base_filters)
 
         count, lst = self.datamodel.query(filters=joined_filters)
-        log.debug("Group Data1 {0}".format(lst))
+        data = group.apply(lst)
         log.debug("GROUP: {0}".format(group.apply(lst)))
+        log.debug("GROUP JSON: {0}".format(group.to_json(data)))
 
 
 class ChartView(BaseSimpleGroupByChartView):

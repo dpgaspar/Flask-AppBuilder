@@ -1,8 +1,11 @@
 from __future__ import unicode_literals
+import datetime
 import calendar
 import logging
 from itertools import groupby
 from operator import itemgetter, attrgetter
+from flask_appbuilder._compat import as_unicode
+
 
 log = logging.getLogger(__name__)
 
@@ -124,7 +127,7 @@ class GroupBys(object):
     group_bys_cols = None
     # ['<COLNAME>',<FUNC>, ....]
     aggr_by_cols = None
-    # [(<AGGR FUNC>),'<COLNAME>',...]
+    # [(<AGGR FUNC>,'<COLNAME>'),...]
 
     def __init__(self, group_by_cols, aggr_by_cols):
         self.group_bys_cols = group_by_cols
@@ -144,3 +147,27 @@ class GroupBys(object):
                 result_item.append(aggr_by_col[0](items, aggr_by_col[1]))
             result.append(result_item)
         return result
+
+    def to_json(self, data, labels={}):
+        json_data = dict()
+        json_data['cols'] = []
+        for group_col in self.group_bys_cols:
+            json_data['cols'].append( {'id': group_col,
+                        #  'label': as_unicode(labels[group_col]),
+                          'type': 'string'})
+        for aggr_col in self.aggr_by_cols:
+            json_data['cols'].append({'id': aggr_col[1],
+                         # 'label': as_unicode(labels[aggr_col[1]]),
+                          'type': 'number'})
+        json_data['rows'] = []
+        for item in data:
+            row = {'c': []}
+            for group_col_data in item[0]:
+                row['c'].append({'v': group_col_data})
+            for col_data in item[1:]:
+                if isinstance(col_data, datetime.date):
+                    row['c'].append({'v': (str(col_data))})
+                else:
+                    row['c'].append({'v': col_data})
+            json_data['rows'].append(row)
+        return json_data
