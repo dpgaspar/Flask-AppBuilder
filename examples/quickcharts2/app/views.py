@@ -1,4 +1,4 @@
-    from flask.ext.appbuilder.models.datamodel import SQLAModel
+from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.views import ModelView
 from flask_appbuilder.charts.views import DirectChartView, GroupByChartView
 from models import CountryStats, Country, PoliticalType
