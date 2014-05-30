@@ -136,6 +136,9 @@ class GroupBys(object):
     def get_group_col(self, item):
         return getattr(item, self.column_name)
 
+    def attrgetter(self, item, *attrs):
+        for attr in attrs:
+            return getattr(item, self.column_name)
 
     def apply(self, data):
         data = sorted(data, key=attrgetter(*self.group_bys_cols))

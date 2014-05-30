@@ -1,12 +1,12 @@
+import random
+import logging
+import datetime
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.views import ModelView
 from flask_appbuilder.charts.views import DirectChartView, GroupByChartView
 from models import CountryStats, Country, PoliticalType
 from app import appbuilder, db
 from flask_appbuilder.models.group import aggregate_count, aggregate_sum
-import random
-import logging
-import datetime
 
 log = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ def fill_data():
             year = random.choice(range(1900, 2012))
             month = random.choice(range(1, 12))
             day = random.choice(range(1, 28))
-            #cs.statdate = datetime(year, month, day)
+            cs.stat_date = datetime.datetime(year, month, day)
             cs.country_id = random.randint(1, len(countries))
             cs.political_type_id = random.randint(1, len(politicals))
             db.session.add(cs)
