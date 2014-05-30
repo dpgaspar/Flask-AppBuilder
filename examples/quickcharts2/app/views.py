@@ -5,7 +5,9 @@ from models import CountryStats, Country, PoliticalType
 from app import appbuilder, db
 from flask_appbuilder.models.group import aggregate_count, aggregate_sum
 import random
+import logging
 
+log = logging.getLogger(__name__)
 
 def fill_data():
     countries = ['Portugal', 'Germany', 'Spain', 'France', 'USA', 'China','Russia','Japan']
