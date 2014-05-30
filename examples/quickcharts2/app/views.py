@@ -33,7 +33,7 @@ def fill_data():
     try:
         for x in range(1,100):
             cs = CountryStats()
-            cs.population = random.randint(1, 1000000)
+            cs.population = random.randint(1, 100)
             cs.unemployed = random.randint(1, 100)
             cs.college = random.randint(1, 100)
             year = random.choice(range(1900, 2012))
