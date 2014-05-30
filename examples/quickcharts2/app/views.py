@@ -36,7 +36,7 @@ def fill_data():
             db.session.commit()
     except Exception as e:
         log.error("Update ViewMenu error: {0}".format(str(e)))
-        self.get_session.rollback()
+        db.session.rollback()
 
 
 class CountryStatsModelView(ModelView):
