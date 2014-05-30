@@ -39,7 +39,7 @@ def fill_data():
             year = random.choice(range(1900, 2012))
             month = random.choice(range(1, 12))
             day = random.choice(range(1, 28))
-            cs.statdate = datetime(year, month, day)
+            #cs.statdate = datetime(year, month, day)
             cs.country_id = random.randint(1, len(countries))
             cs.political_type_id = random.randint(1, len(politicals))
             db.session.add(cs)
