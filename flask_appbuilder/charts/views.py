@@ -161,19 +161,53 @@ class GroupByChartView(BaseChartView):
         super(BaseChartView, self).__init__(**kwargs)
 
 
+    def _get_chart_widget(self, filters=None,
+                          order_column='',
+                          order_direction='',
+                          widgets=None,
+                          direct=None,
+                          height=None,
+                          **args):
+
+        height = height or self.height
+        widgets = widgets or dict()
+        joined_filters = filters.get_joined_filters(self._base_filters)
+        count, lst = self.datamodel.query(filters=joined_filters,
+                                          order_column=order_column,
+                                          order_direction=order_direction)
+        group = GroupBys(self.group_by_columns, self.aggregate_by_column)
+        data = group.apply(lst)
+        log.debug("GROUP {0}".format(data))
+
+        value_columns = group.to_json(data, self.label_columns)
+        log.debug("GROUP {0}".format(value_columns))
+
+        widgets['chart'] = self.chart_widget(route_base=self.route_base,
+                                             chart_title=self.chart_title,
+                                             chart_type=self.chart_type,
+                                             chart_3d=self.chart_3d,
+                                             height=height,
+                                             value_columns=value_columns, **args)
+        return widgets
+
+
     @expose('/chart/')
     @has_access
     def chart(self):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
 
-        group = GroupBys(self.group_by_columns, self.aggregate_by_column)
-        joined_filters = self._filters.get_joined_filters(self._base_filters)
+        widgets = self._get_chart_widget(filters=self._filters)
+        widgets = self._get_search_widget(form=form, widgets=widgets)
+        return render_template(self.chart_template, route_base=self.route_base,
+                               title=self.chart_title,
+                               label_columns=self.label_columns,
+                               group_by_columns=[],
+                               group_by_label={},
+                               height=self.height,
+                               widgets=widgets,
+                               appbuilder=self.appbuilder)
 
-        count, lst = self.datamodel.query(filters=joined_filters)
-        data = group.apply(lst)
-        log.debug("GROUP: {0}".format(group.apply(lst)))
-        log.debug("GROUP JSON: {0}".format(group.to_json(data)))
 
 
 class ChartView(BaseSimpleGroupByChartView):

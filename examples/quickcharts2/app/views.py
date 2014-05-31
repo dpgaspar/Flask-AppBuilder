@@ -31,7 +31,7 @@ def fill_data():
         log.error("Update ViewMenu error: {0}".format(str(e)))
         db.session.rollback()
     try:
-        for x in range(1,100):
+        for x in range(1, 100):
             cs = CountryStats()
             cs.population = random.randint(1, 100)
             cs.unemployed = random.randint(1, 100)
@@ -73,9 +73,9 @@ class CountryGroupByChartView(GroupByChartView):
     datamodel = SQLAModel(CountryStats)
     chart_title = 'Statistics'
     chart_type = 'ColumnChart'
-    group_by_columns = ['country.name', 'political_type.name']
+    group_by_columns = ['country']
     # [{'column':'<COL NAME>','group_class':<CLASS>]
-    aggregate_by_column = [(aggregate_count, ''), (aggregate_sum, 'population')]
+    aggregate_by_column = [(aggregate_sum, 'unemployed'), (aggregate_sum, 'population'), (aggregate_sum, 'college')]
     # [{'aggr_func':<FUNC>,'column':'<COL NAME>'}]
 
 

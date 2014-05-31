@@ -136,16 +136,25 @@ class GroupBys(object):
     def get_group_col(self, item):
         return getattr(item, self.column_name)
 
-    def attrgetter(self, item, *attrs):
-        for attr in attrs:
-            return getattr(item, self.column_name)
+    def attrgetter(self, *items):
+        if len(items) == 1:
+            attr = items[0]
+            def g(obj):
+                return self.resolve_attr(obj, attr)
+        else:
+            def g(obj):
+                return tuple(self.resolve_attr(obj, attr) for attr in items)
+        return g
+
+    def resolve_attr(self, obj, attr):
+        return getattr(obj, attr)
 
     def apply(self, data):
-        data = sorted(data, key=attrgetter(*self.group_bys_cols))
+        data = sorted(data, key=self.attrgetter(*self.group_bys_cols))
         result = []
-        for (grouped, items) in groupby(data, key=attrgetter(*self.group_bys_cols)):
+        for (grouped, items) in groupby(data, key=self.attrgetter(*self.group_bys_cols)):
             items = list(items)
-            result_item = [grouped]
+            result_item = [(grouped)]
             for aggr_by_col in self.aggr_by_cols:
                 result_item.append(aggr_by_col[0](items, aggr_by_col[1]))
             result.append(result_item)
@@ -155,22 +164,27 @@ class GroupBys(object):
         json_data = dict()
         json_data['cols'] = []
         for group_col in self.group_bys_cols:
+            label = '' or as_unicode(labels[group_col])
             json_data['cols'].append( {'id': group_col,
-                        #  'label': as_unicode(labels[group_col]),
+                          'label': label,
                           'type': 'string'})
         for aggr_col in self.aggr_by_cols:
+            label = '' or as_unicode(labels[aggr_col[1]])
             json_data['cols'].append({'id': aggr_col[1],
-                         # 'label': as_unicode(labels[aggr_col[1]]),
+                          'label': label,
                           'type': 'number'})
         json_data['rows'] = []
         for item in data:
             row = {'c': []}
-            for group_col_data in item[0]:
-                row['c'].append({'v': group_col_data})
+            if not isinstance(item[0], tuple):
+                row['c'].append({'v': str(item[0])})
+            else:
+                for group_col_data in item[0]:
+                    row['c'].append({'v': str(group_col_data)})
             for col_data in item[1:]:
                 if isinstance(col_data, datetime.date):
                     row['c'].append({'v': (str(col_data))})
                 else:
-                    row['c'].append({'v': col_data})
+                    row['c'].append({'v': float(col_data)})
             json_data['rows'].append(row)
         return json_data
