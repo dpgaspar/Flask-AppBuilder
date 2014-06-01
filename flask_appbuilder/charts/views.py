@@ -152,7 +152,7 @@ class BaseSimpleDirectChartView(BaseChartView):
 class GroupByChartView(BaseChartView):
 
     group_by_columns = []
-    # [{'column':'<COL NAME>']
+    # ['<COL NAME>'|<FUNC NAME>]
     group_by_labels = {}
     aggregate_by_column = []
     # [{'aggr_func':<FUNC>,'column':'<COL NAME>'}]
