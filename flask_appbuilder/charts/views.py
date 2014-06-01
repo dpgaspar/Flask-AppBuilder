@@ -185,11 +185,7 @@ class GroupByChartView(BaseChartView):
                                           order_column=order_column,
                                           order_direction=order_direction)
         group = GroupBys([group_by], self.aggregate_by_column, self.formatter_by_columns)
-        data = group.apply(lst)
-        log.debug("GROUP {0}".format(data))
-
-        value_columns = group.to_json(data, self.label_columns)
-        log.debug("GROUP {0}".format(value_columns))
+        value_columns = group.to_json(group.apply(lst), self.label_columns)
 
         widgets['chart'] = self.chart_widget(route_base=self.route_base,
                                              chart_title=self.chart_title,
