@@ -139,6 +139,7 @@ class GroupBys(object):
     def attrgetter(self, *items):
         if len(items) == 1:
             attr = items[0]
+
             def g(obj):
                 return self.resolve_attr(obj, attr)
         else:
@@ -169,14 +170,14 @@ class GroupBys(object):
         json_data['cols'] = []
         for group_col in self.group_bys_cols:
             label = '' or as_unicode(labels[group_col])
-            json_data['cols'].append( {'id': group_col,
-                          'label': label,
-                          'type': 'string'})
+            json_data['cols'].append({'id': group_col,
+                                      'label': label,
+                                      'type': 'string'})
         for aggr_col in self.aggr_by_cols:
             label = '' or as_unicode(labels[aggr_col[1]])
             json_data['cols'].append({'id': aggr_col[1],
-                          'label': label,
-                          'type': 'number'})
+                                      'label': label,
+                                      'type': 'number'})
         json_data['rows'] = []
         for item in data:
             row = {'c': []}

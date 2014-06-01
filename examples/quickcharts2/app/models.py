@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.orm import relationship
 from flask.ext.appbuilder import Model
+import datetime
 
 
 class Country(Model):
@@ -34,4 +35,4 @@ class CountryStats(Model):
         return "{0}:{1}:{2}:{3}".format(self.country, self.political_type, self.population, self.college)
 
     def month_year(self):
-        return (self.stat_date.year)
+        return datetime.datetime(self.stat_date.year, self.stat_date.month, 1)

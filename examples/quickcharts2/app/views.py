@@ -72,7 +72,7 @@ class CountryStatsDirectChart(DirectChartView):
 class CountryGroupByChartView(GroupByChartView):
     datamodel = SQLAModel(CountryStats)
     chart_title = 'Statistics'
-    chart_type = 'ColumnChart'
+    chart_type = 'LineChart'
     label_columns = {'month_year': 'Month Year'}
     group_by_columns = ['country', 'political_type','month_year']
     # ['<COL NAME>']
