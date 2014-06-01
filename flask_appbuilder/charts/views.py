@@ -157,6 +157,7 @@ class GroupByChartView(BaseChartView):
     # [{'aggr_func':<FUNC>,'column':'<COL NAME>'}]
     formatter_by_columns = {}
 
+    chart_type = 'ColumnChart'
     chart_widget = DirectChartWidget
 
     def __init__(self, **kwargs):

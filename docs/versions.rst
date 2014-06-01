@@ -5,6 +5,7 @@ Improvements and Bug fixes on 0.9.1
 -----------------------------------
 
 - New, Support for application factory *init_app* (Flask ext approved guide line).
+- New, Flexible group by charts with multiple series and formatters, no need for ChartView or TimeChartView.
 
 Improvements and Bug fixes on 0.9.0
 -----------------------------------
