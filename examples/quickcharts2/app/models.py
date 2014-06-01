@@ -32,3 +32,6 @@ class CountryStats(Model):
 
     def __repr__(self):
         return "{0}:{1}:{2}:{3}".format(self.country, self.political_type, self.population, self.college)
+
+    def month_year(self):
+        return (self.stat_date.year)

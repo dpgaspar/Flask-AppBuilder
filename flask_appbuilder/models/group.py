@@ -147,7 +147,11 @@ class GroupBys(object):
         return g
 
     def resolve_attr(self, obj, attr):
-        return getattr(obj, attr)
+        if hasattr(getattr(obj, attr), '__call__'):
+            # its a function
+            return getattr(obj, attr)()
+        else:
+            return getattr(obj, attr)
 
     def apply(self, data):
         data = sorted(data, key=self.attrgetter(*self.group_bys_cols))

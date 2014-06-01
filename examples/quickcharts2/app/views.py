@@ -1,6 +1,7 @@
 import random
 import logging
 import datetime
+import calendar
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.views import ModelView
 from flask_appbuilder.charts.views import DirectChartView, GroupByChartView
@@ -72,14 +73,15 @@ class CountryGroupByChartView(GroupByChartView):
     datamodel = SQLAModel(CountryStats)
     chart_title = 'Statistics'
     chart_type = 'ColumnChart'
-    group_by_columns = ['country', 'political_type']
+    label_columns = {'month_year': 'Month Year'}
+    group_by_columns = ['country', 'political_type','month_year']
     # ['<COL NAME>']
     aggregate_by_column = [(aggregate_avg, 'unemployed'), (aggregate_avg, 'population'), (aggregate_avg, 'college')]
     # [{'aggr_func':<FUNC>,'column':'<COL NAME>'}]
 
 
 db.create_all()
-fill_data()
+#fill_data()
 appbuilder.add_view(CountryModelView, "List Countries", icon="fa-folder-open-o", category="Statistics")
 appbuilder.add_view(PoliticalTypeModelView, "List Political Types", icon="fa-folder-open-o", category="Statistics")
 appbuilder.add_view(CountryStatsModelView, "List Country Stats", icon="fa-folder-open-o", category="Statistics")
