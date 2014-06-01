@@ -76,7 +76,6 @@ def pretty_month_year(value):
 class CountryGroupByChartView(GroupByChartView):
     datamodel = SQLAModel(CountryStats)
     chart_title = 'Statistics'
-    chart_type = 'LineChart'
     #label_columns = {'month_year': 'Month Year', 'country_political': 'Country Political'}
     group_by_columns = ['country', 'political_type', 'country_political', 'month_year']
     # ['<COL NAME>']
