@@ -69,15 +69,21 @@ class CountryStatsDirectChart(DirectChartView):
     base_order = ('stat_date', 'asc')
 
 
+def pretty_month_year(value):
+    return calendar.month_name[value.month] + ' ' + str(value.year)
+
+
 class CountryGroupByChartView(GroupByChartView):
     datamodel = SQLAModel(CountryStats)
     chart_title = 'Statistics'
-    chart_type = 'LineChart'
-    label_columns = {'month_year': 'Month Year'}
-    group_by_columns = ['country', 'political_type','month_year']
+    chart_type = 'ColumnChart'
+    #label_columns = {'month_year': 'Month Year', 'country_political': 'Country Political'}
+    group_by_columns = ['country', 'political_type', 'country_political', 'month_year']
     # ['<COL NAME>']
     aggregate_by_column = [(aggregate_avg, 'unemployed'), (aggregate_avg, 'population'), (aggregate_avg, 'college')]
     # [{'aggr_func':<FUNC>,'column':'<COL NAME>'}]
+    formatter_by_columns = {'month_year': pretty_month_year}
+
 
 
 db.create_all()

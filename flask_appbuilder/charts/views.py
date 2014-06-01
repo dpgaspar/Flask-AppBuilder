@@ -153,13 +153,17 @@ class GroupByChartView(BaseChartView):
 
     group_by_columns = []
     # ['<COL NAME>'|<FUNC NAME>]
-    group_by_labels = {}
     aggregate_by_column = []
     # [{'aggr_func':<FUNC>,'column':'<COL NAME>'}]
+    formatter_by_columns = {}
+
     chart_widget = DirectChartWidget
 
     def __init__(self, **kwargs):
         super(BaseChartView, self).__init__(**kwargs)
+        for col in self.group_by_columns:
+            if not self.label_columns.get(col):
+                self.label_columns[col] = self._prettify_column(col)
 
 
     def _get_chart_widget(self, filters=None,
@@ -179,7 +183,7 @@ class GroupByChartView(BaseChartView):
         count, lst = self.datamodel.query(filters=joined_filters,
                                           order_column=order_column,
                                           order_direction=order_direction)
-        group = GroupBys([group_by], self.aggregate_by_column)
+        group = GroupBys([group_by], self.aggregate_by_column, self.formatter_by_columns)
         data = group.apply(lst)
         log.debug("GROUP {0}".format(data))
 

@@ -36,3 +36,6 @@ class CountryStats(Model):
 
     def month_year(self):
         return datetime.datetime(self.stat_date.year, self.stat_date.month, 1)
+
+    def country_political(self):
+        return str(self.country) + ' - ' + str(self.political_type)

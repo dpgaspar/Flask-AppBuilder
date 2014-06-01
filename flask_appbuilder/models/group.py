@@ -128,10 +128,13 @@ class GroupBys(object):
     # ['<COLNAME>',<FUNC>, ....]
     aggr_by_cols = None
     # [(<AGGR FUNC>,'<COLNAME>'),...]
+    formatter_by_cols = {}
+    # {'<COLNAME>':<FUNC>,...}
 
-    def __init__(self, group_by_cols, aggr_by_cols):
+    def __init__(self, group_by_cols, aggr_by_cols, formatter_by_cols):
         self.group_bys_cols = group_by_cols
         self.aggr_by_cols = aggr_by_cols
+        self.formatter_by_cols = formatter_by_cols
 
     def get_group_col(self, item):
         return getattr(item, self.column_name)
@@ -154,12 +157,24 @@ class GroupBys(object):
         else:
             return getattr(obj, attr)
 
+    def format_columns(self, *values):
+        if len(values) == 1:
+            return self.format_column(self.group_bys_cols[0], values[0])
+        else:
+            return tuple(self.fomart_column(item, value) for item, value in (self.group_bys_cols, values))
+
+    def format_column(self, item, value):
+        if item in self.formatter_by_cols:
+            return self.formatter_by_cols[item](value)
+        else:
+            return value
+
     def apply(self, data):
         data = sorted(data, key=self.attrgetter(*self.group_bys_cols))
         result = []
         for (grouped, items) in groupby(data, key=self.attrgetter(*self.group_bys_cols)):
             items = list(items)
-            result_item = [(grouped)]
+            result_item = [self.format_columns(grouped)]
             for aggr_by_col in self.aggr_by_cols:
                 result_item.append(aggr_by_col[0](items, aggr_by_col[1]))
             result.append(result_item)
