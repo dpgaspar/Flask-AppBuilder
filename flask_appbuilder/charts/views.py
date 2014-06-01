@@ -152,7 +152,8 @@ class BaseSimpleDirectChartView(BaseChartView):
 class GroupByChartView(BaseChartView):
 
     group_by_columns = []
-    # [{'column':'<COL NAME>','group_class':<CLASS>]
+    # [{'column':'<COL NAME>']
+    group_by_labels = {}
     aggregate_by_column = []
     # [{'aggr_func':<FUNC>,'column':'<COL NAME>'}]
     chart_widget = DirectChartWidget
@@ -167,15 +168,18 @@ class GroupByChartView(BaseChartView):
                           widgets=None,
                           direct=None,
                           height=None,
+                          group_by='',
                           **args):
 
         height = height or self.height
         widgets = widgets or dict()
+        group_by = group_by or self.group_by_columns[0]
+
         joined_filters = filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(filters=joined_filters,
                                           order_column=order_column,
                                           order_direction=order_direction)
-        group = GroupBys(self.group_by_columns, self.aggregate_by_column)
+        group = GroupBys([group_by], self.aggregate_by_column)
         data = group.apply(lst)
         log.debug("GROUP {0}".format(data))
 
@@ -190,20 +194,19 @@ class GroupByChartView(BaseChartView):
                                              value_columns=value_columns, **args)
         return widgets
 
-
+    @expose('/chart/<group_by>')
     @expose('/chart/')
     @has_access
-    def chart(self):
+    def chart(self, group_by=''):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
-
-        widgets = self._get_chart_widget(filters=self._filters)
+        widgets = self._get_chart_widget(filters=self._filters, group_by=group_by)
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,
                                label_columns=self.label_columns,
-                               group_by_columns=[],
-                               group_by_label={},
+                               group_by_columns=self.group_by_columns,
+                               group_by_label=self.group_by_label,
                                height=self.height,
                                widgets=widgets,
                                appbuilder=self.appbuilder)

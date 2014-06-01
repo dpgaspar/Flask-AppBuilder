@@ -185,6 +185,6 @@ class GroupBys(object):
                 if isinstance(col_data, datetime.date):
                     row['c'].append({'v': (str(col_data))})
                 else:
-                    row['c'].append({'v': float(col_data)})
+                    row['c'].append({'v': col_data})
             json_data['rows'].append(row)
         return json_data

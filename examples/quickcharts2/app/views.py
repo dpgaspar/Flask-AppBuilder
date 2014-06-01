@@ -6,30 +6,29 @@ from flask.ext.appbuilder.views import ModelView
 from flask_appbuilder.charts.views import DirectChartView, GroupByChartView
 from models import CountryStats, Country, PoliticalType
 from app import appbuilder, db
-from flask_appbuilder.models.group import aggregate_count, aggregate_sum
+from flask_appbuilder.models.group import aggregate_count, aggregate_sum, aggregate_avg
 
 log = logging.getLogger(__name__)
 
 def fill_data():
     countries = ['Portugal', 'Germany', 'Spain', 'France', 'USA', 'China','Russia','Japan']
     politicals = ['Democratic', 'Authorative']
-    try:
-        for country in countries:
-            c = Country(name=country)
+    for country in countries:
+        c = Country(name=country)
+        try:
             db.session.add(c)
             db.session.commit()
-    except Exception as e:
-        log.error("Update ViewMenu error: {0}".format(str(e)))
-        db.session.rollback()
-
-    try:
-        for political in politicals:
-            c = PoliticalType(name=political)
+        except Exception as e:
+            log.error("Update ViewMenu error: {0}".format(str(e)))
+            db.session.rollback()
+    for political in politicals:
+        c = PoliticalType(name=political)
+        try:
             db.session.add(c)
             db.session.commit()
-    except Exception as e:
-        log.error("Update ViewMenu error: {0}".format(str(e)))
-        db.session.rollback()
+        except Exception as e:
+            log.error("Update ViewMenu error: {0}".format(str(e)))
+            db.session.rollback()
     try:
         for x in range(1, 100):
             cs = CountryStats()
@@ -73,9 +72,9 @@ class CountryGroupByChartView(GroupByChartView):
     datamodel = SQLAModel(CountryStats)
     chart_title = 'Statistics'
     chart_type = 'ColumnChart'
-    group_by_columns = ['country']
-    # [{'column':'<COL NAME>','group_class':<CLASS>]
-    aggregate_by_column = [(aggregate_sum, 'unemployed'), (aggregate_sum, 'population'), (aggregate_sum, 'college')]
+    group_by_columns = ['country', 'political_type']
+    # ['<COL NAME>']
+    aggregate_by_column = [(aggregate_avg, 'unemployed'), (aggregate_avg, 'population'), (aggregate_avg, 'college')]
     # [{'aggr_func':<FUNC>,'column':'<COL NAME>'}]
 
 
