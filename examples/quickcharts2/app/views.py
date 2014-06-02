@@ -80,7 +80,7 @@ class CountryGroupByChartView(GroupByChartView):
     chart_title = 'Statistics'
 
     definitions = [{
-                       'label': 'Country',
+                       'label': 'Country Aval',
                        'group': 'country',
                        'series': [(aggregate_avg, 'unemployed'),
                                   (aggregate_avg, 'population'),

@@ -8,7 +8,7 @@ from ..security.decorators import has_access
 from ..models.filters import Filters, FilterRelationOneToManyEqual
 from ..baseviews import BaseModelView, expose
 from ..urltools import *
-from ..models.group import GroupBys
+from ..models.group import GroupByProcessData
 
 log = logging.getLogger(__name__)
 
@@ -162,20 +162,15 @@ class GroupByChartView(BaseChartView):
         ]
 
     """
-    group_by_columns = []
-    # ['<COL NAME>'|<FUNC NAME>]
-    aggregate_by_column = []
-    # [{'aggr_func':<FUNC>,'column':'<COL NAME>'}]
-    formatter_by_columns = {}
-
     chart_type = 'ColumnChart'
     chart_widget = DirectChartWidget
 
     def __init__(self, **kwargs):
         super(BaseChartView, self).__init__(**kwargs)
-        #for col in self.group_by_columns:
-        #    if not self.label_columns.get(col):
-        #        self.label_columns[col] = self._prettify_column(col)
+        for definition in self.definitions:
+            col = definition.get('group')
+            if not self.label_columns.get(col):
+                self.label_columns[col] = definition['label']
 
 
     def get_definition(self, group):
@@ -191,12 +186,11 @@ class GroupByChartView(BaseChartView):
             formatter = {group_by: definition['formatter']}
         else:
             formatter = {}
-        return GroupBys([group_by], series, formatter)
+        return GroupByProcessData([group_by], series, formatter)
 
 
     def get_group_bys(self):
-        return \
-            [(definition['group'], definition['label']) for definition in self.definitions]
+        return [definition['group'] for definition in self.definitions]
 
 
     def _get_chart_widget(self, filters=None,
@@ -241,8 +235,8 @@ class GroupByChartView(BaseChartView):
         return render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,
                                label_columns=self.label_columns,
-                               group_by_columns=self.get_group_bys()[0],
-                               group_by_label=self.get_group_bys()[1],
+                               group_by_columns=self.get_group_bys(),
+                               group_by_label=self.group_by_label,
                                height=self.height,
                                widgets=widgets,
                                appbuilder=self.appbuilder)

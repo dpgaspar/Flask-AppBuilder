@@ -123,21 +123,8 @@ class GroupByDateMonth(BaseGroupBy):
         return calendar.month_name[item[1]] + ' ' + str(item[0])
 
 
-class GroupBys(object):
-    group_bys_cols = None
-    # ['<COLNAME>',<FUNC>, ....]
-    aggr_by_cols = None
-    # [(<AGGR FUNC>,'<COLNAME>'),...]
-    formatter_by_cols = {}
-    # {'<COLNAME>':<FUNC>,...}
+class BaseProcessData(object):
 
-    def __init__(self, group_by_cols, aggr_by_cols, formatter_by_cols):
-        self.group_bys_cols = group_by_cols
-        self.aggr_by_cols = aggr_by_cols
-        self.formatter_by_cols = formatter_by_cols
-
-    def get_group_col(self, item):
-        return getattr(item, self.column_name)
 
     def attrgetter(self, *items):
         if len(items) == 1:
@@ -156,6 +143,22 @@ class GroupBys(object):
             return getattr(obj, attr)()
         else:
             return getattr(obj, attr)
+
+
+
+class GroupByProcessData(BaseProcessData):
+    group_bys_cols = None
+    # ['<COLNAME>',<FUNC>, ....]
+    aggr_by_cols = None
+    # [(<AGGR FUNC>,'<COLNAME>'),...]
+    formatter_by_cols = {}
+    # {'<COLNAME>':<FUNC>,...}
+
+    def __init__(self, group_by_cols, aggr_by_cols, formatter_by_cols):
+        self.group_bys_cols = group_by_cols
+        self.aggr_by_cols = aggr_by_cols
+        self.formatter_by_cols = formatter_by_cols
+
 
     def format_columns(self, *values):
         if len(values) == 1:
