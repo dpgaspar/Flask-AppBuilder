@@ -151,6 +151,17 @@ class BaseSimpleDirectChartView(BaseChartView):
 
 class GroupByChartView(BaseChartView):
 
+    definitions = []
+    """
+        [{
+            'label': 'String',
+            'group': '<COLNAME>'|'<FUNCNAME>'
+            'formatter: <FUNC>
+            'series': [(<AGGR FUNC>, <COLNAME>|'<FUNCNAME>'),...]
+            }
+        ]
+
+    """
     group_by_columns = []
     # ['<COL NAME>'|<FUNC NAME>]
     aggregate_by_column = []
@@ -162,9 +173,30 @@ class GroupByChartView(BaseChartView):
 
     def __init__(self, **kwargs):
         super(BaseChartView, self).__init__(**kwargs)
-        for col in self.group_by_columns:
-            if not self.label_columns.get(col):
-                self.label_columns[col] = self._prettify_column(col)
+        #for col in self.group_by_columns:
+        #    if not self.label_columns.get(col):
+        #        self.label_columns[col] = self._prettify_column(col)
+
+
+    def get_definition(self, group):
+        for definition in self.definitions:
+            if definition['group'] == group:
+                return definition
+
+    def get_group_by_class(self, group):
+        definition = self.get_definition(group)
+        group_by = definition['group']
+        series = definition['series']
+        if 'formatter' in definition:
+            formatter = {group_by: definition['formatter']}
+        else:
+            formatter = {}
+        return GroupBys([group_by], series, formatter)
+
+
+    def get_group_bys(self):
+        return \
+            [(definition['group'], definition['label']) for definition in self.definitions]
 
 
     def _get_chart_widget(self, filters=None,
@@ -184,8 +216,10 @@ class GroupByChartView(BaseChartView):
         count, lst = self.datamodel.query(filters=joined_filters,
                                           order_column=order_column,
                                           order_direction=order_direction)
-        group = GroupBys([group_by], self.aggregate_by_column, self.formatter_by_columns)
+        group = self.get_group_by_class(group_by)
         value_columns = group.to_json(group.apply(lst), self.label_columns)
+
+        log.debug('_GROUP JSON {0}'.format(value_columns))
 
         widgets['chart'] = self.chart_widget(route_base=self.route_base,
                                              chart_title=self.chart_title,
@@ -203,11 +237,12 @@ class GroupByChartView(BaseChartView):
         get_filter_args(self._filters)
         widgets = self._get_chart_widget(filters=self._filters, group_by=group_by)
         widgets = self._get_search_widget(form=form, widgets=widgets)
+
         return render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,
                                label_columns=self.label_columns,
-                               group_by_columns=self.group_by_columns,
-                               group_by_label=self.group_by_label,
+                               group_by_columns=self.get_group_bys()[0],
+                               group_by_label=self.get_group_bys()[1],
                                height=self.height,
                                widgets=widgets,
                                appbuilder=self.appbuilder)

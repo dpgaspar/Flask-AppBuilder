@@ -11,8 +11,9 @@ from flask_appbuilder.models.group import aggregate_count, aggregate_sum, aggreg
 
 log = logging.getLogger(__name__)
 
+
 def fill_data():
-    countries = ['Portugal', 'Germany', 'Spain', 'France', 'USA', 'China','Russia','Japan']
+    countries = ['Portugal', 'Germany', 'Spain', 'France', 'USA', 'China', 'Russia', 'Japan']
     politicals = ['Democratic', 'Authorative']
     for country in countries:
         c = Country(name=country)
@@ -53,6 +54,7 @@ class CountryStatsModelView(ModelView):
     datamodel = SQLAModel(CountryStats)
     list_columns = ['country', 'stat_date', 'population', 'unemployed', 'college']
 
+
 class CountryModelView(ModelView):
     datamodel = SQLAModel(Country)
 
@@ -76,13 +78,32 @@ def pretty_month_year(value):
 class CountryGroupByChartView(GroupByChartView):
     datamodel = SQLAModel(CountryStats)
     chart_title = 'Statistics'
+
+    definitions = [{
+                       'label': 'Country',
+                       'group': 'country',
+                       'series': [(aggregate_avg, 'unemployed'),
+                                  (aggregate_avg, 'population'),
+                                  (aggregate_avg, 'college')
+                       ]
+                   }]
+    """
+        [{
+            'label': 'String',
+            'group': '<COLNAME>'|'<FUNCNAME>'
+            'formatter: <FUNC>
+            'series': [(<AGGR FUNC>, <COLNAME>|'<FUNCNAME>'),...]
+            }
+        ]
+
+    """
+
     #label_columns = {'month_year': 'Month Year', 'country_political': 'Country Political'}
     group_by_columns = ['country', 'political_type', 'country_political', 'month_year']
     # ['<COL NAME>']
     aggregate_by_column = [(aggregate_avg, 'unemployed'), (aggregate_avg, 'population'), (aggregate_avg, 'college')]
     # [{'aggr_func':<FUNC>,'column':'<COL NAME>'}]
     formatter_by_columns = {'month_year': pretty_month_year}
-
 
 
 db.create_all()
