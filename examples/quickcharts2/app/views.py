@@ -79,14 +79,23 @@ class CountryGroupByChartView(GroupByChartView):
     datamodel = SQLAModel(CountryStats)
     chart_title = 'Statistics'
 
-    definitions = [{
-                       'label': 'Country Aval',
-                       'group': 'country',
-                       'series': [(aggregate_avg, 'unemployed'),
-                                  (aggregate_avg, 'population'),
-                                  (aggregate_avg, 'college')
-                       ]
-                   }]
+    definitions = [
+        {
+            'label': 'Country Aval',
+            'group': 'country',
+            'series': [(aggregate_avg, 'unemployed'),
+                       (aggregate_avg, 'population'),
+                       (aggregate_avg, 'college')
+            ],
+            'label': 'Time',
+            'group': 'month_year',
+            'formatter': pretty_month_year,
+            'series': [(aggregate_avg, 'unemployed'),
+                       (aggregate_avg, 'population'),
+                       (aggregate_avg, 'college')
+            ]
+        }
+    ]
     """
         [{
             'label': 'String',

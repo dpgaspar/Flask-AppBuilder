@@ -204,7 +204,7 @@ class GroupByChartView(BaseChartView):
 
         height = height or self.height
         widgets = widgets or dict()
-        group_by = group_by or self.group_by_columns[0]
+        group_by = group_by or self.definitions[0]['group']
 
         joined_filters = filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(filters=joined_filters,
