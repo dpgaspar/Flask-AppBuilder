@@ -169,9 +169,10 @@ class GroupByChartView(BaseChartView):
         super(BaseChartView, self).__init__(**kwargs)
         for definition in self.definitions:
             col = definition.get('group')
-            if not self.label_columns.get(col):
-                self.label_columns[col] = definition['label']
-
+            try:
+                self.label_columns[col] = definition.get('label') or self.label_columns[col]
+            except Exception:
+                self.label_columns[col] = self._prettify_column(col)
 
     def get_definition(self, group):
         for definition in self.definitions:

@@ -81,7 +81,7 @@ class CountryGroupByChartView(GroupByChartView):
 
     definitions = [
         {
-            'label': 'Country Aval',
+            'label': 'Country Stat',
             'group': 'country',
             'series': [(aggregate_avg, 'unemployed'),
                        (aggregate_avg, 'population'),
@@ -89,7 +89,7 @@ class CountryGroupByChartView(GroupByChartView):
             ]
         },
         {
-            'label': 'Time',
+            #'label': 'Monthly',
             'group': 'month_year',
             'formatter': pretty_month_year,
             'series': [(aggregate_avg, 'unemployed'),
