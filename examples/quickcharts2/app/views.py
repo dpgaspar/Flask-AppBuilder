@@ -86,7 +86,9 @@ class CountryGroupByChartView(GroupByChartView):
             'series': [(aggregate_avg, 'unemployed'),
                        (aggregate_avg, 'population'),
                        (aggregate_avg, 'college')
-            ],
+            ]
+        },
+        {
             'label': 'Time',
             'group': 'month_year',
             'formatter': pretty_month_year,
