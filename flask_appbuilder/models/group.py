@@ -161,7 +161,7 @@ class BaseProcessData(object):
         if len(values) == 1:
             return self.format_column(self.group_bys_cols[0], values[0])
         else:
-            return tuple(self.fomart_column(item, value) for item, value in (self.group_bys_cols, values))
+            return tuple(self.format_column(item, value) for item, value in (self.group_bys_cols, values))
 
     def format_column(self, item, value):
         if item in self.formatter_by_cols:
