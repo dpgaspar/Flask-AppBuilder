@@ -212,9 +212,9 @@ class DirectProcessData(BaseProcessData):
         data = sorted(data, key=self.attrgetter(group_by))
         result = []
         for item in data:
-            result_item = [self.format_columns(self.attrgetter(item, group_by))]
+            result_item = [self.format_columns(item, self.attrgetter(group_by)(item))]
             for aggr_by_col in self.aggr_by_cols:
-                result_item.append(self.format_columns(self.attrgetter(item, aggr_by_col)))
+                result_item.append(self.format_columns(item, self.attrgetter(aggr_by_col)(item)))
             result.append(result_item)
         return result
 
