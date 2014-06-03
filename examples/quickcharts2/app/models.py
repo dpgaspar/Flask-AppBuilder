@@ -39,3 +39,6 @@ class CountryStats(Model):
 
     def country_political(self):
         return str(self.country) + ' - ' + str(self.political_type)
+
+    def test(self):
+        return 20

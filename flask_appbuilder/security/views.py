@@ -13,7 +13,7 @@ from flask_login import login_user, logout_user
 
 from flask_appbuilder.models.datamodel import SQLAModel
 from flask_appbuilder.views import BaseView, ModelView, SimpleFormView, expose
-from flask_appbuilder.charts.views import DirectChartView
+from flask_appbuilder.charts.views import DirectByChartView
 
 from ..fieldwidgets import BS3PasswordFieldWidget
 from ..actions import action
@@ -249,13 +249,25 @@ class UserDBModelView(UserModelView):
         item.password = generate_password_hash(item.password)
 
 
-class UserStatsChartView(DirectChartView):
+class UserStatsChartView(DirectByChartView):
     datamodel = SQLAModel(User)
     chart_title = lazy_gettext('User Statistics')
     label_columns = UserModelView.label_columns
     search_columns = UserModelView.search_columns
-    direct_columns = {'Login Count': ('username', 'login_count'),
-                      'Failed Login Count': ('username', 'fail_login_count')}
+
+    definitions = [
+        {
+            'label': 'Login Count',
+            'group': 'username',
+            'series': ['login_count']
+        },
+        {
+            'label': 'Failed Login Count',
+            'group': 'username',
+            'series': ['fail_login_count']
+        }
+
+    ]
 
 
 class RoleModelView(ModelView):

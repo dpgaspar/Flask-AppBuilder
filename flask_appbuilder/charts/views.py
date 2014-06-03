@@ -163,6 +163,7 @@ class GroupByChartView(BaseChartView):
 
     """
     chart_type = 'ColumnChart'
+    chart_template = 'appbuilder/general/charts/jsonchart.html'
     chart_widget = DirectChartWidget
     ProcessClass = GroupByProcessData
 
@@ -174,14 +175,21 @@ class GroupByChartView(BaseChartView):
                 self.label_columns[col] = definition.get('label') or self.label_columns[col]
             except Exception:
                 self.label_columns[col] = self._prettify_column(col)
+            if not definition.get('label'):
+                definition['label'] = self.label_columns[col]
+            for serie in definition['series']:
+                if isinstance(serie, tuple):
+                    if hasattr(serie[0], '_label'):
+                        key = serie[0].__name__ + serie[1]
+                        self.label_columns[key] = \
+                            serie[0]._label + ' ' + self._prettify_column(serie[1])
+                else:
+                    self.label_columns[serie] = self._prettify_column(serie)
+            log.debug("LABELS {0}".format(self.label_columns))
 
-    def get_definition(self, group):
-        for definition in self.definitions:
-            if definition['group'] == group:
-                return definition
 
-    def get_group_by_class(self, group):
-        definition = self.get_definition(group)
+
+    def get_group_by_class(self, definition):
         group_by = definition['group']
         series = definition['series']
         if 'formatter' in definition:
@@ -201,22 +209,18 @@ class GroupByChartView(BaseChartView):
                           widgets=None,
                           direct=None,
                           height=None,
-                          group_by='',
+                          definition='',
                           **args):
 
         height = height or self.height
         widgets = widgets or dict()
-        group_by = group_by or self.definitions[0]['group']
 
         joined_filters = filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(filters=joined_filters,
                                           order_column=order_column,
                                           order_direction=order_direction)
-        group = self.get_group_by_class(group_by)
+        group = self.get_group_by_class(definition)
         value_columns = group.to_json(group.apply(lst), self.label_columns)
-
-        log.debug('_GROUP JSON {0}'.format(value_columns))
-
         widgets['chart'] = self.chart_widget(route_base=self.route_base,
                                              chart_title=self.chart_title,
                                              chart_type=self.chart_type,
@@ -225,23 +229,26 @@ class GroupByChartView(BaseChartView):
                                              value_columns=value_columns, **args)
         return widgets
 
-    @expose('/chart/<group_by>')
+    @expose('/chart/<int:group_by>')
     @expose('/chart/')
     @has_access
-    def chart(self, group_by=''):
+    def chart(self, group_by=0):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
-        widgets = self._get_chart_widget(filters=self._filters, group_by=group_by)
+        log.debug("I {0}".format(group_by))
+        widgets = self._get_chart_widget(filters=self._filters,
+                                         definition=self.definitions[group_by])
         widgets = self._get_search_widget(form=form, widgets=widgets)
 
         return render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,
                                label_columns=self.label_columns,
-                               group_by_columns=self.get_group_bys(),
+                               definitions=self.definitions,
                                group_by_label=self.group_by_label,
                                height=self.height,
                                widgets=widgets,
                                appbuilder=self.appbuilder)
+
 
 class DirectByChartView(GroupByChartView):
 

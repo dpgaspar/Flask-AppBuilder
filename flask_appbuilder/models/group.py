@@ -3,21 +3,35 @@ import datetime
 import calendar
 import logging
 from itertools import groupby
-from operator import itemgetter, attrgetter
+from flask.ext.babelpkg import lazy_gettext as _
 from flask_appbuilder._compat import as_unicode
 
 
 log = logging.getLogger(__name__)
 
+def aggregate(label=''):
+    """
+        Use this decorator to set a label for your aggregation functions on charts.
 
+        :param label:
+            The label to complement with the column
+    """
+    def wrap(f):
+        f._label = label
+        return f
+    return wrap
+
+
+@aggregate(_('Count of'))
 def aggregate_count(items, col):
     return len(list(items))
 
 
+@aggregate(_('Sum of'))
 def aggregate_sum(items, col):
     return sum(getattr(item, col) for item in items)
 
-
+@aggregate(_('Avg. of'))
 def aggregate_avg(items, col):
     return aggregate_sum(items, col) / aggregate_count(items, col)
 
@@ -183,8 +197,11 @@ class BaseProcessData(object):
                                       'type': 'string'})
         for aggr_col in self.aggr_by_cols:
             if isinstance(aggr_col, tuple):
+                label_key = aggr_col[0].__name__ + aggr_col[1]
                 aggr_col = aggr_col[1]
-            label = '' or as_unicode(labels[aggr_col])
+            else:
+                label_key = aggr_col
+            label = '' or as_unicode(labels[label_key])
             json_data['cols'].append({'id': aggr_col,
                                       'label': label,
                                       'type': 'number'})
@@ -212,9 +229,9 @@ class DirectProcessData(BaseProcessData):
         data = sorted(data, key=self.attrgetter(group_by))
         result = []
         for item in data:
-            result_item = [self.format_columns(self.attrgetter(*[group_by])(item))]
+            result_item = [self.format_columns(self.attrgetter(group_by)(item))]
             for aggr_by_col in self.aggr_by_cols:
-                result_item.append(self.format_columns(self.attrgetter(*aggr_by_col)(item)))
+                result_item.append(self.attrgetter(aggr_by_col)(item))
             result.append(result_item)
         return result
 
