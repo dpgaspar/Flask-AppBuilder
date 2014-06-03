@@ -4,7 +4,7 @@ import datetime
 import calendar
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.views import ModelView
-from flask_appbuilder.charts.views import DirectChartView, GroupByChartView
+from flask_appbuilder.charts.views import DirectChartView, DirectByChartView, GroupByChartView
 from models import CountryStats, Country, PoliticalType
 from app import appbuilder, db
 from flask_appbuilder.models.group import aggregate_count, aggregate_sum, aggregate_avg
@@ -32,7 +32,7 @@ def fill_data():
             log.error("Update ViewMenu error: {0}".format(str(e)))
             db.session.rollback()
     try:
-        for x in range(1, 100):
+        for x in range(1, 20):
             cs = CountryStats()
             cs.population = random.randint(1, 100)
             cs.unemployed = random.randint(1, 100)
@@ -75,9 +75,25 @@ def pretty_month_year(value):
     return calendar.month_name[value.month] + ' ' + str(value.year)
 
 
+class CountryDirectChartView(DirectByChartView):
+    datamodel = SQLAModel(CountryStats)
+    chart_title = 'Direct Data'
+
+    definitions = [
+        {
+            #'label': 'Monthly',
+            'group': 'stat_date',
+            'series': ['unemployed',
+                       'population',
+                       'college']
+        }
+    ]
+
+
 class CountryGroupByChartView(GroupByChartView):
     datamodel = SQLAModel(CountryStats)
     chart_title = 'Statistics'
+
 
     definitions = [
         {
@@ -125,4 +141,5 @@ appbuilder.add_view(CountryStatsModelView, "List Country Stats", icon="fa-folder
 appbuilder.add_separator("Statistics")
 appbuilder.add_view(CountryStatsDirectChart, "Show Country Chart", icon="fa-dashboard", category="Statistics")
 appbuilder.add_view(CountryGroupByChartView, "Group Country Chart", icon="fa-dashboard", category="Statistics")
+appbuilder.add_view(CountryDirectChartView, "Show Country Chart", icon="fa-dashboard", category="Statistics")
 

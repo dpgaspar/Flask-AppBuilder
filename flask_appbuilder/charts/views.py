@@ -8,7 +8,7 @@ from ..security.decorators import has_access
 from ..models.filters import Filters, FilterRelationOneToManyEqual
 from ..baseviews import BaseModelView, expose
 from ..urltools import *
-from ..models.group import GroupByProcessData
+from ..models.group import GroupByProcessData, DirectProcessData
 
 log = logging.getLogger(__name__)
 
@@ -164,6 +164,7 @@ class GroupByChartView(BaseChartView):
     """
     chart_type = 'ColumnChart'
     chart_widget = DirectChartWidget
+    ProcessClass = GroupByProcessData
 
     def __init__(self, **kwargs):
         super(BaseChartView, self).__init__(**kwargs)
@@ -187,7 +188,7 @@ class GroupByChartView(BaseChartView):
             formatter = {group_by: definition['formatter']}
         else:
             formatter = {}
-        return GroupByProcessData([group_by], series, formatter)
+        return self.ProcessClass([group_by], series, formatter)
 
 
     def get_group_bys(self):
@@ -242,6 +243,9 @@ class GroupByChartView(BaseChartView):
                                widgets=widgets,
                                appbuilder=self.appbuilder)
 
+class DirectByChartView(GroupByChartView):
+
+    ProcessClass = DirectProcessData
 
 
 class ChartView(BaseSimpleGroupByChartView):

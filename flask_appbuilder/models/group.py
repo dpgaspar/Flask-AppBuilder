@@ -66,6 +66,7 @@ class BaseGroupBy(object):
 
 
 class GroupByCol(BaseGroupBy):
+
     def _apply(self, data):
         data = sorted(data, key=self.get_group_col)
         json_data = dict()
@@ -125,6 +126,18 @@ class GroupByDateMonth(BaseGroupBy):
 
 class BaseProcessData(object):
 
+    group_bys_cols = None
+    # ['<COLNAME>',<FUNC>, ....]
+    aggr_by_cols = None
+    # [(<AGGR FUNC>,'<COLNAME>'),...]
+    formatter_by_cols = {}
+    # {<FUNC>: '<COLNAME>',...}
+
+    def __init__(self, group_by_cols, aggr_by_cols, formatter_by_cols):
+        self.group_bys_cols = group_by_cols
+        self.aggr_by_cols = aggr_by_cols
+        self.formatter_by_cols = formatter_by_cols
+
 
     def attrgetter(self, *items):
         if len(items) == 1:
@@ -144,22 +157,6 @@ class BaseProcessData(object):
         else:
             return getattr(obj, attr)
 
-
-
-class GroupByProcessData(BaseProcessData):
-    group_bys_cols = None
-    # ['<COLNAME>',<FUNC>, ....]
-    aggr_by_cols = None
-    # [(<AGGR FUNC>,'<COLNAME>'),...]
-    formatter_by_cols = {}
-    # {'<COLNAME>':<FUNC>,...}
-
-    def __init__(self, group_by_cols, aggr_by_cols, formatter_by_cols):
-        self.group_bys_cols = group_by_cols
-        self.aggr_by_cols = aggr_by_cols
-        self.formatter_by_cols = formatter_by_cols
-
-
     def format_columns(self, *values):
         if len(values) == 1:
             return self.format_column(self.group_bys_cols[0], values[0])
@@ -173,17 +170,10 @@ class GroupByProcessData(BaseProcessData):
             return value
 
     def apply(self, data):
-        data = sorted(data, key=self.attrgetter(*self.group_bys_cols))
-        result = []
-        for (grouped, items) in groupby(data, key=self.attrgetter(*self.group_bys_cols)):
-            items = list(items)
-            result_item = [self.format_columns(grouped)]
-            for aggr_by_col in self.aggr_by_cols:
-                result_item.append(aggr_by_col[0](items, aggr_by_col[1]))
-            result.append(result_item)
-        return result
+        pass
 
-    def to_json(self, data, labels={}):
+    def to_json(self, data, labels=None):
+        labels = labels or dict()
         json_data = dict()
         json_data['cols'] = []
         for group_col in self.group_bys_cols:
@@ -192,8 +182,10 @@ class GroupByProcessData(BaseProcessData):
                                       'label': label,
                                       'type': 'string'})
         for aggr_col in self.aggr_by_cols:
-            label = '' or as_unicode(labels[aggr_col[1]])
-            json_data['cols'].append({'id': aggr_col[1],
+            if isinstance(aggr_col, tuple):
+                aggr_col = aggr_col[1]
+            label = '' or as_unicode(labels[aggr_col])
+            json_data['cols'].append({'id': aggr_col,
                                       'label': label,
                                       'type': 'number'})
         json_data['rows'] = []
@@ -211,3 +203,33 @@ class GroupByProcessData(BaseProcessData):
                     row['c'].append({'v': col_data})
             json_data['rows'].append(row)
         return json_data
+
+
+class DirectProcessData(BaseProcessData):
+
+    def apply(self, data):
+        group_by = self.group_bys_cols[0]
+        data = sorted(data, key=self.attrgetter(group_by))
+        result = []
+        for item in data:
+            result_item = [self.format_columns(self.attrgetter(item, group_by))]
+            for aggr_by_col in self.aggr_by_cols:
+                result_item.append(self.format_columns(self.attrgetter(item, aggr_by_col)))
+            result.append(result_item)
+        return result
+
+
+class GroupByProcessData(BaseProcessData):
+
+    def apply(self, data):
+        data = sorted(data, key=self.attrgetter(*self.group_bys_cols))
+        result = []
+        for (grouped, items) in groupby(data, key=self.attrgetter(*self.group_bys_cols)):
+            items = list(items)
+            result_item = [self.format_columns(grouped)]
+            for aggr_by_col in self.aggr_by_cols:
+                result_item.append(aggr_by_col[0](items, aggr_by_col[1]))
+            result.append(result_item)
+        return result
+
+
