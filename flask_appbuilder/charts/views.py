@@ -199,10 +199,6 @@ class GroupByChartView(BaseChartView):
         return self.ProcessClass([group_by], series, formatter)
 
 
-    def get_group_bys(self):
-        return [definition['group'] for definition in self.definitions]
-
-
     def _get_chart_widget(self, filters=None,
                           order_column='',
                           order_direction='',

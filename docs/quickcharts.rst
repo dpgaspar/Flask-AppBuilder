@@ -1,14 +1,73 @@
 Chart Views (Quick How to)
 ==========================
 
-To implement views with google charts, use all derived class from BaseChartView, these are:
+To implement views with google charts, use all inherited classes from BaseChartView, these are:
 
- :ChartView: Display simple group by method charts.
- :TimeChartView: Displays simple group by month and year charts.
- :DirectChartView: Display direct data charts, no group by is applied.
+ :DirectChartView: Display direct data charts with multiple series, no group by is applied.
+ :GroupByChartView: Displays grouped data with multiple series.
+ :ChartView: (Deprecated) Display simple group by method charts.
+ :TimeChartView: (Deprecated) Displays simple group by month and year charts.
 
-Define your Chart Views (views.py)
-----------------------------------
+Direct Data Charts
+------------------
+
+These charts can display multiple series, based on columns from models or functions defined on the models.
+You can display multiple charts on the same view.
+
+Let's create a simple model first, the gold is to display a chart showing the unemployment evolution
+versus the percentage of the population with higher education::
+
+    class CountryStats(Model):
+        id = Column(Integer, primary_key=True)
+        stat_date = Column(Date, nullable=True)
+        population = Column(Float)
+        unemployed_perc = Column(Float)
+        poor_perc = Column(Float)
+        college = Column(Float)
+
+Let's suppose that the college field will have the total number of college students on some date.
+But the *unemployed_perc* field holds a percentage, we can't draw a chart with these two together,
+we must create a function that calculated the *college_perc*::
+
+        def college_perc(self):
+            if self.population != 0:
+                return (self.college*100)/self.population
+            else
+                return 0.0
+
+Now we are ready to define our view::
+
+    class CountryDirectChartView(DirectByChartView):
+        datamodel = SQLAModel(CountryStats)
+        chart_title = 'Direct Data Example'
+
+        definitions = [
+        {
+            'label': 'Unemployment',
+            'group': 'stat_date',
+            'series': ['unemployed_perc',
+                       'college_perc'
+        }
+    ]
+
+This kind of chart inherits from **BaseChartView** that has some properties that you can configure
+these are:
+
+    :chart_title: The Title of the chart (can be used with babel of course).
+    :group_by_label: The label that will be displayed before the buttons for choosing the chart.
+    :chart_type: The chart type PieChart, ColumnChart or LineChart
+    :chart_3d: = True or false label like: 'true'
+    :width: The charts width
+    :height: The charts height
+
+Additionally you can configure **BaseModelView** properties because **BaseChartView** is a child.
+The most interesting one is
+
+    :base_filters: Defines the filters for data, this has precedence from all UI filters.
+
+
+(Deprecated) Define your Chart Views (views.py)
+-----------------------------------------------
 
 ::
 
