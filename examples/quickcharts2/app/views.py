@@ -75,7 +75,6 @@ def pretty_month_year(value):
     return calendar.month_name[value.month] + ' ' + str(value.year)
 
 
-
 class CountryDirectChartView(DirectByChartView):
     datamodel = SQLAModel(CountryStats)
     chart_title = 'Direct Data'
@@ -85,7 +84,6 @@ class CountryDirectChartView(DirectByChartView):
             #'label': 'Monthly',
             'group': 'stat_date',
             'series': ['unemployed',
-                       'population',
                        'college']
         }
     ]

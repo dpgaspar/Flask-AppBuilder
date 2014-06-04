@@ -1,6 +1,13 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.9.1
+-----------------------------------
+
+- New, Support for application factory *init_app* (Flask ext approved guide line).
+- New, Flexible group by charts with multiple series and formatters, no need for ChartView or TimeChartView.
+- New, internal AppBuilder rebuild.
+
 Improvements and Bug fixes on 0.9.0
 -----------------------------------
 
@@ -8,6 +15,8 @@ Improvements and Bug fixes on 0.9.0
 - New, can import expose decorator like: flask.ext.appbuilder import expose
 - New, Changed 'Base' declarative name to 'Model' no need to add BaseMixin.
 - New, No automatic dev's model creation, must invoke appbuilder.create_db()
+- New, Change GeneralView to ModelView.
+- Fix, Multiple database support correction.
 
 Improvements and Bug fixes on 0.8.5
 -----------------------------------

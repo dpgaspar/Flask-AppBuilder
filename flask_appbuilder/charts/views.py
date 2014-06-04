@@ -185,7 +185,6 @@ class GroupByChartView(BaseChartView):
                             serie[0]._label + ' ' + self._prettify_column(serie[1])
                 else:
                     self.label_columns[serie] = self._prettify_column(serie)
-            log.debug("LABELS {0}".format(self.label_columns))
 
 
 
@@ -231,7 +230,6 @@ class GroupByChartView(BaseChartView):
     def chart(self, group_by=0):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
-        log.debug("I {0}".format(group_by))
         widgets = self._get_chart_widget(filters=self._filters,
                                          definition=self.definitions[group_by])
         widgets = self._get_search_widget(form=form, widgets=widgets)
