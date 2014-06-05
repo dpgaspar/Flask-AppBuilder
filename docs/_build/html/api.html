@@ -803,7 +803,7 @@ Use this function on your models on an aditional function</p>
 <dt id="flask.ext.appbuilder.charts.views.BaseChartView">
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">BaseChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.BaseChartView" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the base class for all chart views. 
-Use ChartView or TimeChartView, override their properties and these
+Use SimpleByChartView or GroupByChartView, override their properties and these
 to customise your charts</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.charts.views.BaseChartView.chart_3d">
@@ -865,49 +865,152 @@ to customise your charts</p>
 
 </div></blockquote>
 </div>
-<div class="section" id="chartview">
-<h3>ChartView<a class="headerlink" href="#chartview" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="directbychartview">
+<h3>DirectByChartView<a class="headerlink" href="#directbychartview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="class">
-<dt id="flask.ext.appbuilder.charts.views.ChartView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">ChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.ChartView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provides a simple (and hopefully nice) way to draw charts on your application.</p>
-<p>This will show Google Charts based on group by of your tables.</p>
-</dd></dl>
-
+<dt id="flask.ext.appbuilder.charts.views.DirectByChartView">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">DirectByChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.DirectByChartView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this class to display charts with multiple series,
+based on columns or methods defined on models.
+You can display multiple charts on the same view.</p>
+<p>Default routing point is &#8216;/chart&#8217;</p>
+<p>Setup definitions property to configure the chart</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Label:</th><td class="field-body">(optional) String label to display on chart selection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Group:</th><td class="field-body">String with the column name or method from model.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Formatter:</th><td class="field-body">(optional) function that formats the output of &#8216;group&#8217; key</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Series:</th><td class="field-body">A list of tuples with the aggregation function and the column name
+to apply the aggregation</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>definitions</strong> property respects the following grammar:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>definitions = [</dt>
+<dd><blockquote class="first">
+<div><dl class="docutils">
+<dt>{</dt>
+<dd>&#8216;label&#8217;: &#8216;label for chart definition&#8217;,
+&#8216;group&#8217;: &#8216;&lt;COLNAME&gt;&#8217;|&#8217;&lt;MODEL FUNCNAME&gt;&#8217;,
+&#8216;formatter&#8217;: &lt;FUNC FORMATTER FOR GROUP COL&gt;,
+&#8216;series&#8217;: [&#8216;&lt;COLNAME&gt;&#8217;|&#8217;&lt;MODEL FUNCNAME&gt;&#8217;,...]</dd>
+</dl>
+<p>}, ...</p>
 </div></blockquote>
-</div>
-<div class="section" id="timechartview">
-<h3>TimeChartView<a class="headerlink" href="#timechartview" title="Permalink to this headline">¶</a></h3>
-<blockquote>
-<div><dl class="class">
-<dt id="flask.ext.appbuilder.charts.views.TimeChartView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">TimeChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.TimeChartView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provides a simple way to draw some time charts on your application.</p>
-<p>This will show Google Charts based on count and group by month and year for your tables.</p>
-</dd></dl>
-
+<p class="last">]</p>
+</dd>
+</dl>
 </div></blockquote>
-</div>
-<div class="section" id="directchartview">
-<h3>DirectChartView<a class="headerlink" href="#directchartview" title="Permalink to this headline">¶</a></h3>
-<blockquote>
-<div><dl class="class">
-<dt id="flask.ext.appbuilder.charts.views.DirectChartView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">DirectChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.DirectChartView" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class is responsible for displaying a Google chart with
-direct model values. Chart widget uses json.
-No group by is processed, example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">StatsChartView</span><span class="p">(</span><span class="n">DirectChartView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Stats</span><span class="p">)</span>
-    <span class="n">chart_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Statistics&#39;</span><span class="p">)</span>
-    <span class="n">direct_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;Some Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;X_col_1&#39;</span><span class="p">,</span> <span class="s">&#39;stat_col_1&#39;</span><span class="p">,</span> <span class="s">&#39;stat_col_2&#39;</span><span class="p">),</span>
-                      <span class="s">&#39;Other Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;X_col2&#39;</span><span class="p">,</span> <span class="s">&#39;stat_col_3&#39;</span><span class="p">)}</span>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CountryDirectChartView</span><span class="p">(</span><span class="n">DirectByChartView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Direct Data Example&#39;</span>
+
+    <span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Unemployment&#39;</span><span class="p">,</span>
+            <span class="s">&#39;group&#39;</span><span class="p">:</span> <span class="s">&#39;stat_date&#39;</span><span class="p">,</span>
+            <span class="s">&#39;series&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;unemployed_perc&#39;</span><span class="p">,</span>
+                <span class="s">&#39;college_perc&#39;</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>
 
 </div></blockquote>
+</div>
+<div class="section" id="groupbychartview">
+<h3>GroupByChartView<a class="headerlink" href="#groupbychartview" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="class">
+<dt id="flask.ext.appbuilder.charts.views.GroupByChartView">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">GroupByChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.GroupByChartView" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="flask.ext.appbuilder.charts.views.GroupByChartView.definitions">
+<tt class="descname">definitions</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.charts.views.GroupByChartView.definitions" title="Permalink to this definition">¶</a></dt>
+<dd><p>These charts can display multiple series,
+based on columns or methods defined on models.
+You can display multiple charts on the same view.
+This data can be grouped and aggregated has you like.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Label:</th><td class="field-body">(optional) String label to display on chart selection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Group:</th><td class="field-body">String with the column name or method from model.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Formatter:</th><td class="field-body">(optional) function that formats the output of &#8216;group&#8217; key</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Series:</th><td class="field-body">A list of tuples with the aggregation function and the column name
+to apply the aggregation</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre>[{
+    &#39;label&#39;: &#39;String&#39;,
+    &#39;group&#39;: &#39;&lt;COLNAME&gt;&#39;|&#39;&lt;FUNCNAME&gt;&#39;
+    &#39;formatter: &lt;FUNC&gt;
+    &#39;series&#39;: [(&lt;AGGR FUNC&gt;, &lt;COLNAME&gt;|&#39;&lt;FUNCNAME&gt;&#39;),...]
+    }
+]
+</pre></div>
+</div>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CountryGroupByChartView</span><span class="p">(</span><span class="n">GroupByChartView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Statistics&#39;</span>
+
+<span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Country Stat&#39;</span><span class="p">,</span>
+        <span class="s">&#39;group&#39;</span><span class="p">:</span> <span class="s">&#39;country&#39;</span><span class="p">,</span>
+        <span class="s">&#39;series&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="n">aggregate_avg</span><span class="p">,</span> <span class="s">&#39;unemployed_perc&#39;</span><span class="p">),</span>
+               <span class="p">(</span><span class="n">aggregate_avg</span><span class="p">,</span> <span class="s">&#39;population&#39;</span><span class="p">),</span>
+               <span class="p">(</span><span class="n">aggregate_avg</span><span class="p">,</span> <span class="s">&#39;college_perc&#39;</span><span class="p">)</span>
+              <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div></blockquote>
+</div>
+<div class="section" id="module-flask.ext.appbuilder.models.group">
+<span id="aggr-functions-for-group-by-charts"></span><h3>Aggr Functions for Group By Charts<a class="headerlink" href="#module-flask.ext.appbuilder.models.group" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="flask.ext.appbuilder.models.group.aggregate_count">
+<tt class="descclassname">flask.ext.appbuilder.models.group.</tt><tt class="descname">aggregate_count</tt><big>(</big><em>items</em>, <em>col</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.group.aggregate_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum list</p>
+</dd></dl>
+
+</div>
+<div class="section" id="deprecated-chartview">
+<h3>(Deprecated) ChartView<a class="headerlink" href="#deprecated-chartview" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div></div></blockquote>
+</div>
+<div class="section" id="deprecated-timechartview">
+<h3>(Deprecated) TimeChartView<a class="headerlink" href="#deprecated-timechartview" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div></div></blockquote>
+</div>
+<div class="section" id="deprecated-directchartview">
+<h3>(Deprecated) DirectChartView<a class="headerlink" href="#deprecated-directchartview" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div></div></blockquote>
 </div>
 </div>
 <div class="section" id="module-flask.ext.appbuilder.models.mixins">
@@ -1002,9 +1105,12 @@ will create the following columns:</p>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.filemanager">flask.ext.appbuilder.filemanager</a></li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.charts.views">flask.ext.appbuilder.charts.views</a><ul>
 <li><a class="reference internal" href="#basechartview">BaseChartView</a></li>
-<li><a class="reference internal" href="#chartview">ChartView</a></li>
-<li><a class="reference internal" href="#timechartview">TimeChartView</a></li>
-<li><a class="reference internal" href="#directchartview">DirectChartView</a></li>
+<li><a class="reference internal" href="#directbychartview">DirectByChartView</a></li>
+<li><a class="reference internal" href="#groupbychartview">GroupByChartView</a></li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.models.group">Aggr Functions for Group By Charts</a></li>
+<li><a class="reference internal" href="#deprecated-chartview">(Deprecated) ChartView</a></li>
+<li><a class="reference internal" href="#deprecated-timechartview">(Deprecated) TimeChartView</a></li>
+<li><a class="reference internal" href="#deprecated-directchartview">(Deprecated) DirectChartView</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.models.mixins">flask.ext.appbuilder.models.mixins</a><ul>

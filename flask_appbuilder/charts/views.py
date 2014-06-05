@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 class BaseChartView(BaseModelView):
     """
         This is the base class for all chart views. 
-        Use ChartView or TimeChartView, override their properties and these
+        Use SimpleByChartView or GroupByChartView, override their properties and these
         to customise your charts
     """
 
@@ -153,13 +153,43 @@ class GroupByChartView(BaseChartView):
 
     definitions = []
     """
-        [{
-            'label': 'String',
-            'group': '<COLNAME>'|'<FUNCNAME>'
-            'formatter: <FUNC>
-            'series': [(<AGGR FUNC>, <COLNAME>|'<FUNCNAME>'),...]
-            }
-        ]
+        These charts can display multiple series,
+        based on columns or methods defined on models.
+        You can display multiple charts on the same view.
+        This data can be grouped and aggregated has you like.
+
+        :label: (optional) String label to display on chart selection.
+        :group: String with the column name or method from model.
+        :formatter: (optional) function that formats the output of 'group' key
+        :series: A list of tuples with the aggregation function and the column name
+                to apply the aggregation
+
+        ::
+
+            [{
+                'label': 'String',
+                'group': '<COLNAME>'|'<FUNCNAME>'
+                'formatter: <FUNC>
+                'series': [(<AGGR FUNC>, <COLNAME>|'<FUNCNAME>'),...]
+                }
+            ]
+
+        example::
+
+            class CountryGroupByChartView(GroupByChartView):
+                datamodel = SQLAModel(CountryStats)
+                chart_title = 'Statistics'
+
+            definitions = [
+                {
+                    'label': 'Country Stat',
+                    'group': 'country',
+                    'series': [(aggregate_avg, 'unemployed_perc'),
+                           (aggregate_avg, 'population'),
+                           (aggregate_avg, 'college_perc')
+                          ]
+                }
+            ]
 
     """
     chart_type = 'ColumnChart'
@@ -245,12 +275,55 @@ class GroupByChartView(BaseChartView):
 
 
 class DirectByChartView(GroupByChartView):
+    """
+        Use this class to display charts with multiple series,
+        based on columns or methods defined on models.
+        You can display multiple charts on the same view.
 
+        Default routing point is '/chart'
+
+        Setup definitions property to configure the chart
+
+        :label: (optional) String label to display on chart selection.
+        :group: String with the column name or method from model.
+        :formatter: (optional) function that formats the output of 'group' key
+        :series: A list of tuples with the aggregation function and the column name
+                to apply the aggregation
+
+        The **definitions** property respects the following grammar:
+
+            definitions = [
+                    {
+                     'label': 'label for chart definition',
+                     'group': '<COLNAME>'|'<MODEL FUNCNAME>',
+                     'formatter': <FUNC FORMATTER FOR GROUP COL>,
+                     'series': ['<COLNAME>'|'<MODEL FUNCNAME>',...]
+                    }, ...
+                  ]
+
+        example::
+
+            class CountryDirectChartView(DirectByChartView):
+                datamodel = SQLAModel(CountryStats)
+                chart_title = 'Direct Data Example'
+
+                definitions = [
+                    {
+                        'label': 'Unemployment',
+                        'group': 'stat_date',
+                        'series': ['unemployed_perc',
+                            'college_perc']
+                    }
+                ]
+
+    """
     ProcessClass = DirectProcessData
 
 
 class ChartView(BaseSimpleGroupByChartView):
     """
+        **DEPRECATED**
+
         Provides a simple (and hopefully nice) way to draw charts on your application.
 
         This will show Google Charts based on group by of your tables.                
@@ -279,6 +352,8 @@ class ChartView(BaseSimpleGroupByChartView):
 
 class TimeChartView(BaseSimpleGroupByChartView):
     """
+        **DEPRECATED**
+
         Provides a simple way to draw some time charts on your application.
 
         This will show Google Charts based on count and group by month and year for your tables.
@@ -342,6 +417,8 @@ class TimeChartView(BaseSimpleGroupByChartView):
 
 class DirectChartView(BaseSimpleDirectChartView):
     """
+        **DEPRECATED**
+
         This class is responsible for displaying a Google chart with
         direct model values. Chart widget uses json.
         No group by is processed, example::
@@ -388,27 +465,3 @@ class DirectChartView(BaseSimpleDirectChartView):
                                appbuilder=self.appbuilder)
 
 
-class MultipleChartView(BaseChartView):
-    chart_template = 'appbuilder/general/charts/chart.html'
-    chart_type = 'ColumnChart'
-
-    chart_widget = MultipleChartWidget
-
-    @expose('/chart/')
-    @has_access
-    def chart(self):
-        form = self.search_form.refresh()
-        get_filter_args(self._filters)
-
-        value_columns = self.datamodel.query_group(self.group_bys[0], filters=self._filters)
-
-        widgets = self._get_chart_widget(value_columns=value_columns)
-        widgets = self._get_search_widget(form=form, widgets=widgets)
-        return render_template(self.chart_template, route_base=self.route_base,
-                               title=self.chart_title,
-                               label_columns=self.label_columns,
-                               group_by_columns=self.group_by_columns,
-                               group_by_label=self.group_by_label,
-                               height=self.height,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder)

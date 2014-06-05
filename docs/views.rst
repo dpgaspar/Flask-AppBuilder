@@ -10,7 +10,7 @@ You will map your methods to routing points, and each method will be registered
 as a possible security permission if you want to.
 
 So your methods will have automatic routing points much like Flask, but this time in a class.
-Additionally you can have granular security (method lock security) that can be associated with a user's role
+Additionally you can have granular security (method access security) that can be associated with a user's role
 (take a look at :doc:`security` for more detail).
 
 The views documented on this chapter are the building blocks of F.A.B, but the juicy part is on the next chapter

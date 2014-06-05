@@ -101,20 +101,40 @@ BaseChartView
     .. autoclass:: BaseChartView
         :members:
 
-ChartView
----------
+DirectByChartView
+-----------------
+
+    .. autoclass:: DirectByChartView
+        :members:
+
+GroupByChartView
+----------------
+
+    .. autoclass:: GroupByChartView
+        :members:
+
+Aggr Functions for Group By Charts
+----------------------------------
+
+.. automodule:: flask.ext.appbuilder.models.group
+
+    .. autofunction:: aggregate_count
+
+
+(Deprecated) ChartView
+----------------------
 
     .. autoclass:: ChartView
         :members:
 
-TimeChartView
--------------
+(Deprecated) TimeChartView
+--------------------------
 
     .. autoclass:: TimeChartView
         :members:
 
-DirectChartView
----------------
+(Deprecated) DirectChartView
+----------------------------
 
     .. autoclass:: DirectChartView
         :members:

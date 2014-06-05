@@ -24,6 +24,9 @@ def aggregate(label=''):
 
 @aggregate(_('Count of'))
 def aggregate_count(items, col):
+    """
+        Sum list
+    """
     return len(list(items))
 
 

@@ -11,7 +11,7 @@ To implement views with google charts, use all inherited classes from BaseChartV
 Direct Data Charts
 ------------------
 
-These charts can display multiple series, based on columns from models or functions defined on the models.
+These charts can display multiple series, based on columns or methods defined on models.
 You can display multiple charts on the same view.
 
 Let's create a simple model first, the gold is to display a chart showing the unemployment evolution
