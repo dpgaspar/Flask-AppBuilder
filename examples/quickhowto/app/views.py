@@ -98,7 +98,6 @@ class ContactTimeChartView(GroupByChartView):
         }
     ]
 
-    group_by_columns = ['birthday']
 
 
 
