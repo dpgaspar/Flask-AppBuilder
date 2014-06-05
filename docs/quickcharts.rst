@@ -8,6 +8,9 @@ To implement views with google charts, use all inherited classes from BaseChartV
  :ChartView: (Deprecated) Display simple group by method charts.
  :TimeChartView: (Deprecated) Displays simple group by month and year charts.
 
+You can experiment with following examples with a live
+`Demo <http://flaskappbuilder.pythonanywhere.com/>`_ (login has guest/welcome).
+
 Direct Data Charts
 ------------------
 
@@ -27,7 +30,7 @@ versus the percentage of the population with higher education::
 
 Let's suppose that the college field will have the total number of college students on some date.
 But the *unemployed_perc* field holds a percentage, we can't draw a chart with these two together,
-we must create a function that calculated the *college_perc*::
+we must create a function to calculate the *college_perc*::
 
         def college_perc(self):
             if self.population != 0:

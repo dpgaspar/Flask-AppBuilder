@@ -90,6 +90,15 @@ flask.ext.appbuilder.filemanager
 
     .. autofunction:: get_file_original_name
 
+Aggr Functions for Group By Charts
+==================================
+
+.. automodule:: flask.ext.appbuilder.models.group
+
+    .. autofunction:: aggregate_count
+    .. autofunction:: aggregate_avg
+    .. autofunction:: aggregate_sum
+
 flask.ext.appbuilder.charts.views
 =================================
 
@@ -112,14 +121,6 @@ GroupByChartView
 
     .. autoclass:: GroupByChartView
         :members:
-
-Aggr Functions for Group By Charts
-----------------------------------
-
-.. automodule:: flask.ext.appbuilder.models.group
-
-    .. autofunction:: aggregate_count
-
 
 (Deprecated) ChartView
 ----------------------

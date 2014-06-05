@@ -25,17 +25,26 @@ def aggregate(label=''):
 @aggregate(_('Count of'))
 def aggregate_count(items, col):
     """
-        Sum list
+        Function to use on Group by Charts.
+        accepts a list and returns the count of the list's items
     """
     return len(list(items))
 
 
 @aggregate(_('Sum of'))
 def aggregate_sum(items, col):
+    """
+        Function to use on Group by Charts.
+        accepts a list and returns the sum of the list's items
+    """
     return sum(getattr(item, col) for item in items)
 
 @aggregate(_('Avg. of'))
 def aggregate_avg(items, col):
+    """
+        Function to use on Group by Charts.
+        accepts a list and returns the average of the list's items
+    """
     return aggregate_sum(items, col) / aggregate_count(items, col)
 
 

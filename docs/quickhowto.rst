@@ -135,7 +135,17 @@ Let's define it::
 Some explanation:
 
 :label_columns: defines the labels for your columns. The framework will define the missing ones for you, with a pretty version of your column names.
-:show_fieldsets: A fieldset (Django style). This will allow you to customize the add, show and edit views independently.
+:show_fieldsets: A fieldset (Django style). You can use show_fieldsets, add_fieldsets, edit_fieldsets
+    customize the show, add and edit views independently.
+
+
+Additionally you can customize what columns are displayed and their order on lists and forms.
+Remember you can include columns, relations or methods from a model's definition:
+
+.. automodule:: flask.ext.appbuilder.baseviews
+
+    .. autoclass:: BaseCRUDView
+        :members: list_columns,add_columns,edit_columns,show_columns
 
 
 Register (views.py)

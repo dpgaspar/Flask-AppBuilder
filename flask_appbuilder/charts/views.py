@@ -239,11 +239,12 @@ class GroupByChartView(BaseChartView):
 
         height = height or self.height
         widgets = widgets or dict()
-
         joined_filters = filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(filters=joined_filters,
                                           order_column=order_column,
                                           order_direction=order_direction)
+        if not definition:
+            definition = self.definitions[0]
         group = self.get_group_by_class(definition)
         value_columns = group.to_json(group.apply(lst), self.label_columns)
         widgets['chart'] = self.chart_widget(route_base=self.route_base,
@@ -254,10 +255,11 @@ class GroupByChartView(BaseChartView):
                                              value_columns=value_columns, **args)
         return widgets
 
-    @expose('/chart/<int:group_by>')
+    @expose('/chart/<group_by>')
     @expose('/chart/')
     @has_access
     def chart(self, group_by=0):
+        group_by = int(group_by)
         form = self.search_form.refresh()
         get_filter_args(self._filters)
         widgets = self._get_chart_widget(filters=self._filters,

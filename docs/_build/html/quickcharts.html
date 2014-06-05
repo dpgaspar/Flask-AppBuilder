@@ -80,6 +80,8 @@
 </tbody>
 </table>
 </div></blockquote>
+<p>You can experiment with following examples with a live
+<a class="reference external" href="http://flaskappbuilder.pythonanywhere.com/">Demo</a> (login has guest/welcome).</p>
 <div class="section" id="direct-data-charts">
 <h2>Direct Data Charts<a class="headerlink" href="#direct-data-charts" title="Permalink to this headline">¶</a></h2>
 <p>These charts can display multiple series, based on columns or methods defined on models.
@@ -97,7 +99,7 @@ versus the percentage of the population with higher education:</p>
 </div>
 <p>Let&#8217;s suppose that the college field will have the total number of college students on some date.
 But the <em>unemployed_perc</em> field holds a percentage, we can&#8217;t draw a chart with these two together,
-we must create a function that calculated the <em>college_perc</em>:</p>
+we must create a function to calculate the <em>college_perc</em>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">college_perc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">college</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span>

@@ -356,7 +356,8 @@ Customize ModelView overriding this properties</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.add_columns">
 <tt class="descname">add_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.add_columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Include Columns for add view</p>
+<dd><p>A list of columns (or model&#8217;s methods) to be displayed on the add form view.
+Use it to control the order of the display</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -427,7 +428,8 @@ Add a custom filter to form related fields:</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.edit_columns">
 <tt class="descname">edit_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.edit_columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Include Columns for edit view</p>
+<dd><p>A list of columns (or model&#8217;s methods) to be displayed on the edit form view.
+Use it to control the order of the display</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -486,7 +488,8 @@ Add a custom filter to form related fields:</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.list_columns">
 <tt class="descname">list_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.list_columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Include Columns for lists view</p>
+<dd><p>A list of columns (or model&#8217;s methods) to be displayed on the list view.
+Use it to control the order of the display</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -578,7 +581,8 @@ Will be displayed related with this one using relationship sqlalchemy property:<
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.show_columns">
 <tt class="descname">show_columns</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.show_columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Include Columns for show view</p>
+<dd><p>A list of columns (or model&#8217;s methods) to be displayed on the show view.
+Use it to control the order of the display</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -794,6 +798,30 @@ Use this function on your models on an aditional function</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-flask.ext.appbuilder.models.group">
+<span id="aggr-functions-for-group-by-charts"></span><h2>Aggr Functions for Group By Charts<a class="headerlink" href="#module-flask.ext.appbuilder.models.group" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="flask.ext.appbuilder.models.group.aggregate_count">
+<tt class="descclassname">flask.ext.appbuilder.models.group.</tt><tt class="descname">aggregate_count</tt><big>(</big><em>items</em>, <em>col</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.group.aggregate_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to use on Group by Charts.
+accepts a list and returns the count of the list&#8217;s items</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="flask.ext.appbuilder.models.group.aggregate_avg">
+<tt class="descclassname">flask.ext.appbuilder.models.group.</tt><tt class="descname">aggregate_avg</tt><big>(</big><em>items</em>, <em>col</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.group.aggregate_avg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to use on Group by Charts.
+accepts a list and returns the average of the list&#8217;s items</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="flask.ext.appbuilder.models.group.aggregate_sum">
+<tt class="descclassname">flask.ext.appbuilder.models.group.</tt><tt class="descname">aggregate_sum</tt><big>(</big><em>items</em>, <em>col</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.group.aggregate_sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to use on Group by Charts.
+accepts a list and returns the sum of the list&#8217;s items</p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-flask.ext.appbuilder.charts.views">
 <span id="flask-ext-appbuilder-charts-views"></span><h2>flask.ext.appbuilder.charts.views<a class="headerlink" href="#module-flask.ext.appbuilder.charts.views" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="basechartview">
@@ -988,29 +1016,52 @@ to apply the aggregation</td>
 
 </div></blockquote>
 </div>
-<div class="section" id="module-flask.ext.appbuilder.models.group">
-<span id="aggr-functions-for-group-by-charts"></span><h3>Aggr Functions for Group By Charts<a class="headerlink" href="#module-flask.ext.appbuilder.models.group" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="flask.ext.appbuilder.models.group.aggregate_count">
-<tt class="descclassname">flask.ext.appbuilder.models.group.</tt><tt class="descname">aggregate_count</tt><big>(</big><em>items</em>, <em>col</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.group.aggregate_count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sum list</p>
-</dd></dl>
-
-</div>
 <div class="section" id="deprecated-chartview">
 <h3>(Deprecated) ChartView<a class="headerlink" href="#deprecated-chartview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
-<div></div></blockquote>
+<div><dl class="class">
+<dt id="flask.ext.appbuilder.charts.views.ChartView">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">ChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.ChartView" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>DEPRECATED</strong></p>
+<p>Provides a simple (and hopefully nice) way to draw charts on your application.</p>
+<p>This will show Google Charts based on group by of your tables.</p>
+</dd></dl>
+
+</div></blockquote>
 </div>
 <div class="section" id="deprecated-timechartview">
 <h3>(Deprecated) TimeChartView<a class="headerlink" href="#deprecated-timechartview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
-<div></div></blockquote>
+<div><dl class="class">
+<dt id="flask.ext.appbuilder.charts.views.TimeChartView">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">TimeChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.TimeChartView" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>DEPRECATED</strong></p>
+<p>Provides a simple way to draw some time charts on your application.</p>
+<p>This will show Google Charts based on count and group by month and year for your tables.</p>
+</dd></dl>
+
+</div></blockquote>
 </div>
 <div class="section" id="deprecated-directchartview">
 <h3>(Deprecated) DirectChartView<a class="headerlink" href="#deprecated-directchartview" title="Permalink to this headline">¶</a></h3>
 <blockquote>
-<div></div></blockquote>
+<div><dl class="class">
+<dt id="flask.ext.appbuilder.charts.views.DirectChartView">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">DirectChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.DirectChartView" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>DEPRECATED</strong></p>
+<p>This class is responsible for displaying a Google chart with
+direct model values. Chart widget uses json.
+No group by is processed, example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">StatsChartView</span><span class="p">(</span><span class="n">DirectChartView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Stats</span><span class="p">)</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Statistics&#39;</span><span class="p">)</span>
+    <span class="n">direct_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;Some Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;X_col_1&#39;</span><span class="p">,</span> <span class="s">&#39;stat_col_1&#39;</span><span class="p">,</span> <span class="s">&#39;stat_col_2&#39;</span><span class="p">),</span>
+                      <span class="s">&#39;Other Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;X_col2&#39;</span><span class="p">,</span> <span class="s">&#39;stat_col_3&#39;</span><span class="p">)}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="module-flask.ext.appbuilder.models.mixins">
@@ -1103,11 +1154,11 @@ will create the following columns:</p>
 </li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.actions">flask.ext.appbuilder.actions</a></li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.filemanager">flask.ext.appbuilder.filemanager</a></li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.models.group">Aggr Functions for Group By Charts</a></li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.charts.views">flask.ext.appbuilder.charts.views</a><ul>
 <li><a class="reference internal" href="#basechartview">BaseChartView</a></li>
 <li><a class="reference internal" href="#directbychartview">DirectByChartView</a></li>
 <li><a class="reference internal" href="#groupbychartview">GroupByChartView</a></li>
-<li><a class="reference internal" href="#module-flask.ext.appbuilder.models.group">Aggr Functions for Group By Charts</a></li>
 <li><a class="reference internal" href="#deprecated-chartview">(Deprecated) ChartView</a></li>
 <li><a class="reference internal" href="#deprecated-timechartview">(Deprecated) TimeChartView</a></li>
 <li><a class="reference internal" href="#deprecated-directchartview">(Deprecated) DirectChartView</a></li>
