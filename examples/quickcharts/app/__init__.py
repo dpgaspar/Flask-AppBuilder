@@ -14,5 +14,7 @@ db = SQLA(app)
 appbuilder = AppBuilder(app, db.session)
 
 
-from app import views
+from app import views, data
 
+db.create_all()
+data.fill_data()
