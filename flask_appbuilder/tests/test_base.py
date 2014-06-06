@@ -47,6 +47,7 @@ class Model2(Model):
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
     field_integer = Column(Integer())
+    field_float = Column(Float())
     field_date = Column(Date())
     group_id = Column(Integer, ForeignKey('model1.id'), nullable=False)
     group = relationship("Model1")
@@ -183,6 +184,7 @@ class FlaskTestCase(unittest.TestCase):
                 for x, i in zip(string.ascii_letters[:10], range(10)):
                     model = Model2(field_string="%stest" % (x),
                                    field_integer=random.randint(1, 10),
+                                   field_float=random.randfloat(0.0, 1.0),
                                    group=model1)
                     year = random.choice(range(1900, 2012))
                     month = random.choice(range(1, 12))
