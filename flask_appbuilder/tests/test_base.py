@@ -413,6 +413,8 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
         rv = client.get('/model2groupbychartview/chart/')
         eq_(rv.status_code, 200)
+        rv = client.get('/model2directchartview/chart/')
+        eq_(rv.status_code, 200)
         rv = client.get('/model2timechartview/chart/')
         eq_(rv.status_code, 200)
         rv = client.get('/model2directchartview/chart/')
