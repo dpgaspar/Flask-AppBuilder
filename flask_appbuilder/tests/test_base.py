@@ -111,6 +111,17 @@ class FlaskTestCase(unittest.TestCase):
                             ]
                 }
             ]
+            
+        class Model2DirectByChartView(GroupByChartView):
+            datamodel = SQLAModel(Model2)
+            chart_title = 'Test Model1 Chart'
+
+            definitions = [
+                {
+                    'group':'field_string',
+                    'series':['field_integer','field_float']
+                }
+            ]
 
         class Model2TimeChartView(TimeChartView):
             datamodel = SQLAModel(Model2)
@@ -141,6 +152,7 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view(Model2View, "Model2 Add", href='/model2view/add')
         self.appbuilder.add_view(Model2ChartView, "Model2 Chart")
         self.appbuilder.add_view(Model2GroupByChartView, "Model2 Group By Chart")
+        self.appbuilder.add_view(Model2DirectByChartView, "Model2 Direct By Chart")
         self.appbuilder.add_view(Model2TimeChartView, "Model2 Time Chart")
         self.appbuilder.add_view(Model2DirectChartView, "Model2 Direct Chart")
 
