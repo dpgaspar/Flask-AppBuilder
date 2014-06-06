@@ -10,8 +10,10 @@ from flask.ext.appbuilder import Model, SQLA
 from flask_appbuilder.models.filters import FilterStartsWith, FilterEqual
 from flask_appbuilder.models.mixins import FileColumn, ImageColumn
 from flask_appbuilder.views import MasterDetailView
-from flask_appbuilder.charts.views import ChartView, TimeChartView, DirectChartView
-
+from flask_appbuilder.charts.views import (ChartView, TimeChartView,
+                                           DirectChartView, GroupByChartView,
+                                           DirectByChartView)
+from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
 import logging
 
 """
@@ -95,6 +97,20 @@ class FlaskTestCase(unittest.TestCase):
             chart_title = 'Test Model1 Chart'
             group_by_columns = 'field_string'
 
+        class Model2GroupByChartView(ChartView):
+            datamodel = SQLAModel(Model2)
+            chart_title = 'Test Model1 Chart'
+
+            definitions = [
+                {
+                    'group':'field_string',
+                    'series':[(aggregate_sum,'field_integer',
+                               aggregate_avg, 'field_integer',
+                               aggregate_count,'field_integer')
+                            ]
+                }
+            ]
+
         class Model2TimeChartView(TimeChartView):
             datamodel = SQLAModel(Model2)
             chart_title = 'Test Model1 Chart'
@@ -123,6 +139,7 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view(Model2View, "Model2")
         self.appbuilder.add_view(Model2View, "Model2 Add", href='/model2view/add')
         self.appbuilder.add_view(Model2ChartView, "Model2 Chart")
+        self.appbuilder.add_view(Model2GroupByChartView, "Model2 Group By Chart")
         self.appbuilder.add_view(Model2TimeChartView, "Model2 Time Chart")
         self.appbuilder.add_view(Model2DirectChartView, "Model2 Direct Chart")
 
@@ -379,6 +396,8 @@ class FlaskTestCase(unittest.TestCase):
         self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data2()
         rv = client.get('/model2chartview/chart/')
+        eq_(rv.status_code, 200)
+        rv = client.get('/model2groupbychartview/chart/')
         eq_(rv.status_code, 200)
         rv = client.get('/model2timechartview/chart/')
         eq_(rv.status_code, 200)
