@@ -97,7 +97,7 @@ class FlaskTestCase(unittest.TestCase):
             chart_title = 'Test Model1 Chart'
             group_by_columns = 'field_string'
 
-        class Model2GroupByChartView(ChartView):
+        class Model2GroupByChartView(GroupByChartView):
             datamodel = SQLAModel(Model2)
             chart_title = 'Test Model1 Chart'
 
