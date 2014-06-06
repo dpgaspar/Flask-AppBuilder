@@ -1,6 +1,7 @@
 from models import Person, Group
 from flask.ext.appbuilder.views import ModelView, BaseView
-from flask.ext.appbuilder.charts.views import ChartView
+from flask.ext.appbuilder.charts.views import GroupByChartView
+from flask.ext.appbuilder.models.group import aggregate_count
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.widgets import ListThumbnail
 
@@ -61,13 +62,18 @@ class GroupModelView(ModelView):
     list_columns = ['name', 'notes']
 
 
-class PersonChartView(ChartView):
-    route_base = '/persons'
-    datamodel = SQLAModel(Person, db.session)
+class PersonChartView(GroupByChartView):
+    datamodel = SQLAModel(Person)
     chart_title = 'Grouped Persons'
     label_columns = PersonModelView.label_columns
-    group_by_columns = ['group']
-    search_columns = ['name', 'group']
+    chart_type = 'PieChart'
+
+    definitions = [
+        {
+            'group' : 'group',
+            'series' : [(aggregate_count,'group')]
+        }
+    ]
 
 
 db.create_all()
