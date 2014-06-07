@@ -9,7 +9,7 @@ Flask App Builder
 .. image:: https://pypip.in/download/Flask-AppBuilder/badge.png
 	:target: https://pypi.python.org/pypi/Flask-AppBuilder
 	:alt: Downloads
-.. image:: https://coveralls.io/repos/dpgaspar/Flask-AppBuilder/badge.png?branch=api-rework
+.. image:: https://coveralls.io/repos/dpgaspar/Flask-AppBuilder/badge.png?branch=master
     :target: https://coveralls.io/r/dpgaspar/Flask-AppBuilder
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
