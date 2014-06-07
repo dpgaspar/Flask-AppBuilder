@@ -312,13 +312,25 @@ class BaseCRUDView(BaseModelView):
     """ Edit Title , if not configured the default is 'Edit ' with pretty model name """
 
     list_columns = None
-    """ Include Columns for lists view """
+    """
+        A list of columns (or model's methods) to be displayed on the list view.
+        Use it to control the order of the display
+    """
     show_columns = None
-    """ Include Columns for show view """
+    """
+        A list of columns (or model's methods) to be displayed on the show view.
+        Use it to control the order of the display
+    """
     add_columns = None
-    """ Include Columns for add view """
+    """
+        A list of columns (or model's methods) to be displayed on the add form view.
+        Use it to control the order of the display
+    """
     edit_columns = None
-    """ Include Columns for edit view """
+    """
+        A list of columns (or model's methods) to be displayed on the edit form view.
+        Use it to control the order of the display
+    """
     order_columns = None
     """ Allowed order columns """
 

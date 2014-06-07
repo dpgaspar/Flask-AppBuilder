@@ -1,7 +1,10 @@
+import calendar
 from flask.ext.appbuilder import ModelView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
+from flask.ext.appbuilder.charts.views import GroupByChartView
+from flask.ext.appbuilder.models.group import aggregate_count
 from flask.ext.babelpkg import lazy_gettext as _
+
 
 from app import db, appbuilder
 from .models import Group, Gender, Contact
@@ -45,31 +48,57 @@ class ContactModelView(ModelView):
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
-class ContactChartView(ChartView):
-    chart_title = 'Grouped contacts'
-    label_columns = ContactModelView.label_columns
-    group_by_columns = ['group', 'gender']
-    datamodel = SQLAModel(Contact)
-
-
-class ContactTimeChartView(TimeChartView):
-    chart_title = 'Grouped Birth contacts'
-    chart_type = 'AreaChart'
-    label_columns = ContactModelView.label_columns
-    group_by_columns = ['birthday']
-    datamodel = SQLAModel(Contact)
-
 
 class GroupModelView(ModelView):
     datamodel = SQLAModel(Group)
     related_views = [ContactModelView]
 
 
-fixed_translations_import = [
-    _("List Groups"),
-    _("List Contacts"),
-    _("Contacts Chart"),
-    _("Contacts Birth Chart")]
+class ContactChartView(GroupByChartView):
+    datamodel = SQLAModel(Contact)
+    chart_title = 'Grouped contacts'
+    label_columns = ContactModelView.label_columns
+    chart_type = 'PieChart'
+
+    definitions = [
+        {
+            'group' : 'group',
+            'series' : [(aggregate_count,'group')]
+        },
+        {
+            'group' : 'gender',
+            'series' : [(aggregate_count,'group')]
+        }
+    ]
+
+
+def pretty_month_year(value):
+    return calendar.month_name[value.month] + ' ' + str(value.year)
+
+def pretty_year(value):
+    return str(value.year)
+
+
+class ContactTimeChartView(GroupByChartView):
+    datamodel = SQLAModel(Contact)
+
+    chart_title = 'Grouped Birth contacts'
+    chart_type = 'AreaChart'
+    label_columns = ContactModelView.label_columns
+    definitions = [
+        {
+            'group' : 'month_year',
+            'formatter': pretty_month_year,
+            'series': [(aggregate_count,'group')]
+        },
+        {
+            'group': 'year',
+            'formatter': pretty_year,
+            'series': [(aggregate_count,'group')]
+        }
+    ]
+
+
 
 
 db.create_all()

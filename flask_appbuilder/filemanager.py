@@ -9,6 +9,12 @@ from wtforms import ValidationError
 from werkzeug import secure_filename
 from werkzeug.datastructures import FileStorage
 
+try:
+    from flask import _app_ctx_stack
+except ImportError:
+    _app_ctx_stack = None
+
+app_stack = _app_ctx_stack or _request_ctx_stack
 
 log = logging.getLogger(__name__)
 
@@ -27,7 +33,7 @@ class FileManager(object):
                  permission=0o666, **kwargs):
 
 
-        ctx = _request_ctx_stack.top
+        ctx = app_stack.top
 
         if 'UPLOAD_FOLDER' in ctx.app.config and not base_path:
             base_path = ctx.app.config['UPLOAD_FOLDER']
@@ -85,7 +91,7 @@ class ImageManager(FileManager):
         if Image is None:
             raise Exception('PIL library was not found')
 
-        ctx = _request_ctx_stack.top
+        ctx = app_stack.top
         if 'IMG_SIZE' in ctx.app.config and not max_size:
             max_size = ctx.app.config['IMG_SIZE']
         self.max_size = max_size or (300, 200, True)
@@ -197,6 +203,7 @@ class ImageManager(FileManager):
 
 def uuid_namegen(file_data):
     return str(uuid.uuid1()) + '_sep_' + file_data.filename
+
 
 def get_file_original_name(name):
     """

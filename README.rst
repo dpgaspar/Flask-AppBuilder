@@ -26,7 +26,7 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 0.9.N* with some API changes (class name changes).
+*New 0.9.1* with new features.
 
 If you're already using F.A.B. (0.8.N or earlier)
 read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.
@@ -119,17 +119,17 @@ Charts:
 
 Group by pie chart 
 
-.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart.png
+.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/grouped_chart.png
     :width: 480px
-    :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart.png
+    :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/grouped_chart.png
 
-Group by month chart 
+Direct time chart
 
-.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time1.png
+.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/direct_chart.png
     :width: 480px
     :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time1.png
 
-Group by year chart
+Group by time chart
 
 .. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart_time2.png
     :width: 480px

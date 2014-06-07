@@ -7,7 +7,7 @@ Simple and rapid application development framework, built on top of `Flask <http
 includes detailed security, auto CRUD generation for your models, google charts and much more.
 
 Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples>`_
-and a live quickhowto `Demo <http://flaskappbuilder.pythonanywhere.com/>`_ (login has guest/welcome).
+and a live `Demo <http://flaskappbuilder.pythonanywhere.com/>`_ (login has guest/welcome).
 
 Fixes, bugs and contributions
 -----------------------------

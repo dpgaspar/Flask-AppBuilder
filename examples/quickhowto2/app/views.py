@@ -1,10 +1,11 @@
+from flask import Flask
 from flask.ext.appbuilder.baseapp import BaseApp
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import GeneralView
+from flask.ext.appbuilder.views import ModelView
 from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
 from flask.ext.babelpkg import lazy_gettext as _
 
-from app import app, db
+from app import appbuilder, db
 from .models import Group, Gender, Contact
 
 
@@ -17,7 +18,7 @@ def fill_gender():
         db.session.rollback()
 
 
-class ContactGeneralView(GeneralView):
+class ContactModelView(ModelView):
     datamodel = SQLAModel(Contact)
 
     label_columns = {'group': 'Contacts Group'}
@@ -48,7 +49,7 @@ class ContactGeneralView(GeneralView):
 
 class ContactChartView(ChartView):
     chart_title = 'Grouped contacts'
-    label_columns = ContactGeneralView.label_columns
+    label_columns = ContactModelView.label_columns
     group_by_columns = ['group', 'gender']
     datamodel = SQLAModel(Contact)
 
@@ -56,14 +57,14 @@ class ContactChartView(ChartView):
 class ContactTimeChartView(TimeChartView):
     chart_title = 'Grouped Birth contacts'
     chart_type = 'AreaChart'
-    label_columns = ContactGeneralView.label_columns
+    label_columns = ContactModelView.label_columns
     group_by_columns = ['birthday']
     datamodel = SQLAModel(Contact)
 
 
-class GroupGeneralView(GeneralView):
+class GroupModelView(ModelView):
     datamodel = SQLAModel(Group)
-    related_views = [ContactGeneralView]
+    related_views = [ContactModelView]
     #base_permissions = ['can_list']
 
 fixed_translations_import = [
@@ -73,12 +74,10 @@ fixed_translations_import = [
     _("Contacts Birth Chart")]
 
 
-fill_gender()
-appbuilder = BaseApp(app, db)
-appbuilder.add_view(GroupGeneralView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-appbuilder.add_view(ContactGeneralView, "List Contacts", icon="fa-envelope", category="Contacts")
+appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
+appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
 appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
 
-appbuilder.security_cleanup()
+

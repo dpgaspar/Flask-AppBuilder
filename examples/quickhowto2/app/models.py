@@ -1,9 +1,9 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship
-from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
-from flask.ext.appbuilder import Base
+from flask.ext.appbuilder.models.mixins import AuditMixin, FileColumn, ImageColumn
+from flask.ext.appbuilder import Model
 
-class Group(BaseMixin, Base):
+class Group(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique = True, nullable=False)
 
@@ -11,7 +11,7 @@ class Group(BaseMixin, Base):
         return self.name
 
 
-class Gender(BaseMixin, Base):
+class Gender(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique = True, nullable=False)
 
@@ -19,7 +19,7 @@ class Gender(BaseMixin, Base):
         return self.name
 
 
-class Contact(BaseMixin, Base):
+class Contact(Model):
     id = Column(Integer, primary_key=True)
     name =  Column(String(150), unique = True, nullable=False)
     address = Column(String(564))

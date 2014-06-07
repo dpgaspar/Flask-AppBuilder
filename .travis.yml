@@ -8,6 +8,6 @@ install:
   - "pip install coveralls"
 script:
   - nosetests -v flask_appbuilder/tests
-  - coverage run --source flask_appbuilder setup.py test
+  - coverage run --source=flask_appbuilder --omit=*messages.py*,*baseapp.py* setup.py test
 after_success:
   coveralls
