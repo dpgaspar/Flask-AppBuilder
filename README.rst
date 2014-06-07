@@ -119,7 +119,7 @@ Charts:
 
 Group by pie chart 
 
-.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart.png
+.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/grouped_chart.png
     :width: 480px
     :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/chart.png
 
