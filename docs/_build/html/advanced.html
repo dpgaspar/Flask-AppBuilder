@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Advanced Configuration &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="index.html" />
+    <link rel="next" title="Customizing" href="customizing.html" />
+    <link rel="prev" title="Base Configuration" href="config.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="customizing.html" title="Customizing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="config.html" title="Base Configuration"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="advanced-configuration">
+<h1>Advanced Configuration<a class="headerlink" href="#advanced-configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="security">
+<h2>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h2>
+<p>To block or set the allowed permissions on a view, just set the <em>base_permissions</em> property with the base permissions</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
+    <span class="n">base_permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;can_add&#39;</span><span class="p">,</span><span class="s">&#39;can_delete&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>With this initial config, the framework will only create &#8216;can_add&#8217; and &#8216;can_delete&#8217;
+permissions on GroupModelView as the only allowed. So users and even the administrator
+of the application will not have the possibility to add list or show permissions on Group table view.
+Base available permission are: can_add, can_edit, can_delete, can_list, can_show. More detailed info on <a class="reference internal" href="security.html"><em>Security</em></a></p>
+</div>
+<div class="section" id="base-filtering">
+<h2>Base Filtering<a class="headerlink" href="#base-filtering" title="Permalink to this headline">¶</a></h2>
+<p>To filter a views data, just set the <em>base_filter</em> property with your base filters. These will allways be applied first on any search.</p>
+<p>It&#8217;s very flexible, you can apply multiple filters with static values, or values based on a function you define. On this next example we are filtering a view by the logged in user and with column <em>name</em> starting with &#8220;a&#8221;</p>
+<p><em>base_filters</em> is a list of lists with 3 values [[&#8216;column name&#8217;,FilterClass,&#8217;filter value],...]</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_user</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span>
+
+<span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
+    <span class="n">base_filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s">&#39;created_by&#39;</span><span class="p">,</span> <span class="n">FilterEqualFunction</span><span class="p">,</span> <span class="n">get_user</span><span class="p">],</span>
+                    <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="n">FilterStartsWith</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="default-order">
+<h2>Default Order<a class="headerlink" href="#default-order" title="Permalink to this headline">¶</a></h2>
+<p>Use a default order on your lists, this can be overridden by the user on the UI. Data structure (&#8216;col_name&#8217;:&#8217;asc|desc&#8217;)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
+    <span class="n">base_order</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;my_col_to_be_ordered&#39;</span><span class="p">,</span><span class="s">&#39;asc&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="forms">
+<h2>Forms<a class="headerlink" href="#forms" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">You can create a custom query filter for all related columns like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+    <span class="n">add_form_query_rel_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;group&#39;</span><span class="p">,</span>
+                <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
+                <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;W&#39;</span><span class="p">]]</span>
+                <span class="p">)]</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>This will filter list combo on Contact&#8217;s model related with Group model. The combo will be filtered with entries that start with W. You can define individual filters for add and edit. Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>
+If you want to filter multiple related fields just add tuples to the list, remember you can add multiple filters for each field also, take a look at the <em>base_filter</em> property:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+    <span class="n">add_form_query_rel_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;group&#39;</span><span class="p">,</span>
+                <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
+                <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;W&#39;</span><span class="p">]]</span>
+                <span class="p">),</span>
+                <span class="p">(</span><span class="s">&#39;gender&#39;</span><span class="p">,</span>
+                <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Gender</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
+                <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;M&#39;</span><span class="p">]]</span>
+                <span class="p">)</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
+<ul>
+<li><p class="first">You can define your own Add, Edit forms to override the automatic form creation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
+    <span class="n">add_form</span> <span class="o">=</span> <span class="n">AddFormWTF</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">You can define what columns will be included on Add or Edit forms,</p>
+</li>
+</ul>
+<p>for example if you have automatic fields like user or date, you can remove this from the Add Form:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
+    <span class="n">add_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;my_field1&#39;</span><span class="p">,</span><span class="s">&#39;my_field2&#39;</span><span class="p">]</span>
+    <span class="n">edit_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;my_field1&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>You can contribute with any additional field that are not on a table/model,</li>
+</ul>
+<p>for example a confirmation field:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+    <span class="n">add_form_extra_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;extra&#39;</span><span class="p">:</span> <span class="n">TextField</span><span class="p">(</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;Extra Field&#39;</span><span class="p">),</span>
+                    <span class="n">description</span><span class="o">=</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;Extra Field description&#39;</span><span class="p">),</span>
+                    <span class="n">widget</span><span class="o">=</span><span class="n">BS3TextFieldWidget</span><span class="p">())}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>You can contribute with your own additional form validations rules.</li>
+</ul>
+<p>Remember the framework will automatically validate any field that is defined on the database
+with <em>Not Null</em> (Required) or Unique constraints:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
+    <span class="n">validators_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;my_field1&#39;</span><span class="p">:[</span><span class="n">EqualTo</span><span class="p">(</span><span class="s">&#39;my_field2&#39;</span><span class="p">,</span>
+                                        <span class="n">message</span><span class="o">=</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;fields must match&#39;</span><span class="p">))</span>
+                                      <span class="p">]</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>. Experiment with <em>add_form</em>, <em>edit_form</em>, <em>add_columns</em>, <em>edit_columns</em>, <em>validators_columns</em>, <em>add_form_extra_fields</em>, <em>edit_form_extra_fields</em></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Advanced Configuration</a><ul>
+<li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#base-filtering">Base Filtering</a></li>
+<li><a class="reference internal" href="#default-order">Default Order</a></li>
+<li><a class="reference internal" href="#forms">Forms</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="config.html" title="previous chapter">Base Configuration</a></li>
+      <li>Next: <a href="customizing.html" title="next chapter">Customizing</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/advanced.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+<a href="http://github.com/dpgaspar/Flask-AppBuilder"><img style="position: fixed; top: 0; right: 0; border: 0;"
+src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+
+  <div class="footer">
+    &copy; Copyright 2013, Daniel Vaz Gaspar.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

@@ -1,0 +1,33 @@
+{% import 'appbuilder/general/lib.html' as lib %}
+
+        {% set can_add = "can_add" | is_item_visible(modelview_name) %}
+        {% set can_show = "can_show" | is_item_visible(modelview_name) %}
+        {% set can_edit = "can_edit" | is_item_visible(modelview_name) %}
+        {% set can_delete = "can_delete" | is_item_visible(modelview_name) %}
+        
+        {{ lib.render_list_header(can_add, page, page_size, count, filters, modelview_name) }}
+
+        {% if value_columns %}
+        <div class="container">
+        <div class="row">        
+                
+        {% for item in value_columns %}
+        	<div class="col-sm-12 col-md-6 col-lg-6">
+                <div class="thumbnail">
+                {% set pk = pks[loop.index-1] %}
+                {{ lib.btn_crud(can_show, can_edit, can_delete, pk, modelview_name, filters) }}
+                {% for value in include_columns %}
+                        <dl class="dl-horizontal">
+                        	<dt>{{label_columns.get(include_columns[loop.index -1])}}</dt>
+                            <dd>{{ item[value]|safe }}</dd>
+                        </dl>                        
+                {% endfor %}
+                
+                </div>
+        	</div>
+        {% endfor %}                        
+    </div>
+   </div>
+{% else %}
+    <b> {{_("No records found")}}</b>
+{% endif %}

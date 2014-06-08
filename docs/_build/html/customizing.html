@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Customizing &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="index.html" />
+    <link rel="next" title="Actions" href="actions.html" />
+    <link rel="prev" title="Advanced Configuration" href="advanced.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="actions.html" title="Actions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="advanced.html" title="Advanced Configuration"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="customizing">
+<h1>Customizing<a class="headerlink" href="#customizing" title="Permalink to this headline">¶</a></h1>
+<p>You can override and customize almost everything on the UI, or use different templates and widgets already on the framework.</p>
+<p>Even better you can develop your own widgets or templates and contribute to the project.</p>
+<div class="section" id="changing-themes">
+<h2>Changing themes<a class="headerlink" href="#changing-themes" title="Permalink to this headline">¶</a></h2>
+<p>F.A.B comes with bootswatch themes ready to use, to change bootstrap default theme just change the APP_THEME key&#8217;s value.</p>
+<ul>
+<li><p class="first">On config.py (from flask-appbuilder-skeleton), using spacelab theme:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">APP_THEME</span> <span class="o">=</span> <span class="s">&quot;spacelab.css&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Not using a config.py on your applications, set the key like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;APP_THEME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;spacelab.css&quot;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>You can choose from the folowing <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py">themes</a></p>
+</div>
+<div class="section" id="changing-the-index">
+<h2>Changing the index<a class="headerlink" href="#changing-the-index" title="Permalink to this headline">¶</a></h2>
+<p>The index can be easily overridden by your own.
+You must develop your template, then define it in a IndexView and pass it to AppBuilder</p>
+<p>The default index template is very simple, you can create your own like this:</p>
+<p>1 - Develop your template (on your &lt;PROJECT_NAME&gt;/app/templates/my_index.html):</p>
+<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;appbuilder/base.html&quot; %}
+{% block content %}
+&lt;div class=&quot;jumbotron&quot;&gt;
+  &lt;div class=&quot;container&quot;&gt;
+    &lt;h1&gt;{{_(&quot;My App on F.A.B.&quot;)}}&lt;/h1&gt;
+    &lt;p&gt;{{_(&quot;My first app using F.A.B, bla, bla, bla&quot;)}}&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+{% endblock %}
+</pre></div>
+</div>
+<p>What happened here? We should always extend from &#8220;appbuilder/base.html&#8221; this is the base template that will include all CSS&#8217;s, Javascripts, and contruct the menu based on the user&#8217;s security definition.</p>
+<p>Next we will override the &#8220;content&#8221; block, we could override other areas like CSS, extend CSS, Javascript or extend javascript. We can even override the base.html completely</p>
+<p>I&#8217;ve presented the text on the content like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{{</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;text to be translated&quot;</span><span class="p">)}}</span>
+</pre></div>
+</div>
+<p>So that we can use Babel to translate our index text</p>
+<p>2 - Define an IndexView</p>
+<p>Define a special and simple view inherit from IndexView:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyIndexView</span><span class="p">(</span><span class="n">IndexView</span><span class="p">):</span>
+    <span class="n">index_template</span> <span class="o">=</span> <span class="s">&#39;index.html&#39;</span>
+</pre></div>
+</div>
+<p>3 - Tell F.A.B to use your index view:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">set_index_view</span><span class="p">(</span><span class="n">MyIndexView</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="changing-the-footer">
+<h2>Changing the Footer<a class="headerlink" href="#changing-the-footer" title="Permalink to this headline">¶</a></h2>
+<p>The default footer can be easily changed by your own. You must develop your template, to override the existing one.</p>
+<p>Develop your jinja2 template and place it on the following relative path to override the F.A.B footer.</p>
+<p>./your_root_project_path/app/templates/appbuilder/footer.html</p>
+<p>Actually you can override any given F.A.B. template.</p>
+</div>
+<div class="section" id="changing-menu-construction">
+<h2>Changing Menu Construction<a class="headerlink" href="#changing-menu-construction" title="Permalink to this headline">¶</a></h2>
+<p>You can change the way the menu is constructed adding your own links, separators and changing the navbar reverse property.</p>
+<p>By default menu is constructed based on your classes and in a reversed navbar. Let&#8217;s take a quick look on how to easily change this</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Change the reversed navbar style, on AppBuilder initialization:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">Menu</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Add your own menu links, on a default reversed navbar:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Register a view, rendering a top menu without icon</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyModelView</span><span class="p">,</span> <span class="s">&quot;My View&quot;</span><span class="p">)</span>
+<span class="c"># Register a view, a submenu &quot;Other View&quot; from &quot;Other&quot; with a phone icon</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherModelView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">)</span>
+<span class="c"># Register a view, with label for babel support (internationalization), setup an icon for the category.</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyOtherModelView</span><span class="p">,</span> <span class="s">&quot;Other View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&#39;fa-phone&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Other View&#39;</span><span class="p">),</span>
+                <span class="n">category</span><span class="o">=</span><span class="s">&quot;Others&quot;</span><span class="p">,</span> <span class="n">category_label</span><span class="o">=</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Other&#39;</span><span class="p">),</span> <span class="n">category_label</span><span class="o">=</span><span class="s">&#39;fa-envelope&#39;</span><span class="p">)</span>
+<span class="c"># Add a link</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;google&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-google-plus&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Add separators:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Register a view, rendering a top menu without icon</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyModelView1</span><span class="p">,</span> <span class="s">&quot;My View 1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyModelView2</span><span class="p">,</span> <span class="s">&quot;My View 2&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_separator</span><span class="p">(</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyModelView3</span><span class="p">,</span> <span class="s">&quot;My View 3&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+<p>Using <em>label</em> argument is optional for view name or category, but it&#8217;s advised for internationalization, if you use it with Babel&#8217;s <em>lazy_gettext</em> function it will automate translation&#8217;s extraction.</p>
+<p>Category icon and label can be setup only for the first time. Internally F.A.B. has already stored it, next references will be made by name.</p>
+</div>
+<div class="section" id="changing-widgets-and-templates">
+<h2>Changing Widgets and Templates<a class="headerlink" href="#changing-widgets-and-templates" title="Permalink to this headline">¶</a></h2>
+<p>F.A.B. has a collection of widgets to change your views presentation, you can create your own and override, or (even better) create them and contribute to the project on git.</p>
+<p>All views have templates that will display widgets in a certain layout. For example you can display a record related lists on tab (default) or on the same page.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ServerDiskTypeModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">ServerDiskType</span><span class="p">)</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;quantity&#39;</span><span class="p">,</span> <span class="s">&#39;disktype&#39;</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">ServerModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Server</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ServerDiskTypeModelView</span><span class="p">]</span>
+
+    <span class="n">show_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/show_cascade.html&#39;</span>
+    <span class="n">edit_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/edit_cascade.html&#39;</span>
+
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;serial&#39;</span><span class="p">]</span>
+    <span class="n">order_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;serial&#39;</span><span class="p">]</span>
+    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;serial&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The above example will override the show and edit templates that will change the related lists layout presentation.</p>
+<a class="reference internal image-reference" href="_images/list_cascade.png"><img alt="_images/list_cascade.png" src="_images/list_cascade.png" style="width: 100%;" /></a>
+<p>If you want to change the above example, and change the way the server disks are displayed has a list just use the available widgets:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ServerDiskTypeModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">ServerDiskType</span><span class="p">)</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;quantity&#39;</span><span class="p">,</span> <span class="s">&#39;disktype&#39;</span><span class="p">]</span>
+    <span class="n">list_widget</span> <span class="o">=</span> <span class="n">ListBlock</span>
+
+<span class="k">class</span> <span class="nc">ServerModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Server</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ServerDiskTypeModelView</span><span class="p">]</span>
+
+    <span class="n">show_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/show_cascade.html&#39;</span>
+    <span class="n">edit_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/edit_cascade.html&#39;</span>
+
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;serial&#39;</span><span class="p">]</span>
+    <span class="n">order_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;serial&#39;</span><span class="p">]</span>
+    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;serial&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>We have overridden the list_widget property with the ListBlock Class. This will look like this.</p>
+<a class="reference internal image-reference" href="_images/list_cascade_block.png"><img alt="_images/list_cascade_block.png" src="_images/list_cascade_block.png" style="width: 100%;" /></a>
+<p>You have the following widgets already available</p>
+<ul class="simple">
+<li>ListWidget (default)</li>
+<li>ListItem</li>
+<li>ListThumbnail</li>
+<li>ListBlock</li>
+</ul>
+<p>If you want to develop your own widgets just look at the code on:</p>
+<p><a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/flask_appbuilder/templates/appbuilder/general/widgets">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/flask_appbuilder/templates/appbuilder/general/widgets</a></p>
+<p>Implement your own and then create a very simple class like this one:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyWidgetList</span><span class="p">(</span><span class="n">ListWidget</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s">&#39;/widgets/my_widget_list.html&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="change-default-view-behaviour">
+<h2>Change Default View Behaviour<a class="headerlink" href="#change-default-view-behaviour" title="Permalink to this headline">¶</a></h2>
+<p>If you want to have Add, edit and list on the same page, this can be done. This could be very helpful on master/detail lists (inline) on views based on tables with very few columns.</p>
+<p>All you have to do is to mix <em>CompactCRUDMixin</em> class with the <em>ModelView</em> class.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.datamodel</span> <span class="kn">import</span> <span class="n">SQLAModel</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.views</span> <span class="kn">import</span> <span class="n">ModelView</span><span class="p">,</span> <span class="n">CompactCRUDMixin</span>
+<span class="kn">from</span> <span class="nn">app.models</span> <span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ProjectFiles</span>
+<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">appbuilder</span>
+
+
+<span class="k">class</span> <span class="nc">MyInlineView</span><span class="p">(</span><span class="n">CompactCRUDMixin</span><span class="p">,</span> <span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyInlineTable</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyViewTable</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyInlineView</span><span class="p">]</span>
+
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">,</span> <span class="s">&quot;List My View&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-table&quot;</span><span class="p">,</span> <span class="n">category</span> <span class="o">=</span> <span class="s">&quot;My Views&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="n">MyInlineView</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Notice the class mixin, with this configuration you will have a <em>Master View</em> with the inline view <em>MyInlineView</em> where you can Add and Edit on the same page.</p>
+<p>Of course you could use the mixin on <em>MyView</em> also, use it only on ModelView classes.</p>
+<p>Take a look at the example: <a class="reference external" href="https://github.com/dpgaspar/Flask-appBuilder/tree/master/examples/quickfiles">https://github.com/dpgaspar/Flask-appBuilder/tree/master/examples/quickfiles</a></p>
+<a class="reference internal image-reference" href="_images/list_compact_inline.png"><img alt="_images/list_compact_inline.png" src="_images/list_compact_inline.png" style="width: 100%;" /></a>
+<p>Next we will take a look at a different view behaviour. A master detail style view, master is a view associated with a database table that is linked to the detail view.</p>
+<p>Let&#8217;s assume our quick how to example, a simple contacts applications. We have <em>Contact</em> table related with <em>Group</em> table.</p>
+<p>So we are using master detail view, first we will define the detail view (this view can be customized like the examples above):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then we define the master detail view, where master is the one side of the 1-N relation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupMasterView</span><span class="p">(</span><span class="n">MasterDetailView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactModelView</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Remember you can use charts has related views, you can use it like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactTimeChartView</span><span class="p">(</span><span class="n">TimeChartView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped Birth contacts&#39;</span>
+    <span class="n">chart_type</span> <span class="o">=</span> <span class="s">&#39;AreaChart&#39;</span>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactModelView</span><span class="o">.</span><span class="n">label_columns</span>
+    <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;birthday&#39;</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">GroupMasterView</span><span class="p">(</span><span class="n">MasterDetailView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactModelView</span><span class="p">,</span> <span class="n">ContactTimeChartView</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This will show a left side menu with the <em>groups</em> and a right side list with contacts, and a time chart with the number of birthdays during time by the selected group.</p>
+<p>Finally register everything:</p>
+<div class="highlight-python"><div class="highlight"><pre>// if Using the above example with related chart
+appbuilder.add_view_no_menu(ContactTimeChartView)
+
+appbuilder.add_view(GroupMasterView, &quot;List Groups&quot;, icon=&quot;fa-folder-open-o&quot;, category=&quot;Contacts&quot;)
+appbuilder.add_separator(&quot;Contacts&quot;)
+appbuilder.add_view(ContactModelView, &quot;List Contacts&quot;, icon=&quot;fa-envelope&quot;, category=&quot;Contacts&quot;)
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/list_master_detail.png"><img alt="_images/list_master_detail.png" src="_images/list_master_detail.png" style="width: 100%;" /></a>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Customizing</a><ul>
+<li><a class="reference internal" href="#changing-themes">Changing themes</a></li>
+<li><a class="reference internal" href="#changing-the-index">Changing the index</a></li>
+<li><a class="reference internal" href="#changing-the-footer">Changing the Footer</a></li>
+<li><a class="reference internal" href="#changing-menu-construction">Changing Menu Construction</a></li>
+<li><a class="reference internal" href="#changing-widgets-and-templates">Changing Widgets and Templates</a></li>
+<li><a class="reference internal" href="#change-default-view-behaviour">Change Default View Behaviour</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="advanced.html" title="previous chapter">Advanced Configuration</a></li>
+      <li>Next: <a href="actions.html" title="next chapter">Actions</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/customizing.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+<a href="http://github.com/dpgaspar/Flask-AppBuilder"><img style="position: fixed; top: 0; right: 0; border: 0;"
+src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+
+  <div class="footer">
+    &copy; Copyright 2013, Daniel Vaz Gaspar.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

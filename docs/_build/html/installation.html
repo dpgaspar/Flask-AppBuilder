@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="index.html" />
+    <link rel="next" title="Base Views" href="views.html" />
+    <link rel="prev" title="Introduction" href="intro.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="views.html" title="Base Views"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>Installation is straightforward, it uses the normal python package install.
+I do advise you to additionally install the base skeleton application
+so that you can immediately have a running application (without any models yet) and an easy to grow boilerplate.</p>
+<p>Checkout installation video on <a class="reference external" href="http://youtu.be/ZrqFDroqqWE">YouTube</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Remember the initial user is <strong>&#8216;admin&#8217;</strong> password <strong>&#8216;general&#8217;</strong>.</p>
+</div>
+<div class="section" id="using-pip">
+<h2>Using pip<a class="headerlink" href="#using-pip" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first"><strong>Simple Install</strong></p>
+<blockquote>
+<div><p>You can install the framework simply by:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ pip install flask-appbuilder
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>Advised Virtual Environment Install</strong></p>
+<blockquote>
+<div><p>Virtual env is highly advisable because the more projects you have,
+the more likely it is that you will be working with
+different versions of Python itself, or at least different versions of Python libraries.
+Let’s face it: quite often libraries break backwards compatibility,
+and it’s unlikely that any serious application will have zero dependencies.
+So what do you do if two or more of your projects have conflicting dependencies?</p>
+<p>If you are on Mac OS X or Linux, chances are that one of the following two commands will work for you:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo easy_install virtualenv
+</pre></div>
+</div>
+<p>or even better:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo pip install virtualenv
+</pre></div>
+</div>
+<p>One of these will probably install virtualenv on your system.
+Maybe it’s even in your package manager. If you use a debian system (like Ubuntu), try:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get install python-virtualenv
+</pre></div>
+</div>
+<p>Once you have virtualenv installed, :</p>
+<div class="highlight-python"><div class="highlight"><pre>$ mkdir myproject
+$ cd myproject
+$ virtualenv venv
+New python executable in venv/bin/python
+Installing distribute............done.
+$ . venv/bin/activate
+(venv)$
+</pre></div>
+</div>
+<p>Now install F.A.B on the virtual env,
+it will install all the dependencies and these will be isolated from your system&#8217;s python packages</p>
+<div class="highlight-python"><div class="highlight"><pre>(venv)$ pip install flask-appbuilder
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="skeleton-application">
+<h2>Skeleton Application<a class="headerlink" href="#skeleton-application" title="Permalink to this headline">¶</a></h2>
+<p>After installing F.A.B. You probably want a simple quick start,
+you can use one of the examples, or clone the base skeleton application:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
+$ cd Flask-AppBuilder-Skeleton
+</pre></div>
+</div>
+<p>This is a running boilerplate, you can run it on a development server, simply like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python run.py
+</pre></div>
+</div>
+<p>That&#8217;s it!! When you run the development server you can notice the log,
+it&#8217;s telling you it is creating all the needed security tables,
+creating the initial &#8216;admin&#8217; user, and roles, has well has all the minimal permissions.</p>
+<p>You now have a running development server on <a class="reference external" href="http://localhost:8080">http://localhost:8080</a>.</p>
+<p>The git clone of the skeleton is not actually needed for you to run AppBuilder. but it&#8217;s a good way to start.</p>
+</div>
+<div class="section" id="initialization">
+<h2>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h2>
+<p>When starting your application for the first time,
+all AppBuilder security tables will be created for you.
+All your models can easily be created too (optionally).</p>
+<p><strong>The initial &#8216;admin&#8217; user password will be &#8216;general&#8217;</strong>. Change it on your first access using the application.
+(Click the username on the navigation bar, then choose &#8216;Reset Password&#8217;)</p>
+</div>
+<div class="section" id="what-requirements-were-instaled">
+<h2>What requirements were instaled<a class="headerlink" href="#what-requirements-were-instaled" title="Permalink to this headline">¶</a></h2>
+<p>pip installs all the requirements for you.</p>
+<p>Flask App Builder dependes on</p>
+<blockquote>
+<div><ul class="simple">
+<li>flask : The web framework, this is what we&#8217;re extending</li>
+<li>flask-sqlalchemy : DB access see SQLAlchemy.</li>
+<li>flask-login : Login, session on flask.</li>
+<li>flask-openid : Open ID authentication</li>
+<li>flask-wtform : Web forms.</li>
+<li>flask-BabelPkg : For internationalization, fork from flask-babel</li>
+</ul>
+</div></blockquote>
+<p>If you plan to use Image on database, you will need to install PIL:</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install pillow
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install PIL
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#using-pip">Using pip</a></li>
+<li><a class="reference internal" href="#skeleton-application">Skeleton Application</a></li>
+<li><a class="reference internal" href="#initialization">Initialization</a></li>
+<li><a class="reference internal" href="#what-requirements-were-instaled">What requirements were instaled</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="intro.html" title="previous chapter">Introduction</a></li>
+      <li>Next: <a href="views.html" title="next chapter">Base Views</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/installation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+<a href="http://github.com/dpgaspar/Flask-AppBuilder"><img style="position: fixed; top: 0; right: 0; border: 0;"
+src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+
+  <div class="footer">
+    &copy; Copyright 2013, Daniel Vaz Gaspar.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

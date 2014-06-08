@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="index.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Flask-AppBuilder" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Flask-AppBuilder"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>The main goal for this project is to provide a simple development framework
+that handles the main problems any web application or site encounters.
+It will help you adhere to the DRY (Don&#8217;t repat yourself) principle.</p>
+<p>Keeping on mind that it must be possible to develop directly on Flask/Jinja2 for custom pages or flows,
+that painlessly integrate the framework.
+But the framework it self should go further then an admin scaffolding package.
+It should have builtin presentation alternatives, and behaviour.
+Should be highly configurable, and should have extra goodies.</p>
+<p>It&#8217;s intended to lower errors, bugs and project&#8217;s time to deliver.</p>
+<p>This package has some CSS and JS batteries included:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Google charts CSS and JS</li>
+<li>BootStrap CSS and JS</li>
+<li>BootsWatch Themes</li>
+<li>Font-Awesome CSS and Fonts</li>
+</ul>
+</div></blockquote>
+<div class="section" id="includes">
+<h2>Includes:<a class="headerlink" href="#includes" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul>
+<li><dl class="first docutils">
+<dt>Database</dt>
+<dd><ul class="first last simple">
+<li>SQLAlchemy, multiple database support: sqlite, MySQL, ORACLE, MSSQL, DB2 etc.</li>
+<li>Multiple database connections support (Vertical partitioning).</li>
+<li>Easy mixin audit to models (created/changed by user, and timestamps).</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Security</dt>
+<dd><ul class="first last simple">
+<li>Automatic permissions lookup, based on exposed methods. It will grant all permissions to the Admin Role.</li>
+<li>Inserts on the Database all the detailed permissions possible on your application.</li>
+<li>Public (no authentication needed) and Private permissions.</li>
+<li>Role based permissions.</li>
+<li>Authentication support for OpenID, Database and LDAP.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Views and Widgets</dt>
+<dd><ul class="first last simple">
+<li>Automatic menu generation.</li>
+<li>Automatic CRUD generation.</li>
+<li>Big variety of filters for your lists.</li>
+<li>Various view widgets: lists, master-detail, list of thumbnails etc</li>
+<li>Select2, Datepicker, DateTimePicker</li>
+<li>Google charts with automatic group by or direct values and filters.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Forms</dt>
+<dd><ul class="first last simple">
+<li>Automatic, Add, Edit and Show from Database Models</li>
+<li>Labels and descriptions for each field.</li>
+<li>Automatic base validators from model&#8217;s definition.</li>
+<li>Custom validators, extra fields, custom filters for related dropdown lists.</li>
+<li>Image and File support for upload and database field association. It will handle everything for you.</li>
+<li>Field sets for Form&#8217;s (Django style).</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>i18n</dt>
+<dd><ul class="first last simple">
+<li>Support for multi-language via Babel</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">Bootstrap 3.0.3 CSS and js, with Select2 and DatePicker</p>
+</li>
+<li><p class="first">Font-Awesome icons, for menu icons and actions.</p>
+</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a><ul>
+<li><a class="reference internal" href="#includes">Includes:</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Flask-AppBuilder</a></li>
+      <li>Next: <a href="installation.html" title="next chapter">Installation</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/intro.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+<a href="http://github.com/dpgaspar/Flask-AppBuilder"><img style="position: fixed; top: 0; right: 0; border: 0;"
+src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+
+  <div class="footer">
+    &copy; Copyright 2013, Daniel Vaz Gaspar.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

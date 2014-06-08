@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>i18n Translations &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="index.html" />
+    <link rel="next" title="Security" href="security.html" />
+    <link rel="prev" title="Multiple Databases" href="multipledbs.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="security.html" title="Security"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="multipledbs.html" title="Multiple Databases"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="i18n-translations">
+<h1>i18n Translations<a class="headerlink" href="#i18n-translations" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>F.A.B. has support for seven languages (planning for some more):</dt>
+<dd><ul class="first last simple">
+<li>English</li>
+<li>Portuguese</li>
+<li>Portuguese Brazil</li>
+<li>Spanish</li>
+<li>Chinese</li>
+<li>Russian</li>
+<li>German</li>
+</ul>
+</dd>
+</dl>
+<p>This means that all messages, views and menus generated from the framework can be translated to these languages.</p>
+<p>You can add your own translations for your application, using Flask-BabelPkg, this is a fork from Flask-Babel, created because it was not possible to separate package translations from the application translations.</p>
+<p>You can add your own translations, and your own language support. Take a look at <a class="reference external" href="http://pythonhosted.org/Flask-Babel">Flask-Babel</a> for setup an babel initial configuration.</p>
+</div>
+<div class="section" id="babel-quick-how-to-config">
+<h2>Babel Quick How to Config<a class="headerlink" href="#babel-quick-how-to-config" title="Permalink to this headline">¶</a></h2>
+<p>On you projects root create a directory named babel, then create and edit a file named babel.cfg with the following content:</p>
+<div class="highlight-python"><div class="highlight"><pre>[python: **.py]
+[jinja2: **/templates/**.html]
+encoding = utf-8
+</pre></div>
+</div>
+<p>Next extract your strings to be translated, execute on you projects root:</p>
+<div class="highlight-python"><div class="highlight"><pre>pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
+</pre></div>
+</div>
+<p>Finaly create your translations, for example to portuguese, spanish and german, execute on you projects root:</p>
+<div class="highlight-python"><div class="highlight"><pre>pybabel init -i ./babel/messages.pot -d app/translations -l de
+pybabel init -i ./babel/messages.pot -d app/translations -l es
+pybabel init -i ./babel/messages.pot -d app/translations -l de
+</pre></div>
+</div>
+<p>If your using Flask-AppBuilder-Skeleton use the provided script:</p>
+<div class="highlight-python"><div class="highlight"><pre>./babel_init.sh pt
+./babel_init.sh es
+./babel_init.sh de
+</pre></div>
+</div>
+</div>
+<div class="section" id="quick-how-to">
+<h2>Quick How to<a class="headerlink" href="#quick-how-to" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s work with the contacts application example, so you want to add translations for the menus &#8220;List Groups&#8221; and &#8220;List Contacts&#8221;.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.babelpkg</span> <span class="kn">import</span> <span class="n">lazy_gettext</span> <span class="k">as</span> <span class="n">_</span>
+
+<span class="k">class</span> <span class="nc">GroupModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactModelView</span><span class="p">()]</span>
+
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Name&#39;</span><span class="p">)}</span>
+
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupModelView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;th-large&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;List Groups&#39;</span><span class="p">),</span>
+                    <span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s">&#39;fa-envelope&#39;</span><span class="p">,</span> <span class="n">category_label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Contacts&#39;</span><span class="p">))</span>
+<span class="n">genapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactModelView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;earphone&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;List Contacts&#39;</span><span class="p">),</span>
+                    <span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>1 - Run the folowing extraction script:</p>
+<div class="highlight-python"><div class="highlight"><pre>pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
+
+- If your using Flask-AppBuilder-Skeleton use the provided script::
+
+    ./babel_extract.sh
+</pre></div>
+</div>
+<p>2 - Make your translations</p>
+<blockquote>
+<div><ul>
+<li><p class="first">On app/translations/pt/LC_MESSAGES/messages.po you will find the messages you added to translate:</p>
+<div class="highlight-python"><div class="highlight"><pre>msgid &quot;Name&quot;
+msgstr &quot;&quot;
+
+msgid &quot;Contacts&quot;
+msgstr &quot;&quot;
+
+msgid &quot;List Groups&quot;
+msgstr &quot;&quot;
+
+msgid &quot;List Contacts&quot;
+msgstr &quot;&quot;
+</pre></div>
+</div>
+</li>
+<li><p class="first">Translate them:</p>
+<div class="highlight-python"><div class="highlight"><pre>msgid &quot;Name&quot;
+msgstr &quot;Nome&quot;
+
+msgid &quot;Contacts&quot;
+msgstr &quot;Contactos&quot;
+
+msgid &quot;List Groups&quot;
+msgstr &quot;Lista de Grupos&quot;
+
+msgid &quot;List Contacts&quot;
+msgstr &quot;Lista de Contactos&quot;
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+<p>3 - Run the babel extraction again:</p>
+<div class="highlight-python"><div class="highlight"><pre>pybabel update -i ./babel/messages.pot -d app/translations
+
+    - If your using Flask-AppBuilder-Skeleton use the provided script::
+
+    ./babel_extract.sh
+</pre></div>
+</div>
+<p>4 - Run the compilation:</p>
+<blockquote>
+<div>pybabel compile -d app/translations</div></blockquote>
+<p>5 - Add your language support to the framework</p>
+<blockquote>
+<div><ul>
+<li><p class="first">On config tell the framework the languages you support.
+With this you will render a menu with the corresponding country flags.
+use the config var &#8216;LANGUAGES&#8217; with a dict whose first key is a string with the corresponding babel language code,
+the value is another dict with two keys &#8216;flag&#8217; and &#8216;name&#8217;, with the country flag code, and text to be displayed:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">LANGUAGES</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="s">&#39;en&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;flag&#39;</span><span class="p">:</span><span class="s">&#39;gb&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;English&#39;</span><span class="p">},</span>
+   <span class="s">&#39;pt&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;flag&#39;</span><span class="p">:</span><span class="s">&#39;pt&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;Portuguese&#39;</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+<p>And thats it!</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">i18n Translations</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#babel-quick-how-to-config">Babel Quick How to Config</a></li>
+<li><a class="reference internal" href="#quick-how-to">Quick How to</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="multipledbs.html" title="previous chapter">Multiple Databases</a></li>
+      <li>Next: <a href="security.html" title="next chapter">Security</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/i18n.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+<a href="http://github.com/dpgaspar/Flask-AppBuilder"><img style="position: fixed; top: 0; right: 0; border: 0;"
+src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+
+  <div class="footer">
+    &copy; Copyright 2013, Daniel Vaz Gaspar.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>
