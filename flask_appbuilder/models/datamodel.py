@@ -61,29 +61,7 @@ class DataModel():
             retlst.append(retdict)
         return retlst
 
-    def get_gchart_json(self, lst, list_columns, label_columns):
-        """
-            Get google charts JSON
-        """
-        json_cols = []
-        for col_name in list_columns:
-            col = {'id': col_name, 'label': label_columns.get(col_name)}
-            if self.is_string(col_name):
-                col['type'] = 'string'
-            elif self.is_integer(col_name):
-                col['type'] = 'int'
-            elif self.is_date(col_name):
-                col['type'] = 'date'
-            json_cols.append(col)
-        json_data = []
-        for item in list_columns:
-            data = {}
-            for col in list_columns:
-                data['c'] = col
-                data['v'] = self._get_attr_value(item, col)
-            json_data.append(data)
-        return [{'cols': json_cols, 'rows': json_data}]
-
+    
 
 class SQLAModel(DataModel):
     """
