@@ -255,7 +255,11 @@ class UserDBModelView(UserModelView):
 class UserStatsChartView(DirectByChartView):
     datamodel = SQLAModel(User)
     chart_title = lazy_gettext('User Statistics')
-    label_columns = UserModelView.label_columns
+    label_columns = {'username': lazy_gettext('User Name'),
+                     'login_count': lazy_gettext('Login count'),
+                     'fail_login_count': lazy_gettext('Failed login count')
+                     }
+                     
     search_columns = UserModelView.search_columns
 
     definitions = [
