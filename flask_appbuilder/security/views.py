@@ -207,10 +207,6 @@ class UserDBModelView(UserModelView):
 
     add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role', 'password', 'conf_password']
 
-    def __init__(self, **kwargs):
-        log.debug("LABELS {0}".format(self.label_columns))
-        super(UserDBModelView, self).__init__(**kwargs)
-        log.debug("LABELS FIM {0}".format(self.label_columns))
 
     @expose('/show/<int:pk>', methods=['GET'])
     @has_access
