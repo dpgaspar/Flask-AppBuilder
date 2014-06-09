@@ -118,6 +118,7 @@ class SecurityManager(BaseManager):
                                  "Permission on Views/Menus", icon="fa-link",
                                  label=_('Permission on Views/Menus'), category="Security")
 
+        log.debug("SEC LABELS {0}".format(self.user_view.label_columns))
 
     def load_user(self, pk):
         return self.get_user_by_id(int(pk))
