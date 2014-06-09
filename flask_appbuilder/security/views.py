@@ -115,7 +115,7 @@ class UserModelView(ModelView):
     label_columns = {'get_full_name': lazy_gettext('Full Name'),
                      'first_name': lazy_gettext('First Name'),
                      'last_name': lazy_gettext('Last Name'),
-                     'username': lazy_gettext('User Name'),
+                     'username': 'User Name',
                      'password': lazy_gettext('Password'),
                      'active': lazy_gettext('Is Active?'),
                      'email': lazy_gettext('EMail'),
