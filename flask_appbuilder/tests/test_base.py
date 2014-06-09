@@ -109,7 +109,7 @@ class FlaskTestCase(unittest.TestCase):
         class Model2ChartView(ChartView):
             datamodel = SQLAModel(Model2)
             chart_title = 'Test Model1 Chart'
-            group_by_columns = 'field_string'
+            group_by_columns = ['field_string']
 
 
         class Model2GroupByChartView(GroupByChartView):
@@ -140,7 +140,7 @@ class FlaskTestCase(unittest.TestCase):
         class Model2TimeChartView(TimeChartView):
             datamodel = SQLAModel(Model2)
             chart_title = 'Test Model1 Chart'
-            group_by_columns = 'field_date'
+            group_by_columns = ['field_date']
 
         class Model2DirectChartView(DirectChartView):
             datamodel = SQLAModel(Model2)
@@ -457,9 +457,9 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.get('/model1masterview/list/')
         eq_(rv.status_code, 200)
         rv = client.get('/model1masterview/list/1')
-        #eq_(rv.status_code, 200)
+        eq_(rv.status_code, 200)
 
         rv = client.get('/model1masterchartview/list/')
         eq_(rv.status_code, 200)
         rv = client.get('/model1masterchartview/list/1')
-        #eq_(rv.status_code, 200)
+        eq_(rv.status_code, 200)
