@@ -143,24 +143,12 @@ class SQLAModel(DataModel):
         group = GroupByCol(group_by, 'Group by')
         return group.apply(query_result)
 
-    # still not in use
-    def query_group(self, group_bys, filters=None):
-        query = self.session.query(self.obj)
-        query = self._get_base_query(query=query, filters=filters)
-        query_result = query.all()
-        for group_by in group_bys:
-            result = group_by.apply2(query_result)
-            log.debug("QG: %s" % result)
-        return result
-
-
     def query_month_group(self, group_by='', filters=None):
         query = self.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
         query_result = query.all()
         group = GroupByDateMonth(group_by, 'Group by Month')
         return group.apply(query_result)
-
 
     def query_year_group(self, group_by='', filters=None):
         query = self.session.query(self.obj)
