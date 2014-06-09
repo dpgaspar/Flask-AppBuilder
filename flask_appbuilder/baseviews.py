@@ -267,7 +267,8 @@ class BaseModelView(BaseView):
             if not self.label_columns.get(col):
                 self.label_columns[col] = self._prettify_column(col)
         self._filters = Filters(self.search_columns, self.datamodel)
-
+        log.debug("LABELS FIM {0}".format(self.label_columns))
+        
 
     def _base_model_init_forms(self):
         conv = GeneralModelConverter(self.datamodel)
