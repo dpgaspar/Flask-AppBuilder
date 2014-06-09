@@ -262,6 +262,7 @@ class BaseModelView(BaseView):
         self._base_filters = Filters().add_filter_list(self.datamodel, self.base_filters)
         list_cols = self.datamodel.get_columns_list()
         self.search_columns = self.search_columns or self.datamodel.get_search_columns_list()
+        log.debug("LABELS {0}".format(self.label_columns))
         for col in list_cols:
             if not self.label_columns.get(col):
                 self.label_columns[col] = self._prettify_column(col)
