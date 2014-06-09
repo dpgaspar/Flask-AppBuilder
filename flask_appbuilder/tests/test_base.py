@@ -126,7 +126,7 @@ class FlaskTestCase(unittest.TestCase):
                 }
             ]
             
-        class Model2DirectByChartView(GroupByChartView):
+        class Model2DirectByChartView(DirectByChartView):
             datamodel = SQLAModel(Model2)
             chart_title = 'Test Model1 Chart'
 
