@@ -44,7 +44,7 @@ class Model1(Model):
     field_image = ImageColumn()
 
     def __repr__(self):
-        return self.field_string
+        return str(self.field_string)
 
 
 class Model2(Model):
@@ -57,7 +57,7 @@ class Model2(Model):
     group = relationship("Model1")
 
     def __repr__(self):
-        return self.field_string
+        return str(self.field_string)
 
     def field_method(self):
        return "field_method_value"                                               
