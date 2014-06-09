@@ -153,7 +153,7 @@ class FlaskTestCase(unittest.TestCase):
 
         class Model1MasterChartView(MasterDetailView):
             datamodel = SQLAModel(Model1)
-            related_views = [Model2ChartView]
+            related_views = [Model2DirectByChartView]
 
 
         self.appbuilder.add_view(Model1View, "Model1", category='Model1')
