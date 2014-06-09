@@ -311,6 +311,16 @@ class FlaskTestCase(unittest.TestCase):
                          follow_redirects=True)
         eq_(rv.status_code, 200)
 
+        #Reset Password Admin
+        rv = client.get('/users/action/resetpasswords/1', follow_redirects=True)
+        data = rv.data.decode('utf-8')
+        ok_("Reset Password Form" in data)
+        rv = client.post('/resetmypassword/form',
+                         data=dict(password=DEFAULT_ADMIN_PASSWORD, conf_password=DEFAULT_ADMIN_PASSWORD), 
+                         follow_redirects=True)
+        eq_(rv.status_code, 200)
+        
+
 
     def test_model_crud(self):
         """
