@@ -198,7 +198,7 @@ class FlaskTestCase(unittest.TestCase):
     def insert_data2(self):
         models1 = [Model1(field_string='G1'),
                    Model1(field_string='G2'),
-                   Model1(field_string='G2')]
+                   Model1(field_string='G3')]
         for model1 in models1:
             try:
                 self.db.session.add(model1)
