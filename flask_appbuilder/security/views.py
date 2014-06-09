@@ -112,6 +112,7 @@ class UserModelView(ModelView):
     add_title = lazy_gettext('Add User')
     edit_title = lazy_gettext('Edit User')
 
+    """
     label_columns = {'get_full_name': lazy_gettext('Full Name'),
                      'first_name': lazy_gettext('First Name'),
                      'last_name': lazy_gettext('Last Name'),
@@ -127,7 +128,8 @@ class UserModelView(ModelView):
                      'created_by': lazy_gettext('Created by'),
                      'changed_on': lazy_gettext('Changed on'),
                      'changed_by': lazy_gettext('Changed by')}
-
+    """
+    
     description_columns = {'first_name': lazy_gettext('Write the user first name or names'),
                            'last_name': lazy_gettext('Write the user last name'),
                            'username': lazy_gettext(
