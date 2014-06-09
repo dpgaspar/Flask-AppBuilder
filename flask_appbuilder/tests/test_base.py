@@ -421,7 +421,8 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.get('/model2view/list/')
         eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
-        print("DATA: {0}".format(data))
+        ok_('field_method_value' in data)
+        
 
     def test_charts_view(self):
         """
