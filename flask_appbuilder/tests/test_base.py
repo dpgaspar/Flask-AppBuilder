@@ -86,22 +86,27 @@ class FlaskTestCase(unittest.TestCase):
             related_views = [Model2View]
             list_columns = ['field_string','field_file']
 
+
         class Model1Filtered1View(ModelView):
             datamodel = SQLAModel(Model1)
             base_filters = [['field_string', FilterStartsWith, 'a']]
+
 
         class Model1MasterView(MasterDetailView):
             datamodel = SQLAModel(Model1)
             related_views = [Model2View]
 
+
         class Model1Filtered2View(ModelView):
             datamodel = SQLAModel(Model1)
             base_filters = [['field_integer', FilterEqual, 0]]
+
 
         class Model2ChartView(ChartView):
             datamodel = SQLAModel(Model2)
             chart_title = 'Test Model1 Chart'
             group_by_columns = 'field_string'
+
 
         class Model2GroupByChartView(GroupByChartView):
             datamodel = SQLAModel(Model2)
@@ -201,7 +206,7 @@ class FlaskTestCase(unittest.TestCase):
                 for x, i in zip(string.ascii_letters[:10], range(10)):
                     model = Model2(field_string="%stest" % (x),
                                    field_integer=random.randint(1, 10),
-                                   field_float=random.randfloat(0.0, 1.0),
+                                   field_float=random.uniform(0.0, 1.0),
                                    group=model1)
                     year = random.choice(range(1900, 2012))
                     month = random.choice(range(1, 12))
