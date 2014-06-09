@@ -210,7 +210,8 @@ class FlaskTestCase(unittest.TestCase):
 
                     self.db.session.add(model)
                     self.db.session.commit()
-            except:
+            except Exception as e:
+                print("ERROR {0}".format(str(e)))                                                      
                 self.db.session.rollback()
 
 
