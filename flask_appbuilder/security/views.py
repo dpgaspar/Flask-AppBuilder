@@ -213,7 +213,6 @@ class UserDBModelView(UserModelView):
     def show(self, pk):
         actions = {}
         actions['resetpasswords'] = self.actions.get('resetpasswords')
-        log.debug("LABEL DEBUG {0}".format(self.label_columns))
         widgets = self._get_show_widget(pk, actions=actions)
         return render_template(self.show_template,
                                pk=pk,
