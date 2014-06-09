@@ -420,6 +420,7 @@ class FlaskTestCase(unittest.TestCase):
         self.insert_data2()                                               
         rv = client.get('/model2view/list/')
         eq_(rv.status_code, 200)
+        log.debug("LOG")
         data = rv.data.decode('utf-8')
         ok_('field_method_value' in data)
         
