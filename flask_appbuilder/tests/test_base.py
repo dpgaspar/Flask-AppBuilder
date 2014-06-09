@@ -55,6 +55,8 @@ class Model2(Model):
     def __repr__(self):
         return self.field_string
 
+    def field_method(self):
+       return "field_method_value"                                               
 
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):
@@ -73,8 +75,11 @@ class FlaskTestCase(unittest.TestCase):
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
+
         class Model2View(ModelView):
             datamodel = SQLAModel(Model2)
+            list_columns = ['field_integer', 'field_float', 'field_string', 'field_method']
+
 
         class Model1View(ModelView):
             datamodel = SQLAModel(Model1)
@@ -401,6 +406,16 @@ class FlaskTestCase(unittest.TestCase):
         data = rv.data.decode('utf-8')
         ok_('atest' in data)
         ok_('btest' not in data)
+
+    def test_model_list_method_field(self):
+        
+        client = self.app.test_client()
+        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.insert_data2()                                               
+        rv = client.get('/model2view/list/')
+        eq_(rv.status_code, 200)
+        data = rv.data.decode('utf-8')
+        ok_('field_method_value' in data)
 
     def test_charts_view(self):
         """
