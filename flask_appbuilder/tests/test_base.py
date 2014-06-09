@@ -460,6 +460,6 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
 
         rv = client.get('/model1masterchartview/list/')
-        #eq_(rv.status_code, 200)
+        eq_(rv.status_code, 200)
         rv = client.get('/model1masterchartview/list/1')
         eq_(rv.status_code, 200)
