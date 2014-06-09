@@ -424,7 +424,6 @@ class FlaskTestCase(unittest.TestCase):
         self.insert_data2()                                               
         rv = client.get('/model2view/list/')
         eq_(rv.status_code, 200)
-        log.debug("LOG")
         data = rv.data.decode('utf-8')
         ok_('field_method_value' in data)
         
@@ -435,7 +434,7 @@ class FlaskTestCase(unittest.TestCase):
         """
         client = self.app.test_client()
         self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        #self.insert_data2()
+        self.insert_data2()
         log.info("CHART TEST")
         rv = client.get('/model2chartview/chart/')
         eq_(rv.status_code, 200)
@@ -454,7 +453,7 @@ class FlaskTestCase(unittest.TestCase):
         """
         client = self.app.test_client()
         self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        #self.insert_data2()
+        self.insert_data2()
         rv = client.get('/model1masterview/list/')
         eq_(rv.status_code, 200)
         rv = client.get('/model1masterview/list/1')
