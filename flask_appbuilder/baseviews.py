@@ -553,7 +553,6 @@ class BaseCRUDView(BaseModelView):
             :return:
                 Returns a widget
         """
-        log.info("KWARGS {0}".format(kwargs))
         return self._get_list_widget(**kwargs).get('list')
 
     def _get_list_widget(self, filters,
