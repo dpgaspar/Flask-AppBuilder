@@ -16,6 +16,10 @@ from flask_appbuilder.charts.views import (ChartView, TimeChartView,
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
 import logging
 
+logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
+logging.getLogger().setLevel(logging.DEBUG)
+
+
 """
     Constant english display string from framework
 """
