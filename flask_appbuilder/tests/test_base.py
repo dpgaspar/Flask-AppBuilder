@@ -211,7 +211,7 @@ class FlaskTestCase(unittest.TestCase):
                     year = random.choice(range(1900, 2012))
                     month = random.choice(range(1, 12))
                     day = random.choice(range(1, 28))
-                    model.field_date = datetime(year, month, day)
+                    model.field_date = datetime.datetime(year, month, day)
 
                     self.db.session.add(model)
                     self.db.session.commit()
