@@ -101,14 +101,17 @@ class SecurityManager(BaseManager):
                                                   icon="fa-user", label=_("List Users"),
                                                   category="Security", category_icon="fa-cogs",
                                                   category_label=_('Security'))
-        log.debug("SEC LABELS 2 {0}".format(self.user_view.label_columns))
-
+        
         role_view = self.appbuilder.add_view(RoleModelView, "List Roles", icon="fa-group", label=_('List Roles'),
                                              category="Security", category_icon="fa-cogs")
         role_view.related_views = [self.user_view.__class__]
+        log.debug("SEC LABELS 2 {0}".format(self.user_view.label_columns))
+
         self.appbuilder.add_view(UserStatsChartView,
                                  "User's Statistics", icon="fa-bar-chart-o", label=_("User's Statistics"),
                                  category="Security")
+        log.debug("SEC LABELS 3 {0}".format(self.user_view.label_columns))
+
         self.appbuilder.menu.add_separator("Security")
         self.appbuilder.add_view(PermissionModelView,
                                  "Base Permissions", icon="fa-lock",
@@ -120,8 +123,7 @@ class SecurityManager(BaseManager):
                                  "Permission on Views/Menus", icon="fa-link",
                                  label=_('Permission on Views/Menus'), category="Security")
 
-        log.debug("SEC LABELS {0}".format(self.user_view.label_columns))
-
+        
     def load_user(self, pk):
         return self.get_user_by_id(int(pk))
 
