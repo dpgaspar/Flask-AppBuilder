@@ -122,6 +122,39 @@ This will create the following menu
 .. image:: ./images/simpleview2.png
     :width: 100%
 
+Notice that these methods will render ugly pages not integrated with F.A.B's look and feel.
+It's easy to render your methods answer integrated with the app's look and feel,
+for this you have to create your own template.
+under your projects directory and app folder create a folder named 'templates'
+inside it create a file name 'method3.html'
+
+1 - Develop your template (on your <PROJECT_NAME>/app/templates/method3.html)::
+
+    {% extends "appbuilder/base.html" %}
+    {% block content %}
+        <h1>{{param1}}</h1>
+    {% endblock %}
+
+2 - Add the following method on your *MyView* class::
+
+    @expose('/method3/<string:param1>')
+    @has_access
+    def method3(self, param1):
+        # do something with param1
+        # and render template with param
+        param1 = 'Goodbye %s' % (param1)
+        return render_template('method3.html',
+                               param1 = param1,
+                               appbuilder=self.appbuilder)
+
+3 - Create a menu link to your new method::
+
+    appbuilder.add_link("Method3", href='/myview/method3/jonh', category='My View')
+
+Has you can see you just have to extend "appbuilder/base.html" on your template and then override *block content*
+Next use **Flask** **render_template** to render you new template
+
+
 
 SimpleFormView
 --------------

@@ -481,7 +481,7 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.get('/model2directchartview/chart/')
         #eq_(rv.status_code, 200)
 
-    def ztest_master_detail_view(self):
+    def test_master_detail_view(self):
         """
             Test Master detail view
         """

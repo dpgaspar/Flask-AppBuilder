@@ -179,6 +179,36 @@ defined permissions, use it only on BaseView classes.</p>
 
 <p>This will create the following menu</p>
 <a class="reference internal image-reference" href="_images/simpleview2.png"><img alt="_images/simpleview2.png" src="_images/simpleview2.png" style="width: 100%;" /></a>
+<p>Notice that these methods will render ugly pages not integrated with F.A.B&#8217;s look and feel.
+It&#8217;s easy to render your methods answer integrated with the app&#8217;s look and feel,
+for this you have to create your own template.
+under your projects directory and app folder create a folder named &#8216;templates&#8217;
+inside it create a file name &#8216;method3.html&#8217;</p>
+<p>1 - Develop your template (on your &lt;PROJECT_NAME&gt;/app/templates/method3.html):</p>
+<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;appbuilder/base.html&quot; %}
+{% block content %}
+    &lt;h1&gt;{{param1}}&lt;/h1&gt;
+{% endblock %}
+</pre></div>
+</div>
+<p>2 - Add the following method on your <em>MyView</em> class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/method3/&lt;string:param1&gt;&#39;</span><span class="p">)</span>
+<span class="nd">@has_access</span>
+<span class="k">def</span> <span class="nf">method3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param1</span><span class="p">):</span>
+    <span class="c"># do something with param1</span>
+    <span class="c"># and render template with param</span>
+    <span class="n">param1</span> <span class="o">=</span> <span class="s">&#39;Goodbye </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;method3.html&#39;</span><span class="p">,</span>
+                           <span class="n">param1</span> <span class="o">=</span> <span class="n">param1</span><span class="p">,</span>
+                           <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>3 - Create a menu link to your new method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;Method3&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method3/jonh&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Has you can see you just have to extend &#8220;appbuilder/base.html&#8221; on your template and then override <em>block content</em>
+Next use <strong>Flask</strong> <strong>render_template</strong> to render you new template</p>
 </div>
 <div class="section" id="simpleformview">
 <h2>SimpleFormView<a class="headerlink" href="#simpleformview" title="Permalink to this headline">¶</a></h2>
