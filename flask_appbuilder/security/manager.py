@@ -128,7 +128,7 @@ class SecurityManager(BaseManager):
     def before_request():
         g.user = current_user
 
-    def _migrate_db(self):
+    def _migrate_db(self): # pragma: no cover
         """
             Migrate from 0.8 to 0.9, change GeneralView to ModelView
             on ViewMenus
