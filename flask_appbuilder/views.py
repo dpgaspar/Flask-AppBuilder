@@ -278,54 +278,6 @@ class MasterDetailView(BaseCRUDView):
                                appbuilder=self.appbuilder)
 
 
-class MasterDetailChart(BaseCRUDView):
-    """
-        Implements behaviour for controlling two CRUD views
-        linked by PK and FK, in a master/detail type with
-        two lists.
-
-        Master view will behave like a left menu::
-
-            class MyChartView(DirectChartView):
-                datamodel = SQLAModel(DetailTable, db.session)
-
-            class MasterView(MasterDetailView):
-                datamodel = SQLAModel(MasterTable, db.session)
-                related_views = [MyChartView]
-
-    """
-
-    list_template = 'appbuilder/general/model/left_master_detail.html'
-    list_widget = ListMasterWidget
-    master_div_width = 2
-    """
-        Set to configure bootstrap class for master grid size
-    """
-
-    @expose('/list/')
-    @expose('/list/<pk>')
-    @has_access
-    def list(self, pk=None):
-        pages = get_page_args()
-        page_sizes = get_page_size_args()
-        orders = get_order_args()
-
-        widgets = self._list()
-        if pk:
-            item = self.datamodel.get(pk)
-            widgets = self._get_chart_widget(item, orders=orders,
-                                             pages=pages, page_sizes=page_sizes, widgets=widgets)
-            related_views = self._related_views
-        else:
-            related_views = []
-
-        return render_template(self.list_template,
-                               title=self.list_title,
-                               widgets=widgets,
-                               related_views=related_views,
-                               master_div_width=self.master_div_width,
-                               appbuilder=self.appbuilder)
-
 
 class CompactCRUDMixin(BaseCRUDView):
     """

@@ -249,14 +249,15 @@ class BaseModelView(BaseView):
         """
             Constructor
         """
-        self._base_model_init_vars()
-        self._base_model_init_forms()
+        self._init_properties()
+        self._init_forms()
+        self._init_titles()
         super(BaseModelView, self).__init__(**kwargs)
 
     def _init_titles(self):
         pass
 
-    def _base_model_init_vars(self):
+    def _init_properties(self):
         self.label_columns = self.label_columns or {}
         self.base_filters = self.base_filters or []
         self._base_filters = Filters().add_filter_list(self.datamodel, self.base_filters)
@@ -268,7 +269,7 @@ class BaseModelView(BaseView):
         self._filters = Filters(self.search_columns, self.datamodel)
         
 
-    def _base_model_init_forms(self):
+    def _init_forms(self):
         conv = GeneralModelConverter(self.datamodel)
         if not self.search_form:
             self.search_form = conv.create_form(self.label_columns, self.search_columns)
@@ -436,10 +437,7 @@ class BaseCRUDView(BaseModelView):
 
     def __init__(self, **kwargs):
         super(BaseCRUDView, self).__init__(**kwargs)
-        self._init_properties()
-        self._init_forms()
-        self._init_titles()
-
+        # collect and setup actions
         self.actions = {}
         for attr_name in dir(self):
             func = getattr(self, attr_name)
@@ -450,6 +448,10 @@ class BaseCRUDView(BaseModelView):
 
 
     def _init_forms(self):
+        """
+            Init forms for Add and Edit
+        """
+        super(BaseCRUDView, self)._init_forms()
         conv = GeneralModelConverter(self.datamodel)
         if not self.add_form:
             self.add_form = conv.create_form(self.label_columns,
@@ -468,6 +470,10 @@ class BaseCRUDView(BaseModelView):
 
 
     def _init_titles(self):
+        """
+            Init Titles if not defined
+        """
+        super(BaseCRUDView, self)._init_titles()
         if not self.list_title:
             self.list_title = 'List ' + self._prettify_name(self.datamodel.obj.__name__)
         if not self.add_title:
@@ -479,6 +485,10 @@ class BaseCRUDView(BaseModelView):
         self.title = self.list_title
 
     def _init_properties(self):
+        """
+            Init Properties
+        """
+        super(BaseCRUDView, self)._init_properties()
         self.related_views = self.related_views or []
         self._related_views = self._related_views or []
         self.description_columns = self.description_columns or {}
@@ -534,6 +544,11 @@ class BaseCRUDView(BaseModelView):
     def _get_related_views_widgets(self, item, orders=None,
                                    pages=None, page_sizes=None,
                                    widgets=None, **args):
+        """
+            :return:
+                Returns a dict with 'related_views' key with a list of
+                Model View widgets
+        """
         widgets = widgets or {}
         widgets['related_views'] = []
         for view in self._related_views:
@@ -551,7 +566,7 @@ class BaseCRUDView(BaseModelView):
     def _get_view_widget(self, **kwargs):
         """
             :return:
-                Returns a widget
+                Returns a Model View widget
         """
         return self._get_list_widget(**kwargs).get('list')
 
@@ -727,6 +742,13 @@ class BaseCRUDView(BaseModelView):
 
 
     def _delete(self, pk):
+        """
+            Delete function logic, override to implement diferent logic
+            deletes the record with primary_key = pk
+
+            :param pk:
+                record primary key to delete
+        """
         item = self.datamodel.get(pk)
         self.pre_delete(item)
         self.datamodel.delete(item)
