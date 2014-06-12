@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship
 from flask.ext.appbuilder import Model, SQLA
 from flask_appbuilder.models.filters import FilterStartsWith, FilterEqual
 from flask_appbuilder.models.mixins import FileColumn, ImageColumn
-from flask_appbuilder.views import MasterDetailView
+from flask_appbuilder.views import MasterDetailView, CompactCRUDMixin
 from flask_appbuilder.charts.views import (ChartView, TimeChartView,
                                            DirectChartView, GroupByChartView,
                                            DirectByChartView)
@@ -90,6 +90,9 @@ class FlaskTestCase(unittest.TestCase):
             related_views = [Model2View]
             list_columns = ['field_string','field_file']
 
+        class Model1CompactView(CompactCRUDMixin, ModelView):
+            datamodel = SQLAModel(Model1)
+
 
         class Model1Filtered1View(ModelView):
             datamodel = SQLAModel(Model1)
@@ -157,6 +160,7 @@ class FlaskTestCase(unittest.TestCase):
 
 
         self.appbuilder.add_view(Model1View, "Model1", category='Model1')
+        self.appbuilder.add_view(Model1CompactView, "Model1Compact", category='Model1')
         self.appbuilder.add_view(Model1MasterView, "Model1Master", category='Model1')
         self.appbuilder.add_view(Model1MasterChartView, "Model1MasterChart", category='Model1')
         self.appbuilder.add_view(Model1Filtered1View, "Model1Filtered1", category='Model1')
@@ -228,7 +232,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 22)  # current minimal views are 11
+        eq_(len(self.appbuilder.baseviews), 23)  # current minimal views are 11
         
 
     def test_model_creation(self):
@@ -452,7 +456,9 @@ class FlaskTestCase(unittest.TestCase):
         ok_('btest' not in data)
 
     def test_model_list_method_field(self):
-        
+        """
+            Tests a model's field has a method
+        """
         client = self.app.test_client()
         self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data2()                                               
@@ -460,7 +466,18 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
         ok_('field_method_value' in data)
-        
+
+
+    def test_compactCRUDMixin(self):
+        """
+            Test CompactCRUD Mixin view
+        """
+        client = self.app.test_client()
+        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.insert_data2()
+        rv = client.get('/model1compactview/list/')
+        eq_(rv.status_code, 200)
+
 
     def test_charts_view(self):
         """

@@ -28,7 +28,7 @@ versus the percentage of the population with higher education::
         poor_perc = Column(Float)
         college = Column(Float)
 
-Let's suppose that the college field will have the total number of college students on some date.
+Suppose that the college field will have the total number of college students on some date.
 But the *unemployed_perc* field holds a percentage, we can't draw a chart with these two together,
 we must create a function to calculate the *college_perc*::
 
