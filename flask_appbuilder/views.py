@@ -3,7 +3,7 @@ from flask import render_template, flash, redirect, send_file
 from .filemanager import uuid_originalname
 from .security.decorators import has_access
 from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
-from .baseviews import expose, BaseView, BaseCRUDView
+from .baseviews import expose, BaseView, BaseModelView, BaseCRUDView
 from .urltools import *
 
 
@@ -227,6 +227,22 @@ class ModelView(BaseCRUDView):
         else:
             flash("Access is Denied %s %s" % (name, self.__class__.__name__), "danger")
             return redirect('.')
+
+
+class GroupModelView(BaseModelView):
+    """
+        Lists grouped by data for visualization only
+    """
+    base_permissions = 'can_list'
+    definitions = None
+    """
+        [{
+                'group': ['<COLNAME>'|'<FUNCNAME>']
+                'formatter: <FUNC>
+                'series': [(<AGGR FUNC>, <COLNAME>|'<FUNCNAME>'),...]
+                }
+            ]
+    """
 
 
 class MasterDetailView(BaseCRUDView):
