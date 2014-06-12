@@ -2,7 +2,7 @@ import logging
 
 from flask_wtf import Form
 from wtforms import (BooleanField, TextField,
-                       TextAreaField, IntegerField, FloatField, DateField)
+                       TextAreaField, IntegerField, FloatField, DateField, DateTimeField)
 
 from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 
@@ -35,7 +35,7 @@ class FieldConverter(object):
                         ('is_float', FloatField, BS3TextFieldWidget),
                         ('is_boolean', BooleanField, None),
                         ('is_date', DateField, DatePickerWidget),
-                        ('is_datetime', DateField, DateTimePickerWidget),
+                        ('is_datetime', DateTimeField, DateTimePickerWidget),
     )
 
 
