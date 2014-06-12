@@ -1,7 +1,7 @@
 Versions
 ========
 
-Improvements and Bug fixes on 0.9.2
+Improvements and Bug fixes on 0.9.3
 -----------------------------------
 
 - Fix, DateTimeField Fix issue #22.
