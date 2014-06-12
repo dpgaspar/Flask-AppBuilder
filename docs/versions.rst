@@ -4,6 +4,11 @@ Versions
 Improvements and Bug fixes on 0.9.2
 -----------------------------------
 
+- Fix, DateTimeField Fix issue #22.
+
+Improvements and Bug fixes on 0.9.2
+-----------------------------------
+
 - Fix, label for 'username' was displaying 'Failed Login Count', Chart definition override.
 
 Improvements and Bug fixes on 0.9.1
