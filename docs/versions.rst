@@ -10,6 +10,8 @@ Improvements and Bug fixes on 0.9.2
 -----------------------------------
 
 - Fix, label for 'username' was displaying 'Failed Login Count', Chart definition override.
+- New, bootstrap updated to version 3.1.1.
+- New, fontawesome updated to version 4.1.0.
 
 Improvements and Bug fixes on 0.9.1
 -----------------------------------

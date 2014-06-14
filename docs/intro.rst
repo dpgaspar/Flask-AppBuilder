@@ -49,7 +49,7 @@ Includes:
       - Field sets for Form's (Django style).
   - i18n
       - Support for multi-language via Babel
-  - Bootstrap 3.0.3 CSS and js, with Select2 and DatePicker
+  - Bootstrap 3.1.1 CSS and js, with Select2 and DatePicker
   - Font-Awesome icons, for menu icons and actions.
 
 
