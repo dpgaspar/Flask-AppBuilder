@@ -26,7 +26,7 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 0.9.2* with new features and fixes.
+*New 0.9.3* with one fix and updates for bootstrap and fontawesome.
 
 If you're already using F.A.B. (0.8.N or earlier)
 read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.
