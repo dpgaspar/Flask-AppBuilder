@@ -34,3 +34,5 @@ class Contact(Model):
     def __repr__(self):
         return self.name
 
+    def readonly_f(self):
+        return address

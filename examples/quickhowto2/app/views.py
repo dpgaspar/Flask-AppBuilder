@@ -4,6 +4,8 @@ from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.views import ModelView
 from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
 from flask.ext.babelpkg import lazy_gettext as _
+from flask_appbuilder.fieldwidgets import BS3TextFieldWidget, BS3PasswordFieldWidget
+from wtforms import TextField, widgets
 
 from app import appbuilder, db
 from .models import Group, Gender, Contact
@@ -16,6 +18,12 @@ def fill_gender():
         db.session.commit()
     except:
         db.session.rollback()
+
+
+class BS3TextFieldROWidget(BS3TextFieldWidget):
+    def __call__(self, field, **kwargs):
+        kwargs['readonly'] = 'true'
+        return super(BS3TextFieldROWidget, self).__call__(field, **kwargs)
 
 
 class ContactModelView(ModelView):
@@ -40,12 +48,17 @@ class ContactModelView(ModelView):
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
+
     edit_fieldsets = [
         ('Summary', {'fields': ['name', 'gender', 'group']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
+
+    edit_form_extra_fields = {'address': TextField('address',
+                                        widget=BS3TextFieldROWidget())}
+
 
 class ContactChartView(ChartView):
     chart_title = 'Grouped contacts'
