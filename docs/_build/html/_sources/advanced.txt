@@ -93,7 +93,7 @@ for example if you have automatic fields like user or date, you can remove this 
         add_columns = ['my_field1','my_field2']
         edit_columns = ['my_field1']
 
-- You can contribute with any additional field that are not on a table/model,
+- You can contribute with any additional fields that are not on a table/model,
 for example a confirmation field::
 
     class ContactModelView(ModelView):
@@ -101,6 +101,24 @@ for example a confirmation field::
         add_form_extra_fields = {'extra': TextField(gettext('Extra Field'),
                         description=gettext('Extra Field description'),
                         widget=BS3TextFieldWidget())}
+
+
+- You can define/override readonly fields like this, first define a new **Readonly** field::
+
+    from flask_appbuilder.fieldwidgets import BS3TextFieldWidget
+
+    class BS3TextFieldROWidget(BS3TextFieldWidget):
+        def __call__(self, field, **kwargs):
+            kwargs['readonly'] = 'true'
+            return super(BS3TextFieldROWidget, self).__call__(field, **kwargs)
+
+
+Next override your field using your new widget::
+
+    class ExampleView(ModelView):
+        datamodel = SQLAModel(ExampleModel)
+        edit_form_extra_fields = {'field2': TextField('field2',
+                                    widget=BS3TextFieldROWidget())}
 
 
 - You can contribute with your own additional form validations rules.

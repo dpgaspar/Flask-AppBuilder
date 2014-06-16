@@ -146,7 +146,7 @@ If you want to filter multiple related fields just add tuples to the list, remem
 </pre></div>
 </div>
 <ul class="simple">
-<li>You can contribute with any additional field that are not on a table/model,</li>
+<li>You can contribute with any additional fields that are not on a table/model,</li>
 </ul>
 <p>for example a confirmation field:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
@@ -154,6 +154,25 @@ If you want to filter multiple related fields just add tuples to the list, remem
     <span class="n">add_form_extra_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;extra&#39;</span><span class="p">:</span> <span class="n">TextField</span><span class="p">(</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;Extra Field&#39;</span><span class="p">),</span>
                     <span class="n">description</span><span class="o">=</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;Extra Field description&#39;</span><span class="p">),</span>
                     <span class="n">widget</span><span class="o">=</span><span class="n">BS3TextFieldWidget</span><span class="p">())}</span>
+</pre></div>
+</div>
+<ul>
+<li><p class="first">You can define/override readonly fields like this, first define a new <strong>Readonly</strong> field:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.fieldwidgets</span> <span class="kn">import</span> <span class="n">BS3TextFieldWidget</span>
+
+<span class="k">class</span> <span class="nc">BS3TextFieldROWidget</span><span class="p">(</span><span class="n">BS3TextFieldWidget</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;readonly&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;true&#39;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">BS3TextFieldROWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__call__</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Next override your field using your new widget:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ExampleView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">ExampleModel</span><span class="p">)</span>
+    <span class="n">edit_form_extra_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;field2&#39;</span><span class="p">:</span> <span class="n">TextField</span><span class="p">(</span><span class="s">&#39;field2&#39;</span><span class="p">,</span>
+                                <span class="n">widget</span><span class="o">=</span><span class="n">BS3TextFieldROWidget</span><span class="p">())}</span>
 </pre></div>
 </div>
 <ul class="simple">
