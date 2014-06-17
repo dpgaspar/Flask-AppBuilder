@@ -4,6 +4,7 @@ from .filemanager import uuid_originalname
 from .security.decorators import has_access
 from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
 from .baseviews import expose, BaseView, BaseModelView, BaseCRUDView
+from .models.group import GroupByProcessData
 from .urltools import *
 
 
@@ -257,8 +258,10 @@ class GroupModelView(BaseModelView):
         widgets = widgets or {}
         actions = actions or self.actions
         joined_filters = filters.get_joined_filters(self._base_filters)
-        #count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
+        count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         #pks = self.datamodel.get_keys(lst)
+        group = GroupByProcessData(self.group_by, self.series, self.formatter)
+        group.apply(lst)
         widgets['list'] = self.list_widget(label_columns=self.label_columns,
                                            include_columns=self.list_columns,
                                            value_columns=self.datamodel.get_values(lst, self.list_columns),
