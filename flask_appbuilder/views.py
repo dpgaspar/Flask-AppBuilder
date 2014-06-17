@@ -128,7 +128,6 @@ class ModelView(BaseCRUDView):
             LIST
     --------------------------------
     """
-
     @expose('/list/')
     @has_access
     def list(self):
@@ -234,15 +233,69 @@ class GroupModelView(BaseModelView):
         Lists grouped by data for visualization only
     """
     base_permissions = 'can_list'
-    definitions = None
+    group_bys_cols = None
+    # ['<COLNAME>',<FUNC>, ....]
+    aggr_by_cols = None
+    # [(<AGGR FUNC>,'<COLNAME>'),...]
+    formatter_by_cols = {}
+    # {<FUNC>: '<COLNAME>',...}
+
+    def __init__(self, **kwargs):
+        super(GroupModelView, self).__init__(**kwargs)
+
+
+    def _get_list_widget(self, filters,
+                         actions=None,
+                         order_column='',
+                         order_direction='',
+                         page=None,
+                         page_size=None,
+                         widgets=None,
+                         **args):
+
+        """ get joined base filter and current active filter for query """
+        widgets = widgets or {}
+        actions = actions or self.actions
+        joined_filters = filters.get_joined_filters(self._base_filters)
+        #count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
+        #pks = self.datamodel.get_keys(lst)
+        widgets['list'] = self.list_widget(label_columns=self.label_columns,
+                                           include_columns=self.list_columns,
+                                           value_columns=self.datamodel.get_values(lst, self.list_columns),
+                                           order_columns=self.order_columns,
+                                           page=page,
+                                           page_size=page_size,
+                                           count=count,
+                                           pks=pks,
+                                           actions=actions,
+                                           filters=filters,
+                                           modelview_name=self.__class__.__name__
+        )
+        return widgets
+
+
+    def _list(self):
+        get_filter_args(self._filters)
+        widgets = self._get_list_widget(filters=self._filters)
+        form = self.search_form.refresh()
+        return self._get_search_widget(form=form, widgets=widgets)
+
+
     """
-        [{
-                'group': ['<COLNAME>'|'<FUNCNAME>']
-                'formatter: <FUNC>
-                'series': [(<AGGR FUNC>, <COLNAME>|'<FUNCNAME>'),...]
-                }
-            ]
+    --------------------------------
+            LIST
+    --------------------------------
     """
+    @expose('/list/')
+    @has_access
+    def list(self):
+
+        widgets = self._list()
+        return render_template(self.list_template,
+                               title=self.list_title,
+                               widgets=widgets,
+                               appbuilder=self.appbuilder)
+
 
 
 class MasterDetailView(BaseCRUDView):
