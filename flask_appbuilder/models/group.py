@@ -198,6 +198,27 @@ class BaseProcessData(object):
     def apply(self, data):
         pass
 
+    def to_dict(self, data):
+        ret = []
+        for item in data:
+            row = {}
+            if not isinstance(item[0], tuple):
+                row[self.group_bys_cols[0]] = str(item[0])
+            else:
+                for group_col_data, i in zip(item[0], enumerate(item[0])):
+                    row[self.group_bys_cols[i]] = str(group_col_data)
+            for col_data, i in zip(item[1:], enumerate(item[1:])):
+                log.debug("{0},{1}".format(col_data, i))
+                key = self.aggr_by_cols[i].__name__ + self.aggr_by_cols[i]
+                if isinstance(col_data, datetime.date):
+                    row[key] = str(col_data)
+                else:
+                    row[key] = col_data
+            ret.append(row)
+        return ret
+
+
+
     def to_json(self, data, labels=None):
         labels = labels or dict()
         json_data = dict()

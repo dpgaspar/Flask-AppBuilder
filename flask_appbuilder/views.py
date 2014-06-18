@@ -229,11 +229,11 @@ class ModelView(BaseCRUDView):
             return redirect('.')
 
 
-class GroupModelView(BaseModelView):
+class GroupModelView(BaseCRUDView):
     """
         Lists grouped by data for visualization only
     """
-    base_permissions = 'can_list'
+    base_permissions = ['can_list']
     group_bys_cols = None
     # ['<COLNAME>',<FUNC>, ....]
     aggr_by_cols = None
@@ -256,21 +256,21 @@ class GroupModelView(BaseModelView):
 
         """ get joined base filter and current active filter for query """
         widgets = widgets or {}
-        actions = actions or self.actions
+        #actions = actions or self.actions
         joined_filters = filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         #pks = self.datamodel.get_keys(lst)
-        group = GroupByProcessData(self.group_by, self.series, self.formatter)
-        group.apply(lst)
+        group = GroupByProcessData(self.group_bys_cols, self.aggr_by_cols, self.formatter_by_cols)
+        value_columns = group.apply(lst)
+        value_columns = group.to_dict(value_columns)
+        log.debug(value_columns)
         widgets['list'] = self.list_widget(label_columns=self.label_columns,
                                            include_columns=self.list_columns,
-                                           value_columns=self.datamodel.get_values(lst, self.list_columns),
+                                           value_columns=value_columns,
                                            order_columns=self.order_columns,
-                                           page=page,
-                                           page_size=page_size,
-                                           count=count,
-                                           pks=pks,
-                                           actions=actions,
+                                           page=1,
+                                           page_size=self.page_size,
+                                           count=len(value_columns),
                                            filters=filters,
                                            modelview_name=self.__class__.__name__
         )

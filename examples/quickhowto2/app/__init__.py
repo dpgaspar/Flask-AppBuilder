@@ -1,16 +1,16 @@
-import os
 import logging
 from flask import Flask
 from flask.ext.appbuilder import SQLA, AppBuilder
-from sqlalchemy.engine import Engine
-from sqlalchemy import event
+#from sqlalchemy.engine import Engine
+#from sqlalchemy import event
 
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 logging.getLogger().setLevel(logging.DEBUG)
 
-db = SQLA()
-appbuilder = AppBuilder()
-
+app = Flask(__name__)
+app.config.from_object('config')
+db = SQLA(app)
+appbuilder = AppBuilder(app, db.session)
 
 """
 Only include this for SQLLite constraints
@@ -24,12 +24,3 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 from app import views
 
-def create_app(config='config'):
-    app = Flask(__name__)
-    app.config.from_object(config)
-    db.init_app(app)
-    with app.app_context():
-        views.fill_gender()
-        appbuilder.init_app(app, db.session)
-        appbuilder.security_cleanup()
-    return app

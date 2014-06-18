@@ -1,6 +1,7 @@
+import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship
-from flask.ext.appbuilder.models.mixins import AuditMixin, FileColumn, ImageColumn
+from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
 from flask.ext.appbuilder import Model
 
 class Group(Model):
@@ -34,5 +35,8 @@ class Contact(Model):
     def __repr__(self):
         return self.name
 
-    def readonly_f(self):
-        return address
+    def month_year(self):
+        return datetime.datetime(self.birthday.year, self.birthday.month, 1)
+
+    def year(self):
+        return datetime.datetime(self.birthday.year, 1, 1)
