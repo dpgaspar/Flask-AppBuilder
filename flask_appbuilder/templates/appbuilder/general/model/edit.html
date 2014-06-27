@@ -20,12 +20,14 @@
 	{% endfor %}
 {% endif %}
 
-<div id="Home" class="tab-pane active">
+{% block edit_form %}
+    <div id="Home" class="tab-pane active">
         {{ widgets.get('edit')()|safe }}
-</div>
+    </div>
 
+{% endblock %}
 
-{% if related_views %} </div> {% endif %}
+    {% if related_views %} </div> {% endif %}
 
 {{ lib.panel_end() }}
 {% endblock %}

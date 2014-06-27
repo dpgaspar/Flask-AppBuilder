@@ -26,6 +26,9 @@ class ContactModelView(ModelView):
     label_columns = {'group': 'Contacts Group'}
     list_columns = ['name', 'personal_celphone', 'birthday', 'group']
 
+    list_template = 'list_contacts.html'
+    show_template = 'show_contacts.html'
+
     base_order = ('name', 'asc')
 
     show_fieldsets = [
@@ -62,7 +65,7 @@ class ContactGroupModelView(GroupModelView):
 class GroupModelView(ModelView):
     datamodel = SQLAModel(Group)
     related_views = [ContactModelView]
-
+    show_template = 'appbuilder/general/model/show_cascade.html'
 
 class ContactChartView(GroupByChartView):
     datamodel = SQLAModel(Contact)

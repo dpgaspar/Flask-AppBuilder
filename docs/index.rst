@@ -35,6 +35,7 @@ Contents:
    config
    advanced
    customizing
+   templates
    actions
    multipledbs
    i18n

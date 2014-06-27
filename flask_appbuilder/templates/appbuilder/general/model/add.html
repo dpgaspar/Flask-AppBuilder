@@ -4,7 +4,9 @@
 {% block content %}
 {{ lib.panel_begin(title) }}
 
-{{ widgets.get('add')()|safe }}
+{% block add_form %}
+    {{ widgets.get('add')()|safe }}
+{% endblock %}
 
 {{ lib.panel_end() }}
 {% endblock %}
