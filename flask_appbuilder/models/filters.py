@@ -1,7 +1,13 @@
 import logging
-from flask.ext.babelpkg import lazy_gettext
 from .._compat import as_unicode
 
+# For Retro Compatibility purposes
+from sqla.filters import (FilterContains,FilterEndsWith,
+                          FilterEqual,FilterEqualFunction,
+                          FilterGreater,FilterNotContains,
+                          FilterNotEndsWith,FilterNotEqual,
+                          FilterNotStartsWith,FilterRelationManyToManyEqual,FilterRelationOneToManyEqual,
+                          FilterRelationOneToManyNotEqual,FilterSmaller,FilterStartsWith)
 log = logging.getLogger(__name__)
 
 
@@ -42,166 +48,11 @@ class BaseFilter(object):
         return self.name
 
 
-class FilterStartsWith(BaseFilter):
-    name = lazy_gettext('Starts with')
-
-    def apply(self, query, value):
-        return query.filter(getattr(self.model, self.column_name).like(value + '%'))
-
-
-class FilterNotStartsWith(BaseFilter):
-    name = lazy_gettext('Not Starts with')
-
-    def apply(self, query, value):
-        return query.filter(~getattr(self.model, self.column_name).like(value + '%'))
-
-
-class FilterEndsWith(BaseFilter):
-    name = lazy_gettext('Ends with')
-
-    def apply(self, query, value):
-        return query.filter(getattr(self.model, self.column_name).like('%' + value))
-
-
-class FilterNotEndsWith(BaseFilter):
-    name = lazy_gettext('Not Ends with')
-
-    def apply(self, query, value):
-        return query.filter(~getattr(self.model, self.column_name).like('%' + value))
-
-
-class FilterContains(BaseFilter):
-    name = lazy_gettext('Contains')
-
-    def apply(self, query, value):
-        return query.filter(getattr(self.model, self.column_name).like('%' + value + '%'))
-
-
-class FilterNotContains(BaseFilter):
-    name = lazy_gettext('Not Contains')
-
-    def apply(self, query, value):
-        return query.filter(~getattr(self.model, self.column_name).like('%' + value + '%'))
-
-
-class FilterEqual(BaseFilter):
-    name = lazy_gettext('Equal to')
-
-    def apply(self, query, value):
-        return query.filter(getattr(self.model, self.column_name) == value)
-
-
-class FilterNotEqual(BaseFilter):
-    name = lazy_gettext('Not Equal to')
-
-    def apply(self, query, value):
-        return query.filter(getattr(self.model, self.column_name) != value)
-
-
-class FilterGreater(BaseFilter):
-    name = lazy_gettext('Greater than')
-
-    def apply(self, query, value):
-        return query.filter(getattr(self.model, self.column_name) > value)
-
-
-class FilterSmaller(BaseFilter):
-    name = lazy_gettext('Smaller than')
-
-    def apply(self, query, value):
-        return query.filter(getattr(self.model, self.column_name) < value)
-
-
 class FilterRelation(BaseFilter):
+    """
+        All Filters for relations must inherit from this class
+    """
     pass
-
-
-class FilterRelationOneToManyEqual(FilterRelation):
-    name = lazy_gettext('Relation')
-
-    def apply(self, query, value):
-        rel_obj = self.datamodel.get_related_obj(self.column_name, value)
-        return query.filter(getattr(self.model, self.column_name) == rel_obj)
-
-
-class FilterRelationOneToManyNotEqual(FilterRelation):
-    name = lazy_gettext('No Relation')
-
-    def apply(self, query, value):
-        rel_obj = self.datamodel.get_related_obj(self.column_name, value)
-        return query.filter(getattr(self.model, self.column_name) != rel_obj)
-
-
-class FilterRelationManyToManyEqual(FilterRelation):
-    name = lazy_gettext('Relation as Many')
-
-    def apply(self, query, value):
-        rel_obj = self.datamodel.get_related_obj(self.column_name, value)
-        return query.filter(getattr(self.model, self.column_name).contains(rel_obj))
-
-
-class FilterEqualFunction(BaseFilter):
-    name = "Filter view with a function"
-
-    def apply(self, query, func):
-        return query.filter(getattr(self.model, self.column_name) == func())
-
-
-class SQLAFilterConverter(object):
-    """
-        Class for converting columns into a supported list of filters
-        specific for SQLAlchemy.
-
-    """
-    conversion_table = (('is_relation_many_to_one', [FilterRelationOneToManyEqual,
-                        FilterRelationOneToManyNotEqual]),
-                        ('is_relation_one_to_one', [FilterRelationOneToManyEqual,
-                        FilterRelationOneToManyNotEqual]),
-                        ('is_relation_many_to_many', [FilterRelationManyToManyEqual]),
-                        ('is_relation_one_to_many', [FilterRelationManyToManyEqual]),
-                        ('is_text', [FilterStartsWith,
-                                     FilterEndsWith,
-                                     FilterContains,
-                                     FilterEqual,
-                                     FilterNotStartsWith,
-                                     FilterNotEndsWith,
-                                     FilterNotContains,
-                                     FilterNotEqual]),
-                        ('is_string', [FilterStartsWith,
-                                       FilterEndsWith,
-                                       FilterContains,
-                                       FilterEqual,
-                                       FilterNotStartsWith,
-                                       FilterNotEndsWith,
-                                       FilterNotContains,
-                                       FilterNotEqual]),
-                        ('is_integer', [FilterEqual,
-                                        FilterGreater,
-                                        FilterSmaller,
-                                        FilterNotEqual]),
-                        ('is_float', [FilterEqual,
-                                      FilterGreater,
-                                      FilterSmaller,
-                                      FilterNotEqual]),
-                        ('is_date', [FilterEqual,
-                                     FilterGreater,
-                                     FilterSmaller,
-                                     FilterNotEqual]),
-                        ('is_datetime', [FilterEqual,
-                                         FilterGreater,
-                                         FilterSmaller,
-                                         FilterNotEqual]),
-    )
-
-    def __init__(self, datamodel):
-        self.datamodel = datamodel
-
-    def convert(self, col_name):
-        for conversion in self.conversion_table:
-            if getattr(self.datamodel, conversion[0])(col_name):
-                return [item(col_name, self.datamodel) for item in conversion[1]]
-        log.warning('Filter type not supported for column: %s' % col_name)
-
 
 
 class Filters(object):
@@ -213,7 +64,8 @@ class Filters(object):
     """ dict like {'col_name':[BaseFilter1, BaseFilter2, ...], ... } """
     _all_filters = {}
 
-    def __init__(self, search_columns=[], datamodel=None):
+    def __init__(self, filter_converter, search_columns=[], datamodel=None):
+        self.filter_converter = filter_converter
         self.clear_filters()
         if search_columns and datamodel:
             self._search_filters = self._get_filters(search_columns, datamodel)
@@ -225,7 +77,7 @@ class Filters(object):
     def _get_filters(self, cols, datamodel):
         filters = {}
         for col in cols:
-            lst_flt = SQLAFilterConverter(datamodel).convert(col)
+            lst_flt = self.filter_converter(datamodel).convert(col)
             if lst_flt:
                 filters[col] = lst_flt
         return filters

@@ -1,5 +1,8 @@
 __author__ = 'dpgaspar'
 
+
+__author__ = 'dpgaspar'
+
 #--------------------------------------
 #        Exceptions
 #--------------------------------------
@@ -24,7 +27,7 @@ class VolColumn(object):
 
     def check_type(self, value):
         return isinstance(value, self.col_type)
-    
+
 
 class VolModel(object):
 

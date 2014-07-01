@@ -7,7 +7,8 @@ Improvements and Bug fixes on 0.9.4
 - New, template block on add.html template, add_form.
 - New, template block on edit.html template, edit_form.
 - New, template block on show.html template, show_form.
-- New, bootstrap updated to version 3.1.1.
+- New, template block on show_cascade.html template, relative_views.
+- New, template block on edit_cascade.html template, relative_views.
 
 Improvements and Bug fixes on 0.9.3
 -----------------------------------

@@ -26,7 +26,7 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 0.9.3* with one fix and updates for bootstrap and fontawesome.
+*New 0.9.4* with new updates for data interfaces alternative to SQLAlchemy.
 
 If you're already using F.A.B. (0.8.N or earlier)
 read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.
@@ -71,7 +71,7 @@ Includes:
       - Field sets for Form's (Django style).
   - i18n
       - Support for multi-language via Babel
-  - Bootstrap 3.0.3 CSS and js, with Select2 and DatePicker
+  - Bootstrap 3.1.1 CSS and js, with Select2 and DatePicker
   - Font-Awesome icons, for menu icons and actions.
 
 
