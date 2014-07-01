@@ -190,7 +190,10 @@ class SQLAModel(DataModel):
     def is_datetime(self, col_name):
         return isinstance(self.obj.__mapper__.columns[col_name].type, sa.types.DateTime)
 
+
     def is_relation(self, prop):
+        if isinstance(prop, str):
+            prop = self.get_col_property(prop)
         return isinstance(prop, sa.orm.properties.RelationshipProperty)
 
     def is_relation_col(self, col):
@@ -201,16 +204,28 @@ class SQLAModel(DataModel):
         return False
 
     def is_relation_many_to_one(self, prop):
-        return prop.direction.name == 'MANYTOONE'
+        if isinstance(prop, str):
+            prop = self.get_col_property(prop)
+        if self.is_relation(prop):
+            return prop.direction.name == 'MANYTOONE'
 
     def is_relation_many_to_many(self, prop):
-        return prop.direction.name == 'MANYTOMANY'
+        if isinstance(prop, str):
+            prop = self.get_col_property(prop)
+        if self.is_relation(prop):
+            return prop.direction.name == 'MANYTOMANY'
 
     def is_relation_one_to_one(self, prop):
-        return prop.direction.name == 'ONETOONE'
+        if isinstance(prop, str):
+            prop = self.get_col_property(prop)
+        if self.is_relation(prop):
+            return prop.direction.name == 'ONETOONE'
 
     def is_relation_one_to_many(self, prop):
-        return prop.direction.name == 'ONETOMANY'
+        if isinstance(prop, str):
+            prop = self.get_col_property(prop)
+        if self.is_relation(prop):
+            return prop.direction.name == 'ONETOMANY'
 
 
     def is_pk(self, col):

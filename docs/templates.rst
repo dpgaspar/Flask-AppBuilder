@@ -210,3 +210,22 @@ For show cascade templates you have the following structure:
         - End Block "related_views"
     - End Block "content"
 
+Library Functions
+-----------------
+
+F.A.B. has the following library functions that you can use to render bootstrap 3
+components easily. Using them will ease your productivity and help you introduce
+new html that shares the same look and feel has the framework.
+
+- Panel component::
+
+    {{ lib.panel_begin("Panel's Title") }}
+        Your html goes here
+    {{ lib.panel_end() }}
+
+- Accordion (pass your view's name, or something that will serve has an id)::
+
+    {% call lib.accordion_tag(view.__class__.__name__,"Accordion Title", False) %}
+        Your HTML goes here
+    {% endcall %}
+

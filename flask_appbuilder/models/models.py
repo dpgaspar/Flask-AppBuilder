@@ -92,11 +92,30 @@ class VolModel(object):
 
 class BaseVolSession(object):
 
+
     def __init__(self):
         self.store = dict()
+        self.query_filters = list()
+        self.query_class = ""
 
     def query(self, model_cls):
-        return self.store.get(model_cls.__name__)
+        self.query_class = model_cls.__name__
+        return self
+
+    def filter(self, condition):
+        self.query_filters.append(condition)
+
+    def _filter_apply(self, condition, items):
+        ret = list()
+        for item in items:
+            if getattr(item, self.column_name) == condition:
+                ret.append(item)
+        return ret
+
+    def all(self):
+        items = self.store.get(self.query_class)
+        for filter in self.query_filters:
+            items = self._filter_apply(filter, items)
 
     def add(self, model):
         model_cls_name = model._name

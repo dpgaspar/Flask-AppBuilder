@@ -147,6 +147,63 @@ class FilterEqualFunction(BaseFilter):
         return query.filter(getattr(self.model, self.column_name) == func())
 
 
+class SQLAFilterConverter(object):
+    """
+        Class for converting columns into a supported list of filters
+        specific for SQLAlchemy.
+
+    """
+    conversion_table = (('is_relation_many_to_one', [FilterRelationOneToManyEqual,
+                        FilterRelationOneToManyNotEqual]),
+                        ('is_relation_one_to_one', [FilterRelationOneToManyEqual,
+                        FilterRelationOneToManyNotEqual]),
+                        ('is_relation_many_to_many', [FilterRelationManyToManyEqual]),
+                        ('is_relation_one_to_many', [FilterRelationManyToManyEqual]),
+                        ('is_text', [FilterStartsWith,
+                                     FilterEndsWith,
+                                     FilterContains,
+                                     FilterEqual,
+                                     FilterNotStartsWith,
+                                     FilterNotEndsWith,
+                                     FilterNotContains,
+                                     FilterNotEqual]),
+                        ('is_string', [FilterStartsWith,
+                                       FilterEndsWith,
+                                       FilterContains,
+                                       FilterEqual,
+                                       FilterNotStartsWith,
+                                       FilterNotEndsWith,
+                                       FilterNotContains,
+                                       FilterNotEqual]),
+                        ('is_integer', [FilterEqual,
+                                        FilterGreater,
+                                        FilterSmaller,
+                                        FilterNotEqual]),
+                        ('is_float', [FilterEqual,
+                                      FilterGreater,
+                                      FilterSmaller,
+                                      FilterNotEqual]),
+                        ('is_date', [FilterEqual,
+                                     FilterGreater,
+                                     FilterSmaller,
+                                     FilterNotEqual]),
+                        ('is_datetime', [FilterEqual,
+                                         FilterGreater,
+                                         FilterSmaller,
+                                         FilterNotEqual]),
+    )
+
+    def __init__(self, datamodel):
+        self.datamodel = datamodel
+
+    def convert(self, col_name):
+        for conversion in self.conversion_table:
+            if getattr(self.datamodel, conversion[0])(col_name):
+                return [item(col_name, self.datamodel) for item in conversion[1]]
+        log.warning('Filter type not supported for column: %s' % col_name)
+
+
+
 class Filters(object):
     filters = []
     """ List of instanciated filters """
@@ -168,40 +225,11 @@ class Filters(object):
     def _get_filters(self, cols, datamodel):
         filters = {}
         for col in cols:
-            lst_flt = self._get_filter_type(col, datamodel)
+            lst_flt = SQLAFilterConverter(datamodel).convert(col)
             if lst_flt:
                 filters[col] = lst_flt
         return filters
 
-    def _get_filter_type(self, col, datamodel):
-        prop = datamodel.get_col_property(col)
-        if datamodel.is_relation(prop):
-            if datamodel.is_relation_many_to_one(prop) or datamodel.is_relation_one_to_one(prop):
-                return [FilterRelationOneToManyEqual(col, datamodel),
-                        FilterRelationOneToManyNotEqual(col, datamodel)]
-            elif datamodel.is_relation_many_to_many(prop) or datamodel.is_relation_one_to_many(prop):
-                return [FilterRelationManyToManyEqual(col, datamodel)]
-        else:
-            if datamodel.is_text(col) or datamodel.is_string(col):
-                return [FilterStartsWith(col, datamodel),
-                        FilterEndsWith(col, datamodel),
-                        FilterContains(col, datamodel),
-                        FilterEqual(col, datamodel),
-                        FilterNotStartsWith(col, datamodel),
-                        FilterNotEndsWith(col, datamodel),
-                        FilterNotContains(col, datamodel),
-                        FilterNotEqual(col, datamodel)]
-            elif datamodel.is_integer(col) or \
-                    datamodel.is_date(col) or \
-                    datamodel.is_datetime(col) or \
-                    datamodel.is_float(col):
-                return [FilterEqual(col, datamodel),
-                        FilterGreater(col, datamodel),
-                        FilterSmaller(col, datamodel),
-                        FilterNotEqual(col, datamodel)]
-            else:
-                log.warning('Filter type not supported for column: %s' % (col))
-                return None
 
     def clear_filters(self):
         self.filters = []
