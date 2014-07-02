@@ -95,7 +95,6 @@ class VolModel(object):
 
 class BaseVolSession(object):
 
-
     def __init__(self):
         self.store = dict()
         self.query_filters = list()
@@ -128,4 +127,21 @@ class BaseVolSession(object):
         self.store[model_cls_name].append(model)
 
 
+#-------------------------------------
+#                EXP
+#-------------------------------------
+class LSModel(VolModel):
+    filename = VolColumn(int)
 
+
+class LSSession(BaseVolSession):
+
+    def query(self):
+        super(LSSession, self).query(self, LSModel)
+
+    def all(self):
+        import os
+        out = os.popen('ls')
+        for line in out.readline():
+            self.add(LSModel(filename=line))
+        return self.store.get(self.query_class)

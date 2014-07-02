@@ -1,5 +1,54 @@
 from flask_babelpkg import lazy_gettext
 
+
+class BaseFilter(object):
+    """
+        Base class for all data filters.
+    """
+    column_name = ''
+    datamodel = None
+    model = None
+    name = ''
+    is_related_view = False
+    """
+        Sets this filter to a special kind of filter for related views.
+        If true this filter was not set by the user
+    """
+
+    def __init__(self, column_name, datamodel, is_related_view=False):
+        """
+            Constructor.
+
+            :param column_name:
+                Model field name
+            :param datamodel:
+                The datamodel access class
+            :param is_related_view:
+                Optional internal parameter to filter related views
+        """
+        self.column_name = column_name
+        self.datamodel = datamodel
+        self.model = datamodel.obj
+        self.is_related_view = is_related_view
+
+    def apply(self, query, value):
+        """
+            Override this to implement you own new filters
+        """
+        pass
+
+    def __repr__(self):
+        return self.name
+
+
+class FilterRelation(BaseFilter):
+    """
+        Base class for all filters for relations
+    """
+    pass
+
+
+
 class BaseInterface(object):
     obj = None
 

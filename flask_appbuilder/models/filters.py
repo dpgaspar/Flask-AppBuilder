@@ -1,6 +1,7 @@
 import logging
 from .._compat import as_unicode
 
+
 # For Retro Compatibility purposes
 from sqla.filters import (FilterContains,FilterEndsWith,
                           FilterEqual,FilterEqualFunction,
@@ -10,49 +11,6 @@ from sqla.filters import (FilterContains,FilterEndsWith,
                           FilterRelationOneToManyNotEqual,FilterSmaller,FilterStartsWith)
 log = logging.getLogger(__name__)
 
-
-class BaseFilter(object):
-    column_name = ''
-    datamodel = None
-    model = None
-    name = ''
-    is_related_view = False
-    """ 
-        Sets this filter to a special kind of filter for related views.
-        If true this filter was not set by the user
-    """
-
-    def __init__(self, column_name, datamodel, is_related_view=False):
-        """
-            Constructor.
-
-            :param column_name:
-                Model field name
-            :param datamodel:
-                The datamodel access class
-            :param is_related_view:
-                Optional internal parameter to filter related views
-        """
-        self.column_name = column_name
-        self.datamodel = datamodel
-        self.model = datamodel.obj
-        self.is_related_view = is_related_view
-
-    def apply(self, query, value):
-        """
-            Override this to implement you own new filters
-        """
-        pass
-
-    def __repr__(self):
-        return self.name
-
-
-class FilterRelation(BaseFilter):
-    """
-        All Filters for relations must inherit from this class
-    """
-    pass
 
 
 class Filters(object):
@@ -105,7 +63,10 @@ class Filters(object):
         return self
 
     def get_joined_filters(self, filters):
-        retfilters = Filters()
+        """
+            Creates a new filters class with active filters joined
+        """
+        retfilters = Filters(self.filter_converter)
         retfilters.filters = self.filters + filters.filters
         retfilters.values = self.values + filters.values
         return retfilters

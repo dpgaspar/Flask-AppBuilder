@@ -4,7 +4,7 @@ from flask.globals import _app_ctx_stack, _request_ctx_stack
 from werkzeug.urls import url_parse
 from .forms import GeneralModelConverter
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
-from .models.filters import Filters, FilterRelationOneToManyEqual
+from .models.filters import FilterRelationOneToManyEqual
 from .actions import ActionItem
 from .urltools import *
 
@@ -260,13 +260,13 @@ class BaseModelView(BaseView):
     def _init_properties(self):
         self.label_columns = self.label_columns or {}
         self.base_filters = self.base_filters or []
-        self._base_filters = Filters().add_filter_list(self.datamodel, self.base_filters)
+        self._base_filters = self.datamodel.get_filters().add_filter_list(self.datamodel, self.base_filters)
         list_cols = self.datamodel.get_columns_list()
         self.search_columns = self.search_columns or self.datamodel.get_search_columns_list()
         for col in list_cols:
             if not self.label_columns.get(col):
                 self.label_columns[col] = self._prettify_column(col)
-        self._filters = Filters(self.search_columns, self.datamodel)
+        self._filters = self.datamodel.get_filters(self.search_columns)
         
 
     def _init_forms(self):
@@ -533,7 +533,8 @@ class BaseCRUDView(BaseModelView):
                                  page=None, page_size=None):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
-        filters = Filters().add_filter_related_view(fk, FilterRelationOneToManyEqual,
+        filters = self.datamodel.get_filters()
+        filters.add_filter_related_view(fk, FilterRelationOneToManyEqual,
                                                     related_view.datamodel, self.datamodel.get_pk_value(item))
         return related_view._get_view_widget(filters=filters,
                                              order_column=order_column,

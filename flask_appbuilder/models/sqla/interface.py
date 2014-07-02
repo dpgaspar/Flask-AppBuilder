@@ -38,8 +38,8 @@ class SQLAModel(BaseInterface):
             query = query.order_by(order_column + ' ' + order_direction)
         return query
 
-    def get_filters(self, search_columns=[], datamodel=None):
-        return Filters(SQLAFilterConverter, search_columns, datamodel)
+    def get_filters(self, search_columns=[]):
+        return Filters(SQLAFilterConverter, search_columns, self)
 
     def query(self, filters=None, order_column='', order_direction='',
               page=None, page_size=None):
