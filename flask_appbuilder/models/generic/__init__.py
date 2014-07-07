@@ -97,6 +97,8 @@ class VolModel(object):
 class BaseVolSession(object):
 
     def __init__(self):
+        self._order_by_cmd = None
+        self._filters_cmd = list()
         self.store = dict()
         self.query_filters = list()
         self.query_class = ""
@@ -105,25 +107,38 @@ class BaseVolSession(object):
         self.query_class = model_cls.__name__
         return self
 
+    def order_by(self, order_cmd):
+        self._order_by_cmd = order_cmd
+        return self
 
-    def order(self, data, col, direction='desc'):
+    def _order_by(self, data, order_cmd):
+        col_name, direction = order_cmd.split()
         reverse_flag = direction == 'desc'
-        return sorted(data, key=operator.attrgetter(col), reverse=reverse_flag)
+        return sorted(data, key=operator.attrgetter(col_name), reverse=reverse_flag)
 
-    def filter(self, condition):
-        self.query_filters.append(condition)
+    def scalar(self):
+        return 0
 
-    def _filter_apply(self, condition, items):
-        ret = list()
-        for item in items:
-            if getattr(item, self.column_name) == condition:
-                ret.append(item)
-        return ret
+    def like(self, col_name, value):
+        self._filters_cmd.append((self._like, col_name, value))
+        return self
+
+    def _like(self, item, col_name, value):
+        return value in getattr(item, col_name)
 
     def all(self):
-        items = self.store.get(self.query_class)
-        for filter in self.query_filters:
-            items = self._filter_apply(filter, items)
+        items = list()
+        if not self._filters_cmd:
+            items = self.store.get(self.query_class)
+        else:
+            for item in self.store.get(self.query_class):
+                for filter_cmd in self._filters_cmd:
+                    if filter_cmd[0](item, filter_cmd[1], filter_cmd[2]):
+                        items.append(item)
+        if self._order_by_cmd:
+            return self._order_by(items, self._order_by_cmd)
+
+        return items
 
     def add(self, model):
         model_cls_name = model._name
@@ -151,14 +166,12 @@ class PSSession(BaseVolSession):
     def query(self):
         return super(PSSession, self).query(PSModel)
 
-
-
     def all(self):
         import os
         import re
         out = os.popen('ps -ef')
         for line in out.readlines():
-            group = re.findall("(\w*) *(\w*) *(\w*) *(\w*) *(\w*:\w*) (\?|tty\w*) +(\w*:\w*:\w*) *(.*)", line)
+            group = re.findall("(\w+) +(\w+) +(\w+) +(\w+) +(\w+:\w+|\w+) (\?|tty\w+) +(\w+:\w+:\w+) +(.+)\n", line)
             if group:
                 model = PSModel()
                 model.UID = group[0][0]
@@ -170,4 +183,4 @@ class PSSession(BaseVolSession):
                 model.TIME = group[0][6]
                 model.CMD = group[0][7]
                 self.add(model)
-        return self.store.get(self.query_class)
+        return super(PSSession, self).all()
