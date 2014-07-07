@@ -1,7 +1,8 @@
+import operator
+
 __author__ = 'dpgaspar'
 
 
-__author__ = 'dpgaspar'
 
 #--------------------------------------
 #        Exceptions
@@ -104,6 +105,11 @@ class BaseVolSession(object):
         self.query_class = model_cls.__name__
         return self
 
+
+    def order(self, data, col, direction='desc'):
+        reverse_flag = direction == 'desc'
+        return sorted(data, key=operator.attrgetter(col), reverse=reverse_flag)
+
     def filter(self, condition):
         self.query_filters.append(condition)
 
@@ -130,18 +136,38 @@ class BaseVolSession(object):
 #-------------------------------------
 #                EXP
 #-------------------------------------
-class LSModel(VolModel):
-    filename = VolColumn(int)
+class PSModel(VolModel):
+    UID = VolColumn(str)
+    PID = VolColumn(int, primary_key=True)
+    PPID = VolColumn(int)
+    C = VolColumn(int)
+    STIME = VolColumn(str)
+    TTY = VolColumn(str)
+    TIME = VolColumn(str)
+    CMD = VolColumn(str)
 
-
-class LSSession(BaseVolSession):
+class PSSession(BaseVolSession):
 
     def query(self):
-        super(LSSession, self).query(self, LSModel)
+        return super(PSSession, self).query(PSModel)
+
+
 
     def all(self):
         import os
-        out = os.popen('ls')
-        for line in out.readline():
-            self.add(LSModel(filename=line))
+        import re
+        out = os.popen('ps -ef')
+        for line in out.readlines():
+            group = re.findall("(\w*) *(\w*) *(\w*) *(\w*) *(\w*:\w*) (\?|tty\w*) +(\w*:\w*:\w*) *(.*)", line)
+            if group:
+                model = PSModel()
+                model.UID = group[0][0]
+                model.PID = group[0][1]
+                model.PPID = group[0][2]
+                model.C = group[0][3]
+                model.STIME = group[0][4]
+                model.TTY = group[0][5]
+                model.TIME = group[0][6]
+                model.CMD = group[0][7]
+                self.add(model)
         return self.store.get(self.query_class)
