@@ -474,14 +474,15 @@ class BaseCRUDView(BaseModelView):
             Init Titles if not defined
         """
         super(BaseCRUDView, self)._init_titles()
+        class_name = self.datamodel.obj.__class__.__name__
         if not self.list_title:
-            self.list_title = 'List ' + self._prettify_name(self.datamodel.obj.__name__)
+            self.list_title = 'List ' + self._prettify_name(class_name)
         if not self.add_title:
-            self.add_title = 'Add ' + self._prettify_name(self.datamodel.obj.__name__)
+            self.add_title = 'Add ' + self._prettify_name(class_name)
         if not self.edit_title:
-            self.edit_title = 'Edit ' + self._prettify_name(self.datamodel.obj.__name__)
+            self.edit_title = 'Edit ' + self._prettify_name(class_name)
         if not self.show_title:
-            self.show_title = 'Show ' + self._prettify_name(self.datamodel.obj.__name__)
+            self.show_title = 'Show ' + self._prettify_name(class_name)
         self.title = self.list_title
 
     def _init_properties(self):

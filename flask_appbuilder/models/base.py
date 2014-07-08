@@ -1,4 +1,7 @@
+import logging
 from flask_babelpkg import lazy_gettext
+
+log = logging.getLogger(__name__)
 
 
 class BaseFilter(object):
@@ -48,6 +51,23 @@ class FilterRelation(BaseFilter):
     pass
 
 
+class BaseFilterConverter(object):
+    """
+        Base Filter Converter, all classes responsible
+        for the association of columns and possible filters
+        will inherite from this
+
+    """
+    def __init__(self, datamodel):
+        self.datamodel = datamodel
+
+    def convert(self, col_name):
+        for conversion in self.conversion_table:
+            if getattr(self.datamodel, conversion[0])(col_name):
+                return [item(col_name, self.datamodel) for item in conversion[1]]
+        log.warning('Filter type not supported for column: %s' % col_name)
+
+
 
 class BaseInterface(object):
     obj = None
@@ -92,4 +112,129 @@ class BaseInterface(object):
                 retdict[col] = self._get_attr_value(item, col)
             retlst.append(retdict)
         return retlst
+
+    """
+        Next methods must be overridden
+    """
+    def get_filters(self, search_columns=None):
+        pass
+
+
+    def query(self, filters=None, order_column='', order_direction='',
+              page=None, page_size=None):
+        pass
+
+    def is_image(self, col_name):
+        return False
+
+    def is_file(self, col_name):
+        return False
+
+    def is_string(self, col_name):
+        return False
+
+    def is_text(self, col_name):
+        return False
+
+    def is_integer(self, col_name):
+        return False
+
+    def is_float(self, col_name):
+        return False
+
+    def is_boolean(self, col_name):
+        return False
+
+    def is_date(self, col_name):
+        return False
+
+    def is_datetime(self, col_name):
+        return False
+
+    def is_relation(self, prop):
+        return False
+
+    def is_relation_col(self, col):
+        return False
+
+    def is_relation_many_to_one(self, prop):
+        return False
+
+    def is_relation_many_to_many(self, prop):
+        return False
+
+    def is_relation_one_to_one(self, prop):
+        return False
+
+    def is_relation_one_to_many(self, prop):
+        return False
+
+
+    def is_pk(self, col):
+        return False
+
+    def is_fk(self, col):
+        return False
+
+    """
+    -----------------------------------------
+           FUNCTIONS FOR CRUD OPERATIONS
+    -----------------------------------------
+    """
+
+    def add(self, item):
+        pass
+
+    def edit(self, item):
+        pass
+
+    def delete(self, item):
+        pass
+
+    def get_keys(self, lst):
+        return []
+
+
+
+    def get_model_relation(self, prop):
+        pass
+
+    def get_property_col(self, prop):
+        pass
+
+    def get_property_first_col(self, prop):
+        pass
+
+    def get_col_property(self, col_name):
+        pass
+
+    def get_related_obj(self, col_name, value):
+        pass
+
+    def get_related_fk(self, model):
+        pass
+
+    def get_columns_list(self):
+        return []
+
+    def get_search_columns_list(self):
+        return []
+
+    def get_order_columns_list(self):
+        return []
+
+    def get_property_first_col(self, prop):
+        pass
+
+    def get_relation_fk(self, prop):
+        pass
+
+    def get_col_property(self, col_name):
+        pass
+
+    def get(self, id):
+        pass
+
+    def get_pk_value(self, item):
+        pass
 

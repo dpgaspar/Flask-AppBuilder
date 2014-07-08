@@ -1,6 +1,6 @@
 import logging
 from flask.ext.babelpkg import lazy_gettext
-from ..base import BaseFilter, FilterRelation
+from ..base import BaseFilter, FilterRelation, BaseFilterConverter
 
 log = logging.getLogger(__name__)
 
@@ -106,7 +106,7 @@ class FilterEqualFunction(BaseFilter):
         return query.filter(getattr(self.model, self.column_name) == func())
 
 
-class SQLAFilterConverter(object):
+class SQLAFilterConverter(BaseFilterConverter):
     """
         Class for converting columns into a supported list of filters
         specific for SQLAlchemy.
@@ -152,12 +152,4 @@ class SQLAFilterConverter(object):
                                          FilterNotEqual]),
     )
 
-    def __init__(self, datamodel):
-        self.datamodel = datamodel
-
-    def convert(self, col_name):
-        for conversion in self.conversion_table:
-            if getattr(self.datamodel, conversion[0])(col_name):
-                return [item(col_name, self.datamodel) for item in conversion[1]]
-        log.warning('Filter type not supported for column: %s' % col_name)
 

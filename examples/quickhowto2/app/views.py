@@ -5,7 +5,9 @@ from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
 from flask.ext.babelpkg import lazy_gettext as _
-
+from flask.ext.appbuilder.models.generic import PSSession
+from flask_appbuilder.models.generic.interface import VolInterface
+from flask_appbuilder.models.generic import PSModel
 
 from app import db, appbuilder
 from .models import Group, Gender, Contact
@@ -19,6 +21,13 @@ def fill_gender():
     except:
         db.session.rollback()
 
+sess = PSSession()
+
+
+class VolView(ModelView):
+    datamodel = VolInterface(PSModel(), sess)
+    base_permission = ['can_list']
+    search_columns = ['UID']
 
 class ContactModelView(ModelView):
     datamodel = SQLAModel(Contact)
@@ -116,6 +125,8 @@ class ContactTimeChartView(GroupByChartView):
 
 db.create_all()
 fill_gender()
+
+appbuilder.add_view(VolView(), "List PS", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
 appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
 appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
 appbuilder.add_view(ContactGroupModelView, "List Grouped Contacts", icon="fa-envelope", category="Contacts")

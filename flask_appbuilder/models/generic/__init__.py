@@ -89,8 +89,8 @@ class VolModel(object):
     def __str__(self):
         str = self.__class__.__name__ + '=('
         for col in self.columns:
-            str += "{0}:{1};".format(col, getattr(self,col))
-        str += ')'
+            str += "{0}:{1};".format(col, getattr(self, col))
+        str += ')\n'
         return str
 
 
@@ -104,6 +104,7 @@ class BaseVolSession(object):
         self.query_class = ""
 
     def query(self, model_cls):
+        self.__init__()
         self.query_class = model_cls.__name__
         return self
 
@@ -125,6 +126,13 @@ class BaseVolSession(object):
 
     def _like(self, item, col_name, value):
         return value in getattr(item, col_name)
+
+    def equal(self, col_name, value):
+        self._filters_cmd.append((self._equal, col_name, value))
+        return self
+
+    def _equal(self, item, col_name, value):
+        return getattr(item, col_name) == value
 
     def all(self):
         items = list()

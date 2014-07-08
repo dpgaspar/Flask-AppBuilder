@@ -134,12 +134,13 @@ class GeneralModelConverter(object):
                 lst_validators.append(validators.Optional())
             if col.unique:
                 lst_validators.append(Unique(self.datamodel, col))
-
+        except:
             fc = FieldConverter(self.datamodel, col.name, label, description, lst_validators)
             form_props[col.name] = fc.convert()
             return form_props
-        except Exception as e:
-            log.warning("Cannot convert field: {0} ({1})".format(col, label))
+
+            #except Exception as e:
+            #    log.warning("Cannot convert field: {0} ({1})".format(col, label))
 
     def _convert_prop(self, prop, label, description, lst_validators, filter_rel_fields, form_props):
         if self.datamodel.is_relation(prop):
