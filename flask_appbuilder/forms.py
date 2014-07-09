@@ -176,6 +176,7 @@ class GeneralModelConverter(object):
                                    self._get_description(col_name, description_columns),
                                    self._get_validators(col_name, validators_columns),
                                    filter_rel_fields, form_props)
+        print "FORM: {0}".format(form_props)
         return type('DynamicForm', (DynamicForm,), form_props)
 
 

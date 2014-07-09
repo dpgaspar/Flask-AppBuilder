@@ -25,10 +25,11 @@ class SQLAModel(BaseInterface):
     Implements SQLA support methods for views
     """
     session = None
-    list_columns = dict()
-    list_properties = dict()
 
     def __init__(self, obj, session=None):
+        self.list_columns = dict()
+        self.list_properties = dict()
+
         self.session = session
         # Collect all SQLA columns
         for col_name in obj.__mapper__.columns.keys():
@@ -36,6 +37,8 @@ class SQLAModel(BaseInterface):
         for prop in sa.orm.class_mapper(obj).iterate_properties:
             self.list_properties[prop.key] = prop
         super(SQLAModel, self).__init__(obj)
+
+
 
     @staticmethod
     def _get_base_query(query=None, filters=None, order_column='', order_direction=''):
@@ -317,6 +320,17 @@ class SQLAModel(BaseInterface):
         return sa.orm.class_mapper(self.obj).iterate_properties
 
     def get_columns_list(self):
+        ret_lst = list()
+        for col_name in self.list_properties.keys():
+            if not self.is_relation(col_name):
+                tmp_prop = self.get_property_first_col(col_name).name
+                if (not self.is_pk(tmp_prop)) and (not self.is_fk(tmp_prop)):
+                    ret_lst.append(col_name)
+            else:
+                ret_lst.append(col_name)
+        return ret_lst
+
+        """
         ret_lst = []
         for prop in self.get_properties_iterator():
             if not self.is_relation(prop):
@@ -326,9 +340,24 @@ class SQLAModel(BaseInterface):
             else:
                 ret_lst.append(prop.key)
         return ret_lst
+        """
 
     #TODO get diferent solution, more intergrated with filters
     def get_search_columns_list(self):
+        ret_lst = list()
+        for col_name in self.list_properties.keys():
+            if not self.is_relation(col_name):
+                tmp_prop = self.get_property_first_col(col_name).name
+                if (not self.is_pk(tmp_prop)) and \
+                        (not self.is_fk(tmp_prop)) and \
+                        (not self.is_image(col_name)) and \
+                        (not self.is_file(col_name)) and \
+                        (not self.is_boolean(col_name)):
+                    ret_lst.append(col_name)
+            else:
+                ret_lst.append(col_name)
+        return ret_lst
+        """
         ret_lst = []
         for prop in self.get_properties_iterator():
             if not self.is_relation(prop):
@@ -340,8 +369,19 @@ class SQLAModel(BaseInterface):
             else:
                 ret_lst.append(prop.key)
         return ret_lst
+        """
 
     def get_order_columns_list(self):
+        ret_lst = list()
+        for col_name in self.list_properties.keys():
+            if not self.is_relation(col_name):
+                if (not self.is_pk(self.get_property_first_col(col_name).name)) and (
+                        not self.is_fk(self.get_property_first_col(col_name).name)):
+                    ret_lst.append(col_name)
+            else:
+                ret_lst.append(col_name)
+        return ret_lst
+        """
         ret_lst = []
         for prop in self.get_properties_iterator():
             if not self.is_relation(prop):
@@ -349,6 +389,7 @@ class SQLAModel(BaseInterface):
                         not self.is_fk(self.get_property_first_col(prop))):
                     ret_lst.append(prop.key)
         return ret_lst
+        """
 
     def get_file_column_list(self):
         return [i.name for i in self.obj.__mapper__.columns if isinstance(i.type, FileColumn)]
@@ -357,9 +398,9 @@ class SQLAModel(BaseInterface):
         return [i.name for i in self.obj.__mapper__.columns if isinstance(i.type, ImageColumn)]
 
 
-    def get_property_first_col(self, prop):
+    def get_property_first_col(self, col_name):
         # support for only one col for pk and fk
-        return prop.columns[0]
+        return self.list_properties[col_name].columns[0]
 
     def get_relation_fk(self, col_name):
         # support for only one col for pk and fk
