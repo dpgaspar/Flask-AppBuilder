@@ -25,9 +25,16 @@ class SQLAModel(BaseInterface):
     Implements SQLA support methods for views
     """
     session = None
+    list_columns = dict()
+    list_properties = dict()
 
     def __init__(self, obj, session=None):
         self.session = session
+        # Collect all SQLA columns
+        for col_name in obj.__mapper__.columns.keys():
+            self.list_columns[col_name] = obj.__mapper__.columns[col_name]
+        for prop in sa.orm.class_mapper(obj).iterate_properties:
+            self.list_properties[prop.key] = prop
         super(SQLAModel, self).__init__(obj)
 
     @staticmethod
@@ -121,68 +128,55 @@ class SQLAModel(BaseInterface):
     """
 
     def is_image(self, col_name):
-        return isinstance(self.obj.__mapper__.columns[col_name].type, ImageColumn)
+        return isinstance(self.list_columns[col_name].type, ImageColumn)
 
     def is_file(self, col_name):
-        return isinstance(self.obj.__mapper__.columns[col_name].type, FileColumn)
+        return isinstance(self.list_columns[col_name].type, FileColumn)
 
     def is_string(self, col_name):
-        return isinstance(self.obj.__mapper__.columns[col_name].type, sa.types.String)
+        return isinstance(self.list_columns[col_name].type, sa.types.String)
 
     def is_text(self, col_name):
-        return isinstance(self.obj.__mapper__.columns[col_name].type, sa.types.Text)
+        return isinstance(self.list_columns[col_name].type, sa.types.Text)
 
     def is_integer(self, col_name):
-        return isinstance(self.obj.__mapper__.columns[col_name].type, sa.types.Integer)
+        return isinstance(self.list_columns[col_name].type, sa.types.Integer)
 
     def is_float(self, col_name):
-        return isinstance(self.obj.__mapper__.columns[col_name].type, sa.types.Float)
+        return isinstance(self.list_columns[col_name].type, sa.types.Float)
 
     def is_boolean(self, col_name):
-        return isinstance(self.obj.__mapper__.columns[col_name].type, sa.types.Boolean)
+        return isinstance(self.list_columns[col_name].type, sa.types.Boolean)
 
     def is_date(self, col_name):
-        return isinstance(self.obj.__mapper__.columns[col_name].type, sa.types.Date)
+        return isinstance(self.list_columns[col_name].type, sa.types.Date)
 
     def is_datetime(self, col_name):
-        return isinstance(self.obj.__mapper__.columns[col_name].type, sa.types.DateTime)
+        return isinstance(self.list_columns[col_name].type, sa.types.DateTime)
 
 
-    def is_relation(self, prop):
-        if isinstance(prop, str):
-            prop = self.get_col_property(prop)
-        return isinstance(prop, sa.orm.properties.RelationshipProperty)
+    def is_relation(self, col_name):
+        return isinstance(self.list_properties[col_name], sa.orm.properties.RelationshipProperty)
+        #if isinstance(prop, str):
+        #    prop = self.get_col_property(prop)
+        # return isinstance(prop, sa.orm.properties.RelationshipProperty)
 
-    def is_relation_col(self, col):
-        for i in self.get_properties_iterator():
-            if self.is_relation(i):
-                if (i.key == col):
-                    return self.is_relation(i)
-        return False
 
-    def is_relation_many_to_one(self, prop):
-        if isinstance(prop, str):
-            prop = self.get_col_property(prop)
-        if self.is_relation(prop):
-            return prop.direction.name == 'MANYTOONE'
+    def is_relation_many_to_one(self, col_name):
+        if self.is_relation(col_name):
+            return self.list_properties[col_name].direction.name == 'MANYTOONE'
 
-    def is_relation_many_to_many(self, prop):
-        if isinstance(prop, str):
-            prop = self.get_col_property(prop)
-        if self.is_relation(prop):
-            return prop.direction.name == 'MANYTOMANY'
+    def is_relation_many_to_many(self, col_name):
+        if self.is_relation(col_name):
+            return self.list_properties[col_name].direction.name == 'MANYTOMANY'
 
-    def is_relation_one_to_one(self, prop):
-        if isinstance(prop, str):
-            prop = self.get_col_property(prop)
-        if self.is_relation(prop):
-            return prop.direction.name == 'ONETOONE'
+    def is_relation_one_to_one(self, col_name):
+        if self.is_relation(col_name):
+            return self.list_properties[col_name].direction.name == 'ONETOONE'
 
-    def is_relation_one_to_many(self, prop):
-        if isinstance(prop, str):
-            prop = self.get_col_property(prop)
-        if self.is_relation(prop):
-            return prop.direction.name == 'ONETOMANY'
+    def is_relation_one_to_many(self, col_name):
+        if self.is_relation(col_name):
+            return self.list_properties[col_name].direction.name == 'ONETOMANY'
 
 
     def is_pk(self, col):

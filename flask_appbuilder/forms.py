@@ -142,38 +142,39 @@ class GeneralModelConverter(object):
             #except Exception as e:
             #    log.warning("Cannot convert field: {0} ({1})".format(col, label))
 
-    def _convert_prop(self, prop, label, description, lst_validators, filter_rel_fields, form_props):
-        if self.datamodel.is_relation(prop):
-            if self.datamodel.is_relation_many_to_one(prop) or self.datamodel.is_relation_one_to_one(prop):
-                return self._convert_many_to_one(prop, label,
+    def _convert_prop(self, col_name, label, description, lst_validators, filter_rel_fields, form_props):
+        if self.datamodel.is_relation(col_name):
+            if self.datamodel.is_relation_many_to_one(col_name) or \
+                    self.datamodel.is_relation_one_to_one(col_name):
+                return self._convert_many_to_one(col_name, label,
                                                  description,
                                                  lst_validators,
                                                  filter_rel_fields, form_props)
-            elif self.datamodel.is_relation_many_to_many(prop) or self.datamodel.is_relation_one_to_many(prop):
-                return self._convert_many_to_many(prop, label,
+            elif self.datamodel.is_relation_many_to_many(col_name) or \
+                    self.datamodel.is_relation_one_to_many(col_name):
+                return self._convert_many_to_many(col_name, label,
                                                   description,
                                                   lst_validators,
                                                   filter_rel_fields, form_props)
             else:
                 log.warning("Relation {0} not supported on {1}".format(prop.direction.name, prop))
         else:
-            col = self.datamodel.get_property_first_col(prop)
-            if not (self.datamodel.is_pk(col) or self.datamodel.is_fk(col)):
-                return self._convert_field(col, label, description, lst_validators, form_props)
+            if not (self.datamodel.is_pk(col_name) or self.datamodel.is_fk(col_name)):
+                return self._convert_field(col_name, label, description, lst_validators, form_props)
 
 
     def create_form(self, label_columns={}, inc_columns=[],
                     description_columns={}, validators_columns={},
                     extra_fields={}, filter_rel_fields=None):
         form_props = {}
-        for col in inc_columns:
-            if col in extra_fields:
-                form_props[col] = extra_fields.get(col)
+        for col_name in inc_columns:
+            if col_name in extra_fields:
+                form_props[col_name] = extra_fields.get(col_name)
             else:
-                prop = self.datamodel.get_col_property(col)
-                self._convert_prop(prop, self._get_label(col, label_columns),
-                                   self._get_description(col, description_columns),
-                                   self._get_validators(col, validators_columns),
+                #prop = self.datamodel.get_col_property(col)
+                self._convert_prop(col_name, self._get_label(col_name, label_columns),
+                                   self._get_description(col_name, description_columns),
+                                   self._get_validators(col_name, validators_columns),
                                    filter_rel_fields, form_props)
         return type('DynamicForm', (DynamicForm,), form_props)
 

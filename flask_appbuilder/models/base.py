@@ -215,12 +215,21 @@ class BaseInterface(object):
         pass
 
     def get_columns_list(self):
+        """
+            Returns a list of all the columns names
+        """
         return []
 
     def get_search_columns_list(self):
+        """
+            Returns a list of searchable columns names
+        """
         return []
 
     def get_order_columns_list(self):
+        """
+            Returns a list of order columns names
+        """
         return []
 
     def get_property_first_col(self, prop):
