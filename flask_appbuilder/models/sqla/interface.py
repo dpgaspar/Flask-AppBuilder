@@ -178,12 +178,18 @@ class SQLAModel(BaseInterface):
         if self.is_relation(col_name):
             return self.list_properties[col_name].direction.name == 'ONETOMANY'
 
+    def is_nullable(self, col_name):
+        return self.list_columns[col_name].nullable
 
-    def is_pk(self, col):
-        return col.primary_key
+    def is_unique(self, col_name):
+        return self.list_columns[col_name].unique
 
-    def is_fk(self, col):
-        return col.foreign_keys
+    def is_pk(self, col_name):
+        return self.list_columns[col_name].primary_key
+
+    def is_fk(self, col_name):
+        return self.list_columns[col_name].foreign_keys
+
 
     """
     -----------------------------------------
@@ -277,24 +283,17 @@ class SQLAModel(BaseInterface):
     -----------------------------------------
     """
 
-    def get_model_relation(self, prop):
-        return prop.mapper.class_
+    def get_model_relation(self, col_name):
+        return self.list_properties[col_name].mapper.class_
+
 
     def get_property_col(self, prop):
         return prop.key
 
     def _get_related_model(self, col_name):
-        for i in self.get_properties_iterator():
-            if self.is_relation(i):
-                if i.key == col_name:
-                    return self.get_model_relation(i), i.direction.name
+        if self.is_relation(col_name):
+            return self.get_model_relation(col_name), self.list_properties[col_name].direction.name
         return None
-
-    def _get_relation_direction(self, col_name):
-        for i in self.get_properties_iterator():
-            if self.is_relation(i):
-                if i.key == col_name:
-                    return i.direction.name
 
     def get_related_obj(self, col_name, value):
         rel_model, rel_direction = self._get_related_model(col_name)
@@ -362,9 +361,9 @@ class SQLAModel(BaseInterface):
         # support for only one col for pk and fk
         return prop.columns[0]
 
-    def get_relation_fk(self, prop):
+    def get_relation_fk(self, col_name):
         # support for only one col for pk and fk
-        return list(prop.local_columns)[0]
+        return list(self.list_properties[col_name].local_columns)[0]
 
     def get_col_property(self, col_name):
         for prop in self.get_properties_iterator():

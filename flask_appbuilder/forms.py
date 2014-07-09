@@ -83,28 +83,28 @@ class GeneralModelConverter(object):
         else:
             return ""
 
-    def _get_func_related_query(self, prop, filter_rel_fields):
+    def _get_func_related_query(self, col_name, filter_rel_fields):
         if filter_rel_fields:
             for filter_rel_field in filter_rel_fields:
-                if filter_rel_field[0] == prop.key:
+                if filter_rel_field[0] == col_name:
                     sqla = filter_rel_field[1]
                     _filters = Filters().add_filter_list(sqla, filter_rel_field[2])
                     return lambda: sqla.query(_filters)[1]
-        rel_model = self.datamodel.get_model_relation(prop)
+        rel_model = self.datamodel.get_model_relation(col_name)
         return lambda: self.datamodel.session.query(rel_model)
 
 
-    def _convert_many_to_one(self, prop, label, description,
+    def _convert_many_to_one(self, col_name, label, description,
                              lst_validators, filter_rel_fields, form_props):
-        query_func = self._get_func_related_query(prop, filter_rel_fields)
+        query_func = self._get_func_related_query(col_name, filter_rel_fields)
         allow_blank = True
-        col = self.datamodel.get_relation_fk(prop)
+        col = self.datamodel.get_relation_fk(col_name)
         if not col.nullable:
             lst_validators.append(validators.Required())
             allow_blank = False
         else:
             lst_validators.append(validators.Optional())
-        form_props[self.datamodel.get_property_col(prop)] = \
+        form_props[col_name] = \
             QuerySelectField(label,
                              description=description,
                              query_factory=query_func,
@@ -113,11 +113,11 @@ class GeneralModelConverter(object):
                              widget=Select2Widget())
         return form_props
 
-    def _convert_many_to_many(self, prop, label, description,
+    def _convert_many_to_many(self, col_name, label, description,
                               lst_validators, filter_rel_fields, form_props):
-        query_func = self._get_func_related_query(prop, filter_rel_fields)
+        query_func = self._get_func_related_query(col_name, filter_rel_fields)
         allow_blank = True
-        form_props[self.datamodel.get_property_col(prop)] = \
+        form_props[col_name] = \
             QuerySelectMultipleField(label,
                                      description=description,
                                      query_factory=query_func,
@@ -126,17 +126,17 @@ class GeneralModelConverter(object):
                                      widget=Select2ManyWidget())
         return form_props
 
-    def _convert_field(self, col, label, description, lst_validators, form_props):
+    def _convert_field(self, col_name, label, description, lst_validators, form_props):
         try:
-            if not col.nullable:
+            if not self.datamodel.is_nullable(col_name):
                 lst_validators.append(validators.Required())
             else:
                 lst_validators.append(validators.Optional())
-            if col.unique:
-                lst_validators.append(Unique(self.datamodel, col))
+            if self.datamodel.is_unique(col_name):
+                lst_validators.append(Unique(self.datamodel, col_name))
         except:
-            fc = FieldConverter(self.datamodel, col.name, label, description, lst_validators)
-            form_props[col.name] = fc.convert()
+            fc = FieldConverter(self.datamodel, col_name, label, description, lst_validators)
+            form_props[col_name] = fc.convert()
             return form_props
 
             #except Exception as e:
@@ -157,7 +157,7 @@ class GeneralModelConverter(object):
                                                   lst_validators,
                                                   filter_rel_fields, form_props)
             else:
-                log.warning("Relation {0} not supported on {1}".format(prop.direction.name, prop))
+                log.warning("Relation {0} not supported".format(col_name))
         else:
             if not (self.datamodel.is_pk(col_name) or self.datamodel.is_fk(col_name)):
                 return self._convert_field(col_name, label, description, lst_validators, form_props)

@@ -9,20 +9,20 @@ class Unique(object):
 
         :param datamodel:
             The datamodel class, abstract layer for backend
-        :param column:
-            The unique column.
+        :param col_name:
+            The unique column name.
         :param message:
             The error message.
     """
     field_flags = ('unique', )
 
-    def __init__(self, datamodel, column, message=None):
+    def __init__(self, datamodel, col_name, message=None):
         self.datamodel = datamodel
-        self.column = column
+        self.col_name = col_name
         self.message = message
 
     def __call__(self, form, field):
-        filters = self.datamodel.get_filters().add_filter(self.column.name,
+        filters = self.datamodel.get_filters().add_filter(self.col_name,
                                                           FilterEqual,
                                                           self.datamodel,
                                                           field.data)
