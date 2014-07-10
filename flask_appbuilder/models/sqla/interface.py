@@ -306,10 +306,11 @@ class SQLAModel(BaseInterface):
         return [view.datamodel.get_related_fk(self.obj) for view in related_views]
 
     def get_related_fk(self, model):
-        for i in self.get_properties_iterator():
-            if self.is_relation(i):
-                if model == self.get_model_relation(i):
-                    return self.get_property_col(i)
+        for col_name in self.list_properties.keys():
+            if self.is_relation(col_name):
+                if model == self.get_model_relation(col_name):
+                    return col_name
+                    #return self.get_property_col(i)
 
 
     """
@@ -330,18 +331,6 @@ class SQLAModel(BaseInterface):
                 ret_lst.append(col_name)
         return ret_lst
 
-        """
-        ret_lst = []
-        for prop in self.get_properties_iterator():
-            if not self.is_relation(prop):
-                tmp_prop = self.get_property_first_col(prop)
-                if (not self.is_pk(tmp_prop)) and (not self.is_fk(tmp_prop)):
-                    ret_lst.append(prop.key)
-            else:
-                ret_lst.append(prop.key)
-        return ret_lst
-        """
-
     #TODO get diferent solution, more intergrated with filters
     def get_search_columns_list(self):
         ret_lst = list()
@@ -357,19 +346,6 @@ class SQLAModel(BaseInterface):
             else:
                 ret_lst.append(col_name)
         return ret_lst
-        """
-        ret_lst = []
-        for prop in self.get_properties_iterator():
-            if not self.is_relation(prop):
-                tmp_prop = self.get_property_first_col(prop)
-                if (not self.is_pk(tmp_prop)) and (not self.is_fk(tmp_prop)):
-                    col = prop.key
-                    if (not self.is_image(col)) and (not self.is_file(col)) and (not self.is_boolean(col)):
-                        ret_lst.append(col)
-            else:
-                ret_lst.append(prop.key)
-        return ret_lst
-        """
 
     def get_order_columns_list(self):
         ret_lst = list()
@@ -381,15 +357,6 @@ class SQLAModel(BaseInterface):
             else:
                 ret_lst.append(col_name)
         return ret_lst
-        """
-        ret_lst = []
-        for prop in self.get_properties_iterator():
-            if not self.is_relation(prop):
-                if (not self.is_pk(self.get_property_first_col(prop))) and (
-                        not self.is_fk(self.get_property_first_col(prop))):
-                    ret_lst.append(prop.key)
-        return ret_lst
-        """
 
     def get_file_column_list(self):
         return [i.name for i in self.obj.__mapper__.columns if isinstance(i.type, FileColumn)]

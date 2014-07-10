@@ -9,6 +9,7 @@ from sqla.filters import (FilterContains,FilterEndsWith,
                           FilterNotEndsWith,FilterNotEqual,
                           FilterNotStartsWith,FilterRelationManyToManyEqual,FilterRelationOneToManyEqual,
                           FilterRelationOneToManyNotEqual,FilterSmaller,FilterStartsWith)
+from base import FilterRelation
 log = logging.getLogger(__name__)
 
 
