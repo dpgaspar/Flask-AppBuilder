@@ -127,20 +127,15 @@ class GeneralModelConverter(object):
         return form_props
 
     def _convert_field(self, col_name, label, description, lst_validators, form_props):
-        try:
-            if not self.datamodel.is_nullable(col_name):
-                lst_validators.append(validators.Required())
-            else:
-                lst_validators.append(validators.Optional())
-            if self.datamodel.is_unique(col_name):
-                lst_validators.append(Unique(self.datamodel, col_name))
-        except:
-            fc = FieldConverter(self.datamodel, col_name, label, description, lst_validators)
-            form_props[col_name] = fc.convert()
-            return form_props
-
-            #except Exception as e:
-            #    log.warning("Cannot convert field: {0} ({1})".format(col, label))
+        if not self.datamodel.is_nullable(col_name):
+            lst_validators.append(validators.Required())
+        else:
+            lst_validators.append(validators.Optional())
+        if self.datamodel.is_unique(col_name):
+            lst_validators.append(Unique(self.datamodel, col_name))
+        fc = FieldConverter(self.datamodel, col_name, label, description, lst_validators)
+        form_props[col_name] = fc.convert()
+        return form_props
 
     def _convert_prop(self, col_name, label, description, lst_validators, filter_rel_fields, form_props):
         if self.datamodel.is_relation(col_name):
@@ -176,7 +171,6 @@ class GeneralModelConverter(object):
                                    self._get_description(col_name, description_columns),
                                    self._get_validators(col_name, validators_columns),
                                    filter_rel_fields, form_props)
-        print "FORM: {0}".format(form_props)
         return type('DynamicForm', (DynamicForm,), form_props)
 
 
