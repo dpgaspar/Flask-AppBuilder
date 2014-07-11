@@ -114,6 +114,14 @@ class BaseInterface(object):
         return retlst
 
     """
+        Returns the models class name
+        usefull for auto title on views
+    """
+    @property
+    def model_name(self):
+        return self.obj.__class__.__name__
+
+    """
         Next methods must be overridden
     """
     def get_filters(self, search_columns=None):
@@ -169,11 +177,16 @@ class BaseInterface(object):
     def is_relation_one_to_many(self, prop):
         return False
 
+    def is_nullable(self, col_name):
+        return True
 
-    def is_pk(self, col):
+    def is_unique(self, col_name):
         return False
 
-    def is_fk(self, col):
+    def is_pk(self, col_name):
+        return False
+
+    def is_fk(self, col_name):
         return False
 
     """

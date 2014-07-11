@@ -28,6 +28,12 @@ class VolInterface(BaseInterface):
     def is_string(self, col_name):
         return True
 
+    def is_nullable(self, col_name):
+        return True
+
+    def is_unique(self, col_name):
+        return False
+
     def get_columns_list(self):
         return self.obj.columns
 

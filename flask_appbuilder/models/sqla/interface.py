@@ -38,6 +38,13 @@ class SQLAModel(BaseInterface):
             self.list_properties[prop.key] = prop
         super(SQLAModel, self).__init__(obj)
 
+    """
+        Returns the models class name
+        usefull for auto title on views
+    """
+    @property
+    def model_name(self):
+        return self.obj.__name__
 
 
     @staticmethod

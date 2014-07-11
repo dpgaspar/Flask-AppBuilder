@@ -15,21 +15,6 @@ class PKMissingException(Exception):
 
 
 
-class VolString(str):
-    def __new__(cls, name, is_nullable=False, is_unique=False):
-        obj = super(VolString, cls).__new__(cls)
-        setattr(obj, 'name', name)
-        print 'name' in dir(obj)
-        return obj
-
-class VolInteger(int):
-
-    def __new__(cls, name, is_nullable=False, is_unique=False):
-        obj = super(VolInteger, cls).__new__(cls)
-        setattr(obj, 'name', name)
-        return obj
-
-
 class VolColumn(object):
     col_type = None
     primary_key = None
@@ -45,14 +30,6 @@ class VolColumn(object):
     def check_type(self, value):
         return isinstance(value, self.col_type)
 
-    def get_extended_type(self, name):
-        if self.col_type == int:
-            return VolInteger(name, self.nullable, self.unique)
-        else:
-            v =  VolString(name, self.nullable, self.unique)
-            print v.name
-            return v
-
 
 
 class VolModel(object):
@@ -66,7 +43,7 @@ class VolModel(object):
             if isinstance(getattr(obj, prop), VolColumn):
                 vol_col = getattr(obj, prop)
                 obj._col_defs[prop] = vol_col
-                setattr(obj, prop, vol_col.get_extended_type(prop))
+                setattr(obj, prop, None)
         return obj
 
 
