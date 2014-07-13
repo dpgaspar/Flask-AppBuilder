@@ -205,20 +205,12 @@ class BaseInterface(object):
         pass
 
     def get_keys(self, lst):
+        """
+            return a list of pk values from object list
+        """
         return []
 
-
-
     def get_model_relation(self, prop):
-        pass
-
-    def get_property_col(self, prop):
-        pass
-
-    def get_property_first_col(self, prop):
-        pass
-
-    def get_col_property(self, col_name):
         pass
 
     def get_related_obj(self, col_name, value):
@@ -245,13 +237,7 @@ class BaseInterface(object):
         """
         return []
 
-    def get_property_first_col(self, prop):
-        pass
-
     def get_relation_fk(self, prop):
-        pass
-
-    def get_col_property(self, col_name):
         pass
 
     def get(self, id):

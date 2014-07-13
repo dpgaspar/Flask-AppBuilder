@@ -31,7 +31,7 @@ class SQLAModel(BaseInterface):
         self.list_properties = dict()
 
         self.session = session
-        # Collect all SQLA columns
+        # Collect all SQLA columns and properties
         for col_name in obj.__mapper__.columns.keys():
             self.list_columns[col_name] = obj.__mapper__.columns[col_name]
         for prop in sa.orm.class_mapper(obj).iterate_properties:
@@ -45,7 +45,6 @@ class SQLAModel(BaseInterface):
     @property
     def model_name(self):
         return self.obj.__name__
-
 
     @staticmethod
     def _get_base_query(query=None, filters=None, order_column='', order_direction=''):
@@ -167,10 +166,6 @@ class SQLAModel(BaseInterface):
 
     def is_relation(self, col_name):
         return isinstance(self.list_properties[col_name], sa.orm.properties.RelationshipProperty)
-        #if isinstance(prop, str):
-        #    prop = self.get_col_property(prop)
-        # return isinstance(prop, sa.orm.properties.RelationshipProperty)
-
 
     def is_relation_many_to_one(self, col_name):
         if self.is_relation(col_name):
@@ -296,10 +291,6 @@ class SQLAModel(BaseInterface):
     def get_model_relation(self, col_name):
         return self.list_properties[col_name].mapper.class_
 
-
-    def get_property_col(self, prop):
-        return prop.key
-
     def _get_related_model(self, col_name):
         if self.is_relation(col_name):
             return self.get_model_relation(col_name), self.list_properties[col_name].direction.name
@@ -323,9 +314,6 @@ class SQLAModel(BaseInterface):
     """
     ----------- GET METHODS -------------
     """
-
-    def get_properties_iterator(self):
-        return sa.orm.class_mapper(self.obj).iterate_properties
 
     def get_columns_list(self):
         ret_lst = list()
@@ -380,11 +368,6 @@ class SQLAModel(BaseInterface):
         # support for only one col for pk and fk
         return list(self.list_properties[col_name].local_columns)[0]
 
-    def get_col_property(self, col_name):
-        for prop in self.get_properties_iterator():
-            if col_name == prop.key:
-                return prop
-
     def get(self, id):
         return self.session.query(self.obj).get(id)
 
@@ -392,11 +375,10 @@ class SQLAModel(BaseInterface):
         return getattr(self.obj, name)
 
 
-    """
-    ----------- GET KEYS -------------------
-    """
-
     def get_keys(self, lst):
+        """
+            return a list of pk values from object list
+        """
         pk_name = self.get_pk_name()
         return [getattr(item, pk_name) for item in lst]
 
@@ -404,13 +386,10 @@ class SQLAModel(BaseInterface):
     """
     ----------- GET PK NAME -------------------
     """
-
     def get_pk_name(self):
-        ret_str = ""
         for col_name in self.list_columns.keys():
             if self.is_pk(col_name):
                 return col_name
-
 
     def get_pk_value(self, item):
         for col_name in self.list_columns.keys():
