@@ -3,7 +3,7 @@ from .._compat import as_unicode
 
 
 # For Retro Compatibility purposes
-from sqla.filters import (FilterContains,FilterEndsWith,
+from .sqla.filters import (FilterContains,FilterEndsWith,
                           FilterEqual,FilterEqualFunction,
                           FilterGreater,FilterNotContains,
                           FilterNotEndsWith,FilterNotEqual,
