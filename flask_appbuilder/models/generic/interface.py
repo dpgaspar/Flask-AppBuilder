@@ -43,10 +43,4 @@ class VolInterface(BaseInterface):
     def get_order_columns_list(self):
         return self.obj.columns
 
-    def get_col_property(self, col_name):
-        return col_name
-
-    def get_property_first_col(self, prop):
-        return prop
-
 
