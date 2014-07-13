@@ -28,7 +28,7 @@ class VolView(ModelView):
     datamodel = VolInterface(PSModel(), sess)
     base_permissions = ['can_list']
     list_columns = ['UID','CMD','TIME']
-    search_columns = ['UID']
+    search_columns = ['UID','CMD']
 
 class ContactModelView(ModelView):
     datamodel = SQLAModel(Contact)

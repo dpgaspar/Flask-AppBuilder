@@ -407,14 +407,13 @@ class SQLAModel(BaseInterface):
 
     def get_pk_name(self):
         ret_str = ""
-        for item in list(self.obj.__mapper__.columns):
-            if item.primary_key:
-                ret_str = item.name
-                break
-        return ret_str
+        for col_name in self.list_columns.keys():
+            if self.is_pk(col_name):
+                return col_name
+
 
     def get_pk_value(self, item):
-        for col in list(self.obj.__mapper__.columns):
-            if col.primary_key:
-                return getattr(item, col.name)
+        for col_name in self.list_columns.keys():
+            if self.is_pk(col_name):
+                return getattr(item, col_name)
 
