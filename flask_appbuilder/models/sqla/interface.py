@@ -371,17 +371,6 @@ class SQLAModel(BaseInterface):
     def get(self, id):
         return self.session.query(self.obj).get(id)
 
-    def get_col_byname(self, name):
-        return getattr(self.obj, name)
-
-
-    def get_keys(self, lst):
-        """
-            return a list of pk values from object list
-        """
-        pk_name = self.get_pk_name()
-        return [getattr(item, pk_name) for item in lst]
-
 
     """
     ----------- GET PK NAME -------------------

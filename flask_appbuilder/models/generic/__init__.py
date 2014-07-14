@@ -3,7 +3,6 @@ import operator
 __author__ = 'dpgaspar'
 
 
-
 #--------------------------------------
 #        Exceptions
 #--------------------------------------
@@ -74,7 +73,16 @@ class VolModel(object):
         """
             Returns a list with columns names
         """
-        return self._col_defs.keys()
+        if hasattr(self, '_col_defs'):
+            return self._col_defs.keys()
+        else:
+            return [prop for prop in dir(self)
+                if isinstance(getattr(self, prop), VolColumn)]
+
+
+    @property
+    def properties(self):
+        return self._col_defs
 
     @property
     def pk(self):
@@ -105,6 +113,11 @@ class BaseVolSession(object):
         self.store = dict()
         self.query_filters = list()
         self.query_class = ""
+
+    def get(self, pk):
+        for item in self.store.get(self.query_class):
+            if getattr(item, item.pk) == pk:
+                return item
 
     def query(self, model_cls):
         self.__init__()
@@ -172,26 +185,41 @@ class PSModel(VolModel):
     TIME = VolColumn(str)
     CMD = VolColumn(str)
 
+
 class PSSession(BaseVolSession):
+
+    regexp = "(\w+) +(\w+) +(\w+) +(\w+) +(\w+:\w+|\w+) (\?|tty\w+) +(\w+:\w+:\w+) +(.+)\n"
 
     def query(self):
         return super(PSSession, self).query(PSModel)
 
+    def add_object(self, line):
+        import re
+        group = re.findall(self.regexp, line)
+        if group:
+            model = PSModel()
+            model.UID = group[0][0]
+            model.PID = group[0][1]
+            model.PPID = group[0][2]
+            model.C = group[0][3]
+            model.STIME = group[0][4]
+            model.TTY = group[0][5]
+            model.TIME = group[0][6]
+            model.CMD = group[0][7]
+            self.add(model)
+
+
+    def get(self, pk):
+        import os
+        out = os.popen('ps -p {0} -f'.format(pk))
+        for line in out.readlines():
+            self.add_object(line)
+        return super(PSSession, self).get(pk)
+
+
     def all(self):
         import os
-        import re
         out = os.popen('ps -ef')
         for line in out.readlines():
-            group = re.findall("(\w+) +(\w+) +(\w+) +(\w+) +(\w+:\w+|\w+) (\?|tty\w+) +(\w+:\w+:\w+) +(.+)\n", line)
-            if group:
-                model = PSModel()
-                model.UID = group[0][0]
-                model.PID = group[0][1]
-                model.PPID = group[0][2]
-                model.C = group[0][3]
-                model.STIME = group[0][4]
-                model.TTY = group[0][5]
-                model.TIME = group[0][6]
-                model.CMD = group[0][7]
-                self.add(model)
+            self.add_object(line)
         return super(PSSession, self).all()

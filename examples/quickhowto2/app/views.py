@@ -26,7 +26,7 @@ sess = PSSession()
 
 class VolView(ModelView):
     datamodel = VolInterface(PSModel(), sess)
-    base_permissions = ['can_list']
+    base_permissions = ['can_list', 'can_show']
     list_columns = ['UID','CMD','TIME']
     search_columns = ['UID','CMD']
 

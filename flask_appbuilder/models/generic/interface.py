@@ -26,13 +26,20 @@ class VolInterface(BaseInterface):
         return len(result), result
 
     def is_string(self, col_name):
-        return True
+        return self.obj.properties[col_name].col_type == str
+
+    def is_integer(self, col_name):
+        return self.obj.properties[col_name].col_type == int
+
 
     def is_nullable(self, col_name):
-        return True
+        return self.obj.properties[col_name].nullable
 
     def is_unique(self, col_name):
-        return False
+        return self.obj.properties[col_name].unique
+
+    def is_pk(self, col_name):
+        return self.obj.properties[col_name].primary_key
 
     def get_columns_list(self):
         return self.obj.columns
@@ -43,4 +50,17 @@ class VolInterface(BaseInterface):
     def get_order_columns_list(self):
         return self.obj.columns
 
+    def get_keys(self, lst):
+        """
+            return a list of pk values from object list
+        """
+        pk_name = self.get_pk_name()
+        return [getattr(item, pk_name) for item in lst]
 
+    def get_pk_name(self):
+        for col_name in self.obj.columns:
+            if self.is_pk(col_name):
+                return col_name
+
+    def get(self, id):
+        return self.session.get(id)

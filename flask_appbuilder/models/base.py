@@ -208,7 +208,15 @@ class BaseInterface(object):
         """
             return a list of pk values from object list
         """
-        return []
+        pk_name = self.get_pk_name()
+        return [getattr(item, pk_name) for item in lst]
+
+    def get_pk_name(self, item):
+        pass
+
+    def get(self, id):
+        pass
+
 
     def get_model_relation(self, prop):
         pass
@@ -240,9 +248,5 @@ class BaseInterface(object):
     def get_relation_fk(self, prop):
         pass
 
-    def get(self, id):
-        pass
 
-    def get_pk_value(self, item):
-        pass
 
