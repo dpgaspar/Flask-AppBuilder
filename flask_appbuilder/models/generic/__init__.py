@@ -156,9 +156,13 @@ class BaseVolSession(object):
             items = self.store.get(self.query_class)
         else:
             for item in self.store.get(self.query_class):
+                tmp_flag = True
                 for filter_cmd in self._filters_cmd:
-                    if filter_cmd[0](item, filter_cmd[1], filter_cmd[2]):
-                        items.append(item)
+                    if not filter_cmd[0](item, filter_cmd[1], filter_cmd[2]):
+                        tmp_flag = False
+                        break
+                if tmp_flag:
+                    items.append(item)
         if self._order_by_cmd:
             return self._order_by(items, self._order_by_cmd)
 
