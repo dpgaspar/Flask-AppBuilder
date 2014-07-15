@@ -3,17 +3,17 @@ from ..base import BaseFilter, FilterRelation, BaseFilterConverter
 
 
 class FilterContains(BaseFilter):
-    name = lazy_gettext('Starts with')
+    name = lazy_gettext('Contains')
 
     def apply(self, query, value):
         return query.like(self.column_name, value)
+
 
 class FilterEqual(BaseFilter):
     name = lazy_gettext('Equal to')
 
     def apply(self, query, value):
         return query.equal(self.column_name, value)
-
 
 
 class VolFilterConverter(BaseFilterConverter):

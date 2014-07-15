@@ -22,6 +22,12 @@ class VolInterface(BaseInterface):
             query = filters.apply_all(query)
         if order_column != '':
             query = query.order_by(order_column + ' ' + order_direction)
+
+        if page:
+            query = query.offset(page * page_size)
+        if page_size:
+            query = query.limit(page_size)
+
         result = query.all()
         return len(result), result
 

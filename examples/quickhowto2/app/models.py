@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, Date
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.orm import relationship
 from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
 from flask.ext.appbuilder import Model
@@ -19,6 +19,12 @@ class Gender(Model):
     def __repr__(self):
         return self.name
 
+class FloatModel(Model):
+    id = Column(Integer, primary_key=True)
+    value = Column(Float, nullable = False, default=0.0)
+
+    def __repr__(self):
+        return self.value
 
 class Contact(Model):
     id = Column(Integer, primary_key=True)

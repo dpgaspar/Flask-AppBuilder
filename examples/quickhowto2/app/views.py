@@ -10,7 +10,7 @@ from flask_appbuilder.models.generic.interface import VolInterface
 from flask_appbuilder.models.generic import PSModel
 
 from app import db, appbuilder
-from .models import Group, Gender, Contact
+from .models import Group, Gender, Contact, FloatModel
 
 
 def fill_gender():
@@ -77,6 +77,10 @@ class GroupModelView(ModelView):
     related_views = [ContactModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
+class FloatModelView(ModelView):
+    datamodel = SQLAModel(FloatModel)
+
+
 class ContactChartView(GroupByChartView):
     datamodel = SQLAModel(Contact)
     chart_title = 'Grouped contacts'
@@ -130,6 +134,7 @@ fill_gender()
 appbuilder.add_view(VolView(), "List PS", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
 appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
 appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
+appbuilder.add_view(FloatModelView, "List Float Model", icon="fa-envelope", category="Contacts")
 appbuilder.add_view(ContactGroupModelView, "List Grouped Contacts", icon="fa-envelope", category="Contacts")
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")

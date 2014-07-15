@@ -1,6 +1,8 @@
-import operator
-
 __author__ = 'dpgaspar'
+
+import operator
+import os
+
 
 
 #--------------------------------------
@@ -113,9 +115,16 @@ class BaseVolSession(object):
         self.store = dict()
         self.query_filters = list()
         self.query_class = ""
+        self._offset = 0
+        self._limit = 0
+
+    def clear(self):
+        self.store = dict()
 
     def get(self, pk):
         for item in self.store.get(self.query_class):
+            # coverts pk value to correct type
+            pk = item.properties[item.pk].col_type(pk)
             if getattr(item, item.pk) == pk:
                 return item
 
@@ -150,6 +159,12 @@ class BaseVolSession(object):
     def _equal(self, item, col_name, value):
         return getattr(item, col_name) == value
 
+    def offset(self, offset = 0):
+        self._offset = offset
+
+    def limit(self, limit = 0):
+        self._limit = limit
+
     def all(self):
         items = list()
         if not self._filters_cmd:
@@ -165,8 +180,11 @@ class BaseVolSession(object):
                     items.append(item)
         if self._order_by_cmd:
             return self._order_by(items, self._order_by_cmd)
-
-        return items
+        if self._limit != 0:
+            print "OFF {0} {1}".format(self._limit, self._offset)
+            return items[self._offset:self._offset + self._limit]
+        else:
+            return items
 
     def add(self, model):
         model_cls_name = model._name
@@ -203,9 +221,9 @@ class PSSession(BaseVolSession):
         if group:
             model = PSModel()
             model.UID = group[0][0]
-            model.PID = group[0][1]
-            model.PPID = group[0][2]
-            model.C = group[0][3]
+            model.PID = int(group[0][1])
+            model.PPID = int(group[0][2])
+            model.C = int(group[0][3])
             model.STIME = group[0][4]
             model.TTY = group[0][5]
             model.TIME = group[0][6]
@@ -214,7 +232,7 @@ class PSSession(BaseVolSession):
 
 
     def get(self, pk):
-        import os
+        self.clear()
         out = os.popen('ps -p {0} -f'.format(pk))
         for line in out.readlines():
             self.add_object(line)
@@ -222,7 +240,7 @@ class PSSession(BaseVolSession):
 
 
     def all(self):
-        import os
+        self.clear()
         out = os.popen('ps -ef')
         for line in out.readlines():
             self.add_object(line)

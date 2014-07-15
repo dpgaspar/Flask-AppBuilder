@@ -39,12 +39,13 @@ class FieldConverter(object):
     )
 
 
-    def __init__(self, datamodel, colname, label, description, validators):
+    def __init__(self, datamodel, colname, label, description, validators, default = None):
         self.datamodel = datamodel
         self.colname = colname
         self.label = label
         self.description = description
         self.validators = validators
+        self.default = default
 
     def convert(self):
         for conversion in self.conversion_table:
@@ -53,11 +54,13 @@ class FieldConverter(object):
                     return conversion[1](self.label,
                                          description=self.description,
                                          validators=self.validators,
-                                         widget=conversion[2]())
+                                         widget=conversion[2](),
+                                         default=self.default)
                 else:
                     return conversion[1](self.label,
                                          description=self.description,
-                                         validators=self.validators)
+                                         validators=self.validators,
+                                         default=self.default)
         log.error('Column %s Type not supported' % self.colname)
 
 
