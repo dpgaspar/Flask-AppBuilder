@@ -131,12 +131,13 @@ class GeneralModelConverter(object):
 
     def _convert_field(self, col_name, label, description, lst_validators, form_props):
         if not self.datamodel.is_nullable(col_name):
-            lst_validators.append(validators.Required())
+            lst_validators.append(validators.InputRequired())
         else:
             lst_validators.append(validators.Optional())
         if self.datamodel.is_unique(col_name):
             lst_validators.append(Unique(self.datamodel, col_name))
-        fc = FieldConverter(self.datamodel, col_name, label, description, lst_validators)
+        default_value = self.datamodel.get_col_default(col_name)
+        fc = FieldConverter(self.datamodel, col_name, label, description, lst_validators, default=default_value)
         form_props[col_name] = fc.convert()
         return form_props
 

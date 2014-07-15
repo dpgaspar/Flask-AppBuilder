@@ -13,6 +13,8 @@ Improvements and Bug fixes on 0.9.4
 - New, API Change, SQLAModel is on flask.ext.appbuilder.model.sqla.interface
 - New, API Change, Filters for sqla are on flask.ext.appbuilder.model.sqla.filters
 - New, API Change, BaseFilter is on flask.ext.appbuilder.model.base
+- Fix, nullable Float and Integer bug issue #26
+- New, default model sqlalchemy support on forms (issue #26). static and callable value
 
 Improvements and Bug fixes on 0.9.3
 -----------------------------------

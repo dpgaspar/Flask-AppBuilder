@@ -204,6 +204,9 @@ class BaseInterface(object):
     def delete(self, item):
         pass
 
+    def get_col_default(self, col_name):
+        pass
+
     def get_keys(self, lst):
         """
             return a list of pk values from object list
@@ -216,7 +219,6 @@ class BaseInterface(object):
 
     def get(self, id):
         pass
-
 
     def get_model_relation(self, prop):
         pass

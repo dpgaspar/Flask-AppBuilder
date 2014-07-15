@@ -161,9 +161,11 @@ class BaseVolSession(object):
 
     def offset(self, offset = 0):
         self._offset = offset
+        return self
 
     def limit(self, limit = 0):
         self._limit = limit
+        return self
 
     def all(self):
         items = list()
@@ -179,12 +181,12 @@ class BaseVolSession(object):
                 if tmp_flag:
                     items.append(item)
         if self._order_by_cmd:
-            return self._order_by(items, self._order_by_cmd)
+            items = self._order_by(items, self._order_by_cmd)
+        total_length = len(items)
         if self._limit != 0:
             print "OFF {0} {1}".format(self._limit, self._offset)
-            return items[self._offset:self._offset + self._limit]
-        else:
-            return items
+            items = items[self._offset:self._offset + self._limit]
+        return total_length, items
 
     def add(self, model):
         model_cls_name = model._name
