@@ -184,7 +184,6 @@ class BaseVolSession(object):
             items = self._order_by(items, self._order_by_cmd)
         total_length = len(items)
         if self._limit != 0:
-            print "OFF {0} {1}".format(self._limit, self._offset)
             items = items[self._offset:self._offset + self._limit]
         return total_length, items
 
