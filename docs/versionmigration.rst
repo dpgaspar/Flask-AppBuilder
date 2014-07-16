@@ -1,6 +1,25 @@
 Version Migration
 =================
 
+Migrating from 0.9.X to 0.10.X
+------------------------------
+
+This new version has NO breaking features, all your code will work, unless you are hacking directly onto SQLModel,
+Filters, DataModel etc.
+
+But, to keep up with the changes, you should change these:
+
+::
+
+    from flask.ext.appbuilder.models.datamodel import SQLAModel
+    from flask.ext.appbuilder.models.filters import FilterEqual, FilterContains
+to::
+
+    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
+    from flask.ext.appbuilder.models.sqla.filters import FilterEqual, FilterContains
+
+
+
 Migrating from 0.8.X to 0.9.X
 -----------------------------
 

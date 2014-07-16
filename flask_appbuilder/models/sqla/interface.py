@@ -19,7 +19,7 @@ from ..._compat import as_unicode
 log = logging.getLogger(__name__)
 
 
-class SQLAModel(BaseInterface):
+class SQLAInterface(BaseInterface):
     """
     SQLAModel
     Implements SQLA support methods for views
@@ -396,3 +396,7 @@ class SQLAModel(BaseInterface):
             if self.is_pk(col_name):
                 return getattr(item, col_name)
 
+"""
+    For Retro-Compatibility
+"""
+SQLModel = SQLAInterface
