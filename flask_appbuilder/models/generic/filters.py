@@ -8,12 +8,27 @@ class FilterContains(BaseFilter):
     def apply(self, query, value):
         return query.like(self.column_name, value)
 
+class FilterNotContains(BaseFilter):
+    name = lazy_gettext('Not Contains')
+
+    def apply(self, query, value):
+        return query.not_like(self.column_name, value)
+
 
 class FilterEqual(BaseFilter):
     name = lazy_gettext('Equal to')
 
     def apply(self, query, value):
         return query.equal(self.column_name, value)
+
+
+class FilterNotEqual(BaseFilter):
+    name = lazy_gettext('Not Equal to')
+
+    def apply(self, query, value):
+        return query.not_equal(self.column_name, value)
+
+
 
 
 class VolFilterConverter(BaseFilterConverter):
@@ -23,9 +38,15 @@ class VolFilterConverter(BaseFilterConverter):
 
     """
     conversion_table = (('is_text', [FilterContains,
-                                     FilterEqual]
+                                     FilterNotContains,
+                                     FilterEqual,
+                                     FilterNotEqual]
                                      ),
                         ('is_string', [FilterContains,
-                                       FilterEqual]),
+                                       FilterNotContains,
+                                       FilterEqual,
+                                       FilterNotEqual]),
+                        ('is_integer', [FilterEqual,
+                                        FilterNotEqual]),
                         )
 

@@ -118,7 +118,16 @@ class BaseVolSession(object):
         self._limit = 0
 
     def clear(self):
+        """
+            Deletes the entire store
+        """
         self.store = dict()
+
+    def delete_all(self, model_cls):
+        """
+            Deletes all objects of type model_cls
+        """
+        self.store[model_cls._name] = []
 
     def get(self, pk):
         for item in self.store.get(self.query_class):
@@ -148,6 +157,10 @@ class BaseVolSession(object):
     def scalar(self):
         return 0
 
+    #-----------------------------------------
+    #           FUNCTIONS for FILTERS
+    #-----------------------------------------
+
     def like(self, col_name, value):
         self._filters_cmd.append((self._like, col_name, value))
         return self
@@ -155,12 +168,29 @@ class BaseVolSession(object):
     def _like(self, item, col_name, value):
         return value in getattr(item, col_name)
 
+    def not_like(self, col_name, value):
+        self._filters_cmd.append((self._not_like, col_name, value))
+        return self
+
+    def _not_like(self, item, col_name, value):
+        return value not in getattr(item, col_name)
+
     def equal(self, col_name, value):
         self._filters_cmd.append((self._equal, col_name, value))
         return self
 
     def _equal(self, item, col_name, value):
-        return getattr(item, col_name) == value
+        source_value = getattr(item, col_name)
+        return source_value == type(source_value)(value)
+
+    def not_equal(self, col_name, value):
+        self._filters_cmd.append((self._not_equal, col_name, value))
+        return self
+
+    def _not_equal(self, item, col_name, value):
+        source_value = getattr(item, col_name)
+        return source_value != type(source_value)(value)
+
 
     def offset(self, offset = 0):
         self._offset = offset
@@ -174,7 +204,6 @@ class BaseVolSession(object):
         items = list()
         if not self._filters_cmd:
             items = self.store.get(self.query_class)
-            print("DEBUG {0} {1}".format(self.query_class, items))
         else:
             for item in self.store.get(self.query_class):
                 tmp_flag = True
@@ -216,9 +245,6 @@ class PSSession(BaseVolSession):
 
     regexp = "(\w+) +(\w+) +(\w+) +(\w+) +(\w+:\w+|\w+) (\?|tty\w+) +(\w+:\w+:\w+) +(.+)\n"
 
-    def query(self):
-        return super(PSSession, self).query(PSModel())
-
     def add_object(self, line):
         import re
         group = re.findall(self.regexp, line)
@@ -236,7 +262,7 @@ class PSSession(BaseVolSession):
 
 
     def get(self, pk):
-        self.clear()
+        self.delete_all(PSModel())
         out = os.popen('ps -p {0} -f'.format(pk))
         for line in out.readlines():
             self.add_object(line)
@@ -244,7 +270,7 @@ class PSSession(BaseVolSession):
 
 
     def all(self):
-        self.clear()
+        self.delete_all(PSModel())
         out = os.popen('ps -ef')
         for line in out.readlines():
             self.add_object(line)
