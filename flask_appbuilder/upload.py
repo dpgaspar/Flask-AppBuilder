@@ -3,11 +3,14 @@ from werkzeug.datastructures import FileStorage
 
 from wtforms import ValidationError, fields
 from wtforms.widgets import HTMLString, html_params
-from wtforms.fields.core import _unset_value
 from flask.ext.babelpkg import gettext
 from .filemanager import ImageManager, FileManager
 
-
+try:
+    from wtforms.fields.core import _unset_value as unset_value
+except ImportError:
+    from wtforms.utils import unset_value
+    
 
 """
     Based and thanks to https://github.com/mrjoes/flask-admin/blob/master/flask_admin/form/upload.py
@@ -132,7 +135,7 @@ class FileUploadField(fields.TextField):
                 not self.filemanager.is_file_allowed(self.data.filename)):
             raise ValidationError(gettext('Invalid file extension'))
 
-    def process(self, formdata, data=_unset_value):
+    def process(self, formdata, data=unset_value):
         if formdata:
             marker = '_%s-delete' % self.name
             if marker in formdata:
@@ -180,7 +183,7 @@ class ImageUploadField(fields.TextField):
                 not self.imagemanager.is_file_allowed(self.data.filename)):
             raise ValidationError(gettext('Invalid file extension'))
 
-    def process(self, formdata, data=_unset_value):
+    def process(self, formdata, data=unset_value):
         if formdata:
             marker = '_%s-delete' % self.name
             if marker in formdata:
