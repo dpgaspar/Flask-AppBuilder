@@ -26,7 +26,10 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 0.10.0* with new updates for data interfaces alternative to SQLAlchemy.
+*New 0.10.0* with new updates for data interfaces alternative to SQLAlchemy, and some important fixes.
+
+There are some API changes with no breaking features, but you should read the
+`migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures
 
 If you're already using F.A.B. (0.8.N or earlier)
 read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.

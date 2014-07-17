@@ -4,7 +4,7 @@ Version Migration
 Migrating from 0.9.X to 0.10.X
 ------------------------------
 
-This new version has NO breaking features, all your code will work, unless you are hacking directly onto SQLModel,
+This new version has NO breaking features, all your code will work, unless you are hacking directly onto SQLAModel,
 Filters, DataModel etc.
 
 But, to keep up with the changes, you should change these:
