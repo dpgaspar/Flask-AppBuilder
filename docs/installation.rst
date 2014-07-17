@@ -1,7 +1,7 @@
 Installation
 ============
 
-Installation is straightforward, it uses the normal python package install.
+Installation is straightforward, using the normal python package install.
 I do advise you to additionally install the base skeleton application
 so that you can immediately have a running application (without any models yet) and an easy to grow boilerplate.
 
@@ -70,24 +70,24 @@ Using pip
 Skeleton Application
 --------------------
 
-After installing F.A.B. You probably want a simple quick start,
-you can use one of the examples, or clone the base skeleton application::
+After installing F.A.B. you probably want a simple quick start.
+You can use one of the examples, or clone the base skeleton application::
 
     $ git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
     $ cd Flask-AppBuilder-Skeleton
 
 
-This is a running boilerplate, you can run it on a development server, simply like this::
+This is a running boilerplate. You can simply run it on a development server, like this::
 
     $ python run.py
 
-That's it!! When you run the development server you can notice the log,
-it's telling you it is creating all the needed security tables,
-creating the initial 'admin' user, and roles, has well has all the minimal permissions.
+That's it!! When you run the development server you may notice the log,
+informing you about creating all the needed security tables,
+creating the initial 'admin' user, roles, as well as all the minimal permissions.
 
 You now have a running development server on http://localhost:8080.
 
-The git clone of the skeleton is not actually needed for you to run AppBuilder. but it's a good way to start.
+The git clone of the skeleton is not actually needed for you to run AppBuilder, but it's a good way to start.
 
 Initialization
 --------------
@@ -99,19 +99,19 @@ All your models can easily be created too (optionally).
 **The initial 'admin' user password will be 'general'**. Change it on your first access using the application.
 (Click the username on the navigation bar, then choose 'Reset Password')
 
-What requirements were instaled
--------------------------------
+Installation Requirements
+-------------------------
 
 pip installs all the requirements for you.
 
 Flask App Builder dependes on
 
-    - flask : The web framework, this is what we're extending
-    - flask-sqlalchemy : DB access see SQLAlchemy.
+    - flask : The web framework, this is what we're extending.
+    - flask-sqlalchemy : DB access (see SQLAlchemy).
     - flask-login : Login, session on flask.
-    - flask-openid : Open ID authentication
+    - flask-openid : Open ID authentication.
     - flask-wtform : Web forms.
-    - flask-BabelPkg : For internationalization, fork from flask-babel
+    - flask-BabelPkg : For internationalization, fork from flask-babel.
 
 If you plan to use Image on database, you will need to install PIL::
 
