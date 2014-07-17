@@ -217,7 +217,7 @@ class PSSession(BaseVolSession):
     regexp = "(\w+) +(\w+) +(\w+) +(\w+) +(\w+:\w+|\w+) (\?|tty\w+) +(\w+:\w+:\w+) +(.+)\n"
 
     def query(self):
-        return super(PSSession, self).query(PSModel)
+        return super(PSSession, self).query(PSModel())
 
     def add_object(self, line):
         import re
