@@ -34,7 +34,6 @@ class VolInterface(BaseInterface):
     def is_integer(self, col_name):
         return self.obj.properties[col_name].col_type == int
 
-
     def is_nullable(self, col_name):
         return self.obj.properties[col_name].nullable
 

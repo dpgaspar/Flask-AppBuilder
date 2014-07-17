@@ -36,7 +36,7 @@ class SQLAInterface(BaseInterface):
             self.list_columns[col_name] = obj.__mapper__.columns[col_name]
         for prop in sa.orm.class_mapper(obj).iterate_properties:
             self.list_properties[prop.key] = prop
-        super(SQLAModel, self).__init__(obj)
+        super(SQLAInterface, self).__init__(obj)
 
     """
         Returns the models class name
