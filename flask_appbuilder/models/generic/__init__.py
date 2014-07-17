@@ -174,6 +174,7 @@ class BaseVolSession(object):
         items = list()
         if not self._filters_cmd:
             items = self.store.get(self.query_class)
+            print("DEBUG {0} {1}".format(self.query_class, items))
         else:
             for item in self.store.get(self.query_class):
                 tmp_flag = True
