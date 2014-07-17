@@ -11,8 +11,8 @@ Improvements and Bug fixes on 0.10.0
 - New, template block on edit_cascade.html template, relative_views.
 - New, API Change, DataModel is now BaseInterface and on flask.ext.appbuilder.models.base
 - New, API Change, SQLAModel is now SQLAInterface
-- New, API Change, SQLAModel inherits from BaseInterface (not DataModel)
-- New, API Change, SQLAModel is on flask.ext.appbuilder.models.sqla.interface
+- New, API Change, SQLAInterface inherits from BaseInterface (not DataModel)
+- New, API Change, SQLAInterface is on flask.ext.appbuilder.models.sqla.interface
 - New, API Change, Filters for sqla are on flask.ext.appbuilder.models.sqla.filters
 - New, API Change, BaseFilter is on flask.ext.appbuilder.model.base
 - Fix, nullable Float and Integer bug issue #26
