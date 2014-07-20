@@ -76,7 +76,7 @@ The *Contacts* table.
 	class Contact(Model):
 	    id = Column(Integer, primary_key=True)
 	    name =  Column(String(150), unique = True, nullable=False)
-	    address =  Column(String(564))
+	    address =  Column(String(564), default='Street ')
 	    birthday = Column(Date)
 	    personal_phone = Column(String(20))
 	    personal_celphone = Column(String(20))
@@ -85,6 +85,13 @@ The *Contacts* table.
 	    
 	    def __repr__(self):
                 return self.name
+
+
+Notice that SqlAlchemy properties used here like 'unique', 'nullable' and 'default', will have special
+treatment. In this case when adding a new *Contact* a query will be made to validate
+if a someone with the same name already exists. Empty name contacts will not be allowed. Column types
+are validated. The address field will contain 'Street' has default on add form.
+You can add your own custom validations also, take a look at :doc:`advanced`
 
 
 Define your Views (views.py)
