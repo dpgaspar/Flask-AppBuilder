@@ -31,7 +31,6 @@ class VolColumn(object):
         return isinstance(value, self.col_type)
 
 
-
 class VolModel(object):
 
     def __new__(cls, *args, **kwargs):
@@ -58,6 +57,10 @@ class VolModel(object):
             if arg in self._col_defs:
                 value = kwargs.get(arg)
                 setattr(self, arg, value)
+
+    def __setattr__(self, key, value):
+        if key in self.columns:
+            super(VolModel, self).__setattr__('key', value)
 
     def get_col_type(self, col_name):
         return self._col_defs[col_name].col_type
