@@ -20,19 +20,45 @@ class VolColumn(object):
     primary_key = None
     unique = None
     nullable = None
+    value = None
 
     def __init__(self, col_type, primary_key=False, unique=False, nullable=False):
         self.col_type = col_type
         self.primary_key = primary_key
         self.unique = unique
         self.nullable = nullable
+        self.value = None
 
     def check_type(self, value):
         return isinstance(value, self.col_type)
 
 
+
+class MetaVolModel(type):
+
+    def __new__(meta, name, bases, dct):
+        obj = super(MetaVolModel, meta).__new__(meta, name, bases, dct)
+        obj._col_defs = dict()
+        obj._name = name
+
+        for prop in dct:
+            if isinstance(dct[prop], VolColumn):
+                vol_col = dct[prop]
+                obj._col_defs[prop] = vol_col
+        obj.properties = obj._col_defs
+        obj.columns = obj._col_defs.keys()
+        for col in obj.columns:
+            if obj._col_defs[col].primary_key:
+                obj.pk = col
+                break
+        return obj
+
+
 class VolModel(object):
 
+    __metaclass__ = MetaVolModel
+
+    """
     def __new__(cls, *args, **kwargs):
         obj = super(VolModel, cls).__new__(cls, *args, **kwargs)
         obj._col_defs = dict()
@@ -44,7 +70,7 @@ class VolModel(object):
                 obj._col_defs[prop] = vol_col
                 setattr(obj, prop, None)
         return obj
-
+    """
 
     def __init__(self, **kwargs):
         if not self.pk:
@@ -58,44 +84,8 @@ class VolModel(object):
                 value = kwargs.get(arg)
                 setattr(self, arg, value)
 
-    def __setattr__(self, key, value):
-        if key in self.columns:
-            super(VolModel, self).__setattr__('key', value)
-
     def get_col_type(self, col_name):
         return self._col_defs[col_name].col_type
-
-    @property
-    def _name(self):
-        """
-            Returns this class name
-        """
-        return self.__class__.__name__
-
-    @property
-    def columns(self):
-        """
-            Returns a list with columns names
-        """
-        if hasattr(self, '_col_defs'):
-            return self._col_defs.keys()
-        else:
-            return [prop for prop in dir(self)
-                if isinstance(getattr(self, prop), VolColumn)]
-
-
-    @property
-    def properties(self):
-        return self._col_defs
-
-    @property
-    def pk(self):
-        """
-            Returns the pk name
-        """
-        for col in self.columns:
-            if self._col_defs[col].primary_key:
-                return col
 
 
     def __repr__(self):
