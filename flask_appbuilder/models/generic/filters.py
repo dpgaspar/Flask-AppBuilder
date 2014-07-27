@@ -31,7 +31,7 @@ class FilterNotEqual(BaseFilter):
 
 
 
-class VolFilterConverter(BaseFilterConverter):
+class GenericFilterConverter(BaseFilterConverter):
     """
         Class for converting columns into a supported list of filters
         specific for SQLAlchemy.

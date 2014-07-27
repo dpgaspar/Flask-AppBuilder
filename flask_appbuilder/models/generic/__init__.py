@@ -14,35 +14,45 @@ class PKMissingException(Exception):
         super(PKMissingException, self).__init__(self, message)
 
 
-
-class VolColumn(object):
+class GenericColumn(object):
     col_type = None
     primary_key = None
     unique = None
     nullable = None
-    value = None
 
     def __init__(self, col_type, primary_key=False, unique=False, nullable=False):
         self.col_type = col_type
         self.primary_key = primary_key
         self.unique = unique
         self.nullable = nullable
-        self.value = None
 
     def check_type(self, value):
         return isinstance(value, self.col_type)
 
 
 
-class MetaVolModel(type):
+class MetaGenericModel(type):
+    """
+        Meta class for GenericModel
+        will change default properties:
+        - instantiates internal '_col_defs' dict with
+            all the defined columns.
+        - Define pk property with the name of the primary key column
+        - Define properties with a list of all column's properties
+        - Define columns with a list of all column's name
+    """
+
+    pk = None
+    properties = None
+    columns = None
 
     def __new__(meta, name, bases, dct):
-        obj = super(MetaVolModel, meta).__new__(meta, name, bases, dct)
+        obj = super(MetaGenericModel, meta).__new__(meta, name, bases, dct)
         obj._col_defs = dict()
         obj._name = name
 
         for prop in dct:
-            if isinstance(dct[prop], VolColumn):
+            if isinstance(dct[prop], GenericColumn):
                 vol_col = dct[prop]
                 obj._col_defs[prop] = vol_col
         obj.properties = obj._col_defs
@@ -54,23 +64,23 @@ class MetaVolModel(type):
         return obj
 
 
-class VolModel(object):
+class GenericModel(object):
+    """
+        Generic Model class to define generic purpose models to use
+        with the framework.
 
-    __metaclass__ = MetaVolModel
+        Use GenericSession much like SQLAlchemy's Session Class.
+        Extend GenericSession to implement specific engine features.
+
+        Define your models like::
+
+            class MyGenericModel(GenericModel):
+                id = GenericColumn(int, primary_key=True)
+                age = GenericColumn(int)
+                name = GenericColumn(str)
 
     """
-    def __new__(cls, *args, **kwargs):
-        obj = super(VolModel, cls).__new__(cls, *args, **kwargs)
-        obj._col_defs = dict()
-
-        props = dir(obj)
-        for prop in props:
-            if isinstance(getattr(obj, prop), VolColumn):
-                vol_col = getattr(obj, prop)
-                obj._col_defs[prop] = vol_col
-                setattr(obj, prop, None)
-        return obj
-    """
+    __metaclass__ = MetaGenericModel
 
     def __init__(self, **kwargs):
         if not self.pk:
@@ -99,7 +109,7 @@ class VolModel(object):
         return str
 
 
-class BaseVolSession(object):
+class GenericSession(object):
 
     def __init__(self):
         self._order_by_cmd = None
@@ -223,18 +233,18 @@ class BaseVolSession(object):
 #-------------------------------------
 #                EXP
 #-------------------------------------
-class PSModel(VolModel):
-    UID = VolColumn(str)
-    PID = VolColumn(int, primary_key=True)
-    PPID = VolColumn(int)
-    C = VolColumn(int)
-    STIME = VolColumn(str)
-    TTY = VolColumn(str)
-    TIME = VolColumn(str)
-    CMD = VolColumn(str)
+class PSModel(GenericModel):
+    UID = GenericColumn(str)
+    PID = GenericColumn(int, primary_key=True)
+    PPID = GenericColumn(int)
+    C = GenericColumn(int)
+    STIME = GenericColumn(str)
+    TTY = GenericColumn(str)
+    TIME = GenericColumn(str)
+    CMD = GenericColumn(str)
 
 
-class PSSession(BaseVolSession):
+class PSSession(GenericSession):
 
     regexp = "(\w+) +(\w+) +(\w+) +(\w+) +(\w+:\w+|\w+) (\?|tty\w+) +(\w+:\w+:\w+) +(.+)\n"
 

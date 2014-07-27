@@ -34,7 +34,6 @@ class FloatModel(Model):
         return self.value
 
 
-
 class Contact(Model):
     id = Column(Integer, primary_key=True)
     name =  Column(String(150), unique = True, nullable=False)

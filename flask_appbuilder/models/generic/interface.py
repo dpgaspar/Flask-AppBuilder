@@ -1,17 +1,17 @@
-from filters import VolFilterConverter
+from filters import GenericFilterConverter
 from ..base import BaseInterface
 from ..filters import Filters
 
 
-class VolInterface(BaseInterface):
+class GenericInterface(BaseInterface):
 
     def __init__(self, obj, session=None):
         self.session = session
-        super(VolInterface, self).__init__(obj)
+        super(GenericInterface, self).__init__(obj)
 
 
     def get_filters(self, search_columns=[]):
-        return Filters(VolFilterConverter, search_columns, self)
+        return Filters(GenericFilterConverter, search_columns, self)
 
 
     def query(self, filters=None, order_column='', order_direction='',
