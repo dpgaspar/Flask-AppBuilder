@@ -62,6 +62,7 @@ class BaseView(object):
                 for attr_name in dir(self)
                 if hasattr(getattr(self, attr_name), '_urls')
             ]
+        print "BASE PERM {0}".format(self.base_permissions)
 
 
     def create_blueprint(self, appbuilder,
