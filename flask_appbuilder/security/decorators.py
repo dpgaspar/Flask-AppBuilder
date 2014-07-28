@@ -1,5 +1,5 @@
 from flask import flash, redirect,url_for,g
-import functools
+from functools
 
 
 def has_access(f):
@@ -32,9 +32,8 @@ def permission_name(name):
         :param name:
             The name of the permission to override
     """
-
     def wrap(f):
         f._permission_name = name
-        return f
+        return functools.update_wrapper(wrap, f)
+    return wrap
     
-    return functools.update_wrapper(wrap, f)
