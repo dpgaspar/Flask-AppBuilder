@@ -445,7 +445,7 @@ class BaseCRUDView(BaseModelView):
             if hasattr(func, '_action'):
                 action = ActionItem(*func._action, func=func)
                 self.base_permissions.append(action.name)
-                self.actions[action.name] = (action)
+                self.actions[action.name] = action
 
 
     def _init_forms(self):
