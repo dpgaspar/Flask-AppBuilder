@@ -1,5 +1,5 @@
 from flask import flash, redirect,url_for,g
-from functools
+import functools
 
 
 def has_access(f):
