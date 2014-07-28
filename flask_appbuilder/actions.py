@@ -18,6 +18,7 @@ class ActionItem(object):
     def __repr__(self):
         return "Action name:%s; text:%s; func:%s;" % (self.name, self.text, self.func.__name__)
 
+
 def action(name, text, confirmation=None, icon = None, multiple=False):
     """
         Use this decorator to expose actions
