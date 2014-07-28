@@ -8,7 +8,7 @@ from flask.ext.babelpkg import lazy_gettext as _
 from flask.ext.appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.generic import PSModel
-from flask_appbuilder import expose,has_access
+from flask_appbuilder import expose, has_access, permission_name
 
 from app import db, appbuilder
 from .models import Group, Gender, Contact, FloatModel
@@ -66,6 +66,7 @@ class ContactModelView(ModelView):
 
     @expose()
     @has_access
+    @permission_name('TEST_HELLO')
     def xpto(self):
         return "HELLO"
 
