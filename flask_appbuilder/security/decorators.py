@@ -18,7 +18,7 @@ def has_access(f):
     return wraps
 
 
-def permission_name(name):
+def permission_name(f, name):
     """
         Use this decorator to override the name of the permission.
         has_access will use the methods name has the permission name
@@ -33,13 +33,7 @@ def permission_name(name):
             The name of the permission to override
     """
     
-    def with_wraps(f):
-        @functools.wraps(f)
-        def wrap(self, *args, **kwargs):
-            return f(self, *args, **kwargs)
-        print "PERMISSION NAME URLS={0}".format(f._urls)
-        f._permission_name = name
-        return f
-    return with_wraps
-
+    f._permission_name = name
+    return f
+    
     
