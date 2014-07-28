@@ -1,5 +1,5 @@
 from flask import flash, redirect,url_for,g
-import functools
+from decorator import decorator
 
 
 def has_access(f):
@@ -32,8 +32,9 @@ def permission_name(f, name):
         :param name:
             The name of the permission to override
     """
-    
-    f._permission_name = name
-    return f
+    def decor(f):
+        f._permission_name = name
+        return f
+    return decor
     
     
