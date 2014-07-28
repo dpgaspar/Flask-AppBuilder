@@ -33,7 +33,10 @@ def permission_name(name):
             The name of the permission to override
     """
     @functools.wraps(f)
-    print "PERMISSION NAME URLS={0}".format(f._urls)
+    def wrap(self, *args, **kwargs):
+        print "PERMISSION NAME URLS={0}".format(f._urls)
+        return f(self, *args, **kwargs)
     f._permission_name = name
+    return wrap
 
     
