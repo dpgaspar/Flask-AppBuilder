@@ -18,7 +18,7 @@ def has_access(f):
     return wraps
 
 
-def permission_name(f, name):
+def permission_name(name):
     """
         Use this decorator to override the name of the permission.
         has_access will use the methods name has the permission name
