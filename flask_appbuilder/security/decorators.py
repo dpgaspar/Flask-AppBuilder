@@ -33,7 +33,7 @@ def permission_name(name):
             The name of the permission to override
     """
     def wrap(f):
-        f._permission_name = name
-        return functools.update_wrapper(wrap, f)
+        return f
+    wrap._permission_name = name
     return wrap
     
