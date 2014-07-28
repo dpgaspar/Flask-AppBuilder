@@ -64,9 +64,9 @@ class ContactModelView(ModelView):
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
-    @expose()
     @has_access
     @permission_name('TEST_HELLO')
+    @expose()
     def xpto(self):
         return "HELLO"
 
