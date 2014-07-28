@@ -36,10 +36,10 @@ def permission_name(name):
     def with_wraps(f):
         @functools.wraps(f)
         def wrap(self, *args, **kwargs):
-            print "PERMISSION NAME URLS={0}".format(f._urls)
             return f(self, *args, **kwargs)
+        print "PERMISSION NAME URLS={0}".format(f._urls)
         f._permission_name = name
-        return wrap
+        return f
     return with_wraps
 
     
