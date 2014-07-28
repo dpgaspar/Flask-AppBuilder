@@ -118,7 +118,7 @@ by inherit them from <em>AuditMixin</em> also. (see <a class="reference internal
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Contact</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">address</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">564</span><span class="p">))</span>
+    <span class="n">address</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">564</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="s">&#39;Street &#39;</span><span class="p">)</span>
     <span class="n">birthday</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Date</span><span class="p">)</span>
     <span class="n">personal_phone</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
     <span class="n">personal_celphone</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
@@ -129,6 +129,11 @@ by inherit them from <em>AuditMixin</em> also. (see <a class="reference internal
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </pre></div>
 </div>
+<p>Notice that SqlAlchemy properties used here like &#8216;unique&#8217;, &#8216;nullable&#8217; and &#8216;default&#8217;, will have special
+treatment. In this case when adding a new <em>Contact</em> a query will be made to validate
+if a someone with the same name already exists. Empty name contacts will not be allowed. Column types
+are validated. The address field will contain &#8216;Street&#8217; has default on add form.
+You can add your own custom validations also, take a look at <a class="reference internal" href="advanced.html"><em>Advanced Configuration</em></a></p>
 </div>
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>

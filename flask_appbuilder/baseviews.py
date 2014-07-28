@@ -57,24 +57,12 @@ class BaseView(object):
             based on exposed methods and actions
         """
         if self.base_permissions is None:
-            self.base_permissions = []
+            self.base_permissions = set()
             for attr_name in dir(self):
-                if hasattr(getattr(self, attr_name), '_urls') \
-                and not hasattr(getattr(self, attr_name), '_permission_name'):
-                    print attr_name, '-->' , dir(getattr(self, attr_name))
-
-                    self.base_permissions.append('can_' + attr_name)
-                elif hasattr(getattr(self, attr_name), '_permission_name'):
+                if hasattr(getattr(self, attr_name), '_permission_name'):
                     permission_name = getattr(getattr(self, attr_name), '_permission_name')
-                    self.base_permissions.append('can_' + permission_name)
-        """
-            self.base_permissions = [
-                ('can_' + attr_name)
-                for attr_name in dir(self)
-                if hasattr(getattr(self, attr_name), '_urls')
-            ]
-        """
-        print "BASE PERM {0}".format(self.base_permissions)
+                    self.base_permissions.add('can_' + permission_name)
+            self.base_permissions = list(self.base_permissions)
 
 
     def create_blueprint(self, appbuilder,

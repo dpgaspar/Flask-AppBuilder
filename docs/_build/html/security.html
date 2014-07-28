@@ -88,7 +88,7 @@
 </div>
 <div class="section" id="permissions">
 <h2>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h2>
-<p>The framework automatically creates for you all the possible existing permissions on your views or menus, by &#8220;inspection&#8221; your code.</p>
+<p>The framework automatically creates for you all the possible existing permissions on your views or menus, by &#8220;inspecting&#8221; your code.</p>
 <p>Each time you create a new view based on a model (inherit from ModelView) it will create the following permissions:</p>
 <blockquote>
 <div><ul class="simple">
@@ -100,7 +100,7 @@
 <li>can download</li>
 </ul>
 </div></blockquote>
-<p>These base permission will be associated with your view, so if you create a view named &#8220;MyModelView&#8221; you can assign to any role these permissions:</p>
+<p>These base permissions will be associated to your view, so if you create a view named &#8220;MyModelView&#8221; you can assign to any role these permissions:</p>
 <blockquote>
 <div><ul class="simple">
 <li>can list on MyModelView</li>
@@ -111,25 +111,28 @@
 <li>can doanload on MyModelView</li>
 </ul>
 </div></blockquote>
-<p>If you extend your view with some exposed method via the &#64;expose decorator:</p>
+<p>If you extend your view with some exposed method via the &#64;expose decorator and you want to protect it
+use the &#64;has_access decorator:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 
-
-    <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/mymethod/&#39;</span><span class="p">)</span>
     <span class="nd">@has_access</span>
+    <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/mymethod/&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">mymethod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c"># do something</span>
         <span class="k">pass</span>
 </pre></div>
 </div>
-<p>The framework will create the following access:</p>
+<p>The framework will create the following access based on your method&#8217;s name:</p>
 <blockquote>
 <div><ul class="simple">
 <li>can mymethod on MyModelView</li>
 </ul>
 </div></blockquote>
-<p>And the decorator &#64;has_access will prevent any unwanted access</p>
+<p>You can aggregate some of your method&#8217;s on a single permission, this can simplify the security configuration
+if there is no need for granular permissions on a group of methods, for this use &#64;permission_name decorator.</p>
+<p>You can use the &#64;permission_name to override the permission&#8217;s name to whatever you like.</p>
+<p>Take a look at <a class="reference internal" href="api.html"><em>API Reference</em></a></p>
 </div>
 <div class="section" id="automatic-cleanup">
 <h2>Automatic Cleanup<a class="headerlink" href="#automatic-cleanup" title="Permalink to this headline">¶</a></h2>

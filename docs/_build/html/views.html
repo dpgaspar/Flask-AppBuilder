@@ -173,8 +173,9 @@ additionally add <strong>&#64;has_access</strong> decorator to tell flask that t
 <span class="target" id="module-flask.ext.appbuilder.security.decorators"></span><dl class="function">
 <dt id="flask.ext.appbuilder.security.decorators.has_access">
 <tt class="descclassname">flask.ext.appbuilder.security.decorators.</tt><tt class="descname">has_access</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.decorators.has_access" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use this decorator to allow access only to security 
-defined permissions, use it only on BaseView classes.</p>
+<dd><p>Use this decorator to enable granular security permissions to your methods.
+Permissions will be associated to a role, and roles are associated to users.</p>
+<p>By default the permission&#8217;s name is the methods name.</p>
 </dd></dl>
 
 <p>This will create the following menu</p>

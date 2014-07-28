@@ -1,13 +1,30 @@
 Versions
 ========
 
-Improvements and Bug fixes on 0.9.4
------------------------------------
+Improvements and Bug fixes on 0.10.1
+------------------------------------
+
+- New, decorator '@permission_name' to override endpoint access permission name.
+- Fix, edit_form_query_rel_fields error only on 0.10.0, issue #30.
+- Fix, only add permissions to methods with @has_access decorator.
+- Fix, prevents duplicate permissions.
+
+Improvements and Bug fixes on 0.10.0
+------------------------------------
 
 - New, template block on add.html template, add_form.
 - New, template block on edit.html template, edit_form.
 - New, template block on show.html template, show_form.
-- New, bootstrap updated to version 3.1.1.
+- New, template block on show_cascade.html template, relative_views.
+- New, template block on edit_cascade.html template, relative_views.
+- New, API Change, DataModel is now BaseInterface and on flask.ext.appbuilder.models.base
+- New, API Change, SQLAModel is now SQLAInterface
+- New, API Change, SQLAInterface inherits from BaseInterface (not DataModel)
+- New, API Change, SQLAInterface is on flask.ext.appbuilder.models.sqla.interface
+- New, API Change, Filters for sqla are on flask.ext.appbuilder.models.sqla.filters
+- New, API Change, BaseFilter is on flask.ext.appbuilder.model.base
+- Fix, nullable Float and Integer bug issue #26
+- New, default model sqlalchemy support on forms (issue #26). static and callable value
 
 Improvements and Bug fixes on 0.9.3
 -----------------------------------

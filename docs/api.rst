@@ -15,6 +15,14 @@ AppBuilder
         
         .. automethod:: __init__
 
+flask.ext.appbuilder.security.decorators
+========================================
+
+.. automodule:: flask.ext.appbuilder.security.decorators
+
+    .. autofunction:: has_access
+    .. autofunction:: permission_name
+
 flask.ext.appbuilder.baseviews
 ==============================
 

@@ -1,6 +1,14 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.10.1
+------------------------------------
+
+- New, decorator '@permission_name' to override endpoint access permission name.
+- Fix, edit_form_query_rel_fields error only on 0.10.0, issue #30.
+- Fix, only add permissions to methods with @has_access decorator.
+- Fix, prevents duplicate permissions.
+
 Improvements and Bug fixes on 0.10.0
 ------------------------------------
 

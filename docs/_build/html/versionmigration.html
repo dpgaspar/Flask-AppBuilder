@@ -61,6 +61,21 @@
             
   <div class="section" id="version-migration">
 <h1>Version Migration<a class="headerlink" href="#version-migration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="migrating-from-0-9-x-to-0-10-x">
+<h2>Migrating from 0.9.X to 0.10.X<a class="headerlink" href="#migrating-from-0-9-x-to-0-10-x" title="Permalink to this headline">¶</a></h2>
+<p>This new version has NO breaking features, all your code will work, unless you are hacking directly onto SQLAModel,
+Filters, DataModel etc.</p>
+<p>But, to keep up with the changes, you should change these:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.datamodel</span> <span class="kn">import</span> <span class="n">SQLAModel</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.filters</span> <span class="kn">import</span> <span class="n">FilterEqual</span><span class="p">,</span> <span class="n">FilterContains</span>
+</pre></div>
+</div>
+<p>to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.filters</span> <span class="kn">import</span> <span class="n">FilterEqual</span><span class="p">,</span> <span class="n">FilterContains</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="migrating-from-0-8-x-to-0-9-x">
 <h2>Migrating from 0.8.X to 0.9.X<a class="headerlink" href="#migrating-from-0-8-x-to-0-9-x" title="Permalink to this headline">¶</a></h2>
 <p>This new version has a breaking feature, the way you initialize AppBuilder (former BaseApp) has changed.
@@ -265,6 +280,7 @@ python hash_db_password.py
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Version Migration</a><ul>
+<li><a class="reference internal" href="#migrating-from-0-9-x-to-0-10-x">Migrating from 0.9.X to 0.10.X</a></li>
 <li><a class="reference internal" href="#migrating-from-0-8-x-to-0-9-x">Migrating from 0.8.X to 0.9.X</a></li>
 <li><a class="reference internal" href="#migrating-from-0-6-x-to-0-7-x">Migrating from 0.6.X to 0.7.X</a></li>
 <li><a class="reference internal" href="#migrating-from-0-5-x-to-0-6-x">Migrating from 0.5.X to 0.6.X</a></li>

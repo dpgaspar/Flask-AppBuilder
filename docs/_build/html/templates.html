@@ -316,7 +316,7 @@ each block:</p>
 <h2>Edit/Show Cascade Templates<a class="headerlink" href="#edit-show-cascade-templates" title="Permalink to this headline">¶</a></h2>
 <p>On cascade templates for related views the above rules apply, but you can use an extra block
 to insert your template code before, after or over the related view list widget.
-For show cascade templated you have the following structure:</p>
+For show cascade templates you have the following structure:</p>
 <ul>
 <li><dl class="first docutils">
 <dt>Show template</dt>
@@ -356,6 +356,28 @@ For show cascade templated you have the following structure:</p>
 </li>
 </ul>
 </div>
+<div class="section" id="library-functions">
+<h2>Library Functions<a class="headerlink" href="#library-functions" title="Permalink to this headline">¶</a></h2>
+<p>F.A.B. has the following library functions that you can use to render bootstrap 3
+components easily. Using them will ease your productivity and help you introduce
+new html that shares the same look and feel has the framework.</p>
+<ul>
+<li><p class="first">Panel component:</p>
+<div class="highlight-python"><div class="highlight"><pre>{{ lib.panel_begin(&quot;Panel&#39;s Title&quot;) }}
+    Your html goes here
+{{ lib.panel_end() }}
+</pre></div>
+</div>
+</li>
+<li><p class="first">Accordion (pass your view&#8217;s name, or something that will serve has an id):</p>
+<div class="highlight-python"><div class="highlight"><pre>{% call lib.accordion_tag(view.__class__.__name__,&quot;Accordion Title&quot;, False) %}
+    Your HTML goes here
+{% endcall %}
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
 </div>
 
 
@@ -372,6 +394,7 @@ For show cascade templated you have the following structure:</p>
 <li><a class="reference internal" href="#edit-templates">Edit Templates</a></li>
 <li><a class="reference internal" href="#show-templates">Show Templates</a></li>
 <li><a class="reference internal" href="#edit-show-cascade-templates">Edit/Show Cascade Templates</a></li>
+<li><a class="reference internal" href="#library-functions">Library Functions</a></li>
 </ul>
 </li>
 </ul>

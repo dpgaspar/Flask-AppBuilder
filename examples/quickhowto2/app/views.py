@@ -8,6 +8,7 @@ from flask.ext.babelpkg import lazy_gettext as _
 from flask.ext.appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.generic import PSModel
+from flask_appbuilder.models.filters import FilterStartsWith
 from flask_appbuilder import expose, has_access, permission_name
 
 from app import db, appbuilder
@@ -22,14 +23,15 @@ def fill_gender():
     except:
         db.session.rollback()
 
+
 sess = PSSession()
 
 
 class PSView(ModelView):
     datamodel = GenericInterface(PSModel, sess)
     base_permissions = ['can_list', 'can_show']
-    list_columns = ['UID','C','CMD','TIME']
-    search_columns = ['UID','C','CMD']
+    list_columns = ['UID', 'C', 'CMD', 'TIME']
+    search_columns = ['UID', 'C', 'CMD']
 
 
 class ContactModelView(ModelView):
@@ -64,11 +66,22 @@ class ContactModelView(ModelView):
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
+    edit_form_query_rel_fields = [('group',
+                                   SQLAModel(Group, db.session),
+                                   [['name', FilterStartsWith, 'A']]
+                                  )
+                                ]
+
+    @expose(url='/xpto')
     @has_access
-    @permission_name('TEST_HELLO')
-    @expose()
     def xpto(self):
         return "HELLO"
+
+    @has_access
+    @permission_name('TEST_HELLO')
+    @expose(url='/xpto2')
+    def xpto2(self):
+        return "HELLO 2"
 
 
 class ContactGroupModelView(GroupModelView):
@@ -86,6 +99,7 @@ class GroupModelView(ModelView):
     related_views = [ContactModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
+
 class FloatModelView(ModelView):
     datamodel = SQLAModel(FloatModel)
 
@@ -98,18 +112,19 @@ class ContactChartView(GroupByChartView):
 
     definitions = [
         {
-            'group' : 'group',
-            'series' : [(aggregate_count,'group')]
+            'group': 'group',
+            'series': [(aggregate_count, 'group')]
         },
         {
-            'group' : 'gender',
-            'series' : [(aggregate_count,'group')]
+            'group': 'gender',
+            'series': [(aggregate_count, 'group')]
         }
     ]
 
 
 def pretty_month_year(value):
     return calendar.month_name[value.month] + ' ' + str(value.year)
+
 
 def pretty_year(value):
     return str(value.year)
@@ -123,25 +138,24 @@ class ContactTimeChartView(GroupByChartView):
     label_columns = ContactModelView.label_columns
     definitions = [
         {
-            'group' : 'month_year',
+            'group': 'month_year',
             'formatter': pretty_month_year,
-            'series': [(aggregate_count,'group')]
+            'series': [(aggregate_count, 'group')]
         },
         {
             'group': 'year',
             'formatter': pretty_year,
-            'series': [(aggregate_count,'group')]
+            'series': [(aggregate_count, 'group')]
         }
     ]
-
-
 
 
 db.create_all()
 fill_gender()
 
 appbuilder.add_view(PSView, "List PS", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
+appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts",
+                    category_icon='fa-envelope')
 appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
 appbuilder.add_view(FloatModelView, "List Float Model", icon="fa-envelope", category="Contacts")
 appbuilder.add_view(ContactGroupModelView, "List Grouped Contacts", icon="fa-envelope", category="Contacts")

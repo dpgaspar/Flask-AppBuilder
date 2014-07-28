@@ -91,7 +91,7 @@ class GeneralModelConverter(object):
             for filter_rel_field in filter_rel_fields:
                 if filter_rel_field[0] == col_name:
                     sqla = filter_rel_field[1]
-                    _filters = Filters().add_filter_list(sqla, filter_rel_field[2])
+                    _filters = self.datamodel.get_filters().add_filter_list(sqla, filter_rel_field[2])
                     return lambda: sqla.query(_filters)[1]
         rel_model = self.datamodel.get_model_relation(col_name)
         return lambda: self.datamodel.session.query(rel_model)

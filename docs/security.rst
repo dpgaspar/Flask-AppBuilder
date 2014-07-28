@@ -32,7 +32,7 @@ Of course you can create any additional role you want and configure them as you 
 Permissions
 -----------
 
-The framework automatically creates for you all the possible existing permissions on your views or menus, by "inspection" your code. 
+The framework automatically creates for you all the possible existing permissions on your views or menus, by "inspecting" your code.
 
 Each time you create a new view based on a model (inherit from ModelView) it will create the following permissions:
 
@@ -43,7 +43,7 @@ Each time you create a new view based on a model (inherit from ModelView) it wil
 	- can delete
 	- can download
 	
-These base permission will be associated with your view, so if you create a view named "MyModelView" you can assign to any role these permissions:
+These base permissions will be associated to your view, so if you create a view named "MyModelView" you can assign to any role these permissions:
 
 	- can list on MyModelView
 	- can show on MyModelView
@@ -52,23 +52,29 @@ These base permission will be associated with your view, so if you create a view
 	- can delete on MyModelView
 	- can doanload on MyModelView
 	
-If you extend your view with some exposed method via the @expose decorator::
+If you extend your view with some exposed method via the @expose decorator and you want to protect it
+use the @has_access decorator::
 
     class MyModelView(ModelView):
         datamodel = SQLAModel(Group, db.session)
     	
-
-        @expose('/mymethod/')
         @has_access
+        @expose('/mymethod/')
         def mymethod(self):
             # do something
             pass
 
-The framework will create the following access:
+The framework will create the following access based on your method's name:
 
 	- can mymethod on MyModelView
 	
-And the decorator @has_access will prevent any unwanted access
+You can aggregate some of your method's on a single permission, this can simplify the security configuration
+if there is no need for granular permissions on a group of methods, for this use @permission_name decorator.
+
+You can use the @permission_name to override the permission's name to whatever you like.
+
+Take a look at :doc:`api`
+
 
 Automatic Cleanup
 -----------------

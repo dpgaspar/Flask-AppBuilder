@@ -208,6 +208,56 @@ that is no longer part of any registered view or menu.</p>
 
 </div>
 </div>
+<div class="section" id="module-flask.ext.appbuilder.security.decorators">
+<span id="flask-ext-appbuilder-security-decorators"></span><h2>flask.ext.appbuilder.security.decorators<a class="headerlink" href="#module-flask.ext.appbuilder.security.decorators" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="flask.ext.appbuilder.security.decorators.has_access">
+<tt class="descclassname">flask.ext.appbuilder.security.decorators.</tt><tt class="descname">has_access</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.decorators.has_access" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this decorator to enable granular security permissions to your methods.
+Permissions will be associated to a role, and roles are associated to users.</p>
+<p>By default the permission&#8217;s name is the methods name.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="flask.ext.appbuilder.security.decorators.permission_name">
+<tt class="descclassname">flask.ext.appbuilder.security.decorators.</tt><tt class="descname">permission_name</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.decorators.permission_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this decorator to override the name of the permission.
+has_access will use the methods name has the permission name
+if you want to override this add this decorator to your methods.
+This is useful if you want to aggregate methods to permissions</p>
+<p>It will add &#8216;_permission_name&#8217; attribute to your method
+that will be inspected by BaseView to collect your view&#8217;s
+permissions.</p>
+<p>Note that you should use &#64;has_access to execute after &#64;permission_name
+like on the following example.</p>
+<p>Use it like this to aggregate permissions for your methods:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
+
+    <span class="nd">@has_access</span>
+    <span class="nd">@permission_name</span><span class="p">(</span><span class="s">&#39;GeneralXPTO_Permission&#39;</span><span class="p">)</span>
+    <span class="nd">@expose</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s">&#39;/xpto&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">xpto</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;Your on xpto&quot;</span>
+
+    <span class="nd">@has_access</span>
+    <span class="nd">@permission_name</span><span class="p">(</span><span class="s">&#39;GeneralXPTO_Permission&#39;</span><span class="p">)</span>
+    <span class="nd">@expose</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s">&#39;/xpto2&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">xpto2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;Your on xpto2&quot;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; The name of the permission to override</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 <div class="section" id="module-flask.ext.appbuilder.baseviews">
 <span id="flask-ext-appbuilder-baseviews"></span><h2>flask.ext.appbuilder.baseviews<a class="headerlink" href="#module-flask.ext.appbuilder.baseviews" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -1138,6 +1188,7 @@ will create the following columns:</p>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.base">AppBuilder</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.security.decorators">flask.ext.appbuilder.security.decorators</a></li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.baseviews">flask.ext.appbuilder.baseviews</a><ul>
 <li><a class="reference internal" href="#baseview">BaseView</a></li>
 <li><a class="reference internal" href="#basemodelview">BaseModelView</a></li>

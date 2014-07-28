@@ -57,13 +57,31 @@
             
   <div class="section" id="versions">
 <h1>Versions<a class="headerlink" href="#versions" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="improvements-and-bug-fixes-on-0-9-4">
-<h2>Improvements and Bug fixes on 0.9.4<a class="headerlink" href="#improvements-and-bug-fixes-on-0-9-4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="improvements-and-bug-fixes-on-0-10-1">
+<h2>Improvements and Bug fixes on 0.10.1<a class="headerlink" href="#improvements-and-bug-fixes-on-0-10-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>New, decorator <a class="reference external" href="mailto:'&#37;&#52;&#48;permission_name">'<span>&#64;</span>permission_name</a>&#8216; to override endpoint access permission name.</li>
+<li>Fix, edit_form_query_rel_fields error only on 0.10.0, issue #30.</li>
+<li>Fix, only add permissions to methods with &#64;has_access decorator.</li>
+<li>Fix, prevents duplicate permissions.</li>
+</ul>
+</div>
+<div class="section" id="improvements-and-bug-fixes-on-0-10-0">
+<h2>Improvements and Bug fixes on 0.10.0<a class="headerlink" href="#improvements-and-bug-fixes-on-0-10-0" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>New, template block on add.html template, add_form.</li>
 <li>New, template block on edit.html template, edit_form.</li>
 <li>New, template block on show.html template, show_form.</li>
-<li>New, bootstrap updated to version 3.1.1.</li>
+<li>New, template block on show_cascade.html template, relative_views.</li>
+<li>New, template block on edit_cascade.html template, relative_views.</li>
+<li>New, API Change, DataModel is now BaseInterface and on flask.ext.appbuilder.models.base</li>
+<li>New, API Change, SQLAModel is now SQLAInterface</li>
+<li>New, API Change, SQLAInterface inherits from BaseInterface (not DataModel)</li>
+<li>New, API Change, SQLAInterface is on flask.ext.appbuilder.models.sqla.interface</li>
+<li>New, API Change, Filters for sqla are on flask.ext.appbuilder.models.sqla.filters</li>
+<li>New, API Change, BaseFilter is on flask.ext.appbuilder.model.base</li>
+<li>Fix, nullable Float and Integer bug issue #26</li>
+<li>New, default model sqlalchemy support on forms (issue #26). static and callable value</li>
 </ul>
 </div>
 <div class="section" id="improvements-and-bug-fixes-on-0-9-3">
@@ -544,7 +562,8 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Versions</a><ul>
-<li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-9-4">Improvements and Bug fixes on 0.9.4</a></li>
+<li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-10-1">Improvements and Bug fixes on 0.10.1</a></li>
+<li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-10-0">Improvements and Bug fixes on 0.10.0</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-9-3">Improvements and Bug fixes on 0.9.3</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-9-2">Improvements and Bug fixes on 0.9.2</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-9-1">Improvements and Bug fixes on 0.9.1</a></li>
