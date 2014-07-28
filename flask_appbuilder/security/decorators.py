@@ -1,5 +1,5 @@
 from flask import flash, redirect,url_for,g
-from decorator import decorator
+
 
 
 def has_access(f):
