@@ -1,4 +1,6 @@
 from flask import flash, redirect,url_for,g
+import functools
+
 
 def has_access(f):
     """
@@ -32,8 +34,7 @@ def permission_name(name):
     """
 
     def wrap(f):
-        f._permission_name = []
-        f._permission_name.append(name)
+        f._permission_name = name
         return f
     
-    return wrap
+    return functools.update_wrapper(wrap, f)
