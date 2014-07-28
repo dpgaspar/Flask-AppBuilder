@@ -40,5 +40,6 @@ def permission_name(name):
             return f(self, *args, **kwargs)
         f._permission_name = name
         return wrap
+    return with_wraps
 
     
