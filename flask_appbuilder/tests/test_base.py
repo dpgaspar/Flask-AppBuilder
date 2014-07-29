@@ -387,7 +387,6 @@ class FlaskTestCase(unittest.TestCase):
         # Base filter string starts with
         rv = client.get('/model2view/edit/1')
         data = rv.data.decode('utf-8')
-        print data
         ok_('G2' in data)
         ok_('G1' not in data)
 
