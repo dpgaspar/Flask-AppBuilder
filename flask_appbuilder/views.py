@@ -229,6 +229,9 @@ class ModelView(BaseCRUDView):
             return redirect('.')
 
 """
+
+    NEW IDEIA FOR FUTURE RELEASE
+
 class GroupModelView(BaseCRUDView):
     #    Lists grouped by data for visualization only
     base_permissions = ['can_list']
