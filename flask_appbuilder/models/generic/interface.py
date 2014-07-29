@@ -1,4 +1,4 @@
-from filters import GenericFilterConverter
+from .filters import GenericFilterConverter
 from ..base import BaseInterface
 from ..filters import Filters
 
