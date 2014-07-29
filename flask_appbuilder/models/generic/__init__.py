@@ -56,7 +56,7 @@ class MetaGenericModel(type):
                 vol_col = dct[prop]
                 obj._col_defs[prop] = vol_col
         obj.properties = obj._col_defs
-        obj.columns = obj._col_defs.keys()
+        obj.columns = list(obj._col_defs.keys())
         for col in obj.columns:
             if obj._col_defs[col].primary_key:
                 obj.pk = col
