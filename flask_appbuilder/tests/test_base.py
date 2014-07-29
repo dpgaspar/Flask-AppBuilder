@@ -84,6 +84,18 @@ class FlaskTestCase(unittest.TestCase):
             datamodel = SQLAModel(Model2)
             list_columns = ['field_integer', 'field_float', 'field_string', 'field_method']
 
+            edit_form_query_rel_fields = [('group',
+                                   SQLAModel(Model1, self.db.session),
+                                   [['field_string', FilterEqual, 'G2']]
+                                  )
+                                ]
+
+            add_form_query_rel_fields = [('group',
+                                   SQLAModel(Model1, self.db.session),
+                                   [['field_string', FilterEqual, 'G1']]
+                                  )
+                                ]
+
 
         class Model1View(ModelView):
             datamodel = SQLAModel(Model1)
@@ -356,6 +368,28 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model1).first()
         eq_(model, None)
+
+
+    def test_query_rel_fields(self):
+        """
+            Test add and edit form related fields filter
+        """
+        client = self.app.test_client()
+        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.insert_data2()
+
+        # Base filter string starts with
+        rv = client.get('/model2view/add')
+        data = rv.data.decode('utf-8')
+        ok_('G1' in data)
+        ok_('G2' not in data)
+
+        # Base filter string starts with
+        rv = client.get('/model2view/edit')
+        data = rv.data.decode('utf-8')
+        ok_('G2' in data)
+        ok_('G1' not in data)
+
 
     def test_model_list_order(self):
         """
