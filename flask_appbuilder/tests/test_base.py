@@ -14,6 +14,11 @@ from flask_appbuilder.charts.views import (ChartView, TimeChartView,
                                            DirectChartView, GroupByChartView,
                                            DirectByChartView)
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
+
+from flask.ext.appbuilder.models.generic import PSSession
+from flask_appbuilder.models.generic.interface import GenericInterface
+from flask_appbuilder.models.generic import PSModel
+
 import logging
 
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
@@ -78,6 +83,14 @@ class FlaskTestCase(unittest.TestCase):
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        sess = PSSession()
+
+        class PSView(ModelView):
+            datamodel = GenericInterface(PSModel, sess)
+            base_permissions = ['can_list', 'can_show']
+            list_columns = ['UID', 'C', 'CMD', 'TIME']
+            search_columns = ['UID', 'C', 'CMD']
 
 
         class Model2View(ModelView):
@@ -186,6 +199,8 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view(Model2TimeChartView, "Model2 Time Chart")
         self.appbuilder.add_view(Model2DirectChartView, "Model2 Direct Chart")
 
+        self.appbuilder.add_view(PSView, "Generic DS PS View", category='PSView')
+
 
     def tearDown(self):
         self.appbuilder = None
@@ -244,7 +259,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 23)  # current minimal views are 11
+        eq_(len(self.appbuilder.baseviews), 24)  # current minimal views are 11
         
 
     def test_model_creation(self):
@@ -336,6 +351,15 @@ class FlaskTestCase(unittest.TestCase):
                          follow_redirects=True)
         eq_(rv.status_code, 200)
         
+
+    def test_generic_interface(self):
+        """
+            Test Generic Interface for generic-alter datasource
+        """
+        client = self.app.test_client()
+        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = client.get('/psview/list')
+        data = rv.data.decode('utf-8')
 
 
     def test_model_crud(self):

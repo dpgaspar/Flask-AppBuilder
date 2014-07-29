@@ -228,11 +228,9 @@ class ModelView(BaseCRUDView):
             flash("Access is Denied %s %s" % (name, self.__class__.__name__), "danger")
             return redirect('.')
 
-
+"""
 class GroupModelView(BaseCRUDView):
-    """
-        Lists grouped by data for visualization only
-    """
+    #    Lists grouped by data for visualization only
     base_permissions = ['can_list']
     group_bys_cols = None
     # ['<COLNAME>',<FUNC>, ....]
@@ -254,7 +252,7 @@ class GroupModelView(BaseCRUDView):
                          widgets=None,
                          **args):
 
-        """ get joined base filter and current active filter for query """
+        # get joined base filter and current active filter for query
         widgets = widgets or {}
         #actions = actions or self.actions
         joined_filters = filters.get_joined_filters(self._base_filters)
@@ -284,11 +282,6 @@ class GroupModelView(BaseCRUDView):
         return self._get_search_widget(form=form, widgets=widgets)
 
 
-    """
-    --------------------------------
-            LIST
-    --------------------------------
-    """
     @expose('/list/')
     @has_access
     def list(self):
@@ -298,7 +291,7 @@ class GroupModelView(BaseCRUDView):
                                title=self.list_title,
                                widgets=widgets,
                                appbuilder=self.appbuilder)
-
+"""
 
 
 class MasterDetailView(BaseCRUDView):
