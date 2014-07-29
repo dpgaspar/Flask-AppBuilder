@@ -8,7 +8,6 @@ import os
 #        Exceptions
 #--------------------------------------
 class PKMissingException(Exception):
-
     def __init__(self, model_name=''):
         message = 'Please set one primary key on: {0}'.format(model_name)
         super(PKMissingException, self).__init__(self, message)
@@ -28,7 +27,6 @@ class GenericColumn(object):
 
     def check_type(self, value):
         return isinstance(value, self.col_type)
-
 
 
 class MetaGenericModel(type):
@@ -64,7 +62,7 @@ class MetaGenericModel(type):
         return obj
 
 
-class GenericModel(object):
+class GenericModel(object, metaclass=MetaGenericModel):
     """
         Generic Model class to define generic purpose models to use
         with the framework.
@@ -80,8 +78,7 @@ class GenericModel(object):
                 name = GenericColumn(str)
 
     """
-    __metaclass__ = MetaGenericModel
-
+    
     def __init__(self, **kwargs):
         if not self.pk:
             # if only one column, set it as pk
@@ -110,7 +107,6 @@ class GenericModel(object):
 
 
 class GenericSession(object):
-
     def __init__(self):
         self._order_by_cmd = None
         self._filters_cmd = list()
@@ -194,16 +190,19 @@ class GenericSession(object):
         source_value = getattr(item, col_name)
         return source_value != type(source_value)(value)
 
-
-    def offset(self, offset = 0):
+    def offset(self, offset=0):
         self._offset = offset
         return self
 
-    def limit(self, limit = 0):
+    def limit(self, limit=0):
         self._limit = limit
         return self
 
     def all(self):
+        """
+            SQLA like 'all' method, will populate all rows and apply all
+            filters and orders to it.
+        """
         items = list()
         if not self._filters_cmd:
             items = self.store.get(self.query_class)
@@ -225,10 +224,11 @@ class GenericSession(object):
 
     def add(self, model):
         model_cls_name = model._name
-        cls_list =  self.store.get(model_cls_name)
+        cls_list = self.store.get(model_cls_name)
         if not cls_list:
             self.store[model_cls_name] = []
         self.store[model_cls_name].append(model)
+
 
 #-------------------------------------
 #                EXP
@@ -245,11 +245,11 @@ class PSModel(GenericModel):
 
 
 class PSSession(GenericSession):
-
     regexp = "(\w+) +(\w+) +(\w+) +(\w+) +(\w+:\w+|\w+) (\?|tty\w+) +(\w+:\w+:\w+) +(.+)\n"
 
     def add_object(self, line):
         import re
+
         group = re.findall(self.regexp, line)
         if group:
             model = PSModel()
