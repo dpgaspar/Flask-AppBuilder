@@ -78,7 +78,7 @@ class GenericModel(object, metaclass=MetaGenericModel):
                 name = GenericColumn(str)
 
     """
-    
+
     def __init__(self, **kwargs):
         if not self.pk:
             # if only one column, set it as pk
