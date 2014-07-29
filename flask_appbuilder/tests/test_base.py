@@ -379,13 +379,13 @@ class FlaskTestCase(unittest.TestCase):
         self.insert_data2()
 
         # Base filter string starts with
-        rv = client.get('/model2view/add')
+        rv = client.get('/model2view/add?next=%2Fmodel2view%2Flist%2F')
         data = rv.data.decode('utf-8')
         ok_('G1' in data)
         ok_('G2' not in data)
 
         # Base filter string starts with
-        rv = client.get('/model2view/edit')
+        rv = client.get('/model2view/edit/1')
         data = rv.data.decode('utf-8')
         print data
         ok_('G2' in data)
