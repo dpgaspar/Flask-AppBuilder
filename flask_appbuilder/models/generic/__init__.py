@@ -62,7 +62,7 @@ class MetaGenericModel(type):
         return obj
 
 
-class GenericModel(object, with_metaclass=MetaGenericModel):
+class GenericModel(with_metaclass(MetaGenericModel, object)):
     """
         Generic Model class to define generic purpose models to use
         with the framework.
