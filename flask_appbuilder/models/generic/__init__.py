@@ -2,7 +2,7 @@ __author__ = 'dpgaspar'
 
 import operator
 import os
-
+from ..._compat import with_metaclass
 
 #--------------------------------------
 #        Exceptions
@@ -62,7 +62,7 @@ class MetaGenericModel(type):
         return obj
 
 
-class GenericModel(object, metaclass=MetaGenericModel):
+class GenericModel(object, with_metaclass=MetaGenericModel):
     """
         Generic Model class to define generic purpose models to use
         with the framework.
