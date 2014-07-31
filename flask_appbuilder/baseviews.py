@@ -491,15 +491,17 @@ class BaseCRUDView(BaseModelView):
             Init Properties
         """
         super(BaseCRUDView, self)._init_properties()
+        # Reset init props
         self.related_views = self.related_views or []
         self._related_views = self._related_views or []
         self.description_columns = self.description_columns or {}
         self.validators_columns = self.validators_columns or {}
         self.add_form_extra_fields = self.add_form_extra_fields or {}
         self.edit_form_extra_fields = self.edit_form_extra_fields or {}
+        # Generate base props
         order_cols = self.datamodel.get_order_columns_list()
-        list_cols = self.datamodel.get_columns_list()
-        self.list_columns = self.list_columns or [order_cols[0]]
+        list_cols = self.datamodel.get_user_columns_list()
+        self.list_columns = self.list_columns or [list_cols[0]]
         self.order_columns = self.order_columns or order_cols
         if self.show_fieldsets:
             self.show_columns = []

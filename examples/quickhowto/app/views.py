@@ -18,12 +18,15 @@ def fill_gender():
     except:
         db.session.rollback()
 
+class ContactModelView2(ModelView):
+    datamodel = SQLAModel(Contact)
+
 
 class ContactModelView(ModelView):
     datamodel = SQLAModel(Contact)
 
     label_columns = {'group': 'Contacts Group'}
-    list_columns = ['name', 'personal_celphone', 'birthday', 'group']
+    list_columns = ['name', 'personal_celphone', 'birthday', 'group', 'id']
 
     base_order = ('name', 'asc')
 
@@ -105,6 +108,7 @@ db.create_all()
 fill_gender()
 appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
 appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
+appbuilder.add_view(ContactModelView2, "List Contacts2", icon="fa-envelope", category="Contacts")
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
 appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")

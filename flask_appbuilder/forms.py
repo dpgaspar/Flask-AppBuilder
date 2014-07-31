@@ -158,8 +158,8 @@ class GeneralModelConverter(object):
             else:
                 log.warning("Relation {0} not supported".format(col_name))
         else:
-            if not (self.datamodel.is_pk(col_name) or self.datamodel.is_fk(col_name)):
-                return self._convert_field(col_name, label, description, lst_validators, form_props)
+            #if not (self.datamodel.is_pk(col_name) or self.datamodel.is_fk(col_name)):
+            return self._convert_field(col_name, label, description, lst_validators, form_props)
 
 
     def create_form(self, label_columns={}, inc_columns=[],

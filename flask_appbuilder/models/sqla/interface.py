@@ -38,12 +38,12 @@ class SQLAInterface(BaseInterface):
             self.list_properties[prop.key] = prop
         super(SQLAInterface, self).__init__(obj)
 
-    """
-        Returns the models class name
-        usefull for auto title on views
-    """
     @property
     def model_name(self):
+        """
+            Returns the models class name
+            useful for auto title on views
+        """
         return self.obj.__name__
 
     @staticmethod
@@ -184,16 +184,28 @@ class SQLAInterface(BaseInterface):
             return self.list_properties[col_name].direction.name == 'ONETOMANY'
 
     def is_nullable(self, col_name):
-        return self.list_columns[col_name].nullable
+        try:
+            return self.list_columns[col_name].nullable
+        except:
+            return False
 
     def is_unique(self, col_name):
-        return self.list_columns[col_name].unique
+        try:
+            return self.list_columns[col_name].unique
+        except:
+            return False
 
     def is_pk(self, col_name):
-        return self.list_columns[col_name].primary_key
+        try:
+            return self.list_columns[col_name].primary_key
+        except:
+            return False
 
     def is_fk(self, col_name):
-        return self.list_columns[col_name].foreign_keys
+        try:
+            return self.list_columns[col_name].foreign_keys
+        except:
+            return False
 
 
     """
@@ -327,17 +339,22 @@ class SQLAInterface(BaseInterface):
     """
 
     def get_columns_list(self):
+        """
+            Returns all model's columns on SQLA properties
+        """
+        return list(self.list_properties.keys())
+
+    def get_user_columns_list(self):
+        """
+            Returns all model's columns except pk or fk
+        """
         ret_lst = list()
         for col_name in self.list_properties.keys():
-            if not self.is_relation(col_name):
-                tmp_prop = self.get_property_first_col(col_name).name
-                if (not self.is_pk(tmp_prop)) and (not self.is_fk(tmp_prop)):
-                    ret_lst.append(col_name)
-            else:
+            if (not self.is_pk(col_name)) and (not self.is_fk(col_name)):
                 ret_lst.append(col_name)
         return ret_lst
 
-    #TODO get diferent solution, more intergrated with filters
+    #TODO get different solution, more integrated with filters
     def get_search_columns_list(self):
         ret_lst = list()
         for col_name in self.list_properties.keys():
@@ -357,10 +374,6 @@ class SQLAInterface(BaseInterface):
         ret_lst = list()
         for col_name in self.list_properties.keys():
             if not self.is_relation(col_name):
-                if (not self.is_pk(self.get_property_first_col(col_name).name)) and (
-                        not self.is_fk(self.get_property_first_col(col_name).name)):
-                    ret_lst.append(col_name)
-            else:
                 ret_lst.append(col_name)
         return ret_lst
 

@@ -1,6 +1,13 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.10.2
+------------------------------------
+
+- Fix, get order columns was including relations.
+- New, possibility to include primary key and foreign key on forms and views.
+- Fix, python 3 errors on GenericModels, metaclass compatibility.
+
 Improvements and Bug fixes on 0.10.1
 ------------------------------------
 

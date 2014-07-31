@@ -235,6 +235,13 @@ class BaseInterface(object):
         """
         return []
 
+    def get_user_columns_list(self):
+        """
+            Returns a list user viewable columns names
+        """
+        return self.get_columns_list()
+
+
     def get_search_columns_list(self):
         """
             Returns a list of searchable columns names
