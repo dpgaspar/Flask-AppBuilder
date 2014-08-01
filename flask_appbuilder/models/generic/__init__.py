@@ -107,6 +107,15 @@ class GenericModel(with_metaclass(MetaGenericModel, object)):
 
 
 class GenericSession(object):
+    """
+        This class is a base, you should subclass it
+        to implement your own generic data source.
+
+        Override at least the **all** method.
+
+        **GenericSession** will implement filter and orders
+        based on your data generation on the **all** method.
+    """
     def __init__(self):
         self._order_by_cmd = None
         self._filters_cmd = list()
@@ -129,6 +138,10 @@ class GenericSession(object):
         self.store[model_cls._name] = []
 
     def get(self, pk):
+        """
+            Returns the object for the key
+            Override it for efficiency.
+        """
         for item in self.store.get(self.query_class):
             # coverts pk value to correct type
             pk = item.properties[item.pk].col_type(pk)
@@ -136,6 +149,9 @@ class GenericSession(object):
                 return item
 
     def query(self, model_cls):
+        """
+            SQLAlchemy query like method
+        """
         self._filters_cmd = list()
         self.query_filters = list()
         self._order_by_cmd = None
@@ -231,7 +247,7 @@ class GenericSession(object):
 
 
 #-------------------------------------
-#                EXP
+#   Example of an Generic Data Source
 #-------------------------------------
 class PSModel(GenericModel):
     UID = GenericColumn(str)

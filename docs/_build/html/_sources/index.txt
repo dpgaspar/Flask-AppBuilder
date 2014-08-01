@@ -37,6 +37,7 @@ Contents:
    customizing
    templates
    actions
+   generic_datasource
    multipledbs
    i18n
    security

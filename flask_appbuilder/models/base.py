@@ -7,6 +7,7 @@ log = logging.getLogger(__name__)
 class BaseFilter(object):
     """
         Base class for all data filters.
+        Sub class to im
     """
     column_name = ''
     datamodel = None
@@ -14,7 +15,7 @@ class BaseFilter(object):
     name = ''
     is_related_view = False
     """
-        Sets this filter to a special kind of filter for related views.
+        Sets this filter to a special kind for related views.
         If true this filter was not set by the user
     """
 

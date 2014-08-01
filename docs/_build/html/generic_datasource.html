@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Generic Data Sources &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="index.html" />
+    <link rel="next" title="Multiple Databases" href="multipledbs.html" />
+    <link rel="prev" title="Actions" href="actions.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="multipledbs.html" title="Multiple Databases"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="actions.html" title="Actions"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="generic-data-sources">
+<h1>Generic Data Sources<a class="headerlink" href="#generic-data-sources" title="Permalink to this headline">¶</a></h1>
+<p>This feature is still beta, but you can already use it, it allows you to use alternative/generic datasources.
+With it you can use python libraries, systems commands or whatever with the framework has if they were
+SQLAlchemy models.</p>
+<div class="section" id="ps-command-example">
+<h2>PS Command example<a class="headerlink" href="#ps-command-example" title="Permalink to this headline">¶</a></h2>
+<p>Already on the framework, and intended to be an example is a data source that holds the output from
+the linux &#8216;ps -ef&#8217; command, and shows it has if it were an SQLA model.</p>
+<p>Your own generic data source must subclass from <strong>GenericSession</strong> and implement at least the <strong>all</strong> method</p>
+<p>The <strong>GenericSession</strong> mimics a subset of SQLA <strong>Session</strong> class and it&#8217;s query feature, so if you
+override the all method you will implement the data generation at it&#8217;s heart.</p>
+<p>On our example you must first define the <strong>Model</strong> you will represent:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.generic</span> <span class="kn">import</span> <span class="n">GenericModel</span><span class="p">,</span> <span class="n">GenericSession</span><span class="p">,</span> <span class="n">GenericColumn</span>
+
+<span class="k">class</span> <span class="nc">PSModel</span><span class="p">(</span><span class="n">GenericModel</span><span class="p">):</span>
+    <span class="n">UID</span> <span class="o">=</span> <span class="n">GenericColumn</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">PID</span> <span class="o">=</span> <span class="n">GenericColumn</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">PPID</span> <span class="o">=</span> <span class="n">GenericColumn</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">GenericColumn</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">STIME</span> <span class="o">=</span> <span class="n">GenericColumn</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">TTY</span> <span class="o">=</span> <span class="n">GenericColumn</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">TIME</span> <span class="o">=</span> <span class="n">GenericColumn</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">CMD</span> <span class="o">=</span> <span class="n">GenericColumn</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Has you can see, we are subclassing from <strong>GenericModel</strong> and use <strong>GenericColumn</strong> much like SQLAlchemy.
+except type are really python types. No type obligation is implemented, but you should respect it when
+implementing your own data generation</p>
+<p>For your data generation, and regarding our example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PSSession</span><span class="p">(</span><span class="n">GenericSession</span><span class="p">):</span>
+    <span class="n">regexp</span> <span class="o">=</span> <span class="s">&quot;(\w+) +(\w+) +(\w+) +(\w+) +(\w+:\w+|\w+) (\?|tty\w+) +(\w+:\w+:\w+) +(.+)</span><span class="se">\n</span><span class="s">&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_add_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">re</span>
+
+        <span class="n">group</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regexp</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">group</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">PSModel</span><span class="p">()</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">UID</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">PID</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">PPID</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">STIME</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">TTY</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">TIME</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">6</span><span class="p">]</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">CMD</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">7</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete_all</span><span class="p">(</span><span class="n">PSModel</span><span class="p">())</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s">&#39;ps -p {0} -f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pk</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_object</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">PSSession</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete_all</span><span class="p">(</span><span class="n">PSModel</span><span class="p">())</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s">&#39;ps -ef&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_object</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">PSSession</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>So each time the framework queries the data source, it will <strong>delete_all</strong> records, and
+call &#8216;ps -ef&#8217; for a query all records, or &#8216;ps -p &lt;PID&gt;&#8217; for a single record.</p>
+<p>The <strong>GenericSession</strong> class will implement by itself the Filters and order by methods
+to be applied prior to your <em>all</em> method. So that everything works much like SQLAlchemy.</p>
+<p>I implemented this feature out of the necessity of representing LDAP queries, but of course
+you can use it to wherever your imagination/necessity drives you.</p>
+<p>Finally you can use it on the framework like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sess</span> <span class="o">=</span> <span class="n">PSSession</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">PSView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">GenericInterface</span><span class="p">(</span><span class="n">PSModel</span><span class="p">,</span> <span class="n">sess</span><span class="p">)</span>
+    <span class="n">base_permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;can_list&#39;</span><span class="p">,</span> <span class="s">&#39;can_show&#39;</span><span class="p">]</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;UID&#39;</span><span class="p">,</span> <span class="s">&#39;C&#39;</span><span class="p">,</span> <span class="s">&#39;CMD&#39;</span><span class="p">,</span> <span class="s">&#39;TIME&#39;</span><span class="p">]</span>
+    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;UID&#39;</span><span class="p">,</span> <span class="s">&#39;C&#39;</span><span class="p">,</span> <span class="s">&#39;CMD&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>And then register it like a normal ModelView.</p>
+<p>You can try this example on <cite>quickhowto2 example &lt;https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto2&gt;</cite></p>
+<p>I know this is still a short doc for such a complex feature, any doubts you may have just open an issue.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Generic Data Sources</a><ul>
+<li><a class="reference internal" href="#ps-command-example">PS Command example</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="actions.html" title="previous chapter">Actions</a></li>
+      <li>Next: <a href="multipledbs.html" title="next chapter">Multiple Databases</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/generic_datasource.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+<a href="http://github.com/dpgaspar/Flask-AppBuilder"><img style="position: fixed; top: 0; right: 0; border: 0;"
+src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+
+  <div class="footer">
+    &copy; Copyright 2013, Daniel Vaz Gaspar.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

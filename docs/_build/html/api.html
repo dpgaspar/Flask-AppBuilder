@@ -1172,6 +1172,75 @@ will create the following columns:</p>
 
 </div></blockquote>
 </div>
+<div class="section" id="generic-data-source-beta">
+<h3>Generic Data Source (Beta)<a class="headerlink" href="#generic-data-source-beta" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="module-flask.ext.appbuilder.models.generic">
+<span id="flask-ext-appbuilder-models-generic"></span><h2>flask.ext.appbuilder.models.generic<a class="headerlink" href="#module-flask.ext.appbuilder.models.generic" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="flask.ext.appbuilder.models.generic.GenericColumn">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.generic.</tt><tt class="descname">GenericColumn</tt><big>(</big><em>col_type</em>, <em>primary_key=False</em>, <em>unique=False</em>, <em>nullable=False</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericColumn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="flask.ext.appbuilder.models.generic.GenericModel">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.generic.</tt><tt class="descname">GenericModel</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic Model class to define generic purpose models to use
+with the framework.</p>
+<p>Use GenericSession much like SQLAlchemy&#8217;s Session Class.
+Extend GenericSession to implement specific engine features.</p>
+<p>Define your models like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyGenericModel</span><span class="p">(</span><span class="n">GenericModel</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">GenericColumn</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="n">GenericColumn</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">GenericColumn</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="flask.ext.appbuilder.models.generic.GenericSession">
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.generic.</tt><tt class="descname">GenericSession</tt><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is a base, you should subclass it
+to implement your own generic data source.</p>
+<p>Override at least the <strong>all</strong> method.</p>
+<p><strong>GenericSession</strong> will implement filter and orders
+based on your data generation on the <strong>all</strong> method.</p>
+<dl class="method">
+<dt id="flask.ext.appbuilder.models.generic.GenericSession.all">
+<tt class="descname">all</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>SQLA like &#8216;all&#8217; method, will populate all rows and apply all
+filters and orders to it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.models.generic.GenericSession.clear">
+<tt class="descname">clear</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the entire store</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.models.generic.GenericSession.delete_all">
+<tt class="descname">delete_all</tt><big>(</big><em>model_cls</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.delete_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes all objects of type model_cls</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.models.generic.GenericSession.get">
+<tt class="descname">get</tt><big>(</big><em>pk</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the object for the key
+Override it for efficiency.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.models.generic.GenericSession.query">
+<tt class="descname">query</tt><big>(</big><em>model_cls</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.query" title="Permalink to this definition">¶</a></dt>
+<dd><p>SQLAlchemy query like method</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 
@@ -1217,8 +1286,10 @@ will create the following columns:</p>
 </li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.models.mixins">flask.ext.appbuilder.models.mixins</a><ul>
 <li><a class="reference internal" href="#extra-columns">Extra Columns</a></li>
+<li><a class="reference internal" href="#generic-data-source-beta">Generic Data Source (Beta)</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.models.generic">flask.ext.appbuilder.models.generic</a></li>
 </ul>
 </li>
 </ul>

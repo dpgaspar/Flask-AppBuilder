@@ -168,3 +168,20 @@ Extra Columns
 
     .. autoclass:: ImageColumn
         :members:
+
+Generic Data Source (Beta)
+--------------------------
+
+flask.ext.appbuilder.models.generic
+===================================
+
+.. automodule:: flask.ext.appbuilder.models.generic
+
+    .. autoclass:: GenericColumn
+        :members:
+
+    .. autoclass:: GenericModel
+        :members:
+
+    .. autoclass:: GenericSession
+        :members:
