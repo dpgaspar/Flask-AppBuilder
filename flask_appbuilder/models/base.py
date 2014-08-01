@@ -196,12 +196,21 @@ class BaseInterface(object):
     """
 
     def add(self, item):
+        """
+            Adds object
+        """
         pass
 
     def edit(self, item):
+        """
+            Edit (change) object
+        """
         pass
 
     def delete(self, item):
+        """
+            Deletes object
+        """
         pass
 
     def get_col_default(self, col_name):
@@ -215,9 +224,15 @@ class BaseInterface(object):
         return [getattr(item, pk_name) for item in lst]
 
     def get_pk_name(self, item):
+        """
+            Returns the primary key name
+        """
         pass
 
-    def get(self, id):
+    def get(self, pk):
+        """
+            return the record from key
+        """
         pass
 
     def get_model_relation(self, prop):

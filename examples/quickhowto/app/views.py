@@ -18,9 +18,6 @@ def fill_gender():
     except:
         db.session.rollback()
 
-class ContactModelView2(ModelView):
-    datamodel = SQLAModel(Contact)
-
 
 class ContactModelView(ModelView):
     datamodel = SQLAModel(Contact)

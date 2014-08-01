@@ -8,6 +8,12 @@ Improvements and Bug fixes on 0.10.2
 - New, possibility to include primary key and foreign key on forms and views.
 - Fix, python 3 errors on GenericModels, metaclass compatibility.
 
+TODO:
+- Fix, translation for sec decorator "Access is denied bla bla"
+- Fix, Removal of permission works well but generates error on last iteration.
+- Doc, Application factory method
+- Doc, Python 2 and 3 support.
+
 Improvements and Bug fixes on 0.10.1
 ------------------------------------
 

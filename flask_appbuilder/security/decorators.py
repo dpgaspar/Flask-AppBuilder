@@ -1,4 +1,5 @@
-from flask import flash, redirect,url_for,g
+from flask import flash, redirect,url_for
+from flask_babelpkg import lazy_gettext
 import functools
 
 

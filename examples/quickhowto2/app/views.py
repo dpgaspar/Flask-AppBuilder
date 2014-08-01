@@ -1,6 +1,5 @@
 import calendar
 from flask.ext.appbuilder import ModelView
-from flask.ext.appbuilder.views import GroupModelView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
@@ -34,8 +33,13 @@ class PSView(ModelView):
     search_columns = ['UID', 'C', 'CMD']
 
 
+class ContactModelView2(ModelView):
+    datamodel = SQLAModel(Contact)
+
+
 class ContactModelView(ModelView):
     datamodel = SQLAModel(Contact)
+    base_permissions = ['can_list']
 
     label_columns = {'group': 'Contacts Group'}
     list_columns = ['name', 'personal_celphone', 'birthday', 'group']
@@ -83,15 +87,6 @@ class ContactModelView(ModelView):
     def xpto2(self):
         return "HELLO 2"
 
-
-class ContactGroupModelView(GroupModelView):
-    datamodel = SQLAModel(Contact)
-    group_bys_cols = ['group']
-    # ['<COLNAME>',<FUNC>, ....]
-    aggr_by_cols = [(aggregate_count, 'name')]
-    # [(<AGGR FUNC>,'<COLNAME>'),...]
-    formatter_by_cols = {}
-    # {<FUNC>: '<COLNAME>',...}
 
 
 class GroupModelView(ModelView):
@@ -157,9 +152,10 @@ appbuilder.add_view(PSView, "List PS", icon="fa-folder-open-o", category="Contac
 appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts",
                     category_icon='fa-envelope')
 appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
+appbuilder.add_view(ContactModelView2, "List Contacts 2", icon="fa-envelope", category="Contacts")
 appbuilder.add_view(FloatModelView, "List Float Model", icon="fa-envelope", category="Contacts")
-appbuilder.add_view(ContactGroupModelView, "List Grouped Contacts", icon="fa-envelope", category="Contacts")
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
 appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
 
+appbuilder.security_cleanup()
