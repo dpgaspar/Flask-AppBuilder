@@ -26,7 +26,7 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 0.10.1* with some important fixes, and a new security decorator.
+*New 0.10.2* with some important fixes.
 
 If you're already using F.A.B. (0.9.N or earlier)
 read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.
