@@ -62,6 +62,9 @@
         	$(".my_select2").select2({placeholder: "Select a State", allowClear: true});
         	$("a").tooltip({'selector': '','placement': 'bottom'});
 		});
+
+		$( ".my_change" ).on("change", function(e) { alert('change'); })
+
 	</script>
 {% endblock %}
 

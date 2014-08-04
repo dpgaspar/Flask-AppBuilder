@@ -88,6 +88,18 @@ class Select2Widget(widgets.Select):
             field.name = kwargs['name_']
         return super(Select2Widget, self).__call__(field, **kwargs)
 
+
+class Select2MasterWidget(widgets.Select):
+    def __call__(self, field, **kwargs):
+        kwargs['class'] = u'my_select2 my_change'
+        kwargs['style'] = u'width:250px'
+        kwargs['data-placeholder'] = u'Select Value'
+        if 'name_' in kwargs:
+            field.name = kwargs['name_']
+        return super(Select2Widget, self).__call__(field, **kwargs)
+
+
+
 class Select2ManyWidget(widgets.Select):
     def __call__(self, field, **kwargs):
         kwargs['class'] = u'my_select2'

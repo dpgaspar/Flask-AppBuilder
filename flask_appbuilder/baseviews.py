@@ -380,6 +380,22 @@ class BaseCRUDView(BaseModelView):
     """ Dictionary to add extra fields to the Add form using this property """
     edit_form_extra_fields = None
     """ Dictionary to Add extra fields to the Edit form using this property """
+    add_form_query_cascade = None
+    """
+        Implements query cascade related fields. Will user relate fields
+        with multiple values.
+
+        Grammar: [('Parent field','Child field', SQLAModel(ChildModel, Session),
+                [['child field rel to parent',Filter,'parent'],...]),...]
+
+            class ContactModelView(ModelView):
+                datamodel = SQLAModel(Contact, db.session)
+                add_form_query_cascade = [('model', 'manufacture'
+                        SQLAModel(Product, db.session),
+                        [['manufacture_id',FilterEqual,'id']]
+                        )]
+
+    """
     add_form_query_rel_fields = None
     """
         Add Customized query for related fields on add form.
