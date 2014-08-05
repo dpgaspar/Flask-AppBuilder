@@ -53,19 +53,8 @@
     <script src="{{url_for('appbuilder.static',filename='js/bootstrap.min.js')}}"></script>
 	<script src="{{url_for('appbuilder.static',filename='datepicker/bootstrap-datepicker.js')}}"></script>
 	<script src="{{url_for('appbuilder.static',filename='select2/select2.js')}}"></script>
-	
-	<script>
-		$(document).ready(function() {
-		$('.appbuilder_datetime').datetimepicker();
-		$('.appbuilder_date').datetimepicker({
-                    pickTime: false });
-        	$(".my_select2").select2({placeholder: "Select a State", allowClear: true});
-        	$("a").tooltip({'selector': '','placement': 'bottom'});
-		});
+	<script src="{{url_for('appbuilder.static',filename='js/ab.js')}}"></script>
 
-		$( ".my_change" ).on("change", function(e) { alert('change'); })
-
-	</script>
 {% endblock %}
 
 {% block add_tail_js %}

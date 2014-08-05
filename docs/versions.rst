@@ -1,6 +1,12 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.10.3
+------------------------------------
+
+- New, select related cascade fields.
+- Fix, inserted script in init.html moved to ab.js on static/js.
+
 Improvements and Bug fixes on 0.10.2
 ------------------------------------
 

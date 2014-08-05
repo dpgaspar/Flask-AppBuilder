@@ -123,7 +123,7 @@ class GeneralModelConverter(object):
                              query_factory=query_func,
                              allow_blank=allow_blank,
                              validators=lst_validators,
-                             widget=Select2Widget(extra_classes))
+                             widget=Select2Widget(extra_classes=extra_classes))
         return form_props
 
     def _convert_many_to_many(self, col_name, label, description,

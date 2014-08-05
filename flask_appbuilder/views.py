@@ -1,7 +1,7 @@
 import logging
 from flask import render_template, flash, redirect, send_file
 from .filemanager import uuid_originalname
-from .security.decorators import has_access
+from .security.decorators import has_access, permission_name
 from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
 from .baseviews import expose, BaseView, BaseModelView, BaseCRUDView
 from .models.group import GroupByProcessData
@@ -176,6 +176,25 @@ class ModelView(BaseCRUDView):
                                    title=self.add_title,
                                    widgets=widget,
                                    appbuilder=self.appbuilder)
+
+    @has_access
+    @permission_name('add')
+    @expose('/add_post', methods=['POST'])
+    def add_post(self):
+        get_filter_args(self._filters)
+        exclude_cols = self._filters.get_relation_cols()
+
+        log.debug("ADD POST --------")
+        item = self.datamodel.obj()
+        form = self.add_form.refresh()
+        form.populate_obj(item)
+        self.add_form = form.refresh(obj=item)
+        widget = self._get_add_widget(form=form, exclude_cols=exclude_cols)
+        return render_template(self.add_template,
+                                   title=self.add_title,
+                                   widgets=widget,
+                                   appbuilder=self.appbuilder)
+
 
     """
     ---------------------------

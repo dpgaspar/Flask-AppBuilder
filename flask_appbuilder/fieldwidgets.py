@@ -81,9 +81,15 @@ class BS3PasswordFieldWidget(widgets.PasswordInput):
 
 
 class Select2Widget(widgets.Select):
-    def __call__(self, field, extra_classes=None, **kwargs):
-        if extra_classes:
-            kwargs['class'] = u'my_select2 ' + extra_classes
+    extra_classes = None
+
+    def __init__(self, extra_classes=None):
+        self.extra_classes = extra_classes
+        return super(Select2Widget, self).__init__()
+
+    def __call__(self, field, **kwargs):
+        if self.extra_classes:
+            kwargs['class'] = u'my_select2 ' + self.extra_classes
         else:
             kwargs['class'] = u'my_select2'
         kwargs['style'] = u'width:250px'

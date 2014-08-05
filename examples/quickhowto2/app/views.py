@@ -48,8 +48,8 @@ class ProductView(ModelView):
     add_columns = ['name','product_manufacturer', 'product_model']
     edit_columns = ['name','product_manufacturer', 'product_model']
 
-    add_form_query_cascade = [('product_model', 'product_manufacturer',
-                        SQLAModel(ProductManufacturer, db.session),
+    add_form_query_cascade = [('product_manufacturer', 'product_model',
+                        SQLAModel(ProductModel, db.session),
                         [['id',FilterEqual,'id']]
                         )]
 
