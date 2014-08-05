@@ -71,6 +71,7 @@ class BS3TextAreaFieldWidget(widgets.TextArea):
             kwargs['placeholder'] = field.label.text
         return super(BS3TextAreaFieldWidget, self).__call__(field, **kwargs)
 
+
 class BS3PasswordFieldWidget(widgets.PasswordInput):
     def __call__(self, field, **kwargs):
         kwargs['class'] = u'form-control'
@@ -80,8 +81,11 @@ class BS3PasswordFieldWidget(widgets.PasswordInput):
 
 
 class Select2Widget(widgets.Select):
-    def __call__(self, field, **kwargs):
-        kwargs['class'] = u'my_select2'
+    def __call__(self, field, extra_classes=None, **kwargs):
+        if extra_classes:
+            kwargs['class'] = u'my_select2 ' + extra_classes
+        else:
+            kwargs['class'] = u'my_select2'
         kwargs['style'] = u'width:250px'
         kwargs['data-placeholder'] = u'Select Value'
         if 'name_' in kwargs:

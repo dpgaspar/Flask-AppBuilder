@@ -5,9 +5,40 @@ from sqlalchemy.orm import relationship
 from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
 from flask.ext.appbuilder import Model
 
+
 class Group(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique = True, nullable=False)
+
+    def __repr__(self):
+        return self.name
+
+
+class ProductManufacturer(Model):
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), unique = True, nullable=False)
+
+    def __repr__(self):
+        return self.name
+
+
+class ProductModel(Model):
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), unique = True, nullable=False)
+    product_manufacturer_id = Column(Integer, ForeignKey('product_manufacturer.id'), nullable=False)
+    product_manufacturer = relationship("ProductManufacturer")
+
+    def __repr__(self):
+        return self.name
+
+
+class Product(Model):
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), unique = True, nullable=False)
+    product_manufacturer_id = Column(Integer, ForeignKey('product_manufacturer.id'), nullable=False)
+    product_manufacturer = relationship("ProductManufacturer")
+    product_model_id = Column(Integer, ForeignKey('product_model.id'), nullable=False)
+    product_model = relationship("ProductModel")
 
     def __repr__(self):
         return self.name

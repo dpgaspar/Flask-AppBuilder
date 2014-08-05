@@ -6,12 +6,13 @@ from flask.ext.appbuilder.models.group import aggregate_count
 from flask.ext.babelpkg import lazy_gettext as _
 from flask.ext.appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
+from flask_appbuilder.models.generic.filters import FilterEqual
 from flask_appbuilder.models.generic import PSModel
 from flask_appbuilder.models.filters import FilterStartsWith
 from flask_appbuilder import expose, has_access, permission_name
 
 from app import db, appbuilder
-from .models import Group, Gender, Contact, FloatModel
+from .models import Group, Gender, Contact, FloatModel, Product, ProductManufacturer, ProductModel
 
 
 def fill_gender():
@@ -32,6 +33,25 @@ class PSView(ModelView):
     list_columns = ['UID', 'C', 'CMD', 'TIME']
     search_columns = ['UID', 'C', 'CMD']
 
+
+class ProductManufacturerView(ModelView):
+    datamodel = SQLAModel(ProductManufacturer)
+
+
+class ProductModelView(ModelView):
+    datamodel = SQLAModel(ProductModel)
+
+
+class ProductView(ModelView):
+    datamodel = SQLAModel(Product)
+    list_columns = ['name','product_manufacturer', 'product_model']
+    add_columns = ['name','product_manufacturer', 'product_model']
+    edit_columns = ['name','product_manufacturer', 'product_model']
+
+    add_form_query_cascade = [('product_model', 'product_manufacturer',
+                        SQLAModel(ProductManufacturer, db.session),
+                        [['id',FilterEqual,'id']]
+                        )]
 
 class ContactModelView2(ModelView):
     datamodel = SQLAModel(Contact)
@@ -157,5 +177,11 @@ appbuilder.add_view(FloatModelView, "List Float Model", icon="fa-envelope", cate
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
 appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
+
+appbuilder.add_view(ProductManufacturerView, "List Manufacturer", icon="fa-folder-open-o", category="Products",
+                    category_icon='fa-envelope')
+appbuilder.add_view(ProductModelView, "List Models", icon="fa-envelope", category="Products")
+appbuilder.add_view(ProductView, "List Products", icon="fa-envelope", category="Products")
+
 
 appbuilder.security_cleanup()

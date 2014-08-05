@@ -396,6 +396,8 @@ class BaseCRUDView(BaseModelView):
                         )]
 
     """
+    edit_form_query_cascade = None
+
     add_form_query_rel_fields = None
     """
         Add Customized query for related fields on add form.
@@ -476,14 +478,16 @@ class BaseCRUDView(BaseModelView):
                                              self.description_columns,
                                              self.validators_columns,
                                              self.add_form_extra_fields,
-                                             self.add_form_query_rel_fields)
+                                             self.add_form_query_rel_fields,
+                                             self.add_form_query_cascade)
         if not self.edit_form:
             self.edit_form = conv.create_form(self.label_columns,
                                               self.edit_columns,
                                               self.description_columns,
                                               self.validators_columns,
                                               self.edit_form_extra_fields,
-                                              self.edit_form_query_rel_fields)
+                                              self.edit_form_query_rel_fields,
+                                              self.edit_form_query_cascade)
 
 
     def _init_titles(self):

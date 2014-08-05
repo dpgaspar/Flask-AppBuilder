@@ -96,10 +96,20 @@ class GeneralModelConverter(object):
         rel_model = self.datamodel.get_model_relation(col_name)
         return lambda: self.datamodel.session.query(rel_model)
 
+    def is_master_cascade_field(self, col_name, cascade_rel_fields):
+        if cascade_rel_fields:
+            for cascade_rel_field in cascade_rel_fields:
+                if col_name == cascade_rel_field[0]:
+                    return True
+        return False
 
     def _convert_many_to_one(self, col_name, label, description,
-                             lst_validators, filter_rel_fields, form_props):
+                             lst_validators, filter_rel_fields,
+                             cascade_rel_fields, form_props):
         query_func = self._get_func_related_query(col_name, filter_rel_fields)
+        extra_classes = None
+        if self.is_master_cascade_field(col_name, cascade_rel_fields):
+            extra_classes = 'my_change'
         allow_blank = True
         col = self.datamodel.get_relation_fk(col_name)
         if not col.nullable:
@@ -113,11 +123,12 @@ class GeneralModelConverter(object):
                              query_factory=query_func,
                              allow_blank=allow_blank,
                              validators=lst_validators,
-                             widget=Select2Widget())
+                             widget=Select2Widget(extra_classes))
         return form_props
 
     def _convert_many_to_many(self, col_name, label, description,
-                              lst_validators, filter_rel_fields, form_props):
+                              lst_validators, filter_rel_fields,
+                              cascade_rel_fields, form_props):
         query_func = self._get_func_related_query(col_name, filter_rel_fields)
         allow_blank = True
         form_props[col_name] = \
@@ -141,20 +152,28 @@ class GeneralModelConverter(object):
         form_props[col_name] = fc.convert()
         return form_props
 
-    def _convert_prop(self, col_name, label, description, lst_validators, filter_rel_fields, form_props):
+    def _convert_prop(self, col_name,
+                      label, description,
+                      lst_validators, filter_rel_fields,
+                      cascade_rel_fields,
+                      form_props):
         if self.datamodel.is_relation(col_name):
             if self.datamodel.is_relation_many_to_one(col_name) or \
                     self.datamodel.is_relation_one_to_one(col_name):
                 return self._convert_many_to_one(col_name, label,
                                                  description,
                                                  lst_validators,
-                                                 filter_rel_fields, form_props)
+                                                 filter_rel_fields,
+                                                 cascade_rel_fields,
+                                                 form_props)
             elif self.datamodel.is_relation_many_to_many(col_name) or \
                     self.datamodel.is_relation_one_to_many(col_name):
                 return self._convert_many_to_many(col_name, label,
                                                   description,
                                                   lst_validators,
-                                                  filter_rel_fields, form_props)
+                                                  filter_rel_fields,
+                                                  cascade_rel_fields,
+                                                 form_props)
             else:
                 log.warning("Relation {0} not supported".format(col_name))
         else:
@@ -164,7 +183,7 @@ class GeneralModelConverter(object):
 
     def create_form(self, label_columns={}, inc_columns=[],
                     description_columns={}, validators_columns={},
-                    extra_fields={}, filter_rel_fields=None):
+                    extra_fields={}, filter_rel_fields=None, cascade_rel_fields=None):
         form_props = {}
         for col_name in inc_columns:
             if col_name in extra_fields:
@@ -174,7 +193,7 @@ class GeneralModelConverter(object):
                 self._convert_prop(col_name, self._get_label(col_name, label_columns),
                                    self._get_description(col_name, description_columns),
                                    self._get_validators(col_name, validators_columns),
-                                   filter_rel_fields, form_props)
+                                   filter_rel_fields, cascade_rel_fields, form_props)
         return type('DynamicForm', (DynamicForm,), form_props)
 
 
