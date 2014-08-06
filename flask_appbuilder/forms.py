@@ -90,6 +90,7 @@ class GeneralModelConverter(object):
         if filter_rel_fields:
             for filter_rel_field in filter_rel_fields:
                 if filter_rel_field[0] == col_name:
+                    # filter_rel_field[1] if the Data Interface class with model
                     sqla = filter_rel_field[1]
                     _filters = self.datamodel.get_filters().add_filter_list(sqla, filter_rel_field[2])
                     return lambda: sqla.query(_filters)[1]
@@ -97,6 +98,10 @@ class GeneralModelConverter(object):
         return lambda: self.datamodel.session.query(rel_model)
 
     def is_master_cascade_field(self, col_name, cascade_rel_fields):
+        """
+            Checks if field (col_name) is a master field on a
+            cascade related fields definition.
+        """
         if cascade_rel_fields:
             for cascade_rel_field in cascade_rel_fields:
                 if col_name == cascade_rel_field[0]:
@@ -109,6 +114,7 @@ class GeneralModelConverter(object):
         query_func = self._get_func_related_query(col_name, filter_rel_fields)
         extra_classes = None
         if self.is_master_cascade_field(col_name, cascade_rel_fields):
+            # it's master field get's css class for on change post.
             extra_classes = 'my_change'
         allow_blank = True
         col = self.datamodel.get_relation_fk(col_name)
