@@ -26,12 +26,24 @@ from functools import partial
 log = logging.getLogger(__name__)
 
 
-def get_cascade_value_helper(col_name = ""):
+def get_cascade_value_helper(session=None, col_name = "", model=None):
+    import sys
+    from flask import request
+
     print "ON CASCADE HELPR"
     if not col_name:
-        return -1
-    else:
         return None
+    else:
+        print "COL={0}".format(col_name)
+
+        if col_name in request.form:
+            print "FORM {0} col={1}".format(request.form[col_name], col_name)
+            obj = session.query(model).get(request.form[col_name])
+            print obj
+            return obj
+        else:
+            return None
+
 
 class FieldConverter(object):
     conversion_table = (('is_image', ImageUploadField, BS3ImageUploadFieldWidget),
@@ -103,8 +115,10 @@ class GeneralModelConverter(object):
         for cascade_rel_field in cascade_rel_fields:
             if col_name == cascade_rel_field[1]:
                 sqla = cascade_rel_field[2]
+
                 filter_item = list(cascade_rel_field[3])
-                filter_item[2] = partial(get_cascade_value_helper, col_name=col_name)
+                related_model = sqla._get_related_model(filter_item[0])[0]
+                filter_item[2] = partial(get_cascade_value_helper, session=sqla.session, col_name=filter_item[2],model=related_model)
                 print filter_item
 
                 _filters = self.datamodel.get_filters().add_filter_list(sqla, [filter_item])
