@@ -53,6 +53,7 @@ class ProductView(ModelView):
                         ['product_manufacturer',FA, 'product_manufacturer']
                         )]
 
+
 class ContactModelView2(ModelView):
     datamodel = SQLAModel(Contact)
 

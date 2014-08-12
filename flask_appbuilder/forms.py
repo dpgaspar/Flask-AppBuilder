@@ -68,23 +68,17 @@ class GeneralModelConverter(object):
     def __init__(self, datamodel):
         self.datamodel = datamodel
 
-    def _get_validators(self, colname, validators_columns):
-        if colname in validators_columns:
-            return validators_columns[colname]
-        else:
-            return []
+    @staticmethod
+    def _get_validators(col_name, validators_columns):
+        return validators_columns.get(col_name, [])
 
-    def _get_description(self, colname, description_columns):
-        if colname in description_columns:
-            return description_columns[colname]
-        else:
-            return ""
+    @staticmethod
+    def _get_description(col_name, description_columns):
+        return description_columns.get(col_name, "")
 
-    def _get_label(self, colname, label_columns):
-        if colname in label_columns:
-            return label_columns[colname]
-        else:
-            return ""
+    @staticmethod
+    def _get_label(col_name, label_columns):
+        return label_columns.get(col_name, "")
 
     def _get_func_related_query(self, col_name, filter_rel_fields):
         if filter_rel_fields:
@@ -97,6 +91,9 @@ class GeneralModelConverter(object):
         rel_model = self.datamodel.get_model_relation(col_name)
         return lambda: self.datamodel.session.query(rel_model)
 
+    def _get_func_cascade_query(self, col_name, filter_rel_fields, cascade_rel_fields):
+        pass
+
     def is_master_cascade_field(self, col_name, cascade_rel_fields):
         """
             Checks if field (col_name) is a master field on a
@@ -108,10 +105,30 @@ class GeneralModelConverter(object):
                     return True
         return False
 
+    def is_slave_cascade_field(self, col_name, cascade_rel_fields):
+        """
+            Checks if field (col_name) is a master field on a
+            cascade related fields definition.
+        """
+        if cascade_rel_fields:
+            for cascade_rel_field in cascade_rel_fields:
+                if col_name == cascade_rel_field[1]:
+                    return True
+        return False
+
+
     def _convert_many_to_one(self, col_name, label, description,
                              lst_validators, filter_rel_fields,
                              cascade_rel_fields, form_props):
-        query_func = self._get_func_related_query(col_name, filter_rel_fields)
+        """
+            Creates a WTForm field for many to one related fields,
+            will use a Select box based on a query. Will only
+            work with SQLAlchemy interface
+        """
+        if self.is_slave_cascade_field(col_name, cascade_rel_fields):
+            query_func = self._get_func_cascade_query(col_name, filter_rel_fields, cascade_rel_fields)
+        else:
+            query_func = self._get_func_related_query(col_name, filter_rel_fields)
         extra_classes = None
         if self.is_master_cascade_field(col_name, cascade_rel_fields):
             # it's master field get's css class for on change post.
