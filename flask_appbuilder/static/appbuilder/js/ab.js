@@ -7,8 +7,8 @@ $(document).ready(function() {
 });
 
 $( ".my_change" ).on("change", function(e) {
- alert('change');
  var theForm=document.getElementById("model_form");
-  theForm.action = "add_post";
+  theForm.action = "";
+  theForm.method = "get";
   theForm.submit();
  })

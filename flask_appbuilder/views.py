@@ -187,21 +187,6 @@ class ModelView(BaseCRUDView):
         item = self.datamodel.obj()
         form = self.add_form.refresh()
         form.populate_obj(item)
-        """
-        for query_cascade in self.add_form_query_cascade:
-            sqla = query_cascade[2]
-            filter_list = list(query_cascade[3])
-            filter_list[2] = getattr(item, filter_list[2])
-            _filters = self.datamodel.get_filters().add_filter_list(sqla, [filter_list])
-            query_func = lambda: sqla.query(_filters)[1]
-            log.debug("-B {0}".format(dir(getattr(form, query_cascade[1]))))
-            log.debug("-B {0}".format(getattr(form, query_cascade[1]).data))
-            getattr(form, query_cascade[1]).query_factory = query_func
-            getattr(form, query_cascade[1])._get_data()
-            log.debug("-B {0}".format(getattr(form, query_cascade[1])))
-        """
-        #form = self.add_form.refresh()
-        #self.add_form = form.refresh(obj=item)
         widget = self._get_add_widget(form=form, exclude_cols=exclude_cols)
         return render_template(self.add_template,
                                    title=self.add_title,

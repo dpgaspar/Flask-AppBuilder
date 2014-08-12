@@ -53,6 +53,7 @@ class ProductView(ModelView):
                         ['product_manufacturer',FA, 'product_manufacturer']
                         )]
 
+    edit_form_query_cascade = add_form_query_cascade
 
 class ContactModelView2(ModelView):
     datamodel = SQLAModel(Contact)

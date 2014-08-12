@@ -1,5 +1,5 @@
 import logging
-from flask import Blueprint
+from flask import Blueprint, request
 from flask.globals import _app_ctx_stack, _request_ctx_stack
 from werkzeug.urls import url_parse
 from .forms import GeneralModelConverter
@@ -673,7 +673,7 @@ class BaseCRUDView(BaseModelView):
 
     def _list(self):
         """
-            list function logic, override to implement diferent logic
+            list function logic, override to implement different logic
             returns list and search widget
         """
         if get_order_args().get(self.__class__.__name__):
@@ -726,6 +726,12 @@ class BaseCRUDView(BaseModelView):
                 self.datamodel.add(item)
                 self.post_add(item)
                 return None
+        else:
+            print "GET METHOD"
+            item = self.datamodel.obj()
+            form = self.add_form(request.args)
+            form.populate_obj(item)
+
         return self._get_add_widget(form=form, exclude_cols=exclude_cols)
 
     def _edit(self, pk):

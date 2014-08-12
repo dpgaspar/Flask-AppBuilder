@@ -26,8 +26,7 @@ from functools import partial
 log = logging.getLogger(__name__)
 
 
-def get_cascade_value_helper(session=None, col_name = "", model=None):
-    import sys
+def get_cascade_value_helper(session=None, col_name="", model=None):
     from flask import request
 
     print "ON CASCADE HELPR"
@@ -36,9 +35,9 @@ def get_cascade_value_helper(session=None, col_name = "", model=None):
     else:
         print "COL={0}".format(col_name)
 
-        if col_name in request.form:
-            print "FORM {0} col={1}".format(request.form[col_name], col_name)
-            obj = session.query(model).get(request.form[col_name])
+        if col_name in request.args:
+            print "FORM {0} col={1}".format(request.args[col_name], col_name)
+            obj = session.query(model).get(request.args[col_name])
             print obj
             return obj
         else:
@@ -118,7 +117,10 @@ class GeneralModelConverter(object):
 
                 filter_item = list(cascade_rel_field[3])
                 related_model = sqla._get_related_model(filter_item[0])[0]
-                filter_item[2] = partial(get_cascade_value_helper, session=sqla.session, col_name=filter_item[2],model=related_model)
+                filter_item[2] = partial(get_cascade_value_helper,
+                                         session=sqla.session,
+                                         model=related_model,
+                                         col_name=filter_item[2])
                 print filter_item
 
                 _filters = self.datamodel.get_filters().add_filter_list(sqla, [filter_item])
@@ -154,7 +156,7 @@ class GeneralModelConverter(object):
         """
             Creates a WTForm field for many to one related fields,
             will use a Select box based on a query. Will only
-            work with SQLAlchemy interface
+            work with SQLAlchemy interface.
         """
         if self.is_slave_cascade_field(col_name, cascade_rel_fields):
             query_func = self._get_func_cascade_query(col_name, filter_rel_fields, cascade_rel_fields)
