@@ -8,7 +8,7 @@ from flask.ext.appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.generic.filters import FilterEqual
 from flask_appbuilder.models.generic import PSModel
-from flask_appbuilder.models.filters import FilterStartsWith, FilterRelationOneToManyEqual, FilterEqual as FA
+from flask_appbuilder.models.filters import FilterStartsWith, FilterEqualFunction as FA
 from flask_appbuilder import expose, has_access, permission_name
 
 from app import db, appbuilder

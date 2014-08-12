@@ -193,7 +193,7 @@ class ModelView(BaseCRUDView):
             filter_list[2] = getattr(item, filter_list[2])
             _filters = self.datamodel.get_filters().add_filter_list(sqla, [filter_list])
             query_func = lambda: sqla.query(_filters)[1]
-            log.debug("-B {0}".format(dir(getattr(form, query_cascade[1]))))
+            log.debug("-B {0}".format(dir(getattr(form, query_cascade[1])))
             log.debug("-B {0}".format(getattr(form, query_cascade[1]).data))
             getattr(form, query_cascade[1]).query_factory = query_func
             getattr(form, query_cascade[1])._get_data()

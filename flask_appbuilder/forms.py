@@ -20,11 +20,18 @@ from .upload import (BS3FileUploadFieldWidget,
                     FileUploadField,
                     ImageUploadField)
 from .validators import Unique
-
+from functools import partial
 
 
 log = logging.getLogger(__name__)
 
+
+def get_cascade_value_helper(col_name = ""):
+    print "ON CASCADE HELPR"
+    if not col_name:
+        return -1
+    else:
+        return None
 
 class FieldConverter(object):
     conversion_table = (('is_image', ImageUploadField, BS3ImageUploadFieldWidget),
@@ -91,8 +98,18 @@ class GeneralModelConverter(object):
         rel_model = self.datamodel.get_model_relation(col_name)
         return lambda: self.datamodel.session.query(rel_model)
 
+
     def _get_func_cascade_query(self, col_name, filter_rel_fields, cascade_rel_fields):
-        pass
+        for cascade_rel_field in cascade_rel_fields:
+            if col_name == cascade_rel_field[1]:
+                sqla = cascade_rel_field[2]
+                filter_item = list(cascade_rel_field[3])
+                filter_item[2] = partial(get_cascade_value_helper, col_name=col_name)
+                print filter_item
+
+                _filters = self.datamodel.get_filters().add_filter_list(sqla, [filter_item])
+                return lambda: sqla.query(_filters)[1]
+
 
     def is_master_cascade_field(self, col_name, cascade_rel_fields):
         """

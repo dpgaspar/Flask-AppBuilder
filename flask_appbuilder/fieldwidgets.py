@@ -89,7 +89,7 @@ class Select2Widget(widgets.Select):
 
     def __call__(self, field, **kwargs):
         if self.extra_classes:
-            kwargs['class'] = u'my_select2' + self.extra_classes
+            kwargs['class'] = u'my_select2 ' + self.extra_classes
         else:
             kwargs['class'] = u'my_select2'
         kwargs['style'] = u'width:250px'
