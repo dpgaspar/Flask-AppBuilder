@@ -45,6 +45,7 @@ class ModelDeclarativeMeta(_BoundDeclarativeMeta):
     """
 
 
+
 @as_declarative(name='Model', metaclass=ModelDeclarativeMeta)
 class Model(object):
     """
@@ -61,7 +62,15 @@ class Model(object):
                 name = Column(String(50), unique = True, nullable=False)
 
     """
+
     __table_args__ = {'extend_existing': True}
+
+    def to_json(self):
+        result = dict()
+        for key in self.__mapper__.c.keys():
+            result[key] = getattr(self, key)
+        return result
+
 
 
 """

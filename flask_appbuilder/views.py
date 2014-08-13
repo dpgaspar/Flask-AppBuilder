@@ -157,6 +157,15 @@ class ModelView(BaseCRUDView):
                                appbuilder=self.appbuilder,
                                related_views=self._related_views)
 
+    @has_access
+    @permission_name('list')
+    @expose('/related_json/<col_name>')
+    def get_related_json(self, col_name):
+        from flask import jsonify
+        rel_model = self.datamodel.get_model_relation(col_name)
+        result = self.datamodel.session.query(rel_model).all()
+        return jsonify(results=[i.to_json() for i in result])
+
 
     """
     ---------------------------
