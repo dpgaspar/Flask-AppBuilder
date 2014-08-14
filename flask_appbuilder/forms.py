@@ -26,13 +26,15 @@ from functools import partial
 log = logging.getLogger(__name__)
 
 
-def get_cascade_value_helper(session=None, col_name="", model=None):
+def get_cascade_value_helper(session=None, col_name="", model=None, master_field=None):
     from flask import request
 
     print "ON CASCADE HELPR"
     if not col_name:
         return None
     else:
+        if master_field:
+            print "MASTER={0} {1}".format(dir(master_field), master_field.data)
         print "COL={0}".format(col_name)
 
         if col_name in request.args:
@@ -110,17 +112,23 @@ class GeneralModelConverter(object):
         return lambda: self.datamodel.session.query(rel_model)
 
 
-    def _get_func_cascade_query(self, col_name, filter_rel_fields, cascade_rel_fields):
+    def _get_func_cascade_query(self, col_name, filter_rel_fields, cascade_rel_fields, form_props):
         for cascade_rel_field in cascade_rel_fields:
             if col_name == cascade_rel_field[1]:
                 sqla = cascade_rel_field[2]
 
                 filter_item = list(cascade_rel_field[3])
                 related_model = sqla._get_related_model(filter_item[0])[0]
+                """
                 filter_item[2] = partial(get_cascade_value_helper,
                                          session=sqla.session,
                                          model=related_model,
-                                         col_name=filter_item[2])
+                                         col_name=filter_item[2],
+                                         master_field=form_props[filter_item[0]])
+                """
+                filter_item[2] = partial(DynamicForm.get_cascade_value_helper,
+                                         col_name=filter_item[2]
+                                         )
                 print filter_item
 
                 _filters = self.datamodel.get_filters().add_filter_list(sqla, [filter_item])
@@ -159,7 +167,7 @@ class GeneralModelConverter(object):
             work with SQLAlchemy interface.
         """
         if self.is_slave_cascade_field(col_name, cascade_rel_fields):
-            query_func = self._get_func_cascade_query(col_name, filter_rel_fields, cascade_rel_fields)
+            query_func = self._get_func_cascade_query(col_name, filter_rel_fields, cascade_rel_fields, form_props)
         else:
             query_func = self._get_func_related_query(col_name, filter_rel_fields)
         extra_classes = None
@@ -254,6 +262,18 @@ class GeneralModelConverter(object):
 
 
 class DynamicForm(Form):
+
+    @classmethod
+    def get_cascade_value_helper(self, col_name=""):
+        from flask import request
+
+        print "ON CASCADE HELPR"
+        if not col_name:
+            return None
+        else:
+            print "COL: {0} {1}".format(dir(self), self.data.keys())
+            return None
+
     @classmethod
     def refresh(self, obj=None):
         form = self(obj=obj)
