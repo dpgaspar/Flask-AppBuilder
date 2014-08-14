@@ -6,7 +6,6 @@ from flask.ext.appbuilder.models.group import aggregate_count
 from flask.ext.babelpkg import lazy_gettext as _
 from flask.ext.appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
-from flask_appbuilder.models.generic.filters import FilterEqual
 from flask_appbuilder.models.generic import PSModel
 from flask_appbuilder.models.filters import FilterStartsWith, FilterEqualFunction as FA
 from flask_appbuilder import expose, has_access, permission_name
@@ -55,6 +54,7 @@ class ProductView(ModelView):
 
     edit_form_query_cascade = add_form_query_cascade
 
+
 class ContactModelView2(ModelView):
     datamodel = SQLAModel(Contact)
 
@@ -97,6 +97,7 @@ class ContactModelView(ModelView):
                                    [['name', FilterStartsWith, 'A']]
                                   )
                                 ]
+
 
     @expose(url='/xpto')
     @has_access

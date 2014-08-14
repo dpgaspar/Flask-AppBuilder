@@ -99,6 +99,7 @@ class Select2Widget(widgets.Select):
         return super(Select2Widget, self).__call__(field, **kwargs)
 
 
+
 class Select2MasterWidget(widgets.Select):
     def __call__(self, field, **kwargs):
         kwargs['class'] = u'my_select2 my_change'

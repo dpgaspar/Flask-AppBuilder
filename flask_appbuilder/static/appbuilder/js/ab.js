@@ -12,3 +12,5 @@ $( ".my_change" ).on("change", function(e) {
   theForm.method = "get";
   theForm.submit();
  })
+
+
