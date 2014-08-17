@@ -1,5 +1,5 @@
 import logging
-from flask import Blueprint, request
+from flask import Blueprint, request, session, url_for
 from flask.globals import _app_ctx_stack, _request_ctx_stack
 from werkzeug.urls import url_parse
 from .forms import GeneralModelConverter
@@ -162,6 +162,7 @@ class BaseView(object):
             raise NotFound()
         return url_adapter.match(parsed_url.path, method)
 
+    """
     def _get_redirect(self):
         next_url = request.args.get('next')
         if next_url:
@@ -174,6 +175,24 @@ class BaseView(object):
                 return url_for('%s.%s' % (self.endpoint, self.default_view), **request.args)
             except:
                 return url_for('%s.%s' % (self.appbuilder.indexview.endpoint, self.appbuilder.indexview.default_view))
+    """
+    def update_redirect(self):
+        page_history = session.get('page_history', Stack())
+        page_history.push(request.url)
+        session['page_history'] = page_history
+        print "UPD SESSION {0}".format(session)
+
+
+    def _get_redirect(self):
+        index_url = url_for('%s.%s' % (self.appbuilder.indexview.endpoint, self.appbuilder.indexview.default_view))
+        page_history = session.get('page_history', Stack())
+
+        page_history.pop()
+        print "REDIR 1 SESSION {0}".format(session)
+        session['page_history'] = page_history
+        print "REDIR 2 SESSION {0}".format(session)
+        return page_history.pop()
+
 
 
 class BaseModelView(BaseView):
@@ -689,6 +708,7 @@ class BaseCRUDView(BaseModelView):
                                         page=page,
                                         page_size=page_size)
         form = self.search_form.refresh()
+        self.update_redirect()
         return self._get_search_widget(form=form, widgets=widgets)
 
 
@@ -703,7 +723,7 @@ class BaseCRUDView(BaseModelView):
 
         widgets = self._get_show_widget(pk)
         item = self.datamodel.get(pk)
-
+        self.update_redirect()
         return self._get_related_views_widgets(item, orders=orders,
                                                pages=pages, page_sizes=page_sizes, widgets=widgets)
 
@@ -713,6 +733,7 @@ class BaseCRUDView(BaseModelView):
             Add function logic, override to implement diferent logic
             returns add widget or None
         """
+        is_valid_form = True
         get_filter_args(self._filters)
         exclude_cols = self._filters.get_relation_cols()
         form = self.add_form.refresh()
@@ -726,12 +747,15 @@ class BaseCRUDView(BaseModelView):
                 self.datamodel.add(item)
                 self.post_add(item)
                 return None
+            else:
+                is_valid_form = False
         else:
             print "GET METHOD"
             item = self.datamodel.obj()
             form = self.add_form(request.args)
             form.populate_obj(item)
-
+        if is_valid_form:
+            self.update_redirect()
         return self._get_add_widget(form=form, exclude_cols=exclude_cols)
 
     def _edit(self, pk):
@@ -739,7 +763,7 @@ class BaseCRUDView(BaseModelView):
             Edit function logic, override to implement diferent logic
             returns Edit widget and related list or None
         """
-
+        is_valid_form = True
         pages = get_page_args()
         page_sizes = get_page_size_args()
         orders = get_order_args()
@@ -763,12 +787,16 @@ class BaseCRUDView(BaseModelView):
                 self.datamodel.edit(item)
                 self.post_update(item)
                 return None
+            else:
+                is_valid_form = False
         else:
             form = self.edit_form(obj=item)
             form = form.refresh(obj=item)
         widgets = self._get_edit_widget(form=form, exclude_cols=exclude_cols)
         widgets = self._get_related_views_widgets(item, filters={},
                                                   orders=orders, pages=pages, page_sizes=page_sizes, widgets=widgets)
+        if is_valid_form:
+            self.update_redirect()
         return widgets
 
 
@@ -784,6 +812,7 @@ class BaseCRUDView(BaseModelView):
         self.pre_delete(item)
         self.datamodel.delete(item)
         self.post_delete(item)
+        self.update_redirect()
 
 
     """

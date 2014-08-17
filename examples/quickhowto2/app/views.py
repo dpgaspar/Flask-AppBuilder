@@ -61,7 +61,6 @@ class ContactModelView2(ModelView):
 
 class ContactModelView(ModelView):
     datamodel = SQLAModel(Contact)
-    base_permissions = ['can_list']
 
     label_columns = {'group': 'Contacts Group'}
     list_columns = ['name', 'personal_celphone', 'birthday', 'group']

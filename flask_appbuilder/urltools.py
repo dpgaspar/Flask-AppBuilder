@@ -1,6 +1,29 @@
 import re
 from flask import url_for, request
 
+
+class Stack(object):
+    """
+        Stack data structure will not insert
+        equal sequential data
+    """
+    def __init__(self, size=5):
+        self.size = size
+        self.data = []
+
+    def push(self, item):
+        if self.data:
+            if item != self.data[len(self.data) - 1]:
+                self.data.append(item)
+        else:
+            self.data.append(item)
+        if len(self.data) > self.size:
+            self.data.pop(0)
+
+    def pop(self):
+        return self.data.pop(len(self.data) - 1)
+
+
 def get_group_by_args():
     """
         Get page arguments for group by
