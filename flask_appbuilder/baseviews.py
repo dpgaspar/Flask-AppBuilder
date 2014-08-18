@@ -715,7 +715,8 @@ class BaseCRUDView(BaseModelView):
             item = self.datamodel.obj()
             form = self.add_form(request.args)
             form.populate_obj(item)
-            form = self.add_form.refresh(item)
+            if item:
+                form = self.add_form.refresh(item)
             
         if is_valid_form:
             self.update_redirect()
