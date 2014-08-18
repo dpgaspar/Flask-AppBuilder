@@ -91,24 +91,6 @@ class ContactModelView(ModelView):
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
-    edit_form_query_rel_fields = [('group',
-                                   SQLAModel(Group, db.session),
-                                   [['name', FilterStartsWith, 'A']]
-                                  )
-                                ]
-
-
-    @expose(url='/xpto')
-    @has_access
-    def xpto(self):
-        return "HELLO"
-
-    @has_access
-    @permission_name('TEST_HELLO')
-    @expose(url='/xpto2')
-    def xpto2(self):
-        return "HELLO 2"
-
 
 
 class GroupModelView(ModelView):
