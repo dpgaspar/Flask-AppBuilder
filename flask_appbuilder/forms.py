@@ -1,5 +1,5 @@
 import logging
-
+from flask import g
 from flask_wtf import Form
 from wtforms import (BooleanField, TextField,
                        TextAreaField, IntegerField, FloatField, DateField, DateTimeField)
@@ -26,25 +26,15 @@ from functools import partial
 log = logging.getLogger(__name__)
 
 
-def get_cascade_value_helper(session=None, col_name="", model=None, master_field=None):
+def get_cascade_value_helper(col_name=""):
     from flask import request
 
-    print "ON CASCADE HELPR"
     if not col_name:
         return None
     else:
-        if master_field:
-            print "MASTER={0} {1}".format(dir(master_field), master_field.data)
-        print "COL={0}".format(col_name)
-
-        if col_name in request.args:
-            print "FORM {0} col={1}".format(request.args[col_name], col_name)
-            obj = session.query(model).get(request.args[col_name])
-            print obj
-            return obj
-        else:
-            return None
-
+        obj = getattr(g, '_current_form_obj', None)
+        print "CASC OBJ {0}".format(obj)
+        return getattr(obj, col_name, None)
 
 class FieldConverter(object):
     conversion_table = (('is_image', ImageUploadField, BS3ImageUploadFieldWidget),
@@ -119,18 +109,8 @@ class GeneralModelConverter(object):
 
                 filter_item = list(cascade_rel_field[3])
                 related_model = sqla._get_related_model(filter_item[0])[0]
-                """
-                filter_item[2] = partial(get_cascade_value_helper,
-                                         session=sqla.session,
-                                         model=related_model,
-                                         col_name=filter_item[2],
-                                         master_field=form_props[filter_item[0]])
-                """
-                filter_item[2] = partial(DynamicForm.get_cascade_value_helper,
-                                         col_name=filter_item[2]
-                                         )
-                print filter_item
-
+                filter_item[2] = partial(get_cascade_value_helper, col_name=filter_item[2])
+                
                 _filters = self.datamodel.get_filters().add_filter_list(sqla, [filter_item])
                 return lambda: sqla.query(_filters)[1]
 
@@ -264,18 +244,8 @@ class GeneralModelConverter(object):
 class DynamicForm(Form):
 
     @classmethod
-    def get_cascade_value_helper(self, col_name=""):
-        from flask import request
-
-        print "ON CASCADE HELPR"
-        if not col_name:
-            return None
-        else:
-            print "COL: {0} {1}".format(dir(self), self.data.keys())
-            return None
-
-    @classmethod
     def refresh(self, obj=None):
+        g._current_form_obj = obj                           
         form = self(obj=obj)
         return form
 
