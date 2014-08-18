@@ -710,11 +710,6 @@ class BaseCRUDView(BaseModelView):
                 return None
             else:
                 is_valid_form = False
-        else:
-            # Only force form refresh for select cascade events
-            item = self.datamodel.obj()
-            form = self.add_form.refresh(request.args)
-            
         if is_valid_form:
             self.update_redirect()
         return self._get_add_widget(form=form, exclude_cols=exclude_cols)
