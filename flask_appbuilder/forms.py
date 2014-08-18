@@ -243,7 +243,7 @@ class GeneralModelConverter(object):
 class DynamicForm(Form):
 
     def __init__(self, *args, **kwargs):
-        super(BaseModelView, self).__init__(*args, **kwargs)
+        super(DynamicForm, self).__init__(*args, **kwargs)
         print "FORM INIT"
 
     @classmethod
