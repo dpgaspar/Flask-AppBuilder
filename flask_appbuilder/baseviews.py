@@ -1,5 +1,5 @@
 import logging
-from flask import Blueprint, request, session, url_for
+from flask import Blueprint, request, redirect, session, url_for
 from flask.globals import _app_ctx_stack, _request_ctx_stack
 from werkzeug.urls import url_parse
 from .forms import GeneralModelConverter
