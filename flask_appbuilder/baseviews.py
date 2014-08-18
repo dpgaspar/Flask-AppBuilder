@@ -193,6 +193,9 @@ class BaseView(object):
         print "REDIR 2 SESSION {0}".format(session)
         return page_history.pop()
 
+    @expose('back')
+    def back(self):
+        return redirect(self._get_redirect())
 
 
 class BaseModelView(BaseView):
