@@ -177,19 +177,19 @@ class BaseView(object):
                 return url_for('%s.%s' % (self.appbuilder.indexview.endpoint, self.appbuilder.indexview.default_view))
     """
     def update_redirect(self):
-        page_history = session.get('page_history', Stack())
+        page_history = Stack(session.get('page_history', []))
         page_history.push(request.url)
-        session['page_history'] = page_history
+        session['page_history'] = page_history.to_json()
         print "UPD SESSION {0}".format(session)
 
 
     def _get_redirect(self):
         index_url = url_for('%s.%s' % (self.appbuilder.indexview.endpoint, self.appbuilder.indexview.default_view))
-        page_history = session.get('page_history', Stack())
+        page_history = Stack(session.get('page_history', []))
 
         page_history.pop()
         print "REDIR 1 SESSION {0}".format(session)
-        session['page_history'] = page_history
+        session['page_history'] = page_history.to_json()
         print "REDIR 2 SESSION {0}".format(session)
         return page_history.pop()
 

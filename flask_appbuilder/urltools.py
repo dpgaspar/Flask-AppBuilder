@@ -7,9 +7,9 @@ class Stack(object):
         Stack data structure will not insert
         equal sequential data
     """
-    def __init__(self, size=5):
+    def __init__(self, list=None, size=5):
         self.size = size
-        self.data = []
+        self.data = list or []
 
     def push(self, item):
         if self.data:
@@ -23,6 +23,8 @@ class Stack(object):
     def pop(self):
         return self.data.pop(len(self.data) - 1)
 
+    def to_json(self):
+        return self.data
 
 def get_group_by_args():
     """
