@@ -175,6 +175,7 @@ class UserOIDModelView(UserModelView):
     @has_access
     def userinfo(self):
         widgets = self._get_show_widget(g.user.id, show_fieldsets=self.user_show_fieldsets)
+        self.update_redirect()
         return render_template(self.show_template,
                                title=self.user_info_title,
                                widgets=widgets,
@@ -186,6 +187,7 @@ class UserLDAPModelView(UserModelView):
     @has_access
     def userinfo(self):
         widgets = self._get_show_widget(g.user.id, show_fieldsets=self.user_show_fieldsets)
+        self.update_redirect()
         return render_template(self.show_template,
                                title=self.user_info_title,
                                widgets=widgets,
@@ -214,6 +216,7 @@ class UserDBModelView(UserModelView):
         actions = {}
         actions['resetpasswords'] = self.actions.get('resetpasswords')
         widgets = self._get_show_widget(pk, actions=actions)
+        self.update_redirect()
         return render_template(self.show_template,
                                pk=pk,
                                title=self.show_title,
@@ -228,6 +231,7 @@ class UserDBModelView(UserModelView):
         actions = {}
         actions['resetmypassword'] = self.actions.get('resetmypassword')
         widgets = self._get_show_widget(g.user.id, actions=actions, show_fieldsets=self.user_show_fieldsets)
+        self.update_redirect()
         return render_template(self.show_template,
                                title=self.user_info_title,
                                widgets=widgets,
