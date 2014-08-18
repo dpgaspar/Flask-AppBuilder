@@ -738,8 +738,8 @@ class BaseCRUDView(BaseModelView):
         pk = self.datamodel.get_pk_value(item)
 
         if request.method == 'POST':
-            form = self.edit_form(request.form)
-            form = form.refresh(obj=item)
+            #form = self.edit_form(request.form)
+            form = self.edit_form.refresh(request.form)
             # fill the form with the suppressed cols, generated from exclude_cols
             self._fill_form_exclude_cols(exclude_cols, form)
             # trick to pass unique validation
@@ -754,7 +754,6 @@ class BaseCRUDView(BaseModelView):
                 is_valid_form = False
         else:
             # Only force form refresh for select cascade events
-            #form = self.edit_form(obj=item)
             form = self.edit_form.refresh(obj=item)
         widgets = self._get_edit_widget(form=form, exclude_cols=exclude_cols)
         widgets = self._get_related_views_widgets(item, filters={},
