@@ -21,6 +21,8 @@ class Stack(object):
             self.data.pop(0)
 
     def pop(self):
+        if len(self.data) == 0:
+            return None
         return self.data.pop(len(self.data) - 1)
 
     def to_json(self):
