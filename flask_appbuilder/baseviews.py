@@ -754,8 +754,8 @@ class BaseCRUDView(BaseModelView):
                 is_valid_form = False
         else:
             # Only force form refresh for select cascade events
-            form = self.edit_form(obj=item)
-            form = form.refresh(obj=item)
+            #form = self.edit_form(obj=item)
+            form = self.edit_form.refresh(obj=item)
         widgets = self._get_edit_widget(form=form, exclude_cols=exclude_cols)
         widgets = self._get_related_views_widgets(item, filters={},
                                                   orders=orders, pages=pages, page_sizes=page_sizes, widgets=widgets)
