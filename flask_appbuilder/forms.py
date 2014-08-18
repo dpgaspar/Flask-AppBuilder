@@ -33,7 +33,7 @@ def get_cascade_value_helper(col_name=""):
         return None
     else:
         obj = getattr(g, '_current_form_obj', None)
-        print "CASC OBJ {0}".format(obj)
+        print "CASC OBJ {0} {1}".format(obj, g)
         return getattr(obj, col_name, None)
 
 class FieldConverter(object):
@@ -245,6 +245,7 @@ class DynamicForm(Form):
 
     @classmethod
     def refresh(self, obj=None):
+        print "REFRESH OBJ={0}".format(obj)
         g._current_form_obj = obj                           
         form = self(obj=obj)
         return form
