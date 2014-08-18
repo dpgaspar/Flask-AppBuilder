@@ -711,10 +711,12 @@ class BaseCRUDView(BaseModelView):
             else:
                 is_valid_form = False
         else:
-            print "GET METHOD"
+            # Only force form refresh for select cascade events
             item = self.datamodel.obj()
             form = self.add_form(request.args)
             form.populate_obj(item)
+            form = self.add_form.refresh(item)
+            
         if is_valid_form:
             self.update_redirect()
         return self._get_add_widget(form=form, exclude_cols=exclude_cols)
@@ -751,6 +753,7 @@ class BaseCRUDView(BaseModelView):
             else:
                 is_valid_form = False
         else:
+            # Only force form refresh for select cascade events
             form = self.edit_form(obj=item)
             form = form.refresh(obj=item)
         widgets = self._get_edit_widget(form=form, exclude_cols=exclude_cols)
