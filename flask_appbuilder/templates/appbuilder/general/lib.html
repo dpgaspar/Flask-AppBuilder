@@ -219,7 +219,7 @@
         {{ render_pagination(page, page_size, count, modelview_name) }}
         {{ render_set_page_size(page, page_size, count, modelview_name) }}
     	{% if can_add %}
-			{% set path = url_for(modelview_name + '.add',next=request.script_root + request.path) %}
+			{% set path = url_for(modelview_name + '.add') %}
 			{% set path = path | set_link_filters(filters) %}
 			&nbsp;{{ lnk_add(path) }}
 		{% endif %}
@@ -233,17 +233,17 @@
 {% macro btn_crud(can_show, can_edit, can_delete, pk, modelview_name, filters) %}
     <div class="btn-group btn-group-xs" style="display: flex;">
         {% if can_show %}
-            {% set path = url_for(modelview_name + '.show',pk=pk,next=request.script_root + request.path) %}
+            {% set path = url_for(modelview_name + '.show',pk=pk) %}
             {% set path = path | set_link_filters(filters) %}
             {{ lnk_show(path) }}
         {% endif %}
         {% if can_edit %}
-            {% set path = url_for(modelview_name + '.edit',pk=pk,next=request.script_root + request.path) %}
+            {% set path = url_for(modelview_name + '.edit',pk=pk) %}
             {% set path = path | set_link_filters(filters) %}
             {{ lnk_edit(path) }}
         {% endif %}
         {% if can_delete %}
-            {{ lnk_delete(url_for(modelview_name + '.delete',pk=pk,next=request.script_root + request.path)) }}
+            {{ lnk_delete(url_for(modelview_name + '.delete',pk=pk)) }}
         {% endif %}
     </div>
 {% endmacro %}
@@ -258,12 +258,20 @@
     <INPUT Type="button" class="btn  btn-sm btn-primary" VALUE="{{_('Back')}}" onClick="history.go(-1);return true;">
     {% endmacro %}
 
-    {% macro lnk_back() %}
+    {% macro lnk_back_old2() %}
     <a href="{{ request | get_link_back }}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
        title="{{_('Back')}}">
         <i class="fa fa-arrow-left"></i>
     </a>
     {% endmacro %}
+
+    {% macro lnk_back() %}
+    <a href="back" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
+       title="{{_('Back')}}">
+        <i class="fa fa-arrow-left"></i>
+    </a>
+    {% endmacro %}
+
 
 
     {% macro lnk_add(my_href) %}
