@@ -244,7 +244,7 @@ class DynamicForm(Form):
 
     def __init__(self, **kwargs):
         super(DynamicForm, self).__init__(**kwargs)
-        print "FORM INIT {0}".format(**kwargs)
+        print "FORM INIT {0}".format(kwargs)
 
     @classmethod
     def refresh(self, obj=None):
