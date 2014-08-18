@@ -713,9 +713,7 @@ class BaseCRUDView(BaseModelView):
         else:
             # Only force form refresh for select cascade events
             item = self.datamodel.obj()
-            form = self.add_form(request.args)
-            form.populate_obj(item)
-            form = self.add_form.refresh(obj=item)
+            form = self.add_form.refresh(request.args)
             
         if is_valid_form:
             self.update_redirect()
@@ -738,7 +736,6 @@ class BaseCRUDView(BaseModelView):
         pk = self.datamodel.get_pk_value(item)
 
         if request.method == 'POST':
-            #form = self.edit_form(request.form)
             form = self.edit_form.refresh(request.form)
             # fill the form with the suppressed cols, generated from exclude_cols
             self._fill_form_exclude_cols(exclude_cols, form)
