@@ -6,6 +6,8 @@ Improvements and Bug fixes on 0.10.3
 
 - New, select related cascade fields.
 - Fix, inserted script in init.html moved to ab.js on static/js.
+- Fix, performance improvement on edit, only one form initialization.
+- New, New back mechanism, with 5 history records. issue #35.
 
 Improvements and Bug fixes on 0.10.2
 ------------------------------------
