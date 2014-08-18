@@ -12,6 +12,6 @@ class LocaleView(BaseView):
     def index(self, locale):
         session['locale'] = locale
         refresh()
-        return redirect(self._get_redirect())
+        return redirect(self.get_redirect())
 
 
