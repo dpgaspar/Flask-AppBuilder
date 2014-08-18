@@ -180,18 +180,17 @@ class BaseView(object):
         page_history = Stack(session.get('page_history', []))
         page_history.push(request.url)
         session['page_history'] = page_history.to_json()
-        print "UPD SESSION {0}".format(session)
-
+        
 
     def _get_redirect(self):
         index_url = url_for('%s.%s' % (self.appbuilder.indexview.endpoint, self.appbuilder.indexview.default_view))
         page_history = Stack(session.get('page_history', []))
 
-        page_history.pop()
-        print "REDIR 1 SESSION {0}".format(session)
+        if page_history.pop() is None:
+            return index_url
         session['page_history'] = page_history.to_json()
-        print "REDIR 2 SESSION {0}".format(session)
-        return page_history.pop()
+        redir = page_history.pop() or index_url
+        return redir
 
     @expose('/back')
     def back(self):
