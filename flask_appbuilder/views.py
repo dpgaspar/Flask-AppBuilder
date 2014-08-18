@@ -22,6 +22,7 @@ class IndexView(BaseView):
 
     @expose('/')
     def index(self):
+        self.update_redirect()
         return render_template(self.index_template, appbuilder=self.appbuilder)
 
 
@@ -67,6 +68,7 @@ class SimpleFormView(BaseView):
 
         self.form_get(form)
         widgets = self._get_edit_widget(form=form)
+        self.update_redirect()
         return render_template(self.form_template,
                                title=self.form_title,
                                widgets=widgets,
