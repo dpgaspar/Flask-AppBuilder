@@ -245,7 +245,6 @@ class DynamicForm(Form):
 
     @classmethod
     def refresh(self, obj=None):
-        print "REFRESH OBJ={0}".format(obj)
         g._current_form_obj = obj                           
         form = self(obj=obj)
         return form
