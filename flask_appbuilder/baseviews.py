@@ -697,9 +697,10 @@ class BaseCRUDView(BaseModelView):
         is_valid_form = True
         get_filter_args(self._filters)
         exclude_cols = self._filters.get_relation_cols()
-        form = self.add_form.refresh()
+        #form = self.add_form.refresh()
 
         if request.method == 'POST':
+            form = self.add_form(request.form)
             self._fill_form_exclude_cols(exclude_cols, form)
             if form.validate():
                 item = self.datamodel.obj()
