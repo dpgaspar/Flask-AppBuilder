@@ -254,19 +254,8 @@
     </button>
     {% endmacro %}
 
-    {% macro lnk_back_old() %}
-    <INPUT Type="button" class="btn  btn-sm btn-primary" VALUE="{{_('Back')}}" onClick="history.go(-1);return true;">
-    {% endmacro %}
-
-    {% macro lnk_back_old2() %}
-    <a href="{{ request | get_link_back }}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
-       title="{{_('Back')}}">
-        <i class="fa fa-arrow-left"></i>
-    </a>
-    {% endmacro %}
-
     {% macro lnk_back() %}
-    <a href="../back" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
+    <a href="/back" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
        title="{{_('Back')}}">
         <i class="fa fa-arrow-left"></i>
     </a>
