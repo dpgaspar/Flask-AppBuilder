@@ -242,9 +242,9 @@ class GeneralModelConverter(object):
 
 class DynamicForm(Form):
 
-    def __init__(self, **kwargs):
-        super(DynamicForm, self).__init__(**kwargs)
-        print "FORM INIT {0}".format(kwargs)
+    def __init__(self, *args, **kwargs):
+        super(DynamicForm, self).__init__(*args, **kwargs)
+        print "FORM INIT {0} {1}".format(args, kwargs)
 
     @classmethod
     def refresh(self, obj=None):
