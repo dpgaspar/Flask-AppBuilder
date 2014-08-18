@@ -25,6 +25,10 @@ class IndexView(BaseView):
         self.update_redirect()
         return render_template(self.index_template, appbuilder=self.appbuilder)
 
+    @expose('/back')
+    def back(self):
+        return redirect(self._get_redirect())
+        
 
 class SimpleFormView(BaseView):
     """
