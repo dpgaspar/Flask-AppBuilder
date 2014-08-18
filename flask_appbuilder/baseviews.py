@@ -140,49 +140,12 @@ class BaseView(object):
         return name.replace('_', ' ').title()
 
 
-    def route_from(url, method=None):
-        appctx = _app_ctx_stack.top
-        reqctx = _request_ctx_stack.top
-        if appctx is None:
-            raise RuntimeError('Attempted to match a URL without the '
-                               'application context being pushed. This has to be '
-                               'executed when application context is available.')
-
-        if reqctx is not None:
-            url_adapter = reqctx.url_adapter
-        else:
-            url_adapter = appctx.url_adapter
-            if url_adapter is None:
-                raise RuntimeError('Application was not able to create a URL '
-                                   'adapter for request independent URL matching. '
-                                   'You might be able to fix this by setting '
-                                   'the SERVER_NAME config variable.')
-        parsed_url = url_parse(url)
-        if parsed_url.netloc is not "" and parsed_url.netloc != url_adapter.server_name:
-            raise NotFound()
-        return url_adapter.match(parsed_url.path, method)
-
-    """
-    def _get_redirect(self):
-        next_url = request.args.get('next')
-        if next_url:
-            if next_url in request.referrer:
-                return request.referrer
-            else:
-                return request.args.get('next')
-        else:
-            try:
-                return url_for('%s.%s' % (self.endpoint, self.default_view), **request.args)
-            except:
-                return url_for('%s.%s' % (self.appbuilder.indexview.endpoint, self.appbuilder.indexview.default_view))
-    """
     def update_redirect(self):
         page_history = Stack(session.get('page_history', []))
         page_history.push(request.url)
         session['page_history'] = page_history.to_json()
         
-
-    def _get_redirect(self):
+    def get_redirect(self):
         index_url = url_for('%s.%s' % (self.appbuilder.indexview.endpoint, self.appbuilder.indexview.default_view))
         page_history = Stack(session.get('page_history', []))
 
@@ -191,10 +154,6 @@ class BaseView(object):
         session['page_history'] = page_history.to_json()
         redir = page_history.pop() or index_url
         return redir
-
-    @expose('/back')
-    def back(self):
-        return redirect(self._get_redirect())
 
 
 class BaseModelView(BaseView):
