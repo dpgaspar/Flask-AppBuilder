@@ -27,7 +27,7 @@ class IndexView(BaseView):
 
     @expose('/back')
     def back(self):
-        return redirect(self._get_redirect())
+        return redirect(self.get_redirect())
         
 
 class SimpleFormView(BaseView):
@@ -93,7 +93,7 @@ class SimpleFormView(BaseView):
 
         if form.validate_on_submit():
             self.form_post(form)
-            return redirect(self._get_redirect())
+            return redirect(self.get_redirect())
         else:
             widgets = self._get_edit_widget(form=form)
             return render_template(
@@ -178,7 +178,7 @@ class ModelView(BaseCRUDView):
 
         widget = self._add()
         if not widget:
-            return redirect(self._get_redirect())
+            return redirect(self.get_redirect())
         else:
             return render_template(self.add_template,
                                    title=self.add_title,
@@ -213,7 +213,7 @@ class ModelView(BaseCRUDView):
     def edit(self, pk):
         widgets = self._edit(pk)
         if not widgets:
-            return redirect(self._get_redirect())
+            return redirect(self.get_redirect())
         else:
             return render_template(self.edit_template,
                                    title=self.edit_title,
@@ -232,7 +232,7 @@ class ModelView(BaseCRUDView):
     @has_access
     def delete(self, pk):
         self._delete(pk)
-        return redirect(self._get_redirect())
+        return redirect(self.get_redirect())
 
 
     @expose('/download/<string:filename>')
@@ -342,7 +342,7 @@ class CompactCRUDMixin(BaseCRUDView):
             self._session_form_widget = widgets.get('add')
             self._session_form_action = request.url
             self._session_form_title = self.add_title
-            return redirect(self._get_redirect())
+            return redirect(self.get_redirect())
 
 
     @expose('/edit/<pk>', methods=['GET', 'POST'])
@@ -353,12 +353,12 @@ class CompactCRUDMixin(BaseCRUDView):
             self._session_form_action = ''
             self._session_form_widget = None
 
-            return redirect(self._get_redirect())
+            return redirect(self.get_redirect())
         else:
             self._session_form_widget = widgets.get('edit')
             self._session_form_action = request.url
             self._session_form_title = self.edit_title
-            return redirect(self._get_redirect())
+            return redirect(self.get_redirect())
 
 """
     This is for retro compatibility
