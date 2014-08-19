@@ -262,7 +262,7 @@ class DynamicForm(Form):
 class TQuerySelectField(QuerySelectField):
                        
     def process(self, formdata, data=unset_value):
-        print "PROCESS"
+        print "PROCESS formdata={0} data={1}".format(formdata, data)
         super(TQuerySelectField, self).process(formdata, data)
         
     def process_formdata(self, valuelist):
@@ -270,7 +270,7 @@ class TQuerySelectField(QuerySelectField):
         super(TQuerySelectField, self).process_formdata(valuelist)
         
     def process_data(self, value):
-        print "PROCESS Data"
+        print "PROCESS Data value={0}".format(value)
         super(TQuerySelectField, self).process_data(value)
         
         
