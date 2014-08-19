@@ -93,22 +93,6 @@ class SQLAInterface(BaseInterface):
 
         return count, query.all()
 
-    """
-    def query_simple_group(self, group_by = '', filters = None, order_column = '', order_direction = ''):
-        if self.is_relation_col(group_by):
-            rel_model, rel_direction = self._get_related_model(group_by)
-            query = self.session.query(rel_model, func.count(self.obj.id))
-            query = query.join(rel_model, getattr(self.obj,group_by))
-            query = self._get_base_query(query = query, filters = filters, order_column = order_column, order_direction = order_direction)
-            query = query.group_by(rel_model)
-            return query.all()
-        else:
-            query = self.session.query(group_by,func.count(self.obj.id))
-            query = self._get_base_query(query = query, filters = filters, order_column = order_column, order_direction = order_direction)
-            query = query.group_by(group_by)
-            return query.all()
-    """
-
     def query_simple_group(self, group_by='', aggregate_func = None, aggregate_col = None, filters=None):
         query = self.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
@@ -313,6 +297,10 @@ class SQLAInterface(BaseInterface):
 
     def get_model_relation(self, col_name):
         return self.list_properties[col_name].mapper.class_
+
+    def query_model_relation(self, col_name):
+        model = self.get_model_relation(col_name)
+        return self.session.query(model).all()
 
     def _get_related_model(self, col_name):
         if self.is_relation(col_name):

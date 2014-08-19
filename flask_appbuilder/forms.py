@@ -167,7 +167,7 @@ class GeneralModelConverter(object):
         else:
             lst_validators.append(validators.Optional())
         form_props[col_name] = \
-            TQuerySelectField(label,
+            QuerySelectField(label,
                              description=description,
                              query_factory=query_func,
                              allow_blank=allow_blank,
@@ -259,18 +259,5 @@ class DynamicForm(Form):
         return form
 
 
-class TQuerySelectField(QuerySelectField):
-                       
-    def process(self, formdata, data=unset_value):
-        print "PROCESS formdata={0} data={1}".format(formdata, data)
-        super(TQuerySelectField, self).process(formdata, data)
-        
-    def process_formdata(self, valuelist):
-        print "PROCESS FORM DATA"
-        super(TQuerySelectField, self).process_formdata(valuelist)
-        
-    def process_data(self, value):
-        print "PROCESS Data value={0}".format(value)
-        super(TQuerySelectField, self).process_data(value)
-        
+
         

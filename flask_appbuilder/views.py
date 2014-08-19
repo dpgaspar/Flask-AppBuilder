@@ -1,5 +1,5 @@
 import logging
-from flask import render_template, flash, redirect, send_file
+from flask import render_template, flash, redirect, send_file, jsonify
 from .filemanager import uuid_originalname
 from .security.decorators import has_access, permission_name
 from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
@@ -233,6 +233,49 @@ class ModelView(BaseCRUDView):
     def delete(self, pk):
         self._delete(pk)
         return redirect(self.get_redirect())
+
+    @has_access
+    @permission_name('show')
+    @expose('/jsonselect/<col_name>')
+    def jsonselect(self, col_name):
+        """
+            Use on SQLAlchemy models only
+        """
+        if hasattr(self.datamodel, 'query_model_relation'):
+            items = self.datamodel.query_model_relation(col_name)
+            result = [item.to_json_select() for item in items]
+            return jsonify(result=result)
+        else:
+            log.error("Data Model does not support query model relation")
+            return jsonify(result=[])
+
+
+    @has_access
+    @permission_name('list')
+    @expose('/json')
+    def json(self):
+        if get_order_args().get(self.__class__.__name__):
+            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+        else:
+            order_column, order_direction = '', ''
+        page = get_page_args().get(self.__class__.__name__)
+        page_size = get_page_size_args().get(self.__class__.__name__)
+        get_filter_args(self._filters)
+        if not order_column and self.base_order:
+            order_column, order_direction = self.base_order
+        joined_filters = self._filters.get_joined_filters(self._base_filters)
+        count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
+        result = [item.to_json() for item in lst]
+        return jsonify(result=result)
+
+        if hasattr(self.datamodel, 'query_model_relation'):
+            items = self.datamodel.query_model_relation(col_name)
+            result = [item.to_json_select() for item in items]
+            return jsonify(result=result)
+        else:
+            log.error("Data Model does not support query model relation")
+            return jsonify(result=[])
+
 
 
     @expose('/download/<string:filename>')

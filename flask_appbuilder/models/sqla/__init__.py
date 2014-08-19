@@ -4,6 +4,12 @@ from sqlalchemy.ext.declarative import as_declarative
 from sqlalchemy.ext.declarative import declarative_base
 from flask.ext.sqlalchemy import SQLAlchemy, _BoundDeclarativeMeta, _QueryProperty
 
+try:
+    from sqlalchemy.orm.util import identity_key
+    has_identity_key = True
+except ImportError:
+    has_identity_key = False
+
 log = logging.getLogger(__name__)
 
 _camelcase_re = re.compile(r'([A-Z]+)(?=[a-z0-9])')
@@ -70,6 +76,19 @@ class Model(object):
         for key in self.__mapper__.c.keys():
             result[key] = getattr(self, key)
         return result
+
+    def get_pk(self):
+        for col in self.__mapper__.columns:
+            if col.primary_key:
+                return col.key
+
+    def to_json_select(self):
+        result = dict()
+        result['id'] = getattr(self, self.get_pk())
+        result['text'] = str(self)
+        return result
+
+
 
 
 
