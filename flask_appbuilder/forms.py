@@ -3,6 +3,7 @@ from flask import g
 from flask_wtf import Form
 from wtforms import (BooleanField, TextField,
                        TextAreaField, IntegerField, FloatField, DateField, DateTimeField)
+from wtforms.utils import unset_value
 
 from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 
