@@ -74,23 +74,14 @@ class Model(object):
     def to_json(self):
         result = dict()
         for key in self.__mapper__.c.keys():
-            result[key] = getattr(self, key)
+            col = getattr(self, key)
+            if isinstance(col, datetime.datetime)
+            or isinstance(obj, datetime.date):
+                col = col.isoformat()
+            result[key] = col
         return result
 
-    def get_pk(self):
-        for col in self.__mapper__.columns:
-            if col.primary_key:
-                return col.key
-
-    def to_json_select(self):
-        result = dict()
-        result['id'] = getattr(self, self.get_pk())
-        result['text'] = str(self)
-        return result
-
-
-
-
+    
 
 """
     This is for retro compatibility
