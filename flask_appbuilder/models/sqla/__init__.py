@@ -1,5 +1,6 @@
 import logging
 import re
+import datetime
 from sqlalchemy.ext.declarative import as_declarative
 from sqlalchemy.ext.declarative import declarative_base
 from flask.ext.sqlalchemy import SQLAlchemy, _BoundDeclarativeMeta, _QueryProperty
@@ -74,23 +75,13 @@ class Model(object):
     def to_json(self):
         result = dict()
         for key in self.__mapper__.c.keys():
-            result[key] = getattr(self, key)
+            col = getattr(self, key)
+            if isinstance(col, datetime.datetime) or isinstance(col, datetime.date):
+                col = col.isoformat()
+            result[key] = col
         return result
 
-    def get_pk(self):
-        for col in self.__mapper__.columns:
-            if col.primary_key:
-                return col.key
-
-    def to_json_select(self):
-        result = dict()
-        result['id'] = getattr(self, self.get_pk())
-        result['text'] = str(self)
-        return result
-
-
-
-
+    
 
 """
     This is for retro compatibility

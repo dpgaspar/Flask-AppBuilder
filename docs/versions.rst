@@ -4,10 +4,17 @@ Versions
 Improvements and Bug fixes on 0.10.3
 ------------------------------------
 
-- New, select related cascade fields.
 - Fix, inserted script in init.html moved to ab.js on static/js.
 - Fix, performance improvement on edit, only one form initialization.
 - New, New back mechanism, with 5 history records. issue #35.
+- New, json endpoint for model querys, with same parameters has list endpoint.
+
+TODO:
+- Fix, translation for sec decorator "Access is denied bla bla".
+- Fix, Removal of permission works well but generates error on last iteration.
+- Doc, Application factory method.
+- Doc, Python 2 and 3 support.
+- New, select cascade filters.
 
 Improvements and Bug fixes on 0.10.2
 ------------------------------------
@@ -15,12 +22,6 @@ Improvements and Bug fixes on 0.10.2
 - Fix, get order columns was including relations.
 - New, possibility to include primary key and foreign key on forms and views.
 - Fix, python 3 errors on GenericModels, metaclass compatibility.
-
-TODO:
-- Fix, translation for sec decorator "Access is denied bla bla"
-- Fix, Removal of permission works well but generates error on last iteration.
-- Doc, Application factory method
-- Doc, Python 2 and 3 support.
 
 Improvements and Bug fixes on 0.10.1
 ------------------------------------
