@@ -76,7 +76,7 @@ class Model(object):
         result = dict()
         for key in self.__mapper__.c.keys():
             col = getattr(self, key)
-            if isinstance(col, datetime.datetime) or isinstance(obj, datetime.date):
+            if isinstance(col, datetime.datetime) or isinstance(col, datetime.date):
                 col = col.isoformat()
             result[key] = col
         return result
