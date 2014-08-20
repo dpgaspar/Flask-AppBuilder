@@ -234,22 +234,7 @@ class ModelView(BaseCRUDView):
         self._delete(pk)
         return redirect(self.get_redirect())
 
-    @has_access
-    @permission_name('show')
-    @expose('/jsonselect/<col_name>')
-    def jsonselect(self, col_name):
-        """
-            Use on SQLAlchemy models only
-        """
-        if hasattr(self.datamodel, 'query_model_relation'):
-            items = self.datamodel.query_model_relation(col_name)
-            result = [item.to_json_select() for item in items]
-            return jsonify(result=result)
-        else:
-            log.error("Data Model does not support query model relation")
-            return jsonify(result=[])
-
-
+    
     @has_access
     @permission_name('list')
     @expose('/json')
@@ -266,15 +251,15 @@ class ModelView(BaseCRUDView):
         joined_filters = self._filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         result = [item.to_json() for item in lst]
-        return jsonify(result=result)
+        return jsonify(label_columns=self.label_columns,
+                        include_columns=self.list_columns,
+                        order_columns=self.order_columns,
+                        page=page,
+                        page_size=page_size,
+                        count=count,
+                        modelview_name=self.__class__.__name__,
+                        result=result)
 
-        if hasattr(self.datamodel, 'query_model_relation'):
-            items = self.datamodel.query_model_relation(col_name)
-            result = [item.to_json_select() for item in items]
-            return jsonify(result=result)
-        else:
-            log.error("Data Model does not support query model relation")
-            return jsonify(result=[])
 
 
 
