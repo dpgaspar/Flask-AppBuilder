@@ -158,7 +158,7 @@ class GeneralModelConverter(object):
         extra_classes = None
         if self.is_master_cascade_field(col_name, cascade_rel_fields):
             # it's master field get's css class for on change post.
-            extra_classes = 'my_change'
+            extra_classes = 'json_select2'
         allow_blank = True
         col = self.datamodel.get_relation_fk(col_name)
         if not col.nullable:

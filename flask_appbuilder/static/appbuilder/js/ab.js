@@ -6,6 +6,7 @@ $(document).ready(function() {
     $("a").tooltip({'selector': '','placement': 'bottom'});
 });
 
+
 $( ".my_change" ).on("change", function(e) {
  var theForm=document.getElementById("model_form");
   theForm.action = "";
@@ -14,22 +15,21 @@ $( ".my_change" ).on("change", function(e) {
  })
 
 
-var AdminJsonSelect2 = function(name) {
+var JsonSelect2 = function(name) {
 
     var data = [];
     var json_url = "./jsonselect/" + name;
 
     refresh();
-    $.getJSON( json_url, function( data_json ) {
-      $.each( data_json, function( key, val ) {
-        var item = {};
-        item['id'] = key;
-        item['text'] = val;
-        data.push(item);
-      });
-    });
+    
+    function query() {
+        $.getJSON( json_url, function( data_json ) {
+            data = data_json.results;
+        });
+    }
 
     function refresh() {
+        query();
         $('.json-select2').select2({
             width: "100%",
             multiple: false,
@@ -38,4 +38,9 @@ var AdminJsonSelect2 = function(name) {
     }
 };
 
-AdminJsonSelect2();
+
+$(".json_select2").each(function() {
+    JsonSelect2(this.id);
+});
+
+

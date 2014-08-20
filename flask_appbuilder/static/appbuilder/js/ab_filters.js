@@ -95,23 +95,23 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
     function addFilter(name, filter) {
         var $el = $('<tr />').appendTo($container);
 		
-	addRemoveFilter($el, name, labels[name]);
+	    addRemoveFilter($el, name, labels[name]);
 
         addFilterOptionsValue($el, name);
-	var $field = $(form[name])
+	    var $field = $(form[name])
 	
-	// if form item complex like <div><input bla></div>, datetime
-	if ( $("input", $($field)).html() != undefined ) {
-		$field_inner = $("input", $($field))
-		$field_inner.attr('name', '_flt_0_' + name);
-		$field_inner.attr('class', ' filter_val ' + $field_inner.attr('class'));
+	    // if form item complex like <div><input bla></div>, datetime
+	    if ( $("input", $($field)).html() != undefined ) {
+		    $field_inner = $("input", $($field))
+		    $field_inner.attr('name', '_flt_0_' + name);
+		    $field_inner.attr('class', ' filter_val ' + $field_inner.attr('class'));
 	
-	}
-	else {
-		$field.attr('name', '_flt_0_' + name);
-		$field.attr('class', ' filter_val ' + $field.attr('class'));
-	}
-	$el.append(
+	    }
+	    else {
+		    $field.attr('name', '_flt_0_' + name);
+		    $field.attr('class', ' filter_val ' + $field.attr('class'));
+	    }
+	    $el.append(
         	$('<td/>').append($field)
         );;
         if ($field.hasClass( "my_select2" )) {
