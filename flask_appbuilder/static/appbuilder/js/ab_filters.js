@@ -39,9 +39,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 		$field_inner.attr('class', ' filter_val ' + $field_inner.attr('class'));
 	}
 	else {
-		if ($("input", $($field)).is(':checkbox')) {
-			alert('checkbox');
-		}
+		alert($field);
 		
 		$field.attr('name', '_flt_' + i_option + '_' + name);	
 		$field.val(value);
