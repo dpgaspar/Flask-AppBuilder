@@ -369,6 +369,8 @@ class BaseCRUDView(BaseModelView):
     """ Dictionary to Add extra fields to the Edit form using this property """
     add_form_query_cascade = None
     """
+        FUTURE FEATURE, Don't use it yet
+        
         Implements query cascade related fields. Will user relate fields
         with multiple values.
 
@@ -384,7 +386,9 @@ class BaseCRUDView(BaseModelView):
 
     """
     edit_form_query_cascade = None
-
+    """
+        FUTURE FEATURE, Don't use it yet
+    """
     add_form_query_rel_fields = None
     """
         Add Customized query for related fields on add form.
