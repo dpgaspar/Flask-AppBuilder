@@ -51,6 +51,9 @@ class FilterEqual(BaseFilter):
     name = lazy_gettext('Equal to')
 
     def apply(self, query, value):
+        if self.datamodel.is_boolean(self.column_name):
+            if value == 'y':
+                value = True
         return query.filter(getattr(self.model, self.column_name) == value)
 
 
@@ -58,6 +61,9 @@ class FilterNotEqual(BaseFilter):
     name = lazy_gettext('Not Equal to')
 
     def apply(self, query, value):
+        if self.datamodel.is_boolean(self.column_name):
+            if value == 'y':
+                value = True
         return query.filter(getattr(self.model, self.column_name) != value)
 
 
