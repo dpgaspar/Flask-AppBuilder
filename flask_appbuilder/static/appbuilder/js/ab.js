@@ -13,29 +13,3 @@ $( ".my_change" ).on("change", function(e) {
   theForm.submit();
  })
 
-
-var AdminJsonSelect2 = function(name) {
-
-    var data = [];
-    var json_url = "./jsonselect/" + name;
-
-    refresh();
-    $.getJSON( json_url, function( data_json ) {
-      $.each( data_json, function( key, val ) {
-        var item = {};
-        item['id'] = key;
-        item['text'] = val;
-        data.push(item);
-      });
-    });
-
-    function refresh() {
-        $('.json-select2').select2({
-            width: "100%",
-            multiple: false,
-            data: data
-        });
-    }
-};
-
-AdminJsonSelect2();
