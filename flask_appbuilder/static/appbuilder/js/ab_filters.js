@@ -39,7 +39,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
 		$field_inner.attr('class', ' filter_val ' + $field_inner.attr('class'));
 	}
 	else {
-		if $($field).is(':checkbox') {
+		if ($($field).is(':checkbox')) {
 			alert('checkbox');
 		}
 		
