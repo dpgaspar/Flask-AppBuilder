@@ -44,7 +44,7 @@ class Menu(object):
 
     @property
     def reverse(self):
-        return not "navbar-inverse" in self.extra_classes
+        return "navbar-inverse" in self.extra_classes
 
     def get_list(self):
         return self.menu
