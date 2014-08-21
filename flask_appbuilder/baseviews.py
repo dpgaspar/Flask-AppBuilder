@@ -141,11 +141,18 @@ class BaseView(object):
 
 
     def update_redirect(self):
+        """
+            Call it on your own endpoint's to update the back history navigation.
+            If you bypass it, the next submit our back will go over it.
+        """
         page_history = Stack(session.get('page_history', []))
         page_history.push(request.url)
         session['page_history'] = page_history.to_json()
         
     def get_redirect(self):
+        """
+            Returns the previous url.
+        """
         index_url = url_for('%s.%s' % (self.appbuilder.indexview.endpoint, self.appbuilder.indexview.default_view))
         page_history = Stack(session.get('page_history', []))
 
