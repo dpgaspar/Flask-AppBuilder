@@ -115,7 +115,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
         	$('<td/>').append($field)
         );;
         if ($field.hasClass( "my_select2" )) {
-        	$field.select2({placeholder: "Select a State", allowClear: true});
+        	$field.select2({placeholder: "Select a State", allowClear: true, width: 'resolve'});
         }
         if ($field.hasClass( "appbuilder_datetime" )) {
         	$field.datetimepicker();
