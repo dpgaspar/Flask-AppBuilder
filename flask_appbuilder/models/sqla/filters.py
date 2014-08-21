@@ -146,6 +146,8 @@ class SQLAFilterConverter(BaseFilterConverter):
                                      FilterGreater,
                                      FilterSmaller,
                                      FilterNotEqual]),
+                        ('is_boolean', [FilterEqual,
+                                     FilterNotEqual]),
                         ('is_datetime', [FilterEqual,
                                          FilterGreater,
                                          FilterSmaller,
