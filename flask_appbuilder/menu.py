@@ -35,11 +35,16 @@ class MenuItem(object):
 
 class Menu(object):
     menu = None
-    reverse = True
-
-    def __init__(self, reverse=True):
+    
+    def __init__(self, reverse=True, extra_classes=""):
         self.menu = []
-        self.reverse = reverse
+        if reverse:
+            extra_classes = extra_classes + "navbar-inverse"
+        self.extra_classes = extra_classes
+
+    @property
+    def reverse(self):
+        return not "navbar-inverse" in self.extra_classes
 
     def get_list(self):
         return self.menu
