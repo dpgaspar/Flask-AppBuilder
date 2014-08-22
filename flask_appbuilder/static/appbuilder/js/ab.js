@@ -14,6 +14,7 @@ $( ".my_change" ).on("change", function(e) {
   theForm.submit();
  })
 
+<<<<<<< HEAD
 
 var JsonSelect2 = function(name) {
 
@@ -44,3 +45,5 @@ $(".json_select2").each(function() {
 });
 
 
+=======
+>>>>>>> c71c9bd668ebb02036e264ab604603d6ba76b67e

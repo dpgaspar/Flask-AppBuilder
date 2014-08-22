@@ -73,11 +73,8 @@
 {% endmacro %}       
 
 {% macro navbar_block(menu, languages) %}
-{% if menu.reverse %}
-	<div class="navbar navbar-inverse" role="navigation">
-{% else %}
-	<div class="navbar" role="navigation">
-{% endif %}
+
+<div class="navbar {{menu.extra_classes}}" role="navigation">
    <div class="container">
         <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">

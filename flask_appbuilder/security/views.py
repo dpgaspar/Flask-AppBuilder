@@ -162,7 +162,7 @@ class UserModelView(ModelView):
     ]
 
     order_columns = ['first_name', 'last_name', 'username', 'email']
-    search_columns = ['first_name', 'last_name', 'username', 'email', 'role', 
+    search_columns = ['first_name', 'last_name', 'username', 'email', 'role', 'active',
                     'created_by', 'changed_by', 'changed_on','changed_by', 'login_count']
 
     add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']

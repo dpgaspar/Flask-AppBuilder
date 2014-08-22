@@ -141,11 +141,18 @@ class BaseView(object):
 
 
     def update_redirect(self):
+        """
+            Call it on your own endpoint's to update the back history navigation.
+            If you bypass it, the next submit our back will go over it.
+        """
         page_history = Stack(session.get('page_history', []))
         page_history.push(request.url)
         session['page_history'] = page_history.to_json()
         
     def get_redirect(self):
+        """
+            Returns the previous url.
+        """
         index_url = url_for('%s.%s' % (self.appbuilder.indexview.endpoint, self.appbuilder.indexview.default_view))
         page_history = Stack(session.get('page_history', []))
 
@@ -362,6 +369,8 @@ class BaseCRUDView(BaseModelView):
     """ Dictionary to Add extra fields to the Edit form using this property """
     add_form_query_cascade = None
     """
+        FUTURE FEATURE, Don't use it yet
+        
         Implements query cascade related fields. Will user relate fields
         with multiple values.
 
@@ -377,7 +386,9 @@ class BaseCRUDView(BaseModelView):
 
     """
     edit_form_query_cascade = None
-
+    """
+        FUTURE FEATURE, Don't use it yet
+    """
     add_form_query_rel_fields = None
     """
         Add Customized query for related fields on add form.

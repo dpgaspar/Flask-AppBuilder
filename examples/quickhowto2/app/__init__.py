@@ -1,6 +1,7 @@
 import logging
 from flask import Flask
 from flask.ext.appbuilder import SQLA, AppBuilder
+from flask.ext.appbuilder.menu import Menu
 #from sqlalchemy.engine import Engine
 #from sqlalchemy import event
 
@@ -10,7 +11,7 @@ logging.getLogger().setLevel(logging.DEBUG)
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLA(app)
-appbuilder = AppBuilder(app, db.session)
+appbuilder = AppBuilder(app, db.session, menu=Menu(reverse=False))
 
 """
 Only include this for SQLLite constraints

@@ -8,6 +8,7 @@ Improvements and Bug fixes on 0.10.3
 - Fix, performance improvement on edit, only one form initialization.
 - New, New back mechanism, with 5 history records. issue #35.
 - New, json endpoint for model querys, with same parameters has list endpoint.
+- New, support for boolean columns search, filter with FilterEqual or FilterNotEqual.
 
 TODO:
 - Fix, translation for sec decorator "Access is denied bla bla".
