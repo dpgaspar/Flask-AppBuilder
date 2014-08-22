@@ -10,12 +10,6 @@ Improvements and Bug fixes on 0.10.3
 - New, json endpoint for model querys, with same parameters has list endpoint.
 - New, support for boolean columns search, filter with FilterEqual or FilterNotEqual.
 
-TODO:
-- Fix, translation for sec decorator "Access is denied bla bla".
-- Fix, Removal of permission works well but generates error on last iteration.
-- Doc, Application factory method.
-- New, select cascade filters.
-
 Improvements and Bug fixes on 0.10.2
 ------------------------------------
 
