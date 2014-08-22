@@ -8,7 +8,7 @@ so that you can immediately have a running application (without any models yet) 
 Checkout installation video on `YouTube <http://youtu.be/ZrqFDroqqWE>`_
 
 .. note::
-    Remember the initial user is **'admin'** password **'general'**.
+   Remember the initial user is **'admin'** password **'general'**.
 
 Using pip
 ---------
