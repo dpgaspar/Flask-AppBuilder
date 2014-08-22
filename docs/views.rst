@@ -156,7 +156,7 @@ Has you can see you just have to extend "appbuilder/base.html" on your template 
 You have many other *blocks* to override extending css includes, javascript, headers, tails etc...
 Next use **Flask** **render_template** to render your new template.
 
-..note:
+.. note::
     Update redirect, on version 0.10.3, the redirect algorithm was reviewed, and uses session cookies to keep
     5 records of navigation history, these are very usefull to redirect back, keeping url arguments, and 
     improving UI experience. You must call *self.update_redirect()* to insert the current url into the
