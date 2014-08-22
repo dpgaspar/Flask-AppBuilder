@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
 from flask.ext.appbuilder import Model
 
+mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 class Group(Model):
     id = Column(Integer, primary_key=True)
@@ -81,7 +82,10 @@ class Contact(Model):
         return self.name
 
     def month_year(self):
-        return datetime.datetime(self.birthday.year, self.birthday.month, 1)
+        date = self.birthday or mindate
+        return datetime.datetime(date.year, date.month, 1) or mindate
 
     def year(self):
-        return datetime.datetime(self.birthday.year, 1, 1)
+        date = self.birthday or mindate
+        return datetime.datetime(date.year, 1, 1)
+        
