@@ -143,6 +143,7 @@ inside it create a file name 'method3.html'
         # do something with param1
         # and render template with param
         param1 = 'Goodbye %s' % (param1)
+        self.update_redirect()
         return render_template('method3.html',
                                param1 = param1,
                                appbuilder=self.appbuilder)
@@ -153,7 +154,14 @@ inside it create a file name 'method3.html'
 
 Has you can see you just have to extend "appbuilder/base.html" on your template and then override *block content*.
 You have many other *blocks* to override extending css includes, javascript, headers, tails etc...
-Next use **Flask** **render_template** to render you new template
+Next use **Flask** **render_template** to render your new template.
+
+..note:
+    Update redirect, on version 0.10.3, the redirect algorithm was reviewed, and uses session cookies to keep
+    5 records of navigation history, these are very usefull to redirect back, keeping url arguments, and 
+    improving UI experience. You must call *self.update_redirect()* to insert the current url into the
+    navigation history. Sometimes you may want to skip the update, for example on form validation errors, so that
+    the *back* operation won't send you to the same form, prior to the validation error.
 
 
 SimpleFormView
