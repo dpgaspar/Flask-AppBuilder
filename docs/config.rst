@@ -4,7 +4,7 @@ Base Configuration
 Configuration keys
 ------------------
 
-Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap 3.0.0 base theme:
+Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap 3.1.1 base theme:
 
 +-----------------------------------+--------------------------------------------+-----------+
 | Key                               | Description                                | Mandatory |
