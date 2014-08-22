@@ -14,7 +14,6 @@ TODO:
 - Fix, translation for sec decorator "Access is denied bla bla".
 - Fix, Removal of permission works well but generates error on last iteration.
 - Doc, Application factory method.
-- Doc, Python 2 and 3 support.
 - New, select cascade filters.
 
 Improvements and Bug fixes on 0.10.2
