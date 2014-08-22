@@ -195,8 +195,8 @@ Your **ModelView** classes expose the following methods has flask endpoints
 
 This exposes a REST API, note the *json* method, it will return query results just like the *list*
 method, try it, you can use it on your own template implementations, it will return a JSON object
- with the columns to list, to order, the label's for the columns (already translated), the full
- query count, and of course the query results, it supports pagination also.
+with the columns to list, to order, the label's for the columns (already translated), the full
+query count, and of course the query results, it supports pagination also.
 
 *json* method uses the *list* method security name 'can_list'.
 
