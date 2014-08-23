@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.10.4
+------------------------------------
+
+- Fix, merge problem. issue #38
+
 Improvements and Bug fixes on 0.10.3
 ------------------------------------
 
