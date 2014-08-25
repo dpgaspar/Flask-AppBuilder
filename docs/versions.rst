@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.10.5
+------------------------------------
+
+- Fix, Russian translations from pull request #39
+
 Improvements and Bug fixes on 0.10.4
 ------------------------------------
 
