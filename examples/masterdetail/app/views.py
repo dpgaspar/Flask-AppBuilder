@@ -1,5 +1,6 @@
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import GeneralView, MasterDetailView
+from flask.ext.appbuilder.views import MasterDetailView
+from flask.ext.appbuilder import ModelView
 from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
 from flask.ext.babelpkg import lazy_gettext as _
 
@@ -16,7 +17,7 @@ def fill_gender():
         db.session.rollback()
 
 
-class ContactGeneralView(GeneralView):
+class ContactGeneralView(ModelView):
     datamodel = SQLAModel(Contact)
 
     label_columns = {'group': 'Contacts Group'}
@@ -59,7 +60,7 @@ class GroupMasterView(MasterDetailView):
     related_views = [ContactGeneralView]
 
 
-class GroupGeneralView(GeneralView):
+class GroupGeneralView(ModelView):
     datamodel = SQLAModel(Group)
     related_views = [ContactGeneralView]
 
@@ -78,7 +79,7 @@ fixed_translations_import = [
     _("Contacts Chart"),
     _("Contacts Birth Chart")]
 
-
+db.create_all()
 fill_gender()
 appbuilder.add_view(GroupMasterView, "List Groups", icon="fa-folder-open-o", category="Contacts")
 appbuilder.add_separator("Contacts")
