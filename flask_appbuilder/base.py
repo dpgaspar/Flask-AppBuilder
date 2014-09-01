@@ -89,8 +89,11 @@ class AppBuilder(object):
         self._add_menu_permissions()
         if not self.app:
             for baseview in self.baseviews:
+                # instantiate the views and add session
                 self._check_and_init(baseview)
+                # Register the views has blueprints
                 self.register_blueprint(baseview)
+                # Add missing permissions where needed
                 self._add_permission(baseview)
         self._init_extension(app)
 
@@ -161,7 +164,8 @@ class AppBuilder(object):
 
 
     def _check_and_init(self, baseview):
-        # If class if not instantiated, instantiate it and add security db session.
+        # If class if not instantiated, instantiate it
+        # and add db session from security models.
         if hasattr(baseview, 'datamodel'):
             if baseview.datamodel.session is None:
                 baseview.datamodel.session = self.session
@@ -169,7 +173,9 @@ class AppBuilder(object):
             baseview = baseview()
         return baseview
 
-    def add_view(self, baseview, name, href="", icon="", label="", category="", category_icon="", category_label=""):
+    def add_view(self, baseview, name, href="", icon="",
+                 label="", category="",
+                 category_icon="", category_label=""):
         """
             Add your views associated with menus using this method.
             
