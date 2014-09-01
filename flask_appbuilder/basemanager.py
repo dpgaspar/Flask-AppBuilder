@@ -9,3 +9,10 @@ class BaseManager(object):
 
     def register_views(self):
         pass
+
+    def pre_process(self):
+        pass
+
+    def post_process(self):
+        pass
+
