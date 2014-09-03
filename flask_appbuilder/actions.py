@@ -9,7 +9,7 @@ class ActionItem(object):
 
     def __init__(self, name, text, confirmation, icon, multiple, func):
         self.name = name
-        self.text = text
+        self.text = text or name
         self.confirmation = confirmation
         self.icon = icon
         self.multiple = multiple

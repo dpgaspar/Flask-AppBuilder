@@ -1,5 +1,6 @@
 import logging
 from flask import render_template, flash, redirect, send_file, jsonify
+from .actions import action
 from .filemanager import uuid_originalname
 from .security.decorators import has_access, permission_name
 from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
@@ -234,6 +235,9 @@ class ModelView(BaseCRUDView):
         self._delete(pk)
         return redirect(self.get_redirect())
 
+    @action("muldelete", "Delete", "Delete all Really?", "fa-rocket")
+    def muldelete(self):
+        return redirect(self.get_redirect())
     
     @has_access
     @permission_name('list')

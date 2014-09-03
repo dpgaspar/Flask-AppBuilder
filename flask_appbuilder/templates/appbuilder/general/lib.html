@@ -214,7 +214,24 @@
     </div>
 {% endmacro %}
 
-{% macro render_list_header(can_add, page, page_size, count, filters, modelview_name) %}
+{% macro render_actions(actions) %}
+{% if actions %}
+    <div class="btn-group">
+        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+        {{_('Actions')}}<span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+    	    {% for action in actions %}
+    		    <li><a href="cenas">
+                    {{actions[action].text}}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+{% endmacro %}
+
+{% macro render_list_header(can_add, page, page_size, count, filters, actions, modelview_name) %}
     <div class="well well-sm">
         {{ render_pagination(page, page_size, count, modelview_name) }}
         {{ render_set_page_size(page, page_size, count, modelview_name) }}
@@ -227,6 +244,7 @@
         <div class="pull-right">
 			<strong>{{ _('Record Count') }}:</strong> {{ count }}
 		</div>
+        {{ render_actions(actions) }}
     </div>
 {% endmacro %}
 

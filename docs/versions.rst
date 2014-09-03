@@ -1,6 +1,12 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.10.6
+------------------------------------
+
+- (TODO) New, Support for multiple actions, included mass delete.
+- (TODO) New, PluginModule implementation.
+
 Improvements and Bug fixes on 0.10.5
 ------------------------------------
 
