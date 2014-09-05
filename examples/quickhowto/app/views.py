@@ -23,7 +23,7 @@ class ContactModelView(ModelView):
     datamodel = SQLAModel(Contact)
 
     label_columns = {'group': 'Contacts Group'}
-    list_columns = ['name', 'personal_celphone', 'birthday', 'group', 'id']
+    list_columns = ['name', 'personal_celphone', 'birthday', 'group']
 
     base_order = ('name', 'asc')
 

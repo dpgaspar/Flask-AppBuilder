@@ -6,7 +6,7 @@
     {% set can_edit = "can_edit" | is_item_visible(modelview_name) %}
 	{% set can_delete = "can_delete" | is_item_visible(modelview_name) %}
 
-	{{ lib.render_list_header(can_add, page, page_size, count, filters, modelview_name) }}
+	{{ lib.render_list_header(can_add, page, page_size, count, filters, actions, modelview_name) }}
 
 	{% if value_columns %}
 	

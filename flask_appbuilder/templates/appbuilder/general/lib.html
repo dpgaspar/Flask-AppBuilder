@@ -18,8 +18,16 @@
     {% endfor %}
 {% endmacro %}
 
+
 {% macro render_actions(actions, modelview_name) %}
-{% if actions %}
+{% set sec_flag = [] %}
+{% for action_key in actions if not sec_flag %}
+    {% set action = actions.get(action_key) %}
+    {% if action.name | is_item_visible(modelview_name) %}
+        {% if sec_flag.append(1) %}{% endif %}
+    {% endif %}
+{% endfor %}
+{% if actions and sec_flag %}
 <div class="btn-group">
     <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
     {{_('Actions')}}<span class="caret"></span>
@@ -28,13 +36,14 @@
     	{% for action_key in actions %}
             {% set action = actions.get(action_key) %}
             {% if action.name | is_item_visible(modelview_name) %}
-                <li><a href="{{url_for(modelview_name + '.action',name=action.name,pk=1)}}">{{action.text}}</a></li>
+                <li><a href="">{{action.text}}</a></li>
             {% endif %}
         {% endfor %}
     </ul>
 </div>
 {% endif %}
 {% endmacro %}
+
 
 {% macro render_set_page_size(page, page_size, count, modelview_name) %}
 {% if not page %} {% set page = 0 %} {% endif %}
@@ -214,23 +223,6 @@
     </div>
 {% endmacro %}
 
-{% macro render_actions(actions) %}
-{% if actions %}
-    <div class="btn-group">
-        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-        {{_('Actions')}}<span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu">
-    	    {% for action in actions %}
-    		    <li><a href="cenas">
-                    {{actions[action].text}}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
-{% endif %}
-{% endmacro %}
-
 {% macro render_list_header(can_add, page, page_size, count, filters, actions, modelview_name) %}
     <div class="well well-sm">
         {{ render_pagination(page, page_size, count, modelview_name) }}
@@ -240,11 +232,12 @@
 			{% set path = path | set_link_filters(filters) %}
 			&nbsp;{{ lnk_add(path) }}
 		{% endif %}
-		&nbsp;{{ lnk_back() }}
-        <div class="pull-right">
+        &nbsp;{{ render_actions(actions, modelview_name) }}
+        &nbsp;{{ lnk_back() }}
+		<div class="pull-right">
 			<strong>{{ _('Record Count') }}:</strong> {{ count }}
 		</div>
-        {{ render_actions(actions) }}
+
     </div>
 {% endmacro %}
 
