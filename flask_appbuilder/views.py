@@ -233,7 +233,7 @@ class ModelView(BaseCRUDView):
         return redirect(self.get_redirect())
 
 
-    @action("muldelete", "Delete", "Delete all Really?", "fa-rocket")
+    @action("muldelete", "Delete", "Delete all Really?", "fa-rocket", single=False)
     def muldelete(self, items):
         if isinstance(items, list):
             self.datamodel.delete_all(items)

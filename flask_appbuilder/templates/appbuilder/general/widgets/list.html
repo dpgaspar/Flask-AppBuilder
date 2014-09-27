@@ -4,7 +4,7 @@
 	{% set can_show = "can_show" | is_item_visible(modelview_name) %}
     {% set can_edit = "can_edit" | is_item_visible(modelview_name) %}
 	{% set can_delete = "can_delete" | is_item_visible(modelview_name) %}
-    {% set actions = actions | get_actions_perm(modelview_name) %}
+    {% set actions = actions | get_actions_on_list(modelview_name) %}
 
     {{ lib.render_list_header(can_add, page, page_size, count, filters, actions, modelview_name) }}
 

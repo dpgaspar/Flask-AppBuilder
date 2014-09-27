@@ -27,7 +27,7 @@ log = logging.getLogger(__name__)
 
 class PermissionModelView(ModelView):
     route_base = '/permissions'
-
+    base_permissions = ['can_list']
     datamodel = SQLAModel(Permission)
 
     list_title = lazy_gettext('List Base Permissions')
@@ -40,7 +40,7 @@ class PermissionModelView(ModelView):
 
 class ViewMenuModelView(ModelView):
     route_base = '/viewmenus'
-
+    base_permissions = ['can_list']
     datamodel = SQLAModel(ViewMenu)
 
     list_title = lazy_gettext('List View Menus')
@@ -53,7 +53,7 @@ class ViewMenuModelView(ModelView):
 
 class PermissionViewModelView(ModelView):
     route_base = '/permissionviews'
-
+    base_permissions = ['can_list']
     datamodel = SQLAModel(PermissionView)
 
     list_title = lazy_gettext('List Permissions on Views/Menus')
@@ -69,7 +69,7 @@ class PermissionViewModelView(ModelView):
 
 class ResetMyPasswordView(SimpleFormView):
     """
-    View for reseting own user password
+        View for reseting own user password
     """
     route_base = '/resetmypassword'
 
@@ -238,11 +238,11 @@ class UserDBModelView(UserModelView):
                                appbuilder=self.appbuilder,
         )
 
-    @action('resetmypassword', lazy_gettext("Reset my password"), "", "fa-lock")
+    @action('resetmypassword', lazy_gettext("Reset my password"), "", "fa-lock", multiple=False)
     def resetmypassword(self, item):
         return redirect(url_for('ResetMyPasswordView.this_form_get'))
 
-    @action('resetpasswords', lazy_gettext("Reset Password"), "", "fa-lock")
+    @action('resetpasswords', lazy_gettext("Reset Password"), "", "fa-lock", multiple=False)
     def resetpasswords(self, item):
         return redirect(url_for('ResetPasswordView.this_form_get', pk=item.id))
 

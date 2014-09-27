@@ -8,16 +8,15 @@
 {% endmacro %}
 
 {% macro render_action_links(actions, pk, modelview_name) %}
+    {% set actions = actions | get_actions_on_show(modelview_name) %}
     {% for key in actions %}
         {%  set action = actions.get(key) %}
-        {% if action.name | is_item_visible(modelview_name) %}
         {% set url = url_for('.action', name = action.name, pk = pk) %}
         <a href="javascript:void(0)" class="btn btn-sm btn-primary"
-           onclick="return modelActions.execute_single('{{url}}','{{action.confirmation}}');">
+           onclick="var a = new AdminActions(); return a.execute_single('{{url}}','{{action.confirmation}}');">
             <i class="fa {{action.icon}}"></i>
                 {{_(action.text)}}
             </a>
-        {% endif %}
     {% endfor %}
 {% endmacro %}
 
