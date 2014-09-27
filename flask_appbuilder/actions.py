@@ -4,22 +4,20 @@ class ActionItem(object):
     text = ""
     confirmation = ""
     icon = ""
-    multiple = False
     func = None
 
-    def __init__(self, name, text, confirmation, icon, multiple, func):
+    def __init__(self, name, text, confirmation, icon, func):
         self.name = name
         self.text = text or name
         self.confirmation = confirmation
         self.icon = icon
-        self.multiple = multiple
         self.func = func
 
     def __repr__(self):
-        return "Action name:%s; text:%s; func:%s;" % (self.name, self.text, self.func.__name__)
+        return "Action name:%s; text:%s; confirmation:%s; func:%s;" % (self.name, self.text, self.confirmation, self.func.__name__)
 
 
-def action(name, text, confirmation=None, icon = None, multiple=False):
+def action(name, text, confirmation=None, icon = None):
     """
         Use this decorator to expose actions
 
@@ -34,7 +32,7 @@ def action(name, text, confirmation=None, icon = None, multiple=False):
             Font Awesome icon name
     """
     def wrap(f):
-        f._action = (name, text, confirmation, icon, multiple)
+        f._action = (name, text, confirmation, icon)
         return f
 
     return wrap

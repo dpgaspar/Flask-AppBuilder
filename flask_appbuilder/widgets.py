@@ -121,6 +121,7 @@ class ListAddWidget(ListWidget):
 
     def __init__(self, **kwargs):
         super(ListAddWidget, self).__init__(**kwargs)
+
     def __call__(self, **kwargs):
         return super(ListAddWidget, self).__call__(**kwargs)
 
@@ -128,11 +129,14 @@ class ListAddWidget(ListWidget):
 class ListThumbnail(ListWidget):
     template = 'appbuilder/general/widgets/list_thumbnail.html'
 
+
 class ListCarousel(ListWidget):
     template = 'appbuilder/general/widgets/list_carousel.html'
 
+
 class ListItem(ListWidget):
     template = 'appbuilder/general/widgets/list_item.html'
+
 
 class ListBlock(ListWidget):
     template = 'appbuilder/general/widgets/list_block.html'

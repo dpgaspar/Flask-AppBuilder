@@ -18,16 +18,19 @@
     {% endfor %}
 {% endmacro %}
 
+{% macro action_form(actions, url) %}
+    {% if actions %}
+    <form id="action_form" action="{{ url_for('.action_post') }}" method="POST" style="display: none">
+        {% if csrf_token %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        {% endif %}
+        <input type="hidden" id="action" name="action" />
+    </form>
+    {% endif %}
+{% endmacro %}
 
 {% macro render_actions(actions, modelview_name) %}
-{% set sec_flag = [] %}
-{% for action_key in actions if not sec_flag %}
-    {% set action = actions.get(action_key) %}
-    {% if action.name | is_item_visible(modelview_name) %}
-        {% if sec_flag.append(1) %}{% endif %}
-    {% endif %}
-{% endfor %}
-{% if actions and sec_flag %}
+{% if actions %}
 <div class="btn-group">
     <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
     {{_('Actions')}}<span class="caret"></span>
@@ -35,9 +38,9 @@
     <ul class="dropdown-menu" role="menu">
     	{% for action_key in actions %}
             {% set action = actions.get(action_key) %}
-            {% if action.name | is_item_visible(modelview_name) %}
-                <li><a href="">{{action.text}}</a></li>
-            {% endif %}
+                <li>
+                    <a href="javascript:void(0)" onclick="return modelActions.execute('{{action.name}}','{{action.confirmation}}');">{{ action.text }}</a>
+                </li>
         {% endfor %}
     </ul>
 </div>

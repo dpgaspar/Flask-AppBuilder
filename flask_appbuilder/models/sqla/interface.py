@@ -251,6 +251,26 @@ class SQLAInterface(BaseInterface):
             self.session.rollback()
             return False
 
+    def delete_all(self, items):
+        try:
+            for item in items:
+                self._delete_files(item)
+                self.session.delete(item)
+            self.session.commit()
+            flash(as_unicode(self.delete_row_message), 'success')
+            return True
+        except IntegrityError as e:
+            flash(as_unicode(self.delete_integrity_error_message), 'warning')
+            log.warning("Delete record integrity error: {0}".format(str(e)))
+            self.session.rollback()
+            return False
+        except Exception as e:
+            flash(as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            log.exception("Delete record error: {0}".format(str(e)))
+            self.session.rollback()
+            return False
+
+
     """
     FILE HANDLING METHODS
     """

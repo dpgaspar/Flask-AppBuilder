@@ -4,6 +4,7 @@
 	{% set can_show = "can_show" | is_item_visible(modelview_name) %}
     {% set can_edit = "can_edit" | is_item_visible(modelview_name) %}
 	{% set can_delete = "can_delete" | is_item_visible(modelview_name) %}
+    {% set actions = actions | get_actions_perm(modelview_name) %}
 
     {{ lib.render_list_header(can_add, page, page_size, count, filters, actions, modelview_name) }}
 
@@ -12,9 +13,11 @@
 	<table class="table table-bordered table-hover">
 	<thead>
 	<tr>
-    <th class="action_checkboxes">
-        <input id="check_all" class="action_check_all" name="check_all" type="checkbox">
-    </th>
+    {% if actions %}
+        <th class="action_checkboxes">
+            <input id="check_all" class="action_check_all" name="check_all" type="checkbox">
+        </th>
+    {% endif %}
     {% if can_show or can_edit or can_delete %}
         <th class="col-md-1 col-lg-1 col-sm-1" ></th>
     {% endif %}
@@ -42,9 +45,11 @@
 	{% for item in value_columns %}
 	    {% set pk = pks[loop.index-1] %}
         <tr>
+            {% if actions %}
             <td>
-            <input id="{{pk}}" class="action_check" name="{{pk}}" type="checkbox">
+                <input id="{{pk}}" class="action_check" name="rowid" value="{{pk}}" type="checkbox">
             </td>
+            {% endif %}
             {% if can_show or can_edit or can_delete %}
                 <td><center>
                 {{ lib.btn_crud(can_show, can_edit, can_delete, pk, modelview_name, filters) }}
@@ -56,8 +61,12 @@
 	    </tr>
 	{% endfor %}
 	</table>
-    
+    {{ lib.action_form(actions,'') }}
 	</div>
 	{% else %}
 	    <b> {{_("No records found")}}</b>
 	{% endif %}
+
+<script language="javascript">
+        var modelActions = new AdminActions();
+</script>

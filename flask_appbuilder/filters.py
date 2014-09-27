@@ -23,6 +23,15 @@ class TemplateFilters(object):
                 app.jinja_env.filters[attr._filter] = attr
 
 
+    @app_template_filter('get_actions_perm')
+    def get_actions_perm(self, actions, modelview_name):
+        res_actions = dict()
+        for action_key in actions:
+            action = actions[action_key]
+            if self.is_item_visible(action.name, modelview_name):
+                res_actions[action_key] = action
+        return res_actions
+
     @app_template_filter('link_order')
     def link_order_filter(self, column, modelview_name):
         """

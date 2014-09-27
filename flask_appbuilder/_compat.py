@@ -25,7 +25,6 @@ if not PY2:
     def as_unicode(s):
         if isinstance(s, bytes):
             return s.decode('utf-8')
-
         return str(s)
 
 else:
@@ -40,7 +39,6 @@ else:
     def as_unicode(s):
         if isinstance(s, str):
             return s.decode('utf-8')
-
         return unicode(s)
 
 

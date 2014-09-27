@@ -1,5 +1,5 @@
 import logging
-from flask import render_template, flash, redirect, send_file, jsonify
+from flask import render_template, flash, redirect, send_file, jsonify, request
 from .actions import action
 from .filemanager import uuid_originalname
 from .security.decorators import has_access, permission_name
@@ -164,9 +164,6 @@ class ModelView(BaseCRUDView):
                                appbuilder=self.appbuilder,
                                related_views=self._related_views)
 
-
-
-
     """
     ---------------------------
             ADD
@@ -235,10 +232,16 @@ class ModelView(BaseCRUDView):
         self._delete(pk)
         return redirect(self.get_redirect())
 
+
     @action("muldelete", "Delete", "Delete all Really?", "fa-rocket")
-    def muldelete(self):
+    def muldelete(self, items):
+        if isinstance(items, list):
+            self.datamodel.delete_all(items)
+            self.update_redirect()
+        else:
+            self.datamodel.delete(items)
         return redirect(self.get_redirect())
-    
+
     @has_access
     @permission_name('list')
     @expose('/json')
@@ -265,8 +268,6 @@ class ModelView(BaseCRUDView):
                         result=result)
 
 
-
-
     @expose('/download/<string:filename>')
     @has_access
     def download(self, filename):
@@ -275,12 +276,29 @@ class ModelView(BaseCRUDView):
                          as_attachment=True)
 
 
-    @expose('/action/<string:name>/<pk>')
-    @has_access
+    @expose('/action/<string:name>/<pk>', methods=['GET'])
     def action(self, name, pk):
+        """
+            Action method to handle actions from a show view
+        """
         if self.appbuilder.sm.has_access(name, self.__class__.__name__):
             action = self.actions.get(name)
             return action.func(self.datamodel.get(pk))
+        else:
+            flash("Access is Denied %s %s" % (name, self.__class__.__name__), "danger")
+            return redirect('.')
+
+    @expose('/action_post', methods=['POST'])
+    def action_post(self):
+        """
+            Action method to handle multiple records selected from a list view
+        """
+        name = request.form['action']
+        pks = request.form.getlist('rowid')
+        if self.appbuilder.sm.has_access(name, self.__class__.__name__):
+            action = self.actions.get(name)
+            items = [self.datamodel.get(pk) for pk in pks]
+            return action.func(items)
         else:
             flash("Access is Denied %s %s" % (name, self.__class__.__name__), "danger")
             return redirect('.')
