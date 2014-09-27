@@ -58,6 +58,7 @@ Includes:
   - Views and Widgets
       - Automatic menu generation.
       - Automatic CRUD generation.
+      - Multiple actions on db records.
       - Big variety of filters for your lists.
       - Various view widgets: lists, master-detail, list of thumbnails etc
       - Select2, Datepicker, DateTimePicker

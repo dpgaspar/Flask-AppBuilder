@@ -4,9 +4,8 @@ Versions
 Improvements and Bug fixes on 0.10.6
 ------------------------------------
 
-- (TODO) New, Support for multiple actions, included mass delete.
-- (TODO) New, PluginModule implementation.
-- (TODO) New, extra_args property, for injecting extra arguments to templates.
+- New, Support for multiple actions.
+- New, extra_args property, for injecting extra arguments to templates.
 
 Improvements and Bug fixes on 0.10.5
 ------------------------------------
