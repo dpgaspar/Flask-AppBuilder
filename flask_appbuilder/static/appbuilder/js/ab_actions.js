@@ -7,7 +7,7 @@ var AdminActions = function() {
 
     var chkAllFlag = true;
 
-    this.execute = function(name, confirmation) {
+    this.execute_multiple = function(name, confirmation) {
         var selected = $('input.action_check:checked').size();
 
         if (selected == 0) {
@@ -33,6 +33,17 @@ var AdminActions = function() {
         form.submit();
 
         return false;
+    };
+
+    this.execute_single = function(url, confirmation) {
+
+        if (!!confirmation) {
+            if (!confirm(confirmation)) {
+                return false;
+            }
+        }
+
+        window.location.href = url;
     };
 
     $('.action_check_all').click(function() {

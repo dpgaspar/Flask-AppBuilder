@@ -11,7 +11,10 @@
     {% for key in actions %}
         {%  set action = actions.get(key) %}
         {% if action.name | is_item_visible(modelview_name) %}
-            <a href="{{url_for('.action', name = action.name, pk = pk)}}" class="btn btn-sm btn-primary"><i class="fa {{action.icon}}"></i>
+        {% set url = url_for('.action', name = action.name, pk = pk) %}
+        <a href="javascript:void(0)" class="btn btn-sm btn-primary"
+           onclick="return modelActions.execute_single('{{url}}','{{action.confirmation}}');">
+            <i class="fa {{action.icon}}"></i>
                 {{_(action.text)}}
             </a>
         {% endif %}
@@ -39,7 +42,11 @@
     	{% for action_key in actions %}
             {% set action = actions.get(action_key) %}
                 <li>
-                    <a href="javascript:void(0)" onclick="return modelActions.execute('{{action.name}}','{{action.confirmation}}');">{{ action.text }}</a>
+                    <a href="javascript:void(0)"
+                       onclick="return modelActions.execute_multiple('{{action.name}}','{{action.confirmation}}');">
+                        <i class="fa {{action.icon}}"></i>
+                        {{ _(action.text) }}
+                    </a>
                 </li>
         {% endfor %}
     </ul>
