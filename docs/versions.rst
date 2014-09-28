@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 0.10.7
+------------------------------------
+
+- Fix, actions break on MasterDetail or related views.
+
 Improvements and Bug fixes on 0.10.6
 ------------------------------------
 

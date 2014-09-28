@@ -11,7 +11,8 @@
     {% set actions = actions | get_actions_on_show(modelview_name) %}
     {% for key in actions %}
         {%  set action = actions.get(key) %}
-        {% set url = url_for('.action', name = action.name, pk = pk) %}
+
+        {% set url = url_for(modelview_name + '.action', name = action.name, pk = pk) %}
         <a href="javascript:void(0)" class="btn btn-sm btn-primary"
            onclick="var a = new AdminActions(); return a.execute_single('{{url}}','{{action.confirmation}}');">
             <i class="fa {{action.icon}}"></i>
@@ -20,9 +21,10 @@
     {% endfor %}
 {% endmacro %}
 
-{% macro action_form(actions, url) %}
+{% macro action_form(actions, modelview_name) %}
     {% if actions %}
-    <form id="action_form" action="{{ url_for('.action_post') }}" method="POST" style="display: none">
+    {% set url = url_for(modelview_name + '.action_post') %}
+    <form id="action_form" action="{{ url }}" method="POST" style="display: none">
         {% if csrf_token %}
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         {% endif %}
