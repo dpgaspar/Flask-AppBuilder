@@ -128,7 +128,6 @@ class BaseView(object):
 
 
     def render_template(self, template, **kwargs):
-        print dict(list(kwargs.items()) + list(self.extra_args.items()))
         return render_template(template, **dict(list(kwargs.items()) + list(self.extra_args.items())))
 
     def _prettify_name(self, name):
