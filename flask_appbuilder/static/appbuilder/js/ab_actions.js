@@ -16,7 +16,6 @@ var AdminActions = function() {
         }
 
         if (!!confirmation) {
-            $('#modal-confirm').modal('show');
             if (!confirm(confirmation)) {
                 return false;
             }
