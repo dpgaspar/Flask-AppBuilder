@@ -1,5 +1,5 @@
 import logging
-from flask import Blueprint, request, redirect, session, url_for
+from flask import Blueprint, request, redirect, session, url_for, render_template
 from flask.globals import _app_ctx_stack, _request_ctx_stack
 from werkzeug.urls import url_parse
 from .forms import GeneralModelConverter
@@ -49,7 +49,19 @@ class BaseView(object):
     template_folder = 'templates'
     static_folder = 'static'
     base_permissions = None
+    """
+        List with allowed base permission.
+        Use it like this if you want to restrict your view to readonly::
+
+            class MyView(ModelView):
+                base_permissions = ['can_list','can_show']
+    """
+
     default_view = 'list'
+
+    extra_args = None
+    """ dictionary for injecting extra arguments into template """
+
 
     def __init__(self):
         """
@@ -63,7 +75,8 @@ class BaseView(object):
                     permission_name = getattr(getattr(self, attr_name), '_permission_name')
                     self.base_permissions.add('can_' + permission_name)
             self.base_permissions = list(self.base_permissions)
-
+        if not self.extra_args:
+            self.extra_args = dict()
 
     def create_blueprint(self, appbuilder,
                          endpoint=None,
@@ -115,7 +128,8 @@ class BaseView(object):
 
 
     def render_template(self, template, **kwargs):
-        pass
+        print dict(list(kwargs.items()) + list(self.extra_args.items()))
+        return render_template(template, **dict(list(kwargs.items()) + list(self.extra_args.items())))
 
     def _prettify_name(self, name):
         """

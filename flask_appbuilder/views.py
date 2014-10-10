@@ -24,7 +24,7 @@ class IndexView(BaseView):
     @expose('/')
     def index(self):
         self.update_redirect()
-        return render_template(self.index_template, appbuilder=self.appbuilder)
+        return self.render_template(self.index_template, appbuilder=self.appbuilder)
 
     @expose('/back')
     def back(self):
@@ -74,7 +74,7 @@ class SimpleFormView(BaseView):
         self.form_get(form)
         widgets = self._get_edit_widget(form=form)
         self.update_redirect()
-        return render_template(self.form_template,
+        return self.render_template(self.form_template,
                                title=self.form_title,
                                widgets=widgets,
                                appbuilder=self.appbuilder
@@ -97,7 +97,7 @@ class SimpleFormView(BaseView):
             return redirect(self.get_redirect())
         else:
             widgets = self._get_edit_widget(form=form)
-            return render_template(
+            return self.render_template(
                 self.form_template,
                 title=self.form_title,
                 widgets=widgets,
@@ -141,7 +141,7 @@ class ModelView(BaseCRUDView):
     def list(self):
 
         widgets = self._list()
-        return render_template(self.list_template,
+        return self.render_template(self.list_template,
                                title=self.list_title,
                                widgets=widgets,
                                appbuilder=self.appbuilder)
@@ -157,7 +157,7 @@ class ModelView(BaseCRUDView):
     def show(self, pk):
 
         widgets = self._show(pk)
-        return render_template(self.show_template,
+        return self.render_template(self.show_template,
                                pk=pk,
                                title=self.show_title,
                                widgets=widgets,
@@ -178,7 +178,7 @@ class ModelView(BaseCRUDView):
         if not widget:
             return redirect(self.get_redirect())
         else:
-            return render_template(self.add_template,
+            return self.render_template(self.add_template,
                                    title=self.add_title,
                                    widgets=widget,
                                    appbuilder=self.appbuilder)
@@ -194,7 +194,7 @@ class ModelView(BaseCRUDView):
         form = self.add_form.refresh()
         form.populate_obj(item)
         widget = self._get_add_widget(form=form, exclude_cols=exclude_cols)
-        return render_template(self.add_template,
+        return self.render_template(self.add_template,
                                    title=self.add_title,
                                    widgets=widget,
                                    appbuilder=self.appbuilder)
@@ -213,7 +213,7 @@ class ModelView(BaseCRUDView):
         if not widgets:
             return redirect(self.get_redirect())
         else:
-            return render_template(self.edit_template,
+            return self.render_template(self.edit_template,
                                    title=self.edit_title,
                                    widgets=widgets,
                                    appbuilder=self.appbuilder,
@@ -336,7 +336,7 @@ class MasterDetailView(BaseCRUDView):
         else:
             related_views = []
 
-        return render_template(self.list_template,
+        return self.render_template(self.list_template,
                                title=self.list_title,
                                widgets=widgets,
                                related_views=related_views,
@@ -366,7 +366,7 @@ class CompactCRUDMixin(BaseCRUDView):
     @has_access
     def list(self):
         list_widgets = self._list()
-        return render_template(self.list_template,
+        return self.render_template(self.list_template,
                                title=self.list_title,
                                widgets=list_widgets,
                                appbuilder=self.appbuilder)

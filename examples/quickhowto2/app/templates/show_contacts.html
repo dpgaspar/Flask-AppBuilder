@@ -4,7 +4,7 @@
 
     {{ lib.panel_begin("What is this") }}
 
-    This is the detail of your contact blcdkdkdkdkdkdd
+    This is the detail of your contact
     {{ lib.panel_end() }}
 
     {{ super() }}
@@ -14,5 +14,9 @@
 
 {% block show_form %}
     Text before the show section
+    <div>
+    {{ extra_arg_obj1 }}
+    </div>
+
     {{ super() }}
 {% endblock show_form %}

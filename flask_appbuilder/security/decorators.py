@@ -1,7 +1,10 @@
-from flask import flash, redirect,url_for
-from flask_babelpkg import lazy_gettext
 import functools
 
+from flask import flash, redirect,url_for
+from flask_babelpkg import lazy_gettext
+from .._compat import as_unicode
+
+PERMISSION_PREFIX = 'can_'
 
 def has_access(f):
     """
@@ -16,11 +19,11 @@ def has_access(f):
         permission_str = f.__name__
 
     def wraps(self, *args, **kwargs):
-        permission_str = "can_" + f._permission_name
+        permission_str = PERMISSION_PREFIX + f._permission_name
         if self.appbuilder.sm.has_access(permission_str, self.__class__.__name__):
             return f(self, *args, **kwargs)
         else:
-            flash("Access is Denied to %s on %s" % (f.__name__, self.__class__.__name__), "danger")
+            flash(as_unicode(lazy_gettext("Access is Denied")), "danger")
         return redirect(url_for(self.appbuilder.sm.auth_view.__class__.__name__ + ".login"))
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)

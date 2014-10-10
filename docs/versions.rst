@@ -1,6 +1,16 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.0.0
+-----------------------------------
+
+- New, dynamic package version from python file version.py.
+- New, extra_args property, for injecting extra arguments to templates.
+- Fix, Removed footer with link "Powered by F.A.B.".
+- (TODO) Fix, Added translation for "Access is denied". ES,GE,RU,ZH
+- (TODO) New, Yes and no question with bootstrap modal.
+- (TODO) Fix, Added multiple actions support on other list widgets
+
 Improvements and Bug fixes on 0.10.7
 ------------------------------------
 
@@ -10,7 +20,6 @@ Improvements and Bug fixes on 0.10.6
 ------------------------------------
 
 - New, Support for multiple actions.
-- New, extra_args property, for injecting extra arguments to templates.
 
 Improvements and Bug fixes on 0.10.5
 ------------------------------------

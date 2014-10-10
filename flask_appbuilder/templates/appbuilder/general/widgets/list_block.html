@@ -5,6 +5,7 @@
 	{% set can_show = "can_show" | is_item_visible(modelview_name) %}
     {% set can_edit = "can_edit" | is_item_visible(modelview_name) %}
 	{% set can_delete = "can_delete" | is_item_visible(modelview_name) %}
+    {% set actions = actions | get_actions_on_list(modelview_name) %}
 
 	{{ lib.render_list_header(can_add, page, page_size, count, filters, actions, modelview_name) }}
 
@@ -18,7 +19,10 @@
   	<div class="col-md-4">
   	<div class="thumbnail">
 		<div class="list-group">
-		{% if can_show or can_edit or can_delete %}
+		{% if actions %}
+            <input id="{{pk}}" class="action_check" name="rowid" value="{{pk}}" type="checkbox">
+        {% endif %}
+        {% if can_show or can_edit or can_delete %}
 		    {% set pk = pks[loop.index-1] %}
             {{ lib.btn_crud(can_show, can_edit, can_delete, pk, modelview_name, filters) }}
 		{% endif %}
@@ -37,7 +41,12 @@
 
 	  </div>
 		</div>
-		
+		{{ lib.action_form(actions,modelview_name) }}
+
 	{% else %}
 	<b> {{_("No records found")}}</b>
 	{% endif %}
+
+<script language="javascript">
+        var modelActions = new AdminActions();
+</script>

@@ -1,8 +1,11 @@
 import calendar
+from flask import redirect
 from flask.ext.appbuilder import ModelView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
+from flask.ext.appbuilder.actions import action
+from flask_appbuilder.widgets import ListBlock
 from flask.ext.babelpkg import lazy_gettext as _
 from flask.ext.appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
@@ -66,8 +69,10 @@ class ContactModelView(ModelView):
     list_columns = ['name', 'personal_celphone', 'birthday', 'group']
 
     list_template = 'list_contacts.html'
+    list_widget = ListBlock
     show_template = 'show_contacts.html'
 
+    extra_args = {'extra_arg_obj1':'Extra argument 1 injected'}
     base_order = ('name', 'asc')
 
     show_fieldsets = [
@@ -91,6 +96,11 @@ class ContactModelView(ModelView):
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
+    @action("muldelete", "Delete", "Delete all Really?", "fa-rocket", single=False)
+    def muldelete(self, items):
+        self.datamodel.delete_all(items)
+        self.update_redirect()
+        return redirect(self.get_redirect())
 
 
 class GroupModelView(ModelView):

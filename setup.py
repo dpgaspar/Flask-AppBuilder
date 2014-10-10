@@ -1,7 +1,10 @@
 import os
 import sys
+import imp
 import multiprocessing
 from setuptools import setup, find_packages
+
+version = imp.load_source('version', os.path.join('flask_appbuilder', 'version.py'))
 
 def fpath(name):
     return os.path.join(os.path.dirname(__file__), name)
@@ -14,7 +17,7 @@ def desc():
 
 setup(
     name='Flask-AppBuilder',
-    version='0.10.7',
+    version=version.VERSION_STRING,
     url='https://github.com/dpgaspar/flask-appbuilder/',
     license='BSD',
     author='Daniel Vaz Gaspar',
