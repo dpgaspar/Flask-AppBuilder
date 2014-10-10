@@ -5,7 +5,7 @@ from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
 from flask.ext.appbuilder.actions import action
-from flask_appbuilder.widgets import ListBlock
+from flask_appbuilder.widgets import ListThumbnail
 from flask.ext.babelpkg import lazy_gettext as _
 from flask.ext.appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
@@ -69,7 +69,7 @@ class ContactModelView(ModelView):
     list_columns = ['name', 'personal_celphone', 'birthday', 'group']
 
     list_template = 'list_contacts.html'
-    list_widget = ListBlock
+    list_widget = ListThumbnail
     show_template = 'show_contacts.html'
 
     extra_args = {'extra_arg_obj1':'Extra argument 1 injected'}

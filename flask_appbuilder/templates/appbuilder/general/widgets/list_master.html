@@ -10,7 +10,6 @@
 					    {% set path = path | set_link_filters(filters) %}
 					    <a class="list-group-item"  href="{{path}}">
                         {{ item[value]|safe }}</a>
-
                 {% endfor %}
         {% endfor %}
         </div>
