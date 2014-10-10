@@ -9,7 +9,7 @@ Improvements and Bug fixes on 1.0.0
 - Fix, Removed footer with link "Powered by F.A.B.".
 - (TODO) Fix, Added translation for "Access is denied". ES,GE,RU,ZH
 - (TODO) New, Yes and no question with bootstrap modal.
-- (TODO) Fix, Added multiple actions support on other list widgets
+- Fix, Added multiple actions support on other list widgets
 
 Improvements and Bug fixes on 0.10.7
 ------------------------------------
