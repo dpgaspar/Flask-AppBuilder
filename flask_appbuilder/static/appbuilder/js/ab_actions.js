@@ -16,6 +16,7 @@ var AdminActions = function() {
         }
 
         if (!!confirmation) {
+            $('#modal-confirm').modal('show');
             if (!confirm(confirmation)) {
                 return false;
             }
@@ -36,7 +37,6 @@ var AdminActions = function() {
     };
 
     this.execute_single = function(url, confirmation) {
-
         if (!!confirmation) {
             if (!confirm(confirmation)) {
                 return false;
@@ -52,4 +52,3 @@ var AdminActions = function() {
     });
 
 };
-

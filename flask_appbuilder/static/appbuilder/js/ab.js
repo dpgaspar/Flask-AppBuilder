@@ -1,3 +1,7 @@
+//---------------------------------------
+// Setup date time modal views
+//---------------------------------------
+
 $(document).ready(function() {
     $('.appbuilder_datetime').datetimepicker();
     $('.appbuilder_date').datetimepicker({
@@ -13,4 +17,20 @@ $( ".my_change" ).on("change", function(e) {
   theForm.method = "get";
   theForm.submit();
  })
+
+//---------------------------------------
+// Modal confirmation JS support
+//---------------------------------------
+
+// On link attr "data-text" is set to the modal text
+$(document).ready(function(){
+    $(".confirm").click(function() {
+        $('.modal-text').text($(this).data('text'));
+    });
+});
+
+// If positive confirmation on model follow link
+$('#modal-confirm').on('show.bs.modal', function(e) {
+    $(this).find('.danger').attr('href', $(e.relatedTarget).data('href'));
+});
 

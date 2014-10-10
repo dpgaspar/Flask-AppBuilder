@@ -307,10 +307,10 @@
     {% endmacro %}
 
     {% macro lnk_delete(my_href) %}
-    <a href="{{my_href}}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
-       title="{{_('Delete record')}}" onclick="return confirm('{{ _('You sure you want to delete this item?') }}');">
-        <i class="fa fa-eraser"></i>
-    </a>
+        <a data-text="{{ _('You sure you want to delete this item?') }}" data-href="{{my_href}}" class="btn btn-sm btn-primary confirm" rel="tooltip"
+            title="{{_('Delete record')}}" data-toggle="modal" data-target="#modal-confirm" href="#">
+            <i class="fa fa-eraser"></i>
+        </a>
     {% endmacro %}
 
 </div>
