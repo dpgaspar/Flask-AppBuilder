@@ -161,7 +161,7 @@ msgstr "Relación múltiple"
 
 #: flask_appbuilder/security/decorators.py:24
 msgid "Access is Denied"
-msgstr ""
+msgstr "Acceso denegado"
 
 #: flask_appbuilder/security/forms.py:13
 msgid "openid"
@@ -418,11 +418,11 @@ msgstr "Su información del usuario"
 #: flask_appbuilder/security/views.py:150
 #: flask_appbuilder/security/views.py:160
 msgid "Personal Info"
-msgstr ""
+msgstr "Información Personal"
 
 #: flask_appbuilder/security/views.py:152
 msgid "Audit Info"
-msgstr ""
+msgstr "Información de Auditoría"
 
 #: flask_appbuilder/security/views.py:170
 msgid "Your user information"

@@ -93,15 +93,15 @@ msgstr "Общая ошибка"
 
 #: flask_appbuilder/models/group.py:25
 msgid "Count of"
-msgstr ""
+msgstr "Граф"
 
 #: flask_appbuilder/models/group.py:34
 msgid "Sum of"
-msgstr ""
+msgstr "Сумма"
 
 #: flask_appbuilder/models/group.py:42
 msgid "Avg. of"
-msgstr ""
+msgstr "Средняя . из"
 
 #: flask_appbuilder/models/generic/filters.py:6
 #: flask_appbuilder/models/sqla/filters.py:37
@@ -161,7 +161,7 @@ msgstr "Связь многие ко многим"
 
 #: flask_appbuilder/security/decorators.py:24
 msgid "Access is Denied"
-msgstr ""
+msgstr "Отказано в доступе"
 
 #: flask_appbuilder/security/forms.py:13
 msgid "openid"

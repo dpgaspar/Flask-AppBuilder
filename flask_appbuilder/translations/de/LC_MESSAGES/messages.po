@@ -161,7 +161,7 @@ msgstr "Beziehung, wie viele"
 
 #: flask_appbuilder/security/decorators.py:24
 msgid "Access is Denied"
-msgstr ""
+msgstr "Zugriff verweigert"
 
 #: flask_appbuilder/security/forms.py:13
 msgid "openid"

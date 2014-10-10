@@ -161,7 +161,7 @@ msgstr "没有关系"
 
 #: flask_appbuilder/security/decorators.py:24
 msgid "Access is Denied"
-msgstr ""
+msgstr "访问被拒绝"
 
 #: flask_appbuilder/security/forms.py:13
 msgid "openid"
@@ -408,11 +408,11 @@ msgstr "您的用户信息"
 #: flask_appbuilder/security/views.py:150
 #: flask_appbuilder/security/views.py:160
 msgid "Personal Info"
-msgstr ""
+msgstr "个人信息"
 
 #: flask_appbuilder/security/views.py:152
 msgid "Audit Info"
-msgstr ""
+msgstr "审计信息"
 
 #: flask_appbuilder/security/views.py:170
 msgid "Your user information"
