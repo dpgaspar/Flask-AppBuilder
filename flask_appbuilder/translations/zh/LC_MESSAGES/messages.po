@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-10-10 08:52+0100\n"
+"POT-Creation-Date: 2014-10-12 13:31+0100\n"
 "PO-Revision-Date: 2014-04-21 15:20+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: zh <LL@li.org>\n"
@@ -45,13 +45,13 @@ msgid "Not a valid date value"
 msgstr "不是有效的日期值"
 
 #: flask_appbuilder/messages.py:14
-#: flask_appbuilder/templates/appbuilder/general/widgets/list.html:67
+#: flask_appbuilder/templates/appbuilder/general/widgets/list.html:68
 #: flask_appbuilder/templates/appbuilder/general/widgets/list_bck.html:56
-#: flask_appbuilder/templates/appbuilder/general/widgets/list_block.html:42
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_block.html:48
 #: flask_appbuilder/templates/appbuilder/general/widgets/list_carousel.html:50
-#: flask_appbuilder/templates/appbuilder/general/widgets/list_item.html:34
-#: flask_appbuilder/templates/appbuilder/general/widgets/list_master.html:18
-#: flask_appbuilder/templates/appbuilder/general/widgets/list_thumbnail.html:32
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_item.html:41
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_master.html:17
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_thumbnail.html:40
 msgid "No records found"
 msgstr "没有找到记录"
 
@@ -62,6 +62,11 @@ msgstr "无效的文件扩展名"
 #: flask_appbuilder/validators.py:34
 msgid "Already exists."
 msgstr "已经存在。"
+
+#: flask_appbuilder/views.py:281 flask_appbuilder/views.py:298
+#: flask_appbuilder/security/decorators.py:26
+msgid "Access is Denied"
+msgstr "访问被拒绝"
 
 #: flask_appbuilder/charts/views.py:34
 msgid "Group by"
@@ -158,10 +163,6 @@ msgstr "不相关"
 #: flask_appbuilder/models/sqla/filters.py:101
 msgid "Relation as Many"
 msgstr "没有关系"
-
-#: flask_appbuilder/security/decorators.py:24
-msgid "Access is Denied"
-msgstr "访问被拒绝"
 
 #: flask_appbuilder/security/forms.py:13
 msgid "openid"
@@ -401,7 +402,6 @@ msgstr "请重写用户密码进行确认"
 
 #: flask_appbuilder/security/views.py:148
 #: flask_appbuilder/security/views.py:158
-#, fuzzy
 msgid "User info"
 msgstr "您的用户信息"
 
@@ -469,6 +469,10 @@ msgstr "注册"
 msgid "Welcome"
 msgstr "欢迎"
 
+#: flask_appbuilder/templates/appbuilder/general/confirm.html:6
+msgid "User confirmation needed"
+msgstr "用户需要确认"
+
 #: flask_appbuilder/templates/appbuilder/general/lib.html:40
 msgid "Actions"
 msgstr "操作"
@@ -493,13 +497,13 @@ msgstr "编辑记录"
 msgid "Show record"
 msgstr "记录显示"
 
+#: flask_appbuilder/templates/appbuilder/general/lib.html:310
+msgid "You sure you want to delete this item?"
+msgstr "您确定要删除这个项目吗？"
+
 #: flask_appbuilder/templates/appbuilder/general/lib.html:311
 msgid "Delete record"
 msgstr "删除记录"
-
-#: flask_appbuilder/templates/appbuilder/general/lib.html:311
-msgid "You sure you want to delete this item?"
-msgstr "您确定要删除这个项目吗？"
 
 #: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:17
 msgid "Group by fields"

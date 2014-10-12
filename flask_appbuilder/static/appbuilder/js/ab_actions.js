@@ -6,8 +6,16 @@
 var AdminActions = function() {
 
     var chkAllFlag = true;
+    var multiple = false;
+    var single = false;
+    var action_name = '';
+    var action_url = '';
+    var action_confirmation = '';
 
     this.execute_multiple = function(name, confirmation) {
+        multiple = true;
+        action_name = name;
+        action_confirmation = confirmation;
         var selected = $('input.action_check:checked').size();
 
         if (selected == 0) {
@@ -16,38 +24,72 @@ var AdminActions = function() {
         }
 
         if (!!confirmation) {
-            if (!confirm(confirmation)) {
-                return false;
-            }
+            $('#modal-confirm').modal('show');
         }
-
-        // Update hidden form and submit it
-        var form = $('#action_form');
-        $('#action', form).val(name);
-
-        $('input.action_check', form).remove();
-        $('input.action_check:checked').each(function() {
-            form.append($(this).clone());
-        });
-
-        form.submit();
-
-        return false;
+        else {
+            form_submit();
+        }
     };
 
     this.execute_single = function(url, confirmation) {
+        single = true;
+        action_url = url;
+        action_confirmation = confirmation;
+
         if (!!confirmation) {
             if (!confirm(confirmation)) {
-                return false;
+                $('#modal-confirm').modal('show');
             }
         }
-
-        window.location.href = url;
+        else {
+            window.location.href = action_url;
+        }
     };
 
+    function form_submit() {
+        // Update hidden form and submit it
+            var form = $('#action_form');
+            $('#action', form).val(action_name);
+
+            $('input.action_check', form).remove();
+            $('input.action_check:checked').each(function() {
+                form.append($(this).clone());
+            });
+            form.submit();
+
+            return false;
+    }
+
+    //----------------------------------------------------
+    // Event for checkbox with class "action_check_all"
+    // will check all checkboxes with class "action_check
+    //----------------------------------------------------
     $('.action_check_all').click(function() {
         $('.action_check').prop('checked', chkAllFlag);
         chkAllFlag = !chkAllFlag;
+    });
+
+    //------------------------------------------
+    // Event for modal OK button click (confirm.html)
+    // will submit form or redirect
+    //------------------------------------------
+    $('#modal-confirm-ok').on('click', function(e) {
+        if (multiple) {
+            form_submit();
+        }
+        if (single) {
+            window.location.href = action_url;
+        }
+    });
+
+    //------------------------------------------
+    // Event for modal show (confirm.html)
+    // will replace modal inside text (div class modal-text) with confirmation text
+    //------------------------------------------
+    $('#modal-confirm').on('show.bs.modal', function(e) {
+        if (multiple || single) {
+            $('.modal-text').text(action_confirmation);
+        }
     });
 
 };

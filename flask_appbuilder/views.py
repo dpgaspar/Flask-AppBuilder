@@ -1,11 +1,12 @@
 import logging
 from flask import render_template, flash, redirect, send_file, jsonify, request
 from .actions import action
+from ._compat import as_unicode
+from flask_babelpkg import lazy_gettext
 from .filemanager import uuid_originalname
 from .security.decorators import has_access, permission_name
 from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
-from .baseviews import expose, BaseView, BaseModelView, BaseCRUDView
-from .models.group import GroupByProcessData
+from .baseviews import expose, BaseView, BaseCRUDView
 from .urltools import *
 
 
@@ -276,8 +277,10 @@ class ModelView(BaseCRUDView):
             action = self.actions.get(name)
             return action.func(self.datamodel.get(pk))
         else:
-            flash("Access is Denied %s %s" % (name, self.__class__.__name__), "danger")
+            print("INVALID ACCESS ON {0}".format(self.__class__.__name__))
+            flash(as_unicode(lazy_gettext("Access is Denied")), "danger")
             return redirect('.')
+
 
     @expose('/action_post', methods=['POST'])
     def action_post(self):
@@ -291,7 +294,8 @@ class ModelView(BaseCRUDView):
             items = [self.datamodel.get(pk) for pk in pks]
             return action.func(items)
         else:
-            flash("Access is Denied %s %s" % (name, self.__class__.__name__), "danger")
+            print("INVALID ACCESS ON {0} {1}".format(name, self.__class__.__name__))
+            flash(as_unicode(lazy_gettext("Access is Denied")), "danger")
             return redirect('.')
 
 

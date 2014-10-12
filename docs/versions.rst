@@ -8,7 +8,7 @@ Improvements and Bug fixes on 1.0.0
 - New, extra_args property, for injecting extra arguments to templates.
 - Fix, Removed footer with link "Powered by F.A.B.".
 - Fix, Added translation for "Access is denied". ES,GE,RU,ZH
-- (TODO) New, Yes and no question with bootstrap modal.
+- New, Yes and no questions with bootstrap modal.
 - Fix, Added multiple actions support on other list widgets.
 - Fix, missing translations for "User info" and "Audit info".
 

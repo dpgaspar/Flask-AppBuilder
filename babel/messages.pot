@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-10-10 08:52+0100\n"
+"POT-Creation-Date: 2014-10-12 13:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,13 +45,13 @@ msgid "Not a valid date value"
 msgstr ""
 
 #: flask_appbuilder/messages.py:14
-#: flask_appbuilder/templates/appbuilder/general/widgets/list.html:67
+#: flask_appbuilder/templates/appbuilder/general/widgets/list.html:68
 #: flask_appbuilder/templates/appbuilder/general/widgets/list_bck.html:56
-#: flask_appbuilder/templates/appbuilder/general/widgets/list_block.html:42
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_block.html:48
 #: flask_appbuilder/templates/appbuilder/general/widgets/list_carousel.html:50
-#: flask_appbuilder/templates/appbuilder/general/widgets/list_item.html:34
-#: flask_appbuilder/templates/appbuilder/general/widgets/list_master.html:18
-#: flask_appbuilder/templates/appbuilder/general/widgets/list_thumbnail.html:32
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_item.html:41
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_master.html:17
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_thumbnail.html:40
 msgid "No records found"
 msgstr ""
 
@@ -61,6 +61,11 @@ msgstr ""
 
 #: flask_appbuilder/validators.py:34
 msgid "Already exists."
+msgstr ""
+
+#: flask_appbuilder/views.py:281 flask_appbuilder/views.py:298
+#: flask_appbuilder/security/decorators.py:26
+msgid "Access is Denied"
 msgstr ""
 
 #: flask_appbuilder/charts/views.py:34
@@ -157,10 +162,6 @@ msgstr ""
 
 #: flask_appbuilder/models/sqla/filters.py:101
 msgid "Relation as Many"
-msgstr ""
-
-#: flask_appbuilder/security/decorators.py:24
-msgid "Access is Denied"
 msgstr ""
 
 #: flask_appbuilder/security/forms.py:13
@@ -468,6 +469,10 @@ msgstr ""
 msgid "Welcome"
 msgstr ""
 
+#: flask_appbuilder/templates/appbuilder/general/confirm.html:6
+msgid "User confirmation needed"
+msgstr ""
+
 #: flask_appbuilder/templates/appbuilder/general/lib.html:40
 msgid "Actions"
 msgstr ""
@@ -492,12 +497,12 @@ msgstr ""
 msgid "Show record"
 msgstr ""
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:311
-msgid "Delete record"
+#: flask_appbuilder/templates/appbuilder/general/lib.html:310
+msgid "You sure you want to delete this item?"
 msgstr ""
 
 #: flask_appbuilder/templates/appbuilder/general/lib.html:311
-msgid "You sure you want to delete this item?"
+msgid "Delete record"
 msgstr ""
 
 #: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:17

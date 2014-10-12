@@ -69,7 +69,7 @@ class ContactModelView(ModelView):
     list_columns = ['name', 'personal_celphone', 'birthday', 'group']
 
     list_template = 'list_contacts.html'
-    list_widget = ListThumbnail
+    #list_widget = ListThumbnail
     show_template = 'show_contacts.html'
 
     extra_args = {'extra_arg_obj1':'Extra argument 1 injected'}

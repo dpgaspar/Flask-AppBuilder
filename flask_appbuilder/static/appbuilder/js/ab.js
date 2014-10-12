@@ -31,6 +31,6 @@ $(document).ready(function(){
 
 // If positive confirmation on model follow link
 $('#modal-confirm').on('show.bs.modal', function(e) {
-    $(this).find('.danger').attr('href', $(e.relatedTarget).data('href'));
+    $(this).find('#modal-confirm-ok').attr('href', $(e.relatedTarget).data('href'));
 });
 
