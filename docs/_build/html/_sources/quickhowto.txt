@@ -170,10 +170,35 @@ Register everything, to present the models and create the menu. Issue **create_a
 Take a look at the :doc:`api` for add_view method.
 
 .. note::
-	The icons for the menu on this examples are from font-awesome, Checkout fontAwesome `Icons <http://fontawesome.io/icons/>`_ names. Font-Awesome is already included and you can use any icon you like on menus and actions
+	The icons for the menu on this examples are from font-awesome,
+	Checkout fontAwesome `Icons <http://fontawesome.io/icons/>`_ names.
+	Font-Awesome is already included and you can use any icon you like on menus and actions
 	
-With this very few lines of code (and could be fewer), you now have a web application with detailed security for each CRUD primitives and Menu options, authentication, and form field validation. Yet you can extensively change many details, add your own triggers before or after CRUD primitives, develop your own web views and integrate them.
+With this very few lines of code (and could be fewer), you now have a web application
+with detailed security for each CRUD primitives and Menu options, authentication,
+and form field validation. Yet you can extensively change many details,
+add your own triggers before or after CRUD primitives, develop your own web views and integrate them.
 
+Exposed methods and JSON
+------------------------
+
+Your **ModelView** classes expose the following methods has flask endpoints
+
+- list
+- show
+- add
+- edit
+- delete
+- download
+- action
+- json
+
+This exposes a REST API, note the *json* method, it will return query results just like the *list*
+method, try it, you can use it on your own template implementations, it will return a JSON object
+with the columns to list, to order, the label's for the columns (already translated), the full
+query count, and of course the query results, it supports pagination also.
+
+*json* method uses the *list* method security name 'can_list'.
 
 You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto
 

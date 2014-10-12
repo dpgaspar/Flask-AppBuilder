@@ -287,6 +287,17 @@ like on the following example.</p>
 <dd><p>All views inherit from this class. it&#8217;s constructor will register your exposed urls on flask as a Blueprint.</p>
 <p>This class does not expose any urls, but provides a common base for all views.</p>
 <p>Extend this class if you want to expose methods for your own templates</p>
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.baseviews.BaseView.base_permissions">
+<tt class="descname">base_permissions</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.base_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>List with allowed base permission.
+Use it like this if you want to restrict your view to readonly:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">base_permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;can_list&#39;</span><span class="p">,</span><span class="s">&#39;can_show&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseView.create_blueprint">
 <tt class="descname">create_blueprint</tt><big>(</big><em>appbuilder</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.create_blueprint" title="Permalink to this definition">¶</a></dt>
@@ -307,9 +318,28 @@ like on the following example.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="flask.ext.appbuilder.baseviews.BaseView.extra_args">
+<tt class="descname">extra_args</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.extra_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>dictionary for injecting extra arguments into template</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.baseviews.BaseView.get_redirect">
+<tt class="descname">get_redirect</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.get_redirect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the previous url.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseView.route_base">
 <tt class="descname">route_base</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.route_base" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this if you want to define your own relative url</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.baseviews.BaseView.update_redirect">
+<tt class="descname">update_redirect</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.update_redirect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call it on your own endpoint&#8217;s to update the back history navigation.
+If you bypass it, the next submit our back will go over it.</p>
 </dd></dl>
 
 </dd></dl>
@@ -429,6 +459,30 @@ Use it to control the order of the display</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.add_form_query_cascade">
+<tt class="descname">add_form_query_cascade</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.add_form_query_cascade" title="Permalink to this definition">¶</a></dt>
+<dd><p>FUTURE FEATURE, Don&#8217;t use it yet</p>
+<p>Implements query cascade related fields. Will user relate fields
+with multiple values.</p>
+<dl class="docutils">
+<dt>Grammar: [(&#8216;Parent field&#8217;,&#8217;Child field&#8217;, SQLAModel(ChildModel, Session),</dt>
+<dd><blockquote class="first">
+<div>[[&#8216;child field rel to parent&#8217;,Filter,&#8217;parent&#8217;],...]),...]</div></blockquote>
+<dl class="last docutils">
+<dt>class ContactModelView(ModelView):</dt>
+<dd><p class="first">datamodel = SQLAModel(Contact, db.session)
+add_form_query_cascade = [(&#8216;model&#8217;, &#8216;manufacture&#8217;</p>
+<blockquote class="last">
+<div>SQLAModel(Product, db.session),
+[[&#8216;manufacture_id&#8217;,FilterEqual,&#8217;id&#8217;]]
+)]</div></blockquote>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.add_form_query_rel_fields">
 <tt class="descname">add_form_query_rel_fields</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.add_form_query_rel_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add Customized query for related fields on add form.
@@ -498,6 +552,12 @@ Use it to control the order of the display</p>
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form_extra_fields">
 <tt class="descname">edit_form_extra_fields</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form_extra_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dictionary to Add extra fields to the Edit form using this property</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form_query_cascade">
+<tt class="descname">edit_form_query_cascade</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form_query_cascade" title="Permalink to this definition">¶</a></dt>
+<dd><p>FUTURE FEATURE, Don&#8217;t use it yet</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -751,6 +811,18 @@ Inherit from this view to provide some base processing for your customized form 
 <em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">ModelView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.ModelView" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and list from your database tables, inherit your views from this class.</p>
 <p>Notice that this class inherits from BaseCRUDView and BaseModelView so all properties from the parent class can be overriden.</p>
+<dl class="method">
+<dt id="flask.ext.appbuilder.views.ModelView.action">
+<tt class="descname">action</tt><big>(</big><em>name</em>, <em>pk</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.ModelView.action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Action method to handle actions from a show view</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.views.ModelView.action_post">
+<tt class="descname">action_post</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.ModelView.action_post" title="Permalink to this definition">¶</a></dt>
+<dd><p>Action method to handle multiple records selected from a list view</p>
+</dd></dl>
+
 </dd></dl>
 
 </div></blockquote>
@@ -799,7 +871,7 @@ two lists.</p>
 <span id="flask-ext-appbuilder-actions"></span><h2>flask.ext.appbuilder.actions<a class="headerlink" href="#module-flask.ext.appbuilder.actions" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="flask.ext.appbuilder.actions.action">
-<tt class="descclassname">flask.ext.appbuilder.actions.</tt><tt class="descname">action</tt><big>(</big><em>name</em>, <em>text</em>, <em>confirmation=None</em>, <em>icon=None</em>, <em>multiple=False</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.actions.action" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">flask.ext.appbuilder.actions.</tt><tt class="descname">action</tt><big>(</big><em>name</em>, <em>text</em>, <em>confirmation=None</em>, <em>icon=None</em>, <em>multiple=True</em>, <em>single=True</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.actions.action" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this decorator to expose actions</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -811,6 +883,8 @@ two lists.</p>
 <li><strong>confirmation</strong> &#8211; Confirmation text. If not provided, action will be executed
 unconditionally.</li>
 <li><strong>icon</strong> &#8211; Font Awesome icon name</li>
+<li><strong>multiple</strong> &#8211; If true will display action on list view</li>
+<li><strong>single</strong> &#8211; If true will display action on show view</li>
 </ul>
 </td>
 </tr>

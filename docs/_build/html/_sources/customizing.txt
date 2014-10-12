@@ -66,7 +66,8 @@ Define a special and simple view inherit from IndexView::
 Changing the Footer
 -------------------
 
-The default footer can be easily changed by your own. You must develop your template, to override the existing one.
+The default footer can be easily changed by your own. You must develop your template,
+to override the existing one.
 
 Develop your jinja2 template and place it on the following relative path to override the F.A.B footer.
 
@@ -114,9 +115,12 @@ Category icon and label can be setup only for the first time. Internally F.A.B. 
 Changing Widgets and Templates
 ------------------------------
 
-F.A.B. has a collection of widgets to change your views presentation, you can create your own and override, or (even better) create them and contribute to the project on git.
+F.A.B. has a collection of widgets to change your views presentation,
+you can create your own and override,
+or (even better) create them and contribute to the project on git.
 
-All views have templates that will display widgets in a certain layout. For example you can display a record related lists on tab (default) or on the same page.
+All views have templates that will display widgets in a certain layout.
+For example you can display a record related lists on tab (default) or on the same page.
 
 ::
 

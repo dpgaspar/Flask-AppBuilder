@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
-    <link rel="next" title="Actions" href="actions.html" />
+    <link rel="next" title="Templates" href="templates.html" />
     <link rel="prev" title="Advanced Configuration" href="advanced.html" />
    
   
@@ -45,7 +45,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="actions.html" title="Actions"
+          <a href="templates.html" title="Templates"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="advanced.html" title="Advanced Configuration"
@@ -117,7 +117,8 @@ You must develop your template, then define it in a IndexView and pass it to App
 </div>
 <div class="section" id="changing-the-footer">
 <h2>Changing the Footer<a class="headerlink" href="#changing-the-footer" title="Permalink to this headline">¶</a></h2>
-<p>The default footer can be easily changed by your own. You must develop your template, to override the existing one.</p>
+<p>The default footer can be easily changed by your own. You must develop your template,
+to override the existing one.</p>
 <p>Develop your jinja2 template and place it on the following relative path to override the F.A.B footer.</p>
 <p>./your_root_project_path/app/templates/appbuilder/footer.html</p>
 <p>Actually you can override any given F.A.B. template.</p>
@@ -162,8 +163,11 @@ You must develop your template, then define it in a IndexView and pass it to App
 </div>
 <div class="section" id="changing-widgets-and-templates">
 <h2>Changing Widgets and Templates<a class="headerlink" href="#changing-widgets-and-templates" title="Permalink to this headline">¶</a></h2>
-<p>F.A.B. has a collection of widgets to change your views presentation, you can create your own and override, or (even better) create them and contribute to the project on git.</p>
-<p>All views have templates that will display widgets in a certain layout. For example you can display a record related lists on tab (default) or on the same page.</p>
+<p>F.A.B. has a collection of widgets to change your views presentation,
+you can create your own and override,
+or (even better) create them and contribute to the project on git.</p>
+<p>All views have templates that will display widgets in a certain layout.
+For example you can display a record related lists on tab (default) or on the same page.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ServerDiskTypeModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">ServerDiskType</span><span class="p">)</span>
     <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;quantity&#39;</span><span class="p">,</span> <span class="s">&#39;disktype&#39;</span><span class="p">]</span>
@@ -305,7 +309,7 @@ appbuilder.add_view(ContactModelView, &quot;List Contacts&quot;, icon=&quot;fa-e
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="advanced.html" title="previous chapter">Advanced Configuration</a></li>
-      <li>Next: <a href="actions.html" title="next chapter">Actions</a></li>
+      <li>Next: <a href="templates.html" title="next chapter">Templates</a></li>
   </ul></li>
 </ul>
   <h3>This Page</h3>

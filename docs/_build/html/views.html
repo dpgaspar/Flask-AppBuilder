@@ -199,6 +199,7 @@ inside it create a file name &#8216;method3.html&#8217;</p>
     <span class="c"># do something with param1</span>
     <span class="c"># and render template with param</span>
     <span class="n">param1</span> <span class="o">=</span> <span class="s">&#39;Goodbye </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param1</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;method3.html&#39;</span><span class="p">,</span>
                            <span class="n">param1</span> <span class="o">=</span> <span class="n">param1</span><span class="p">,</span>
                            <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="p">)</span>
@@ -210,7 +211,15 @@ inside it create a file name &#8216;method3.html&#8217;</p>
 </div>
 <p>Has you can see you just have to extend &#8220;appbuilder/base.html&#8221; on your template and then override <em>block content</em>.
 You have many other <em>blocks</em> to override extending css includes, javascript, headers, tails etc...
-Next use <strong>Flask</strong> <strong>render_template</strong> to render you new template</p>
+Next use <strong>Flask</strong> <strong>render_template</strong> to render your new template.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Update redirect, on version 0.10.3, the redirect algorithm was reviewed, and uses session cookies to keep
+5 records of navigation history, these are very usefull to redirect back, keeping url arguments, and
+improving UI experience. You must call <em>self.update_redirect()</em> to insert the current url into the
+navigation history. Sometimes you may want to skip the update, for example on form validation errors, so that
+the <em>back</em> operation won&#8217;t send you to the same form, prior to the validation error.</p>
+</div>
 </div>
 <div class="section" id="simpleformview">
 <h2>SimpleFormView<a class="headerlink" href="#simpleformview" title="Permalink to this headline">¶</a></h2>

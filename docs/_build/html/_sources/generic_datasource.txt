@@ -2,14 +2,14 @@ Generic Data Sources
 ====================
 
 This feature is still beta, but you can already use it, it allows you to use alternative/generic datasources.
-With it you can use python libraries, systems commands or whatever with the framework has if they were
+With it you can use python libraries, systems commands or whatever with the framework as if they were
 SQLAlchemy models.
 
 PS Command example
 ------------------
 
-Already on the framework, and intended to be an example is a data source that holds the output from
-the linux 'ps -ef' command, and shows it has if it were an SQLA model.
+Already on the framework, and intended to be an example, is a data source that holds the output from
+the linux 'ps -ef' command, and shows it as if it were a SQLA model.
 
 Your own generic data source must subclass from **GenericSession** and implement at least the **all** method
 

@@ -244,9 +244,33 @@ Use it to control the order of the display</p>
 <p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a> for add_view method.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The icons for the menu on this examples are from font-awesome, Checkout fontAwesome <a class="reference external" href="http://fontawesome.io/icons/">Icons</a> names. Font-Awesome is already included and you can use any icon you like on menus and actions</p>
+<p class="last">The icons for the menu on this examples are from font-awesome,
+Checkout fontAwesome <a class="reference external" href="http://fontawesome.io/icons/">Icons</a> names.
+Font-Awesome is already included and you can use any icon you like on menus and actions</p>
 </div>
-<p>With this very few lines of code (and could be fewer), you now have a web application with detailed security for each CRUD primitives and Menu options, authentication, and form field validation. Yet you can extensively change many details, add your own triggers before or after CRUD primitives, develop your own web views and integrate them.</p>
+<p>With this very few lines of code (and could be fewer), you now have a web application
+with detailed security for each CRUD primitives and Menu options, authentication,
+and form field validation. Yet you can extensively change many details,
+add your own triggers before or after CRUD primitives, develop your own web views and integrate them.</p>
+</div>
+<div class="section" id="exposed-methods-and-json">
+<h2>Exposed methods and JSON<a class="headerlink" href="#exposed-methods-and-json" title="Permalink to this headline">¶</a></h2>
+<p>Your <strong>ModelView</strong> classes expose the following methods has flask endpoints</p>
+<ul class="simple">
+<li>list</li>
+<li>show</li>
+<li>add</li>
+<li>edit</li>
+<li>delete</li>
+<li>download</li>
+<li>action</li>
+<li>json</li>
+</ul>
+<p>This exposes a REST API, note the <em>json</em> method, it will return query results just like the <em>list</em>
+method, try it, you can use it on your own template implementations, it will return a JSON object
+with the columns to list, to order, the label&#8217;s for the columns (already translated), the full
+query count, and of course the query results, it supports pagination also.</p>
+<p><em>json</em> method uses the <em>list</em> method security name &#8216;can_list&#8217;.</p>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>
 <p>Live quickhowto <a class="reference external" href="http://flaskappbuilder.pythonanywhere.com/">Demo</a> (login with guest/welcome).</p>
 <p>Some images:</p>
@@ -270,6 +294,7 @@ Use it to control the order of the display</p>
 <li><a class="reference internal" href="#define-your-models-models-py">Define your models (models.py)</a></li>
 <li><a class="reference internal" href="#define-your-views-views-py">Define your Views (views.py)</a></li>
 <li><a class="reference internal" href="#register-views-py">Register (views.py)</a></li>
+<li><a class="reference internal" href="#exposed-methods-and-json">Exposed methods and JSON</a></li>
 </ul>
 </li>
 </ul>

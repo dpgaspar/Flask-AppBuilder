@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
-    <link rel="next" title="Multiple Databases" href="multipledbs.html" />
-    <link rel="prev" title="Customizing" href="customizing.html" />
+    <link rel="next" title="Generic Data Sources" href="generic_datasource.html" />
+    <link rel="prev" title="Templates" href="templates.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -45,10 +45,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="multipledbs.html" title="Multiple Databases"
+          <a href="generic_datasource.html" title="Generic Data Sources"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="customizing.html" title="Customizing"
+          <a href="templates.html" title="Templates"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -63,23 +63,51 @@
 <h1>Actions<a class="headerlink" href="#actions" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="define-your-view">
 <h2>Define your view<a class="headerlink" href="#define-your-view" title="Permalink to this headline">¶</a></h2>
-<p>You can setup your actions for records on the show page. Just use the &#64;action decorator on your own functions</p>
+<p>You can setup your actions on records on the show or list views.
+This is a powerful feature, you can easily add custom functionality to your db records,
+like mass delete, sending emails with record information, special mass update etc.</p>
+<p>Just use the &#64;action decorator on your own functions. Here&#8217;s an example</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.actions</span> <span class="kn">import</span> <span class="n">action</span>
 
 <span class="k">class</span> <span class="nc">GroupModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactModelView</span><span class="p">]</span>
 
-    <span class="nd">@action</span><span class="p">(</span><span class="s">&quot;myaction&quot;</span><span class="p">,</span><span class="s">&quot;Do something on this record&quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="s">&quot;fa-rocket&quot;</span><span class="p">)</span>
+    <span class="nd">@action</span><span class="p">(</span><span class="s">&quot;myaction&quot;</span><span class="p">,</span><span class="s">&quot;Do something on this record&quot;</span><span class="p">,</span><span class="s">&quot;Do you really want to?&quot;</span><span class="p">,</span><span class="s">&quot;fa-rocket&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">myaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            do something with the item record</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>This will create the necessary permissions for the item, so that you can include them or remove them from a particular role.</p>
-<p>It will render a button for each action you define on the show page of <em>ModelView</em></p>
+<p>This will create the necessary permissions for the item,
+so that you can include or remove them from a particular role.</p>
+<p>You can easily implement a massive delete option on list&#8217;s. Just add the following code
+to your view. This example will tell F.A.B. to implement the action just for list views and not
+show the option on the show view. You can do this by disabling the <em>single</em> or <em>multiple</em>
+parameters on the <strong>&#64;action</strong> decorator.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@action</span><span class="p">(</span><span class="s">&quot;muldelete&quot;</span><span class="p">,</span> <span class="s">&quot;Delete&quot;</span><span class="p">,</span> <span class="s">&quot;Delete all Really?&quot;</span><span class="p">,</span> <span class="s">&quot;fa-rocket&quot;</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">muldelete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">delete_all</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>F.A.B will call your function with a list of record items if called from a list view.
+Or a single item if called from a show view. By default an action will be implemented on
+list views and show views so your method&#8217;s should be prepared to handle a list of records or
+a single record:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@action</span><span class="p">(</span><span class="s">&quot;muldelete&quot;</span><span class="p">,</span> <span class="s">&quot;Delete&quot;</span><span class="p">,</span> <span class="s">&quot;Delete all Really?&quot;</span><span class="p">,</span> <span class="s">&quot;fa-rocket&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">muldelete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">delete_all</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span>
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -99,8 +127,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="customizing.html" title="previous chapter">Customizing</a></li>
-      <li>Next: <a href="multipledbs.html" title="next chapter">Multiple Databases</a></li>
+      <li>Previous: <a href="templates.html" title="previous chapter">Templates</a></li>
+      <li>Next: <a href="generic_datasource.html" title="next chapter">Generic Data Sources</a></li>
   </ul></li>
 </ul>
   <h3>This Page</h3>
