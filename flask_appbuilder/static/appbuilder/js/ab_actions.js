@@ -3,6 +3,9 @@
 // for more details.
 //
 
+//------------------------------------------------------
+// AdminActions holds methods to handle UI for actions
+//------------------------------------------------------
 var AdminActions = function() {
 
     var chkAllFlag = true;
@@ -11,6 +14,7 @@ var AdminActions = function() {
     var action_name = '';
     var action_url = '';
     var action_confirmation = '';
+    var row_checked_class = 'success';
 
     this.execute_multiple = function(name, confirmation) {
         multiple = true;
@@ -19,7 +23,7 @@ var AdminActions = function() {
         var selected = $('input.action_check:checked').size();
 
         if (selected == 0) {
-            alert('No row selected');
+            ab_alert('No row selected');
             return false;
         }
 
@@ -37,9 +41,7 @@ var AdminActions = function() {
         action_confirmation = confirmation;
 
         if (!!confirmation) {
-            if (!confirm(confirmation)) {
                 $('#modal-confirm').modal('show');
-            }
         }
         else {
             window.location.href = action_url;
@@ -65,8 +67,18 @@ var AdminActions = function() {
     // will check all checkboxes with class "action_check
     //----------------------------------------------------
     $('.action_check_all').click(function() {
-        $('.action_check').prop('checked', chkAllFlag);
+        $('.action_check').prop('checked', chkAllFlag).trigger("change");
         chkAllFlag = !chkAllFlag;
+    });
+
+    //----------------------------------------------------
+    // Event for checkbox with class "action_check"
+    // will add class 'active' to row
+    //----------------------------------------------------
+    $('.action_check').change(function() {
+        var thisClosest = $(this).closest('tr'),
+        checked = this.checked;
+        $(this).closest('tr').add(thisClosest )[checked ? 'addClass' : 'removeClass'](row_checked_class);
     });
 
     //------------------------------------------

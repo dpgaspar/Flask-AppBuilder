@@ -96,7 +96,7 @@ class ContactModelView(ModelView):
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
-    @action("muldelete", "Delete", "Delete all Really?", "fa-rocket", single=False)
+    @action("muldelete", "Delete", "Delete all Really?", "fa-rocket")
     def muldelete(self, items):
         self.datamodel.delete_all(items)
         self.update_redirect()

@@ -18,6 +18,19 @@ $( ".my_change" ).on("change", function(e) {
   theForm.submit();
  })
 
+
+//---------------------------------------
+// Bootstrap modal, javascript alert
+//---------------------------------------
+function ab_alert(text) {
+    $('#modal-alert').on('show.bs.modal', function(e) {
+            $('.modal-text').text(text);
+        }
+    );
+    $('#modal-alert').modal('show');
+};
+
+
 //---------------------------------------
 // Modal confirmation JS support
 //---------------------------------------
