@@ -319,7 +319,7 @@ class AppBuilder(object):
         return url_for('%s.%s' % (self.sm.user_view.endpoint, 'userinfo'))
 
     def get_url_for_locale(self, lang):
-        return url_for('%s.%s' % (self.bm.locale_view.endpoint, self.bm.locale_view.default_view), locale= lang)
+        return url_for('%s.%s' % (self.bm.locale_view.endpoint, self.bm.locale_view.default_view), locale=lang)
 
 
     def _add_permission(self, baseview):

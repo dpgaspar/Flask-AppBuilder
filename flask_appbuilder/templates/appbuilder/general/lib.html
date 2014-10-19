@@ -157,18 +157,24 @@
 {% endmacro %}
 
 
-{% macro render_field(field) %}
-<div class="control-group">
+{% macro render_field(field, begin_sep_label='', end_sep_label='', begin_sep_field='', end_sep_field='') %}
+<div class="form-group">
 	  {% if field.id != 'csrf_token' %}
 	  {% if field.type == 'HiddenField' %}
 	  	{{ field}}
 	  {% else %}
-		<div class="control-label">
-		  <th class="col-lg-2 col-md-2 col-sm-2">{{ field.label.text }}{% if field.flags.required %}<strong style="color: red">&#42;</strong>{% endif %}</th>
-		</div>
-		<div class="controls">
-		  <td>{{ field(**kwargs)|safe }}
-		<span class="help-block">{{ field.description }}</span>
+	    {{begin_sep_label|safe}}
+            <label for="{{field.id}}">
+		        {{ field.label.text }}
+                {% if field.flags.required %}
+                    <strong style="color: red">&#42;</strong>
+                {% endif %}
+		    </label>
+        {{end_sep_label|safe}}
+		{{begin_sep_field|safe}}
+            {{ field(**kwargs)|safe }}
+		   <span class="help-block">{{ field.description }}</span>
+        {{end_sep_field|safe}}
 	  {% endif %}
   	  {% if field.errors %}
 	    <div class="alert alert-danger">
@@ -178,9 +184,9 @@
 	    </div>
 	  {% endif %}
 	  {% endif %}
-	</td></div>
 </div>
 {% endmacro %}
+
 
 {% macro render_field_search(field) %}
 {% if field.id != 'csrf_token' %}
@@ -239,16 +245,15 @@
         {{ render_pagination(page, page_size, count, modelview_name) }}
         {{ render_set_page_size(page, page_size, count, modelview_name) }}
     	{% if can_add %}
-			{% set path = url_for(modelview_name + '.add') %}
+		    {% set path = url_for(modelview_name + '.add') %}
 			{% set path = path | set_link_filters(filters) %}
 			&nbsp;{{ lnk_add(path) }}
-		{% endif %}
+        {% endif %}
         &nbsp;{{ render_actions(actions, modelview_name) }}
         &nbsp;{{ lnk_back() }}
 		<div class="pull-right">
 			<strong>{{ _('Record Count') }}:</strong> {{ count }}
 		</div>
-
     </div>
 {% endmacro %}
 

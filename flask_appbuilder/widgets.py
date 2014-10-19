@@ -40,6 +40,30 @@ class FormWidget(RenderTemplateWidget):
     """
     template = 'appbuilder/general/widgets/form.html'
 
+
+class FormVerticalWidget(RenderTemplateWidget):
+    """
+        FormWidget
+
+        form = None
+        include_cols = []
+        exclude_cols = []
+        fieldsets = []
+    """
+    template = 'appbuilder/general/widgets/form_vertical.html'
+
+class FormInlineWidget(RenderTemplateWidget):
+    """
+        FormWidget
+
+        form = None
+        include_cols = []
+        exclude_cols = []
+        fieldsets = []
+    """
+    template = 'appbuilder/general/widgets/form_inline.html'
+
+
 class GroupFormListWidget(RenderTemplateWidget):
     template = 'appbuilder/general/widgets/group_form_list.html'    
 

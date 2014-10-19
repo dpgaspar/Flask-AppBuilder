@@ -40,7 +40,8 @@ It's very flexible, you can apply multiple filters with static values, or values
 Default Order
 -------------
 
-Use a default order on your lists, this can be overridden by the user on the UI. Data structure ('col_name':'asc|desc')
+Use a default order on your lists, this can be overridden by the user on the UI.
+Data structure ('col_name':'asc|desc')
 
 ::
 
@@ -48,6 +49,19 @@ Use a default order on your lists, this can be overridden by the user on the UI.
         datamodel = SQLAModel(MyTable)
         base_order = ('my_col_to_be_ordered','asc')
 
+
+Template Extra Arguments
+------------------------
+
+You can pass extra Jinja2 arguments to your custom template, using extra_args property::
+
+    class MyView(ModelView):
+        datamodel = SQLAModel(MyTable)
+        extra_args = {'my_extra_arg':'SOMEVALUE'}
+        show_template = 'my_show_template.html'
+
+Your overriding the 'show' template to handle your extra argument.
+You can still use F.A.B. show template using Jinja2 blocks, take a look at the :doc:`templates` chapter
 
 Forms
 -----
