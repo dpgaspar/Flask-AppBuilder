@@ -233,7 +233,7 @@ class SecurityManager(BaseManager):
         if username is None or username == "":
             return None
         user = self.get_session.query(User).filter_by(username=username).first()
-        if user is None or (not user.is_active()):
+        if user is not None and (not user.is_active()):
             return None
         else:
             try:
@@ -243,8 +243,26 @@ class SecurityManager(BaseManager):
             try:
                 con = ldap.initialize(self.auth_ldap_server)
                 con.set_option(ldap.OPT_REFERRALS, 0)
+               
                 try:
-                    con.bind_s(username, password)
+                    app=self.appbuilder.get_app  
+                    if 'AUTH_LDAP_SEARCH' not in app.config:
+                        bind_username=username
+                    else:
+                        if app.config['AUTH_LDAP_SEARCH'] == "" :
+                            bind_username=username
+                        else:
+                            app.config.setdefault('AUTH_LDAP_BIND_FIELD', 'cn')
+                            app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
+
+                            filter="%s=%s" % (app.config['AUTH_LDAP_UID_FIELD'],username)
+                            bind_username_array=con.search_s(app.config['AUTH_LDAP_SEARCH'],ldap.SCOPE_SUBTREE,filter,[app.config['AUTH_LDAP_BIND_FIELD']])
+                            if bind_username_array == []:
+                                return None
+                            else:
+                                bind_username=bind_username_array[0][0]
+
+                    con.bind_s(bind_username, password)
                     self._update_user_auth_stat(user)
                     return user
                 except ldap.INVALID_CREDENTIALS:
