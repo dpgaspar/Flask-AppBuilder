@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from flask.ext.appbuilder.filemanager import ImageManager
 from flask.ext.appbuilder.models.mixins import BaseMixin, ImageColumn
 from flask.ext.appbuilder import Model
-
+from flask_appbuilder.security.models import User
 
 class ProductType(Model):
     id = Column(Integer, primary_key=True)
@@ -12,6 +12,7 @@ class ProductType(Model):
 
     def __repr__(self):
         return self.name
+
 
 class Product(Model):
     id = Column(Integer, primary_key=True)
@@ -39,12 +40,7 @@ class Product(Model):
         return self.name
 
 
-class Sale(Model):
-    id = Column(Integer, primary_key=True)
-    sold_to_id = Column(Integer, ForeignKey('ab_user.id'))
-    sold_to = relationship("User")
-    sold_on = Column(Date)
-    product_id = Column(Integer, ForeignKey('product.id'))
-    product = relationship("Product")
-    quantity = Column(Integer)
+class Client(User):
+    extra = Column(String(50), unique=True, nullable=False)
+
 

@@ -1,27 +1,23 @@
 import logging
 from flask import g
 from flask_wtf import Form
+from functools import partial
 from wtforms import (BooleanField, TextField,
                        TextAreaField, IntegerField, FloatField, DateField, DateTimeField)
-
-
 from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 
 from wtforms import validators
-#from flask_wtf import validators
 from .fieldwidgets import (BS3TextAreaFieldWidget,
                           BS3TextFieldWidget,
                           DatePickerWidget,
                           DateTimePickerWidget,
                           Select2Widget,
                           Select2ManyWidget)
-from .models.filters import Filters
 from .upload import (BS3FileUploadFieldWidget,
                     BS3ImageUploadFieldWidget,
                     FileUploadField,
                     ImageUploadField)
 from .validators import Unique
-from functools import partial
 
 try:
     from wtforms.fields.core import _unset_value as unset_value
@@ -41,7 +37,14 @@ def get_cascade_value_helper(col_name=""):
         obj = getattr(g, '_current_form_obj', None)
         return getattr(obj, col_name, None)
 
+
 class FieldConverter(object):
+    """
+        Helper class that converts model fields into WTForm fields
+
+        it has a conversion table with type method checks from model
+        interfaces, these methods are invoked with a column name
+    """
     conversion_table = (('is_image', ImageUploadField, BS3ImageUploadFieldWidget),
                         ('is_file', FileUploadField, BS3FileUploadFieldWidget),
                         ('is_text', TextAreaField, BS3TextAreaFieldWidget),
@@ -79,7 +82,12 @@ class FieldConverter(object):
         log.error('Column %s Type not supported' % self.colname)
 
 
+
 class GeneralModelConverter(object):
+    """
+        Returns a form from a model only one public exposed
+        method 'create_form'
+    """
     def __init__(self, datamodel):
         self.datamodel = datamodel
 
@@ -120,7 +128,7 @@ class GeneralModelConverter(object):
                 return lambda: sqla.query(_filters)[1]
 
 
-    def is_master_cascade_field(self, col_name, cascade_rel_fields):
+    def _is_master_cascade_field(self, col_name, cascade_rel_fields):
         """
             Checks if field (col_name) is a master field on a
             cascade related fields definition.
@@ -131,7 +139,7 @@ class GeneralModelConverter(object):
                     return True
         return False
 
-    def is_slave_cascade_field(self, col_name, cascade_rel_fields):
+    def _is_slave_cascade_field(self, col_name, cascade_rel_fields):
         """
             Checks if field (col_name) is a master field on a
             cascade related fields definition.
@@ -151,12 +159,12 @@ class GeneralModelConverter(object):
             will use a Select box based on a query. Will only
             work with SQLAlchemy interface.
         """
-        if self.is_slave_cascade_field(col_name, cascade_rel_fields):
+        if self._is_slave_cascade_field(col_name, cascade_rel_fields):
             query_func = self._get_func_cascade_query(col_name, filter_rel_fields, cascade_rel_fields, form_props)
         else:
             query_func = self._get_func_related_query(col_name, filter_rel_fields)
         extra_classes = None
-        if self.is_master_cascade_field(col_name, cascade_rel_fields):
+        if self._is_master_cascade_field(col_name, cascade_rel_fields):
             # it's master field get's css class for on change post.
             extra_classes = 'json_select2'
         allow_blank = True
@@ -189,7 +197,7 @@ class GeneralModelConverter(object):
                                      widget=Select2ManyWidget())
         return form_props
 
-    def _convert_field(self, col_name, label, description, lst_validators, form_props):
+    def _convert_simple(self, col_name, label, description, lst_validators, form_props):
         if not self.datamodel.is_nullable(col_name):
             lst_validators.append(validators.InputRequired())
         else:
@@ -201,12 +209,18 @@ class GeneralModelConverter(object):
         form_props[col_name] = fc.convert()
         return form_props
 
-    def _convert_prop(self, col_name,
+    def _convert_col(self, col_name,
                       label, description,
                       lst_validators, filter_rel_fields,
                       cascade_rel_fields,
                       form_props):
         if self.datamodel.is_relation(col_name):
+            #--------------
+            if self.datamodel.is_relation_one_to_one(col_name):
+                print "ONE COL {0}".format(col_name)
+            if self.datamodel.is_relation_many_to_one(col_name):
+                print "MANY COL {0}".format(col_name)
+            #--------------
             if self.datamodel.is_relation_many_to_one(col_name) or \
                     self.datamodel.is_relation_one_to_one(col_name):
                 return self._convert_many_to_one(col_name, label,
@@ -226,28 +240,55 @@ class GeneralModelConverter(object):
             else:
                 log.warning("Relation {0} not supported".format(col_name))
         else:
-            #if not (self.datamodel.is_pk(col_name) or self.datamodel.is_fk(col_name)):
-            return self._convert_field(col_name, label, description, lst_validators, form_props)
+            return self._convert_simple(col_name, label, description, lst_validators, form_props)
 
 
     def create_form(self, label_columns={}, inc_columns=[],
                     description_columns={}, validators_columns={},
                     extra_fields={}, filter_rel_fields=None, cascade_rel_fields=None):
+        """
+            Converts a model to a form given
+
+            :param label_columns:
+                A dictionary with the column's labels.
+            :param inc_columns:
+                A list with the columns to include
+            :param description_columns:
+                A dictionary with a description for cols.
+            :param validators_columns:
+                A dictionary with WTForms validators ex::
+
+                    validators={'personal_email':EmailValidator}
+
+            :param extra_fields:
+                A dictionary containing column names and a WTForm
+                Form fields to be added to the form, these fields do not
+                 exist on the model itself ex::
+
+                    extra_fields={'some_col':BooleanField('Some Col', default=False)}
+
+            :param filter_rel_fields:
+                A filter to be applied on relationships
+            :param cascade_rel_fields:
+                Still experimental...
+        """
         form_props = {}
         for col_name in inc_columns:
             if col_name in extra_fields:
                 form_props[col_name] = extra_fields.get(col_name)
             else:
-                #prop = self.datamodel.get_col_property(col)
-                self._convert_prop(col_name, self._get_label(col_name, label_columns),
+                self._convert_col(col_name, self._get_label(col_name, label_columns),
                                    self._get_description(col_name, description_columns),
                                    self._get_validators(col_name, validators_columns),
                                    filter_rel_fields, cascade_rel_fields, form_props)
         return type('DynamicForm', (DynamicForm,), form_props)
 
 
-class DynamicForm(Form):
 
+class DynamicForm(Form):
+    """
+        Refresh method will force select field to refresh
+    """
     @classmethod
     def refresh(self, obj=None):
         g._current_form_obj = obj                           
@@ -255,5 +296,3 @@ class DynamicForm(Form):
         return form
 
 
-
-        

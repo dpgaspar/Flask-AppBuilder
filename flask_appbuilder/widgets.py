@@ -11,8 +11,13 @@ from ._compat import as_unicode
 
 log = logging.getLogger(__name__)
 
-class RenderTemplateWidget(object):
 
+class RenderTemplateWidget(object):
+    """
+        Base template for every widget
+        Enables the possibility of rendering a template
+         inside a template with run time options
+    """
     template = 'appbuilder/general/widgets/render.html'
     template_args = None
 
@@ -51,6 +56,19 @@ class FormVerticalWidget(RenderTemplateWidget):
         fieldsets = []
     """
     template = 'appbuilder/general/widgets/form_vertical.html'
+
+
+class FormHorizontalWidget(RenderTemplateWidget):
+    """
+        FormWidget
+
+        form = None
+        include_cols = []
+        exclude_cols = []
+        fieldsets = []
+    """
+    template = 'appbuilder/general/widgets/form_horizontal.html'
+
 
 class FormInlineWidget(RenderTemplateWidget):
     """
@@ -99,7 +117,7 @@ class SearchWidget(FormWidget):
 
 class ShowWidget(RenderTemplateWidget):
     """
-        ShowWidget implements an template as an widget
+        ShowWidget implements a template as an widget
         it takes the following arguments
 
         pk = None
@@ -112,8 +130,13 @@ class ShowWidget(RenderTemplateWidget):
     """
     template = 'appbuilder/general/widgets/show.html'
 
+
 class ShowBlockWidget(RenderTemplateWidget):
     template = 'appbuilder/general/widgets/show_block.html'
+
+
+class ShowVerticalWidget(RenderTemplateWidget):
+    template = 'appbuilder/general/widgets/show_vertical.html'
 
 
 class ListWidget(RenderTemplateWidget):

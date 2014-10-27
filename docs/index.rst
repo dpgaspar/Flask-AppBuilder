@@ -32,6 +32,7 @@ Contents:
    quickcharts
    quickfiles
    quickminimal
+   relations
    config
    advanced
    customizing

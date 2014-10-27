@@ -377,9 +377,16 @@ class BaseCRUDView(BaseModelView):
     validators_columns = None
     """ Dictionary to add your own validators for forms """
     add_form_extra_fields = None
-    """ Dictionary to add extra fields to the Add form using this property """
+    """
+        A dictionary containing column names and a WTForm
+        Form fields to be added to the Add form, these fields do not
+        exist on the model itself ex::
+
+        extra_fields={'some_col':BooleanField('Some Col', default=False)}
+
+    """
     edit_form_extra_fields = None
-    """ Dictionary to Add extra fields to the Edit form using this property """
+    """ Dictionary to add extra fields to the Edit form using this property """
     add_form_query_cascade = None
     """
         FUTURE FEATURE, Don't use it yet
@@ -432,9 +439,9 @@ class BaseCRUDView(BaseModelView):
     """
 
     add_form = None
-    """ To implement your own assign WTF form for Add """
+    """ To implement your own, assign WTF form for Add """
     edit_form = None
-    """ To implement your own assign WTF form for Edit """
+    """ To implement your own, assign WTF form for Edit """
 
     list_template = 'appbuilder/general/model/list.html'
     """ Your own add jinja2 template for list """

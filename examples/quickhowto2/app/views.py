@@ -4,7 +4,7 @@ from flask.ext.appbuilder import ModelView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
-from flask.ext.appbuilder.widgets import FormVerticalWidget, FormInlineWidget
+from flask.ext.appbuilder.widgets import FormVerticalWidget, FormInlineWidget, FormHorizontalWidget, ShowBlockWidget
 from flask.ext.appbuilder.actions import action
 from flask_appbuilder.widgets import ListThumbnail
 from flask.ext.babelpkg import lazy_gettext as _
@@ -66,7 +66,9 @@ class ContactModelView2(ModelView):
 class ContactModelView(ModelView):
     datamodel = SQLAModel(Contact)
 
-    add_widget = FormInlineWidget
+    add_widget = FormVerticalWidget
+    show_widget = ShowBlockWidget
+
     label_columns = {'group': 'Contacts Group'}
     list_columns = ['name', 'personal_celphone', 'birthday', 'group']
 

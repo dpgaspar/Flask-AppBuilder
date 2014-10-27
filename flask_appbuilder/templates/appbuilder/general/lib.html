@@ -160,30 +160,30 @@
 {% macro render_field(field, begin_sep_label='', end_sep_label='', begin_sep_field='', end_sep_field='') %}
 <div class="form-group">
 	  {% if field.id != 'csrf_token' %}
-	  {% if field.type == 'HiddenField' %}
-	  	{{ field}}
-	  {% else %}
-	    {{begin_sep_label|safe}}
-            <label for="{{field.id}}">
-		        {{ field.label.text }}
-                {% if field.flags.required %}
-                    <strong style="color: red">&#42;</strong>
-                {% endif %}
-		    </label>
-        {{end_sep_label|safe}}
-		{{begin_sep_field|safe}}
-            {{ field(**kwargs)|safe }}
-		   <span class="help-block">{{ field.description }}</span>
-        {{end_sep_field|safe}}
+          {% if field.type == 'HiddenField' %}
+            {{ field}}
+          {% else %}
+            {{begin_sep_label|safe}}
+                <label for="{{field.id}}">
+                    {{ field.label.text }}
+                    {% if field.flags.required %}
+                        <strong style="color: red">&#42;</strong>
+                    {% endif %}
+                </label>
+            {{end_sep_label|safe}}
+            {{begin_sep_field|safe}}
+                {{ field(**kwargs)|safe }}
+               <span class="help-block">{{ field.description }}</span>
+          {% endif %}
+          {% if field.errors %}
+            <div class="alert alert-danger">
+            {% for error in field.errors %}
+              {{ _(error) }}
+            {% endfor %}
+            </div>
+          {% endif %}
 	  {% endif %}
-  	  {% if field.errors %}
-	    <div class="alert alert-danger">
-	    {% for error in field.errors %}
-	      {{ _(error) }}
-	    {% endfor %}
-	    </div>
-	  {% endif %}
-	  {% endif %}
+    {{end_sep_field|safe}}
 </div>
 {% endmacro %}
 
