@@ -30,7 +30,7 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
 |                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
 +-----------------------------------+--------------------------------------------+-----------+
-| AUTH_LDAP_BIND_FIELD               | if doing an indirect bind to ldap, this    |   No      |
+| AUTH_LDAP_BIND_FIELD              | if doing an indirect bind to ldap, this    |   No      |
 |                                   | is the field to bind to.                   |           |
 |                                   | Default is "cn".                           |           | 
 |                                   | example:                                   |           |
@@ -42,7 +42,7 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | AUTH_LDAP_UID_FIELD               | if doing an indirect bind to ldap, this    |   No      |
 |                                   | is the field that matches the username     |           |
 |                                   | when searching for the account to bind     |           | 
-|                                   | to.                        |           |
+|                                   | to.                                        |           |
 |                                   | example:                                   |           |
 |                                   | AUTH_TYPE = 2                              |           |
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |

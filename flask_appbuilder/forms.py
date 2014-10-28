@@ -215,12 +215,6 @@ class GeneralModelConverter(object):
                       cascade_rel_fields,
                       form_props):
         if self.datamodel.is_relation(col_name):
-            #--------------
-            if self.datamodel.is_relation_one_to_one(col_name):
-                print "ONE COL {0}".format(col_name)
-            if self.datamodel.is_relation_many_to_one(col_name):
-                print "MANY COL {0}".format(col_name)
-            #--------------
             if self.datamodel.is_relation_many_to_one(col_name) or \
                     self.datamodel.is_relation_one_to_one(col_name):
                 return self._convert_many_to_one(col_name, label,
