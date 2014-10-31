@@ -7,6 +7,8 @@ Improvements and Bug fixes on 1.0.1
 - Fix, field icon for date and datetime that selects calendar, changes mouse cursor to hand.
 - (TODO) New, possible to disable babel use.
 - (TODO) New, order by query based list boxes.
+- (TODO) New, column choices a dict {'col_name':[('value','display_value'),...],...}.
+- (TODO) New, column_formatters a dict {'col_name':func,...}
 - New, render_field changed, could be a breaking feature, if you wrote your own forms. no more <td> on each field.
 - (TODO) New, add/edit form types, with bs3 horizontal, default and inline, base forms.
 - #44, ldap bind options.

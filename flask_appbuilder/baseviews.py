@@ -78,6 +78,9 @@ class BaseView(object):
         if not self.extra_args:
             self.extra_args = dict()
 
+    def error_handler(self, e):
+        print "ERRROROROROR"
+
     def create_blueprint(self, appbuilder,
                          endpoint=None,
                          static_folder=None):
@@ -111,9 +114,10 @@ class BaseView(object):
                                        url_prefix=self.route_base,
                                        template_folder=self.template_folder,
                                        static_folder=static_folder)
-
         self._register_urls()
+        self.blueprint.errorhandler(404)(self.error_handler)
         return self.blueprint
+
 
     def _register_urls(self):
         for attr_name in dir(self):
