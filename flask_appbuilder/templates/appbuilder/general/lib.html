@@ -277,7 +277,7 @@
     {% endmacro %}
 
     {% macro lnk_back() %}
-    <a href="/back" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
+    <a href="{{url_for('IndexView' + '.back')}}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
        title="{{_('Back')}}">
         <i class="fa fa-arrow-left"></i>
     </a>
