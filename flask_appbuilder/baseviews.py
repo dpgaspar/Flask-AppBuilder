@@ -62,7 +62,6 @@ class BaseView(object):
     extra_args = None
     """ dictionary for injecting extra arguments into template """
 
-
     def __init__(self):
         """
             Initialization of base permissions
@@ -77,7 +76,6 @@ class BaseView(object):
             self.base_permissions = list(self.base_permissions)
         if not self.extra_args:
             self.extra_args = dict()
-
 
     def create_blueprint(self, appbuilder,
                          endpoint=None,
@@ -115,7 +113,6 @@ class BaseView(object):
         self._register_urls()
         return self.blueprint
 
-
     def _register_urls(self):
         for attr_name in dir(self):
             attr = getattr(self, attr_name)
@@ -125,7 +122,6 @@ class BaseView(object):
                                                 attr_name,
                                                 attr,
                                                 methods=methods)
-
 
     def render_template(self, template, **kwargs):
         return render_template(template, **dict(list(kwargs.items()) + list(self.extra_args.items())))
@@ -161,7 +157,7 @@ class BaseView(object):
         page_history = Stack(session.get('page_history', []))
         page_history.push(request.url)
         session['page_history'] = page_history.to_json()
-        
+
     def get_redirect(self):
         """
             Returns the previous url.
@@ -268,7 +264,7 @@ class BaseModelView(BaseView):
             if not self.label_columns.get(col):
                 self.label_columns[col] = self._prettify_column(col)
         self._filters = self.datamodel.get_filters(self.search_columns)
-        
+
 
     def _init_forms(self):
         conv = GeneralModelConverter(self.datamodel)
@@ -412,7 +408,8 @@ class BaseCRUDView(BaseModelView):
     add_form_query_rel_fields = None
     """
         Add Customized query for related fields on add form.
-        Assign a list of tuples like ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
+        Assign a list of tuples like
+        ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
         Add a custom filter to form related fields::
 
             class ContactModelView(ModelView):
@@ -426,7 +423,8 @@ class BaseCRUDView(BaseModelView):
     edit_form_query_rel_fields = None
     """
         Add Customized query for related fields on edit form.
-        Assign a list of tuples like ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
+        Assign a list of tuples like
+        ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
         Add a custom filter to form related fields::
 
             class ContactModelView(ModelView):
@@ -476,7 +474,6 @@ class BaseCRUDView(BaseModelView):
                 self.base_permissions.append(action.name)
                 self.actions[action.name] = action
 
-
     def _init_forms(self):
         """
             Init forms for Add and Edit
@@ -499,7 +496,6 @@ class BaseCRUDView(BaseModelView):
                                               self.edit_form_extra_fields,
                                               self.edit_form_query_rel_fields,
                                               self.edit_form_query_cascade)
-
 
     def _init_titles(self):
         """
@@ -556,7 +552,6 @@ class BaseCRUDView(BaseModelView):
             if not self.edit_columns:
                 self.edit_columns = list_cols
 
-
     """
     -----------------------------------------------------
             GET WIDGETS SECTION
@@ -570,7 +565,7 @@ class BaseCRUDView(BaseModelView):
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
         filters = self.datamodel.get_filters()
         filters.add_filter_related_view(fk, FilterRelationOneToManyEqual,
-                                                    related_view.datamodel, self.datamodel.get_pk_value(item))
+                                        related_view.datamodel, self.datamodel.get_pk_value(item))
         return related_view._get_view_widget(filters=filters,
                                              order_column=order_column,
                                              order_direction=order_direction,
@@ -634,10 +629,8 @@ class BaseCRUDView(BaseModelView):
                                            pks=pks,
                                            actions=actions,
                                            filters=filters,
-                                           modelview_name=self.__class__.__name__
-        )
+                                           modelview_name=self.__class__.__name__)
         return widgets
-
 
     def _get_show_widget(self, id, widgets=None, actions=None, show_fieldsets=None):
         widgets = widgets or {}
@@ -719,7 +712,6 @@ class BaseCRUDView(BaseModelView):
         return self._get_related_views_widgets(item, orders=orders,
                                                pages=pages, page_sizes=page_sizes, widgets=widgets)
 
-
     def _add(self):
         """
             Add function logic, override to implement diferent logic
@@ -785,7 +777,6 @@ class BaseCRUDView(BaseModelView):
             self.update_redirect()
         return widgets
 
-
     def _delete(self, pk):
         """
             Delete function logic, override to implement diferent logic
@@ -799,7 +790,6 @@ class BaseCRUDView(BaseModelView):
         self.datamodel.delete(item)
         self.post_delete(item)
         self.update_redirect()
-
 
     """
     ------------------------------------------------
@@ -816,7 +806,6 @@ class BaseCRUDView(BaseModelView):
             rel_obj = self.datamodel.get_related_obj(filter_key, filter_value)
             field = getattr(form, filter_key)
             field.data = rel_obj
-
 
     def pre_update(self, item):
         """
