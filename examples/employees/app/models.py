@@ -45,11 +45,9 @@ class Employee(Model):
     department = relationship("Department")
     function_id = Column(Integer, ForeignKey('function.id'), nullable=False)
     function = relationship("Function")
-    _begin_date = Column(Date, default=datetime.datetime.now, nullable=False)
-    _end_date = Column(Date, default=datetime.datetime.now, nullable=True)
+    begin_date = Column(Date, default=datetime.datetime.now, nullable=False)
+    end_date = Column(Date, default=datetime.datetime.now, nullable=True)
 
     def __repr__(self):
         return self.user.first_name
 
-    def begin_date(self):
-        return "FFF"

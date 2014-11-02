@@ -11,7 +11,9 @@ Improvements and Bug fixes on 1.0.1
 - (TODO) New, column_formatters a dict {'col_name':func,...}
 - New, render_field changed, could be a breaking feature, if you wrote your own forms. no more <td> on each field.
 - (TODO) New, add/edit form types, with bs3 horizontal, default and inline, base forms.
-- #44, ldap bind options.
+- New, #44, ldap bind options.
+- Fix, #48, bug with back button url not working when using uwsgi under sub-do
+
 
 Improvements and Bug fixes on 1.0.0
 -----------------------------------
