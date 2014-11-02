@@ -1,4 +1,4 @@
-from flask import render_template, current_app
+from flask import render_template, current_app, blueprints
 from flask.ext.appbuilder.views import ModelView, BaseView
 from flask.ext.appbuilder.charts.views import ChartView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
@@ -21,6 +21,7 @@ class FunctionView(ModelView):
 
 class DepartmentView(ModelView):
     datamodel = SQLAModel(Department)
+
 
 
 db.create_all()

@@ -131,7 +131,6 @@ class ModelView(BaseCRUDView):
     def __init__(self, **kwargs):
         super(ModelView, self).__init__(**kwargs)
 
-
     """
     --------------------------------
             LIST
