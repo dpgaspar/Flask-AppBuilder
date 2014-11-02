@@ -5,15 +5,14 @@ Improvements and Bug fixes on 1.0.1
 -----------------------------------
 
 - Fix, field icon for date and datetime that selects calendar, changes mouse cursor to hand.
+- New, render_field changed, could be a breaking feature, if you wrote your own forms. no more <td> on each field.
+- New, pull request #44, ldap bind options.
+- Fix, pull request #48, bug with back button url not working when using uwsgi under sub-domain.
 - (TODO) New, possible to disable babel use.
 - (TODO) New, order by query based list boxes.
 - (TODO) New, column choices a dict {'col_name':[('value','display_value'),...],...}.
 - (TODO) New, column_formatters a dict {'col_name':func,...}
-- New, render_field changed, could be a breaking feature, if you wrote your own forms. no more <td> on each field.
 - (TODO) New, add/edit form types, with bs3 horizontal, default and inline, base forms.
-- New, #44, ldap bind options.
-- Fix, #48, bug with back button url not working when using uwsgi under sub-do
-
 
 Improvements and Bug fixes on 1.0.0
 -----------------------------------

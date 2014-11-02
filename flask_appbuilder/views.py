@@ -30,7 +30,7 @@ class IndexView(BaseView):
     @expose('/back')
     def back(self):
         return redirect(self.get_redirect())
-        
+
 
 class SimpleFormView(BaseView):
     """
