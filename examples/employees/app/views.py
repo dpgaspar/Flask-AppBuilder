@@ -23,18 +23,41 @@ class Select2ROWidget(Select2Widget):
 
 class EmployeeHistoryView(ModelView):
     datamodel = SQLAModel(EmployeeHistory)
+    base_permissions = ['can_add', 'can_show']
+    list_columns = ['department', 'begin_date', 'end_date']
+
+    def pre_add(self, item):
+        prev_item = db.session.query(EmployeeHistory).filter(EmployeeHistory.end_date==None).scalar()
+        if prev_item:
+            prev_item.end_date = item.begin_date
+            db.session.merge(prev_item)
+            db.session.commit()
+
+    def post_add(self, item):
+        empployee = db.session.query(Employee).get(item.employee_id)
+        empployee.department = item.department
+        db.session.merge(empployee)
+        db.session.commit()
 
 
 class EmployeeView(ModelView):
     datamodel = SQLAModel(Employee)
 
-    list_columns = ['employee_number', 'full_name', 'department']
+    list_columns = ['full_name', 'department', 'employee_number']
 
     edit_form_extra_fields = {'department':  QuerySelectField('Department',
                                 query_factory=department_query,
                                 widget=Select2ROWidget())}
     related_views = [EmployeeHistoryView]
     show_template = 'appbuilder/general/model/show_cascade.html'
+
+    def post_add(self, item):
+        employee_history = EmployeeHistory()
+        employee_history.employee_id = item.id
+        employee_history.department = item.department
+        employee_history.begin_date = item.begin_date
+        db.session.add(employee_history)
+        db.session.commit()
 
 
 class FunctionView(ModelView):
