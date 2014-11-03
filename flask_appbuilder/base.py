@@ -24,6 +24,7 @@ class AppBuilder(object):
         
     """
     baseviews = []
+    security_manager_class = None
     app = None
     session = None
     sm = None
@@ -42,7 +43,8 @@ class AppBuilder(object):
                  menu=None,
                  indexview=None,
                  static_folder='static/appbuilder',
-                 static_url_path='/appbuilder'):
+                 static_url_path='/appbuilder',
+                 security_manager_class=SecurityManager):
         """
             AppBuilder constructor
             
@@ -58,10 +60,12 @@ class AppBuilder(object):
                 optional, your override for the global static folder
             :param static_url_path:
                 optional, your override for the global static url path
+            :param security_manager_class:
+                optional, pass your own security manager class
         """
         self.baseviews = []
         self.menu = menu or Menu()
-
+        self.security_manager_class = security_manager_class
         self.indexview = indexview or IndexView
         self.static_folder = static_folder
         self.static_url_path = static_url_path
@@ -79,7 +83,7 @@ class AppBuilder(object):
 
         self.session = session
 
-        self.sm = SecurityManager(self)
+        self.sm = self.security_manager_class(self)
         self.bm = BabelManager(self)
         self._add_global_static()
         self._add_global_filters()

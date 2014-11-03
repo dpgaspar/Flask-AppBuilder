@@ -1,10 +1,11 @@
- - Security clean up method.
  - Add easy wizard flow generation.
  - Add tree list with multiple views.
- - Charts Time and normal, with multiple group by's, JSON output to template
- - Add actions on lists with checkboxes (Django style).
  - Add table with global, and db version key.
  - Diferent UI to add permissions to roles.
  - Solution to migrate/alter framework tables.
- - Search with boolean fields.
  - Improve ImageColumn support, update, remove, etc.
+ - (TODO) New, possible to disable babel use.
+ - (TODO) New, order by query based list boxes.
+ - (TODO) New, column choices a dict {'col_name':[('value','display_value'),...],...}.
+ - (TODO) New, column_formatters a dict {'col_name':func,...}
+ - (TODO) New, add/edit form types, with bs3 horizontal, default and inline, base forms.

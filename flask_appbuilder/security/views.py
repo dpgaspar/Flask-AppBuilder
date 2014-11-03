@@ -246,11 +246,9 @@ class UserDBModelView(UserModelView):
     def resetpasswords(self, item):
         return redirect(url_for('ResetPasswordView.this_form_get', pk=item.id))
 
-
     def pre_update(self, item):
         item.changed_on = datetime.datetime.now()
         item.changed_by_fk = g.user.id
-        #item.password = generate_password_hash(item.password)
 
     def pre_add(self, item):
         item.password = generate_password_hash(item.password)

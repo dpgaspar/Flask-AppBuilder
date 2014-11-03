@@ -5,6 +5,7 @@ from flask.ext.appbuilder import SQLA
 from flask.ext.appbuilder import AppBuilder
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
+from .security import MySecurityManager
 from config import basedir
 
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
@@ -14,7 +15,7 @@ logging.getLogger().setLevel(logging.DEBUG)
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLA(app)
-appbuilder = AppBuilder(app, db.session)
+appbuilder = AppBuilder(app, db.session, security_manager_class=MySecurityManager)
 
 
 @event.listens_for(Engine, "connect")

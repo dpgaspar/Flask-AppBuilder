@@ -134,6 +134,29 @@ Next override your field using your new widget::
         edit_form_extra_fields = {'field2': TextField('field2',
                                     widget=BS3TextFieldROWidget())}
 
+For select fields based on  a query use something like this on your views::
+
+    # Define the field query
+    def department_query():
+        return db.session.query(Department)
+
+    # Define your field widget
+    class Select2ROWidget(Select2Widget):
+        def __call__(self, field, **kwargs):
+            kwargs['disabled'] = 'true'
+            return super(Select2ROWidget, self).__call__(field, **kwargs)
+
+
+    class EmployeeView(ModelView):
+        datamodel = SQLAModel(Employee)
+
+        list_columns = ['employee_number', 'full_name', 'department']
+
+        # override the 'department' field, to make it readonly on edit form
+        edit_form_extra_fields = {'department':  QuerySelectField('Department',
+                                    query_factory=department_query,
+                                    widget=Select2ROWidget())}
+
 
 - You can contribute with your own additional form validations rules.
 Remember the framework will automatically validate any field that is defined on the database

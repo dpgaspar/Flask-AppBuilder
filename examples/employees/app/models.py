@@ -8,6 +8,9 @@ from flask.ext.appbuilder import Model
 from flask_appbuilder.security.models import User
 
 
+
+
+
 class Department(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
@@ -24,15 +27,18 @@ class Function(Model):
         return self.name
 
 
+def today():
+    return datetime.datetime.today().strftime('%Y-%m-%d')
+
+
 class EmployeeHistory(Model):
     id = Column(Integer, primary_key=True)
     department_id = Column(Integer, ForeignKey('department.id'), nullable=False)
     department = relationship("Department")
     employee_id = Column(Integer, ForeignKey('employee.id'), nullable=False)
     employee = relationship("Employee")
-    begin_date = Column(Date)
+    begin_date = Column(Date, default=today)
     end_date = Column(Date)
-
 
 
 class Employee(Model):
@@ -45,8 +51,8 @@ class Employee(Model):
     department = relationship("Department")
     function_id = Column(Integer, ForeignKey('function.id'), nullable=False)
     function = relationship("Function")
-    begin_date = Column(Date, default=datetime.datetime.now, nullable=False)
-    end_date = Column(Date, default=datetime.datetime.now, nullable=True)
+    begin_date = Column(Date, default=today, nullable=False)
+    end_date = Column(Date, nullable=True)
 
     def __repr__(self):
         return self.user.first_name

@@ -31,11 +31,30 @@ ADMIN_USER_LAST_NAME = 'User'
 
 
 class SecurityManager(BaseManager):
+    """
+        Responsible for authentication, registering security views,
+        role and permission auto management
 
+        If you want to change anything just inherit and override, then
+        pass your own security manager to AppBuilder.
+    """
     auth_view = None
     user_view = None
     lm = None
     oid = None
+
+    userdbmodelview = UserDBModelView
+    """ Override if you want your own user db view """
+    userldapmodelview = UserLDAPModelView
+    """ Override if you want your own user ldap view """
+    useroidmodelview = UserOIDModelView
+    """ Override if you want your own user OID view """
+    authdbview = AuthDBView
+    """ Override if you want your own Authentication DB view """
+    authldapview = AuthLDAPView
+    """ Override if you want your own Authentication LDAP view """
+    authoidview = AuthOIDView
+    """ Override if you want your own Authentication OID view """
 
     def __init__(self, appbuilder):
         """
@@ -84,14 +103,14 @@ class SecurityManager(BaseManager):
         self.appbuilder.add_view_no_menu(ResetMyPasswordView())
 
         if self.auth_type == AUTH_DB:
-            self.user_view = UserDBModelView
-            self.auth_view = AuthDBView()
+            self.user_view = self.userdbmodelview
+            self.auth_view = self.authdbview()
         elif self.auth_type == AUTH_LDAP:
-            self.user_view = UserLDAPModelView
-            self.auth_view = AuthLDAPView()
+            self.user_view = self.userldapmodelview
+            self.auth_view = self.authldapview()
         else:
-            self.user_view = UserOIDModelView
-            self.auth_view = AuthOIDView()
+            self.user_view = self.useroidmodelview
+            self.auth_view = self.authoidview()
             self.oid.after_login_func = self.auth_view.after_login
 
         self.appbuilder.add_view_no_menu(self.auth_view)
@@ -120,7 +139,6 @@ class SecurityManager(BaseManager):
                                  "Permission on Views/Menus", icon="fa-link",
                                  label=_('Permission on Views/Menus'), category="Security")
 
-        
     def load_user(self, pk):
         return self.get_user_by_id(int(pk))
 
