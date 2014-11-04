@@ -6,7 +6,6 @@ from flask.ext.appbuilder import AppBuilder
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
 from .security import MySecurityManager
-from config import basedir
 
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 logging.getLogger().setLevel(logging.DEBUG)
