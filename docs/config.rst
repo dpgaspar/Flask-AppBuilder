@@ -49,6 +49,16 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
 |                                   | AUTH_LDAP_UID_FIELD = "uid"                |           |
 +-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_EMAIL_FIELD             | if doing an indirect bind to ldap, this    |   No      |
+|                                   | is the field that contains the users email |           |
+|                                   | address to be populated into user          |           | 
+|                                   | database. Default is 'mail'                |           |
+|                                   | example:                                   |           |
+|                                   | AUTH_TYPE = 2                              |           |
+|                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
+|                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
+|                                   | AUTH_LDAP_EMAIL_FIELD = "mail"             |           |
++-----------------------------------+--------------------------------------------+-----------+
 | AUTH_ROLE_ADMIN                   | Configure the name of the admin role.      |   No      |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_ROLE_PUBLIC                  | Special Role that holds the public         |   No      |

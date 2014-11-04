@@ -272,19 +272,42 @@ class SecurityManager(BaseManager):
                         else:
                             app.config.setdefault('AUTH_LDAP_BIND_FIELD', 'cn')
                             app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
+                            app.config.setdefault('AUTH_LDAP_EMAIL_FIELD', 'mail')
 
                             filter="%s=%s" % (app.config['AUTH_LDAP_UID_FIELD'],username)
-                            bind_username_array=con.search_s(app.config['AUTH_LDAP_SEARCH'],ldap.SCOPE_SUBTREE,filter,[app.config['AUTH_LDAP_BIND_FIELD']])
+                            bind_username_array=con.search_s(app.config['AUTH_LDAP_SEARCH'],ldap.SCOPE_SUBTREE,filter,[app.config['AUTH_LDAP_BIND_FIELD'],app.config['AUTH_LDAP_EMAIL_FIELD']])
                             if bind_username_array == []:
                                 return None
                             else:
                                 bind_username=bind_username_array[0][0]
+                                try:
+                                    email=bind_username_array[0][1][app.config['AUTH_LDAP_EMAIL_FIELD']][0]
+                                except:
+                                    email=''
 
                     con.bind_s(bind_username, password)
+                   
+                    #Auth successful, but user does not exist in database. Add with default values
+                    if user is None:
+                        user = User()
+                        user.username = username
+                        user.active = True
+                        user.first_name = ''
+                        user.last_name = ''
+                        user.email = email
+                        user.role = self.get_session.query(Role).filter_by(name=self.appbuilder.get_app.config['AUTH_ROLE_PUBLIC']).first()
+
+
+                        #user.role = self.appbuilder.get_app.config['AUTH_ROLE_PUBLIC']
+                        self.get_session.add(user)
+                        self.get_session.commit()
+                        log.info("Adding ldap user %s to user list." % username)
+
                     self._update_user_auth_stat(user)
                     return user
                 except ldap.INVALID_CREDENTIALS:
-                    self._update_user_auth_stat(user, False)
+                    if user:                    
+                        self._update_user_auth_stat(user, False)
                     return None
             except ldap.LDAPError as e:
                 if type(e.message) == dict and 'desc' in e.message:
