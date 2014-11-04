@@ -158,6 +158,47 @@ no overhead is added when starting your site.</p>
 <h2>Auditing<a class="headerlink" href="#auditing" title="Permalink to this headline">¶</a></h2>
 <p>All user&#8217;s creation and modification are audited, on the show detail for each user you can check who created the user and when and who has last changed it.</p>
 <p>You can check also a total login count (successful login), and the last failed logins (these are reset if a successful login then occurred).</p>
+</div>
+<div class="section" id="your-custom-security">
+<h2>Your Custom Security<a class="headerlink" href="#your-custom-security" title="Permalink to this headline">¶</a></h2>
+<p>If you want to alter the security views, or authentication methods since (1.0.1) you can do it in a simple way.
+The <strong>AppBuilder</strong> has a new optional initialization parameter where you pass your own custom <strong>SecurityManager</strong>
+If you want to add, for example, actions to the list of users you can do it in a simple way.</p>
+<p>First i advise you to create security.py and add the following to it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">redirect</span>
+<span class="kn">from</span> <span class="nn">flask_appbuilder.security.views</span> <span class="kn">import</span> <span class="n">UserDBModelView</span>
+<span class="kn">from</span> <span class="nn">flask_appbuilder.security.manager</span> <span class="kn">import</span> <span class="n">SecurityManager</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.actions</span> <span class="kn">import</span> <span class="n">action</span>
+
+
+<span class="k">class</span> <span class="nc">MyUserDBView</span><span class="p">(</span><span class="n">UserDBModelView</span><span class="p">):</span>
+    <span class="nd">@action</span><span class="p">(</span><span class="s">&quot;muldelete&quot;</span><span class="p">,</span> <span class="s">&quot;Delete&quot;</span><span class="p">,</span> <span class="s">&quot;Delete all Really?&quot;</span><span class="p">,</span> <span class="s">&quot;fa-rocket&quot;</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">muldelete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">delete_all</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span>
+
+
+<span class="k">class</span> <span class="nc">MySecurityManager</span><span class="p">(</span><span class="n">SecurityManager</span><span class="p">):</span>
+    <span class="n">userdbmodelview</span> <span class="o">=</span> <span class="n">MyUserDBView</span>
+</pre></div>
+</div>
+<p>Then on the __init__.py initialize AppBuilder with you own security class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">security_manager_class</span><span class="o">=</span><span class="n">MySecurityManager</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>F.A.B. uses a different user view for each authentication method</p>
+<blockquote>
+<div><ul class="simple">
+<li>UserDBModelView - for database auth method</li>
+<li>UserOIDModelView - for Open ID auth method</li>
+<li>UserLDAPModelView - for LDAP auth method</li>
+</ul>
+</div></blockquote>
+<p>You can extend or create from scratch your own, and then tell F.A.B. to use them instead, by overriding their
+correspondent lower case properties on <strong>SecurityManager</strong> (just like on the given example).</p>
+<p>Take a look and run the example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/employees">Employees example</a></p>
+<p>Study the source code of <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/blob/master/flask_appbuilder/security/manager.py">SecurityManager</a></p>
 <p>Some images:</p>
 <a class="reference internal image-reference" href="_images/security.png"><img alt="_images/security.png" src="_images/security.png" style="width: 100%;" /></a>
 </div>
@@ -177,6 +218,7 @@ no overhead is added when starting your site.</p>
 <li><a class="reference internal" href="#permissions">Permissions</a></li>
 <li><a class="reference internal" href="#automatic-cleanup">Automatic Cleanup</a></li>
 <li><a class="reference internal" href="#auditing">Auditing</a></li>
+<li><a class="reference internal" href="#your-custom-security">Your Custom Security</a></li>
 </ul>
 </li>
 </ul>

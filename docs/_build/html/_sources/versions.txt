@@ -1,6 +1,15 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.0.1
+-----------------------------------
+
+- Fix, field icon for date and datetime that selects calendar, changes mouse cursor to hand.
+- New, render_field changed, could be a breaking feature, if you wrote your own forms. no more <td> on each field.
+- New, pull request #44, ldap bind options.
+- Fix, pull request #48, bug with back button url not working when using uwsgi under sub-domain.
+- New, AppBuilder accepts new parameter security_manager_class, useful to override any security view or auth method.
+
 Improvements and Bug fixes on 1.0.0
 -----------------------------------
 

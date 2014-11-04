@@ -99,8 +99,6 @@ class ContactTimeChartView(GroupByChartView):
     ]
 
 
-
-
 db.create_all()
 fill_gender()
 appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')

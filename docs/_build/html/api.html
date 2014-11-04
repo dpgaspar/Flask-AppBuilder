@@ -67,7 +67,7 @@
 <span id="appbuilder"></span><h3>AppBuilder<a class="headerlink" href="#module-flask.ext.appbuilder.base" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="flask.ext.appbuilder.base.AppBuilder">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.base.</tt><tt class="descname">AppBuilder</tt><big>(</big><em>app=None</em>, <em>session=None</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.base.</tt><tt class="descname">AppBuilder</tt><big>(</big><em>app=None</em>, <em>session=None</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em>, <em>security_manager_class=&lt;class 'flask_appbuilder.security.manager.SecurityManager'&gt;</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the base class for the all framework.
 Will hold your flask app object, all your views, and security classes.</p>
 <p>initialize your application like this:</p>
@@ -79,7 +79,7 @@ Will hold your flask app object, all your views, and security classes.</p>
 </div>
 <dl class="method">
 <dt id="flask.ext.appbuilder.base.AppBuilder.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>app=None</em>, <em>session=None</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.__init__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__init__</tt><big>(</big><em>app=None</em>, <em>session=None</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em>, <em>security_manager_class=&lt;class 'flask_appbuilder.security.manager.SecurityManager'&gt;</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>AppBuilder constructor</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -92,6 +92,7 @@ Will hold your flask app object, all your views, and security classes.</p>
 <li><strong>indexview</strong> &#8211; optional, your customized indexview</li>
 <li><strong>static_folder</strong> &#8211; optional, your override for the global static folder</li>
 <li><strong>static_url_path</strong> &#8211; optional, your override for the global static url path</li>
+<li><strong>security_manager_class</strong> &#8211; optional, pass your own security manager class</li>
 </ul>
 </td>
 </tr>
@@ -112,7 +113,8 @@ Will hold your flask app object, all your views, and security classes.</p>
 <li><strong>href</strong> &#8211; Override the generated href for the menu.</li>
 <li><strong>icon</strong> &#8211; Bootstrap included icon name</li>
 <li><strong>label</strong> &#8211; The label that will be displayed on the menu, if absent param name will be used</li>
-<li><strong>category</strong> &#8211; The menu category where the menu will be included, if non provided the view will be acessible as a top menu.</li>
+<li><strong>category</strong> &#8211; The menu category where the menu will be included,
+if non provided the view will be accessible as a top menu.</li>
 <li><strong>category_icon</strong> &#8211; Font-Awesome icon name for the category, optional.</li>
 <li><strong>category_label</strong> &#8211; The label that will be displayed on the menu, if absent param name will be used</li>
 </ul>
@@ -449,13 +451,16 @@ Use it to control the order of the display</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.add_form">
 <tt class="descname">add_form</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.add_form" title="Permalink to this definition">¶</a></dt>
-<dd><p>To implement your own assign WTF form for Add</p>
+<dd><p>To implement your own, assign WTF form for Add</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.add_form_extra_fields">
 <tt class="descname">add_form_extra_fields</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.add_form_extra_fields" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dictionary to add extra fields to the Add form using this property</p>
+<dd><p>A dictionary containing column names and a WTForm
+Form fields to be added to the Add form, these fields do not
+exist on the model itself ex:</p>
+<p>extra_fields={&#8216;some_col&#8217;:BooleanField(&#8216;Some Col&#8217;, default=False)}</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -486,7 +491,8 @@ add_form_query_cascade = [(&#8216;model&#8217;, &#8216;manufacture&#8217;</p>
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.add_form_query_rel_fields">
 <tt class="descname">add_form_query_rel_fields</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.add_form_query_rel_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add Customized query for related fields on add form.
-Assign a list of tuples like (&#8216;relation col name&#8217;,SQLAModel,[[&#8216;Related model col&#8217;,FilterClass,&#8217;Filter Value&#8217;],...])
+Assign a list of tuples like
+(&#8216;relation col name&#8217;,SQLAModel,[[&#8216;Related model col&#8217;,FilterClass,&#8217;Filter Value&#8217;],...])
 Add a custom filter to form related fields:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
@@ -545,13 +551,13 @@ Use it to control the order of the display</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form">
 <tt class="descname">edit_form</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form" title="Permalink to this definition">¶</a></dt>
-<dd><p>To implement your own assign WTF form for Edit</p>
+<dd><p>To implement your own, assign WTF form for Edit</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form_extra_fields">
 <tt class="descname">edit_form_extra_fields</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form_extra_fields" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dictionary to Add extra fields to the Edit form using this property</p>
+<dd><p>Dictionary to add extra fields to the Edit form using this property</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -564,7 +570,8 @@ Use it to control the order of the display</p>
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form_query_rel_fields">
 <tt class="descname">edit_form_query_rel_fields</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form_query_rel_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add Customized query for related fields on edit form.
-Assign a list of tuples like (&#8216;relation col name&#8217;,SQLAModel,[[&#8216;Related model col&#8217;,FilterClass,&#8217;Filter Value&#8217;],...])
+Assign a list of tuples like
+(&#8216;relation col name&#8217;,SQLAModel,[[&#8216;Related model col&#8217;,FilterClass,&#8217;Filter Value&#8217;],...])
 Add a custom filter to form related fields:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>

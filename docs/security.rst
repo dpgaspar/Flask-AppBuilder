@@ -107,6 +107,51 @@ All user's creation and modification are audited, on the show detail for each us
 
 You can check also a total login count (successful login), and the last failed logins (these are reset if a successful login then occurred).
 
+
+Your Custom Security
+--------------------
+
+If you want to alter the security views, or authentication methods since (1.0.1) you can do it in a simple way.
+The **AppBuilder** has a new optional initialization parameter where you pass your own custom **SecurityManager**
+If you want to add, for example, actions to the list of users you can do it in a simple way.
+
+First i advise you to create security.py and add the following to it::
+
+    from flask import redirect
+    from flask_appbuilder.security.views import UserDBModelView
+    from flask_appbuilder.security.manager import SecurityManager
+    from flask.ext.appbuilder.actions import action
+
+
+    class MyUserDBView(UserDBModelView):
+        @action("muldelete", "Delete", "Delete all Really?", "fa-rocket", single=False)
+        def muldelete(self, items):
+            self.datamodel.delete_all(items)
+            self.update_redirect()
+            return redirect(self.get_redirect())
+
+
+    class MySecurityManager(SecurityManager):
+        userdbmodelview = MyUserDBView
+
+Then on the __init__.py initialize AppBuilder with you own security class::
+
+    appbuilder = AppBuilder(app, db.session, security_manager_class=MySecurityManager)
+
+
+F.A.B. uses a different user view for each authentication method
+
+ - UserDBModelView - for database auth method
+ - UserOIDModelView - for Open ID auth method
+ - UserLDAPModelView - for LDAP auth method
+
+You can extend or create from scratch your own, and then tell F.A.B. to use them instead, by overriding their
+correspondent lower case properties on **SecurityManager** (just like on the given example).
+
+Take a look and run the example on `Employees example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/employees>`_
+
+Study the source code of `SecurityManager <https://github.com/dpgaspar/Flask-AppBuilder/blob/master/flask_appbuilder/security/manager.py>`_
+
 Some images:
 
 .. image:: ./images/security.png

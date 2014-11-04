@@ -1,14 +1,9 @@
-from flask import render_template, current_app, blueprints, redirect, url_for
-from flask_appbuilder import expose
-from flask.ext.appbuilder.views import ModelView, BaseView
-from flask.ext.appbuilder.charts.views import ChartView
+from flask_appbuilder import ModelView
 from flask_appbuilder.fieldwidgets import Select2Widget
 from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.widgets import ListBlock, ShowBlockWidget
-from .models import Employee,Department, Function, EmployeeHistory
+from .models import Employee,Department, Function, EmployeeHistory, Benefit
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-
-from app import appbuilder, db, app
+from app import appbuilder, db
 
 
 def department_query():
@@ -23,7 +18,7 @@ class Select2ROWidget(Select2Widget):
 
 class EmployeeHistoryView(ModelView):
     datamodel = SQLAModel(EmployeeHistory)
-    base_permissions = ['can_add', 'can_show']
+    #base_permissions = ['can_add', 'can_show']
     list_columns = ['department', 'begin_date', 'end_date']
 
     def pre_add(self, item):
@@ -62,10 +57,21 @@ class EmployeeView(ModelView):
 
 class FunctionView(ModelView):
     datamodel = SQLAModel(Function)
+    related_views = [EmployeeView]
 
 
 class DepartmentView(ModelView):
     datamodel = SQLAModel(Department)
+    related_views = [EmployeeView]
+
+
+class BenefitView(ModelView):
+    datamodel = SQLAModel(Benefit)
+    related_views = [EmployeeView]
+    add_columns = ['name']
+    edit_columns = ['name']
+    show_columns = ['name']
+    list_columns = ['name']
 
 
 db.create_all()
@@ -75,4 +81,5 @@ appbuilder.add_view(EmployeeView, "Employees", icon="fa-folder-open-o", category
 appbuilder.add_separator("Company")
 appbuilder.add_view(DepartmentView, "Departments", icon="fa-folder-open-o", category="Company")
 appbuilder.add_view(FunctionView, "Functions", icon="fa-folder-open-o", category="Company")
+appbuilder.add_view(BenefitView, "Benefits", icon="fa-folder-open-o", category="Company")
 

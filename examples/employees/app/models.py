@@ -1,11 +1,7 @@
 import datetime
-from flask import Markup, url_for
-from sqlalchemy import Table, Column, Integer, Float, String, ForeignKey, Date, Text, DateTime
-from sqlalchemy.orm import relationship, backref
-from flask.ext.appbuilder.filemanager import ImageManager
-from flask.ext.appbuilder.models.mixins import BaseMixin, ImageColumn
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, Date, Text
+from sqlalchemy.orm import relationship
 from flask.ext.appbuilder import Model
-from flask_appbuilder.security.models import User
 
 
 class Department(Model):
@@ -22,6 +18,20 @@ class Function(Model):
 
     def __repr__(self):
         return self.name
+
+
+class Benefit(Model):
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), unique=True, nullable=False)
+
+    def __repr__(self):
+        return self.name
+
+assoc_benefits_employee = Table('benefits_employee', Model.metadata,
+                                  Column('id', Integer, primary_key=True),
+                                  Column('benefit_id', Integer, ForeignKey('benefit.id')),
+                                  Column('employee_id', Integer, ForeignKey('employee.id'))
+)
 
 
 def today():
@@ -48,6 +58,8 @@ class Employee(Model):
     department = relationship("Department")
     function_id = Column(Integer, ForeignKey('function.id'), nullable=False)
     function = relationship("Function")
+    benefits = relationship('Benefit', secondary=assoc_benefits_employee, backref='employee')
+
     begin_date = Column(Date, default=today, nullable=False)
     end_date = Column(Date, nullable=True)
 
