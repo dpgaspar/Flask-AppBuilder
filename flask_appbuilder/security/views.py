@@ -334,6 +334,10 @@ class AuthDBView(AuthView):
                                form=form,
                                appbuilder=self.appbuilder)
 
+    @expose('/register/')
+    def register(self):
+        print "REGISTER"
+
 
 class AuthLDAPView(AuthView):
 

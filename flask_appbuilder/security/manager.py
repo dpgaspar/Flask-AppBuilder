@@ -67,6 +67,7 @@ class SecurityManager(BaseManager):
         app.config.setdefault('AUTH_ROLE_ADMIN', 'Admin')
         app.config.setdefault('AUTH_ROLE_PUBLIC', 'Public')
         app.config.setdefault('AUTH_TYPE', AUTH_DB)
+        app.config.setdefault('AUTH_USER_REGISTRATION',False)
 
         if app.config['AUTH_TYPE'] == AUTH_LDAP:
             if 'AUTH_LDAP_SERVER' not in app.config:
@@ -97,6 +98,11 @@ class SecurityManager(BaseManager):
     @property
     def auth_ldap_server(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_SERVER']
+
+    @property
+    def auth_user_registration(self):
+        return self.appbuilder.get_app.config['AUTH_USER_REGISTRATION']
+
 
     def register_views(self):
         self.appbuilder.add_view_no_menu(ResetPasswordView())
@@ -263,18 +269,21 @@ class SecurityManager(BaseManager):
                 con.set_option(ldap.OPT_REFERRALS, 0)
                
                 try:
-                    app=self.appbuilder.get_app  
+                    app = self.appbuilder.get_app
                     if 'AUTH_LDAP_SEARCH' not in app.config:
-                        bind_username=username
+                        bind_username = username
                     else:
-                        if app.config['AUTH_LDAP_SEARCH'] == "" :
-                            bind_username=username
+                        if app.config['AUTH_LDAP_SEARCH'] == "":
+                            bind_username = username
                         else:
                             app.config.setdefault('AUTH_LDAP_BIND_FIELD', 'cn')
                             app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
 
                             filter="%s=%s" % (app.config['AUTH_LDAP_UID_FIELD'],username)
-                            bind_username_array=con.search_s(app.config['AUTH_LDAP_SEARCH'],ldap.SCOPE_SUBTREE,filter,[app.config['AUTH_LDAP_BIND_FIELD']])
+                            bind_username_array=con.search_s(app.config['AUTH_LDAP_SEARCH'],
+                                                             ldap.SCOPE_SUBTREE,
+                                                             filter,
+                                                             [app.config['AUTH_LDAP_BIND_FIELD']])
                             if bind_username_array == []:
                                 return None
                             else:
