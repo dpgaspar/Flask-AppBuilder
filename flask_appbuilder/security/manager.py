@@ -15,7 +15,7 @@ from ..basemanager import BaseManager
 from .models import User, Role, PermissionView, Permission, ViewMenu
 from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, \
     ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, RoleModelView, \
-    PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
+    PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView, RegisterUserDBView
 
 log = logging.getLogger(__name__)
 
@@ -55,6 +55,8 @@ class SecurityManager(BaseManager):
     """ Override if you want your own Authentication LDAP view """
     authoidview = AuthOIDView
     """ Override if you want your own Authentication OID view """
+    registeruserdbview = RegisterUserDBView
+
 
     def __init__(self, appbuilder):
         """
@@ -107,6 +109,7 @@ class SecurityManager(BaseManager):
     def register_views(self):
         self.appbuilder.add_view_no_menu(ResetPasswordView())
         self.appbuilder.add_view_no_menu(ResetMyPasswordView())
+        self.appbuilder.add_view_no_menu(self.registeruserdbview())
 
         if self.auth_type == AUTH_DB:
             self.user_view = self.userdbmodelview

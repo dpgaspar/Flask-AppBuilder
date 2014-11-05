@@ -12,13 +12,14 @@ from flask.ext.babelpkg import gettext, lazy_gettext
 from flask_login import login_user, logout_user
 
 from flask_appbuilder.models.datamodel import SQLAModel
-from flask_appbuilder.views import BaseView, ModelView, SimpleFormView, expose
+from flask_appbuilder.views import BaseView, ModelView, SimpleFormView, expose, PublicFormView
 from flask_appbuilder.charts.views import DirectByChartView
 
 from ..fieldwidgets import BS3PasswordFieldWidget
 from ..actions import action
+from ..validators import Unique
 from .._compat import as_unicode
-from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
+from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm, RegisterUserDBForm
 from .models import User, Permission, PermissionView, Role, ViewMenu
 from .decorators import has_access
 
@@ -314,6 +315,29 @@ class AuthView(BaseView):
         return redirect(self.appbuilder.get_url_for_index)
 
 
+
+class RegisterUserDBView(PublicFormView):
+    """
+        View Registering user, auth db mode
+    """
+
+    route_base = '/register'
+
+    form = RegisterUserDBForm
+    form_title = lazy_gettext('Fill out the registration form')
+    redirect_url = '/'
+
+    message = lazy_gettext('Registration sent to your email')
+
+    def form_get(self, form):
+        datamodel = SQLAModel(User, self.appbuilder.get_session)
+        form.username.validators.append(Unique(datamodel, 'username'))
+
+    def form_post(self, form):
+
+        flash(as_unicode(self.message), 'info')
+
+
 class AuthDBView(AuthView):
     login_template = 'appbuilder/general/security/login_db.html'
 
@@ -333,11 +357,11 @@ class AuthDBView(AuthView):
                                title=self.title,
                                form=form,
                                appbuilder=self.appbuilder)
-
+    """
     @expose('/register/')
     def register(self):
-        print "REGISTER"
-
+        redirect(url_for('RegisterUserDBView.this_form_get'))
+    """
 
 class AuthLDAPView(AuthView):
 

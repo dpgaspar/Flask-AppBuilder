@@ -5,9 +5,9 @@ from wtforms.ext.sqlalchemy.orm import model_form
 from wtforms import validators
 from wtforms.validators import Required, Length, EqualTo
 #from flask.ext.wtf import Required, Length, validators, EqualTo
-from flask.ext.appbuilder.fieldwidgets import BS3PasswordFieldWidget
-from flask.ext.appbuilder.forms import DynamicForm
-
+from ..fieldwidgets import BS3PasswordFieldWidget, BS3TextFieldWidget
+from ..forms import DynamicForm
+from ..validators import Unique
 
 class LoginForm_oid(DynamicForm):
     openid = TextField(lazy_gettext('openid'), validators=[Required()])
@@ -29,3 +29,9 @@ class ResetPasswordForm(DynamicForm):
                                   description=lazy_gettext('Please rewrite the password to confirm'),
                                   validators=[EqualTo('password', message=lazy_gettext('Passwords must match'))],
                                   widget=BS3PasswordFieldWidget())
+
+
+class RegisterUserDBForm(DynamicForm):
+    username = TextField(lazy_gettext('User Name'), validators=[Required()], widget=BS3TextFieldWidget())
+    first_name = TextField(lazy_gettext('First Name'), validators=[Required()], widget=BS3TextFieldWidget())
+    last_name = TextField(lazy_gettext('Last Name'), validators=[Required()], widget=BS3TextFieldWidget())
