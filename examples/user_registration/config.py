@@ -41,6 +41,10 @@ AUTH_USER_REGISTRATION = True
 #AUTH_LDAP_SERVER = "ldap://dc.domain.net"
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
+
+RECAPTCHA_PUBLIC_KEY = '6LedRP0SAAAAAOF03Nsv_ny2NzOF_Dthe_Xn269v'
+RECAPTCHA_PRIVATE_KEY = '6LedRP0SAAAAAPnsdEKgj5VU1QbFcPv7mO8cW0So'
+
 APP_NAME = "F.A.B. Example"
 APP_THEME = ""  # default
 #APP_THEME = "cerulean.css"      # COOL

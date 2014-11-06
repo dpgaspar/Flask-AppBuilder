@@ -4,6 +4,18 @@ Versions
 Improvements and Bug fixes on 1.0.1
 -----------------------------------
 
+- Fix, changed WTForm validator Required to DataRequired.
+- New, AUTH_USER_REGISTRATION for self user registration, on ldap it's used automatic registration based on ldap attrs.
+- New, Added property to AppBuilder that returns the frameworks version.
+- (TODO), change auth_ldap to register user with AUTH_USER_REGISTRATION_ROLE.
+- (TODO), on user db registration, check username with RegisterUser also. Add double Unique.
+- (TODO), send email based on configurable template.
+- (TODO), expose URL to catch user registration activation.
+
+
+Improvements and Bug fixes on 1.0.1
+-----------------------------------
+
 - Fix, field icon for date and datetime that selects calendar, changes mouse cursor to hand.
 - New, render_field changed, could be a breaking feature, if you wrote your own forms. no more <td> on each field.
 - New, pull request #44, ldap bind options.

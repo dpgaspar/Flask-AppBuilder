@@ -64,7 +64,22 @@ class Role(Model):
         return self.name
 
 
+class RegisterUser(Model):
+    __tablename__ = 'ab_register_user'
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String(64), nullable=False)
+    last_name = Column(String(64), nullable=False)
+    username = Column(String(32), unique=True, nullable=False)
+    password = Column(String(256))
+    email = Column(String(64), nullable=False)
+    registration_date = Column(DateTime, default=datetime.datetime.now, nullable=True)
+    registration_hash = Column(String(256))
+
+
 class User(Model):
+    """
+        The User model will serve for all authentication methods
+    """
     __tablename__ = 'ab_user'
     id = Column(Integer, primary_key=True)
     first_name = Column(String(64), nullable=False)
@@ -120,9 +135,6 @@ class User(Model):
                 break
             version += 1
         return new_nickname
-
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
 
     def is_authenticated(self):
         return True

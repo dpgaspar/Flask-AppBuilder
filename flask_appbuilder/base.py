@@ -6,6 +6,7 @@ from .filters import TemplateFilters
 from .menu import Menu
 from .security.manager import SecurityManager
 from .babel.manager import BabelManager
+from .version import VERSION_STRING
 
 log = logging.getLogger(__name__)
 
@@ -131,6 +132,10 @@ class AppBuilder(object):
     @property
     def languages(self):
         return self.get_app.config['LANGUAGES']
+
+    @property
+    def version(self):
+        return VERSION_STRING
 
     def _add_global_filters(self):
         self.template_filters = TemplateFilters(self.get_app, self.sm)

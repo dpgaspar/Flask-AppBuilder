@@ -170,7 +170,7 @@ class GeneralModelConverter(object):
         allow_blank = True
         col = self.datamodel.get_relation_fk(col_name)
         if not col.nullable:
-            lst_validators.append(validators.Required())
+            lst_validators.append(validators.DataRequired())
             allow_blank = False
         else:
             lst_validators.append(validators.Optional())

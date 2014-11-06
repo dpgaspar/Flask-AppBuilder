@@ -1,3 +1,4 @@
+import logging
 import calendar
 from flask.ext.appbuilder import ModelView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
@@ -8,6 +9,8 @@ from flask.ext.babelpkg import lazy_gettext as _
 
 from app import db, appbuilder
 from .models import Group, Gender, Contact
+
+log = logging.getLogger(__name__)
 
 
 def fill_gender():
@@ -107,4 +110,8 @@ appbuilder.add_separator("Contacts")
 appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
 appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
 
-print "DEBUG --- {0}".format(appbuilder.sm.auth_user_registration)
+log.info("F.A.B. Version: {0}".format(appbuilder.version))
+
+from flask_appbuilder.smtp import SendEmail
+sendemail = SendEmail()
+sendemail.send('danielvazgaspar@gmail.com', 'danielvazgaspar@gmail.com')

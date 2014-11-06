@@ -1,10 +1,10 @@
 import datetime
 import logging
+import uuid
+import sys
 from flask import render_template, flash, redirect, session, url_for, request, g
 from werkzeug.security import generate_password_hash
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
-#from openid.extensions import ax
-#from openid.extensions.sreg import SRegRequest, SRegResponse
 from flask.ext.openid import SessionWrapper, OpenIDResponse
 from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
@@ -20,7 +20,7 @@ from ..actions import action
 from ..validators import Unique
 from .._compat import as_unicode
 from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm, RegisterUserDBForm
-from .models import User, Permission, PermissionView, Role, ViewMenu
+from .models import User, Permission, PermissionView, Role, ViewMenu, RegisterUser
 from .decorators import has_access
 
 log = logging.getLogger(__name__)
@@ -172,6 +172,11 @@ class UserModelView(ModelView):
 
 
 class UserOIDModelView(UserModelView):
+    """
+        View that add OID specifics to User view.
+        Override to implement your own custom view.
+        Then override useroidmodelview property on SecurityManager
+    """
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
@@ -184,6 +189,11 @@ class UserOIDModelView(UserModelView):
 
 
 class UserLDAPModelView(UserModelView):
+    """
+        View that add LDAP specifics to User view.
+        Override to implement your own custom view.
+        Then override userldapmodelview property on SecurityManager
+    """
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
@@ -196,6 +206,11 @@ class UserLDAPModelView(UserModelView):
 
 
 class UserDBModelView(UserModelView):
+    """
+        View that add DB specifics to User view.
+        Override to implement your own custom view.
+        Then override userdbmodelview property on SecurityManager
+    """
     add_form_extra_fields = {'password': PasswordField(lazy_gettext('Password'),
                                                        description=lazy_gettext(
                                                            'Please use a good password policy, this application does not check this for you'),
@@ -315,12 +330,10 @@ class AuthView(BaseView):
         return redirect(self.appbuilder.get_url_for_index)
 
 
-
 class RegisterUserDBView(PublicFormView):
     """
         View Registering user, auth db mode
     """
-
     route_base = '/register'
 
     form = RegisterUserDBForm
@@ -330,12 +343,35 @@ class RegisterUserDBView(PublicFormView):
     message = lazy_gettext('Registration sent to your email')
 
     def form_get(self, form):
-        datamodel = SQLAModel(User, self.appbuilder.get_session)
-        form.username.validators.append(Unique(datamodel, 'username'))
+        datamodel_user = SQLAModel(User, self.appbuilder.get_session)
+        datamodel_register_user = SQLAModel(RegisterUser, self.appbuilder.get_session)
+        if len(form.username.validators) == 1:
+            form.username.validators.append(Unique(datamodel_user, 'username'))
+            form.username.validators.append(Unique(datamodel_register_user, 'username'))
 
     def form_post(self, form):
+        register_user = RegisterUser()
+        register_user.username = form.username.data
+        register_user.email = form.email.data
+        register_user.first_name = form.first_name.data
+        register_user.last_name = form.last_name.data
+        register_user.password = generate_password_hash(form.password.data)
+        register_user.registration_hash = str(uuid.uuid1())
+        try:
+            self.appbuilder.get_session.add(register_user)
+            self.appbuilder.get_session.commit()
+            flash(as_unicode(self.message), 'info')
 
-        flash(as_unicode(self.message), 'info')
+            from ..smtp import SendEmail
+            sendemail = SendEmail()
+            sendemail.send('danielvazgaspar@gmail.com', register_user.email)
+        except Exception as e:
+            flash(as_unicode(str(sys.exc_info()[0])), 'danger')
+            log.exception("Add record error: {0}".format(str(e)))
+            self.appbuilder.get_session.rollback()
+
+
+
 
 
 class AuthDBView(AuthView):
@@ -357,11 +393,6 @@ class AuthDBView(AuthView):
                                title=self.title,
                                form=form,
                                appbuilder=self.appbuilder)
-    """
-    @expose('/register/')
-    def register(self):
-        redirect(url_for('RegisterUserDBView.this_form_get'))
-    """
 
 class AuthLDAPView(AuthView):
 
