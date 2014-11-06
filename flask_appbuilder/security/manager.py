@@ -281,18 +281,38 @@ class SecurityManager(BaseManager):
                         else:
                             app.config.setdefault('AUTH_LDAP_BIND_FIELD', 'cn')
                             app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
+                            app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
+                            app.config.setdefault('AUTH_LDAP_LASTNAME_FIELD', 'sn')
+                            app.config.setdefault('AUTH_LDAP_EMAIL_FIELD', 'mail')
 
                             filter="%s=%s" % (app.config['AUTH_LDAP_UID_FIELD'],username)
                             bind_username_array=con.search_s(app.config['AUTH_LDAP_SEARCH'],
                                                              ldap.SCOPE_SUBTREE,
                                                              filter,
-                                                             [app.config['AUTH_LDAP_BIND_FIELD']])
+                                                             [app.config['AUTH_LDAP_FIRSTNAME_FIELD'],
+                                                              app.config['AUTH_LDAP_LASTNAME_FIELD'],
+                                                              app.config['AUTH_LDAP_EMAIL_FIELD']
+                                                              ])
                             if bind_username_array == []:
                                 return None
-                            else:
-                                bind_username=bind_username_array[0][0]
+                            else:                               
+                                bind_username=bind_username_array[0][0]                                                                
+                                ldap_user_info=bind_username_array[0][1]
 
                     con.bind_s(bind_username, password)
+
+                    if app.config['AUTH_USER_REGISTRATION'] and user is None:
+                        user = User()
+                        user.first_name = ldap_user_info[app.config['AUTH_LDAP_FIRSTNAME_FIELD']][0]
+                        user.last_name = ldap_user_info[app.config['AUTH_LDAP_LASTNAME_FIELD']][0]
+                        user.username = username
+                        user.email = ldap_user_info[app.config['AUTH_LDAP_EMAIL_FIELD']][0]
+                        user.active = True
+                        user.role = self.get_session.query(Role).filter_by(name=self.appbuilder.get_app.config['AUTH_ROLE_PUBLIC']).first()
+                        self.get_session.add(user)
+                        self.get_session.commit()
+                        log.info("Adding ldap user %s to user list." % username)
+
                     self._update_user_auth_stat(user)
                     return user
                 except ldap.INVALID_CREDENTIALS:
