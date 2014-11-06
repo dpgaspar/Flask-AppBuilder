@@ -111,7 +111,3 @@ appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", cat
 appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
 
 log.info("F.A.B. Version: {0}".format(appbuilder.version))
-
-from flask_appbuilder.smtp import SendEmail
-sendemail = SendEmail()
-sendemail.send('danielvazgaspar@gmail.com', 'danielvazgaspar@gmail.com')

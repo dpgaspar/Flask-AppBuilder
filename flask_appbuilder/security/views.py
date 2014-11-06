@@ -339,7 +339,7 @@ class RegisterUserDBView(PublicFormView):
     form = RegisterUserDBForm
     form_title = lazy_gettext('Fill out the registration form')
     redirect_url = '/'
-
+    error_message = lazy_gettext('Not possible to register you at the moment, try again later')
     message = lazy_gettext('Registration sent to your email')
 
     def form_get(self, form):
@@ -348,6 +348,23 @@ class RegisterUserDBView(PublicFormView):
         if len(form.username.validators) == 1:
             form.username.validators.append(Unique(datamodel_user, 'username'))
             form.username.validators.append(Unique(datamodel_register_user, 'username'))
+
+    def send_email(self, register_user):
+        try:
+            from flask_mail import Mail, Message
+        except:
+            log.error("Install Flask-Mail to use User registration")
+            return False
+
+        mail = Mail(self.appbuilder.get_app)
+        print self.appbuilder.get_app.extensions
+        msg = Message()
+        msg.body = "testing"
+        msg.html = "<h1><b>testing</b></h1>"
+        msg.recipients = [register_user.email]
+        mail.send(msg)
+        return True
+
 
     def form_post(self, form):
         register_user = RegisterUser()
@@ -359,17 +376,17 @@ class RegisterUserDBView(PublicFormView):
         register_user.registration_hash = str(uuid.uuid1())
         try:
             self.appbuilder.get_session.add(register_user)
+        except Exception as e:
+            log.exception("Add record error: {0}".format(str(e)))
+            flash(as_unicode(self.error_message), 'danger')
+            self.appbuilder.get_session.rollback()
+            return
+        if self.send_email(register_user):
             self.appbuilder.get_session.commit()
             flash(as_unicode(self.message), 'info')
-
-            from ..smtp import SendEmail
-            sendemail = SendEmail()
-            sendemail.send('danielvazgaspar@gmail.com', register_user.email)
-        except Exception as e:
-            flash(as_unicode(str(sys.exc_info()[0])), 'danger')
-            log.exception("Add record error: {0}".format(str(e)))
+        else:
+            flash(as_unicode(self.error_message), 'danger')
             self.appbuilder.get_session.rollback()
-
 
 
 

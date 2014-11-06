@@ -42,8 +42,15 @@ AUTH_USER_REGISTRATION = True
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
 
+# Config for Flask-WTF Recaptcha necessary for user registration
 RECAPTCHA_PUBLIC_KEY = '6LedRP0SAAAAAOF03Nsv_ny2NzOF_Dthe_Xn269v'
 RECAPTCHA_PRIVATE_KEY = '6LedRP0SAAAAAPnsdEKgj5VU1QbFcPv7mO8cW0So'
+# Config for Flask-Mail
+MAIL_SERVER = 'smtp.gmail.com'
+MAIL_USE_TLS = True
+MAIL_USERNAME = 'XXXX@gmail.com'
+MAIL_PASSWORD = 'XXXXX'
+MAIL_DEFAULT_SENDER = 'XXXX@gmail.com'
 
 APP_NAME = "F.A.B. Example"
 APP_THEME = ""  # default
