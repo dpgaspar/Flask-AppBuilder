@@ -336,6 +336,8 @@ class RegisterUserDBView(PublicFormView):
     """
     route_base = '/register'
 
+    email_template = 'appbuilder/general/security/register_mail.html'
+    activation_template = 'appbuilder/general/security/activation.html'
     form = RegisterUserDBForm
     form_title = lazy_gettext('Fill out the registration form')
     redirect_url = '/'
@@ -349,18 +351,47 @@ class RegisterUserDBView(PublicFormView):
             form.username.validators.append(Unique(datamodel_user, 'username'))
             form.username.validators.append(Unique(datamodel_register_user, 'username'))
 
+    @expose('/activation/<string:activation_hash>')
+    def activation(self, activation_hash):
+        reg = self.appbuilder.get_session.query(RegisterUser).filter(RegisterUser.registration_hash==activation_hash).scalar()
+        newuser = User()
+        newuser.email = reg.email
+        newuser.username = reg.username
+        newuser.active = True
+        newuser.first_name = reg.first_name
+        newuser.last_name = reg.last_name
+        newuser.password = reg.password
+        role = self.appbuilder.sm.get_role_by_name(self.appbuilder.get_app.config.get('AUTH_USER_REGISTRATION_ROLE'))
+        newuser.role = role
+        try:
+            self.appbuilder.get_session.add(newuser)
+            self.appbuilder.get_session.delete(reg)
+        except Exception as e:
+            log.exception("Add record on user activation error: {0}".format(str(e)))
+            flash(as_unicode(self.error_message), 'danger')
+            self.appbuilder.get_session.rollback()
+            return redirect(self.appbuilder.get_url_for_index)
+        self.appbuilder.get_session.commit()
+        return render_template(self.activation_template,
+                               username=newuser.username,
+                               first_name=newuser.first_name,
+                               last_name=newuser.last_name,
+                               appbuilder=self.appbuilder)
+
     def send_email(self, register_user):
         try:
             from flask_mail import Mail, Message
         except:
             log.error("Install Flask-Mail to use User registration")
             return False
-
         mail = Mail(self.appbuilder.get_app)
-        print self.appbuilder.get_app.extensions
         msg = Message()
-        msg.body = "testing"
-        msg.html = "<h1><b>testing</b></h1>"
+        url = url_for('.activation', _external=True, activation_hash=register_user.registration_hash)
+        msg.html = render_template(self.email_template,
+                                   url=url,
+                                   username=register_user.username,
+                                   first_name=register_user.first_name,
+                                   last_name=register_user.last_name)
         msg.recipients = [register_user.email]
         mail.send(msg)
         return True

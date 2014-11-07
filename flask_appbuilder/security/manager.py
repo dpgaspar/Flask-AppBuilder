@@ -439,6 +439,8 @@ class SecurityManager(BaseManager):
             PERMISSION MANAGEMENT
         ----------------------------------------
     """
+    def get_role_by_name(self, name):
+        return self.get_session.query(Role).filter_by(name=name).first()
 
     def _find_permission(self, name):
         """
