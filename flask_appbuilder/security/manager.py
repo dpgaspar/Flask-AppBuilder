@@ -56,6 +56,7 @@ class SecurityManager(BaseManager):
     authoidview = AuthOIDView
     """ Override if you want your own Authentication OID view """
     registeruserdbview = RegisterUserDBView
+    """ Override if you want your own register user db view """
 
 
     def __init__(self, appbuilder):

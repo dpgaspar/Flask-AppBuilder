@@ -6,12 +6,13 @@ Improvements and Bug fixes on 1.0.1
 
 - Fix, changed WTForm validator Required to DataRequired.
 - New, AUTH_USER_REGISTRATION for self user registration, on ldap it's used automatic registration based on ldap attrs.
+- New, AUTH_USER_REGISTRATION for auth db will present registration form, send email configurable html for activation.
 - New, Added property to AppBuilder that returns the frameworks version.
+- New, User extension mixin.
 - (TODO), change auth_ldap to register user with AUTH_USER_REGISTRATION_ROLE.
-- (TODO), on user db registration, check username with RegisterUser also. Add double Unique.
-- (TODO), send email based on configurable template.
-- (TODO), expose URL to catch user registration activation.
-
+- (TODO), change before_request on AppBuilder.init_app to inside SecurityManager.
+- (TODO), AUTH_USER_REGISTRATION for auth OID.
+- (TODO), Full SecurityManager class revision.
 
 Improvements and Bug fixes on 1.0.1
 -----------------------------------
@@ -21,6 +22,7 @@ Improvements and Bug fixes on 1.0.1
 - New, pull request #44, ldap bind options.
 - Fix, pull request #48, bug with back button url not working when using uwsgi under sub-domain.
 - New, AppBuilder accepts new parameter security_manager_class, useful to override any security view or auth method.
+
 
 Improvements and Bug fixes on 1.0.0
 -----------------------------------
