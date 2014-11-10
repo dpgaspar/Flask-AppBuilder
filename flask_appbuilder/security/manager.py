@@ -224,7 +224,17 @@ class SecurityManager(BaseManager):
                 "DB Creation and initialization failed, if just upgraded to 0.7.X you must migrate the DB. {0}".format(
                     str(e)))
 
-
+    def add_user(self,username,first_name,last_name,email,role,password=''):
+        user = User()
+        user.first_name = first_name
+        user.last_name = last_name
+        user.username = username
+        user.email = email
+        user.active = True
+        user.role = role
+        self.get_session.add(user)
+        self.get_session.commit()
+        log.info("Adding ldap user %s to user list." % username)        
     """
     ----------------------------------------
         AUTHENTICATION METHODS
@@ -302,16 +312,13 @@ class SecurityManager(BaseManager):
                     con.bind_s(bind_username, password)
 
                     if app.config['AUTH_USER_REGISTRATION'] and user is None:
-                        user = User()
-                        user.first_name = ldap_user_info[app.config['AUTH_LDAP_FIRSTNAME_FIELD']][0]
-                        user.last_name = ldap_user_info[app.config['AUTH_LDAP_LASTNAME_FIELD']][0]
-                        user.username = username
-                        user.email = ldap_user_info[app.config['AUTH_LDAP_EMAIL_FIELD']][0]
-                        user.active = True
-                        user.role = self.get_session.query(Role).filter_by(name=self.appbuilder.get_app.config['AUTH_ROLE_PUBLIC']).first()
-                        self.get_session.add(user)
-                        self.get_session.commit()
-                        log.info("Adding ldap user %s to user list." % username)
+                        self.add_user(
+                                    username=username,
+                                    first_name=ldap_user_info[app.config['AUTH_LDAP_FIRSTNAME_FIELD']][0],
+                                    last_name = ldap_user_info[app.config['AUTH_LDAP_LASTNAME_FIELD']][0],
+                                    email = ldap_user_info[app.config['AUTH_LDAP_EMAIL_FIELD']][0],
+                                    role = self.get_session.query(Role).filter_by(name=self.appbuilder.get_app.config['AUTH_ROLE_PUBLIC']).first()
+                                    )                        
 
                     self._update_user_auth_stat(user)
                     return user
