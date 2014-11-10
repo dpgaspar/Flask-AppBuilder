@@ -1,10 +1,11 @@
 import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship
-from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
 from flask.ext.appbuilder import Model
+from flask_appbuilder.models.mixins import UserExtensionMixin
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
+
 
 class Group(Model):
     id = Column(Integer, primary_key=True)
@@ -22,9 +23,14 @@ class Gender(Model):
         return self.name
 
 
+class UserExtended(Model, UserExtensionMixin):
+    group_id = Column(Integer, ForeignKey('group.id'), nullable=True)
+    group = relationship("Group")
+
+
 class Contact(Model):
     id = Column(Integer, primary_key=True)
-    name =  Column(String(150), unique = True, nullable=False)
+    name = Column(String(150), unique = True, nullable=False)
     address = Column(String(564))
     birthday = Column(Date, nullable=True)
     personal_phone = Column(String(20))

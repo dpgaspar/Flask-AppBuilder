@@ -113,7 +113,6 @@ class UserModelView(ModelView):
     add_title = lazy_gettext('Add User')
     edit_title = lazy_gettext('Edit User')
 
-    
     label_columns = {'get_full_name': lazy_gettext('Full Name'),
                      'first_name': lazy_gettext('First Name'),
                      'last_name': lazy_gettext('Last Name'),
@@ -129,8 +128,7 @@ class UserModelView(ModelView):
                      'created_by': lazy_gettext('Created by'),
                      'changed_on': lazy_gettext('Changed on'),
                      'changed_by': lazy_gettext('Changed by')}
-    
-    
+
     description_columns = {'first_name': lazy_gettext('Write the user first name or names'),
                            'last_name': lazy_gettext('Write the user last name'),
                            'username': lazy_gettext(
@@ -165,6 +163,7 @@ class UserModelView(ModelView):
     order_columns = ['first_name', 'last_name', 'username', 'email']
     search_columns = ['first_name', 'last_name', 'username', 'email', 'role', 'active',
                     'created_by', 'changed_by', 'changed_on','changed_by', 'login_count']
+
 
     add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
     edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
@@ -332,7 +331,7 @@ class AuthView(BaseView):
 
 class RegisterUserDBView(PublicFormView):
     """
-        View Registering user, auth db mode
+        View for Registering a new user, auth db mode
     """
     route_base = '/register'
 
@@ -396,7 +395,6 @@ class RegisterUserDBView(PublicFormView):
         mail.send(msg)
         return True
 
-
     def form_post(self, form):
         register_user = RegisterUser()
         register_user.username = form.username.data
@@ -418,8 +416,6 @@ class RegisterUserDBView(PublicFormView):
         else:
             flash(as_unicode(self.error_message), 'danger')
             self.appbuilder.get_session.rollback()
-
-
 
 
 class AuthDBView(AuthView):

@@ -5,7 +5,7 @@ from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
 from flask.ext.babelpkg import lazy_gettext as _
-
+from flask_appbuilder.models.mixins import UserExtensionMixin
 
 from app import db, appbuilder
 from .models import Group, Gender, Contact
@@ -111,3 +111,4 @@ appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", cat
 appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
 
 log.info("F.A.B. Version: {0}".format(appbuilder.version))
+log.info("User extension class {0}".format(UserExtensionMixin.__subclasses__()[0]))
