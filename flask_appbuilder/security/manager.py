@@ -71,6 +71,11 @@ class SecurityManager(BaseManager):
         app.config.setdefault('AUTH_ROLE_PUBLIC', 'Public')
         app.config.setdefault('AUTH_TYPE', AUTH_DB)
         app.config.setdefault('AUTH_USER_REGISTRATION',False)
+        app.config.setdefault('AUTH_LDAP_BIND_FIELD', 'cn')
+        app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
+        app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
+        app.config.setdefault('AUTH_LDAP_LASTNAME_FIELD', 'sn')
+        app.config.setdefault('AUTH_LDAP_EMAIL_FIELD', 'mail')
 
         if app.config['AUTH_TYPE'] == AUTH_LDAP:
             if 'AUTH_LDAP_SERVER' not in app.config:
@@ -279,13 +284,7 @@ class SecurityManager(BaseManager):
                     else:
                         if app.config['AUTH_LDAP_SEARCH'] == "":
                             bind_username = username
-                        else:
-                            app.config.setdefault('AUTH_LDAP_BIND_FIELD', 'cn')
-                            app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
-                            app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
-                            app.config.setdefault('AUTH_LDAP_LASTNAME_FIELD', 'sn')
-                            app.config.setdefault('AUTH_LDAP_EMAIL_FIELD', 'mail')
-
+                        else:                            
                             filter="%s=%s" % (app.config['AUTH_LDAP_UID_FIELD'],username)
                             bind_username_array=con.search_s(app.config['AUTH_LDAP_SEARCH'],
                                                              ldap.SCOPE_SUBTREE,
