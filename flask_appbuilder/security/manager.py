@@ -207,7 +207,7 @@ class SecurityManager(BaseManager):
                 self.get_session.commit()
                 log.info("Inserted Role for public access %s" % (self.auth_role_public))
             if not self.get_session.query(User).all():
-                add_user(
+                self.add_user(
                         username = ADMIN_USER_NAME,
                         first_name = ADMIN_USER_FIRST_NAME,
                         last_name = ADMIN_USER_LAST_NAME,
@@ -230,12 +230,12 @@ class SecurityManager(BaseManager):
             user.username = username
             user.email = email
             user.active = True
-            user.role = role
+            user.role = role            
             user.password = password
             self.get_session.add(user)
             self.get_session.commit()            
             log.info("Adding ldap user %s to user list." % username)
-            return True
+            return user
         except Exception as e:
             log.error(
                 "Error adding new user to database. {0}".format(
@@ -318,7 +318,7 @@ class SecurityManager(BaseManager):
                     con.bind_s(bind_username, password)
 
                     if app.config['AUTH_USER_REGISTRATION'] and user is None:
-                        self.add_user(
+                        user=self.add_user(
                                     username=username,
                                     first_name=ldap_user_info[app.config['AUTH_LDAP_FIRSTNAME_FIELD']][0],
                                     last_name = ldap_user_info[app.config['AUTH_LDAP_LASTNAME_FIELD']][0],
