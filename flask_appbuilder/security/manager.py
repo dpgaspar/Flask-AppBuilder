@@ -207,16 +207,14 @@ class SecurityManager(BaseManager):
                 self.get_session.commit()
                 log.info("Inserted Role for public access %s" % (self.auth_role_public))
             if not self.get_session.query(User).all():
-                user = User()
-                user.first_name = ADMIN_USER_FIRST_NAME
-                user.last_name = ADMIN_USER_LAST_NAME
-                user.username = ADMIN_USER_NAME
-                user.password = generate_password_hash(ADMIN_USER_PASSWORD)
-                user.email = ADMIN_USER_EMAIL
-                user.active = True
-                user.role = self.get_session.query(Role).filter_by(name=self.auth_role_admin).first()
-                self.get_session.add(user)
-                self.get_session.commit()
+                add_user(
+                        username = ADMIN_USER_NAME,
+                        first_name = ADMIN_USER_FIRST_NAME,
+                        last_name = ADMIN_USER_LAST_NAME,
+                        email = ADMIN_USER_EMAIL,
+                        role = self.get_session.query(Role).filter_by(name=self.auth_role_admin).first(),
+                        password = generate_password_hash(ADMIN_USER_PASSWORD)
+                        )
                 log.info("Inserted initial Admin user")
                 log.info("Login using {0}/{1}".format(ADMIN_USER_NAME, ADMIN_USER_PASSWORD))
         except Exception as e:
@@ -225,16 +223,24 @@ class SecurityManager(BaseManager):
                     str(e)))
 
     def add_user(self,username,first_name,last_name,email,role,password=''):
-        user = User()
-        user.first_name = first_name
-        user.last_name = last_name
-        user.username = username
-        user.email = email
-        user.active = True
-        user.role = role
-        self.get_session.add(user)
-        self.get_session.commit()
-        log.info("Adding ldap user %s to user list." % username)        
+        try:
+            user = User()
+            user.first_name = first_name
+            user.last_name = last_name
+            user.username = username
+            user.email = email
+            user.active = True
+            user.role = role
+            user.password = password
+            self.get_session.add(user)
+            self.get_session.commit()            
+            log.info("Adding ldap user %s to user list." % username)
+            return True
+        except Exception as e:
+            log.error(
+                "Error adding new user to database. {0}".format(
+                    str(e)))
+            return False
     """
     ----------------------------------------
         AUTHENTICATION METHODS
