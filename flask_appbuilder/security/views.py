@@ -70,7 +70,7 @@ class PermissionViewModelView(ModelView):
 
 class ResetMyPasswordView(SimpleFormView):
     """
-        View for reseting own user password
+        View for resetting own user password
     """
     route_base = '/resetmypassword'
 
@@ -437,6 +437,7 @@ class AuthDBView(AuthView):
                                title=self.title,
                                form=form,
                                appbuilder=self.appbuilder)
+
 
 class AuthLDAPView(AuthView):
 

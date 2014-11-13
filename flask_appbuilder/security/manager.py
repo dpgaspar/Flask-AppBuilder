@@ -70,7 +70,9 @@ class SecurityManager(BaseManager):
         app.config.setdefault('AUTH_ROLE_ADMIN', 'Admin')
         app.config.setdefault('AUTH_ROLE_PUBLIC', 'Public')
         app.config.setdefault('AUTH_TYPE', AUTH_DB)
-        app.config.setdefault('AUTH_USER_REGISTRATION',False)
+        app.config.setdefault('AUTH_USER_REGISTRATION', False)
+        app.config.setdefault('AUTH_USER_REGISTRATION_ROLE', self.auth_role_public)
+        app.config.setdefault('AUTH_LDAP_SEARCH', '')
         app.config.setdefault('AUTH_LDAP_BIND_FIELD', 'cn')
         app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
         app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
@@ -111,6 +113,34 @@ class SecurityManager(BaseManager):
     def auth_user_registration(self):
         return self.appbuilder.get_app.config['AUTH_USER_REGISTRATION']
 
+    @property
+    def auth_user_registration_role(self):
+        return self.appbuilder.get_app.config['AUTH_USER_REGISTRATION_ROLE']
+
+    @property
+    def auth_ldap_search(self):
+        return self.appbuilder.get_app.config('AUTH_LDAP_SEARCH')
+
+    @property
+    def auth_ldap_bind_field(self):
+        return self.appbuilder.get_app.config('AUTH_LDAP_BIND_FIELD')
+
+    @property
+    def auth_ldap_uid_field(self):
+        return self.appbuilder.get_app.config('AUTH_LDAP_UID_FIELD')
+
+    @property
+    def auth_ldap_firstname_field(self):
+        return self.appbuilder.get_app.config('AUTH_LDAP_FIRSTNAME_FIELD')
+
+    @property
+    def auth_ldap_lastname_field(self):
+        return self.appbuilder.get_app.config('AUTH_LDAP_LASTNAME_FIELD')
+
+    @property
+    def auth_ldap_email_field(self):
+        return self.appbuilder.get_app.config('AUTH_LDAP_EMAIL_FIELD')
+
 
     def register_views(self):
         self.appbuilder.add_view_no_menu(ResetPasswordView())
@@ -134,15 +164,15 @@ class SecurityManager(BaseManager):
                                                   icon="fa-user", label=_("List Users"),
                                                   category="Security", category_icon="fa-cogs",
                                                   category_label=_('Security'))
-        
+
         role_view = self.appbuilder.add_view(RoleModelView, "List Roles", icon="fa-group", label=_('List Roles'),
                                              category="Security", category_icon="fa-cogs")
         role_view.related_views = [self.user_view.__class__]
-        
+
         self.appbuilder.add_view(UserStatsChartView,
                                  "User's Statistics", icon="fa-bar-chart-o", label=_("User's Statistics"),
                                  category="Security")
-        
+
         self.appbuilder.menu.add_separator("Security")
         self.appbuilder.add_view(PermissionModelView,
                                  "Base Permissions", icon="fa-lock",
@@ -161,7 +191,7 @@ class SecurityManager(BaseManager):
     def before_request():
         g.user = current_user
 
-    def _migrate_db(self): # pragma: no cover
+    def _migrate_db(self):  # pragma: no cover
         """
             Migrate from 0.8 to 0.9, change GeneralView to ModelView
             on ViewMenus
@@ -208,13 +238,13 @@ class SecurityManager(BaseManager):
                 log.info("Inserted Role for public access %s" % (self.auth_role_public))
             if not self.get_session.query(User).all():
                 self.add_user(
-                        username = ADMIN_USER_NAME,
-                        first_name = ADMIN_USER_FIRST_NAME,
-                        last_name = ADMIN_USER_LAST_NAME,
-                        email = ADMIN_USER_EMAIL,
-                        role = self.get_session.query(Role).filter_by(name=self.auth_role_admin).first(),
-                        password = generate_password_hash(ADMIN_USER_PASSWORD)
-                        )
+                    username=ADMIN_USER_NAME,
+                    first_name=ADMIN_USER_FIRST_NAME,
+                    last_name=ADMIN_USER_LAST_NAME,
+                    email=ADMIN_USER_EMAIL,
+                    role=self.get_session.query(Role).filter_by(name=self.auth_role_admin).first(),
+                    password=generate_password_hash(ADMIN_USER_PASSWORD)
+                )
                 log.info("Inserted initial Admin user")
                 log.info("Login using {0}/{1}".format(ADMIN_USER_NAME, ADMIN_USER_PASSWORD))
         except Exception as e:
@@ -222,7 +252,10 @@ class SecurityManager(BaseManager):
                 "DB Creation and initialization failed, if just upgraded to 0.7.X you must migrate the DB. {0}".format(
                     str(e)))
 
-    def add_user(self,username,first_name,last_name,email,role,password=''):
+    def add_user(self, username, first_name, last_name, email, role, password=''):
+        """
+            Generic function to create user
+        """
         try:
             user = User()
             user.first_name = first_name
@@ -230,10 +263,10 @@ class SecurityManager(BaseManager):
             user.username = username
             user.email = email
             user.active = True
-            user.role = role            
+            user.role = role
             user.password = password
             self.get_session.add(user)
-            self.get_session.commit()            
+            self.get_session.commit()
             log.info("Adding ldap user %s to user list." % username)
             return user
         except Exception as e:
@@ -241,6 +274,7 @@ class SecurityManager(BaseManager):
                 "Error adding new user to database. {0}".format(
                     str(e)))
             return False
+
     """
     ----------------------------------------
         AUTHENTICATION METHODS
@@ -292,39 +326,37 @@ class SecurityManager(BaseManager):
             try:
                 con = ldap.initialize(self.auth_ldap_server)
                 con.set_option(ldap.OPT_REFERRALS, 0)
-               
+
                 try:
                     app = self.appbuilder.get_app
-                    if 'AUTH_LDAP_SEARCH' not in app.config:
+                    if not self.auth_ldap_search:
                         bind_username = username
+
                     else:
-                        if app.config['AUTH_LDAP_SEARCH'] == "":
-                            bind_username = username
-                        else:                            
-                            filter="%s=%s" % (app.config['AUTH_LDAP_UID_FIELD'],username)
-                            bind_username_array=con.search_s(app.config['AUTH_LDAP_SEARCH'],
-                                                             ldap.SCOPE_SUBTREE,
-                                                             filter,
-                                                             [app.config['AUTH_LDAP_FIRSTNAME_FIELD'],
-                                                              app.config['AUTH_LDAP_LASTNAME_FIELD'],
-                                                              app.config['AUTH_LDAP_EMAIL_FIELD']
-                                                              ])
-                            if bind_username_array == []:
-                                return None
-                            else:                               
-                                bind_username=bind_username_array[0][0]                                                                
-                                ldap_user_info=bind_username_array[0][1]
+                        filter = "%s=%s" % (self.auth_ldap_uid_field, username)
+                        bind_username_array = con.search_s(self.auth_ldap_search,
+                                                               ldap.SCOPE_SUBTREE,
+                                                               filter,
+                                                               [self.auth_ldap_firstname_field,
+                                                                self.auth_ldap_lastname_field,
+                                                                self.auth_ldap_email_field
+                                                               ])
+                        if bind_username_array == []:
+                            return None
+                        else:
+                            bind_username = bind_username_array[0][0]
+                            ldap_user_info = bind_username_array[0][1]
 
                     con.bind_s(bind_username, password)
 
-                    if app.config['AUTH_USER_REGISTRATION'] and user is None:
-                        user=self.add_user(
-                                    username=username,
-                                    first_name=ldap_user_info[app.config['AUTH_LDAP_FIRSTNAME_FIELD']][0],
-                                    last_name = ldap_user_info[app.config['AUTH_LDAP_LASTNAME_FIELD']][0],
-                                    email = ldap_user_info[app.config['AUTH_LDAP_EMAIL_FIELD']][0],
-                                    role = self.get_session.query(Role).filter_by(name=self.appbuilder.get_app.config['AUTH_ROLE_PUBLIC']).first()
-                                    )                        
+                    if self.auth_user_registration and user is None:
+                        user = self.add_user(
+                            username=username,
+                            first_name=ldap_user_info[self.auth_ldap_firstname_field][0],
+                            last_name=ldap_user_info[self.auth_ldap_lastname_field][0],
+                            email=ldap_user_info[self.auth_ldap_email_field][0],
+                            role=self.get_role_by_name(self.auth_user_registration_role)
+                        )
 
                     self._update_user_auth_stat(user)
                     return user
@@ -379,8 +411,16 @@ class SecurityManager(BaseManager):
             log.error("Update user login stat: {0}".format(str(e)))
             self.get_session.rollback()
 
-
     def reset_password(self, userid, password):
+        """
+            Change/Reset a user's password for authdb.
+            Password will be hashed and saved.
+
+            :param userid:
+                the user.id to reset the password
+            :param password:
+                The clear text password to reset and save hashed on the db
+        """
         try:
             user = self.get_user_by_id(userid)
             user.password = generate_password_hash(password)
@@ -452,6 +492,7 @@ class SecurityManager(BaseManager):
             PERMISSION MANAGEMENT
         ----------------------------------------
     """
+
     def get_role_by_name(self, name):
         return self.get_session.query(Role).filter_by(name=name).first()
 
@@ -498,7 +539,7 @@ class SecurityManager(BaseManager):
                 log.error("Del Permission Error: {0}".format(str(e)))
                 self.get_session.rollback()
 
-    #----------------------------------------------
+    # ----------------------------------------------
     #       PERMITIVES VIEW MENU
     #----------------------------------------------
     def _find_view_menu(self, name):

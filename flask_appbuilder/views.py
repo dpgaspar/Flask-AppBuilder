@@ -95,6 +95,7 @@ class SimpleFormView(BaseView):
 
         if form.validate_on_submit():
             self.form_post(form)
+            return redirect(self.get_redirect())
         else:
             widgets = self._get_edit_widget(form=form)
             return self.render_template(
