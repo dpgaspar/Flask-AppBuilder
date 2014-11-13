@@ -267,7 +267,7 @@ class SecurityManager(BaseManager):
             user.password = password
             self.get_session.add(user)
             self.get_session.commit()
-            log.info("Adding ldap user %s to user list." % username)
+            log.info("Added user %s to user list." % username)
             return user
         except Exception as e:
             log.error(
@@ -326,12 +326,9 @@ class SecurityManager(BaseManager):
             try:
                 con = ldap.initialize(self.auth_ldap_server)
                 con.set_option(ldap.OPT_REFERRALS, 0)
-
                 try:
-                    app = self.appbuilder.get_app
                     if not self.auth_ldap_search:
                         bind_username = username
-
                     else:
                         filter = "%s=%s" % (self.auth_ldap_uid_field, username)
                         bind_username_array = con.search_s(self.auth_ldap_search,

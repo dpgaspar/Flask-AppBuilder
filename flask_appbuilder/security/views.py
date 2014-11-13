@@ -73,11 +73,9 @@ class ResetMyPasswordView(SimpleFormView):
         View for resetting own user password
     """
     route_base = '/resetmypassword'
-
     form = ResetPasswordForm
     form_title = lazy_gettext('Reset Password Form')
     redirect_url = '/'
-
     message = lazy_gettext('Password Changed')
 
     def form_post(self, form):
@@ -87,15 +85,12 @@ class ResetMyPasswordView(SimpleFormView):
 
 class ResetPasswordView(SimpleFormView):
     """
-    View for reseting all users password
+        View for reseting all users password
     """
-
     route_base = '/resetpassword'
-
     form = ResetPasswordForm
     form_title = lazy_gettext('Reset Password Form')
     redirect_url = '/'
-
     message = lazy_gettext('Password Changed')
 
     def form_post(self, form):
@@ -145,25 +140,24 @@ class UserModelView(ModelView):
 
     show_fieldsets = [
         (lazy_gettext('User info'),
-            {'fields': ['username', 'active', 'role', 'login_count']}),
+         {'fields': ['username', 'active', 'role', 'login_count']}),
         (lazy_gettext('Personal Info'),
-            {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
+         {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
         (lazy_gettext('Audit Info'),
-            {'fields': ['last_login', 'fail_login_count', 'created_on',
-                        'created_by', 'changed_on', 'changed_by'], 'expanded': False}),
+         {'fields': ['last_login', 'fail_login_count', 'created_on',
+                     'created_by', 'changed_on', 'changed_by'], 'expanded': False}),
     ]
 
     user_show_fieldsets = [
         (lazy_gettext('User info'),
-            {'fields': ['username', 'active', 'role', 'login_count']}),
+         {'fields': ['username', 'active', 'role', 'login_count']}),
         (lazy_gettext('Personal Info'),
-            {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
+         {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
     ]
 
     order_columns = ['first_name', 'last_name', 'username', 'email']
     search_columns = ['first_name', 'last_name', 'username', 'email', 'role', 'active',
-                    'created_by', 'changed_by', 'changed_on','changed_by', 'login_count']
-
+                      'created_by', 'changed_by', 'changed_on', 'changed_by', 'login_count']
 
     add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
     edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
@@ -176,6 +170,7 @@ class UserOIDModelView(UserModelView):
         Override to implement your own custom view.
         Then override useroidmodelview property on SecurityManager
     """
+
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
@@ -193,6 +188,7 @@ class UserLDAPModelView(UserModelView):
         Override to implement your own custom view.
         Then override userldapmodelview property on SecurityManager
     """
+
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
@@ -213,7 +209,7 @@ class UserDBModelView(UserModelView):
     add_form_extra_fields = {'password': PasswordField(lazy_gettext('Password'),
                                                        description=lazy_gettext(
                                                            'Please use a good password policy, this application does not check this for you'),
-                                                       validators=[validators.Required()],
+                                                       validators=[validators.DataRequired()],
                                                        widget=BS3PasswordFieldWidget()),
                              'conf_password': PasswordField(lazy_gettext('Confirm Password'),
                                                             description=lazy_gettext(
@@ -275,8 +271,8 @@ class UserStatsChartView(DirectByChartView):
     label_columns = {'username': lazy_gettext('User Name'),
                      'login_count': lazy_gettext('Login count'),
                      'fail_login_count': lazy_gettext('Failed login count')
-                     }
-                     
+    }
+
     search_columns = UserModelView.search_columns
 
     definitions = [
@@ -336,6 +332,7 @@ class RegisterUserDBView(PublicFormView):
     route_base = '/register'
 
     email_template = 'appbuilder/general/security/register_mail.html'
+    email_subject = lazy_gettext('Account activation')
     activation_template = 'appbuilder/general/security/activation.html'
     form = RegisterUserDBForm
     form_title = lazy_gettext('Fill out the registration form')
@@ -352,18 +349,17 @@ class RegisterUserDBView(PublicFormView):
 
     @expose('/activation/<string:activation_hash>')
     def activation(self, activation_hash):
-        reg = self.appbuilder.get_session.query(RegisterUser).filter(RegisterUser.registration_hash==activation_hash).scalar()
-        newuser = User()
-        newuser.email = reg.email
-        newuser.username = reg.username
-        newuser.active = True
-        newuser.first_name = reg.first_name
-        newuser.last_name = reg.last_name
-        newuser.password = reg.password
-        role = self.appbuilder.sm.get_role_by_name(self.appbuilder.get_app.config.get('AUTH_USER_REGISTRATION_ROLE'))
-        newuser.role = role
+        reg = self.appbuilder.get_session.query(RegisterUser).filter(
+            RegisterUser.registration_hash == activation_hash).scalar()
         try:
-            self.appbuilder.get_session.add(newuser)
+            if not self.appbuilder.sm.add_user(username=reg.username,
+                                               email=reg.email,
+                                               first_name=reg.first_name,
+                                               last_name=reg.last_name,
+                                               role=self.appbuilder.sm.get_role_by_name(
+                                                       self.appbuilder.sm.auth_user_registration_role),
+                                               password=reg.password):
+                raise Exception('Could not add user to DB')
             self.appbuilder.get_session.delete(reg)
         except Exception as e:
             log.exception("Add record on user activation error: {0}".format(str(e)))
@@ -372,9 +368,9 @@ class RegisterUserDBView(PublicFormView):
             return redirect(self.appbuilder.get_url_for_index)
         self.appbuilder.get_session.commit()
         return render_template(self.activation_template,
-                               username=newuser.username,
-                               first_name=newuser.first_name,
-                               last_name=newuser.last_name,
+                               username=reg.username,
+                               first_name=reg.first_name,
+                               last_name=reg.last_name,
                                appbuilder=self.appbuilder)
 
     def send_email(self, register_user):
@@ -385,6 +381,7 @@ class RegisterUserDBView(PublicFormView):
             return False
         mail = Mail(self.appbuilder.get_app)
         msg = Message()
+        msg.subject = self.email_subject
         url = url_for('.activation', _external=True, activation_hash=register_user.registration_hash)
         msg.html = render_template(self.email_template,
                                    url=url,
@@ -392,7 +389,11 @@ class RegisterUserDBView(PublicFormView):
                                    first_name=register_user.first_name,
                                    last_name=register_user.last_name)
         msg.recipients = [register_user.email]
-        mail.send(msg)
+        try:
+            mail.send(msg)
+        except Exception as e:
+            log.error("Send email exception: {0}".format(str(e)))
+            return False
         return True
 
     def form_post(self, form):
@@ -440,7 +441,6 @@ class AuthDBView(AuthView):
 
 
 class AuthLDAPView(AuthView):
-
     login_template = 'appbuilder/general/security/login_ldap.html'
 
     @expose('/login/', methods=['GET', 'POST'])
