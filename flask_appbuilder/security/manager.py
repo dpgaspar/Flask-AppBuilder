@@ -119,27 +119,27 @@ class SecurityManager(BaseManager):
 
     @property
     def auth_ldap_search(self):
-        return self.appbuilder.get_app.config('AUTH_LDAP_SEARCH')
+        return self.appbuilder.get_app.config['AUTH_LDAP_SEARCH']
 
     @property
     def auth_ldap_bind_field(self):
-        return self.appbuilder.get_app.config('AUTH_LDAP_BIND_FIELD')
+        return self.appbuilder.get_app.config['AUTH_LDAP_BIND_FIELD']
 
     @property
     def auth_ldap_uid_field(self):
-        return self.appbuilder.get_app.config('AUTH_LDAP_UID_FIELD')
+        return self.appbuilder.get_app.config['AUTH_LDAP_UID_FIELD']
 
     @property
     def auth_ldap_firstname_field(self):
-        return self.appbuilder.get_app.config('AUTH_LDAP_FIRSTNAME_FIELD')
+        return self.appbuilder.get_app.config['AUTH_LDAP_FIRSTNAME_FIELD']
 
     @property
     def auth_ldap_lastname_field(self):
-        return self.appbuilder.get_app.config('AUTH_LDAP_LASTNAME_FIELD')
+        return self.appbuilder.get_app.config['AUTH_LDAP_LASTNAME_FIELD']
 
     @property
     def auth_ldap_email_field(self):
-        return self.appbuilder.get_app.config('AUTH_LDAP_EMAIL_FIELD')
+        return self.appbuilder.get_app.config['AUTH_LDAP_EMAIL_FIELD']
 
 
     def register_views(self):
