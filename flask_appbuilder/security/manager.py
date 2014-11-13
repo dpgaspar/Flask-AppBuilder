@@ -71,6 +71,11 @@ class SecurityManager(BaseManager):
         app.config.setdefault('AUTH_ROLE_PUBLIC', 'Public')
         app.config.setdefault('AUTH_TYPE', AUTH_DB)
         app.config.setdefault('AUTH_USER_REGISTRATION',False)
+        app.config.setdefault('AUTH_LDAP_BIND_FIELD', 'cn')
+        app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
+        app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
+        app.config.setdefault('AUTH_LDAP_LASTNAME_FIELD', 'sn')
+        app.config.setdefault('AUTH_LDAP_EMAIL_FIELD', 'mail')
 
         if app.config['AUTH_TYPE'] == AUTH_LDAP:
             if 'AUTH_LDAP_SERVER' not in app.config:
@@ -202,16 +207,14 @@ class SecurityManager(BaseManager):
                 self.get_session.commit()
                 log.info("Inserted Role for public access %s" % (self.auth_role_public))
             if not self.get_session.query(User).all():
-                user = User()
-                user.first_name = ADMIN_USER_FIRST_NAME
-                user.last_name = ADMIN_USER_LAST_NAME
-                user.username = ADMIN_USER_NAME
-                user.password = generate_password_hash(ADMIN_USER_PASSWORD)
-                user.email = ADMIN_USER_EMAIL
-                user.active = True
-                user.role = self.get_session.query(Role).filter_by(name=self.auth_role_admin).first()
-                self.get_session.add(user)
-                self.get_session.commit()
+                self.add_user(
+                        username = ADMIN_USER_NAME,
+                        first_name = ADMIN_USER_FIRST_NAME,
+                        last_name = ADMIN_USER_LAST_NAME,
+                        email = ADMIN_USER_EMAIL,
+                        role = self.get_session.query(Role).filter_by(name=self.auth_role_admin).first(),
+                        password = generate_password_hash(ADMIN_USER_PASSWORD)
+                        )
                 log.info("Inserted initial Admin user")
                 log.info("Login using {0}/{1}".format(ADMIN_USER_NAME, ADMIN_USER_PASSWORD))
         except Exception as e:
@@ -219,7 +222,25 @@ class SecurityManager(BaseManager):
                 "DB Creation and initialization failed, if just upgraded to 0.7.X you must migrate the DB. {0}".format(
                     str(e)))
 
-
+    def add_user(self,username,first_name,last_name,email,role,password=''):
+        try:
+            user = User()
+            user.first_name = first_name
+            user.last_name = last_name
+            user.username = username
+            user.email = email
+            user.active = True
+            user.role = role            
+            user.password = password
+            self.get_session.add(user)
+            self.get_session.commit()            
+            log.info("Adding ldap user %s to user list." % username)
+            return user
+        except Exception as e:
+            log.error(
+                "Error adding new user to database. {0}".format(
+                    str(e)))
+            return False
     """
     ----------------------------------------
         AUTHENTICATION METHODS
@@ -279,13 +300,7 @@ class SecurityManager(BaseManager):
                     else:
                         if app.config['AUTH_LDAP_SEARCH'] == "":
                             bind_username = username
-                        else:
-                            app.config.setdefault('AUTH_LDAP_BIND_FIELD', 'cn')
-                            app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
-                            app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
-                            app.config.setdefault('AUTH_LDAP_LASTNAME_FIELD', 'sn')
-                            app.config.setdefault('AUTH_LDAP_EMAIL_FIELD', 'mail')
-
+                        else:                            
                             filter="%s=%s" % (app.config['AUTH_LDAP_UID_FIELD'],username)
                             bind_username_array=con.search_s(app.config['AUTH_LDAP_SEARCH'],
                                                              ldap.SCOPE_SUBTREE,
@@ -303,16 +318,13 @@ class SecurityManager(BaseManager):
                     con.bind_s(bind_username, password)
 
                     if app.config['AUTH_USER_REGISTRATION'] and user is None:
-                        user = User()
-                        user.first_name = ldap_user_info[app.config['AUTH_LDAP_FIRSTNAME_FIELD']][0]
-                        user.last_name = ldap_user_info[app.config['AUTH_LDAP_LASTNAME_FIELD']][0]
-                        user.username = username
-                        user.email = ldap_user_info[app.config['AUTH_LDAP_EMAIL_FIELD']][0]
-                        user.active = True
-                        user.role = self.get_session.query(Role).filter_by(name=self.appbuilder.get_app.config['AUTH_ROLE_PUBLIC']).first()
-                        self.get_session.add(user)
-                        self.get_session.commit()
-                        log.info("Adding ldap user %s to user list." % username)
+                        user=self.add_user(
+                                    username=username,
+                                    first_name=ldap_user_info[app.config['AUTH_LDAP_FIRSTNAME_FIELD']][0],
+                                    last_name = ldap_user_info[app.config['AUTH_LDAP_LASTNAME_FIELD']][0],
+                                    email = ldap_user_info[app.config['AUTH_LDAP_EMAIL_FIELD']][0],
+                                    role = self.get_session.query(Role).filter_by(name=self.appbuilder.get_app.config['AUTH_ROLE_PUBLIC']).first()
+                                    )                        
 
                     self._update_user_auth_stat(user)
                     return user
