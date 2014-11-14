@@ -51,9 +51,9 @@ RECAPTCHA_PRIVATE_KEY = '6LedRP0SAAAAAPnsdEKgj5VU1QbFcPv7mO8cW0So'
 # Config for Flask-Mail necessary for user registration
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_USE_TLS = True
-MAIL_USERNAME = 'danielvazgaspar@gmail.com'
-MAIL_PASSWORD = 'mnopsso01'
-MAIL_DEFAULT_SENDER = 'danielvazgaspar@gmail.com'
+MAIL_USERNAME = 'XXXX@gmail.com'
+MAIL_PASSWORD = 'XXXXX'
+MAIL_DEFAULT_SENDER = 'XXXXXX@gmail.com'
 #--------------------------------------
 
 APP_NAME = "F.A.B. Example"
