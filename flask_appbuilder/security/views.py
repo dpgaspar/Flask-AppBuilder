@@ -346,6 +346,9 @@ class RegisterUserDBView(PublicFormView):
         if len(form.username.validators) == 1:
             form.username.validators.append(Unique(datamodel_user, 'username'))
             form.username.validators.append(Unique(datamodel_register_user, 'username'))
+        if len(form.email.validators) == 2:
+            form.email.validators.append(Unique(datamodel_user, 'email'))
+            form.email.validators.append(Unique(datamodel_register_user, 'email'))
 
     @expose('/activation/<string:activation_hash>')
     def activation(self, activation_hash):
