@@ -1,7 +1,7 @@
 Versions
 ========
 
-Improvements and Bug fixes on 1.0.1
+Improvements and Bug fixes on 1.1.0
 -----------------------------------
 
 - Fix, changed WTForm validator Required to DataRequired.
@@ -10,8 +10,7 @@ Improvements and Bug fixes on 1.0.1
 - New, AUTH_USER_REGISTRATION for auth db will present registration form, send email configurable html for activation.
 - New, Added property to AppBuilder that returns the frameworks version.
 - New, User extension mixin.
--
-- (TODO), change auth_ldap to register user with AUTH_USER_REGISTRATION_ROLE.
+- New, allows dotted attributes on list_columns, to fetch values from related models.
 - (TODO), change before_request on AppBuilder.init_app to inside SecurityManager.
 - (TODO), AUTH_USER_REGISTRATION for auth OID.
 - (TODO), Full SecurityManager class revision.

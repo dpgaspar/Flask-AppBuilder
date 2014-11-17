@@ -29,7 +29,6 @@ LANGUAGES = {
 }
 
 
-
 #------------------------------
 # GLOBALS FOR GENERAL APP's
 #------------------------------
@@ -51,9 +50,9 @@ RECAPTCHA_PRIVATE_KEY = '6LedRP0SAAAAAPnsdEKgj5VU1QbFcPv7mO8cW0So'
 # Config for Flask-Mail necessary for user registration
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_USE_TLS = True
-MAIL_USERNAME = 'XXXX@gmail.com'
-MAIL_PASSWORD = 'XXXXX'
-MAIL_DEFAULT_SENDER = 'XXXXXX@gmail.com'
+MAIL_USERNAME = 'fabtest10@gmail.com'
+MAIL_PASSWORD = 'Passw0rdqwerty'
+MAIL_DEFAULT_SENDER = 'fabtest10@gmail.com'
 #--------------------------------------
 
 APP_NAME = "F.A.B. Example"
