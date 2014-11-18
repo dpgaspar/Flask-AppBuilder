@@ -5,7 +5,7 @@ import sys
 from flask import render_template, flash, redirect, session, url_for, request, g
 from werkzeug.security import generate_password_hash
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
-from flask.ext.openid import SessionWrapper, OpenIDResponse
+from flask.ext.openid import SessionWrapper, OpenIDResponse, OpenID
 from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
 from flask.ext.babelpkg import gettext, lazy_gettext
@@ -466,6 +466,8 @@ class AuthLDAPView(AuthView):
 
 class AuthOIDView(AuthView):
     login_template = 'appbuilder/general/security/login_oid.html'
+    oid_ask_for = ['email']
+    oid_ask_for_optional = []
 
     @expose('/login/', methods=['GET', 'POST'])
     def login(self, flag=True):
@@ -476,15 +478,19 @@ class AuthOIDView(AuthView):
         form = LoginForm_oid()
         if form.validate_on_submit():
             session['remember_me'] = form.remember_me.data
-            return self.appbuilder.sm.oid.try_login(form.openid.data, ask_for=['email'])
+            return self.appbuilder.sm.oid.try_login(form.openid.data, ask_for=self.oid_ask_for,
+                                                    ask_for_optional=self.oid_ask_for_optional)
         return render_template(self.login_template,
                                title=self.title,
                                form=form,
-                               providers=self.appbuilder.app.config['OPENID_PROVIDERS'],
+                               providers=self.appbuilder.sm.openid_providers,
                                appbuilder=self.appbuilder
         )
 
     def oid_login_handler(self, f, oid):
+        """
+            Hackish method to make use of oid.login_handler decorator.
+        """
         if request.args.get('openid_complete') != u'yes':
             return f(False)
         consumer = Consumer(SessionWrapper(self), oid.store_factory())
@@ -501,11 +507,11 @@ class AuthOIDView(AuthView):
     def after_login(self, resp):
         if resp.email is None or resp.email == "":
             flash(as_unicode(self.invalid_login_message), 'warning')
-            return redirect('appbuilder/general/security/login_oid.html')
+            return redirect(self.login_template)
         user = self.appbuilder.sm.auth_user_oid(resp.email)
         if user is None:
             flash(as_unicode(self.invalid_login_message), 'warning')
-            return redirect('appbuilder/general/security/login_oid.html')
+            return redirect(self.login_template)
         remember_me = False
         if 'remember_me' in session:
             remember_me = session['remember_me']
@@ -513,7 +519,4 @@ class AuthOIDView(AuthView):
 
         login_user(user, remember=remember_me)
         return redirect(self.appbuilder.get_url_for_index)
-
-
-
 

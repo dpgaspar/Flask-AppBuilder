@@ -9,6 +9,7 @@ from ..validators import Unique
 
 class LoginForm_oid(DynamicForm):
     openid = StringField(lazy_gettext('openid'), validators=[DataRequired()])
+    username = StringField(lazy_gettext('User Name'))
     remember_me = BooleanField(lazy_gettext('remember_me'), default=False)
 
 

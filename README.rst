@@ -55,6 +55,7 @@ Includes:
       - Public (no authentication needed) and Private permissions.
       - Role based permissions.
       - Authentication support for OpenID, Database and LDAP.
+      - Support for self user registration for Auth based on Database and LDAP.
   - Views and Widgets
       - Automatic menu generation.
       - Automatic CRUD generation.

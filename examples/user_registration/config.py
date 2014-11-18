@@ -35,7 +35,7 @@ LANGUAGES = {
 UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_URL = '/static/uploads/'
-AUTH_TYPE = 1
+AUTH_TYPE = 0
 #AUTH_LDAP_SERVER = "ldap://dc.domain.net"
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
@@ -51,7 +51,7 @@ RECAPTCHA_PRIVATE_KEY = '6LedRP0SAAAAAPnsdEKgj5VU1QbFcPv7mO8cW0So'
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_USE_TLS = True
 MAIL_USERNAME = 'fabtest10@gmail.com'
-MAIL_PASSWORD = 'Passw0rdqwerty'
+MAIL_PASSWORD = 'password'
 MAIL_DEFAULT_SENDER = 'fabtest10@gmail.com'
 #--------------------------------------
 

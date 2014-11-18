@@ -51,6 +51,13 @@ function set_openid(openid, pr)
             </div>
         </div>
                 <input class="btn btn-primary btn-block" type="submit" value={{_('Sign In')}}>
+                {% if appbuilder.sm.auth_user_registration %}
+                    <a href="{{url_for('RegisterUserDBView.this_form_get')}}" class="btn btn-block btn-primary" data-toggle="tooltip" rel="tooltip"
+                       title="{{_('If your not already a user, please register')}}">
+                        {{_('Register')}}
+                        </a>
+                {% endif %}
+
     </form>
 </div>
 </div></div></div>

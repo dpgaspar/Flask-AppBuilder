@@ -141,6 +141,9 @@ class SecurityManager(BaseManager):
     def auth_ldap_email_field(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_EMAIL_FIELD']
 
+    @property
+    def openid_providers(self):
+        return self.appbuilder.get_app.config['OPENID_PROVIDERS']
 
     def register_views(self):
         self.appbuilder.add_view_no_menu(ResetPasswordView())

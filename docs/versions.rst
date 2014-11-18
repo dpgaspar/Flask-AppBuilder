@@ -11,6 +11,7 @@ Improvements and Bug fixes on 1.1.0
 - New, Added property to AppBuilder that returns the frameworks version.
 - New, User extension mixin.
 - New, allows dotted attributes on list_columns, to fetch values from related models.
+- New, AuthOIDView with oid_ask_for and oid_ask_for_optional, for easy dev override of view.
 - (TODO), change before_request on AppBuilder.init_app to inside SecurityManager.
 - (TODO), AUTH_USER_REGISTRATION for auth OID.
 - (TODO), Full SecurityManager class revision.
