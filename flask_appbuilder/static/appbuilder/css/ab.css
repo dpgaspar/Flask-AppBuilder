@@ -40,3 +40,11 @@ th.action_checkboxes {
     cursor: pointer;
     cursor: hand;
 }
+
+.img-select {
+    outline: 2px solid;
+}
+
+.img-unselect {
+    outline: 1px solid;
+}

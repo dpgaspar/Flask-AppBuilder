@@ -6,6 +6,8 @@
 <script type="text/javascript">
 function set_openid(openid, pr)
 {
+    $('.img-select').attr('class', 'img-rounded img-unselect');
+    $('#' + pr).attr('class', 'img-rounded img-select');
     u = openid.search('<username>');
     if (u != -1) {
         // openid requires username
@@ -15,6 +17,8 @@ function set_openid(openid, pr)
     form = document.forms['login'];
     form.elements['openid'].value = openid;
 }
+
+$('#openid').hide();
 </script>
 
 
@@ -29,15 +33,19 @@ function set_openid(openid, pr)
     <form class="form" action="" method="post" name="login">
         {{form.hidden_tag()}}
         <div class="help-block">{{_("Click on your OpenID provider below")}}:</div>
-        <div class="control-group">
+            <center>
+            <div class="center-block btn-group btn-group-lg" role="group">
             {% for pr in providers %}
-            <a href="javascript:set_openid('{{pr.url}}', '{{pr.name}}');"><img src="{{url_for('appbuilder.static',filename='img/' + pr.name.lower() + '.png')}}" class="img-polaroid" style="margin:2px;" /></a>
+            <a href="javascript:set_openid('{{pr.url}}', '{{pr.name}}');">
+                <img src="{{url_for('appbuilder.static',filename='img/' + pr.name.lower() + '.png')}}"
+                     id="{{pr.name}}" class="img-rounded img-unselect"/></a>
             {% endfor %}
         </div>
+        </center>
         <div class="control-group{% if form.errors.openid %} error{% endif %}">
-            <label class="control-label" for="openid">{{_("Or enter your OpenID here")}}:</label>
+            <label class="hidden control-label" for="openid">{{_("Or enter your OpenID here")}}:</label>
             <div class="controls">
-                {{ form.openid(size = 80, class = "form-control") }}
+                {{ form.openid(size = 80, class = "hidden form-control") }}
                 {% for error in form.errors.openid %}
                     <span class="help-inline">[{{error}}]</span><br>
                 {% endfor %}
