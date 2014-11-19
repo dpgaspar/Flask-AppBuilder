@@ -141,6 +141,9 @@ class PublicFormView(BaseView):
     form = None
     """ The WTF form to render """
     form_fieldsets = None
+    """ The field sets for the form widget """
+    default_view = 'this_form_get'
+    """ The form view default entry endpoint """
 
     def _init_vars(self):
         self.form_columns = self.form_columns or []
