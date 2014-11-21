@@ -52,7 +52,7 @@ RECAPTCHA_PRIVATE_KEY = '6LedRP0SAAAAAPnsdEKgj5VU1QbFcPv7mO8cW0So'
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_USE_TLS = True
 MAIL_USERNAME = 'fabtest10@gmail.com'
-MAIL_PASSWORD = 'password'
+MAIL_PASSWORD = 'Passw0rdqwerty'
 MAIL_DEFAULT_SENDER = 'fabtest10@gmail.com'
 #--------------------------------------
 

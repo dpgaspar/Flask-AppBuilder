@@ -15,8 +15,8 @@ from ..basemanager import BaseManager
 from .models import User, Role, PermissionView, Permission, ViewMenu
 from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, \
     ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, RoleModelView, \
-    PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView, \
-    RegisterUserDBView, RegisterUserOIDView
+    PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
+from .registerviews import RegisterUserDBView, RegisterUserOIDView
 
 log = logging.getLogger(__name__)
 
