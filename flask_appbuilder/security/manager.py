@@ -15,7 +15,8 @@ from ..basemanager import BaseManager
 from .models import User, Role, PermissionView, Permission, ViewMenu
 from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, \
     ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, RoleModelView, \
-    PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView, RegisterUserDBView
+    PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView, \
+    RegisterUserDBView, RegisterUserOIDView
 
 log = logging.getLogger(__name__)
 
@@ -63,6 +64,8 @@ class SecurityManager(BaseManager):
     """ Override if you want your own Authentication OID view """
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
+    registeruseroidview = RegisterUserOIDView
+    """ Override if you want your own register user db view """
 
 
     def __init__(self, appbuilder):
@@ -101,7 +104,7 @@ class SecurityManager(BaseManager):
 
     @property
     def get_url_for_registeruser(self):
-        return url_for('%s.%s' % (self.registeruser_view.endpoint, self.registeruserdbview.default_view))
+        return url_for('%s.%s' % (self.registeruser_view.endpoint, self.registeruser_view.default_view))
 
     @property
     def auth_type(self):
@@ -156,23 +159,27 @@ class SecurityManager(BaseManager):
         return self.appbuilder.get_app.config['OPENID_PROVIDERS']
 
     def register_views(self):
-        self.registeruser_view = self.registeruserdbview()
         self.appbuilder.add_view_no_menu(ResetPasswordView())
         self.appbuilder.add_view_no_menu(ResetMyPasswordView())
-        self.appbuilder.add_view_no_menu(self.registeruser_view)
 
         if self.auth_type == AUTH_DB:
             self.user_view = self.userdbmodelview
             self.auth_view = self.authdbview()
+            if self.auth_user_registration:
+                self.registeruser_view = self.registeruserdbview()
+
         elif self.auth_type == AUTH_LDAP:
             self.user_view = self.userldapmodelview
             self.auth_view = self.authldapview()
         else:
             self.user_view = self.useroidmodelview
             self.auth_view = self.authoidview()
+            if self.auth_user_registration:
+                self.registeruser_view = self.registeruseroidview()
             self.oid.after_login_func = self.auth_view.after_login
 
         self.appbuilder.add_view_no_menu(self.auth_view)
+        self.appbuilder.add_view_no_menu(self.registeruser_view)
 
         self.user_view = self.appbuilder.add_view(self.user_view, "List Users",
                                                   icon="fa-user", label=_("List Users"),
