@@ -26,12 +26,17 @@ def get_first_last_name(fullname):
         return names[0], ''
 
 
-class BaseRegisterUser(object):
+class BaseRegisterUser(PublicFormView):
 
+    route_base = '/register'
     email_template = 'appbuilder/general/security/register_mail.html'
     email_subject = lazy_gettext('Account activation')
+    activation_template = 'appbuilder/general/security/activation.html'
 
     def send_email(self, register_user):
+        """
+            Method for sending the registration Email to the user
+        """
         try:
             from flask_mail import Mail, Message
         except:
@@ -54,33 +59,41 @@ class BaseRegisterUser(object):
             return False
         return True
 
+    def add_registration(self, username, first_name, last_name, email, password=''):
+        """
+            Add a registration request for the user.
 
-
-class RegisterUserDBView(BaseRegisterUser, PublicFormView):
-    """
-        View for Registering a new user, auth db mode
-    """
-    route_base = '/register'
-
-    activation_template = 'appbuilder/general/security/activation.html'
-    form = RegisterUserDBForm
-    form_title = lazy_gettext('Fill out the registration form')
-    redirect_url = '/'
-    error_message = lazy_gettext('Not possible to register you at the moment, try again later')
-    message = lazy_gettext('Registration sent to your email')
-
-    def form_get(self, form):
-        datamodel_user = SQLAInterface(User, self.appbuilder.get_session)
-        datamodel_register_user = SQLAInterface(RegisterUser, self.appbuilder.get_session)
-        if len(form.username.validators) == 1:
-            form.username.validators.append(Unique(datamodel_user, 'username'))
-            form.username.validators.append(Unique(datamodel_register_user, 'username'))
-        if len(form.email.validators) == 2:
-            form.email.validators.append(Unique(datamodel_user, 'email'))
-            form.email.validators.append(Unique(datamodel_register_user, 'email'))
+        :rtype : RegisterUser
+        """
+        register_user = RegisterUser()
+        register_user.username = username
+        register_user.email = email
+        register_user.first_name = first_name
+        register_user.last_name = last_name
+        register_user.password = generate_password_hash(password)
+        register_user.registration_hash = str(uuid.uuid1())
+        try:
+            self.appbuilder.get_session.add(register_user)
+        except Exception as e:
+            log.exception("Add record error: {0}".format(str(e)))
+            flash(as_unicode(self.error_message), 'danger')
+            self.appbuilder.get_session.rollback()
+            return None
+        if self.send_email(register_user):
+            self.appbuilder.get_session.commit()
+            flash(as_unicode(self.message), 'info')
+        else:
+            flash(as_unicode(self.error_message), 'danger')
+            self.appbuilder.get_session.rollback()
+        return register_user
 
     @expose('/activation/<string:activation_hash>')
     def activation(self, activation_hash):
+        """
+            Endpoint to expose an activation url, this url
+            is sent to the user by email, when accessed the user is inserted
+            and activated
+        """
         reg = self.appbuilder.get_session.query(RegisterUser).filter(
             RegisterUser.registration_hash == activation_hash).scalar()
         try:
@@ -105,30 +118,38 @@ class RegisterUserDBView(BaseRegisterUser, PublicFormView):
                                last_name=reg.last_name,
                                appbuilder=self.appbuilder)
 
+
+
+class RegisterUserDBView(BaseRegisterUser):
+    """
+        View for Registering a new user, auth db mode
+    """
+    form = RegisterUserDBForm
+    form_title = lazy_gettext('Fill out the registration form')
+    redirect_url = '/'
+    error_message = lazy_gettext('Not possible to register you at the moment, try again later')
+    message = lazy_gettext('Registration sent to your email')
+
+    def form_get(self, form):
+        datamodel_user = SQLAInterface(User, self.appbuilder.get_session)
+        datamodel_register_user = SQLAInterface(RegisterUser, self.appbuilder.get_session)
+        if len(form.username.validators) == 1:
+            form.username.validators.append(Unique(datamodel_user, 'username'))
+            form.username.validators.append(Unique(datamodel_register_user, 'username'))
+        if len(form.email.validators) == 2:
+            form.email.validators.append(Unique(datamodel_user, 'email'))
+            form.email.validators.append(Unique(datamodel_register_user, 'email'))
+
+
     def form_post(self, form):
-        register_user = RegisterUser()
-        register_user.username = form.username.data
-        register_user.email = form.email.data
-        register_user.first_name = form.first_name.data
-        register_user.last_name = form.last_name.data
-        register_user.password = generate_password_hash(form.password.data)
-        register_user.registration_hash = str(uuid.uuid1())
-        try:
-            self.appbuilder.get_session.add(register_user)
-        except Exception as e:
-            log.exception("Add record error: {0}".format(str(e)))
-            flash(as_unicode(self.error_message), 'danger')
-            self.appbuilder.get_session.rollback()
-            return
-        if self.send_email(register_user):
-            self.appbuilder.get_session.commit()
-            flash(as_unicode(self.message), 'info')
-        else:
-            flash(as_unicode(self.error_message), 'danger')
-            self.appbuilder.get_session.rollback()
+        self.add_registration(username=form.username.data,
+                                              first_name=form.first_name.data,
+                                              last_name=form.last_name.data,
+                                              email=form.email.data,
+                                              password=form.password.data)
 
 
-class RegisterUserOIDView(BaseRegisterUser, PublicFormView):
+class RegisterUserOIDView(BaseRegisterUser):
     """
         View for Registering a new user, auth OID mode
     """
@@ -148,7 +169,6 @@ class RegisterUserOIDView(BaseRegisterUser, PublicFormView):
         form = LoginForm_oid()
         if form.validate_on_submit():
             session['remember_me'] = form.remember_me.data
-            print "POST TRY LOGIN"
             return self.appbuilder.sm.oid.try_login(form.openid.data, ask_for=['email', 'fullname'])
         resp = session.pop('oid_resp', None)
         if resp:
@@ -175,23 +195,24 @@ class RegisterUserOIDView(BaseRegisterUser, PublicFormView):
         """
             Hackish method to make use of oid.login_handler decorator.
         """
-        print "LOGINHANDLER"
         if request.args.get('openid_complete') != u'yes':
             return f(False)
         consumer = Consumer(SessionWrapper(self), oid.store_factory())
         openid_response = consumer.complete(request.args.to_dict(),
                                             oid.get_current_url())
         if openid_response.status == SUCCESS:
-            print "SUCCESS"
             return self.after_login(OpenIDResponse(openid_response, []))
         elif openid_response.status == CANCEL:
             oid.signal_error(u'The request was cancelled')
             return redirect(oid.get_current_url())
         oid.signal_error(u'OpenID authentication error')
-        print "REDIRECT"
         return redirect(oid.get_current_url())
 
     def after_login(self, resp):
+        """
+            Method that adds the return OpenID response object on the session
+            this session key will be deleted
+        """
         session['oid_resp'] = resp
 
     def form_get(self, form):
@@ -204,51 +225,8 @@ class RegisterUserOIDView(BaseRegisterUser, PublicFormView):
             form.email.validators.append(Unique(datamodel_user, 'email'))
             form.email.validators.append(Unique(datamodel_register_user, 'email'))
 
-    @expose('/activation/<string:activation_hash>')
-    def activation(self, activation_hash):
-        reg = self.appbuilder.get_session.query(RegisterUser).filter(
-            RegisterUser.registration_hash == activation_hash).scalar()
-        try:
-            if not self.appbuilder.sm.add_user(username=reg.username,
-                                               email=reg.email,
-                                               first_name=reg.first_name,
-                                               last_name=reg.last_name,
-                                               role=self.appbuilder.sm.get_role_by_name(
-                                                       self.appbuilder.sm.auth_user_registration_role),
-                                               password=reg.password):
-                raise Exception('Could not add user to DB')
-            self.appbuilder.get_session.delete(reg)
-        except Exception as e:
-            log.exception("Add record on user activation error: {0}".format(str(e)))
-            flash(as_unicode(self.error_message), 'danger')
-            self.appbuilder.get_session.rollback()
-            return redirect(self.appbuilder.get_url_for_index)
-        self.appbuilder.get_session.commit()
-        return render_template(self.activation_template,
-                               username=reg.username,
-                               first_name=reg.first_name,
-                               last_name=reg.last_name,
-                               appbuilder=self.appbuilder)
-
-
     def form_post(self, form):
-        register_user = RegisterUser()
-        register_user.username = form.username.data
-        register_user.email = form.email.data
-        register_user.first_name = form.first_name.data
-        register_user.last_name = form.last_name.data
-        register_user.registration_hash = str(uuid.uuid1())
-        try:
-            self.appbuilder.get_session.add(register_user)
-        except Exception as e:
-            log.exception("Add record error: {0}".format(str(e)))
-            flash(as_unicode(self.error_message), 'danger')
-            self.appbuilder.get_session.rollback()
-            return
-        if self.send_email(register_user):
-            self.appbuilder.get_session.commit()
-            flash(as_unicode(self.message), 'info')
-        else:
-            flash(as_unicode(self.error_message), 'danger')
-            self.appbuilder.get_session.rollback()
-
+        self.add_registration(username=form.username.data,
+                                              first_name=form.first_name.data,
+                                              last_name=form.last_name.data,
+                                              email=form.email.data)
