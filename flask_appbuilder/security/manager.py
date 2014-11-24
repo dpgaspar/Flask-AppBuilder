@@ -167,7 +167,7 @@ class SecurityManager(BaseManager):
             self.auth_view = self.authdbview()
             if self.auth_user_registration:
                 self.registeruser_view = self.registeruserdbview()
-
+                self.appbuilder.add_view_no_menu(self.registeruser_view)
         elif self.auth_type == AUTH_LDAP:
             self.user_view = self.userldapmodelview
             self.auth_view = self.authldapview()
@@ -176,10 +176,9 @@ class SecurityManager(BaseManager):
             self.auth_view = self.authoidview()
             if self.auth_user_registration:
                 self.registeruser_view = self.registeruseroidview()
-            self.oid.after_login_func = self.auth_view.after_login
+                self.appbuilder.add_view_no_menu(self.registeruser_view)
 
         self.appbuilder.add_view_no_menu(self.auth_view)
-        self.appbuilder.add_view_no_menu(self.registeruser_view)
 
         self.user_view = self.appbuilder.add_view(self.user_view, "List Users",
                                                   icon="fa-user", label=_("List Users"),
