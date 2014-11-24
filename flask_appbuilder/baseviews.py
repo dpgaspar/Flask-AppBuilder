@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 def expose(url='/', methods=('GET',)):
     """
-        Use this decorator to expose views in your view classes.
+        Use this decorator to expose views on your view classes.
        
         :param url:
             Relative URL for the view

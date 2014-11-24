@@ -27,11 +27,34 @@ def get_first_last_name(fullname):
 
 
 class BaseRegisterUser(PublicFormView):
+    """
+        Make your own user registration view and inherit from this class if you
+        want to implement a completely different registration process. If not,
+        just inherit from RegisterUserDBView or RegisterUserOIDView depending on
+        your authentication method.
+        then override SecurityManager property that defines the class to use::
 
+            from flask.ext.appbuilder.security.registerviews import RegisterUserDBView
+
+            class MyRegisterUserDBView(BaseRegisterUser):
+                email_template = 'register_mail.html'
+                ...
+
+
+            class MySecurityManager(SecurityManager):
+               registeruserdbview = MyRegisterUserDBView
+
+        When instantiating AppBuilder set your own SecurityManager class::
+
+            appbuilder = AppBuilder(app, db.session, security_manager_class=MySecurityManager)
+    """
     route_base = '/register'
     email_template = 'appbuilder/general/security/register_mail.html'
+    """ The template used to generate the email sent to the user """
     email_subject = lazy_gettext('Account activation')
+    """ The email subject sent to the user """
     activation_template = 'appbuilder/general/security/activation.html'
+    """ The activation template, shown when the user is activated """
 
     def send_email(self, register_user):
         """
@@ -124,10 +147,13 @@ class RegisterUserDBView(BaseRegisterUser):
         View for Registering a new user, auth db mode
     """
     form = RegisterUserDBForm
+    """ The WTForm form presented to the user to register himself """
     form_title = lazy_gettext('Fill out the registration form')
+    """ The form title """
     redirect_url = '/'
     error_message = lazy_gettext('Not possible to register you at the moment, try again later')
     message = lazy_gettext('Registration sent to your email')
+    """ The message shown on a successful registration """
 
     def form_get(self, form):
         datamodel_user = SQLAInterface(User, self.appbuilder.get_session)
@@ -154,7 +180,6 @@ class RegisterUserOIDView(BaseRegisterUser):
     """
     route_base = '/register'
 
-    activation_template = 'appbuilder/general/security/activation.html'
     form = RegisterUserOIDForm
     form_title = lazy_gettext('Fill out the registration form')
     error_message = lazy_gettext('Not possible to register you at the moment, try again later')

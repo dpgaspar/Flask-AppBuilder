@@ -41,6 +41,7 @@ Contents:
    generic_datasource
    multipledbs
    i18n
+   user_registration
    security
    
 .. toctree::
