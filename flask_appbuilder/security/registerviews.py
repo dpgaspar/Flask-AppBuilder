@@ -10,7 +10,7 @@ from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
 from flask.ext.openid import SessionWrapper, OpenIDResponse, OpenID
 from flask.ext.babelpkg import gettext, lazy_gettext
 from .models import User, RegisterUser
-from forms import RegisterUserOIDForm, RegisterUserDBForm, LoginForm_oid
+from .forms import RegisterUserOIDForm, RegisterUserDBForm, LoginForm_oid
 from ..models.sqla.interface import SQLAInterface
 from ..validators import Unique
 from .._compat import as_unicode
