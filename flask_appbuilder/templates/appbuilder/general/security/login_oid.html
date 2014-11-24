@@ -64,8 +64,13 @@ function beforeSubmit() {
 //---------------------------------
 function registerUser() {
     form = document.forms['login'];
-    form.action = "{{appbuilder.sm.get_url_for_registeruser}}";
-    form.submit();
+    if (form.elements['openid'].value == '') {
+        alert('Please choose a provider first');
+    }
+    else {
+        form.action = "{{appbuilder.sm.get_url_for_registeruser}}";
+        form.submit();
+    }
 }
 
 </script>
@@ -85,9 +90,10 @@ function registerUser() {
             <center>
             <div class="center-block btn-group btn-group-lg" role="group">
             {% for pr in providers %}
-            <a href="javascript:set_openid('{{pr.url}}', '{{pr.name}}');">
+                <a href="javascript:set_openid('{{pr.url}}', '{{pr.name}}');">
                 <img src="{{url_for('appbuilder.static',filename='img/' + pr.name.lower() + '.png')}}"
-                     id="{{pr.name}}" class="img-rounded img-unselect"/></a>
+                     id="{{pr.name}}" class="img-rounded img-unselect"/>
+                </a>
             {% endfor %}
         </div>
         </center>
@@ -96,7 +102,7 @@ function registerUser() {
             <div class="controls">
                 {{ form.openid(size = 80, class = "hidden form-control") }}
                 {% for error in form.errors.openid %}
-                    <span class="help-inline">[{_('Please choose a provider')}}]</span><br>
+                    <span class="help-inline">{{_('Please choose a provider')}}</span><br>
                 {% endfor %}
                 <label class="hidden control-label" id="label-username" for="username">{{_("Enter your OpenID Username")}}:</label>
                 {{ form.username(size = 80, class = "hidden form-control") }}

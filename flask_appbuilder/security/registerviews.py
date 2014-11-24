@@ -119,7 +119,6 @@ class BaseRegisterUser(PublicFormView):
                                appbuilder=self.appbuilder)
 
 
-
 class RegisterUserDBView(BaseRegisterUser):
     """
         View for Registering a new user, auth db mode
