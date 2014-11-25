@@ -15,8 +15,6 @@ Improvements and Bug fixes on 1.1.0
 - New, AuthOIDView with oid_ask_for and oid_ask_for_optional, for easy dev override of view.
 - New, Access Denied log a warning with info.
 - Fix, OpenID login improvement.
-- (TODO), change before_request on AppBuilder.init_app to inside SecurityManager.
-- (TODO), Full SecurityManager class revision.
 
 Improvements and Bug fixes on 1.0.1
 -----------------------------------
