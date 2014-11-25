@@ -108,6 +108,11 @@ class AppBuilder(object):
 
     @property
     def get_app(self):
+        """
+            Get current or configured flask app
+
+            :return: Flask App
+        """
         if self.app:
             return self.app
         else:
@@ -115,18 +120,38 @@ class AppBuilder(object):
 
     @property
     def get_session(self):
+        """
+            Get the current sqlalchemy session.
+
+            :return: SQLAlchemy Session
+        """
         return self.session
 
     @property
     def app_name(self):
+        """
+            Get the App name
+
+            :return: String with app name
+        """
         return self.get_app.config['APP_NAME']
 
     @property
     def app_theme(self):
+        """
+            Get the App theme name
+
+            :return: String app theme name
+        """
         return self.get_app.config['APP_THEME']
 
     @property
     def app_icon(self):
+        """
+            Get the App icon location
+
+            :return: String with relative app icon location
+        """
         return self.get_app.config['APP_ICON']
 
     @property
@@ -135,6 +160,11 @@ class AppBuilder(object):
 
     @property
     def version(self):
+        """
+            Get the current F.A.B. version
+
+            :return: String with the current F.A.B. version
+        """
         return VERSION_STRING
 
     def _add_global_filters(self):
@@ -242,7 +272,7 @@ class AppBuilder(object):
             :param href:
                 Override the generated href for the menu.
             :param icon:
-                Bootstrap included icon name
+                Font-Awesome icon name, optional.
             :param label:
                 The label that will be displayed on the menu, if absent param name will be used
             :param category:

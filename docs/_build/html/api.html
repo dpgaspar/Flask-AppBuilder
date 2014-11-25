@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Version Migration" href="versionmigration.html" />
-    <link rel="prev" title="Security" href="security.html" />
+    <link rel="prev" title="User Registration" href="user_registration.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -48,7 +48,7 @@
           <a href="versionmigration.html" title="Version Migration"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="security.html" title="Security"
+          <a href="user_registration.html" title="User Registration"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -111,7 +111,7 @@ Will hold your flask app object, all your views, and security classes.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>name</strong> &#8211; The string name that identifies the menu.</li>
 <li><strong>href</strong> &#8211; Override the generated href for the menu.</li>
-<li><strong>icon</strong> &#8211; Bootstrap included icon name</li>
+<li><strong>icon</strong> &#8211; Font-Awesome icon name, optional.</li>
 <li><strong>label</strong> &#8211; The label that will be displayed on the menu, if absent param name will be used</li>
 <li><strong>category</strong> &#8211; The menu category where the menu will be included,
 if non provided the view will be accessible as a top menu.</li>
@@ -195,6 +195,76 @@ if non provided the view will be acessible as a top menu.</li>
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.base.AppBuilder.app_icon">
+<tt class="descname">app_icon</tt><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.app_icon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the App icon location</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">String with relative app icon location</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.base.AppBuilder.app_name">
+<tt class="descname">app_name</tt><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.app_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the App name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">String with app name</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.base.AppBuilder.app_theme">
+<tt class="descname">app_theme</tt><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.app_theme" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the App theme name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">String app theme name</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.base.AppBuilder.get_app">
+<tt class="descname">get_app</tt><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.get_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current or configured flask app</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Flask App</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.base.AppBuilder.get_session">
+<tt class="descname">get_session</tt><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.get_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current sqlalchemy session.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">SQLAlchemy Session</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="flask.ext.appbuilder.base.AppBuilder.security_cleanup">
 <tt class="descname">security_cleanup</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.security_cleanup" title="Permalink to this definition">¶</a></dt>
@@ -204,6 +274,20 @@ changing them will leave behind permissions that are not associated with anythin
 perform a security cleanup. Warning this will delete any permission
 that is no longer part of any registered view or menu.</p>
 <p>Remember invoke ONLY AFTER YOU HAVE REGISTERED ALL VIEWS</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.base.AppBuilder.version">
+<tt class="descname">version</tt><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current F.A.B. version</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">String with the current F.A.B. version</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -1783,7 +1867,7 @@ Override it for efficiency.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="security.html" title="previous chapter">Security</a></li>
+      <li>Previous: <a href="user_registration.html" title="previous chapter">User Registration</a></li>
       <li>Next: <a href="versionmigration.html" title="next chapter">Version Migration</a></li>
   </ul></li>
 </ul>
