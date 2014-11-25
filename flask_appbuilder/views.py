@@ -121,6 +121,95 @@ class SimpleFormView(BaseView):
         return widgets
 
 
+class PublicFormView(BaseView):
+    """
+        View for presenting your own forms
+        Inherit from this view to provide some base processing for your customized form views.
+
+        Notice that this class inherits from BaseView so all properties from the parent class can be overridden also.
+
+        Implement form_get and form_post to implement your form pre-processing and post-processing
+    """
+
+    form_template = 'appbuilder/general/model/edit.html'
+
+    edit_widget = FormWidget
+    form_title = ''
+    """ The form title to be displayed """
+    form_columns = None
+    """ The form columns to include, if empty will include all"""
+    form = None
+    """ The WTF form to render """
+    form_fieldsets = None
+    """ The field sets for the form widget """
+    default_view = 'this_form_get'
+    """ The form view default entry endpoint """
+
+    def _init_vars(self):
+        self.form_columns = self.form_columns or []
+        self.form_fieldsets = self.form_fieldsets or []
+        list_cols = [field.name for field in self.form.refresh()]
+        if self.form_fieldsets:
+            self.form_columns = []
+            for fieldset_item in self.form_fieldsets:
+                self.form_columns = self.form_columns + list(fieldset_item[1].get('fields'))
+        else:
+            if not self.form_columns:
+                self.form_columns = list_cols
+
+
+    @expose("/form", methods=['GET'])
+    def this_form_get(self):
+        self._init_vars()
+        form = self.form.refresh()
+        self.form_get(form)
+        widgets = self._get_edit_widget(form=form)
+        self.update_redirect()
+        return self.render_template(self.form_template,
+                               title=self.form_title,
+                               widgets=widgets,
+                               appbuilder=self.appbuilder
+        )
+
+    def form_get(self, form):
+        """
+            Override this method to implement your form processing
+        """
+        pass
+
+    @expose("/form", methods=['POST'])
+    def this_form_post(self):
+        self._init_vars()
+        form = self.form.refresh()
+        if form.validate_on_submit():
+            self.form_post(form)
+            return redirect(self.get_redirect())
+        else:
+            widgets = self._get_edit_widget(form=form)
+            return self.render_template(
+                self.form_template,
+                title=self.form_title,
+                widgets=widgets,
+                appbuilder=self.appbuilder
+            )
+
+    def form_post(self, form):
+        """
+            Override this method to implement your form processing
+        """
+        pass
+
+    def _get_edit_widget(self, form=None, exclude_cols=[], widgets={}):
+        widgets['edit'] = self.edit_widget(route_base=self.route_base,
+                                           form=form,
+                                           include_cols=self.form_columns,
+                                           exclude_cols=exclude_cols,
+                                           fieldsets=self.form_fieldsets
+        )
+        return widgets
+
+
+
 class ModelView(BaseCRUDView):
     """
         This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and list from your database tables, inherit your views from this class.

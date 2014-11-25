@@ -259,7 +259,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 24)  # current minimal views are 11
+        eq_(len(self.appbuilder.baseviews), 24)  # current minimal views are 24
         
 
     def test_model_creation(self):

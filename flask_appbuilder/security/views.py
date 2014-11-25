@@ -3,9 +3,7 @@ import logging
 from flask import render_template, flash, redirect, session, url_for, request, g
 from werkzeug.security import generate_password_hash
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
-#from openid.extensions import ax
-#from openid.extensions.sreg import SRegRequest, SRegResponse
-from flask.ext.openid import SessionWrapper, OpenIDResponse
+from flask.ext.openid import SessionWrapper, OpenIDResponse, OpenID
 from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
 from flask.ext.babelpkg import gettext, lazy_gettext
@@ -69,14 +67,12 @@ class PermissionViewModelView(ModelView):
 
 class ResetMyPasswordView(SimpleFormView):
     """
-        View for reseting own user password
+        View for resetting own user password
     """
     route_base = '/resetmypassword'
-
     form = ResetPasswordForm
     form_title = lazy_gettext('Reset Password Form')
     redirect_url = '/'
-
     message = lazy_gettext('Password Changed')
 
     def form_post(self, form):
@@ -86,15 +82,12 @@ class ResetMyPasswordView(SimpleFormView):
 
 class ResetPasswordView(SimpleFormView):
     """
-    View for reseting all users password
+        View for reseting all users password
     """
-
     route_base = '/resetpassword'
-
     form = ResetPasswordForm
     form_title = lazy_gettext('Reset Password Form')
     redirect_url = '/'
-
     message = lazy_gettext('Password Changed')
 
     def form_post(self, form):
@@ -112,7 +105,6 @@ class UserModelView(ModelView):
     add_title = lazy_gettext('Add User')
     edit_title = lazy_gettext('Edit User')
 
-    
     label_columns = {'get_full_name': lazy_gettext('Full Name'),
                      'first_name': lazy_gettext('First Name'),
                      'last_name': lazy_gettext('Last Name'),
@@ -128,8 +120,7 @@ class UserModelView(ModelView):
                      'created_by': lazy_gettext('Created by'),
                      'changed_on': lazy_gettext('Changed on'),
                      'changed_by': lazy_gettext('Changed by')}
-    
-    
+
     description_columns = {'first_name': lazy_gettext('Write the user first name or names'),
                            'last_name': lazy_gettext('Write the user last name'),
                            'username': lazy_gettext(
@@ -146,24 +137,24 @@ class UserModelView(ModelView):
 
     show_fieldsets = [
         (lazy_gettext('User info'),
-            {'fields': ['username', 'active', 'role', 'login_count']}),
+         {'fields': ['username', 'active', 'role', 'login_count']}),
         (lazy_gettext('Personal Info'),
-            {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
+         {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
         (lazy_gettext('Audit Info'),
-            {'fields': ['last_login', 'fail_login_count', 'created_on',
-                        'created_by', 'changed_on', 'changed_by'], 'expanded': False}),
+         {'fields': ['last_login', 'fail_login_count', 'created_on',
+                     'created_by', 'changed_on', 'changed_by'], 'expanded': False}),
     ]
 
     user_show_fieldsets = [
         (lazy_gettext('User info'),
-            {'fields': ['username', 'active', 'role', 'login_count']}),
+         {'fields': ['username', 'active', 'role', 'login_count']}),
         (lazy_gettext('Personal Info'),
-            {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
+         {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
     ]
 
     order_columns = ['first_name', 'last_name', 'username', 'email']
     search_columns = ['first_name', 'last_name', 'username', 'email', 'role', 'active',
-                    'created_by', 'changed_by', 'changed_on','changed_by', 'login_count']
+                      'created_by', 'changed_by', 'changed_on', 'changed_by', 'login_count']
 
     add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
     edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
@@ -171,6 +162,12 @@ class UserModelView(ModelView):
 
 
 class UserOIDModelView(UserModelView):
+    """
+        View that add OID specifics to User view.
+        Override to implement your own custom view.
+        Then override useroidmodelview property on SecurityManager
+    """
+
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
@@ -183,6 +180,12 @@ class UserOIDModelView(UserModelView):
 
 
 class UserLDAPModelView(UserModelView):
+    """
+        View that add LDAP specifics to User view.
+        Override to implement your own custom view.
+        Then override userldapmodelview property on SecurityManager
+    """
+
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
@@ -195,10 +198,15 @@ class UserLDAPModelView(UserModelView):
 
 
 class UserDBModelView(UserModelView):
+    """
+        View that add DB specifics to User view.
+        Override to implement your own custom view.
+        Then override userdbmodelview property on SecurityManager
+    """
     add_form_extra_fields = {'password': PasswordField(lazy_gettext('Password'),
                                                        description=lazy_gettext(
                                                            'Please use a good password policy, this application does not check this for you'),
-                                                       validators=[validators.Required()],
+                                                       validators=[validators.DataRequired()],
                                                        widget=BS3PasswordFieldWidget()),
                              'conf_password': PasswordField(lazy_gettext('Confirm Password'),
                                                             description=lazy_gettext(
@@ -260,8 +268,8 @@ class UserStatsChartView(DirectByChartView):
     label_columns = {'username': lazy_gettext('User Name'),
                      'login_count': lazy_gettext('Login count'),
                      'fail_login_count': lazy_gettext('Failed login count')
-                     }
-                     
+    }
+
     search_columns = UserModelView.search_columns
 
     definitions = [
@@ -314,6 +322,7 @@ class AuthView(BaseView):
         return redirect(self.appbuilder.get_url_for_index)
 
 
+
 class AuthDBView(AuthView):
     login_template = 'appbuilder/general/security/login_db.html'
 
@@ -336,7 +345,6 @@ class AuthDBView(AuthView):
 
 
 class AuthLDAPView(AuthView):
-
     login_template = 'appbuilder/general/security/login_ldap.html'
 
     @expose('/login/', methods=['GET', 'POST'])
@@ -359,32 +367,38 @@ class AuthLDAPView(AuthView):
 
 class AuthOIDView(AuthView):
     login_template = 'appbuilder/general/security/login_oid.html'
+    oid_ask_for = ['email']
+    oid_ask_for_optional = []
 
     @expose('/login/', methods=['GET', 'POST'])
     def login(self, flag=True):
         if flag:
             self.oid_login_handler(self.login, self.appbuilder.sm.oid)
         if g.user is not None and g.user.is_authenticated():
-            return redirect('/')
+            return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_oid()
         if form.validate_on_submit():
             session['remember_me'] = form.remember_me.data
-            return self.appbuilder.sm.oid.try_login(form.openid.data, ask_for=['email'])
+            return self.appbuilder.sm.oid.try_login(form.openid.data, ask_for=self.oid_ask_for,
+                                                    ask_for_optional=self.oid_ask_for_optional)
         return render_template(self.login_template,
                                title=self.title,
                                form=form,
-                               providers=self.appbuilder.app.config['OPENID_PROVIDERS'],
+                               providers=self.appbuilder.sm.openid_providers,
                                appbuilder=self.appbuilder
         )
 
     def oid_login_handler(self, f, oid):
+        """
+            Hackish method to make use of oid.login_handler decorator.
+        """
         if request.args.get('openid_complete') != u'yes':
             return f(False)
         consumer = Consumer(SessionWrapper(self), oid.store_factory())
         openid_response = consumer.complete(request.args.to_dict(),
                                             oid.get_current_url())
         if openid_response.status == SUCCESS:
-            return oid.after_login_func(OpenIDResponse(openid_response, []))
+            return self.after_login(OpenIDResponse(openid_response, []))
         elif openid_response.status == CANCEL:
             oid.signal_error(u'The request was cancelled')
             return redirect(oid.get_current_url())
@@ -394,11 +408,11 @@ class AuthOIDView(AuthView):
     def after_login(self, resp):
         if resp.email is None or resp.email == "":
             flash(as_unicode(self.invalid_login_message), 'warning')
-            return redirect('appbuilder/general/security/login_oid.html')
+            return redirect(self.login_template)
         user = self.appbuilder.sm.auth_user_oid(resp.email)
         if user is None:
             flash(as_unicode(self.invalid_login_message), 'warning')
-            return redirect('appbuilder/general/security/login_oid.html')
+            return redirect(self.login_template)
         remember_me = False
         if 'remember_me' in session:
             remember_me = session['remember_me']
@@ -406,7 +420,4 @@ class AuthOIDView(AuthView):
 
         login_user(user, remember=remember_me)
         return redirect(self.appbuilder.get_url_for_index)
-
-
-
 

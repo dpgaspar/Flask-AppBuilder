@@ -6,7 +6,6 @@ from sqlalchemy.ext.declarative import declared_attr
 from .. import Model
 from .._compat import as_unicode
 
-
 _dont_audit = False
 
 
@@ -64,6 +63,18 @@ class Role(Model):
         return self.name
 
 
+class RegisterUser(Model):
+    __tablename__ = 'ab_register_user'
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String(64), nullable=False)
+    last_name = Column(String(64), nullable=False)
+    username = Column(String(32), unique=True, nullable=False)
+    password = Column(String(256))
+    email = Column(String(64), nullable=False)
+    registration_date = Column(DateTime, default=datetime.datetime.now, nullable=True)
+    registration_hash = Column(String(256))
+
+
 class User(Model):
     __tablename__ = 'ab_user'
     id = Column(Integer, primary_key=True)
@@ -100,29 +111,12 @@ class User(Model):
     changed_by = relationship("User", backref=backref("changed", uselist=True),
                               remote_side=[id], primaryjoin='User.changed_by_fk == User.id', uselist=False)
 
-
     @classmethod
     def get_user_id(cls):
         try:
             return g.user.id
         except Exception as e:
             return None
-
-
-    @staticmethod
-    def make_unique_nickname(nickname):
-        if User.query.filter_by(nickname=nickname).first() is None:
-            return nickname
-        version = 2
-        while True:
-            new_nickname = nickname + str(version)
-            if User.query.filter_by(nickname=new_nickname).first() is None:
-                break
-            version += 1
-        return new_nickname
-
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
 
     def is_authenticated(self):
         return True
@@ -141,5 +135,4 @@ class User(Model):
 
     def __repr__(self):
         return self.get_full_name()
-
 

@@ -43,14 +43,12 @@ class SQLA(SQLAlchemy):
         return result
 
 
-
 class ModelDeclarativeMeta(_BoundDeclarativeMeta):
     """
         Base Model declarative meta for all Models definitions.
         Setups bind_keys to support multiple databases.
         Setup the table name based on the class camelcase name.
     """
-
 
 
 @as_declarative(name='Model', metaclass=ModelDeclarativeMeta)

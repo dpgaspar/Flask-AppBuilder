@@ -1,31 +1,55 @@
-from flask.ext.wtf import Form
-from wtforms import TextField, BooleanField, TextAreaField, PasswordField
+from wtforms import StringField, BooleanField, PasswordField
+from flask.ext.wtf.recaptcha import RecaptchaField
 from flask.ext.babelpkg import lazy_gettext
-from wtforms.ext.sqlalchemy.orm import model_form
-from wtforms import validators
-from wtforms.validators import Required, Length, EqualTo
-#from flask.ext.wtf import Required, Length, validators, EqualTo
-from flask.ext.appbuilder.fieldwidgets import BS3PasswordFieldWidget
-from flask.ext.appbuilder.forms import DynamicForm
+from wtforms.validators import DataRequired, EqualTo, Email
+from ..fieldwidgets import BS3PasswordFieldWidget, BS3TextFieldWidget
+from ..forms import DynamicForm
+from ..validators import Unique
 
 
 class LoginForm_oid(DynamicForm):
-    openid = TextField(lazy_gettext('openid'), validators=[Required()])
+    openid = StringField(lazy_gettext('openid'), validators=[DataRequired()])
+    username = StringField(lazy_gettext('User Name'))
     remember_me = BooleanField(lazy_gettext('remember_me'), default=False)
 
 
 class LoginForm_db(DynamicForm):
-    username = TextField(lazy_gettext('User Name'), validators=[Required()])
-    password = PasswordField(lazy_gettext('Password'), validators=[Required()])
+    username = StringField(lazy_gettext('User Name'), validators=[DataRequired()])
+    password = PasswordField(lazy_gettext('Password'), validators=[DataRequired()])
 
 
 class ResetPasswordForm(DynamicForm):
     password = PasswordField(lazy_gettext('Password'),
                              description=lazy_gettext(
                                  'Please use a good password policy, this application does not check this for you'),
-                             validators=[Required()],
+                             validators=[DataRequired()],
                              widget=BS3PasswordFieldWidget())
     conf_password = PasswordField(lazy_gettext('Confirm Password'),
                                   description=lazy_gettext('Please rewrite the password to confirm'),
                                   validators=[EqualTo('password', message=lazy_gettext('Passwords must match'))],
                                   widget=BS3PasswordFieldWidget())
+
+
+class RegisterUserDBForm(DynamicForm):
+    username = StringField(lazy_gettext('User Name'), validators=[DataRequired()], widget=BS3TextFieldWidget())
+    first_name = StringField(lazy_gettext('First Name'), validators=[DataRequired()], widget=BS3TextFieldWidget())
+    last_name = StringField(lazy_gettext('Last Name'), validators=[DataRequired()], widget=BS3TextFieldWidget())
+    email = StringField(lazy_gettext('Email'), validators=[DataRequired(), Email()], widget=BS3TextFieldWidget())
+    password = PasswordField(lazy_gettext('Password'),
+                             description=lazy_gettext(
+                                 'Please use a good password policy, this application does not check this for you'),
+                             validators=[DataRequired()],
+                             widget=BS3PasswordFieldWidget())
+    conf_password = PasswordField(lazy_gettext('Confirm Password'),
+                                  description=lazy_gettext('Please rewrite the password to confirm'),
+                                  validators=[EqualTo('password', message=lazy_gettext('Passwords must match'))],
+                                  widget=BS3PasswordFieldWidget())
+    recaptcha = RecaptchaField()
+
+
+class RegisterUserOIDForm(DynamicForm):
+    username = StringField(lazy_gettext('User Name'), validators=[DataRequired()], widget=BS3TextFieldWidget())
+    first_name = StringField(lazy_gettext('First Name'), validators=[DataRequired()], widget=BS3TextFieldWidget())
+    last_name = StringField(lazy_gettext('Last Name'), validators=[DataRequired()], widget=BS3TextFieldWidget())
+    email = StringField(lazy_gettext('Email'), validators=[DataRequired(), Email()], widget=BS3TextFieldWidget())
+    recaptcha = RecaptchaField()

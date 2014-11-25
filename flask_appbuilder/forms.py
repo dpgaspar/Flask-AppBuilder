@@ -2,7 +2,7 @@ import logging
 from flask import g
 from flask_wtf import Form
 from functools import partial
-from wtforms import (BooleanField, TextField,
+from wtforms import (BooleanField, StringField,
                        TextAreaField, IntegerField, FloatField, DateField, DateTimeField)
 from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 
@@ -48,7 +48,7 @@ class FieldConverter(object):
     conversion_table = (('is_image', ImageUploadField, BS3ImageUploadFieldWidget),
                         ('is_file', FileUploadField, BS3FileUploadFieldWidget),
                         ('is_text', TextAreaField, BS3TextAreaFieldWidget),
-                        ('is_string', TextField, BS3TextFieldWidget),
+                        ('is_string', StringField, BS3TextFieldWidget),
                         ('is_integer', IntegerField, BS3TextFieldWidget),
                         ('is_float', FloatField, BS3TextFieldWidget),
                         ('is_boolean', BooleanField, None),
@@ -170,7 +170,7 @@ class GeneralModelConverter(object):
         allow_blank = True
         col = self.datamodel.get_relation_fk(col_name)
         if not col.nullable:
-            lst_validators.append(validators.Required())
+            lst_validators.append(validators.DataRequired())
             allow_blank = False
         else:
             lst_validators.append(validators.Optional())

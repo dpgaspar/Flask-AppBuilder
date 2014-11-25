@@ -27,22 +27,39 @@ Contents:
 
    intro
    installation
+   config
+
+.. toctree::
+   :maxdepth: 1
+
    views
    quickhowto
    quickcharts
    quickfiles
    quickminimal
+
+.. toctree::
+   :maxdepth: 1
+
    relations
-   config
+   actions
    advanced
    customizing
    templates
-   actions
+
+.. toctree::
+   :maxdepth: 1
+
    generic_datasource
    multipledbs
    i18n
+
+.. toctree::
+   :maxdepth: 1
+
    security
-   
+   user_registration
+
 .. toctree::
    :maxdepth: 1
    

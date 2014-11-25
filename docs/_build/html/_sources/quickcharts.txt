@@ -1,5 +1,5 @@
-Chart Views (Quick How to)
-==========================
+Chart Views
+===========
 
 To implement views with google charts, use all inherited classes from BaseChartView, these are:
 
@@ -8,7 +8,7 @@ To implement views with google charts, use all inherited classes from BaseChartV
  :ChartView: (Deprecated) Display simple group by method charts.
  :TimeChartView: (Deprecated) Displays simple group by month and year charts.
 
-You can experiment with following examples with a live
+You can experiment with some examples on a live
 `Demo <http://flaskappbuilder.pythonanywhere.com/>`_ (login has guest/welcome).
 
 Direct Data Charts

@@ -1,5 +1,5 @@
-Model Views (Files and Images)
-==============================
+Model Views with Files and Images
+=================================
 
 You can implement views with images or files embedded on the model's definition
 

@@ -22,7 +22,7 @@
 
 {% block edit_form %}
     <div id="Home" class="tab-pane active">
-        {{ widgets.get('edit')()|safe }}
+        {{ widgets.get('edit')(form_action=form_action)|safe }}
     </div>
 
 {% endblock %}

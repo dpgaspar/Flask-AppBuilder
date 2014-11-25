@@ -86,6 +86,9 @@ class BaseInterface(object):
         self.obj = obj
 
     def _get_attr_value(self, item, col):
+        if not hasattr(item, col):
+            # it's an inner obj attr
+            return reduce(getattr, col.split('.'), item)
         if hasattr(getattr(item, col), '__call__'):
             # its a function
             return getattr(item, col)()
