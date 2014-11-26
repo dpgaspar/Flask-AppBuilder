@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.1.1
+-----------------------------------
+
+- New, allows order on relationships by implicit declaration of col with dotted notation.
+
 Improvements and Bug fixes on 1.1.0
 -----------------------------------
 

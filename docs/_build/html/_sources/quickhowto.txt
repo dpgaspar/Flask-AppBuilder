@@ -154,6 +154,15 @@ Remember you can include columns, relations or methods from a model's definition
     .. autoclass:: BaseCRUDView
         :members: list_columns,add_columns,edit_columns,show_columns
 
+.. note::
+
+    Fields that reference relationships display the defined related model representation
+    (on this case __repr__() methos on Group Model), so by default these fields can't be ordered.
+    To be able to enable order by on list for relationship fields, you can (since 1.1.1) reference
+    them using dotted notation. On this example would be 'group.name', you must explicitly define
+    all the order columns also.
+
+
 
 Register (views.py)
 -------------------

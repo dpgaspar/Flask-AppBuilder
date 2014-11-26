@@ -61,9 +61,9 @@ class ProductView(ModelView):
 
 class ContactModelView2(ModelView):
     datamodel = SQLAModel(Contact)
-    label_columns = {'contact_group.name': 'Contacts Group'}
-    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
-    order_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
+    label_columns = {'contact_groups.name': 'Contacts Group'}
+    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
+    order_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
 
 
 class ContactModelView(ModelView):
@@ -72,8 +72,8 @@ class ContactModelView(ModelView):
     add_widget = FormVerticalWidget
     show_widget = ShowBlockWidget
 
-    label_columns = {'contact_group': 'Contacts Group'}
-    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group']
+    label_columns = {'contact_groups': 'Contacts Group'}
+    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups']
 
     list_template = 'list_contacts.html'
     list_widget = ListThumbnail
@@ -83,21 +83,21 @@ class ContactModelView(ModelView):
     base_order = ('name', 'asc')
 
     show_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     add_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     edit_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
@@ -128,8 +128,8 @@ class ContactChartView(GroupByChartView):
 
     definitions = [
         {
-            'group': 'contact_group',
-            'series': [(aggregate_count, 'contact_group')]
+            'group': 'contact_groups',
+            'series': [(aggregate_count, 'contact_groups')]
         },
         {
             'group': 'gender',
@@ -156,12 +156,12 @@ class ContactTimeChartView(GroupByChartView):
         {
             'group': 'month_year',
             'formatter': pretty_month_year,
-            'series': [(aggregate_count, 'contact_group')]
+            'series': [(aggregate_count, 'contact_groups')]
         },
         {
             'group': 'year',
             'formatter': pretty_year,
-            'series': [(aggregate_count, 'contact_group')]
+            'series': [(aggregate_count, 'contact_groups')]
         }
     ]
 
