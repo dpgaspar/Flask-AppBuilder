@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
-    <link rel="next" title="Chart Views (Quick How to)" href="quickcharts.html" />
+    <link rel="next" title="Chart Views" href="quickcharts.html" />
     <link rel="prev" title="Base Views" href="views.html" />
    
   
@@ -45,7 +45,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="quickcharts.html" title="Chart Views (Quick How to)"
+          <a href="quickcharts.html" title="Chart Views"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="views.html" title="Base Views"
@@ -231,6 +231,14 @@ Use it to control the order of the display</p>
 
 </dd></dl>
 
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Fields that reference relationships display the defined related model representation
+(on this case __repr__() methos on Group Model), so by default these fields can&#8217;t be ordered.
+To be able to enable order by on list for relationship fields, you can (since 1.1.1) reference
+them using dotted notation. On this example would be &#8216;group.name&#8217;, you must explicitly define
+all the order columns also.</p>
+</div>
 </div>
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
@@ -302,7 +310,7 @@ query count, and of course the query results, it supports pagination also.</p>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="views.html" title="previous chapter">Base Views</a></li>
-      <li>Next: <a href="quickcharts.html" title="next chapter">Chart Views (Quick How to)</a></li>
+      <li>Next: <a href="quickcharts.html" title="next chapter">Chart Views</a></li>
   </ul></li>
 </ul>
   <h3>This Page</h3>
