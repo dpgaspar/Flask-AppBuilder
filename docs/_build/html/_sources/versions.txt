@@ -1,6 +1,21 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.1.0
+-----------------------------------
+
+- Fix, changed WTForm validator Required to DataRequired.
+- Fix, changed WTForm TextField to StringField.
+- New, AUTH_USER_REGISTRATION for self user registration, on ldap it's used automatic registration based on ldap attrs.
+- New, AUTH_USER_REGISTRATION for auth db will present registration form, send email with configurable html for activation.
+- New, AUTH_USER_REGISTRATION for auth oid will present registration form, send email with configurable html for activation.
+- New, Added property to AppBuilder that returns the frameworks version.
+- New, User extension mixin (Beta).
+- New, allows dotted attributes on list_columns, to fetch values from related models.
+- New, AuthOIDView with oid_ask_for and oid_ask_for_optional, for easy dev override of view.
+- New, Access Denied log a warning with info.
+- Fix, OpenID login improvement.
+
 Improvements and Bug fixes on 1.0.1
 -----------------------------------
 
@@ -9,6 +24,7 @@ Improvements and Bug fixes on 1.0.1
 - New, pull request #44, ldap bind options.
 - Fix, pull request #48, bug with back button url not working when using uwsgi under sub-domain.
 - New, AppBuilder accepts new parameter security_manager_class, useful to override any security view or auth method.
+
 
 Improvements and Bug fixes on 1.0.0
 -----------------------------------

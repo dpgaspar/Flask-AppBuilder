@@ -57,6 +57,22 @@
             
   <div class="section" id="versions">
 <h1>Versions<a class="headerlink" href="#versions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="improvements-and-bug-fixes-on-1-1-0">
+<h2>Improvements and Bug fixes on 1.1.0<a class="headerlink" href="#improvements-and-bug-fixes-on-1-1-0" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Fix, changed WTForm validator Required to DataRequired.</li>
+<li>Fix, changed WTForm TextField to StringField.</li>
+<li>New, AUTH_USER_REGISTRATION for self user registration, on ldap it&#8217;s used automatic registration based on ldap attrs.</li>
+<li>New, AUTH_USER_REGISTRATION for auth db will present registration form, send email with configurable html for activation.</li>
+<li>New, AUTH_USER_REGISTRATION for auth oid will present registration form, send email with configurable html for activation.</li>
+<li>New, Added property to AppBuilder that returns the frameworks version.</li>
+<li>New, User extension mixin (Beta).</li>
+<li>New, allows dotted attributes on list_columns, to fetch values from related models.</li>
+<li>New, AuthOIDView with oid_ask_for and oid_ask_for_optional, for easy dev override of view.</li>
+<li>New, Access Denied log a warning with info.</li>
+<li>Fix, OpenID login improvement.</li>
+</ul>
+</div>
 <div class="section" id="improvements-and-bug-fixes-on-1-0-1">
 <h2>Improvements and Bug fixes on 1.0.1<a class="headerlink" href="#improvements-and-bug-fixes-on-1-0-1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -626,6 +642,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Versions</a><ul>
+<li><a class="reference internal" href="#improvements-and-bug-fixes-on-1-1-0">Improvements and Bug fixes on 1.1.0</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-1-0-1">Improvements and Bug fixes on 1.0.1</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-1-0-0">Improvements and Bug fixes on 1.0.0</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-0-10-7">Improvements and Bug fixes on 0.10.7</a></li>

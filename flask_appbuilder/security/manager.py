@@ -1,7 +1,7 @@
 import datetime
 import logging
 
-from flask import g
+from flask import g, url_for
 from flask_login import current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager
@@ -15,7 +15,8 @@ from ..basemanager import BaseManager
 from .models import User, Role, PermissionView, Permission, ViewMenu
 from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, \
     ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, RoleModelView, \
-    PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView, RegisterUserDBView
+    PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
+from .registerviews import RegisterUserDBView, RegisterUserOIDView
 
 log = logging.getLogger(__name__)
 
@@ -39,9 +40,15 @@ class SecurityManager(BaseManager):
         pass your own security manager to AppBuilder.
     """
     auth_view = None
+    """ The obj instance for authentication view """
     user_view = None
+    """ The obj instance for user view """
+    registeruser_view = None
+    """ The obj instance for registering user view """
     lm = None
+    """ Flask-Login LoginManager """
     oid = None
+    """ Flask-OpenID OpenID """
 
     userdbmodelview = UserDBModelView
     """ Override if you want your own user db view """
@@ -56,6 +63,8 @@ class SecurityManager(BaseManager):
     authoidview = AuthOIDView
     """ Override if you want your own Authentication OID view """
     registeruserdbview = RegisterUserDBView
+    """ Override if you want your own register user db view """
+    registeruseroidview = RegisterUserOIDView
     """ Override if you want your own register user db view """
 
 
@@ -92,6 +101,10 @@ class SecurityManager(BaseManager):
     @property
     def get_session(self):
         return self.appbuilder.get_session
+
+    @property
+    def get_url_for_registeruser(self):
+        return url_for('%s.%s' % (self.registeruser_view.endpoint, self.registeruser_view.default_view))
 
     @property
     def auth_type(self):
@@ -141,22 +154,29 @@ class SecurityManager(BaseManager):
     def auth_ldap_email_field(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_EMAIL_FIELD']
 
+    @property
+    def openid_providers(self):
+        return self.appbuilder.get_app.config['OPENID_PROVIDERS']
 
     def register_views(self):
         self.appbuilder.add_view_no_menu(ResetPasswordView())
         self.appbuilder.add_view_no_menu(ResetMyPasswordView())
-        self.appbuilder.add_view_no_menu(self.registeruserdbview())
 
         if self.auth_type == AUTH_DB:
             self.user_view = self.userdbmodelview
             self.auth_view = self.authdbview()
+            if self.auth_user_registration:
+                self.registeruser_view = self.registeruserdbview()
+                self.appbuilder.add_view_no_menu(self.registeruser_view)
         elif self.auth_type == AUTH_LDAP:
             self.user_view = self.userldapmodelview
             self.auth_view = self.authldapview()
         else:
             self.user_view = self.useroidmodelview
             self.auth_view = self.authoidview()
-            self.oid.after_login_func = self.auth_view.after_login
+            if self.auth_user_registration:
+                self.registeruser_view = self.registeruseroidview()
+                self.appbuilder.add_view_no_menu(self.registeruser_view)
 
         self.appbuilder.add_view_no_menu(self.auth_view)
 

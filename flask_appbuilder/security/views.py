@@ -1,26 +1,23 @@
 import datetime
 import logging
-import uuid
-import sys
 from flask import render_template, flash, redirect, session, url_for, request, g
 from werkzeug.security import generate_password_hash
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
-from flask.ext.openid import SessionWrapper, OpenIDResponse
+from flask.ext.openid import SessionWrapper, OpenIDResponse, OpenID
 from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
 from flask.ext.babelpkg import gettext, lazy_gettext
 from flask_login import login_user, logout_user
 
 from flask_appbuilder.models.datamodel import SQLAModel
-from flask_appbuilder.views import BaseView, ModelView, SimpleFormView, expose, PublicFormView
+from flask_appbuilder.views import BaseView, ModelView, SimpleFormView, expose
 from flask_appbuilder.charts.views import DirectByChartView
 
 from ..fieldwidgets import BS3PasswordFieldWidget
 from ..actions import action
-from ..validators import Unique
 from .._compat import as_unicode
-from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm, RegisterUserDBForm
-from .models import User, Permission, PermissionView, Role, ViewMenu, RegisterUser
+from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
+from .models import User, Permission, PermissionView, Role, ViewMenu
 from .decorators import has_access
 
 log = logging.getLogger(__name__)
@@ -325,102 +322,6 @@ class AuthView(BaseView):
         return redirect(self.appbuilder.get_url_for_index)
 
 
-class RegisterUserDBView(PublicFormView):
-    """
-        View for Registering a new user, auth db mode
-    """
-    route_base = '/register'
-
-    email_template = 'appbuilder/general/security/register_mail.html'
-    email_subject = lazy_gettext('Account activation')
-    activation_template = 'appbuilder/general/security/activation.html'
-    form = RegisterUserDBForm
-    form_title = lazy_gettext('Fill out the registration form')
-    redirect_url = '/'
-    error_message = lazy_gettext('Not possible to register you at the moment, try again later')
-    message = lazy_gettext('Registration sent to your email')
-
-    def form_get(self, form):
-        datamodel_user = SQLAModel(User, self.appbuilder.get_session)
-        datamodel_register_user = SQLAModel(RegisterUser, self.appbuilder.get_session)
-        if len(form.username.validators) == 1:
-            form.username.validators.append(Unique(datamodel_user, 'username'))
-            form.username.validators.append(Unique(datamodel_register_user, 'username'))
-        if len(form.email.validators) == 2:
-            form.email.validators.append(Unique(datamodel_user, 'email'))
-            form.email.validators.append(Unique(datamodel_register_user, 'email'))
-
-    @expose('/activation/<string:activation_hash>')
-    def activation(self, activation_hash):
-        reg = self.appbuilder.get_session.query(RegisterUser).filter(
-            RegisterUser.registration_hash == activation_hash).scalar()
-        try:
-            if not self.appbuilder.sm.add_user(username=reg.username,
-                                               email=reg.email,
-                                               first_name=reg.first_name,
-                                               last_name=reg.last_name,
-                                               role=self.appbuilder.sm.get_role_by_name(
-                                                       self.appbuilder.sm.auth_user_registration_role),
-                                               password=reg.password):
-                raise Exception('Could not add user to DB')
-            self.appbuilder.get_session.delete(reg)
-        except Exception as e:
-            log.exception("Add record on user activation error: {0}".format(str(e)))
-            flash(as_unicode(self.error_message), 'danger')
-            self.appbuilder.get_session.rollback()
-            return redirect(self.appbuilder.get_url_for_index)
-        self.appbuilder.get_session.commit()
-        return render_template(self.activation_template,
-                               username=reg.username,
-                               first_name=reg.first_name,
-                               last_name=reg.last_name,
-                               appbuilder=self.appbuilder)
-
-    def send_email(self, register_user):
-        try:
-            from flask_mail import Mail, Message
-        except:
-            log.error("Install Flask-Mail to use User registration")
-            return False
-        mail = Mail(self.appbuilder.get_app)
-        msg = Message()
-        msg.subject = self.email_subject
-        url = url_for('.activation', _external=True, activation_hash=register_user.registration_hash)
-        msg.html = render_template(self.email_template,
-                                   url=url,
-                                   username=register_user.username,
-                                   first_name=register_user.first_name,
-                                   last_name=register_user.last_name)
-        msg.recipients = [register_user.email]
-        try:
-            mail.send(msg)
-        except Exception as e:
-            log.error("Send email exception: {0}".format(str(e)))
-            return False
-        return True
-
-    def form_post(self, form):
-        register_user = RegisterUser()
-        register_user.username = form.username.data
-        register_user.email = form.email.data
-        register_user.first_name = form.first_name.data
-        register_user.last_name = form.last_name.data
-        register_user.password = generate_password_hash(form.password.data)
-        register_user.registration_hash = str(uuid.uuid1())
-        try:
-            self.appbuilder.get_session.add(register_user)
-        except Exception as e:
-            log.exception("Add record error: {0}".format(str(e)))
-            flash(as_unicode(self.error_message), 'danger')
-            self.appbuilder.get_session.rollback()
-            return
-        if self.send_email(register_user):
-            self.appbuilder.get_session.commit()
-            flash(as_unicode(self.message), 'info')
-        else:
-            flash(as_unicode(self.error_message), 'danger')
-            self.appbuilder.get_session.rollback()
-
 
 class AuthDBView(AuthView):
     login_template = 'appbuilder/general/security/login_db.html'
@@ -466,32 +367,38 @@ class AuthLDAPView(AuthView):
 
 class AuthOIDView(AuthView):
     login_template = 'appbuilder/general/security/login_oid.html'
+    oid_ask_for = ['email']
+    oid_ask_for_optional = []
 
     @expose('/login/', methods=['GET', 'POST'])
     def login(self, flag=True):
         if flag:
             self.oid_login_handler(self.login, self.appbuilder.sm.oid)
         if g.user is not None and g.user.is_authenticated():
-            return redirect('/')
+            return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_oid()
         if form.validate_on_submit():
             session['remember_me'] = form.remember_me.data
-            return self.appbuilder.sm.oid.try_login(form.openid.data, ask_for=['email'])
+            return self.appbuilder.sm.oid.try_login(form.openid.data, ask_for=self.oid_ask_for,
+                                                    ask_for_optional=self.oid_ask_for_optional)
         return render_template(self.login_template,
                                title=self.title,
                                form=form,
-                               providers=self.appbuilder.app.config['OPENID_PROVIDERS'],
+                               providers=self.appbuilder.sm.openid_providers,
                                appbuilder=self.appbuilder
         )
 
     def oid_login_handler(self, f, oid):
+        """
+            Hackish method to make use of oid.login_handler decorator.
+        """
         if request.args.get('openid_complete') != u'yes':
             return f(False)
         consumer = Consumer(SessionWrapper(self), oid.store_factory())
         openid_response = consumer.complete(request.args.to_dict(),
                                             oid.get_current_url())
         if openid_response.status == SUCCESS:
-            return oid.after_login_func(OpenIDResponse(openid_response, []))
+            return self.after_login(OpenIDResponse(openid_response, []))
         elif openid_response.status == CANCEL:
             oid.signal_error(u'The request was cancelled')
             return redirect(oid.get_current_url())
@@ -501,11 +408,11 @@ class AuthOIDView(AuthView):
     def after_login(self, resp):
         if resp.email is None or resp.email == "":
             flash(as_unicode(self.invalid_login_message), 'warning')
-            return redirect('appbuilder/general/security/login_oid.html')
+            return redirect(self.login_template)
         user = self.appbuilder.sm.auth_user_oid(resp.email)
         if user is None:
             flash(as_unicode(self.invalid_login_message), 'warning')
-            return redirect('appbuilder/general/security/login_oid.html')
+            return redirect(self.login_template)
         remember_me = False
         if 'remember_me' in session:
             remember_me = session['remember_me']
@@ -513,7 +420,4 @@ class AuthOIDView(AuthView):
 
         login_user(user, remember=remember_me)
         return redirect(self.appbuilder.get_url_for_index)
-
-
-
 

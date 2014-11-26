@@ -16,6 +16,14 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   |  - 1 = Database style (user/password)      |           |
 |                                   |  - 2 = LDAP, use AUTH_LDAP_SERVER also     |           |
 +-----------------------------------+--------------------------------------------+-----------+
+| AUTH_USER_REGISTRATION =          | Set to True to enable user self            |   No      |
+| True|False                        | registration                               |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_USER_REGISTRATION_ROLE       | Set role name, to be assign when a user    |   Cond.   |
+|                                   | registers himself. This role must already  |           |
+|                                   | exist. Mandatory when using user           |           |
+|                                   | registration                               |           |
++-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_SERVER                  | define your ldap server when AUTH_TYPE=2   |   Cond.   |
 |                                   | example:                                   |           |
 |                                   | AUTH_TYPE = 2                              |           |
@@ -48,6 +56,39 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
 |                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
 |                                   | AUTH_LDAP_UID_FIELD = "uid"                |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_FIRSTNAME_FIELD         | sets the field in the ldap directory that  |   No      |
+|                                   | stores the user's first name. This field   |           |
+|                                   | is used to propagate user's first name     |           | 
+|                                   | into the User database.                    |           |
+|                                   | Default is "givenName".                    |           | 
+|                                   | example:                                   |           |
+|                                   | AUTH_TYPE = 2                              |           |
+|                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
+|                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
+|                                   | AUTH_LDAP_FIRSTNAME_FIELD = "givenName"    |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_LASTNAME_FIELD          | sets the field in the ldap directory that  |   No      |
+|                                   | stores the user's last name. This field    |           |
+|                                   | is used to propagate user's last name      |           | 
+|                                   | into the User database.                    |           |
+|                                   | Default is "sn".                           |           | 
+|                                   | example:                                   |           |
+|                                   | AUTH_TYPE = 2                              |           |
+|                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
+|                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
+|                                   | AUTH_LDAP_LASTNAME_FIELD = "sn"            |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_EMAIL_FIELD             | sets the field in the ldap directory that  |   No      |
+|                                   | stores the user's email address. This      |           |
+|                                   | field is used to propagate user's email    |           | 
+|                                   | address into the User database.            |           |
+|                                   | Default is "mail".                         |           | 
+|                                   | example:                                   |           |
+|                                   | AUTH_TYPE = 2                              |           |
+|                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
+|                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
+|                                   | AUTH_LDAP_EMAIL_FIELD = "mail"             |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_ROLE_ADMIN                   | Configure the name of the admin role.      |   No      |
 +-----------------------------------+--------------------------------------------+-----------+

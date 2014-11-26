@@ -65,6 +65,12 @@ SimpleFormView
     .. autoclass:: SimpleFormView
         :members:
 
+PublicFormView
+--------------
+
+    .. autoclass:: PublicFormView
+        :members:
+
 ModelView
 -----------
 
@@ -83,13 +89,31 @@ CompactCRUDMixin
     .. autoclass:: CompactCRUDMixin
         :members:
 
-
 flask.ext.appbuilder.actions
 ============================
 
 .. automodule:: flask.ext.appbuilder.actions
 
     .. autofunction:: action
+
+flask.ext.appbuilder.security
+=============================
+
+.. automodule:: flask.ext.appbuilder.security.manager
+
+SecurityManager
+---------------
+
+    .. autoclass:: SecurityManager
+        :members:
+
+BaseRegisterUser
+----------------
+
+.. automodule:: flask.ext.appbuilder.security.registerviews
+
+    .. autoclass:: BaseRegisterUser
+        :members:
 
 flask.ext.appbuilder.filemanager
 ================================

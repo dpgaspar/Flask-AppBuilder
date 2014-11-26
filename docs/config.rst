@@ -16,6 +16,14 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   |  - 1 = Database style (user/password)      |           |
 |                                   |  - 2 = LDAP, use AUTH_LDAP_SERVER also     |           |
 +-----------------------------------+--------------------------------------------+-----------+
+| AUTH_USER_REGISTRATION =          | Set to True to enable user self            |   No      |
+| True|False                        | registration                               |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_USER_REGISTRATION_ROLE       | Set role name, to be assign when a user    |   Cond.   |
+|                                   | registers himself. This role must already  |           |
+|                                   | exist. Mandatory when using user           |           |
+|                                   | registration                               |           |
++-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_SERVER                  | define your ldap server when AUTH_TYPE=2   |   Cond.   |
 |                                   | example:                                   |           |
 |                                   | AUTH_TYPE = 2                              |           |

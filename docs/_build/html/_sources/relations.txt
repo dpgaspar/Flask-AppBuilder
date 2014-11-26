@@ -1,5 +1,5 @@
-Model Relations (Quick How to)
-==============================
+Model Relations
+===============
 
 On this chapter we are going to show how to setup model relationships and their
 view integration on the framework
