@@ -74,6 +74,9 @@ class SQLAInterface(BaseInterface):
 
         """
         query = self.session.query(self.obj)
+        if len(order_column.split('.')) >= 2:
+            for jointable in order_column.split('.')[:-1]:
+                query=query.join(self.list_properties[jointable].table)
         query_count = self.session.query(func.count('*')).select_from(self.obj)
 
         query_count = self._get_base_query(query=query_count,
