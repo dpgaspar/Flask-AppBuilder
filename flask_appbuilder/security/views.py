@@ -133,7 +133,7 @@ class UserModelView(ModelView):
                                'The user role on the application, this will associate with a list of permissions'),
                            'conf_password': lazy_gettext('Please rewrite the users password to confirm')}
 
-    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'role']
+    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'role.name']
 
     show_fieldsets = [
         (lazy_gettext('User info'),
@@ -152,7 +152,6 @@ class UserModelView(ModelView):
          {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
     ]
 
-    order_columns = ['first_name', 'last_name', 'username', 'email']
     search_columns = ['first_name', 'last_name', 'username', 'email', 'role', 'active',
                       'created_by', 'changed_by', 'changed_on', 'changed_by', 'login_count']
 
