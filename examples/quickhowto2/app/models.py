@@ -74,7 +74,7 @@ class Contact(Model):
     personal_phone = Column(String(20))
     personal_celphone = Column(String(20))
     contact_group_id = Column(Integer, ForeignKey('contact_group.id'), nullable=False)
-    contact_group = relationship("ContactGroup")
+    contact_groups = relationship("ContactGroup")
     gender_id = Column(Integer, ForeignKey('gender.id'), nullable=False)
     gender = relationship("Gender")
 
