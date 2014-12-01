@@ -8,7 +8,7 @@ from flask.ext.appbuilder.filemanager import ImageManager
 from flask.ext.appbuilder import Model
 
 
-class Group(Model):
+class PersonGroup(Model):
     id = Column(Integer, primary_key=True)
     name =  Column(String(50), unique = True, nullable=False)
     address =  Column(String(264))
@@ -43,8 +43,8 @@ class Person(Model):
     business_phone = Column(String(20))
     business_celphone = Column(String(20))
     business_email = Column(String(64))
-    group_id = Column(Integer, ForeignKey('group.id'))
-    group = relationship("Group")
+    person_group_id = Column(Integer, ForeignKey('person_group.id'))
+    person_group = relationship("PersonGroup")
 
 
     def photo_img(self):
