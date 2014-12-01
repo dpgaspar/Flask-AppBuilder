@@ -29,7 +29,7 @@ names_list = [x.strip() for x in f.readlines()]
 
 f.close()
 
-for i in range(1, 1000):
+for i in range(1, 50):
     c = Contact()
     c.name = get_random_name(names_list, random.randrange(2, 6))
     c.address = 'Street ' + names_list[random.randrange(0, len(names_list))]

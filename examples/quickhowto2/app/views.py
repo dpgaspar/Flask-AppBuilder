@@ -61,9 +61,8 @@ class ProductView(ModelView):
 
 class ContactModelView2(ModelView):
     datamodel = SQLAModel(Contact)
-    label_columns = {'contact_groups.name': 'Contacts Group'}
+    #label_columns = {'contact_groups.name': 'Contacts Group'}
     list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
-    order_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
 
 
 class ContactModelView(ModelView):

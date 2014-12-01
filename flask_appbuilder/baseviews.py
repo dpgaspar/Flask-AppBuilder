@@ -130,7 +130,7 @@ class BaseView(object):
         """
             Prettify pythonic variable name.
 
-            For example, 'hello_world' will be converted to 'Hello World'
+            For example, 'HelloWorld' will be converted to 'Hello World'
 
             :param name:
                 Name to prettify.
@@ -146,13 +146,12 @@ class BaseView(object):
             :param name:
                 Name to prettify.
         """
-        return name.replace('_', ' ').title()
-
+        return re.sub('[._]', ' ', name).title()
 
     def update_redirect(self):
         """
             Call it on your own endpoint's to update the back history navigation.
-            If you bypass it, the next submit our back will go over it.
+            If you bypass it, the next submit or back will go over it.
         """
         page_history = Stack(session.get('page_history', []))
         page_history.push(request.url)
@@ -251,6 +250,14 @@ class BaseModelView(BaseView):
         self._init_titles()
         super(BaseModelView, self).__init__(**kwargs)
 
+    def _gen_labels_columns(self, list_columns):
+        """
+            Auto generates pretty label_columns from list of columns
+        """
+        for col in list_columns:
+            if not self.label_columns.get(col):
+                self.label_columns[col] = self._prettify_column(col)
+
     def _init_titles(self):
         pass
 
@@ -260,9 +267,7 @@ class BaseModelView(BaseView):
         self._base_filters = self.datamodel.get_filters().add_filter_list(self.datamodel, self.base_filters)
         list_cols = self.datamodel.get_columns_list()
         self.search_columns = self.search_columns or self.datamodel.get_search_columns_list()
-        for col in list_cols:
-            if not self.label_columns.get(col):
-                self.label_columns[col] = self._prettify_column(col)
+        self._gen_labels_columns(list_cols)
         self._filters = self.datamodel.get_filters(self.search_columns)
 
     def _init_forms(self):
@@ -525,10 +530,10 @@ class BaseCRUDView(BaseModelView):
         self.add_form_extra_fields = self.add_form_extra_fields or {}
         self.edit_form_extra_fields = self.edit_form_extra_fields or {}
         # Generate base props
-        order_cols = self.datamodel.get_order_columns_list()
         list_cols = self.datamodel.get_user_columns_list()
         self.list_columns = self.list_columns or [list_cols[0]]
-        self.order_columns = self.order_columns or order_cols
+        self._gen_labels_columns(self.list_columns)
+        self.order_columns = self.order_columns or self.datamodel.get_order_columns_list(list_columns=self.list_columns)
         if self.show_fieldsets:
             self.show_columns = []
             for fieldset_item in self.show_fieldsets:

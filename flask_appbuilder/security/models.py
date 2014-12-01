@@ -74,7 +74,7 @@ class RegisterUser(Model):
     registration_date = Column(DateTime, default=datetime.datetime.now, nullable=True)
     registration_hash = Column(String(256))
 
-user_role_mapper = Table('ab_test', Model.metadata,
+user_role_mapper = Table('ab_role_mapper', Model.metadata,
                                   Column('id', Integer, primary_key=True),
                                   Column('user_id', Integer, ForeignKey('ab_user.id')),
                                   Column('role_id', Integer, ForeignKey('ab_role.id'))

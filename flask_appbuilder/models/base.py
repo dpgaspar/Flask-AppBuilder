@@ -69,7 +69,6 @@ class BaseFilterConverter(object):
         log.warning('Filter type not supported for column: %s' % col_name)
 
 
-
 class BaseInterface(object):
     obj = None
 
@@ -256,10 +255,9 @@ class BaseInterface(object):
 
     def get_user_columns_list(self):
         """
-            Returns a list user viewable columns names
+            Returns a list of user viewable columns names
         """
         return self.get_columns_list()
-
 
     def get_search_columns_list(self):
         """
@@ -267,7 +265,7 @@ class BaseInterface(object):
         """
         return []
 
-    def get_order_columns_list(self):
+    def get_order_columns_list(self, list_columns=None):
         """
             Returns a list of order columns names
         """

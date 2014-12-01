@@ -5,6 +5,9 @@ Improvements and Bug fixes on 1.1.1
 -----------------------------------
 
 - New, allows order on relationships by implicit declaration of col with dotted notation.
+- New, get_order_columns_list receives optional list_columns to narrow search and auto include dotted cols.
+- New, dotted columns are also automatically pretty labeled.
+- Fix, is<Type col> on SQLInterface handles exceptions for none existing cols.
 
 Improvements and Bug fixes on 1.1.0
 -----------------------------------
