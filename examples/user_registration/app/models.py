@@ -7,7 +7,7 @@ from flask_appbuilder.models.mixins import UserExtensionMixin
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 
-class Group(Model):
+class ContactGroup(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique = True, nullable=False)
 
@@ -24,8 +24,8 @@ class Gender(Model):
 
 
 class UserExtended(Model, UserExtensionMixin):
-    group_id = Column(Integer, ForeignKey('group.id'), nullable=True)
-    group = relationship("Group")
+    contact_group_id = Column(Integer, ForeignKey('contact_group.id'), nullable=True)
+    contact_group = relationship("ContactGroup")
 
 
 class Contact(Model):
@@ -35,8 +35,8 @@ class Contact(Model):
     birthday = Column(Date, nullable=True)
     personal_phone = Column(String(20))
     personal_celphone = Column(String(20))
-    group_id = Column(Integer, ForeignKey('group.id'), nullable=False)
-    group = relationship("Group")
+    contact_group_id = Column(Integer, ForeignKey('contact_group.id'), nullable=False)
+    contact_group = relationship("ContactGroup")
     gender_id = Column(Integer, ForeignKey('gender.id'), nullable=False)
     gender = relationship("Gender")
 

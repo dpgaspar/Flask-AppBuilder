@@ -1,7 +1,14 @@
-from app import db
-from app.models import Group, Gender, Contact
+from flask import Flask
+from flask.ext.appbuilder import SQLA
+from app.models import ContactGroup, Gender, Contact
 import random
 from datetime import datetime
+
+app = Flask(__name__)
+app.config.from_object('config')
+db = SQLA(app)
+db.create_all()
+
 
 
 def get_random_name(names_list, size=1):
@@ -10,9 +17,9 @@ def get_random_name(names_list, size=1):
 
 
 try:
-    db.session.add(Group(name='Friends'))
-    db.session.add(Group(name='Family'))
-    db.session.add(Group(name='Work'))
+    db.session.add(ContactGroup(name='Friends'))
+    db.session.add(ContactGroup(name='Family'))
+    db.session.add(ContactGroup(name='Work'))
     db.session.commit()
 except:
     db.session.rollback()
@@ -29,13 +36,13 @@ names_list = [x.strip() for x in f.readlines()]
 
 f.close()
 
-for i in range(1, 1000):
+for i in range(1, 50):
     c = Contact()
     c.name = get_random_name(names_list, random.randrange(2, 6))
     c.address = 'Street ' + names_list[random.randrange(0, len(names_list))]
     c.personal_phone = random.randrange(1111111, 9999999)
     c.personal_celphone = random.randrange(1111111, 9999999)
-    c.group_id = random.randrange(1, 4)
+    c.contact_group_id = random.randrange(1, 4)
     c.gender_id = random.randrange(1, 3)
     year = random.choice(range(1900, 2012))
     month = random.choice(range(1, 12))
@@ -44,8 +51,6 @@ for i in range(1, 1000):
     db.session.add(c)
     try:
         db.session.commit()
-        print "inserted", c
+        print("inserted {0}".format(c))
     except:
         db.session.rollback()
-    
-    

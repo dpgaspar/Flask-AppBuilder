@@ -8,7 +8,7 @@ from flask.ext.babelpkg import lazy_gettext as _
 from flask_appbuilder.models.mixins import UserExtensionMixin
 
 from app import db, appbuilder
-from .models import Group, Gender, Contact
+from .models import ContactGroup, Gender, Contact
 
 log = logging.getLogger(__name__)
 
@@ -25,27 +25,27 @@ def fill_gender():
 class ContactModelView(ModelView):
     datamodel = SQLAModel(Contact)
 
-    label_columns = {'group': 'Contacts Group'}
-    list_columns = ['name', 'personal_celphone', 'birthday', 'group']
+    label_columns = {'contact_group': 'Contacts Group'}
+    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group']
 
     base_order = ('name', 'asc')
 
     show_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     add_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     edit_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
@@ -53,7 +53,7 @@ class ContactModelView(ModelView):
 
 
 class GroupModelView(ModelView):
-    datamodel = SQLAModel(Group)
+    datamodel = SQLAModel(ContactGroup)
     related_views = [ContactModelView]
 
 
@@ -65,12 +65,12 @@ class ContactChartView(GroupByChartView):
 
     definitions = [
         {
-            'group' : 'group',
-            'series' : [(aggregate_count,'group')]
+            'group' : 'contact_group',
+            'series' : [(aggregate_count,'contact_group')]
         },
         {
             'group' : 'gender',
-            'series' : [(aggregate_count,'group')]
+            'series' : [(aggregate_count,'contact_group')]
         }
     ]
 
@@ -92,12 +92,12 @@ class ContactTimeChartView(GroupByChartView):
         {
             'group' : 'month_year',
             'formatter': pretty_month_year,
-            'series': [(aggregate_count,'group')]
+            'series': [(aggregate_count,'contact_group')]
         },
         {
             'group': 'year',
             'formatter': pretty_year,
-            'series': [(aggregate_count,'group')]
+            'series': [(aggregate_count,'contact_group')]
         }
     ]
 
