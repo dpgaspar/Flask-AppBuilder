@@ -1,7 +1,7 @@
 import logging
 
-from flask import Blueprint, url_for, current_app, render_template
-from .views import IndexView
+from flask import Blueprint, url_for, current_app
+from .views import IndexView, UtilView
 from .filters import TemplateFilters
 from .menu import Menu
 from .security.manager import SecurityManager
@@ -74,6 +74,7 @@ class AppBuilder(object):
         self.app = app
         if app is not None:
             self.init_app(app, session)
+
 
     def init_app(self, app, session):
         app.config.setdefault('APP_NAME', 'F.A.B.')
@@ -179,6 +180,7 @@ class AppBuilder(object):
     def _add_admin_views(self):
         self.indexview = self.indexview()
         self.add_view_no_menu(self.indexview)
+        self.add_view_no_menu(UtilView())
         self.bm.register_views()
         self.sm.register_views()
 

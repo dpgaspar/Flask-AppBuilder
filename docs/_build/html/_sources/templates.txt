@@ -2,7 +2,8 @@ Templates
 =========
 
 F.A.B. uses jinja2, all automatic templates can be overridden entirely or partially.
-This way you can insert html or jinja2 templates parts before or after defined blocks on the page,
+This way you can add your own html on jinja2 templates.
+This can be done before or after defined blocks on the page,
 without the need of developing a template from scratch because you just want to add small changes on it.
 Next is a quick description on how you can do this
 
@@ -10,9 +11,9 @@ List Templates
 --------------
 
 Using the contacts app example, we are going to see how to override or insert jinja2 on specific sections
-of F.A.B. list template. Remember that the framework uses templates with generated widget, this widget's are big
-widgets, because they render big entire sections of the page.
-On list's of records you will have two widgets the search widget and the list widget, so you will have
+of F.A.B. list template. Remember that the framework uses templates with generated widgets, this widgets are big
+widgets, because they render entire sections of a page.
+On list's of records you will have two widgets, the search widget, and the list widget. You will have
 a template with the following sections, where you can add your template sections over, before and after
 each block:
 
@@ -48,7 +49,7 @@ To insert your template section after a block do:
         {% endblock %}
 
 I guess you get the general ideal, make use of {{ super() }} to render the block's original content.
-To use your template define you ModelView with **list_template** declaration to your templates relative path
+To use your templates override **list_template** to your templates relative path, on your ModelView's declaration.
 
 If you have your template on ./your_project/app/templates/list_contacts.html
 
@@ -84,8 +85,8 @@ Add Templates
 --------------
 
 On this section we will see how to override the add template form.
-You will have only one widget the add form widget, so you will have
-a template with the following sections, where you can add your template sections over, before and after
+You will have only one widget, the add form widget. So you will have
+a template with the following sections. Where you can add your template sections over, before and after
 each block:
 
 - Add template

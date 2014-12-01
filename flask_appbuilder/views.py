@@ -17,7 +17,6 @@ class IndexView(BaseView):
     """
         A simple view that implements the index for the site
     """
-
     route_base = ''
     default_view = 'index'
     index_template = 'appbuilder/index.html'
@@ -27,9 +26,19 @@ class IndexView(BaseView):
         self.update_redirect()
         return self.render_template(self.index_template, appbuilder=self.appbuilder)
 
+
+class UtilView(BaseView):
+    """
+        A simple view that implements special util routes.
+        At the moment it only supports the back special endpoint.
+    """
+    route_base = ''
+    default_view = 'back'
+
     @expose('/back')
     def back(self):
         return redirect(self.get_redirect())
+
 
 
 class SimpleFormView(BaseView):

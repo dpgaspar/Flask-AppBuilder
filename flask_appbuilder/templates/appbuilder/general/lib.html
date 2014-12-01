@@ -281,12 +281,12 @@
     </button>
     {% endmacro %}
 
-    {% macro lnk_back() %}
-    <a href="{{url_for('IndexView' + '.back')}}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
+{% macro lnk_back() %}
+    <a href="{{url_for('UtilView' + '.back')}}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
        title="{{_('Back')}}">
         <i class="fa fa-arrow-left"></i>
     </a>
-    {% endmacro %}
+{% endmacro %}
 
 
 

@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
-    <link rel="next" title="Actions" href="actions.html" />
+    <link rel="next" title="Generic Data Sources" href="generic_datasource.html" />
     <link rel="prev" title="Customizing" href="customizing.html" />
    
   
@@ -45,7 +45,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="actions.html" title="Actions"
+          <a href="generic_datasource.html" title="Generic Data Sources"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="customizing.html" title="Customizing"
@@ -62,15 +62,16 @@
   <div class="section" id="templates">
 <h1>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h1>
 <p>F.A.B. uses jinja2, all automatic templates can be overridden entirely or partially.
-This way you can insert html or jinja2 templates parts before or after defined blocks on the page,
+This way you can add your own html on jinja2 templates.
+This can be done before or after defined blocks on the page,
 without the need of developing a template from scratch because you just want to add small changes on it.
 Next is a quick description on how you can do this</p>
 <div class="section" id="list-templates">
 <h2>List Templates<a class="headerlink" href="#list-templates" title="Permalink to this headline">¶</a></h2>
 <p>Using the contacts app example, we are going to see how to override or insert jinja2 on specific sections
-of F.A.B. list template. Remember that the framework uses templates with generated widget, this widget&#8217;s are big
-widgets, because they render big entire sections of the page.
-On list&#8217;s of records you will have two widgets the search widget and the list widget, so you will have
+of F.A.B. list template. Remember that the framework uses templates with generated widgets, this widgets are big
+widgets, because they render entire sections of a page.
+On list&#8217;s of records you will have two widgets, the search widget, and the list widget. You will have
 a template with the following sections, where you can add your template sections over, before and after
 each block:</p>
 <ul>
@@ -129,7 +130,7 @@ each block:</p>
 </pre></div>
 </div>
 <p>I guess you get the general ideal, make use of {{ super() }} to render the block&#8217;s original content.
-To use your template define you ModelView with <strong>list_template</strong> declaration to your templates relative path</p>
+To use your templates override <strong>list_template</strong> to your templates relative path, on your ModelView&#8217;s declaration.</p>
 <p>If you have your template on ./your_project/app/templates/list_contacts.html</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
@@ -159,8 +160,8 @@ To use your template define you ModelView with <strong>list_template</strong> de
 <div class="section" id="add-templates">
 <h2>Add Templates<a class="headerlink" href="#add-templates" title="Permalink to this headline">¶</a></h2>
 <p>On this section we will see how to override the add template form.
-You will have only one widget the add form widget, so you will have
-a template with the following sections, where you can add your template sections over, before and after
+You will have only one widget, the add form widget. So you will have
+a template with the following sections. Where you can add your template sections over, before and after
 each block:</p>
 <ul>
 <li><dl class="first docutils">
@@ -402,7 +403,7 @@ new html that shares the same look and feel has the framework.</p>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="customizing.html" title="previous chapter">Customizing</a></li>
-      <li>Next: <a href="actions.html" title="next chapter">Actions</a></li>
+      <li>Next: <a href="generic_datasource.html" title="next chapter">Generic Data Sources</a></li>
   </ul></li>
 </ul>
   <h3>This Page</h3>
