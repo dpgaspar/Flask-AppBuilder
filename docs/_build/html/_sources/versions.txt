@@ -8,7 +8,7 @@ Improvements and Bug fixes on 1.1.1
 - New, get_order_columns_list receives optional list_columns to narrow search and auto include dotted cols.
 - New, dotted columns are also automatically pretty labeled.
 - Fix, is<Type col> on SQLInterface handles exceptions for none existing cols.
-- Fix, back special URL included on a new View called UtilView, removes bug when replacing IndexView the back crashes.
+- Fix, back special URL included on a new View called UtilView, removes bug: when replacing IndexView the back crashes.
 
 Improvements and Bug fixes on 1.1.0
 -----------------------------------

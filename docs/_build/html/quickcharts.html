@@ -308,11 +308,11 @@ by the framework of the columns them selfs.</p>
 <div class="section" id="deprecated-define-your-chart-views-views-py">
 <h2>(Deprecated) Define your Chart Views (views.py)<a class="headerlink" href="#deprecated-define-your-chart-views-views-py" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactChartView</span><span class="p">(</span><span class="n">ChartView</span><span class="p">):</span>
-    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
+    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;contact_group&#39;</span><span class="p">]</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped contacts&#39;</span>
     <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactModelView</span><span class="o">.</span><span class="n">label_columns</span>
-    <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
+    <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;contact_group&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Notice that:</p>
@@ -335,7 +335,7 @@ If you want a column chart just define:</p>
 <p>You can use &#8216;BarChart&#8217;, &#8216;LineChart&#8217;, &#8216;AreaChart&#8217; the default is &#8216;PieChart&#8217;, take a look at the google charts documentation, the <em>chart_type</em> is the function on &#8216;google.visualization&#8217; object</p>
 <p>Let&#8217;s define a chart grouped by a time frame?</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactTimeChartView</span><span class="p">(</span><span class="n">TimeChartView</span><span class="p">):</span>
-    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
+    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;contact_group&#39;</span><span class="p">]</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped Birth contacts&#39;</span>
     <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactModelView</span><span class="o">.</span><span class="n">label_columns</span>
     <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;birthday&#39;</span><span class="p">]</span>

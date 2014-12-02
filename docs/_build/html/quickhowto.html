@@ -88,7 +88,7 @@ F.A.B uses the excellent SQLAlchemy ORM package, and it&#8217;s Flask extension.
 you should be familiar with it&#8217;s declarative syntax to define your database models on F.A.B.</p>
 <p>On our example application we are going to define two tables,
 a <em>Contact&#8217;s</em> table that will hold the contacts detailed information,
-and a <em>Group</em> table to group our contacts or classify them.
+and a <em>ContactGroup</em> table to group our contacts or classify them.
 We could additionally define a <em>Gender</em> table, to serve the role of enumerated values for &#8216;Male&#8217; and &#8216;Female&#8217;.</p>
 <p>Although your not obliged to, i advise you to inherit your model classes from <strong>Model</strong> class.
 Model class is exactly the same has Flask-SQLALchemy <strong>db.Model</strong> but without the underlying connection.
@@ -97,16 +97,16 @@ The reason for this is that <strong>Model</strong> is on the same declarative sp
 and using it will allow you to define relations to User&#8217;s.</p>
 <p>You can add automatic <em>Audit</em> triggered columns to your models,
 by inherit them from <em>AuditMixin</em> also. (see <a class="reference internal" href="api.html"><em>API Reference</em></a>)</p>
-<p>So, first we are going to create a <em>Group</em> table, to group our contacts</p>
+<p>So, first we are going to create a <em>ContactGroup</em> model, to group our contacts</p>
 </div>
 <div class="section" id="define-your-models-models-py">
 <h2>Define your models (models.py)<a class="headerlink" href="#define-your-models-models-py" title="Permalink to this headline">¶</a></h2>
-<p>The <em>Group</em> table.</p>
+<p>The <em>ContactGroup</em> model.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">Date</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">Model</span>
 
-<span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ContactGroup</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
@@ -122,8 +122,8 @@ by inherit them from <em>AuditMixin</em> also. (see <a class="reference internal
     <span class="n">birthday</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Date</span><span class="p">)</span>
     <span class="n">personal_phone</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
     <span class="n">personal_celphone</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
-    <span class="n">group_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;group.id&#39;</span><span class="p">))</span>
-    <span class="n">group</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s">&quot;Group&quot;</span><span class="p">)</span>
+    <span class="n">contact_group_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;contact_group.id&#39;</span><span class="p">))</span>
+    <span class="n">contact_group</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s">&quot;ContactGroup&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
@@ -131,19 +131,19 @@ by inherit them from <em>AuditMixin</em> also. (see <a class="reference internal
 </div>
 <p>Notice that SqlAlchemy properties used here like &#8216;unique&#8217;, &#8216;nullable&#8217; and &#8216;default&#8217;, will have special
 treatment. In this case when adding a new <em>Contact</em> a query will be made to validate
-if a someone with the same name already exists. Empty name contacts will not be allowed. Column types
+if someone with the same name already exists. Empty name contacts will not be allowed. Column types
 are validated. The address field will contain &#8216;Street&#8217; has default on add form.
 You can add your own custom validations also, take a look at <a class="reference internal" href="advanced.html"><em>Advanced Configuration</em></a></p>
 </div>
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
-<p>Now we are going to define our view for <em>Group</em> table.
+<p>Now we are going to define our view for <em>ContactGroup</em> model.
 This view will setup functionality for create, remove, update and show primitives for your model&#8217;s definition.</p>
 <p>Inherit from <em>ModelView</em> class that inherits from <em>BaseCRUDView</em> that inherits from <em>BaseModelView</em>,
 so you can override all their public properties to configure many details for your CRUD primitives.
 take a look at <a class="reference internal" href="advanced.html"><em>Advanced Configuration</em></a>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">ContactGroup</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactModelView</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -173,11 +173,11 @@ will relate 1/N relations automatically, it will display a show or edit view wit
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 
-    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;group&#39;</span><span class="p">:</span><span class="s">&#39;Contacts Group&#39;</span><span class="p">}</span>
-    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s">&#39;birthday&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]</span>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;contact_group&#39;</span><span class="p">:</span><span class="s">&#39;Contacts Group&#39;</span><span class="p">}</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s">&#39;birthday&#39;</span><span class="p">,</span><span class="s">&#39;contact_group&#39;</span><span class="p">]</span>
 
     <span class="n">show_fieldsets</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">(</span><span class="s">&#39;Summary&#39;</span><span class="p">,{</span><span class="s">&#39;fields&#39;</span><span class="p">:[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">,</span><span class="s">&#39;group&#39;</span><span class="p">]}),</span>
+        <span class="p">(</span><span class="s">&#39;Summary&#39;</span><span class="p">,{</span><span class="s">&#39;fields&#39;</span><span class="p">:[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">,</span><span class="s">&#39;contact_group&#39;</span><span class="p">]}),</span>
         <span class="p">(</span><span class="s">&#39;Personal Info&#39;</span><span class="p">,{</span><span class="s">&#39;fields&#39;</span><span class="p">:[</span><span class="s">&#39;birthday&#39;</span><span class="p">,</span><span class="s">&#39;personal_phone&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">],</span><span class="s">&#39;expanded&#39;</span><span class="p">:</span><span class="bp">False</span><span class="p">}),</span>
         <span class="p">]</span>
 </pre></div>
@@ -187,7 +187,8 @@ will relate 1/N relations automatically, it will display a show or edit view wit
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">label_columns:</th><td class="field-body">defines the labels for your columns. The framework will define the missing ones for you, with a pretty version of your column names.</td>
+<tr class="field-odd field"><th class="field-name">label_columns:</th><td class="field-body">defines the labels for your columns.
+The framework will define the missing ones for you, with a pretty version of your column names.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">show_fieldsets:</th><td class="field-body">A fieldset (Django style). You can use show_fieldsets, add_fieldsets, edit_fieldsets
 customize the show, add and edit views independently.</td>
@@ -234,9 +235,9 @@ Use it to control the order of the display</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Fields that reference relationships display the defined related model representation
-(on this case __repr__() methos on Group Model), so by default these fields can&#8217;t be ordered.
+(on this case __repr__() methos on ContactGroup Model), so by default these fields can&#8217;t be ordered.
 To enable order by on list for relationship fields, you can (since 1.1.1) reference
-them using dotted notation. On this example would be &#8216;group.name&#8217;.</p>
+them using dotted notation. On this example would be &#8216;contact_group.name&#8217;.</p>
 </div>
 </div>
 <div class="section" id="register-views-py">

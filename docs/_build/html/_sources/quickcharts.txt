@@ -233,11 +233,11 @@ by the framework of the columns them selfs.
 ::
 
     class ContactChartView(ChartView):
-        search_columns = ['name','group']
+        search_columns = ['name','contact_group']
         datamodel = SQLAModel(Contact)
         chart_title = 'Grouped contacts'
         label_columns = ContactModelView.label_columns
-        group_by_columns = ['group']
+        group_by_columns = ['contact_group']
     	
 Notice that:
 
@@ -256,7 +256,7 @@ Let's define a chart grouped by a time frame?
 ::
 
     class ContactTimeChartView(TimeChartView):
-        search_columns = ['name','group']
+        search_columns = ['name','contact_group']
         chart_title = 'Grouped Birth contacts'
         label_columns = ContactModelView.label_columns
         group_by_columns = ['birthday']
