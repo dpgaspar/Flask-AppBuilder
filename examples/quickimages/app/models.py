@@ -11,7 +11,7 @@ from flask.ext.appbuilder import Model
 class PersonGroup(Model):
     id = Column(Integer, primary_key=True)
     name =  Column(String(50), unique = True, nullable=False)
-    address =  Column(String(264))
+    address = Column(String(264))
     phone1 = Column(String(20))
     phone2 = Column(String(20))
     taxid = Column(Integer)

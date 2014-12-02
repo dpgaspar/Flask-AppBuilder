@@ -5,7 +5,7 @@ from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
 from flask.ext.babelpkg import lazy_gettext as _
 
 from app import db, appbuilder
-from models import Group, Gender, Contact
+from models import ContactGroup, Gender, Contact
 
 
 def fill_gender():
@@ -20,27 +20,27 @@ def fill_gender():
 class ContactGeneralView(ModelView):
     datamodel = SQLAModel(Contact)
 
-    label_columns = {'group': 'Contacts Group'}
-    list_columns = ['name', 'personal_phone', 'group']
+    label_columns = {'contact_grouo': 'Contacts Group'}
+    list_columns = ['name', 'personal_phone', 'contact_group']
 
     base_order = ('name', 'asc')
 
     show_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     add_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     edit_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
@@ -56,19 +56,19 @@ class ContactTimeChartView(TimeChartView):
 
 
 class GroupMasterView(MasterDetailView):
-    datamodel = SQLAModel(Group)
+    datamodel = SQLAModel(ContactGroup)
     related_views = [ContactGeneralView]
 
 
 class GroupGeneralView(ModelView):
-    datamodel = SQLAModel(Group)
+    datamodel = SQLAModel(ContactGroup)
     related_views = [ContactGeneralView]
 
 
 class ContactChartView(ChartView):
     chart_title = 'Grouped contacts'
     label_columns = ContactGeneralView.label_columns
-    group_by_columns = ['group', 'gender']
+    group_by_columns = ['contact_grouo', 'gender']
     datamodel = SQLAModel(Contact)
 
 
