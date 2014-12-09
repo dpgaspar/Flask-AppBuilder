@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.1.2
+-----------------------------------
+
+- Fix, changing language was redirecting back.
+
 Improvements and Bug fixes on 1.1.1
 -----------------------------------
 
