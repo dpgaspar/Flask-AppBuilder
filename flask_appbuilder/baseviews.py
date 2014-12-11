@@ -131,7 +131,7 @@ class BaseView(object):
         """
             Use this method on your own endpoints, will pass the extra_args
             to the templates.
-        
+
             :param template: The template relative path
             :param kwargs: arguments to be passed to the template
         """
@@ -178,8 +178,8 @@ class BaseView(object):
         if page_history.pop() is None:
             return index_url
         session['page_history'] = page_history.to_json()
-        redir = page_history.pop() or index_url
-        return redir
+        url = page_history.pop() or index_url
+        return url
 
 
 class BaseModelView(BaseView):
@@ -683,13 +683,11 @@ class BaseCRUDView(BaseModelView):
         )
         return widgets
 
-
     """
     -----------------------------------------------------
             CRUD functions behaviour
     -----------------------------------------------------        
     """
-
     def _list(self):
         """
             list function logic, override to implement different logic

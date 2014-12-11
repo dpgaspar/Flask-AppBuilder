@@ -404,6 +404,12 @@ Use it like this if you want to restrict your view to readonly:</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="flask.ext.appbuilder.baseviews.BaseView.default_view">
+<tt class="descname">default_view</tt><em class="property"> = 'list'</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.default_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>the default view for this BaseView, to be used with url_for (method name)</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseView.extra_args">
 <tt class="descname">extra_args</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.extra_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>dictionary for injecting extra arguments into template</p>
@@ -415,10 +421,41 @@ Use it like this if you want to restrict your view to readonly:</p>
 <dd><p>Returns the previous url.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="flask.ext.appbuilder.baseviews.BaseView.render_template">
+<tt class="descname">render_template</tt><big>(</big><em>template</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.render_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this method on your own endpoints, will pass the extra_args
+to the templates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>template</strong> &#8211; The template relative path</li>
+<li><strong>kwargs</strong> &#8211; arguments to be passed to the template</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseView.route_base">
 <tt class="descname">route_base</tt><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.route_base" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this if you want to define your own relative url</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.baseviews.BaseView.static_folder">
+<tt class="descname">static_folder</tt><em class="property"> = 'static'</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.static_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>The static folder relative location</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.baseviews.BaseView.template_folder">
+<tt class="descname">template_folder</tt><em class="property"> = 'templates'</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.template_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>The template folder relative location</p>
 </dd></dl>
 
 <dl class="method">
