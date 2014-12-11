@@ -9,3 +9,5 @@
  - (TODO) New, column choices a dict {'col_name':[('value','display_value'),...],...}.
  - (TODO) New, column_formatters a dict {'col_name':func,...}
  - (TODO) New, add/edit form types, with bs3 horizontal, default and inline, base forms.
+ - (TODO) New, OAuth authentication.
+ - (TODO) New, support for MongoDB.

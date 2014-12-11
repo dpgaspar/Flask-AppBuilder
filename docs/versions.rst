@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.1.3
+-----------------------------------
+
+- Fix, User role column was not translated, since 1.1.2.
+
 Improvements and Bug fixes on 1.1.2
 -----------------------------------
 
