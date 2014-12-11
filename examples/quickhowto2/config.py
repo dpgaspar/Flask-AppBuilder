@@ -17,6 +17,7 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 #SQLALCHEMY_DATABASE_URI = 'postgresql://scott:tiger@localhost:5432/myapp'
 #SQLALCHEMY_ECHO = True
 
+"""
 BABEL_DEFAULT_LOCALE = 'en'
 BABEL_DEFAULT_FOLDER = 'translations'
 LANGUAGES = {
@@ -27,7 +28,7 @@ LANGUAGES = {
     'zh': {'flag': 'cn', 'name': 'Chinese'},
     'ru': {'flag': 'ru', 'name': 'Russian'}
 }
-
+"""
 
 
 #------------------------------

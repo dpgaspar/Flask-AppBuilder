@@ -58,6 +58,7 @@
 	<a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
 	<ul class="f16"><li class="flag {{languages[locale].get('flag')}}"></li></ul>
 	</a>
+    {% if len(languages.keys()) > 1 %}
 	<ul class="dropdown-menu">
 	<li class="dropdown">
 		{% for lang in languages %}
@@ -69,6 +70,7 @@
         	{% endfor %}
         </li>
         </ul>
+    {% endif %}
 </li>
 {% endmacro %}       
 

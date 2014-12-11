@@ -71,14 +71,13 @@ class ContactModelView(ModelView):
     add_widget = FormVerticalWidget
     show_widget = ShowBlockWidget
 
-    label_columns = {'contact_groups': 'Contacts Group'}
-    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups']
+    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
 
     list_template = 'list_contacts.html'
     list_widget = ListThumbnail
     show_template = 'show_contacts.html'
 
-    extra_args = {'extra_arg_obj1':'Extra argument 1 injected'}
+    extra_args = {'extra_arg_obj1': 'Extra argument 1 injected'}
     base_order = ('name', 'asc')
 
     show_fieldsets = [

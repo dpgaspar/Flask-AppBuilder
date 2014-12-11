@@ -47,7 +47,9 @@ class BaseView(object):
     """ Override this if you want to define your own relative url """
 
     template_folder = 'templates'
+    """ The template folder relative location """
     static_folder = 'static'
+    """  The static folder relative location """
     base_permissions = None
     """
         List with allowed base permission.
@@ -58,7 +60,7 @@ class BaseView(object):
     """
 
     default_view = 'list'
-
+    """ the default view for this BaseView, to be used with url_for (method name) """
     extra_args = None
     """ dictionary for injecting extra arguments into template """
 
@@ -66,6 +68,8 @@ class BaseView(object):
         """
             Initialization of base permissions
             based on exposed methods and actions
+
+            Initialization of extra args
         """
         if self.base_permissions is None:
             self.base_permissions = set()
@@ -124,6 +128,13 @@ class BaseView(object):
                                                 methods=methods)
 
     def render_template(self, template, **kwargs):
+        """
+            Use this method on your own endpoints, will pass the extra_args
+            to the templates.
+        
+            :param template: The template relative path
+            :param kwargs: arguments to be passed to the template
+        """
         return render_template(template, **dict(list(kwargs.items()) + list(self.extra_args.items())))
 
     def _prettify_name(self, name):

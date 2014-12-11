@@ -28,8 +28,8 @@ class AppBuilder(object):
     security_manager_class = None
     app = None
     session = None
-    sm = None
-    bm = None
+    sm = None  # Security Manager Class
+    bm = None  # Babel Manager Class
 
     menu = None
     indexview = None

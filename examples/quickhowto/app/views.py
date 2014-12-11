@@ -22,8 +22,7 @@ def fill_gender():
 class ContactModelView(ModelView):
     datamodel = SQLAModel(Contact)
 
-    label_columns = {'contact_group': 'Contacts Group'}
-    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group']
+    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
 
     base_order = ('name', 'asc')
 
