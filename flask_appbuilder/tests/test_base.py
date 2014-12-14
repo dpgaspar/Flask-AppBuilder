@@ -95,7 +95,7 @@ class FlaskTestCase(unittest.TestCase):
 
         class Model2View(ModelView):
             datamodel = SQLAModel(Model2)
-            list_columns = ['field_integer', 'field_float', 'field_string', 'field_method']
+            list_columns = ['field_integer', 'field_float', 'field_string', 'field_method', 'group.field_string']
 
             edit_form_query_rel_fields = [('group',
                                    SQLAModel(Model1, self.db.session),

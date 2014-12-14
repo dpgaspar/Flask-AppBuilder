@@ -1,4 +1,5 @@
 import logging
+from functools import reduce
 from flask_babelpkg import lazy_gettext
 
 log = logging.getLogger(__name__)

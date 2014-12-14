@@ -5,6 +5,9 @@ Improvements and Bug fixes on 1.1.3
 -----------------------------------
 
 - Fix, User role column was not translated, since 1.1.2.
+- Fix, when only one language setup, menu dropdown was not correct.
+- Fix, theme default generates 404, issue #60.
+- Fix, use of reduce as builtin, python3 problem, issue #58.
 
 Improvements and Bug fixes on 1.1.2
 -----------------------------------
