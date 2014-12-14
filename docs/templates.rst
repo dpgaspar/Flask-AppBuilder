@@ -224,7 +224,7 @@ new html that shares the same look and feel has the framework.
         Your html goes here
     {{ lib.panel_end() }}
 
-- Accordion (pass your view's name, or something that will serve has an id)::
+- Accordion (pass your view's name, or something that will serve as an id)::
 
     {% call lib.accordion_tag(view.__class__.__name__,"Accordion Title", False) %}
         Your HTML goes here
