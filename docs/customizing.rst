@@ -41,7 +41,7 @@ The default index template is very simple, you can create your own like this:
     </div>
     {% endblock %}
 
-What happened here? We should always extend from "appbuilder/base.html" this is the base template that will include all CSS's, Javascripts, and contruct the menu based on the user's security definition.
+What happened here? We should always extend from "appbuilder/base.html" this is the base template that will include all CSS's, Javascripts, and construct the menu based on the user's security definition.
 
 Next we will override the "content" block, we could override other areas like CSS, extend CSS, Javascript or extend javascript. We can even override the base.html completely
 
