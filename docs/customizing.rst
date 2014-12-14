@@ -120,7 +120,8 @@ you can create your own and override,
 or (even better) create them and contribute to the project on git.
 
 All views have templates that will display widgets in a certain layout.
-For example you can display a record related lists on tab (default) or on the same page.
+For example, on the edit or show view, you can display the related list (from *related_views*) on the same page,
+or as tab (default).
 
 ::
 
