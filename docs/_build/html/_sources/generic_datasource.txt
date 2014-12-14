@@ -30,7 +30,7 @@ On our example you must first define the **Model** you will represent::
         TIME = GenericColumn(str)
         CMD = GenericColumn(str)
 
-Has you can see, we are subclassing from **GenericModel** and use **GenericColumn** much like SQLAlchemy.
+As you can see, we are subclassing from **GenericModel** and use **GenericColumn** much like SQLAlchemy.
 except type are really python types. No type obligation is implemented, but you should respect it when
 implementing your own data generation
 

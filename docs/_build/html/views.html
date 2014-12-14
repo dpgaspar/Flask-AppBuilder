@@ -123,7 +123,7 @@ additionally add <strong>&#64;has_access</strong> decorator to tell flask that t
 <p>You can test your methods using the following url&#8217;s:</p>
 <p><a class="reference external" href="http://localhost:8080/myview/method1/john">http://localhost:8080/myview/method1/john</a></p>
 <p><a class="reference external" href="http://localhost:8080/myview/method2/john">http://localhost:8080/myview/method2/john</a></p>
-<p>Has you can see this methods are public, let&#8217;s change this example, edit views.py and change it to:</p>
+<p>As you can see this methods are public, let&#8217;s change this example, edit views.py and change it to:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">AppBuilder</span><span class="p">,</span> <span class="n">BaseView</span><span class="p">,</span> <span class="n">expose</span><span class="p">,</span> <span class="n">has_access</span>
 <span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">appbuilder</span>
 
@@ -148,7 +148,7 @@ additionally add <strong>&#64;has_access</strong> decorator to tell flask that t
         <span class="k">return</span> <span class="n">param1</span>
 
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">,</span> <span class="s">&quot;Method1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;Method2&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method2/jonh&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;Method2&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method2/john&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can find this example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2</a></p>
@@ -206,10 +206,10 @@ inside it create a file name &#8216;method3.html&#8217;</p>
 </pre></div>
 </div>
 <p>3 - Create a menu link to your new method:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;Method3&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method3/jonh&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;Method3&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method3/john&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Has you can see you just have to extend &#8220;appbuilder/base.html&#8221; on your template and then override <em>block content</em>.
+<p>As you can see you just have to extend &#8220;appbuilder/base.html&#8221; on your template and then override <em>block content</em>.
 You have many other <em>blocks</em> to override extending css includes, javascript, headers, tails etc...
 Next use <strong>Flask</strong> <strong>render_template</strong> to render your new template.</p>
 <div class="admonition note">

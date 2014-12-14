@@ -97,7 +97,7 @@ You must develop your template, then define it in a IndexView and pass it to App
 {% endblock %}
 </pre></div>
 </div>
-<p>What happened here? We should always extend from &#8220;appbuilder/base.html&#8221; this is the base template that will include all CSS&#8217;s, Javascripts, and contruct the menu based on the user&#8217;s security definition.</p>
+<p>What happened here? We should always extend from &#8220;appbuilder/base.html&#8221; this is the base template that will include all CSS&#8217;s, Javascripts, and construct the menu based on the user&#8217;s security definition.</p>
 <p>Next we will override the &#8220;content&#8221; block, we could override other areas like CSS, extend CSS, Javascript or extend javascript. We can even override the base.html completely</p>
 <p>I&#8217;ve presented the text on the content like:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="p">{{</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;text to be translated&quot;</span><span class="p">)}}</span>
@@ -167,7 +167,8 @@ to override the existing one.</p>
 you can create your own and override,
 or (even better) create them and contribute to the project on git.</p>
 <p>All views have templates that will display widgets in a certain layout.
-For example you can display a record related lists on tab (default) or on the same page.</p>
+For example, on the edit or show view, you can display the related list (from <em>related_views</em>) on the same page,
+or as tab (default).</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ServerDiskTypeModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">ServerDiskType</span><span class="p">)</span>
     <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;quantity&#39;</span><span class="p">,</span> <span class="s">&#39;disktype&#39;</span><span class="p">]</span>

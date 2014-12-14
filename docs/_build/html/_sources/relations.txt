@@ -191,7 +191,7 @@ how to use a many to many relation with extra properties. So let's define our em
         begin_date = Column(Date, default=today)
         end_date = Column(Date)
 
-Has you can see, this model is related to departments and employees and it has a begin date and end date
+As you can see, this model is related to departments and employees and it has a begin date and end date
 when he is/was allocated to it. It's a special kind of association table.
 
 We want the history to be shown on the employee show/detail view, has a list history. for this
