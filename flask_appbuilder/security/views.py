@@ -370,10 +370,19 @@ class AuthOIDView(AuthView):
     oid_ask_for = ['email']
     oid_ask_for_optional = []
 
+    def __init__(self):
+        super(AuthOIDView, self).__init__()
+
+        @self.appbuilder.sm.oid.login_handler
+        def login_handler(self):
+            print "LOGIN HANDLER"
+            return self.login()
+
+
     @expose('/login/', methods=['GET', 'POST'])
     def login(self, flag=True):
-        if flag:
-            self.oid_login_handler(self.login, self.appbuilder.sm.oid)
+        #if flag:
+        #    self.oid_login_handler(self.login, self.appbuilder.sm.oid)
         if g.user is not None and g.user.is_authenticated():
             return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_oid()
