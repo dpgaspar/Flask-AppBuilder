@@ -67,7 +67,6 @@ class DepartmentView(ModelView):
 
 class BenefitView(ModelView):
     datamodel = SQLAModel(Benefit)
-    related_views = [EmployeeView]
     add_columns = ['name']
     edit_columns = ['name']
     show_columns = ['name']
