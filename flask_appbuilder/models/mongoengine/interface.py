@@ -3,6 +3,7 @@ from ..base import BaseInterface
 from ..filters import Filters
 from mongoengine.fields import StringField, IntField
 
+
 class MongoEngineInterface(BaseInterface):
 
     def __init__(self, obj, session=None):
@@ -14,7 +15,7 @@ class MongoEngineInterface(BaseInterface):
 
     def query(self, filters=None, order_column='', order_direction='',
               page=None, page_size=None):
-        pass
+        return self.obj.objects
 
     def is_string(self, col_name):
         return isinstance(self.obj._fields[col_name], StringField)
