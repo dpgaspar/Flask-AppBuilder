@@ -1,7 +1,7 @@
 import logging
 from .._compat import as_unicode
 
-
+"""
 # For Retro Compatibility purposes
 from .sqla.filters import (FilterContains,FilterEndsWith,
                           FilterEqual,FilterEqualFunction,
@@ -9,8 +9,95 @@ from .sqla.filters import (FilterContains,FilterEndsWith,
                           FilterNotEndsWith,FilterNotEqual,
                           FilterNotStartsWith,FilterRelationManyToManyEqual,FilterRelationOneToManyEqual,
                           FilterRelationOneToManyNotEqual,FilterSmaller,FilterStartsWith)
-from .base import FilterRelation
+"""
+
 log = logging.getLogger(__name__)
+
+class BaseFilter(object):
+    """
+        Base class for all data filters.
+        Sub class to implement your own custom filters
+    """
+    column_name = ''
+    datamodel = None
+    model = None
+    name = ''
+    is_related_view = False
+    """
+        Sets this filter to a special kind for related views.
+        If true this filter was not set by the user
+    """
+
+    def __init__(self, column_name, datamodel, is_related_view=False):
+        """
+            Constructor.
+
+            :param column_name:
+                Model field name
+            :param datamodel:
+                The datamodel access class
+            :param is_related_view:
+                Optional internal parameter to filter related views
+        """
+        self.column_name = column_name
+        self.datamodel = datamodel
+        self.model = datamodel.obj
+        self.is_related_view = is_related_view
+
+    def apply(self, query, value):
+        """
+            Override this to implement you own new filters
+        """
+        pass
+
+    def __repr__(self):
+        return self.name
+
+
+class FilterRelation(BaseFilter):
+    """
+        Base class for all filters for relations
+    """
+    pass
+
+
+class BaseFilterConverter(object):
+    """
+        Base Filter Converter, all classes responsible
+        for the association of columns and possible filters
+        will inherit from this
+
+    """
+    conversion_table = ()
+    """
+        When implementing your own filters you just need to define
+        the new filters, and register them overriding this property
+        use something like this::
+
+            (('is_text', [FilterCustomForText,
+                                     FilterNotContains,
+                                     FilterEqual,
+                                     FilterNotEqual]
+                                     ),
+                        ('is_string', [FilterContains,
+                                       FilterNotContains,
+                                       FilterEqual,
+                                       FilterNotEqual]),
+                        ('is_integer', [FilterEqual,
+                                        FilterNotEqual]),
+                        )
+
+    """
+
+    def __init__(self, datamodel):
+        self.datamodel = datamodel
+
+    def convert(self, col_name):
+        for conversion in self.conversion_table:
+            if getattr(self.datamodel, conversion[0])(col_name):
+                return [item(col_name, self.datamodel) for item in conversion[1]]
+        log.warning('Filter type not supported for column: %s' % col_name)
+
 
 
 class Filters(object):

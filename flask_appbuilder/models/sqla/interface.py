@@ -10,7 +10,6 @@ from sqlalchemy import func
 
 from ..base import BaseInterface
 from .filters import SQLAFilterConverter
-from ..filters import Filters
 from ..group import GroupByDateYear, GroupByDateMonth, GroupByCol
 from ..mixins import FileColumn, ImageColumn
 from ...filemanager import FileManager, ImageManager

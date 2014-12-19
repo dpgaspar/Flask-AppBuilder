@@ -1,4 +1,5 @@
-from .models.filters import Filters, FilterEqual
+from .models.filters import Filters
+from .models.sqla.filters import FilterEqual
 from sqlalchemy.orm.exc import NoResultFound
 from wtforms import ValidationError
 

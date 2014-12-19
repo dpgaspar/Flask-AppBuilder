@@ -9,6 +9,9 @@ Improvements and Bug fixes on 1.1.4
 - Fix, BaseInterface new property for overriding filter converter class, better interface for new classes.
 - (TODO), list_show_links - lista de colunas com link para show.
 - (TODO), list_edit_links - lista de colunas com link para edit.
+- Fix, BaseFilter, FilterRelation, BaseFilterRelation changed module from flask.ext.appbuilder.models.base
+  to flask.ext.appbuilder.models.filter. (BREAKING CHANGE)
+- Fix, sqla Filter changed from flask.ext.appbuilder.filters to flask.ext.appbuilder.sql.filters. (BREAKING CHANGE)
 
 Improvements and Bug fixes on 1.1.3
 -----------------------------------

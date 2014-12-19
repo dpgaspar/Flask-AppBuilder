@@ -1,4 +1,4 @@
-from ..base import BaseFilter, FilterRelation, BaseFilterConverter
+from ..filters import BaseFilter, FilterRelation, BaseFilterConverter
 
 
 class MongoEngineFilterConverter(BaseFilterConverter):

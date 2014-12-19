@@ -9,7 +9,7 @@ from wtforms.validators import EqualTo
 from flask.ext.babelpkg import gettext, lazy_gettext
 from flask_login import login_user, logout_user
 
-from flask_appbuilder.models.datamodel import SQLAModel
+from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import BaseView, ModelView, SimpleFormView, expose
 from flask_appbuilder.charts.views import DirectByChartView
 
@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 class PermissionModelView(ModelView):
     route_base = '/permissions'
     base_permissions = ['can_list']
-    datamodel = SQLAModel(Permission)
+    datamodel = SQLAInterface(Permission)
 
     list_title = lazy_gettext('List Base Permissions')
     show_title = lazy_gettext('Show Base Permission')
@@ -39,7 +39,7 @@ class PermissionModelView(ModelView):
 class ViewMenuModelView(ModelView):
     route_base = '/viewmenus'
     base_permissions = ['can_list']
-    datamodel = SQLAModel(ViewMenu)
+    datamodel = SQLAInterface(ViewMenu)
 
     list_title = lazy_gettext('List View Menus')
     show_title = lazy_gettext('Show View Menu')
@@ -52,7 +52,7 @@ class ViewMenuModelView(ModelView):
 class PermissionViewModelView(ModelView):
     route_base = '/permissionviews'
     base_permissions = ['can_list']
-    datamodel = SQLAModel(PermissionView)
+    datamodel = SQLAInterface(PermissionView)
 
     list_title = lazy_gettext('List Permissions on Views/Menus')
     show_title = lazy_gettext('Show Permission on Views/Menus')
@@ -98,7 +98,7 @@ class ResetPasswordView(SimpleFormView):
 
 class UserModelView(ModelView):
     route_base = '/users'
-    datamodel = SQLAModel(User)
+    datamodel = SQLAInterface(User)
 
     list_title = lazy_gettext('List Users')
     show_title = lazy_gettext('Show User')
@@ -263,7 +263,7 @@ class UserDBModelView(UserModelView):
 
 
 class UserStatsChartView(DirectByChartView):
-    datamodel = SQLAModel(User)
+    datamodel = SQLAInterface(User)
     chart_title = lazy_gettext('User Statistics')
     label_columns = {'username': lazy_gettext('User Name'),
                      'login_count': lazy_gettext('Login count'),
@@ -290,7 +290,7 @@ class UserStatsChartView(DirectByChartView):
 class RoleModelView(ModelView):
     route_base = '/roles'
 
-    datamodel = SQLAModel(Role)
+    datamodel = SQLAInterface(Role)
 
     list_title = lazy_gettext('List Roles')
     show_title = lazy_gettext('Show Role')
