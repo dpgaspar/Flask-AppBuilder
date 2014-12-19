@@ -5,13 +5,11 @@ from ..filters import Filters
 
 class GenericInterface(BaseInterface):
 
+    filter_converter_class = GenericFilterConverter
+
     def __init__(self, obj, session=None):
         self.session = session
         super(GenericInterface, self).__init__(obj)
-
-
-    def get_filters(self, search_columns=[]):
-        return Filters(GenericFilterConverter, search_columns, self)
 
 
     def query(self, filters=None, order_column='', order_direction='',

@@ -4,7 +4,11 @@ Versions
 Improvements and Bug fixes on 1.1.4
 -----------------------------------
 
-
+- (TODO) New, excl_show_columns, excl_edit_columns, excl_show_columns, excl_search_columns attributes.
+- (TODO) Fix, GenericSession all crash on empty null collection correction.
+- Fix, BaseInterface new property for overriding filter converter class, better interface for new classes.
+- (TODO), list_show_links - lista de colunas com link para show.
+- (TODO), list_edit_links - lista de colunas com link para edit.
 
 Improvements and Bug fixes on 1.1.3
 -----------------------------------

@@ -13,7 +13,6 @@ from .base import FilterRelation
 log = logging.getLogger(__name__)
 
 
-
 class Filters(object):
     filters = []
     """ List of instanciated filters """

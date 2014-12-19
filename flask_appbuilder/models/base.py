@@ -1,6 +1,7 @@
 import logging
 from functools import reduce
 from flask_babelpkg import lazy_gettext
+from .filters import Filters
 
 log = logging.getLogger(__name__)
 
@@ -8,7 +9,7 @@ log = logging.getLogger(__name__)
 class BaseFilter(object):
     """
         Base class for all data filters.
-        Sub class to im
+        Sub class to implement your own custom filters
     """
     column_name = ''
     datamodel = None
@@ -57,9 +58,30 @@ class BaseFilterConverter(object):
     """
         Base Filter Converter, all classes responsible
         for the association of columns and possible filters
-        will inherite from this
+        will inherit from this
 
     """
+    conversion_table = ()
+    """
+        When implementing your own filters you just need to define
+        the new filters, and register them overriding this property
+        use something like this::
+
+            (('is_text', [FilterCustomForText,
+                                     FilterNotContains,
+                                     FilterEqual,
+                                     FilterNotEqual]
+                                     ),
+                        ('is_string', [FilterContains,
+                                       FilterNotContains,
+                                       FilterEqual,
+                                       FilterNotEqual]),
+                        ('is_integer', [FilterEqual,
+                                        FilterNotEqual]),
+                        )
+
+    """
+
     def __init__(self, datamodel):
         self.datamodel = datamodel
 
@@ -71,7 +93,14 @@ class BaseFilterConverter(object):
 
 
 class BaseInterface(object):
+    """
+        Base class for all data model interfaces.
+        Sub class it to implement your own interface for some data engine.
+    """
     obj = None
+
+    filter_converter_class = None
+    """ when sub classing override with your own custom filter converter """
 
     """ Messages to display on CRUD Events """
     add_row_message = lazy_gettext('Added Row')
@@ -95,6 +124,9 @@ class BaseInterface(object):
         else:
             # its attribute
             return getattr(item, col)
+
+    def get_filters(self, search_columns=[]):
+        return Filters(self.filter_converter_class, search_columns, self)
 
     def get_values_item(self, item, show_columns):
         return [self._get_attr_value(item, col) for col in show_columns]

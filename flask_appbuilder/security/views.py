@@ -395,6 +395,7 @@ class AuthOIDView(AuthView):
 
         @self.appbuilder.sm.oid.after_login
         def after_login(resp):
+
             if resp.email is None or resp.email == "":
                 flash(as_unicode(self.invalid_login_message), 'warning')
                 return redirect(self.login_template)

@@ -26,6 +26,8 @@ class SQLAInterface(BaseInterface):
     """
     session = None
 
+    filter_converter_class = SQLAFilterConverter
+
     def __init__(self, obj, session=None):
         self.list_columns = dict()
         self.list_properties = dict()
@@ -53,9 +55,6 @@ class SQLAInterface(BaseInterface):
         if order_column != '':
             query = query.order_by(order_column + ' ' + order_direction)
         return query
-
-    def get_filters(self, search_columns=[]):
-        return Filters(SQLAFilterConverter, search_columns, self)
 
     def query(self, filters=None, order_column='', order_direction='',
               page=None, page_size=None):
