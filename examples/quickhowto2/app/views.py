@@ -184,3 +184,5 @@ appbuilder.add_view(ProductView, "List Products", icon="fa-envelope", category="
 
 
 appbuilder.security_cleanup()
+
+

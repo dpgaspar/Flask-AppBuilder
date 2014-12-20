@@ -161,13 +161,6 @@ class UserModelView(ModelView):
     user_info_title = lazy_gettext("Your user information")
 
 
-class UserOIDModelView(UserModelView):
-    """
-        View that add OID specifics to User view.
-        Override to implement your own custom view.
-        Then override useroidmodelview property on SecurityManager
-    """
-
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
@@ -177,6 +170,15 @@ class UserOIDModelView(UserModelView):
                                title=self.user_info_title,
                                widgets=widgets,
                                appbuilder=self.appbuilder)
+
+
+class UserOIDModelView(UserModelView):
+    """
+        View that add OID specifics to User view.
+        Override to implement your own custom view.
+        Then override useroidmodelview property on SecurityManager
+    """
+    pass
 
 
 class UserLDAPModelView(UserModelView):
@@ -185,16 +187,16 @@ class UserLDAPModelView(UserModelView):
         Override to implement your own custom view.
         Then override userldapmodelview property on SecurityManager
     """
+    pass
 
-    @expose('/userinfo/')
-    @has_access
-    def userinfo(self):
-        widgets = self._get_show_widget(g.user.id, show_fieldsets=self.user_show_fieldsets)
-        self.update_redirect()
-        return render_template(self.show_template,
-                               title=self.user_info_title,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder)
+
+class UserOAuthModelView(UserModelView):
+    """
+        View that add OAUTH specifics to User view.
+        Override to implement your own custom view.
+        Then override userldapmodelview property on SecurityManager
+    """
+    pass
 
 
 class UserDBModelView(UserModelView):
@@ -378,7 +380,6 @@ class AuthOIDView(AuthView):
     def login(self, flag=True):
         @self.appbuilder.sm.oid.loginhandler
         def login_handler(self):
-            print "DECOR"
             if g.user is not None and g.user.is_authenticated():
                 return redirect(self.appbuilder.get_url_for_index)
             form = LoginForm_oid()
@@ -395,14 +396,13 @@ class AuthOIDView(AuthView):
 
         @self.appbuilder.sm.oid.after_login
         def after_login(resp):
-
             if resp.email is None or resp.email == "":
                 flash(as_unicode(self.invalid_login_message), 'warning')
-                return redirect(self.login_template)
+                return redirect('login')
             user = self.appbuilder.sm.auth_user_oid(resp.email)
             if user is None:
                 flash(as_unicode(self.invalid_login_message), 'warning')
-                return redirect(self.login_template)
+                return redirect('login')
             remember_me = False
             if 'remember_me' in session:
                 remember_me = session['remember_me']
@@ -411,41 +411,26 @@ class AuthOIDView(AuthView):
             login_user(user, remember=remember_me)
             return redirect(self.appbuilder.get_url_for_index)
 
-        ret = login_handler(self)
-        print "RETURN {0}".format(ret)
-        return ret
+        return login_handler(self)
 
 
-    def oid_login_handler(self, f, oid):
-        """
-            Hackish method to make use of oid.login_handler decorator.
-        """
-        if request.args.get('openid_complete') != u'yes':
-            return f(False)
-        consumer = Consumer(SessionWrapper(self), oid.store_factory())
-        openid_response = consumer.complete(request.args.to_dict(),
-                                            oid.get_current_url())
-        if openid_response.status == SUCCESS:
-            return self.after_login(OpenIDResponse(openid_response, []))
-        elif openid_response.status == CANCEL:
-            oid.signal_error(u'The request was cancelled')
-            return redirect(oid.get_current_url())
-        oid.signal_error(u'OpenID authentication error')
-        return redirect(oid.get_current_url())
+class AuthOAuthView(AuthView):
+    login_template = 'appbuilder/general/security/login_oauth.html'
 
-    def after_login(self, resp):
-        if resp.email is None or resp.email == "":
-            flash(as_unicode(self.invalid_login_message), 'warning')
-            return redirect(self.login_template)
-        user = self.appbuilder.sm.auth_user_oid(resp.email)
-        if user is None:
-            flash(as_unicode(self.invalid_login_message), 'warning')
-            return redirect(self.login_template)
-        remember_me = False
-        if 'remember_me' in session:
-            remember_me = session['remember_me']
-            session.pop('remember_me', None)
-
-        login_user(user, remember=remember_me)
-        return redirect(self.appbuilder.get_url_for_index)
+    @expose('/login/', methods=['GET', 'POST'])
+    def login(self):
+        if g.user is not None and g.user.is_authenticated():
+            return redirect(self.appbuilder.get_url_for_index)
+        form = LoginForm_db()
+        if form.validate_on_submit():
+            user = self.appbuilder.sm.auth_user_ldap(form.username.data, form.password.data)
+            if not user:
+                flash(as_unicode(self.invalid_login_message), 'warning')
+                return redirect(self.appbuilder.get_url_for_login)
+            login_user(user, remember=False)
+            return redirect(self.appbuilder.get_url_for_index)
+        return render_template(self.login_template,
+                               title=self.title,
+                               form=form,
+                               appbuilder=self.appbuilder)
 

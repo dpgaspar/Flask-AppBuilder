@@ -22,6 +22,42 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
 """    
+from flask import session, request, url_for, redirect, flash
+from flask_oauth import OAuth
+oauth = OAuth()
+remote_app_args = app.config.get('AUTH_OAUTH_REMOTE_APP')
+oauth_name = app.config.get('AUTH_OAUTH_NAME')
+flaskappbuilder = oauth.remote_app(oauth_name, **remote_app_args)
+
+@flaskappbuilder.tokengetter
+def get_twitter_token(token=None):
+    print "TOKEN"
+    return session.get('twitter_token')
+
+@app.route('/loginoauth')
+def login():
+    print "OAUTH LOGIN"
+    return flaskappbuilder.authorize(callback=url_for('oauth_authorized',
+        next=request.args.get('next') or request.referrer or None))
+
+@app.route('/oauth-authorized')
+@flaskappbuilder.authorized_handler
+def oauth_authorized(resp):
+    print "OAUTH AUTORIZED"
+    next_url = request.args.get('next') or url_for('index')
+    if resp is None:
+        flash(u'You denied the request to sign in.')
+        return redirect(next_url)
+
+    session['twitter_token'] = (
+        resp['oauth_token'],
+        resp['oauth_token_secret']
+    )
+    session['twitter_user'] = resp['screen_name']
+
+    flash('You were signed in as %s' % resp['screen_name'])
+    return redirect(next_url)
+
 
 from app import views
 
