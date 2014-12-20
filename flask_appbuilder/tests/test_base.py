@@ -7,7 +7,7 @@ import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.orm import relationship
 from flask.ext.appbuilder import Model, SQLA
-from flask_appbuilder.models.filters import FilterStartsWith, FilterEqual
+from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqual
 from flask_appbuilder.models.mixins import FileColumn, ImageColumn
 from flask_appbuilder.views import MasterDetailView, CompactCRUDMixin
 from flask_appbuilder.charts.views import (ChartView, TimeChartView,
