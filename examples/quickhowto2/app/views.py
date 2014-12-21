@@ -51,12 +51,12 @@ class ProductView(ModelView):
     add_columns = ['name','product_manufacturer', 'product_model']
     edit_columns = ['name','product_manufacturer', 'product_model']
 
-    add_form_query_cascade = [('product_manufacturer', 'product_model',
-                        SQLAModel(ProductModel, db.session),
-                        ['product_manufacturer',FA, 'product_manufacturer']
-                        )]
+    #add_form_query_cascade = [('product_manufacturer', 'product_model',
+    #                    SQLAModel(ProductModel, db.session),
+    #                    ['product_manufacturer',FA, 'product_manufacturer']
+    #                    )]
 
-    edit_form_query_cascade = add_form_query_cascade
+    #edit_form_query_cascade = add_form_query_cascade
 
 
 class ContactModelView2(ModelView):
@@ -112,7 +112,6 @@ class GroupModelView(ModelView):
     datamodel = SQLAModel(ContactGroup)
     related_views = [ContactModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
-
 
 class FloatModelView(ModelView):
     datamodel = SQLAModel(FloatModel)
