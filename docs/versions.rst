@@ -8,6 +8,7 @@ Improvements and Bug fixes on 1.1.4
 - (TODO) Fix, GenericSession all crash on empty null collection correction.
 - Fix, BaseInterface new property for overriding filter converter class, better interface for new classes.
 - Fix, Openid auth rework, no hacking done.
+- Fix, exclude possible order by for columns that are functions. #67
 - (TODO), list_show_links - lista de colunas com link para show.
 - (TODO), list_edit_links - lista de colunas com link para edit.
 - Fix, BaseFilter, FilterRelation, BaseFilterRelation changed module from flask.ext.appbuilder.models.base

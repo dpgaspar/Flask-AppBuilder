@@ -434,7 +434,11 @@ class SQLAInterface(BaseInterface):
         list_columns = list_columns or self.list_properties.keys()
         for col_name in list_columns:
             if not self.is_relation(col_name):
-                ret_lst.append(col_name)
+                if hasattr(self.obj, col_name):
+                    if not hasattr(getattr(self.obj, col_name), '__call__'):
+                        ret_lst.append(col_name)
+                else:
+                     ret_lst.append(col_name)
         return ret_lst
 
     def get_file_column_list(self):

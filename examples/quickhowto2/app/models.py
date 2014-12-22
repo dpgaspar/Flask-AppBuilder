@@ -11,6 +11,9 @@ class ContactGroup(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique = True, nullable=False)
 
+    def extra_col(self):
+        return "EXTRA {0}".format(self.id)
+
     def __repr__(self):
         return self.name
 

@@ -112,6 +112,7 @@ class GroupModelView(ModelView):
     datamodel = SQLAModel(ContactGroup)
     related_views = [ContactModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
+    list_columns = ['name', 'extra_col']
 
 class FloatModelView(ModelView):
     datamodel = SQLAModel(FloatModel)
