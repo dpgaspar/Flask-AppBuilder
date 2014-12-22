@@ -4,16 +4,17 @@ Versions
 Improvements and Bug fixes on 1.1.4
 -----------------------------------
 
-- (TODO) New, excl_show_columns, excl_edit_columns, excl_show_columns, excl_search_columns attributes.
-- (TODO) Fix, GenericSession all crash on empty null collection correction.
 - Fix, BaseInterface new property for overriding filter converter class, better interface for new classes.
+- Fix, search_widget property changed from BaseCRUDView to BaseModelView.
 - Fix, Openid auth rework, no hacking done.
 - Fix, exclude possible order by for columns that are functions. #67
-- (TODO), list_show_links - lista de colunas com link para show.
-- (TODO), list_edit_links - lista de colunas com link para edit.
 - Fix, BaseFilter, FilterRelation, BaseFilterRelation changed module from flask.ext.appbuilder.models.base
   to flask.ext.appbuilder.models.filter. (BREAKING CHANGE)
-- Fix, sqla Filter changed from flask.ext.appbuilder.filters to flask.ext.appbuilder.sql.filters. (BREAKING CHANGE)
+- Fix, sqla filters changed from flask.ext.appbuilder.filters to flask.ext.appbuilder.sql.filters. (BREAKING CHANGE)
+- (TODO) New, excl_show_columns, excl_edit_columns, excl_show_columns, excl_search_columns attributes.
+- (TODO) Fix, GenericSession method all crashes on empty null collection correction.
+- (TODO), list_show_links - lista de colunas com link para show.
+- (TODO), list_edit_links - lista de colunas com link para edit.
 
 Improvements and Bug fixes on 1.1.3
 -----------------------------------

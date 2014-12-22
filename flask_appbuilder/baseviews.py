@@ -246,6 +246,8 @@ class BaseModelView(BaseView):
                 base_order = ('my_column_name','asc')
 
     """
+    search_widget = SearchWidget
+    """ Search widget you can override with your own """
 
     _base_filters = None
     """ Internal base Filter from class Filters will always filter view """
@@ -473,8 +475,6 @@ class BaseCRUDView(BaseModelView):
     """ Add widget override """
     show_widget = ShowWidget
     """ Show widget override """
-    search_widget = SearchWidget
-    """ Search widget you can override with your own """
 
     actions = None
 
