@@ -417,20 +417,13 @@ class AuthOIDView(AuthView):
 class AuthOAuthView(AuthView):
     login_template = 'appbuilder/general/security/login_oauth.html'
 
-    @expose('/login/', methods=['GET', 'POST'])
+    @expose('/login/')
     def login(self):
+        provider = request.args.get('provider')
         if g.user is not None and g.user.is_authenticated():
             return redirect(self.appbuilder.get_url_for_index)
-        form = LoginForm_db()
-        if form.validate_on_submit():
-            user = self.appbuilder.sm.auth_user_ldap(form.username.data, form.password.data)
-            if not user:
-                flash(as_unicode(self.invalid_login_message), 'warning')
-                return redirect(self.appbuilder.get_url_for_login)
-            login_user(user, remember=False)
-            return redirect(self.appbuilder.get_url_for_index)
-        return render_template(self.login_template,
+        if provider is None:
+            return render_template(self.login_template,
                                title=self.title,
-                               form=form,
                                appbuilder=self.appbuilder)
 

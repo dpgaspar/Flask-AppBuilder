@@ -13,8 +13,8 @@ from .. import Base
 from ..basemanager import BaseManager
 
 from .models import User, Role, PermissionView, Permission, ViewMenu
-from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, \
-    ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, RoleModelView, \
+from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, \
+    ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, RoleModelView, \
     PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
 from .registerviews import RegisterUserDBView, RegisterUserOIDView
 
@@ -23,6 +23,7 @@ log = logging.getLogger(__name__)
 AUTH_OID = 0
 AUTH_DB = 1
 AUTH_LDAP = 2
+AUTH_OAUTH = 3
 
 ADMIN_USER_NAME = 'admin'
 ADMIN_USER_PASSWORD = 'general'
@@ -31,7 +32,11 @@ ADMIN_USER_FIRST_NAME = 'Admin'
 ADMIN_USER_LAST_NAME = 'User'
 
 
-class SecurityManager(BaseManager):
+class BaseSecurityManager(BaseManager):
+    pass
+
+
+class SecurityManager(BaseSecurityManager):
     """
         Responsible for authentication, registering security views,
         role and permission auto management
@@ -56,11 +61,15 @@ class SecurityManager(BaseManager):
     """ Override if you want your own user ldap view """
     useroidmodelview = UserOIDModelView
     """ Override if you want your own user OID view """
+    useroauthmodelview = UserOAuthModelView
+    """ Override if you want your own user OID view """
     authdbview = AuthDBView
     """ Override if you want your own Authentication DB view """
     authldapview = AuthLDAPView
     """ Override if you want your own Authentication LDAP view """
     authoidview = AuthOIDView
+    """ Override if you want your own Authentication OID view """
+    authoauthview = AuthOAuthView
     """ Override if you want your own Authentication OID view """
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
@@ -171,6 +180,9 @@ class SecurityManager(BaseManager):
         elif self.auth_type == AUTH_LDAP:
             self.user_view = self.userldapmodelview
             self.auth_view = self.authldapview()
+        elif self.auth_type == AUTH_OAUTH:
+            self.user_view = self.useroauthmodelview
+            self.auth_view = self.authoauthview()
         else:
             self.user_view = self.useroidmodelview
             self.auth_view = self.authoidview()

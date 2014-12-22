@@ -25,9 +25,8 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 from flask import session, request, url_for, redirect, flash
 from flask_oauth import OAuth
 oauth = OAuth()
-remote_app_args = app.config.get('AUTH_OAUTH_REMOTE_APP')
-oauth_name = app.config.get('AUTH_OAUTH_NAME')
-flaskappbuilder = oauth.remote_app(oauth_name, **remote_app_args)
+oauth_args = app.config.get('AUTH_OAUTH_PROVIDERS')[0]
+flaskappbuilder = oauth.remote_app(oauth_args['name'], **oauth_args['remote_app'])
 
 @flaskappbuilder.tokengetter
 def get_twitter_token(token=None):

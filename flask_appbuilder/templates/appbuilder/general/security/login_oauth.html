@@ -12,10 +12,17 @@
                     </div>
                     <div style="padding-top:30px" class="panel-body" >
 
-        <div class="center-block btn-group btn-group-lg" role="group">
-            <i class="fa fa-twitter fa-3x"></i>
-            <i class="fa fa-linkedin fa-3x"></i>
+        <div class="help-block">{{_("Click on your OpenID provider below")}}:</div>
+            <div class="center-block btn-group btn-group-lg" role="group">
+                <center>
+                <a href="{{url_for('login', provider='twiter')}}">
+                    <i class="fa fa-twitter fa-3x"></i>
+                </a>
+                <a href="{{url_for('login', provider='linkedin')}}">
+                    <i class="fa fa-linkedin fa-3x"></i>
+                </a>
+                </center>
+            </div>
         </div>
-
 </div></div></div>
 {% endblock %}

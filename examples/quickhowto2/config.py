@@ -37,20 +37,22 @@ LANGUAGES = {
 UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_URL = '/static/uploads/'
-AUTH_TYPE = 0
+AUTH_TYPE = 3
 #AUTH_LDAP_SERVER = "ldap://dc.domain.net"
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
 
-AUTH_OAUTH_NAME = 'twitter'
-AUTH_OAUTH_REMOTE_APP = {
-    'consumer_key':'xBeXxg9lyElUgwZT6AZ0A',
-    'consumer_secret':'aawnSpNTOVuDCjx7HMh6uSXetjNN8zWLpZwCEU4LBrk',
-    'base_url':'https://api.twitter.com/1.1/',
-    'request_token_url':'https://api.twitter.com/oauth/request_token',
-    'access_token_url':'https://api.twitter.com/oauth/access_token',
-    'authorize_url':'https://api.twitter.com/oauth/authenticate'}
-
+AUTH_OAUTH_PROVIDERS = [
+    {'name':'twitter', 'icon':'fa-twitter',
+        'remote_app': {
+            'consumer_key':'xBeXxg9lyElUgwZT6AZ0A',
+            'consumer_secret':'aawnSpNTOVuDCjx7HMh6uSXetjNN8zWLpZwCEU4LBrk',
+            'base_url':'https://api.twitter.com/1.1/',
+            'request_token_url':'https://api.twitter.com/oauth/request_token',
+            'access_token_url':'https://api.twitter.com/oauth/access_token',
+            'authorize_url':'https://api.twitter.com/oauth/authenticate'}
+    }
+    ]
 
 
 APP_NAME = "F.A.B. Example"
