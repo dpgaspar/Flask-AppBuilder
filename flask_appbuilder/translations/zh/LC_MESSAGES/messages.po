@@ -29,12 +29,12 @@ msgstr "搜索"
 #: flask_appbuilder/messages.py:10
 #: flask_appbuilder/templates/appbuilder/general/lib.html:281
 msgid "Back"
-msgstr "后面"
+msgstr "后退"
 
 #: flask_appbuilder/messages.py:11
 #: flask_appbuilder/templates/appbuilder/general/lib.html:231
 msgid "Save"
-msgstr "节省"
+msgstr "保存"
 
 #: flask_appbuilder/messages.py:12
 msgid "This field is required."
@@ -70,19 +70,19 @@ msgstr "访问被拒绝"
 
 #: flask_appbuilder/charts/views.py:34
 msgid "Group by"
-msgstr "集团"
+msgstr "分组"
 
 #: flask_appbuilder/models/base.py:77
 msgid "Added Row"
-msgstr "添加的行"
+msgstr "记录已添加"
 
 #: flask_appbuilder/models/base.py:78
 msgid "Changed Row"
-msgstr "更改的行"
+msgstr "记录已更新"
 
 #: flask_appbuilder/models/base.py:79
 msgid "Deleted Row"
-msgstr "删除的行"
+msgstr "记录已删除"
 
 #: flask_appbuilder/models/base.py:80
 msgid "Associated data exists, please delete them first"
@@ -98,15 +98,15 @@ msgstr "一般错误"
 
 #: flask_appbuilder/models/group.py:25
 msgid "Count of"
-msgstr ""
+msgstr "计数"
 
 #: flask_appbuilder/models/group.py:34
 msgid "Sum of"
-msgstr ""
+msgstr "总和"
 
 #: flask_appbuilder/models/group.py:42
 msgid "Avg. of"
-msgstr ""
+msgstr "平均"
 
 #: flask_appbuilder/models/generic/filters.py:6
 #: flask_appbuilder/models/sqla/filters.py:37
@@ -130,19 +130,19 @@ msgstr "不等于"
 
 #: flask_appbuilder/models/sqla/filters.py:9
 msgid "Starts with"
-msgstr "与开始"
+msgstr "以开始"
 
 #: flask_appbuilder/models/sqla/filters.py:16
 msgid "Not Starts with"
-msgstr "不带启动"
+msgstr "不以开始"
 
 #: flask_appbuilder/models/sqla/filters.py:23
 msgid "Ends with"
-msgstr "结尾为"
+msgstr "以结束"
 
 #: flask_appbuilder/models/sqla/filters.py:30
 msgid "Not Ends with"
-msgstr "不带结束"
+msgstr "不以结束"
 
 #: flask_appbuilder/models/sqla/filters.py:71
 msgid "Greater than"
@@ -154,23 +154,23 @@ msgstr "小于"
 
 #: flask_appbuilder/models/sqla/filters.py:85
 msgid "Relation"
-msgstr "关系"
+msgstr "关联"
 
 #: flask_appbuilder/models/sqla/filters.py:93
 msgid "No Relation"
-msgstr "不相关"
+msgstr "不关联"
 
 #: flask_appbuilder/models/sqla/filters.py:101
 msgid "Relation as Many"
-msgstr "没有关系"
+msgstr "多重关联"
 
 #: flask_appbuilder/security/forms.py:13
 msgid "openid"
-msgstr "开放的id"
+msgstr ""
 
 #: flask_appbuilder/security/forms.py:14
 msgid "remember_me"
-msgstr ""
+msgstr "记住我"
 
 #: flask_appbuilder/security/forms.py:18 flask_appbuilder/security/views.py:119
 #: flask_appbuilder/security/views.py:262
@@ -190,7 +190,7 @@ msgstr "密码"
 msgid ""
 "Please use a good password policy, this application does not check this "
 "for you"
-msgstr "请用一个好的密码策略，这样应用程序没有检查这个 你"
+msgstr "请使用安全性的密码，该应用不会坚持密码安全性"
 
 #: flask_appbuilder/security/forms.py:28 flask_appbuilder/security/views.py:203
 msgid "Confirm Password"
@@ -228,11 +228,11 @@ msgstr "基地权限"
 
 #: flask_appbuilder/security/manager.py:118
 msgid "Views/Menus"
-msgstr "查看/菜单"
+msgstr "视图/菜单"
 
 #: flask_appbuilder/security/manager.py:121
 msgid "Permission on Views/Menus"
-msgstr "权限查看/菜单"
+msgstr "视图/菜单权限"
 
 #: flask_appbuilder/security/views.py:33
 msgid "List Base Permissions"
@@ -273,27 +273,27 @@ msgstr "编辑视图菜单"
 
 #: flask_appbuilder/security/views.py:59
 msgid "List Permissions on Views/Menus"
-msgstr "在查看/菜单列表权限"
+msgstr "视图/菜单权限列表"
 
 #: flask_appbuilder/security/views.py:60
 msgid "Show Permission on Views/Menus"
-msgstr "显示在权限查看/菜单"
+msgstr "显示视图/菜单权限"
 
 #: flask_appbuilder/security/views.py:61
 msgid "Add Permission on Views/Menus"
-msgstr "添加权限上查看/菜单"
+msgstr "添加视图/菜单权限"
 
 #: flask_appbuilder/security/views.py:62
 msgid "Edit Permission on Views/Menus"
-msgstr "在查看/编辑菜单权限"
+msgstr "编辑视图/菜单权限"
 
 #: flask_appbuilder/security/views.py:64
 msgid "Permission"
-msgstr "允许"
+msgstr "权限"
 
 #: flask_appbuilder/security/views.py:64
 msgid "View/Menu"
-msgstr "查看/菜单"
+msgstr "视图/菜单"
 
 #: flask_appbuilder/security/views.py:77 flask_appbuilder/security/views.py:95
 msgid "Reset Password Form"
@@ -329,7 +329,7 @@ msgstr "姓"
 
 #: flask_appbuilder/security/views.py:121
 msgid "Is Active?"
-msgstr "是主动？"
+msgstr "是否激活？"
 
 #: flask_appbuilder/security/views.py:122
 msgid "EMail"
@@ -463,7 +463,7 @@ msgstr "注销"
 
 #: flask_appbuilder/templates/appbuilder/baselib.html:110
 msgid "Login"
-msgstr "注册"
+msgstr "登录"
 
 #: flask_appbuilder/templates/appbuilder/index.html:4
 msgid "Welcome"
@@ -499,7 +499,7 @@ msgstr "记录显示"
 
 #: flask_appbuilder/templates/appbuilder/general/lib.html:310
 msgid "You sure you want to delete this item?"
-msgstr "您确定要删除这个项目吗？"
+msgstr "您确定要删除这个条目吗？"
 
 #: flask_appbuilder/templates/appbuilder/general/lib.html:311
 msgid "Delete record"
@@ -507,12 +507,12 @@ msgstr "删除记录"
 
 #: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:17
 msgid "Group by fields"
-msgstr "集团信息"
+msgstr "按字段分组"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:19
 #: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:16
 msgid "Enter your login and password below"
-msgstr "请输入您的登录名和密码如下"
+msgstr "请在下面输入您的登录名和密码"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:21
 #: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:18

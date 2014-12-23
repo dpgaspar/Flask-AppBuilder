@@ -1,6 +1,6 @@
 import datetime
 from flask import g
-from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime, ForeignKey, Sequence
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declared_attr
 from .. import Model
@@ -11,7 +11,7 @@ _dont_audit = False
 
 class Permission(Model):
     __tablename__ = 'ab_permission'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('seq_ab_permission_pk'), primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
 
     def __repr__(self):
@@ -20,7 +20,7 @@ class Permission(Model):
 
 class ViewMenu(Model):
     __tablename__ = 'ab_view_menu'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('seq_ab_view_menu_pk'), primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
 
     def __eq__(self, other):
@@ -35,7 +35,7 @@ class ViewMenu(Model):
 
 class PermissionView(Model):
     __tablename__ = 'ab_permission_view'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('seq_permission_view_pk'), primary_key=True)
     permission_id = Column(Integer, ForeignKey('ab_permission.id'))
     permission = relationship("Permission")
     view_menu_id = Column(Integer, ForeignKey('ab_view_menu.id'))
@@ -46,7 +46,7 @@ class PermissionView(Model):
 
 
 assoc_permissionview_role = Table('ab_permission_view_role', Model.metadata,
-                                  Column('id', Integer, primary_key=True),
+                                  Column('id', Integer, Sequence('seq_ab_permission_view_role_pk'), primary_key=True),
                                   Column('permission_view_id', Integer, ForeignKey('ab_permission_view.id')),
                                   Column('role_id', Integer, ForeignKey('ab_role.id'))
 )
@@ -55,7 +55,7 @@ assoc_permissionview_role = Table('ab_permission_view_role', Model.metadata,
 class Role(Model):
     __tablename__ = 'ab_role'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('seq_ab_role_pk'), primary_key=True)
     name = Column(String(64), unique=True, nullable=False)
     permissions = relationship('PermissionView', secondary=assoc_permissionview_role, backref='role')
 
@@ -65,7 +65,7 @@ class Role(Model):
 
 class RegisterUser(Model):
     __tablename__ = 'ab_register_user'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('seq_ab_register_user_pk'), primary_key=True)
     first_name = Column(String(64), nullable=False)
     last_name = Column(String(64), nullable=False)
     username = Column(String(32), unique=True, nullable=False)
@@ -77,7 +77,7 @@ class RegisterUser(Model):
 
 class User(Model):
     __tablename__ = 'ab_user'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('seq_ab_user_pk'), primary_key=True)
     first_name = Column(String(64), nullable=False)
     last_name = Column(String(64), nullable=False)
     username = Column(String(32), unique=True, nullable=False)
