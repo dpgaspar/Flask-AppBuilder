@@ -477,7 +477,7 @@ msgstr "Bem Vindo"
 #, fuzzy
 msgid "User confirmation needed"
 msgstr "Confirmação do utilizador"
-s
+
 #: flask_appbuilder/templates/appbuilder/general/lib.html:40
 msgid "Actions"
 msgstr "Ações"
