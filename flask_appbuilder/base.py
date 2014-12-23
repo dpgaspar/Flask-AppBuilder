@@ -178,7 +178,7 @@ class AppBuilder(object):
         self.get_app.register_blueprint(bp)
 
     def _add_admin_views(self):
-        self.indexview = self.indexview()
+        self.indexview = self._check_and_init(self.indexview)
         self.add_view_no_menu(self.indexview)
         self.add_view_no_menu(UtilView())
         self.bm.register_views()

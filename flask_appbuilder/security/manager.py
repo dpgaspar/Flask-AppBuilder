@@ -7,23 +7,26 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager
 from flask_openid import OpenID
 from flask_babelpkg import lazy_gettext as _
+from sqlalchemy import func
 from sqlalchemy.engine.reflection import Inspector
 
 from .. import Base
 from ..basemanager import BaseManager
 
 from .models import User, Role, PermissionView, Permission, ViewMenu
-from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, \
-    ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, RoleModelView, \
-    PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
+from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
+    ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserRemoteUserModelView, \
+    RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
 from .registerviews import RegisterUserDBView, RegisterUserOIDView
 
 log = logging.getLogger(__name__)
 
+# Constants for supported authentication types
 AUTH_OID = 0
 AUTH_DB = 1
 AUTH_LDAP = 2
 AUTH_OAUTH = 3
+AUTH_REMOTE_USER = 4
 
 ADMIN_USER_NAME = 'admin'
 ADMIN_USER_PASSWORD = 'general'
@@ -64,7 +67,9 @@ class SecurityManager(BaseSecurityManager):
     useroidmodelview = UserOIDModelView
     """ Override if you want your own user OID view """
     useroauthmodelview = UserOAuthModelView
-    """ Override if you want your own user OID view """
+    """ Override if you want your own user OAuth view """
+    userremoteusermodelview = UserRemoteUserModelView
+    """ Override if you want your own user REMOTE_USER view """
     authdbview = AuthDBView
     """ Override if you want your own Authentication DB view """
     authldapview = AuthLDAPView
@@ -72,7 +77,9 @@ class SecurityManager(BaseSecurityManager):
     authoidview = AuthOIDView
     """ Override if you want your own Authentication OID view """
     authoauthview = AuthOAuthView
-    """ Override if you want your own Authentication OID view """
+    """ Override if you want your own Authentication OAuth view """
+    authremoteuserview = AuthRemoteUserView
+    """ Override if you want your own Authentication OAuth view """
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
     registeruseroidview = RegisterUserOIDView
@@ -196,6 +203,9 @@ class SecurityManager(BaseSecurityManager):
         elif self.auth_type == AUTH_OAUTH:
             self.user_view = self.useroauthmodelview
             self.auth_view = self.authoauthview()
+        elif self.auth_type == AUTH_REMOTE_USER:
+            self.user_view = self.userremoteusermodelview
+            self.auth_view = self.authremoteuserview()
         else:
             self.user_view = self.useroidmodelview
             self.auth_view = self.authoidview()
@@ -421,7 +431,22 @@ class SecurityManager(BaseSecurityManager):
         """
         user = self.get_session.query(User).filter_by(email=email).first()
         if user is None:
-            self._update_user_auth_stat(user, False)
+            return None
+        elif not user.is_active():
+            return None
+        else:
+            self._update_user_auth_stat(user)
+            return user
+
+    def auth_user_remote_user(self, username):
+        """
+            REMOTE_USER user Authentication
+
+            :type self: User model
+        """
+        # Will use case insensitive query
+        user = self.get_session.query(User).filter(func.lower(username)==func.lower(username)).first()
+        if user is None:
             return None
         elif not user.is_active():
             return None

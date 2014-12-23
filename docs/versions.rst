@@ -11,8 +11,8 @@ Improvements and Bug fixes on 1.1.4
 - Fix, BaseFilter, FilterRelation, BaseFilterRelation changed module from flask.ext.appbuilder.models.base
   to flask.ext.appbuilder.models.filter. (BREAKING CHANGE)
 - Fix, sqla filters changed from flask.ext.appbuilder.filters to flask.ext.appbuilder.sql.filters. (BREAKING CHANGE)
-- (TODO) New, AUTH_TYPE = 5 Web server auth via REMOTE_USER enviroment var.
-- (TODO) Fix, #71 set_index_view
+- New, AUTH_TYPE = 4 Web server auth via REMOTE_USER enviroment var.
+- Fix, #71 set_index_view removed, doc correction.
 - (TODO) New, excl_show_columns, excl_edit_columns, excl_show_columns, excl_search_columns attributes.
 - (TODO) Fix, GenericSession method all crashes on empty null collection correction.
 - (TODO), list_show_links - lista de colunas com link para show.

@@ -12,7 +12,8 @@ from flask.ext.appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.generic import PSModel
 from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction as FA
-from flask_appbuilder import expose, has_access, permission_name
+from flask_appbuilder import expose, has_access, permission_name, BaseView
+from flask_appbuilder import IndexView
 
 from app import db, appbuilder
 from .models import ContactGroup, Gender, Contact, FloatModel, Product, ProductManufacturer, ProductModel
@@ -28,6 +29,14 @@ def fill_gender():
 
 
 sess = PSSession()
+
+
+class MyIndexView(IndexView):
+    route_base = ''
+
+    @expose('/a')
+    def index(self):
+        return self.render_template('index.html', appbuilder=self.appbuilder)
 
 
 class PSView(ModelView):
@@ -181,7 +190,7 @@ appbuilder.add_view(ProductManufacturerView, "List Manufacturer", icon="fa-folde
                     category_icon='fa-envelope')
 appbuilder.add_view(ProductModelView, "List Models", icon="fa-envelope", category="Products")
 appbuilder.add_view(ProductView, "List Products", icon="fa-envelope", category="Products")
-
+appbuilder.set_index_view(MyIndexView)
 
 appbuilder.security_cleanup()
 

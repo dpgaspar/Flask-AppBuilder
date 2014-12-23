@@ -199,6 +199,15 @@ class UserOAuthModelView(UserModelView):
     pass
 
 
+class UserRemoteUserModelView(UserModelView):
+    """
+        View that add REMOTE_USER specifics to User view.
+        Override to implement your own custom view.
+        Then override userldapmodelview property on SecurityManager
+    """
+    pass
+
+
 class UserDBModelView(UserModelView):
     """
         View that add DB specifics to User view.
@@ -426,4 +435,23 @@ class AuthOAuthView(AuthView):
             return render_template(self.login_template,
                                title=self.title,
                                appbuilder=self.appbuilder)
+
+
+class AuthRemoteUserView(AuthView):
+    login_template = ''
+
+    @expose('/login/')
+    def login(self):
+        username = request.environ.get('REMOTE_USER')
+        if g.user is not None and g.user.is_authenticated():
+            return redirect(self.appbuilder.get_url_for_index)
+        if username:
+            user = self.appbuilder.sm.auth_user_remote_user(username)
+            if user is None:
+                flash(as_unicode(self.invalid_login_message), 'warning')
+            else:
+                login_user(user)
+        else:
+            flash(as_unicode(self.invalid_login_message), 'warning')
+        return redirect(self.appbuilder.get_url_for_index)
 

@@ -172,7 +172,7 @@ class BaseView(object):
         """
             Returns the previous url.
         """
-        index_url = url_for('%s.%s' % (self.appbuilder.indexview.endpoint, self.appbuilder.indexview.default_view))
+        index_url = self.appbuilder.get_url_for_index
         page_history = Stack(session.get('page_history', []))
 
         if page_history.pop() is None:
