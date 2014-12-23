@@ -31,13 +31,6 @@ def fill_gender():
 sess = PSSession()
 
 
-class MyIndexView(IndexView):
-    route_base = ''
-
-    @expose('/a')
-    def index(self):
-        return self.render_template('index.html', appbuilder=self.appbuilder)
-
 
 class PSView(ModelView):
     datamodel = GenericInterface(PSModel, sess)
@@ -190,7 +183,6 @@ appbuilder.add_view(ProductManufacturerView, "List Manufacturer", icon="fa-folde
                     category_icon='fa-envelope')
 appbuilder.add_view(ProductModelView, "List Models", icon="fa-envelope", category="Products")
 appbuilder.add_view(ProductView, "List Products", icon="fa-envelope", category="Products")
-appbuilder.set_index_view(MyIndexView)
 
 appbuilder.security_cleanup()
 
