@@ -54,6 +54,8 @@ class SecurityManager(BaseSecurityManager):
     """ Flask-Login LoginManager """
     oid = None
     """ Flask-OpenID OpenID """
+    oauth = None
+    """ Flask-OAuth """
 
     userdbmodelview = UserDBModelView
     """ Override if you want your own user db view """
@@ -85,11 +87,14 @@ class SecurityManager(BaseSecurityManager):
             """
         super(SecurityManager, self).__init__(appbuilder)
         app = self.appbuilder.get_app
+        # Base Security Config
         app.config.setdefault('AUTH_ROLE_ADMIN', 'Admin')
         app.config.setdefault('AUTH_ROLE_PUBLIC', 'Public')
         app.config.setdefault('AUTH_TYPE', AUTH_DB)
+        # Self Registration
         app.config.setdefault('AUTH_USER_REGISTRATION', False)
         app.config.setdefault('AUTH_USER_REGISTRATION_ROLE', self.auth_role_public)
+        # LDAP Config
         app.config.setdefault('AUTH_LDAP_SEARCH', '')
         app.config.setdefault('AUTH_LDAP_BIND_FIELD', 'cn')
         app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
@@ -97,13 +102,17 @@ class SecurityManager(BaseSecurityManager):
         app.config.setdefault('AUTH_LDAP_LASTNAME_FIELD', 'sn')
         app.config.setdefault('AUTH_LDAP_EMAIL_FIELD', 'mail')
 
-        if app.config['AUTH_TYPE'] == AUTH_LDAP:
+        if self.auth_type == AUTH_LDAP:
             if 'AUTH_LDAP_SERVER' not in app.config:
                 raise Exception("No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type.")
+        if self.auth_type == AUTH_OID:
+            self.oid = OpenID(app)
+        if self.auth_type == AUTH_OAUTH:
+            from flask_oauth import OAuth
+            self.oauth = OAuth
 
         self.lm = LoginManager(app)
         self.lm.login_view = 'login'
-        self.oid = OpenID(app)
         self.lm.user_loader(self.load_user)
         self.create_db()
 
@@ -166,6 +175,10 @@ class SecurityManager(BaseSecurityManager):
     @property
     def openid_providers(self):
         return self.appbuilder.get_app.config['OPENID_PROVIDERS']
+
+    @property
+    def oauth_providers(self):
+        return self.appbuilder.get_app.config['OAUTH_PROVIDERS']
 
     def register_views(self):
         self.appbuilder.add_view_no_menu(ResetPasswordView())
