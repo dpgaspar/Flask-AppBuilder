@@ -382,14 +382,12 @@ msgstr "Escriba el apellido del usuario"
 #: flask_appbuilder/security/views.py:135
 msgid "Username valid for authentication on DB or LDAP, unused for OID auth"
 msgstr ""
-"Nombre de usuario válido para la autenticación en DB o LDAP, "
-"no utilizado para autenticación OID"
+"Nombre de usuario válido para la autenticación en DB o LDAP, no utilizado"
+" para autenticación OID"
 
 #: flask_appbuilder/security/views.py:139
 msgid "Its not a good policy to remove a user, just make it inactive"
-msgstr ""
-"No es una buena practica eliminar un usuario, simplemente lo hace "
-"inactivo"
+msgstr "No es una buena practica eliminar un usuario, simplemente lo hace inactivo"
 
 #: flask_appbuilder/security/views.py:140
 msgid "The users email, this will also be used for OID auth"
@@ -402,8 +400,8 @@ msgid ""
 "The user role on the application, this will associate with a list of "
 "permissions"
 msgstr ""
-"El role del usuario en la aplicación, esto se asociará con una lista "
-"de permisos"
+"El role del usuario en la aplicación, esto se asociará con una lista de "
+"permisos"
 
 #: flask_appbuilder/security/views.py:143
 #: flask_appbuilder/security/views.py:204
