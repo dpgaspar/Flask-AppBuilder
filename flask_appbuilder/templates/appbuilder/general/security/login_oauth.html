@@ -15,12 +15,11 @@
         <div class="help-block">{{_("Click on your OpenID provider below")}}:</div>
             <div class="center-block btn-group btn-group-lg" role="group">
                 <center>
-                <a href="{{url_for('login', provider='twiter')}}">
-                    <i class="fa fa-twitter fa-3x"></i>
-                </a>
-                <a href="{{url_for('login', provider='linkedin')}}">
-                    <i class="fa fa-linkedin fa-3x"></i>
-                </a>
+                {% for pr in providers %}
+                    <a href="{{url_for('login', provider=pr.name)}}">
+                        <i class="fa {{pr.icon}} fa-3x"></i>
+                    </a>
+                {% endfor %}
                 </center>
             </div>
         </div>

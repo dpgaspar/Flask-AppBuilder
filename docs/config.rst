@@ -11,10 +11,12 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +===================================+============================================+===========+
 | SQLALCHEMY_DATABASE_URI           | Database connection string                 |   Yes     |
 +-----------------------------------+--------------------------------------------+-----------+
-| AUTH_TYPE = 0 | 1 | 2             | This is the authentication type            |   Yes     |
+| AUTH_TYPE = 0 | 1 | 2 | 3         | This is the authentication type            |   Yes     |
 |                                   |  - 0 = Open ID                             |           |
 |                                   |  - 1 = Database style (user/password)      |           |
 |                                   |  - 2 = LDAP, use AUTH_LDAP_SERVER also     |           |
+|                                   |  - 3 = uses web server environ var         |           |
+|                                   |        REMOTE_USER                         |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_USER_REGISTRATION =          | Set to True to enable user self            |   No      |
 | True|False                        | registration                               |           |

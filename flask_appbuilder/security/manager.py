@@ -25,8 +25,8 @@ log = logging.getLogger(__name__)
 AUTH_OID = 0
 AUTH_DB = 1
 AUTH_LDAP = 2
-AUTH_OAUTH = 3
-AUTH_REMOTE_USER = 4
+AUTH_REMOTE_USER = 3
+AUTH_OAUTH = 4
 
 ADMIN_USER_NAME = 'admin'
 ADMIN_USER_PASSWORD = 'general'
@@ -59,6 +59,8 @@ class SecurityManager(BaseSecurityManager):
     """ Flask-OpenID OpenID """
     oauth = None
     """ Flask-OAuth """
+    oauth_handler = None
+    """ OAuth handler, you can use this to use OAuth API's on your app """
 
     userdbmodelview = UserDBModelView
     """ Override if you want your own user db view """

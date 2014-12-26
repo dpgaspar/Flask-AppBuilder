@@ -12,6 +12,10 @@ You have three types of authentication methods
 
 	- LDAP: Authentication against an LDAP server, like Microsoft Active Directory.
 
+    - REMOTE_USER: Reads the *REMOTE_USER* web server environ var, and verifies if it's authorized with the framework users table.
+                It's the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
+                is configured to use kerberos, no need for the user to login with username and password on F.A.B.
+
 Configure the authentication type on config.py, take a look at :doc:`config`
 
 The session is preserved and encrypted using Flask-Login, OpenID requires Flask-OpenID.

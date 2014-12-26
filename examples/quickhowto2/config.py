@@ -1,4 +1,5 @@
 import os
+from flask_appbuilder.security.manager import AUTH_OID, AUTH_REMOTE_USER, AUTH_DB, AUTH_LDAP, AUTH_OAUTH
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -30,19 +31,18 @@ LANGUAGES = {
 }
 """
 
-
 #------------------------------
 # GLOBALS FOR GENERAL APP's
 #------------------------------
 UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_URL = '/static/uploads/'
-AUTH_TYPE = 1
+AUTH_TYPE = AUTH_OID
 #AUTH_LDAP_SERVER = "ldap://dc.domain.net"
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
 
-AUTH_OAUTH_PROVIDERS = [
+OAUTH_PROVIDERS = [
     {'name':'twitter', 'icon':'fa-twitter',
         'remote_app': {
             'consumer_key':'xBeXxg9lyElUgwZT6AZ0A',
