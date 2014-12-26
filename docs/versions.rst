@@ -1,7 +1,7 @@
 Versions
 ========
 
-Improvements and Bug fixes on 1.1.4
+Improvements and Bug fixes on 1.2.0
 -----------------------------------
 
 - Fix, BaseInterface new property for overriding filter converter class, better interface for new classes.
@@ -17,10 +17,6 @@ Improvements and Bug fixes on 1.1.4
 - Fix, #69 added SQLAlchemy Sequence to pk's to support ORACLE.
 - Fix, #69 improved chinese translations.
 - Fix, #66 improved spanish translations.
-- (TODO) New, excl_show_columns, excl_edit_columns, excl_show_columns, excl_search_columns attributes.
-- (TODO) Fix, GenericSession method all crashes on empty null collection correction.
-- (TODO), list_show_links - lista de colunas com link para show.
-- (TODO), list_edit_links - lista de colunas com link para edit.
 
 Improvements and Bug fixes on 1.1.3
 -----------------------------------
