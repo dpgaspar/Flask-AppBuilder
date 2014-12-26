@@ -1,6 +1,23 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.2.0
+-----------------------------------
+
+- Fix, BaseInterface new property for overriding filter converter class, better interface for new classes.
+- Fix, search_widget property changed from BaseCRUDView to BaseModelView.
+- Fix, Openid auth rework, no hacking done.
+- Fix, exclude possible order by for columns that are functions. #67
+- Fix, BaseFilter, FilterRelation, BaseFilterRelation changed module from flask.ext.appbuilder.models.base
+  to flask.ext.appbuilder.models.filter. (BREAKING CHANGE)
+- Fix, sqla filters changed from flask.ext.appbuilder.filters to flask.ext.appbuilder.sql.filters. (BREAKING CHANGE)
+- New, AUTH_TYPE = 4 Web server auth via REMOTE_USER enviroment var.
+- Fix, #71 set_index_view removed, doc correction.
+- Fix, #72 improved german translations.
+- Fix, #69 added SQLAlchemy Sequence to pk's to support ORACLE.
+- Fix, #69 improved chinese translations.
+- Fix, #66 improved spanish translations.
+
 Improvements and Bug fixes on 1.1.3
 -----------------------------------
 

@@ -81,13 +81,22 @@
 <td>Database connection string</td>
 <td>Yes</td>
 </tr>
-<tr class="row-odd"><td>AUTH_TYPE = 0 | 1 | 2</td>
+<tr class="row-odd"><td>AUTH_TYPE = 0 | 1 | 2 | 3</td>
 <td><dl class="first last docutils">
 <dt>This is the authentication type</dt>
-<dd><ul class="first last simple">
-<li>0 = Open ID</li>
-<li>1 = Database style (user/password)</li>
-<li>2 = LDAP, use AUTH_LDAP_SERVER also</li>
+<dd><ul class="first last">
+<li><p class="first">0 = Open ID</p>
+</li>
+<li><p class="first">1 = Database style (user/password)</p>
+</li>
+<li><p class="first">2 = LDAP, use AUTH_LDAP_SERVER also</p>
+</li>
+<li><dl class="first docutils">
+<dt>3 = uses web server environ var</dt>
+<dd><p class="first last">REMOTE_USER</p>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
 </dl>

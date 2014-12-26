@@ -58,10 +58,15 @@ Define a special and simple view inherit from IndexView::
     class MyIndexView(IndexView):
         index_template = 'index.html'
 
-3 - Tell F.A.B to use your index view::
+3 - Tell F.A.B to use your index view, when initializing AppBuilder::
 
-    appbuilder.set_index_view(MyIndexView)
+    appbuilder = AppBuilder(app, db.session, indexview=MyIndexView)
 
+
+Of course you can use a more complex index view, you can use any kind of view (BaseView childs), you can even
+change relative url path to whatever you want, remember to set **default_view** to your function.
+
+You can override **IndexView** index function to display a different view if a user is logged in or not.
 
 Changing the Footer
 -------------------

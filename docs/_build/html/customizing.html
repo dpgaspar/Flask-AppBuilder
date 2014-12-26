@@ -110,10 +110,13 @@ You must develop your template, then define it in a IndexView and pass it to App
     <span class="n">index_template</span> <span class="o">=</span> <span class="s">&#39;index.html&#39;</span>
 </pre></div>
 </div>
-<p>3 - Tell F.A.B to use your index view:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">set_index_view</span><span class="p">(</span><span class="n">MyIndexView</span><span class="p">)</span>
+<p>3 - Tell F.A.B to use your index view, when initializing AppBuilder:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">indexview</span><span class="o">=</span><span class="n">MyIndexView</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Of course you can use a more complex index view, you can use any kind of view (BaseView childs), you can even
+change relative url path to whatever you want, remember to set <strong>default_view</strong> to your function.</p>
+<p>You can override <strong>IndexView</strong> index function to display a different view if a user is logged in or not.</p>
 </div>
 <div class="section" id="changing-the-footer">
 <h2>Changing the Footer<a class="headerlink" href="#changing-the-footer" title="Permalink to this headline">¶</a></h2>

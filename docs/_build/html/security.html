@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
-    <link rel="next" title="API Reference" href="api.html" />
-    <link rel="prev" title="User Registration" href="user_registration.html" />
+    <link rel="next" title="User Registration" href="user_registration.html" />
+    <link rel="prev" title="i18n Translations" href="i18n.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -45,10 +45,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="api.html" title="API Reference"
+          <a href="user_registration.html" title="User Registration"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="user_registration.html" title="User Registration"
+          <a href="i18n.html" title="i18n Translations"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -65,10 +65,21 @@
 <h2>The Authentication methods<a class="headerlink" href="#the-authentication-methods" title="Permalink to this headline">¶</a></h2>
 <p>You have three types of authentication methods</p>
 <blockquote>
+<div><blockquote>
 <div><ul class="simple">
 <li>Database type authentications: username and password style that is queried from the database to match. Passwords are kept hashed on the database.</li>
 <li>Open ID: Uses the user&#8217;s email field to authenticate on Gmail, Yahoo etc...</li>
 <li>LDAP: Authentication against an LDAP server, like Microsoft Active Directory.</li>
+</ul>
+</div></blockquote>
+<ul>
+<li><dl class="first docutils">
+<dt>REMOTE_USER: Reads the <em>REMOTE_USER</em> web server environ var, and verifies if it&#8217;s authorized with the framework users table.</dt>
+<dd><p class="first last">It&#8217;s the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
+is configured to use kerberos, no need for the user to login with username and password on F.A.B.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </div></blockquote>
 <p>Configure the authentication type on config.py, take a look at <a class="reference internal" href="config.html"><em>Base Configuration</em></a></p>
@@ -225,8 +236,8 @@ correspondent lower case properties on <strong>SecurityManager</strong> (just li
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="user_registration.html" title="previous chapter">User Registration</a></li>
-      <li>Next: <a href="api.html" title="next chapter">API Reference</a></li>
+      <li>Previous: <a href="i18n.html" title="previous chapter">i18n Translations</a></li>
+      <li>Next: <a href="user_registration.html" title="next chapter">User Registration</a></li>
   </ul></li>
 </ul>
   <h3>This Page</h3>
