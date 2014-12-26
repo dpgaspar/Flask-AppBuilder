@@ -66,87 +66,6 @@ class BaseChartView(BaseModelView):
         return self._get_chart_widget(**kwargs).get('chart')
 
 
-class BaseSimpleGroupByChartView(BaseChartView):
-    group_by_columns = []
-    """ A list of columns to be possibly grouped by, this list must be filled """
-
-    def __init__(self, **kwargs):
-        if not self.group_by_columns:
-            raise Exception('Base Chart View property <group_by_columns> must not be empty')
-        else:
-            super(BaseChartView, self).__init__(**kwargs)
-
-    def _get_chart_widget(self, filters=None,
-                          order_column='',
-                          order_direction='',
-                          widgets=None,
-                          group_by=None,
-                          height=None,
-                          **args):
-
-        height = height or self.height
-        widgets = widgets or dict()
-        group_by = group_by or self.group_by_columns[0]
-        joined_filters = filters.get_joined_filters(self._base_filters)
-        value_columns = self.datamodel.query_simple_group(group_by, filters=joined_filters)
-
-        widgets['chart'] = self.chart_widget(route_base=self.route_base,
-                                             chart_title=self.chart_title,
-                                             chart_type=self.chart_type,
-                                             chart_3d=self.chart_3d,
-                                             height=height,
-                                             value_columns=value_columns, **args)
-        return widgets
-
-
-class BaseSimpleDirectChartView(BaseChartView):
-    direct_columns = []
-    """
-        Make chart using the column on the dict
-        chart_columns = {'chart label 1':('X column','Y1 Column','Y2 Column, ...),
-                        'chart label 2': ('X Column','Y1 Column',...),...}
-    """
-
-    def __init__(self, **kwargs):
-        if not self.direct_columns:
-            raise Exception('Base Chart View property <direct_columns> must not be empty')
-        else:
-            super(BaseChartView, self).__init__(**kwargs)
-
-
-    def get_group_by_columns(self):
-        """
-            returns the keys from direct_columns
-            Used in template, so that user can choose from options
-        """
-        return list(self.direct_columns.keys())
-
-    def _get_chart_widget(self, filters=None,
-                          order_column='',
-                          order_direction='',
-                          widgets=None,
-                          direct=None,
-                          height=None,
-                          **args):
-
-        height = height or self.height
-        widgets = widgets or dict()
-        joined_filters = filters.get_joined_filters(self._base_filters)
-        count, lst = self.datamodel.query(filters=joined_filters,
-                                          order_column=order_column,
-                                          order_direction=order_direction)
-        value_columns = self.datamodel.get_values(lst, list(direct))
-        value_columns = dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)
-
-        widgets['chart'] = self.chart_widget(route_base=self.route_base,
-                                             chart_title=self.chart_title,
-                                             chart_type=self.chart_type,
-                                             chart_3d=self.chart_3d,
-                                             height=height,
-                                             value_columns=value_columns, **args)
-        return widgets
-
-
 class GroupByChartView(BaseChartView):
 
     definitions = []
@@ -318,6 +237,91 @@ class DirectByChartView(GroupByChartView):
 
     """
     ProcessClass = DirectProcessData
+
+
+#-------------------------------------------------------
+# DEPRECATED SECTION
+#-------------------------------------------------------
+
+class BaseSimpleGroupByChartView(BaseChartView):
+    group_by_columns = []
+    """ A list of columns to be possibly grouped by, this list must be filled """
+
+    def __init__(self, **kwargs):
+        if not self.group_by_columns:
+            raise Exception('Base Chart View property <group_by_columns> must not be empty')
+        else:
+            super(BaseChartView, self).__init__(**kwargs)
+
+    def _get_chart_widget(self, filters=None,
+                          order_column='',
+                          order_direction='',
+                          widgets=None,
+                          group_by=None,
+                          height=None,
+                          **args):
+
+        height = height or self.height
+        widgets = widgets or dict()
+        group_by = group_by or self.group_by_columns[0]
+        joined_filters = filters.get_joined_filters(self._base_filters)
+        value_columns = self.datamodel.query_simple_group(group_by, filters=joined_filters)
+
+        widgets['chart'] = self.chart_widget(route_base=self.route_base,
+                                             chart_title=self.chart_title,
+                                             chart_type=self.chart_type,
+                                             chart_3d=self.chart_3d,
+                                             height=height,
+                                             value_columns=value_columns, **args)
+        return widgets
+
+
+class BaseSimpleDirectChartView(BaseChartView):
+    direct_columns = []
+    """
+        Make chart using the column on the dict
+        chart_columns = {'chart label 1':('X column','Y1 Column','Y2 Column, ...),
+                        'chart label 2': ('X Column','Y1 Column',...),...}
+    """
+
+    def __init__(self, **kwargs):
+        if not self.direct_columns:
+            raise Exception('Base Chart View property <direct_columns> must not be empty')
+        else:
+            super(BaseChartView, self).__init__(**kwargs)
+
+
+    def get_group_by_columns(self):
+        """
+            returns the keys from direct_columns
+            Used in template, so that user can choose from options
+        """
+        return list(self.direct_columns.keys())
+
+    def _get_chart_widget(self, filters=None,
+                          order_column='',
+                          order_direction='',
+                          widgets=None,
+                          direct=None,
+                          height=None,
+                          **args):
+
+        height = height or self.height
+        widgets = widgets or dict()
+        joined_filters = filters.get_joined_filters(self._base_filters)
+        count, lst = self.datamodel.query(filters=joined_filters,
+                                          order_column=order_column,
+                                          order_direction=order_direction)
+        value_columns = self.datamodel.get_values(lst, list(direct))
+        value_columns = dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)
+
+        widgets['chart'] = self.chart_widget(route_base=self.route_base,
+                                             chart_title=self.chart_title,
+                                             chart_type=self.chart_type,
+                                             chart_3d=self.chart_3d,
+                                             height=height,
+                                             value_columns=value_columns, **args)
+        return widgets
 
 
 class ChartView(BaseSimpleGroupByChartView):
