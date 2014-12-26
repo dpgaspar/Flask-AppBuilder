@@ -440,10 +440,10 @@ class AuthOAuthView(AuthView):
             self.appbuilder.sm.oauth_handler = \
                 self.appbuilder.sm.oauth.authorize(callback=url_for('oauth_authorized',
                     next=request.referrer, provider=provider))
-            print "OAUTH {0}".format(self.appbuilder.sm.oauth_handler)
 
     @expose('/oauth-authorized')
     def oauth_authorized(self):
+        """
         #provider = request.args['provider']
         remote_app = self.appbuilder.sm.oauth.remote_apps['twitter']
         print "OAUTH AUTHORIZED {0} {1}".format(remote_app)
@@ -470,6 +470,7 @@ class AuthOAuthView(AuthView):
         else:
             login_user(user)
         return redirect(next_url)
+        """
 
 
 class AuthRemoteUserView(AuthView):
