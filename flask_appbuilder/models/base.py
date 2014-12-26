@@ -145,19 +145,19 @@ class BaseInterface(object):
         """
             Adds object
         """
-        pass
+        raise NotImplementedError
 
     def edit(self, item):
         """
             Edit (change) object
         """
-        pass
+        raise NotImplementedError
 
     def delete(self, item):
         """
             Deletes object
         """
-        pass
+        raise NotImplementedError
 
     def get_col_default(self, col_name):
         pass

@@ -13,6 +13,10 @@ Improvements and Bug fixes on 1.1.4
 - Fix, sqla filters changed from flask.ext.appbuilder.filters to flask.ext.appbuilder.sql.filters. (BREAKING CHANGE)
 - New, AUTH_TYPE = 4 Web server auth via REMOTE_USER enviroment var.
 - Fix, #71 set_index_view removed, doc correction.
+- Fix, #72 improved german translations.
+- Fix, #69 added SQLAlchemy Sequence to pk's to support ORACLE.
+- Fix, #69 improved chinese translations.
+- Fix, #66 improved spanish translations.
 - (TODO) New, excl_show_columns, excl_edit_columns, excl_show_columns, excl_search_columns attributes.
 - (TODO) Fix, GenericSession method all crashes on empty null collection correction.
 - (TODO), list_show_links - lista de colunas com link para show.
