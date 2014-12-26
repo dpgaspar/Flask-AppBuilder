@@ -237,9 +237,9 @@ class GeneralModelConverter(object):
             return self._convert_simple(col_name, label, description, lst_validators, form_props)
 
 
-    def create_form(self, label_columns={}, inc_columns=[],
-                    description_columns={}, validators_columns={},
-                    extra_fields={}, filter_rel_fields=None, cascade_rel_fields=None):
+    def create_form(self, label_columns=None, inc_columns=None,
+                    description_columns=None, validators_columns=None,
+                    extra_fields=None, filter_rel_fields=None, cascade_rel_fields=None):
         """
             Converts a model to a form given
 
@@ -266,6 +266,11 @@ class GeneralModelConverter(object):
             :param cascade_rel_fields:
                 Still experimental...
         """
+        label_columns = label_columns or {}
+        inc_columns = inc_columns or []
+        description_columns = description_columns or {}
+        validators_columns = validators_columns or {}
+        extra_fields = extra_fields or {}
         form_props = {}
         for col_name in inc_columns:
             if col_name in extra_fields:
