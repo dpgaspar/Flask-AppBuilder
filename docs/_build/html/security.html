@@ -63,18 +63,17 @@
 <h1>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="the-authentication-methods">
 <h2>The Authentication methods<a class="headerlink" href="#the-authentication-methods" title="Permalink to this headline">¶</a></h2>
-<p>You have three types of authentication methods</p>
+<p>You have four types of authentication methods</p>
 <blockquote>
-<div><blockquote>
-<div><ul class="simple">
-<li>Database type authentications: username and password style that is queried from the database to match. Passwords are kept hashed on the database.</li>
-<li>Open ID: Uses the user&#8217;s email field to authenticate on Gmail, Yahoo etc...</li>
-<li>LDAP: Authentication against an LDAP server, like Microsoft Active Directory.</li>
-</ul>
-</div></blockquote>
-<ul>
+<div><ul>
+<li><p class="first"><strong>Database type authentications</strong>: username and password style that is queried from the database to match. Passwords are kept hashed on the database.</p>
+</li>
+<li><p class="first"><strong>Open ID</strong>: Uses the user&#8217;s email field to authenticate on Gmail, Yahoo etc...</p>
+</li>
+<li><p class="first"><strong>LDAP</strong>: Authentication against an LDAP server, like Microsoft Active Directory.</p>
+</li>
 <li><dl class="first docutils">
-<dt>REMOTE_USER: Reads the <em>REMOTE_USER</em> web server environ var, and verifies if it&#8217;s authorized with the framework users table.</dt>
+<dt><strong>REMOTE_USER</strong>: Reads the <em>REMOTE_USER</em> web server environ var, and verifies if it&#8217;s authorized with the framework users table.</dt>
 <dd><p class="first last">It&#8217;s the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
 is configured to use kerberos, no need for the user to login with username and password on F.A.B.</p>
 </dd>

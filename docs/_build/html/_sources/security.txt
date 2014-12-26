@@ -4,17 +4,14 @@ Security
 The Authentication methods
 --------------------------
 
-You have three types of authentication methods
+You have four types of authentication methods
 
-	- Database type authentications: username and password style that is queried from the database to match. Passwords are kept hashed on the database.
-	
-	- Open ID: Uses the user's email field to authenticate on Gmail, Yahoo etc...
-
-	- LDAP: Authentication against an LDAP server, like Microsoft Active Directory.
-
-    - REMOTE_USER: Reads the *REMOTE_USER* web server environ var, and verifies if it's authorized with the framework users table.
-                It's the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
-                is configured to use kerberos, no need for the user to login with username and password on F.A.B.
+  - **Database type authentications**: username and password style that is queried from the database to match. Passwords are kept hashed on the database.
+  - **Open ID**: Uses the user's email field to authenticate on Gmail, Yahoo etc...
+  - **LDAP**: Authentication against an LDAP server, like Microsoft Active Directory.
+  - **REMOTE_USER**: Reads the *REMOTE_USER* web server environ var, and verifies if it's authorized with the framework users table.
+       It's the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
+       is configured to use kerberos, no need for the user to login with username and password on F.A.B.
 
 Configure the authentication type on config.py, take a look at :doc:`config`
 
