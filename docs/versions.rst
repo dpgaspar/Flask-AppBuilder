@@ -1,7 +1,12 @@
 Versions
 ========
 
-Improvements and Bug fixes on 1.2.0
+Improvements and Bug fixes on 1.2.2
+-----------------------------------
+
+- New, block template **head_js** on init.html, affects all templates, better js override or add.
+
+Improvements and Bug fixes on 1.2.1
 -----------------------------------
 
 - Fix, New auth REMOTE_USER bug, always logged in Admin user, db query filter bug.

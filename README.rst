@@ -26,8 +26,7 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 1.2.1*. New Authentication method named REMOTE_USER, simple but very useful for intranet sites. There is a small
-breaking feature!
+*New 1.2.2*.
 
 If you're already using F.A.B.
 read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.

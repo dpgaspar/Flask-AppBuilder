@@ -1,6 +1,4 @@
-from .models.filters import Filters
 from .models.sqla.filters import FilterEqual
-from sqlalchemy.orm.exc import NoResultFound
 from wtforms import ValidationError
 
 
@@ -34,4 +32,4 @@ class Unique(object):
                 if self.message is None:
                     self.message = field.gettext(u'Already exists.')
                 raise ValidationError(self.message)
-        
+

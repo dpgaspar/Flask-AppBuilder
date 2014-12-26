@@ -1,16 +1,6 @@
 import logging
 from .._compat import as_unicode
 
-"""
-# For Retro Compatibility purposes
-from .sqla.filters import (FilterContains,FilterEndsWith,
-                          FilterEqual,FilterEqualFunction,
-                          FilterGreater,FilterNotContains,
-                          FilterNotEndsWith,FilterNotEqual,
-                          FilterNotStartsWith,FilterRelationManyToManyEqual,FilterRelationOneToManyEqual,
-                          FilterRelationOneToManyNotEqual,FilterSmaller,FilterStartsWith)
-"""
-
 log = logging.getLogger(__name__)
 
 class BaseFilter(object):
@@ -46,9 +36,9 @@ class BaseFilter(object):
 
     def apply(self, query, value):
         """
-            Override this to implement you own new filters
+            Override this to implement your own new filters
         """
-        pass
+        raise NotImplementedError
 
     def __repr__(self):
         return self.name
@@ -99,17 +89,23 @@ class BaseFilterConverter(object):
         log.warning('Filter type not supported for column: %s' % col_name)
 
 
-
 class Filters(object):
     filters = []
-    """ List of instanciated filters """
+    """ List of instanciated BaseFilter classes """
     values = []
     """ list of values to apply to filters """
     _search_filters = {}
     """ dict like {'col_name':[BaseFilter1, BaseFilter2, ...], ... } """
     _all_filters = {}
 
-    def __init__(self, filter_converter, search_columns=[], datamodel=None):
+    def __init__(self, filter_converter, search_columns=None, datamodel=None):
+        """
+
+            :param filter_converter: Accepts BaseFilterConverter class
+            :param search_columns: restricts possible columns, accepts a list of column names
+            :param datamodel: Accepts BaseInterface class
+        """
+        search_columns = search_columns or []
         self.filter_converter = filter_converter
         self.clear_filters()
         if search_columns and datamodel:

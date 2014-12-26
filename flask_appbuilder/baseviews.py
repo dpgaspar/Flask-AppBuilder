@@ -289,7 +289,9 @@ class BaseModelView(BaseView):
             self.search_form = conv.create_form(self.label_columns, self.search_columns)
 
 
-    def _get_search_widget(self, form=None, exclude_cols=[], widgets={}):
+    def _get_search_widget(self, form=None, exclude_cols=None, widgets=None):
+        exclude_cols = exclude_cols or []
+        widgets = widgets or {}
         widgets['search'] = self.search_widget(route_base=self.route_base,
                                                form=form,
                                                include_cols=self.search_columns,
