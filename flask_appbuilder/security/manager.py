@@ -447,7 +447,7 @@ class SecurityManager(BaseSecurityManager):
             :type self: User model
         """
         # Will use case insensitive query
-        user = self.get_session.query(User).filter(func.lower(username)==func.lower(username)).first()
+        user = self.get_session.query(User).filter(func.lower(User.username) == func.lower(username)).first()
         if user is None:
             return None
         elif not user.is_active():

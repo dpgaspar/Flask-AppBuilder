@@ -4,6 +4,11 @@ Versions
 Improvements and Bug fixes on 1.2.0
 -----------------------------------
 
+- Fix, New auth REMOTE_USER bug, always logged in Admin user, db query filter bug.
+
+Improvements and Bug fixes on 1.2.0
+-----------------------------------
+
 - Fix, BaseInterface new property for overriding filter converter class, better interface for new classes.
 - Fix, search_widget property changed from BaseCRUDView to BaseModelView.
 - Fix, Openid auth rework, no hacking done.
