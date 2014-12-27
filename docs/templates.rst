@@ -83,7 +83,7 @@ To insert your template section after a block do:
 
         {% block list_search scoped %}
             {{ super() }}
-            This Text will replace the search widget
+            This Text will show after the search widget
         {% endblock %}
 
 I guess you get the general ideal, make use of {{ super() }} to render the block's original content.
@@ -95,7 +95,6 @@ If you have your template on ./your_project/app/templates/list_contacts.html
 
     class ContactModelView(ModelView):
         datamodel = SQLAModel(Contact)
-
         list_template = 'list_contacts.html'
 
 

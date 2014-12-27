@@ -3,39 +3,28 @@ from flask import g
 from flask_wtf import Form
 from functools import partial
 from wtforms import (BooleanField, StringField,
-                       TextAreaField, IntegerField, FloatField, DateField, DateTimeField)
+                     TextAreaField, IntegerField, FloatField, DateField, DateTimeField)
 from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 
 from wtforms import validators
 from .fieldwidgets import (BS3TextAreaFieldWidget,
-                          BS3TextFieldWidget,
-                          DatePickerWidget,
-                          DateTimePickerWidget,
-                          Select2Widget,
-                          Select2ManyWidget)
+                           BS3TextFieldWidget,
+                           DatePickerWidget,
+                           DateTimePickerWidget,
+                           Select2Widget,
+                           Select2ManyWidget)
 from .upload import (BS3FileUploadFieldWidget,
-                    BS3ImageUploadFieldWidget,
-                    FileUploadField,
-                    ImageUploadField)
+                     BS3ImageUploadFieldWidget,
+                     FileUploadField,
+                     ImageUploadField)
 from .validators import Unique
 
 try:
     from wtforms.fields.core import _unset_value as unset_value
 except:
     from wtforms.utils import unset_value
-    
 
 log = logging.getLogger(__name__)
-
-
-def get_cascade_value_helper(col_name=""):
-    from flask import request
-
-    if not col_name:
-        return None
-    else:
-        obj = getattr(g, '_current_form_obj', None)
-        return getattr(obj, col_name, None)
 
 
 class FieldConverter(object):
@@ -56,8 +45,7 @@ class FieldConverter(object):
                         ('is_datetime', DateTimeField, DateTimePickerWidget),
     )
 
-
-    def __init__(self, datamodel, colname, label, description, validators, default = None):
+    def __init__(self, datamodel, colname, label, description, validators, default=None):
         self.datamodel = datamodel
         self.colname = colname
         self.label = label
@@ -82,12 +70,12 @@ class FieldConverter(object):
         log.error('Column %s Type not supported' % self.colname)
 
 
-
 class GeneralModelConverter(object):
     """
         Returns a form from a model only one public exposed
         method 'create_form'
     """
+
     def __init__(self, datamodel):
         self.datamodel = datamodel
 
@@ -115,58 +103,16 @@ class GeneralModelConverter(object):
         return lambda: self.datamodel.session.query(rel_model)
 
 
-    def _get_func_cascade_query(self, col_name, filter_rel_fields, cascade_rel_fields, form_props):
-        for cascade_rel_field in cascade_rel_fields:
-            if col_name == cascade_rel_field[1]:
-                sqla = cascade_rel_field[2]
-
-                filter_item = list(cascade_rel_field[3])
-                related_model = sqla._get_related_model(filter_item[0])[0]
-                filter_item[2] = partial(get_cascade_value_helper, col_name=filter_item[2])
-                
-                _filters = self.datamodel.get_filters().add_filter_list(sqla, [filter_item])
-                return lambda: sqla.query(_filters)[1]
-
-
-    def _is_master_cascade_field(self, col_name, cascade_rel_fields):
-        """
-            Checks if field (col_name) is a master field on a
-            cascade related fields definition.
-        """
-        if cascade_rel_fields:
-            for cascade_rel_field in cascade_rel_fields:
-                if col_name == cascade_rel_field[0]:
-                    return True
-        return False
-
-    def _is_slave_cascade_field(self, col_name, cascade_rel_fields):
-        """
-            Checks if field (col_name) is a master field on a
-            cascade related fields definition.
-        """
-        if cascade_rel_fields:
-            for cascade_rel_field in cascade_rel_fields:
-                if col_name == cascade_rel_field[1]:
-                    return True
-        return False
-
-
     def _convert_many_to_one(self, col_name, label, description,
                              lst_validators, filter_rel_fields,
-                             cascade_rel_fields, form_props):
+                             form_props):
         """
             Creates a WTForm field for many to one related fields,
             will use a Select box based on a query. Will only
             work with SQLAlchemy interface.
         """
-        if self._is_slave_cascade_field(col_name, cascade_rel_fields):
-            query_func = self._get_func_cascade_query(col_name, filter_rel_fields, cascade_rel_fields, form_props)
-        else:
-            query_func = self._get_func_related_query(col_name, filter_rel_fields)
+        query_func = self._get_func_related_query(col_name, filter_rel_fields)
         extra_classes = None
-        if self._is_master_cascade_field(col_name, cascade_rel_fields):
-            # it's master field get's css class for on change post.
-            extra_classes = 'json_select2'
         allow_blank = True
         col = self.datamodel.get_relation_fk(col_name)
         if not col.nullable:
@@ -185,7 +131,7 @@ class GeneralModelConverter(object):
 
     def _convert_many_to_many(self, col_name, label, description,
                               lst_validators, filter_rel_fields,
-                              cascade_rel_fields, form_props):
+                              form_props):
         query_func = self._get_func_related_query(col_name, filter_rel_fields)
         allow_blank = True
         form_props[col_name] = \
@@ -210,10 +156,9 @@ class GeneralModelConverter(object):
         return form_props
 
     def _convert_col(self, col_name,
-                      label, description,
-                      lst_validators, filter_rel_fields,
-                      cascade_rel_fields,
-                      form_props):
+                     label, description,
+                     lst_validators, filter_rel_fields,
+                     form_props):
         if self.datamodel.is_relation(col_name):
             if self.datamodel.is_relation_many_to_one(col_name) or \
                     self.datamodel.is_relation_one_to_one(col_name):
@@ -221,7 +166,6 @@ class GeneralModelConverter(object):
                                                  description,
                                                  lst_validators,
                                                  filter_rel_fields,
-                                                 cascade_rel_fields,
                                                  form_props)
             elif self.datamodel.is_relation_many_to_many(col_name) or \
                     self.datamodel.is_relation_one_to_many(col_name):
@@ -229,17 +173,15 @@ class GeneralModelConverter(object):
                                                   description,
                                                   lst_validators,
                                                   filter_rel_fields,
-                                                  cascade_rel_fields,
-                                                 form_props)
+                                                  form_props)
             else:
                 log.warning("Relation {0} not supported".format(col_name))
         else:
             return self._convert_simple(col_name, label, description, lst_validators, form_props)
 
-
     def create_form(self, label_columns=None, inc_columns=None,
                     description_columns=None, validators_columns=None,
-                    extra_fields=None, filter_rel_fields=None, cascade_rel_fields=None):
+                    extra_fields=None, filter_rel_fields=None):
         """
             Converts a model to a form given
 
@@ -263,8 +205,6 @@ class GeneralModelConverter(object):
 
             :param filter_rel_fields:
                 A filter to be applied on relationships
-            :param cascade_rel_fields:
-                Still experimental...
         """
         label_columns = label_columns or {}
         inc_columns = inc_columns or []
@@ -277,20 +217,19 @@ class GeneralModelConverter(object):
                 form_props[col_name] = extra_fields.get(col_name)
             else:
                 self._convert_col(col_name, self._get_label(col_name, label_columns),
-                                   self._get_description(col_name, description_columns),
-                                   self._get_validators(col_name, validators_columns),
-                                   filter_rel_fields, cascade_rel_fields, form_props)
+                                  self._get_description(col_name, description_columns),
+                                  self._get_validators(col_name, validators_columns),
+                                  filter_rel_fields, form_props)
         return type('DynamicForm', (DynamicForm,), form_props)
-
 
 
 class DynamicForm(Form):
     """
         Refresh method will force select field to refresh
     """
+
     @classmethod
     def refresh(self, obj=None):
-        g._current_form_obj = obj                           
         form = self(obj=obj)
         return form
 

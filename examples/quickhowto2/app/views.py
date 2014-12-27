@@ -52,14 +52,7 @@ class ProductView(ModelView):
     list_columns = ['name','product_manufacturer', 'product_model']
     add_columns = ['name','product_manufacturer', 'product_model']
     edit_columns = ['name','product_manufacturer', 'product_model']
-
-    #add_form_query_cascade = [('product_manufacturer', 'product_model',
-    #                    SQLAModel(ProductModel, db.session),
-    #                    ['product_manufacturer',FA, 'product_manufacturer']
-    #                    )]
-
-    #edit_form_query_cascade = add_form_query_cascade
-
+    add_widget = FormVerticalWidget
 
 class ContactModelView2(ModelView):
     datamodel = SQLAModel(Contact)

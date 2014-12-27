@@ -5,6 +5,8 @@ Improvements and Bug fixes on 1.2.2
 -----------------------------------
 
 - New, block template **head_js** on init.html, affects all templates, better js override or add.
+- Fix, fixed menu brand with image (APP_ICON), better display.
+- New, included boostrap-theme THEME.
 
 Improvements and Bug fixes on 1.2.1
 -----------------------------------

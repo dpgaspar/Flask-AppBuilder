@@ -37,7 +37,7 @@ LANGUAGES = {
 UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_URL = '/static/uploads/'
-AUTH_TYPE = AUTH_OID
+AUTH_TYPE = AUTH_DB
 #AUTH_LDAP_SERVER = "ldap://dc.domain.net"
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
@@ -56,7 +56,8 @@ OAUTH_PROVIDERS = [
 
 
 APP_NAME = "F.A.B. Example"
-APP_THEME = ""  # default
+APP_ICON = "/static/img/brand.jpg"
+APP_THEME = "bootstrap-theme.css"  # default
 #APP_THEME = "cerulean.css"      # COOL
 #APP_THEME = "amelia.css"
 #APP_THEME = "cosmo.css"
