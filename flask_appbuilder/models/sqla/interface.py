@@ -75,7 +75,7 @@ class SQLAInterface(BaseInterface):
         if len(order_column.split('.')) >= 2:
             tmp_order_column = ''
             for join_relation in order_column.split('.')[:-1]:
-                model_relation = self.get_model_relation(join_relation)
+                model_relation = self.get_related_model(join_relation)
                 query = query.join(model_relation)
                 # redefine order column name, because relationship can have a different name
                 # from the related table name.
@@ -333,7 +333,6 @@ class SQLAInterface(BaseInterface):
             if self.is_image(file_col):
                 im.save_file(this_request.files[file_col], getattr(item, file_col))
 
-
     def _delete_files(self, item):
         for file_col in self.get_file_column_list():
             if self.is_file(file_col):
@@ -363,20 +362,18 @@ class SQLAInterface(BaseInterface):
                         return None
                 return value
 
-    def get_model_relation(self, col_name):
+    def get_related_model(self, col_name):
         return self.list_properties[col_name].mapper.class_
 
     def query_model_relation(self, col_name):
-        model = self.get_model_relation(col_name)
+        model = self.get_related_model(col_name)
         return self.session.query(model).all()
 
-    def _get_related_model(self, col_name):
-        if self.is_relation(col_name):
-            return self.get_model_relation(col_name), self.list_properties[col_name].direction.name
-        return None
+    def get_related_interface(self, col_name):
+        return self.__class__(self.get_related_model(col_name), self.session)
 
     def get_related_obj(self, col_name, value):
-        rel_model, rel_direction = self._get_related_model(col_name)
+        rel_model = self.get_related_model(col_name)
         return self.session.query(rel_model).get(value)
 
     def get_related_fks(self, related_views):
@@ -385,7 +382,7 @@ class SQLAInterface(BaseInterface):
     def get_related_fk(self, model):
         for col_name in self.list_properties.keys():
             if self.is_relation(col_name):
-                if model == self.get_model_relation(col_name):
+                if model == self.get_related_model(col_name):
                     return col_name
                     #return self.get_property_col(i)
 
@@ -461,7 +458,7 @@ class SQLAInterface(BaseInterface):
 
 
     """
-    ----------- GET PK NAME -------------------
+        ----------- GET PK NAME -------------------
     """
     def get_pk_name(self):
         for col_name in self.list_columns.keys():

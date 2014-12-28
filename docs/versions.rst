@@ -7,6 +7,8 @@ Improvements and Bug fixes on 1.2.2
 - New, block template **head_js** on init.html, affects all templates, better js override or add.
 - Fix, fixed menu brand with image (APP_ICON), better display.
 - New, included boostrap-theme THEME.
+- Fix, internal API change, BaseIterface/SQLAInterface method get_model_relation new name: get_related_model.
+- New, internal QuerySelectField QuerySelectMultipleField based on BaseInterface.
 
 Improvements and Bug fixes on 1.2.1
 -----------------------------------

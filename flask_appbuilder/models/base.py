@@ -181,8 +181,18 @@ class BaseInterface(object):
         """
         pass
 
-    def get_model_relation(self, prop):
-        pass
+    def get_related_model(self, prop):
+        raise NotImplementedError
+
+    def get_related_interface(self, col_name):
+        """
+            Returns a BaseIterface for the related model
+            of column name.
+
+            :param col_name: Column name with relation
+            :return: BaseInterface
+        """
+        raise NotImplementedError
 
     def get_related_obj(self, col_name, value):
         pass

@@ -57,7 +57,7 @@ OAUTH_PROVIDERS = [
 
 APP_NAME = "F.A.B. Example"
 APP_ICON = "/static/img/brand.jpg"
-APP_THEME = "bootstrap-theme.css"  # default
+#APP_THEME = "bootstrap-theme.css"  # default
 #APP_THEME = "cerulean.css"      # COOL
 #APP_THEME = "amelia.css"
 #APP_THEME = "cosmo.css"
@@ -69,3 +69,4 @@ APP_THEME = "bootstrap-theme.css"  # default
 #APP_THEME = "slate.css"          # COOL
 #APP_THEME = "spacelab.css"      # NICE
 #APP_THEME = "united.css"
+APP_THEME = "yeti.css"

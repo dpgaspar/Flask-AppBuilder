@@ -4,7 +4,7 @@ from flask_wtf import Form
 from functools import partial
 from wtforms import (BooleanField, StringField,
                      TextAreaField, IntegerField, FloatField, DateField, DateTimeField)
-from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
+from .fields import QuerySelectMultipleField, QuerySelectField
 
 from wtforms import validators
 from .fieldwidgets import (BS3TextAreaFieldWidget,
@@ -91,17 +91,14 @@ class GeneralModelConverter(object):
     def _get_label(col_name, label_columns):
         return label_columns.get(col_name, "")
 
-    def _get_func_related_query(self, col_name, filter_rel_fields):
+    def _get_related_filters(self, col_name, filter_rel_fields):
         if filter_rel_fields:
             for filter_rel_field in filter_rel_fields:
                 if filter_rel_field[0] == col_name:
                     # filter_rel_field[1] if the Data Interface class with model
-                    sqla = filter_rel_field[1]
-                    _filters = self.datamodel.get_filters().add_filter_list(sqla, filter_rel_field[2])
-                    return lambda: sqla.query(_filters)[1]
-        rel_model = self.datamodel.get_model_relation(col_name)
-        return lambda: self.datamodel.session.query(rel_model)
-
+                    datamodel = filter_rel_field[1]
+                    return datamodel, datamodel.get_filters().add_filter_list(datamodel, filter_rel_field[2])
+        return self.datamodel.get_related_interface(col_name), None
 
     def _convert_many_to_one(self, col_name, label, description,
                              lst_validators, filter_rel_fields,
@@ -111,7 +108,7 @@ class GeneralModelConverter(object):
             will use a Select box based on a query. Will only
             work with SQLAlchemy interface.
         """
-        query_func = self._get_func_related_query(col_name, filter_rel_fields)
+        datamodel, filters = self._get_related_filters(col_name, filter_rel_fields)
         extra_classes = None
         allow_blank = True
         col = self.datamodel.get_relation_fk(col_name)
@@ -123,7 +120,8 @@ class GeneralModelConverter(object):
         form_props[col_name] = \
             QuerySelectField(label,
                              description=description,
-                             query_factory=query_func,
+                             datamodel=datamodel,
+                             filters = filters,
                              allow_blank=allow_blank,
                              validators=lst_validators,
                              widget=Select2Widget(extra_classes=extra_classes))
@@ -132,12 +130,13 @@ class GeneralModelConverter(object):
     def _convert_many_to_many(self, col_name, label, description,
                               lst_validators, filter_rel_fields,
                               form_props):
-        query_func = self._get_func_related_query(col_name, filter_rel_fields)
+        datamodel, filters = self._get_related_filters(col_name, filter_rel_fields)
         allow_blank = True
         form_props[col_name] = \
             QuerySelectMultipleField(label,
                                      description=description,
-                                     query_factory=query_func,
+                                     datamodel=datamodel,
+                                     filters=filters,
                                      allow_blank=allow_blank,
                                      validators=lst_validators,
                                      widget=Select2ManyWidget())
