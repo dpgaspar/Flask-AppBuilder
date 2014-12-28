@@ -277,7 +277,7 @@ class BaseModelView(BaseView):
     def _init_properties(self):
         self.label_columns = self.label_columns or {}
         self.base_filters = self.base_filters or []
-        self._base_filters = self.datamodel.get_filters().add_filter_list(self.datamodel, self.base_filters)
+        self._base_filters = self.datamodel.get_filters().add_filter_list(self.base_filters)
         list_cols = self.datamodel.get_columns_list()
         self.search_columns = self.search_columns or self.datamodel.get_search_columns_list()
         self._gen_labels_columns(list_cols)
@@ -578,9 +578,9 @@ class BaseCRUDView(BaseModelView):
                                  page=None, page_size=None):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
-        filters = self.datamodel.get_filters()
+        filters = related_view.datamodel.get_filters()
         filters.add_filter_related_view(fk, FilterRelationOneToManyEqual,
-                                        related_view.datamodel, self.datamodel.get_pk_value(item))
+                                        self.datamodel.get_pk_value(item))
         return related_view._get_view_widget(filters=filters,
                                              order_column=order_column,
                                              order_direction=order_direction,

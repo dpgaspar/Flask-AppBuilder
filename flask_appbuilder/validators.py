@@ -23,7 +23,6 @@ class Unique(object):
     def __call__(self, form, field):
         filters = self.datamodel.get_filters().add_filter(self.col_name,
                                                           FilterEqual,
-                                                          self.datamodel,
                                                           field.data)
         count, obj = self.datamodel.query(filters)
         if count > 0:
@@ -32,4 +31,3 @@ class Unique(object):
                 if self.message is None:
                     self.message = field.gettext(u'Already exists.')
                 raise ValidationError(self.message)
-

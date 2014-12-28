@@ -51,7 +51,6 @@ class QuerySelectField(SelectFieldBase):
     def _get_object_list(self):
         if self._object_list is None:
             count, objs = self.datamodel.query(self._filters)
-            print "OBJS {0}".format(objs)
             self._object_list = list((text_type(self.datamodel.get_pk_value(obj)), obj) for obj in objs)
         return self._object_list
 

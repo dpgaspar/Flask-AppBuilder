@@ -40,7 +40,7 @@ class BaseInterface(object):
             return getattr(item, col)
 
     def get_filters(self, search_columns=[]):
-        return Filters(self.filter_converter_class, search_columns, self)
+        return Filters(self.filter_converter_class, self, search_columns)
 
     def get_values_item(self, item, show_columns):
         return [self._get_attr_value(item, col) for col in show_columns]

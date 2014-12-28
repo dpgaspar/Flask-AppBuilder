@@ -94,9 +94,8 @@ class GeneralModelConverter(object):
     def _get_related_filters(self, col_name, filter_rel_fields):
         if filter_rel_fields:
             if col_name in filter_rel_fields:
-                # filter_rel_field[1] if the Data Interface class with model
                 datamodel = self.datamodel.get_related_interface(col_name)
-                filters = self.datamodel.get_filters().add_filter_list(self.datamodel, filter_rel_fields[col_name])
+                filters = datamodel.get_filters().add_filter_list(filter_rel_fields[col_name])
                 return datamodel, filters
         return self.datamodel.get_related_interface(col_name), None
 
