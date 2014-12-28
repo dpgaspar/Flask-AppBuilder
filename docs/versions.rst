@@ -9,6 +9,7 @@ Improvements and Bug fixes on 1.2.2
 - New, included boostrap-theme THEME.
 - Fix, internal API change, BaseIterface/SQLAInterface method get_model_relation new name: get_related_model.
 - New, internal QuerySelectField QuerySelectMultipleField based on BaseInterface.
+- New, edit_form_query_rel_fields, add_form_query_rel_fields changed, accepts dict instead of list (BREAKING CHANGE).
 - Fix, Filter rework datamodel is no longer optional for construct (BREAKING CHANGE).
 - Fix, Filter methods no longer require datamodel parameter (BREAKING CHANGE).
 

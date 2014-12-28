@@ -55,13 +55,14 @@ class BaseFilterConverter(object):
     """
         Base Filter Converter, all classes responsible
         for the association of columns and possible filters
-        will inherit from this
+        will inherit from this and override the conversion_table property.
 
     """
     conversion_table = ()
     """
         When implementing your own filters you just need to define
-        the new filters, and register them overriding this property
+        the new filters, and register them overriding this property.
+        This will map a column type to all possible filters.
         use something like this::
 
             (('is_text', [FilterCustomForText,
@@ -119,11 +120,10 @@ class Filters(object):
     def _get_filters(self, cols):
         filters = {}
         for col in cols:
-            lst_flt = self.filter_converter(self.datamodel).convert(col)
-            if lst_flt:
-                filters[col] = lst_flt
+            _filters = self.filter_converter(self.datamodel).convert(col)
+            if _filters:
+                filters[col] = _filters
         return filters
-
 
     def clear_filters(self):
         self.filters = []

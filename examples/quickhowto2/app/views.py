@@ -31,7 +31,6 @@ def fill_gender():
 sess = PSSession()
 
 
-
 class PSView(ModelView):
     datamodel = GenericInterface(PSModel, sess)
     base_permissions = ['can_list', 'can_show']
@@ -59,7 +58,8 @@ class ContactModelView2(ModelView):
     datamodel = SQLAModel(Contact)
     #label_columns = {'contact_groups.name': 'Contacts Group'}
     list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
-    add_form_query_rel_fields = {'contact_groups':[['name',FilterStartsWith,'p']]}
+    add_form_query_rel_fields = {'contact_groups':[['name',FilterStartsWith,'p']],
+                                 'gender':[['name',FilterStartsWith,'F']]}
 
 
 
