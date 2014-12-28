@@ -93,11 +93,11 @@ class GeneralModelConverter(object):
 
     def _get_related_filters(self, col_name, filter_rel_fields):
         if filter_rel_fields:
-            for filter_rel_field in filter_rel_fields:
-                if filter_rel_field[0] == col_name:
-                    # filter_rel_field[1] if the Data Interface class with model
-                    datamodel = filter_rel_field[1]
-                    return datamodel, datamodel.get_filters().add_filter_list(datamodel, filter_rel_field[2])
+            if col_name in filter_rel_fields:
+                # filter_rel_field[1] if the Data Interface class with model
+                datamodel = self.datamodel.get_related_interface(col_name)
+                filters = self.datamodel.get_filters().add_filter_list(self.datamodel, filter_rel_fields[col_name])
+                return datamodel, filters
         return self.datamodel.get_related_interface(col_name), None
 
     def _convert_many_to_one(self, col_name, label, description,

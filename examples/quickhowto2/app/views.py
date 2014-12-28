@@ -54,10 +54,13 @@ class ProductView(ModelView):
     edit_columns = ['name','product_manufacturer', 'product_model']
     add_widget = FormVerticalWidget
 
+
 class ContactModelView2(ModelView):
     datamodel = SQLAModel(Contact)
     #label_columns = {'contact_groups.name': 'Contacts Group'}
     list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
+    add_form_query_rel_fields = {'contact_groups':[['name',FilterStartsWith,'p']]}
+
 
 
 class ContactModelView(ModelView):
