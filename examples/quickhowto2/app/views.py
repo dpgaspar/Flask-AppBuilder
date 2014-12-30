@@ -1,17 +1,22 @@
 import calendar
+from flask import redirect
 from flask.ext.appbuilder import ModelView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
+from flask.ext.appbuilder.widgets import FormVerticalWidget, FormInlineWidget, FormHorizontalWidget, ShowBlockWidget
+from flask.ext.appbuilder.actions import action
+from flask_appbuilder.widgets import ListThumbnail
 from flask.ext.babelpkg import lazy_gettext as _
 from flask.ext.appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.generic import PSModel
-from flask_appbuilder.models.filters import FilterStartsWith, FilterEqualFunction as FA
-from flask_appbuilder import expose, has_access, permission_name
+from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction as FA
+from flask_appbuilder import expose, has_access, permission_name, BaseView
+from flask_appbuilder import IndexView
 
 from app import db, appbuilder
-from .models import Group, Gender, Contact, FloatModel, Product, ProductManufacturer, ProductModel
+from .models import ContactGroup, Gender, Contact, FloatModel, Product, ProductManufacturer, ProductModel
 
 
 def fill_gender():
@@ -24,6 +29,7 @@ def fill_gender():
 
 
 sess = PSSession()
+
 
 
 class PSView(ModelView):
@@ -47,57 +53,68 @@ class ProductView(ModelView):
     add_columns = ['name','product_manufacturer', 'product_model']
     edit_columns = ['name','product_manufacturer', 'product_model']
 
-    add_form_query_cascade = [('product_manufacturer', 'product_model',
-                        SQLAModel(ProductModel, db.session),
-                        ['product_manufacturer',FA, 'product_manufacturer']
-                        )]
+    #add_form_query_cascade = [('product_manufacturer', 'product_model',
+    #                    SQLAModel(ProductModel, db.session),
+    #                    ['product_manufacturer',FA, 'product_manufacturer']
+    #                    )]
 
-    edit_form_query_cascade = add_form_query_cascade
+    #edit_form_query_cascade = add_form_query_cascade
 
 
 class ContactModelView2(ModelView):
     datamodel = SQLAModel(Contact)
+    #label_columns = {'contact_groups.name': 'Contacts Group'}
+    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
 
 
 class ContactModelView(ModelView):
     datamodel = SQLAModel(Contact)
 
-    label_columns = {'group': 'Contacts Group'}
-    list_columns = ['name', 'personal_celphone', 'birthday', 'group']
+    add_widget = FormVerticalWidget
+    show_widget = ShowBlockWidget
+
+    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
 
     list_template = 'list_contacts.html'
+    list_widget = ListThumbnail
     show_template = 'show_contacts.html'
 
+    extra_args = {'extra_arg_obj1': 'Extra argument 1 injected'}
     base_order = ('name', 'asc')
 
     show_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     add_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     edit_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
+    @action("muldelete", "Delete", "Delete all Really?", "fa-rocket")
+    def muldelete(self, items):
+        self.datamodel.delete_all(items)
+        self.update_redirect()
+        return redirect(self.get_redirect())
 
 
 class GroupModelView(ModelView):
-    datamodel = SQLAModel(Group)
+    datamodel = SQLAModel(ContactGroup)
     related_views = [ContactModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
-
+    list_columns = ['name', 'extra_col']
 
 class FloatModelView(ModelView):
     datamodel = SQLAModel(FloatModel)
@@ -111,12 +128,12 @@ class ContactChartView(GroupByChartView):
 
     definitions = [
         {
-            'group': 'group',
-            'series': [(aggregate_count, 'group')]
+            'group': 'contact_groups',
+            'series': [(aggregate_count, 'contact_groups')]
         },
         {
             'group': 'gender',
-            'series': [(aggregate_count, 'group')]
+            'series': [(aggregate_count, 'gender')]
         }
     ]
 
@@ -139,12 +156,12 @@ class ContactTimeChartView(GroupByChartView):
         {
             'group': 'month_year',
             'formatter': pretty_month_year,
-            'series': [(aggregate_count, 'group')]
+            'series': [(aggregate_count, 'contact_groups')]
         },
         {
             'group': 'year',
             'formatter': pretty_year,
-            'series': [(aggregate_count, 'group')]
+            'series': [(aggregate_count, 'contact_groups')]
         }
     ]
 
@@ -167,5 +184,6 @@ appbuilder.add_view(ProductManufacturerView, "List Manufacturer", icon="fa-folde
 appbuilder.add_view(ProductModelView, "List Models", icon="fa-envelope", category="Products")
 appbuilder.add_view(ProductView, "List Products", icon="fa-envelope", category="Products")
 
-
 appbuilder.security_cleanup()
+
+

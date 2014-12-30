@@ -1,10 +1,12 @@
 import logging
-from flask import render_template, flash, redirect, send_file, jsonify
+from flask import render_template, flash, redirect, send_file, jsonify, request
+from .actions import action
+from ._compat import as_unicode
+from flask_babelpkg import lazy_gettext
 from .filemanager import uuid_originalname
 from .security.decorators import has_access, permission_name
 from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
-from .baseviews import expose, BaseView, BaseModelView, BaseCRUDView
-from .models.group import GroupByProcessData
+from .baseviews import expose, BaseView, BaseCRUDView
 from .urltools import *
 
 
@@ -15,7 +17,6 @@ class IndexView(BaseView):
     """
         A simple view that implements the index for the site
     """
-
     route_base = ''
     default_view = 'index'
     index_template = 'appbuilder/index.html'
@@ -23,12 +24,22 @@ class IndexView(BaseView):
     @expose('/')
     def index(self):
         self.update_redirect()
-        return render_template(self.index_template, appbuilder=self.appbuilder)
+        return self.render_template(self.index_template, appbuilder=self.appbuilder)
+
+
+class UtilView(BaseView):
+    """
+        A simple view that implements special util routes.
+        At the moment it only supports the back special endpoint.
+    """
+    route_base = ''
+    default_view = 'back'
 
     @expose('/back')
     def back(self):
         return redirect(self.get_redirect())
-        
+
+
 
 class SimpleFormView(BaseView):
     """
@@ -73,7 +84,7 @@ class SimpleFormView(BaseView):
         self.form_get(form)
         widgets = self._get_edit_widget(form=form)
         self.update_redirect()
-        return render_template(self.form_template,
+        return self.render_template(self.form_template,
                                title=self.form_title,
                                widgets=widgets,
                                appbuilder=self.appbuilder
@@ -96,7 +107,7 @@ class SimpleFormView(BaseView):
             return redirect(self.get_redirect())
         else:
             widgets = self._get_edit_widget(form=form)
-            return render_template(
+            return self.render_template(
                 self.form_template,
                 title=self.form_title,
                 widgets=widgets,
@@ -119,6 +130,95 @@ class SimpleFormView(BaseView):
         return widgets
 
 
+class PublicFormView(BaseView):
+    """
+        View for presenting your own forms
+        Inherit from this view to provide some base processing for your customized form views.
+
+        Notice that this class inherits from BaseView so all properties from the parent class can be overridden also.
+
+        Implement form_get and form_post to implement your form pre-processing and post-processing
+    """
+
+    form_template = 'appbuilder/general/model/edit.html'
+
+    edit_widget = FormWidget
+    form_title = ''
+    """ The form title to be displayed """
+    form_columns = None
+    """ The form columns to include, if empty will include all"""
+    form = None
+    """ The WTF form to render """
+    form_fieldsets = None
+    """ The field sets for the form widget """
+    default_view = 'this_form_get'
+    """ The form view default entry endpoint """
+
+    def _init_vars(self):
+        self.form_columns = self.form_columns or []
+        self.form_fieldsets = self.form_fieldsets or []
+        list_cols = [field.name for field in self.form.refresh()]
+        if self.form_fieldsets:
+            self.form_columns = []
+            for fieldset_item in self.form_fieldsets:
+                self.form_columns = self.form_columns + list(fieldset_item[1].get('fields'))
+        else:
+            if not self.form_columns:
+                self.form_columns = list_cols
+
+
+    @expose("/form", methods=['GET'])
+    def this_form_get(self):
+        self._init_vars()
+        form = self.form.refresh()
+        self.form_get(form)
+        widgets = self._get_edit_widget(form=form)
+        self.update_redirect()
+        return self.render_template(self.form_template,
+                               title=self.form_title,
+                               widgets=widgets,
+                               appbuilder=self.appbuilder
+        )
+
+    def form_get(self, form):
+        """
+            Override this method to implement your form processing
+        """
+        pass
+
+    @expose("/form", methods=['POST'])
+    def this_form_post(self):
+        self._init_vars()
+        form = self.form.refresh()
+        if form.validate_on_submit():
+            self.form_post(form)
+            return redirect(self.get_redirect())
+        else:
+            widgets = self._get_edit_widget(form=form)
+            return self.render_template(
+                self.form_template,
+                title=self.form_title,
+                widgets=widgets,
+                appbuilder=self.appbuilder
+            )
+
+    def form_post(self, form):
+        """
+            Override this method to implement your form processing
+        """
+        pass
+
+    def _get_edit_widget(self, form=None, exclude_cols=[], widgets={}):
+        widgets['edit'] = self.edit_widget(route_base=self.route_base,
+                                           form=form,
+                                           include_cols=self.form_columns,
+                                           exclude_cols=exclude_cols,
+                                           fieldsets=self.form_fieldsets
+        )
+        return widgets
+
+
+
 class ModelView(BaseCRUDView):
     """
         This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and list from your database tables, inherit your views from this class.
@@ -128,7 +228,6 @@ class ModelView(BaseCRUDView):
 
     def __init__(self, **kwargs):
         super(ModelView, self).__init__(**kwargs)
-
 
     """
     --------------------------------
@@ -140,7 +239,7 @@ class ModelView(BaseCRUDView):
     def list(self):
 
         widgets = self._list()
-        return render_template(self.list_template,
+        return self.render_template(self.list_template,
                                title=self.list_title,
                                widgets=widgets,
                                appbuilder=self.appbuilder)
@@ -156,15 +255,12 @@ class ModelView(BaseCRUDView):
     def show(self, pk):
 
         widgets = self._show(pk)
-        return render_template(self.show_template,
+        return self.render_template(self.show_template,
                                pk=pk,
                                title=self.show_title,
                                widgets=widgets,
                                appbuilder=self.appbuilder,
                                related_views=self._related_views)
-
-
-
 
     """
     ---------------------------
@@ -180,7 +276,7 @@ class ModelView(BaseCRUDView):
         if not widget:
             return redirect(self.get_redirect())
         else:
-            return render_template(self.add_template,
+            return self.render_template(self.add_template,
                                    title=self.add_title,
                                    widgets=widget,
                                    appbuilder=self.appbuilder)
@@ -196,7 +292,7 @@ class ModelView(BaseCRUDView):
         form = self.add_form.refresh()
         form.populate_obj(item)
         widget = self._get_add_widget(form=form, exclude_cols=exclude_cols)
-        return render_template(self.add_template,
+        return self.render_template(self.add_template,
                                    title=self.add_title,
                                    widgets=widget,
                                    appbuilder=self.appbuilder)
@@ -215,7 +311,7 @@ class ModelView(BaseCRUDView):
         if not widgets:
             return redirect(self.get_redirect())
         else:
-            return render_template(self.edit_template,
+            return self.render_template(self.edit_template,
                                    title=self.edit_title,
                                    widgets=widgets,
                                    appbuilder=self.appbuilder,
@@ -234,7 +330,7 @@ class ModelView(BaseCRUDView):
         self._delete(pk)
         return redirect(self.get_redirect())
 
-    
+
     @has_access
     @permission_name('list')
     @expose('/json')
@@ -261,8 +357,6 @@ class ModelView(BaseCRUDView):
                         result=result)
 
 
-
-
     @expose('/download/<string:filename>')
     @has_access
     def download(self, filename):
@@ -271,14 +365,34 @@ class ModelView(BaseCRUDView):
                          as_attachment=True)
 
 
-    @expose('/action/<string:name>/<pk>')
-    @has_access
+    @expose('/action/<string:name>/<pk>', methods=['GET'])
     def action(self, name, pk):
+        """
+            Action method to handle actions from a show view
+        """
         if self.appbuilder.sm.has_access(name, self.__class__.__name__):
             action = self.actions.get(name)
             return action.func(self.datamodel.get(pk))
         else:
-            flash("Access is Denied %s %s" % (name, self.__class__.__name__), "danger")
+            print("INVALID ACCESS ON {0}".format(self.__class__.__name__))
+            flash(as_unicode(lazy_gettext("Access is Denied")), "danger")
+            return redirect('.')
+
+
+    @expose('/action_post', methods=['POST'])
+    def action_post(self):
+        """
+            Action method to handle multiple records selected from a list view
+        """
+        name = request.form['action']
+        pks = request.form.getlist('rowid')
+        if self.appbuilder.sm.has_access(name, self.__class__.__name__):
+            action = self.actions.get(name)
+            items = [self.datamodel.get(pk) for pk in pks]
+            return action.func(items)
+        else:
+            print("INVALID ACCESS ON {0} {1}".format(name, self.__class__.__name__))
+            flash(as_unicode(lazy_gettext("Access is Denied")), "danger")
             return redirect('.')
 
 
@@ -323,7 +437,7 @@ class MasterDetailView(BaseCRUDView):
         else:
             related_views = []
 
-        return render_template(self.list_template,
+        return self.render_template(self.list_template,
                                title=self.list_title,
                                widgets=widgets,
                                related_views=related_views,
@@ -353,7 +467,7 @@ class CompactCRUDMixin(BaseCRUDView):
     @has_access
     def list(self):
         list_widgets = self._list()
-        return render_template(self.list_template,
+        return self.render_template(self.list_template,
                                title=self.list_title,
                                widgets=list_widgets,
                                appbuilder=self.appbuilder)

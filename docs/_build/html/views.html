@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Model Views (Quick How to)" href="quickhowto.html" />
-    <link rel="prev" title="Installation" href="installation.html" />
+    <link rel="prev" title="Base Configuration" href="config.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -48,7 +48,7 @@
           <a href="quickhowto.html" title="Model Views (Quick How to)"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="installation.html" title="Installation"
+          <a href="config.html" title="Base Configuration"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -123,7 +123,7 @@ additionally add <strong>&#64;has_access</strong> decorator to tell flask that t
 <p>You can test your methods using the following url&#8217;s:</p>
 <p><a class="reference external" href="http://localhost:8080/myview/method1/john">http://localhost:8080/myview/method1/john</a></p>
 <p><a class="reference external" href="http://localhost:8080/myview/method2/john">http://localhost:8080/myview/method2/john</a></p>
-<p>Has you can see this methods are public, let&#8217;s change this example, edit views.py and change it to:</p>
+<p>As you can see this methods are public, let&#8217;s change this example, edit views.py and change it to:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">AppBuilder</span><span class="p">,</span> <span class="n">BaseView</span><span class="p">,</span> <span class="n">expose</span><span class="p">,</span> <span class="n">has_access</span>
 <span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">appbuilder</span>
 
@@ -148,14 +148,14 @@ additionally add <strong>&#64;has_access</strong> decorator to tell flask that t
         <span class="k">return</span> <span class="n">param1</span>
 
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">,</span> <span class="s">&quot;Method1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;Method2&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method2/jonh&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;Method2&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method2/john&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can find this example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2</a></p>
 <span class="target" id="module-flask.ext.appbuilder.baseviews"></span><dl class="function">
 <dt id="flask.ext.appbuilder.baseviews.expose">
 <tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">expose</tt><big>(</big><em>url='/'</em>, <em>methods=('GET'</em>, <em>)</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.expose" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use this decorator to expose views in your view classes.</p>
+<dd><p>Use this decorator to expose views on your view classes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -199,18 +199,27 @@ inside it create a file name &#8216;method3.html&#8217;</p>
     <span class="c"># do something with param1</span>
     <span class="c"># and render template with param</span>
     <span class="n">param1</span> <span class="o">=</span> <span class="s">&#39;Goodbye </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param1</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;method3.html&#39;</span><span class="p">,</span>
                            <span class="n">param1</span> <span class="o">=</span> <span class="n">param1</span><span class="p">,</span>
                            <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>3 - Create a menu link to your new method:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;Method3&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method3/jonh&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;Method3&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method3/john&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Has you can see you just have to extend &#8220;appbuilder/base.html&#8221; on your template and then override <em>block content</em>.
+<p>As you can see you just have to extend &#8220;appbuilder/base.html&#8221; on your template and then override <em>block content</em>.
 You have many other <em>blocks</em> to override extending css includes, javascript, headers, tails etc...
-Next use <strong>Flask</strong> <strong>render_template</strong> to render you new template</p>
+Next use <strong>Flask</strong> <strong>render_template</strong> to render your new template.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Update redirect, on version 0.10.3, the redirect algorithm was reviewed, and uses session cookies to keep
+5 records of navigation history, these are very usefull to redirect back, keeping url arguments, and
+improving UI experience. You must call <em>self.update_redirect()</em> to insert the current url into the
+navigation history. Sometimes you may want to skip the update, for example on form validation errors, so that
+the <em>back</em> operation won&#8217;t send you to the same form, prior to the validation error.</p>
+</div>
 </div>
 <div class="section" id="simpleformview">
 <h2>SimpleFormView<a class="headerlink" href="#simpleformview" title="Permalink to this headline">¶</a></h2>
@@ -288,7 +297,7 @@ Notice also how label uses babel&#8217;s lazy_gettext as _(&#8216;text&#8217;) f
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+      <li>Previous: <a href="config.html" title="previous chapter">Base Configuration</a></li>
       <li>Next: <a href="quickhowto.html" title="next chapter">Model Views (Quick How to)</a></li>
   </ul></li>
 </ul>

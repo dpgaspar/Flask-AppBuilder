@@ -77,7 +77,7 @@ http://localhost:8080/myview/method1/john
 
 http://localhost:8080/myview/method2/john
 
-Has you can see this methods are public, let's change this example, edit views.py and change it to::
+As you can see this methods are public, let's change this example, edit views.py and change it to::
 
     from flask.ext.appbuilder import AppBuilder, BaseView, expose, has_access
     from app import appbuilder
@@ -103,7 +103,7 @@ Has you can see this methods are public, let's change this example, edit views.p
             return param1
 
     appbuilder.add_view(MyView, "Method1", category='My View')
-    appbuilder.add_link("Method2", href='/myview/method2/jonh', category='My View')
+    appbuilder.add_link("Method2", href='/myview/method2/john', category='My View')
 
 
 You can find this example on https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2
@@ -150,9 +150,9 @@ inside it create a file name 'method3.html'
 
 3 - Create a menu link to your new method::
 
-    appbuilder.add_link("Method3", href='/myview/method3/jonh', category='My View')
+    appbuilder.add_link("Method3", href='/myview/method3/john', category='My View')
 
-Has you can see you just have to extend "appbuilder/base.html" on your template and then override *block content*.
+As you can see you just have to extend "appbuilder/base.html" on your template and then override *block content*.
 You have many other *blocks* to override extending css includes, javascript, headers, tails etc...
 Next use **Flask** **render_template** to render your new template.
 

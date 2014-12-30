@@ -26,9 +26,10 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 0.10.5* Updated russian translations.
+*New 1.2.1*. New Authentication method named REMOTE_USER, simple but very useful for intranet sites. There is a small
+breaking feature!
 
-If you're already using F.A.B. (0.9.N or earlier)
+If you're already using F.A.B.
 read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.
 
 Also read the `Versions <http://flask-appbuilder.readthedocs.org/en/latest/versions.html>`_ for further detail on what changed.
@@ -54,10 +55,12 @@ Includes:
       - Inserts on the Database all the detailed permissions possible on your application.
       - Public (no authentication needed) and Private permissions.
       - Role based permissions.
-      - Authentication support for OpenID, Database and LDAP.
+      - Authentication support for OpenID, Database, LDAP and REMOTE_USER environ var.
+      - Support for self user registration.
   - Views and Widgets
       - Automatic menu generation.
       - Automatic CRUD generation.
+      - Multiple actions on db records.
       - Big variety of filters for your lists.
       - Various view widgets: lists, master-detail, list of thumbnails etc
       - Select2, Datepicker, DateTimePicker

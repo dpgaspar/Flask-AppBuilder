@@ -1,5 +1,5 @@
 from flask.ext.babelpkg import lazy_gettext
-from ..base import BaseFilter, FilterRelation, BaseFilterConverter
+from ..filters import BaseFilter, FilterRelation, BaseFilterConverter
 
 
 class FilterContains(BaseFilter):

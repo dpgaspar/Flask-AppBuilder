@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Multiple Databases" href="multipledbs.html" />
-    <link rel="prev" title="Actions" href="actions.html" />
+    <link rel="prev" title="Templates" href="templates.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -48,7 +48,7 @@
           <a href="multipledbs.html" title="Multiple Databases"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="actions.html" title="Actions"
+          <a href="templates.html" title="Templates"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -62,12 +62,12 @@
   <div class="section" id="generic-data-sources">
 <h1>Generic Data Sources<a class="headerlink" href="#generic-data-sources" title="Permalink to this headline">¶</a></h1>
 <p>This feature is still beta, but you can already use it, it allows you to use alternative/generic datasources.
-With it you can use python libraries, systems commands or whatever with the framework has if they were
+With it you can use python libraries, systems commands or whatever with the framework as if they were
 SQLAlchemy models.</p>
 <div class="section" id="ps-command-example">
 <h2>PS Command example<a class="headerlink" href="#ps-command-example" title="Permalink to this headline">¶</a></h2>
-<p>Already on the framework, and intended to be an example is a data source that holds the output from
-the linux &#8216;ps -ef&#8217; command, and shows it has if it were an SQLA model.</p>
+<p>Already on the framework, and intended to be an example, is a data source that holds the output from
+the linux &#8216;ps -ef&#8217; command, and shows it as if it were a SQLA model.</p>
 <p>Your own generic data source must subclass from <strong>GenericSession</strong> and implement at least the <strong>all</strong> method</p>
 <p>The <strong>GenericSession</strong> mimics a subset of SQLA <strong>Session</strong> class and it&#8217;s query feature, so if you
 override the all method you will implement the data generation at it&#8217;s heart.</p>
@@ -85,7 +85,7 @@ override the all method you will implement the data generation at it&#8217;s hea
     <span class="n">CMD</span> <span class="o">=</span> <span class="n">GenericColumn</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Has you can see, we are subclassing from <strong>GenericModel</strong> and use <strong>GenericColumn</strong> much like SQLAlchemy.
+<p>As you can see, we are subclassing from <strong>GenericModel</strong> and use <strong>GenericColumn</strong> much like SQLAlchemy.
 except type are really python types. No type obligation is implemented, but you should respect it when
 implementing your own data generation</p>
 <p>For your data generation, and regarding our example:</p>
@@ -163,7 +163,7 @@ you can use it to wherever your imagination/necessity drives you.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="actions.html" title="previous chapter">Actions</a></li>
+      <li>Previous: <a href="templates.html" title="previous chapter">Templates</a></li>
       <li>Next: <a href="multipledbs.html" title="next chapter">Multiple Databases</a></li>
   </ul></li>
 </ul>

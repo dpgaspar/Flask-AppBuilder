@@ -5,7 +5,7 @@
 {{ lib.panel_begin(title) }}
 
 {% block add_form %}
-    {{ widgets.get('add')()|safe }}
+    {{ widgets.get('add')(form_action=form_actiion)|safe }}
 {% endblock %}
 
 {{ lib.panel_end() }}

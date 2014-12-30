@@ -54,8 +54,8 @@ Let's work with the contacts application example, so you want to add translation
     from flask.ext.babelpkg import lazy_gettext as _
 
     class GroupModelView(ModelView):
-        datamodel = SQLAModel(Group, db.session)
-        related_views = [ContactModelView()]
+        datamodel = SQLAModel(ContactGroup)
+        related_views = [ContactModelView]
 
         label_columns = {'name':_('Name')}
 

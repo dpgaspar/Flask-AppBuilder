@@ -7,7 +7,7 @@ import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.orm import relationship
 from flask.ext.appbuilder import Model, SQLA
-from flask_appbuilder.models.filters import FilterStartsWith, FilterEqual
+from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqual
 from flask_appbuilder.models.mixins import FileColumn, ImageColumn
 from flask_appbuilder.views import MasterDetailView, CompactCRUDMixin
 from flask_appbuilder.charts.views import (ChartView, TimeChartView,
@@ -95,7 +95,7 @@ class FlaskTestCase(unittest.TestCase):
 
         class Model2View(ModelView):
             datamodel = SQLAModel(Model2)
-            list_columns = ['field_integer', 'field_float', 'field_string', 'field_method']
+            list_columns = ['field_integer', 'field_float', 'field_string', 'field_method', 'group.field_string']
 
             edit_form_query_rel_fields = [('group',
                                    SQLAModel(Model1, self.db.session),
@@ -259,7 +259,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 24)  # current minimal views are 11
+        eq_(len(self.appbuilder.baseviews), 25)  # current minimal views are 11
         
 
     def test_model_creation(self):

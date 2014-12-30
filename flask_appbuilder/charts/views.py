@@ -1,11 +1,9 @@
 import logging
-from flask import render_template
 from flask.ext.babelpkg import lazy_gettext
 from .widgets import ChartWidget, DirectChartWidget, MultipleChartWidget
 from .jsontools import dict_to_json
 from ..widgets import SearchWidget
 from ..security.decorators import has_access
-from ..models.filters import Filters, FilterRelationOneToManyEqual
 from ..baseviews import BaseModelView, expose
 from ..urltools import *
 from ..models.group import GroupByProcessData, DirectProcessData
@@ -266,7 +264,7 @@ class GroupByChartView(BaseChartView):
                                          definition=self.definitions[group_by])
         widgets = self._get_search_widget(form=form, widgets=widgets)
 
-        return render_template(self.chart_template, route_base=self.route_base,
+        return self.render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,
                                label_columns=self.label_columns,
                                definitions=self.definitions,
@@ -342,7 +340,7 @@ class ChartView(BaseSimpleGroupByChartView):
 
         widgets = self._get_chart_widget(filters=self._filters, group_by=group_by)
         widgets = self._get_search_widget(form=form, widgets=widgets)
-        return render_template(self.chart_template, route_base=self.route_base,
+        return self.render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,
                                label_columns=self.label_columns,
                                group_by_columns=self.group_by_columns,
@@ -408,7 +406,7 @@ class TimeChartView(BaseSimpleGroupByChartView):
                                          height=self.height)
 
         widgets = self._get_search_widget(form=form, widgets=widgets)
-        return render_template(self.chart_template, route_base=self.route_base,
+        return self.render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,
                                label_columns=self.label_columns,
                                group_by_columns=self.group_by_columns,
@@ -457,7 +455,7 @@ class DirectChartView(BaseSimpleDirectChartView):
                                          order_direction=order_direction,
                                          direct=direct)
         widgets = self._get_search_widget(form=form, widgets=widgets)
-        return render_template(self.chart_template, route_base=self.route_base,
+        return self.render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,
                                label_columns=self.label_columns,
                                group_by_columns=self.get_group_by_columns(),

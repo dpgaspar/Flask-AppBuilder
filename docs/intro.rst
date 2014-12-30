@@ -32,10 +32,12 @@ Includes:
       - Inserts on the Database all the detailed permissions possible on your application.
       - Public (no authentication needed) and Private permissions.
       - Role based permissions.
-      - Authentication support for OpenID, Database and LDAP.
+      - Authentication support for OpenID, Database, LDAP and REMOTE_USER environ var.
+      - Support for self user registration.
   - Views and Widgets
       - Automatic menu generation.
       - Automatic CRUD generation.
+      - Multiple actions on db records.
       - Big variety of filters for your lists.
       - Various view widgets: lists, master-detail, list of thumbnails etc
       - Select2, Datepicker, DateTimePicker

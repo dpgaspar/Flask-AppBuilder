@@ -91,12 +91,25 @@ Base available permission are: can_add, can_edit, can_delete, can_list, can_show
 </div>
 <div class="section" id="default-order">
 <h2>Default Order<a class="headerlink" href="#default-order" title="Permalink to this headline">¶</a></h2>
-<p>Use a default order on your lists, this can be overridden by the user on the UI. Data structure (&#8216;col_name&#8217;:&#8217;asc|desc&#8217;)</p>
+<p>Use a default order on your lists, this can be overridden by the user on the UI.
+Data structure (&#8216;col_name&#8217;:&#8217;asc|desc&#8217;)</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
     <span class="n">base_order</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;my_col_to_be_ordered&#39;</span><span class="p">,</span><span class="s">&#39;asc&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="template-extra-arguments">
+<h2>Template Extra Arguments<a class="headerlink" href="#template-extra-arguments" title="Permalink to this headline">¶</a></h2>
+<p>You can pass extra Jinja2 arguments to your custom template, using extra_args property:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
+    <span class="n">extra_args</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;my_extra_arg&#39;</span><span class="p">:</span><span class="s">&#39;SOMEVALUE&#39;</span><span class="p">}</span>
+    <span class="n">show_template</span> <span class="o">=</span> <span class="s">&#39;my_show_template.html&#39;</span>
+</pre></div>
+</div>
+<p>Your overriding the &#8216;show&#8217; template to handle your extra argument.
+You can still use F.A.B. show template using Jinja2 blocks, take a look at the <a class="reference internal" href="templates.html"><em>Templates</em></a> chapter</p>
 </div>
 <div class="section" id="forms">
 <h2>Forms<a class="headerlink" href="#forms" title="Permalink to this headline">¶</a></h2>
@@ -175,6 +188,29 @@ If you want to filter multiple related fields just add tuples to the list, remem
                                 <span class="n">widget</span><span class="o">=</span><span class="n">BS3TextFieldROWidget</span><span class="p">())}</span>
 </pre></div>
 </div>
+<p>For select fields based on  a query use something like this on your views:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Define the field query</span>
+<span class="k">def</span> <span class="nf">department_query</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Department</span><span class="p">)</span>
+
+<span class="c"># Define your field widget</span>
+<span class="k">class</span> <span class="nc">Select2ROWidget</span><span class="p">(</span><span class="n">Select2Widget</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;disabled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;true&#39;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Select2ROWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__call__</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">EmployeeView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Employee</span><span class="p">)</span>
+
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;employee_number&#39;</span><span class="p">,</span> <span class="s">&#39;full_name&#39;</span><span class="p">,</span> <span class="s">&#39;department&#39;</span><span class="p">]</span>
+
+    <span class="c"># override the &#39;department&#39; field, to make it readonly on edit form</span>
+    <span class="n">edit_form_extra_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;department&#39;</span><span class="p">:</span>  <span class="n">QuerySelectField</span><span class="p">(</span><span class="s">&#39;Department&#39;</span><span class="p">,</span>
+                                <span class="n">query_factory</span><span class="o">=</span><span class="n">department_query</span><span class="p">,</span>
+                                <span class="n">widget</span><span class="o">=</span><span class="n">Select2ROWidget</span><span class="p">())}</span>
+</pre></div>
+</div>
 <ul class="simple">
 <li>You can contribute with your own additional form validations rules.</li>
 </ul>
@@ -204,6 +240,7 @@ with <em>Not Null</em> (Required) or Unique constraints:</p>
 <li><a class="reference internal" href="#security">Security</a></li>
 <li><a class="reference internal" href="#base-filtering">Base Filtering</a></li>
 <li><a class="reference internal" href="#default-order">Default Order</a></li>
+<li><a class="reference internal" href="#template-extra-arguments">Template Extra Arguments</a></li>
 <li><a class="reference internal" href="#forms">Forms</a></li>
 </ul>
 </li>

@@ -164,7 +164,6 @@ class BaseProcessData(object):
         self.aggr_by_cols = aggr_by_cols
         self.formatter_by_cols = formatter_by_cols
 
-
     def attrgetter(self, *items):
         if len(items) == 1:
             attr = items[0]

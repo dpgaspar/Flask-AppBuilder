@@ -1,7 +1,7 @@
 .navbar .brand { 
 	max-height: 40px; 
 	overflow: visible; 
-	padding-top: 0; 
+	padding-top: 0;
 	padding-bottom: 0; 
 }
 
@@ -29,4 +29,22 @@
 	right:0;	
 	width:100%;
 	margin:auto;
+}
+
+
+th.action_checkboxes {
+    width: 1%;
+}
+
+.cursor-hand {
+    cursor: pointer;
+    cursor: hand;
+}
+
+.img-select {
+    outline: 2px solid;
+}
+
+.img-unselect {
+    outline: 1px solid;
 }

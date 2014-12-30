@@ -18,9 +18,28 @@ class TemplateFilters(object):
     def __init__(self, app, security_manager):
         self.security_manager = security_manager
         for attr_name in dir(self):
-            if hasattr(getattr(self, attr_name),'_filter'):
+            if hasattr(getattr(self, attr_name), '_filter'):
                 attr = getattr(self, attr_name)
                 app.jinja_env.filters[attr._filter] = attr
+
+
+    @app_template_filter('get_actions_on_list')
+    def get_actions_on_list(self, actions, modelview_name):
+        res_actions = dict()
+        for action_key in actions:
+            action = actions[action_key]
+            if self.is_item_visible(action.name, modelview_name) and action.multiple:
+                res_actions[action_key] = action
+        return res_actions
+
+    @app_template_filter('get_actions_on_show')
+    def get_actions_on_show(self, actions, modelview_name):
+        res_actions = dict()
+        for action_key in actions:
+            action = actions[action_key]
+            if self.is_item_visible(action.name, modelview_name) and action.single:
+                res_actions[action_key] = action
+        return res_actions
 
 
     @app_template_filter('link_order')

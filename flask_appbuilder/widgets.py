@@ -11,8 +11,13 @@ from ._compat import as_unicode
 
 log = logging.getLogger(__name__)
 
-class RenderTemplateWidget(object):
 
+class RenderTemplateWidget(object):
+    """
+        Base template for every widget
+        Enables the possibility of rendering a template
+         inside a template with run time options
+    """
     template = 'appbuilder/general/widgets/render.html'
     template_args = None
 
@@ -39,6 +44,43 @@ class FormWidget(RenderTemplateWidget):
         fieldsets = []
     """
     template = 'appbuilder/general/widgets/form.html'
+
+
+class FormVerticalWidget(RenderTemplateWidget):
+    """
+        FormWidget
+
+        form = None
+        include_cols = []
+        exclude_cols = []
+        fieldsets = []
+    """
+    template = 'appbuilder/general/widgets/form_vertical.html'
+
+
+class FormHorizontalWidget(RenderTemplateWidget):
+    """
+        FormWidget
+
+        form = None
+        include_cols = []
+        exclude_cols = []
+        fieldsets = []
+    """
+    template = 'appbuilder/general/widgets/form_horizontal.html'
+
+
+class FormInlineWidget(RenderTemplateWidget):
+    """
+        FormWidget
+
+        form = None
+        include_cols = []
+        exclude_cols = []
+        fieldsets = []
+    """
+    template = 'appbuilder/general/widgets/form_inline.html'
+
 
 class GroupFormListWidget(RenderTemplateWidget):
     template = 'appbuilder/general/widgets/group_form_list.html'    
@@ -75,7 +117,7 @@ class SearchWidget(FormWidget):
 
 class ShowWidget(RenderTemplateWidget):
     """
-        ShowWidget implements an template as an widget
+        ShowWidget implements a template as an widget
         it takes the following arguments
 
         pk = None
@@ -88,8 +130,13 @@ class ShowWidget(RenderTemplateWidget):
     """
     template = 'appbuilder/general/widgets/show.html'
 
+
 class ShowBlockWidget(RenderTemplateWidget):
     template = 'appbuilder/general/widgets/show_block.html'
+
+
+class ShowVerticalWidget(RenderTemplateWidget):
+    template = 'appbuilder/general/widgets/show_vertical.html'
 
 
 class ListWidget(RenderTemplateWidget):
@@ -121,6 +168,7 @@ class ListAddWidget(ListWidget):
 
     def __init__(self, **kwargs):
         super(ListAddWidget, self).__init__(**kwargs)
+
     def __call__(self, **kwargs):
         return super(ListAddWidget, self).__call__(**kwargs)
 
@@ -128,11 +176,14 @@ class ListAddWidget(ListWidget):
 class ListThumbnail(ListWidget):
     template = 'appbuilder/general/widgets/list_thumbnail.html'
 
+
 class ListCarousel(ListWidget):
     template = 'appbuilder/general/widgets/list_carousel.html'
 
+
 class ListItem(ListWidget):
     template = 'appbuilder/general/widgets/list_item.html'
+
 
 class ListBlock(ListWidget):
     template = 'appbuilder/general/widgets/list_block.html'

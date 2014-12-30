@@ -1,10 +1,11 @@
 import datetime
 import logging
 
-from sqlalchemy import Column, Integer, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, ForeignKey, DateTime, String, Boolean
+from sqlalchemy.orm import relationship, backref, remote
 import sqlalchemy.types as types
 from sqlalchemy.ext.declarative import declared_attr
+from .._compat import as_unicode
 
 from flask import g
 
@@ -59,15 +60,23 @@ class AuditMixin(object):
     def changed_by(cls):
         return relationship("User", primaryjoin='%s.changed_by_fk == User.id' % cls.__name__)
 
-
     @classmethod
     def get_user_id(cls):
         try:
             log.debug("GET USER ID: {0}".format(g.user.id))
             return g.user.id
         except Exception as e:
-            #log.warning("AuditMixin Get User ID {0}".format(str(e)))
+            # log.warning("AuditMixin Get User ID {0}".format(str(e)))
             return None
+
+
+class UserExtensionMixin(object):
+    __tablename__ = 'ab_user_extended'
+    __mapper_args__ = {'polymorphic_identity': 'ab_user_extended'}
+
+    @declared_attr
+    def id(cls):
+        return Column(None, ForeignKey('ab_user.id'), primary_key=True)
 
 
 """

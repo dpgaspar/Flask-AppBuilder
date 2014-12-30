@@ -1,10 +1,10 @@
 import logging
-from flask import Blueprint, request, redirect, session, url_for
+from flask import Blueprint, request, redirect, session, url_for, render_template
 from flask.globals import _app_ctx_stack, _request_ctx_stack
 from werkzeug.urls import url_parse
 from .forms import GeneralModelConverter
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
-from .models.filters import FilterRelationOneToManyEqual
+from .models.sqla.filters import FilterRelationOneToManyEqual
 from .actions import ActionItem
 from .urltools import *
 
@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 def expose(url='/', methods=('GET',)):
     """
-        Use this decorator to expose views in your view classes.
+        Use this decorator to expose views on your view classes.
        
         :param url:
             Relative URL for the view
@@ -47,14 +47,29 @@ class BaseView(object):
     """ Override this if you want to define your own relative url """
 
     template_folder = 'templates'
+    """ The template folder relative location """
     static_folder = 'static'
+    """  The static folder relative location """
     base_permissions = None
+    """
+        List with allowed base permission.
+        Use it like this if you want to restrict your view to readonly::
+
+            class MyView(ModelView):
+                base_permissions = ['can_list','can_show']
+    """
+
     default_view = 'list'
+    """ the default view for this BaseView, to be used with url_for (method name) """
+    extra_args = None
+    """ dictionary for injecting extra arguments into template """
 
     def __init__(self):
         """
             Initialization of base permissions
             based on exposed methods and actions
+
+            Initialization of extra args
         """
         if self.base_permissions is None:
             self.base_permissions = set()
@@ -63,7 +78,8 @@ class BaseView(object):
                     permission_name = getattr(getattr(self, attr_name), '_permission_name')
                     self.base_permissions.add('can_' + permission_name)
             self.base_permissions = list(self.base_permissions)
-
+        if not self.extra_args:
+            self.extra_args = dict()
 
     def create_blueprint(self, appbuilder,
                          endpoint=None,
@@ -98,14 +114,12 @@ class BaseView(object):
                                        url_prefix=self.route_base,
                                        template_folder=self.template_folder,
                                        static_folder=static_folder)
-
         self._register_urls()
         return self.blueprint
 
     def _register_urls(self):
         for attr_name in dir(self):
             attr = getattr(self, attr_name)
-
             if hasattr(attr, '_urls'):
                 for url, methods in attr._urls:
                     self.blueprint.add_url_rule(url,
@@ -113,15 +127,21 @@ class BaseView(object):
                                                 attr,
                                                 methods=methods)
 
-
     def render_template(self, template, **kwargs):
-        pass
+        """
+            Use this method on your own endpoints, will pass the extra_args
+            to the templates.
+
+            :param template: The template relative path
+            :param kwargs: arguments to be passed to the template
+        """
+        return render_template(template, **dict(list(kwargs.items()) + list(self.extra_args.items())))
 
     def _prettify_name(self, name):
         """
             Prettify pythonic variable name.
 
-            For example, 'hello_world' will be converted to 'Hello World'
+            For example, 'HelloWorld' will be converted to 'Hello World'
 
             :param name:
                 Name to prettify.
@@ -137,30 +157,29 @@ class BaseView(object):
             :param name:
                 Name to prettify.
         """
-        return name.replace('_', ' ').title()
-
+        return re.sub('[._]', ' ', name).title()
 
     def update_redirect(self):
         """
             Call it on your own endpoint's to update the back history navigation.
-            If you bypass it, the next submit our back will go over it.
+            If you bypass it, the next submit or back will go over it.
         """
         page_history = Stack(session.get('page_history', []))
         page_history.push(request.url)
         session['page_history'] = page_history.to_json()
-        
+
     def get_redirect(self):
         """
             Returns the previous url.
         """
-        index_url = url_for('%s.%s' % (self.appbuilder.indexview.endpoint, self.appbuilder.indexview.default_view))
+        index_url = self.appbuilder.get_url_for_index
         page_history = Stack(session.get('page_history', []))
 
         if page_history.pop() is None:
             return index_url
         session['page_history'] = page_history.to_json()
-        redir = page_history.pop() or index_url
-        return redir
+        url = page_history.pop() or index_url
+        return url
 
 
 class BaseModelView(BaseView):
@@ -227,6 +246,8 @@ class BaseModelView(BaseView):
                 base_order = ('my_column_name','asc')
 
     """
+    search_widget = SearchWidget
+    """ Search widget you can override with your own """
 
     _base_filters = None
     """ Internal base Filter from class Filters will always filter view """
@@ -242,6 +263,14 @@ class BaseModelView(BaseView):
         self._init_titles()
         super(BaseModelView, self).__init__(**kwargs)
 
+    def _gen_labels_columns(self, list_columns):
+        """
+            Auto generates pretty label_columns from list of columns
+        """
+        for col in list_columns:
+            if not self.label_columns.get(col):
+                self.label_columns[col] = self._prettify_column(col)
+
     def _init_titles(self):
         pass
 
@@ -251,11 +280,8 @@ class BaseModelView(BaseView):
         self._base_filters = self.datamodel.get_filters().add_filter_list(self.datamodel, self.base_filters)
         list_cols = self.datamodel.get_columns_list()
         self.search_columns = self.search_columns or self.datamodel.get_search_columns_list()
-        for col in list_cols:
-            if not self.label_columns.get(col):
-                self.label_columns[col] = self._prettify_column(col)
+        self._gen_labels_columns(list_cols)
         self._filters = self.datamodel.get_filters(self.search_columns)
-        
 
     def _init_forms(self):
         conv = GeneralModelConverter(self.datamodel)
@@ -364,9 +390,16 @@ class BaseCRUDView(BaseModelView):
     validators_columns = None
     """ Dictionary to add your own validators for forms """
     add_form_extra_fields = None
-    """ Dictionary to add extra fields to the Add form using this property """
+    """
+        A dictionary containing column names and a WTForm
+        Form fields to be added to the Add form, these fields do not
+        exist on the model itself ex::
+
+        extra_fields={'some_col':BooleanField('Some Col', default=False)}
+
+    """
     edit_form_extra_fields = None
-    """ Dictionary to Add extra fields to the Edit form using this property """
+    """ Dictionary to add extra fields to the Edit form using this property """
     add_form_query_cascade = None
     """
         FUTURE FEATURE, Don't use it yet
@@ -392,7 +425,8 @@ class BaseCRUDView(BaseModelView):
     add_form_query_rel_fields = None
     """
         Add Customized query for related fields on add form.
-        Assign a list of tuples like ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
+        Assign a list of tuples like
+        ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
         Add a custom filter to form related fields::
 
             class ContactModelView(ModelView):
@@ -406,7 +440,8 @@ class BaseCRUDView(BaseModelView):
     edit_form_query_rel_fields = None
     """
         Add Customized query for related fields on edit form.
-        Assign a list of tuples like ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
+        Assign a list of tuples like
+        ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
         Add a custom filter to form related fields::
 
             class ContactModelView(ModelView):
@@ -419,9 +454,9 @@ class BaseCRUDView(BaseModelView):
     """
 
     add_form = None
-    """ To implement your own assign WTF form for Add """
+    """ To implement your own, assign WTF form for Add """
     edit_form = None
-    """ To implement your own assign WTF form for Edit """
+    """ To implement your own, assign WTF form for Edit """
 
     list_template = 'appbuilder/general/model/list.html'
     """ Your own add jinja2 template for list """
@@ -440,8 +475,6 @@ class BaseCRUDView(BaseModelView):
     """ Add widget override """
     show_widget = ShowWidget
     """ Show widget override """
-    search_widget = SearchWidget
-    """ Search widget you can override with your own """
 
     actions = None
 
@@ -455,7 +488,6 @@ class BaseCRUDView(BaseModelView):
                 action = ActionItem(*func._action, func=func)
                 self.base_permissions.append(action.name)
                 self.actions[action.name] = action
-
 
     def _init_forms(self):
         """
@@ -479,7 +511,6 @@ class BaseCRUDView(BaseModelView):
                                               self.edit_form_extra_fields,
                                               self.edit_form_query_rel_fields,
                                               self.edit_form_query_cascade)
-
 
     def _init_titles(self):
         """
@@ -510,10 +541,10 @@ class BaseCRUDView(BaseModelView):
         self.add_form_extra_fields = self.add_form_extra_fields or {}
         self.edit_form_extra_fields = self.edit_form_extra_fields or {}
         # Generate base props
-        order_cols = self.datamodel.get_order_columns_list()
         list_cols = self.datamodel.get_user_columns_list()
         self.list_columns = self.list_columns or [list_cols[0]]
-        self.order_columns = self.order_columns or order_cols
+        self._gen_labels_columns(self.list_columns)
+        self.order_columns = self.order_columns or self.datamodel.get_order_columns_list(list_columns=self.list_columns)
         if self.show_fieldsets:
             self.show_columns = []
             for fieldset_item in self.show_fieldsets:
@@ -536,7 +567,6 @@ class BaseCRUDView(BaseModelView):
             if not self.edit_columns:
                 self.edit_columns = list_cols
 
-
     """
     -----------------------------------------------------
             GET WIDGETS SECTION
@@ -550,7 +580,7 @@ class BaseCRUDView(BaseModelView):
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
         filters = self.datamodel.get_filters()
         filters.add_filter_related_view(fk, FilterRelationOneToManyEqual,
-                                                    related_view.datamodel, self.datamodel.get_pk_value(item))
+                                        related_view.datamodel, self.datamodel.get_pk_value(item))
         return related_view._get_view_widget(filters=filters,
                                              order_column=order_column,
                                              order_direction=order_direction,
@@ -614,10 +644,8 @@ class BaseCRUDView(BaseModelView):
                                            pks=pks,
                                            actions=actions,
                                            filters=filters,
-                                           modelview_name=self.__class__.__name__
-        )
+                                           modelview_name=self.__class__.__name__)
         return widgets
-
 
     def _get_show_widget(self, id, widgets=None, actions=None, show_fieldsets=None):
         widgets = widgets or {}
@@ -655,13 +683,11 @@ class BaseCRUDView(BaseModelView):
         )
         return widgets
 
-
     """
     -----------------------------------------------------
             CRUD functions behaviour
     -----------------------------------------------------        
     """
-
     def _list(self):
         """
             list function logic, override to implement different logic
@@ -698,7 +724,6 @@ class BaseCRUDView(BaseModelView):
         self.update_redirect()
         return self._get_related_views_widgets(item, orders=orders,
                                                pages=pages, page_sizes=page_sizes, widgets=widgets)
-
 
     def _add(self):
         """
@@ -765,7 +790,6 @@ class BaseCRUDView(BaseModelView):
             self.update_redirect()
         return widgets
 
-
     def _delete(self, pk):
         """
             Delete function logic, override to implement diferent logic
@@ -779,7 +803,6 @@ class BaseCRUDView(BaseModelView):
         self.datamodel.delete(item)
         self.post_delete(item)
         self.update_redirect()
-
 
     """
     ------------------------------------------------
@@ -796,7 +819,6 @@ class BaseCRUDView(BaseModelView):
             rel_obj = self.datamodel.get_related_obj(filter_key, filter_value)
             field = getattr(form, filter_key)
             field.data = rel_obj
-
 
     def pre_update(self, item):
         """

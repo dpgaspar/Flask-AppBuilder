@@ -1,5 +1,5 @@
-Chart Views (Quick How to)
-==========================
+Chart Views
+===========
 
 To implement views with google charts, use all inherited classes from BaseChartView, these are:
 
@@ -8,7 +8,7 @@ To implement views with google charts, use all inherited classes from BaseChartV
  :ChartView: (Deprecated) Display simple group by method charts.
  :TimeChartView: (Deprecated) Displays simple group by month and year charts.
 
-You can experiment with following examples with a live
+You can experiment with some examples on a live
 `Demo <http://flaskappbuilder.pythonanywhere.com/>`_ (login has guest/welcome).
 
 Direct Data Charts
@@ -233,11 +233,11 @@ by the framework of the columns them selfs.
 ::
 
     class ContactChartView(ChartView):
-        search_columns = ['name','group']
+        search_columns = ['name','contact_group']
         datamodel = SQLAModel(Contact)
         chart_title = 'Grouped contacts'
         label_columns = ContactModelView.label_columns
-        group_by_columns = ['group']
+        group_by_columns = ['contact_group']
     	
 Notice that:
 
@@ -256,7 +256,7 @@ Let's define a chart grouped by a time frame?
 ::
 
     class ContactTimeChartView(TimeChartView):
-        search_columns = ['name','group']
+        search_columns = ['name','contact_group']
         chart_title = 'Grouped Birth contacts'
         label_columns = ContactModelView.label_columns
         group_by_columns = ['birthday']

@@ -40,7 +40,8 @@ It's very flexible, you can apply multiple filters with static values, or values
 Default Order
 -------------
 
-Use a default order on your lists, this can be overridden by the user on the UI. Data structure ('col_name':'asc|desc')
+Use a default order on your lists, this can be overridden by the user on the UI.
+Data structure ('col_name':'asc|desc')
 
 ::
 
@@ -48,6 +49,19 @@ Use a default order on your lists, this can be overridden by the user on the UI.
         datamodel = SQLAModel(MyTable)
         base_order = ('my_col_to_be_ordered','asc')
 
+
+Template Extra Arguments
+------------------------
+
+You can pass extra Jinja2 arguments to your custom template, using extra_args property::
+
+    class MyView(ModelView):
+        datamodel = SQLAModel(MyTable)
+        extra_args = {'my_extra_arg':'SOMEVALUE'}
+        show_template = 'my_show_template.html'
+
+Your overriding the 'show' template to handle your extra argument.
+You can still use F.A.B. show template using Jinja2 blocks, take a look at the :doc:`templates` chapter
 
 Forms
 -----
@@ -119,6 +133,29 @@ Next override your field using your new widget::
         datamodel = SQLAModel(ExampleModel)
         edit_form_extra_fields = {'field2': TextField('field2',
                                     widget=BS3TextFieldROWidget())}
+
+For select fields based on  a query use something like this on your views::
+
+    # Define the field query
+    def department_query():
+        return db.session.query(Department)
+
+    # Define your field widget
+    class Select2ROWidget(Select2Widget):
+        def __call__(self, field, **kwargs):
+            kwargs['disabled'] = 'true'
+            return super(Select2ROWidget, self).__call__(field, **kwargs)
+
+
+    class EmployeeView(ModelView):
+        datamodel = SQLAModel(Employee)
+
+        list_columns = ['employee_number', 'full_name', 'department']
+
+        # override the 'department' field, to make it readonly on edit form
+        edit_form_extra_fields = {'department':  QuerySelectField('Department',
+                                    query_factory=department_query,
+                                    widget=Select2ROWidget())}
 
 
 - You can contribute with your own additional form validations rules.

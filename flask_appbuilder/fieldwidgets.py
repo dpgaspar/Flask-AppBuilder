@@ -8,7 +8,7 @@ class DatePickerWidget(object):
 
     """
     data_template = ('<div class="input-group date appbuilder_date" id="datepicker">'
-                    '<span class="input-group-addon"><i class="fa fa-calendar"></i>'
+                    '<span class="input-group-addon"><i class="fa fa-calendar cursor-hand"></i>'
                     '</span>'
                     '<input class="form-control" data-format="yyyy-MM-dd" %(text)s/>'
                     '</div>'
@@ -33,7 +33,7 @@ class DateTimePickerWidget(object):
 
     """
     data_template = ('<div class="input-group date appbuilder_datetime" id="datetimepicker">'
-                    '<span class="input-group-addon"><i class="fa fa-calendar"></i>'
+                    '<span class="input-group-addon"><i class="fa fa-calendar cursor-hand"></i>'
                     '</span>'
                     '<input class="form-control" data-format="yyyy-MM-dd hh:mm:ss" %(text)s/>'
         '</div>'
@@ -89,9 +89,9 @@ class Select2Widget(widgets.Select):
 
     def __call__(self, field, **kwargs):
         if self.extra_classes:
-            kwargs['class'] = u'my_select2 ' + self.extra_classes
+            kwargs['class'] = u'my_select2 form-control ' + self.extra_classes
         else:
-            kwargs['class'] = u'my_select2'
+            kwargs['class'] = u'my_select2 form-control'
         kwargs['style'] = u'width:250px'
         kwargs['data-placeholder'] = u'Select Value'
         if 'name_' in kwargs:
@@ -102,7 +102,7 @@ class Select2Widget(widgets.Select):
 
 class Select2MasterWidget(widgets.Select):
     def __call__(self, field, **kwargs):
-        kwargs['class'] = u'my_select2 my_change'
+        kwargs['class'] = u'my_select2 my_change form-control'
         kwargs['style'] = u'width:250px'
         kwargs['data-placeholder'] = u'Select Value'
         if 'name_' in kwargs:

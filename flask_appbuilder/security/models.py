@@ -1,18 +1,17 @@
 import datetime
 from flask import g
-from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime, ForeignKey, Sequence
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declared_attr
 from .. import Model
 from .._compat import as_unicode
-
 
 _dont_audit = False
 
 
 class Permission(Model):
     __tablename__ = 'ab_permission'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('seq_ab_permission_pk'), primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
 
     def __repr__(self):
@@ -21,7 +20,7 @@ class Permission(Model):
 
 class ViewMenu(Model):
     __tablename__ = 'ab_view_menu'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('seq_ab_view_menu_pk'), primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
 
     def __eq__(self, other):
@@ -36,7 +35,7 @@ class ViewMenu(Model):
 
 class PermissionView(Model):
     __tablename__ = 'ab_permission_view'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('seq_permission_view_pk'), primary_key=True)
     permission_id = Column(Integer, ForeignKey('ab_permission.id'))
     permission = relationship("Permission")
     view_menu_id = Column(Integer, ForeignKey('ab_view_menu.id'))
@@ -47,7 +46,7 @@ class PermissionView(Model):
 
 
 assoc_permissionview_role = Table('ab_permission_view_role', Model.metadata,
-                                  Column('id', Integer, primary_key=True),
+                                  Column('id', Integer, Sequence('seq_ab_permission_view_role_pk'), primary_key=True),
                                   Column('permission_view_id', Integer, ForeignKey('ab_permission_view.id')),
                                   Column('role_id', Integer, ForeignKey('ab_role.id'))
 )
@@ -56,7 +55,7 @@ assoc_permissionview_role = Table('ab_permission_view_role', Model.metadata,
 class Role(Model):
     __tablename__ = 'ab_role'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('seq_ab_role_pk'), primary_key=True)
     name = Column(String(64), unique=True, nullable=False)
     permissions = relationship('PermissionView', secondary=assoc_permissionview_role, backref='role')
 
@@ -64,9 +63,21 @@ class Role(Model):
         return self.name
 
 
+class RegisterUser(Model):
+    __tablename__ = 'ab_register_user'
+    id = Column(Integer, Sequence('seq_ab_register_user_pk'), primary_key=True)
+    first_name = Column(String(64), nullable=False)
+    last_name = Column(String(64), nullable=False)
+    username = Column(String(32), unique=True, nullable=False)
+    password = Column(String(256))
+    email = Column(String(64), nullable=False)
+    registration_date = Column(DateTime, default=datetime.datetime.now, nullable=True)
+    registration_hash = Column(String(256))
+
+
 class User(Model):
     __tablename__ = 'ab_user'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('seq_ab_user_pk'), primary_key=True)
     first_name = Column(String(64), nullable=False)
     last_name = Column(String(64), nullable=False)
     username = Column(String(32), unique=True, nullable=False)
@@ -100,29 +111,12 @@ class User(Model):
     changed_by = relationship("User", backref=backref("changed", uselist=True),
                               remote_side=[id], primaryjoin='User.changed_by_fk == User.id', uselist=False)
 
-
     @classmethod
     def get_user_id(cls):
         try:
             return g.user.id
         except Exception as e:
             return None
-
-
-    @staticmethod
-    def make_unique_nickname(nickname):
-        if User.query.filter_by(nickname=nickname).first() is None:
-            return nickname
-        version = 2
-        while True:
-            new_nickname = nickname + str(version)
-            if User.query.filter_by(nickname=new_nickname).first() is None:
-                break
-            version += 1
-        return new_nickname
-
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
 
     def is_authenticated(self):
         return True
@@ -141,5 +135,4 @@ class User(Model):
 
     def __repr__(self):
         return self.get_full_name()
-
 

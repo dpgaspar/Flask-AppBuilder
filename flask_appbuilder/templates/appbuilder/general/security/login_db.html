@@ -42,7 +42,15 @@
             <div class="control-group">
                 <div class="controls">
                     <br>
+                    <div>
                     <input class="btn btn-primary btn-block" type="submit" value={{_('Sign In')}}>
+                    {% if appbuilder.sm.auth_user_registration %}
+                    <a href="{{appbuilder.sm.get_url_for_registeruser}}" class="btn btn-block btn-primary" data-toggle="tooltip" rel="tooltip"
+                       title="{{_('If your not already a user, please register')}}">
+                        {{_('Register')}}
+                    </a>
+                    {% endif %}
+                    </div>
                 </div>
             </div>
         </form>

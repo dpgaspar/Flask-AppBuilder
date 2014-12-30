@@ -1,77 +1,20 @@
 import logging
+from functools import reduce
 from flask_babelpkg import lazy_gettext
+from .filters import Filters
 
 log = logging.getLogger(__name__)
 
 
-class BaseFilter(object):
-    """
-        Base class for all data filters.
-        Sub class to im
-    """
-    column_name = ''
-    datamodel = None
-    model = None
-    name = ''
-    is_related_view = False
-    """
-        Sets this filter to a special kind for related views.
-        If true this filter was not set by the user
-    """
-
-    def __init__(self, column_name, datamodel, is_related_view=False):
-        """
-            Constructor.
-
-            :param column_name:
-                Model field name
-            :param datamodel:
-                The datamodel access class
-            :param is_related_view:
-                Optional internal parameter to filter related views
-        """
-        self.column_name = column_name
-        self.datamodel = datamodel
-        self.model = datamodel.obj
-        self.is_related_view = is_related_view
-
-    def apply(self, query, value):
-        """
-            Override this to implement you own new filters
-        """
-        pass
-
-    def __repr__(self):
-        return self.name
-
-
-class FilterRelation(BaseFilter):
-    """
-        Base class for all filters for relations
-    """
-    pass
-
-
-class BaseFilterConverter(object):
-    """
-        Base Filter Converter, all classes responsible
-        for the association of columns and possible filters
-        will inherite from this
-
-    """
-    def __init__(self, datamodel):
-        self.datamodel = datamodel
-
-    def convert(self, col_name):
-        for conversion in self.conversion_table:
-            if getattr(self.datamodel, conversion[0])(col_name):
-                return [item(col_name, self.datamodel) for item in conversion[1]]
-        log.warning('Filter type not supported for column: %s' % col_name)
-
-
-
 class BaseInterface(object):
+    """
+        Base class for all data model interfaces.
+        Sub class it to implement your own interface for some data engine.
+    """
     obj = None
+
+    filter_converter_class = None
+    """ when sub classing override with your own custom filter converter """
 
     """ Messages to display on CRUD Events """
     add_row_message = lazy_gettext('Added Row')
@@ -86,12 +29,18 @@ class BaseInterface(object):
         self.obj = obj
 
     def _get_attr_value(self, item, col):
+        if not hasattr(item, col):
+            # it's an inner obj attr
+            return reduce(getattr, col.split('.'), item)
         if hasattr(getattr(item, col), '__call__'):
             # its a function
             return getattr(item, col)()
         else:
             # its attribute
             return getattr(item, col)
+
+    def get_filters(self, search_columns=[]):
+        return Filters(self.filter_converter_class, search_columns, self)
 
     def get_values_item(self, item, show_columns):
         return [self._get_attr_value(item, col) for col in show_columns]
@@ -125,10 +74,6 @@ class BaseInterface(object):
     """
         Next methods must be overridden
     """
-    def get_filters(self, search_columns=None):
-        pass
-
-
     def query(self, filters=None, order_column='', order_direction='',
               page=None, page_size=None):
         pass
@@ -200,19 +145,19 @@ class BaseInterface(object):
         """
             Adds object
         """
-        pass
+        raise NotImplementedError
 
     def edit(self, item):
         """
             Edit (change) object
         """
-        pass
+        raise NotImplementedError
 
     def delete(self, item):
         """
             Deletes object
         """
-        pass
+        raise NotImplementedError
 
     def get_col_default(self, col_name):
         pass
@@ -253,10 +198,9 @@ class BaseInterface(object):
 
     def get_user_columns_list(self):
         """
-            Returns a list user viewable columns names
+            Returns a list of user viewable columns names
         """
         return self.get_columns_list()
-
 
     def get_search_columns_list(self):
         """
@@ -264,7 +208,7 @@ class BaseInterface(object):
         """
         return []
 
-    def get_order_columns_list(self):
+    def get_order_columns_list(self, list_columns=None):
         """
             Returns a list of order columns names
         """

@@ -1,4 +1,4 @@
-from models import Person, Group
+from models import Person, PersonGroup
 from flask.ext.appbuilder.views import ModelView, BaseView
 from flask.ext.appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
@@ -23,11 +23,11 @@ class PersonModelView(ModelView):
                      'personal_celphone': 'Personal Celphone', 'personal_email': 'Personal Email',
                      'business_function': 'Business Function',
                      'business_phone': 'Business Phone', 'business_celphone': 'Business Celphone',
-                     'business_email': 'Business Email', 'notes': 'Notes', 'group': 'Group', 'group_id': 'Group'}
+                     'business_email': 'Business Email', 'notes': 'Notes', 'person_group': 'Group', 'person_group_id': 'Group'}
     list_columns = ['photo_img', 'name', 'personal_celphone', 'business_celphone', 'birthday', 'group']
 
     show_fieldsets = [
-        ('Summary', {'fields': ['photo_img', 'name', 'address', 'group']}),
+        ('Summary', {'fields': ['photo_img', 'name', 'address', 'person_group']}),
         ('Personal Info',
          {'fields': ['birthday', 'personal_phone', 'personal_celphone', 'personal_email'], 'expanded': False}),
         ('Professional Info',
@@ -36,7 +36,7 @@ class PersonModelView(ModelView):
     ]
 
     add_fieldsets = [
-        ('Summary', {'fields': ['name', 'photo', 'address', 'group']}),
+        ('Summary', {'fields': ['name', 'photo', 'address', 'person_group']}),
         ('Personal Info',
          {'fields': ['birthday', 'personal_phone', 'personal_celphone', 'personal_email'], 'expanded': False}),
         ('Professional Info',
@@ -45,7 +45,7 @@ class PersonModelView(ModelView):
     ]
 
     edit_fieldsets = [
-        ('Summary', {'fields': ['name', 'photo', 'address', 'group']}),
+        ('Summary', {'fields': ['name', 'photo', 'address', 'person_group']}),
         ('Personal Info',
          {'fields': ['birthday', 'personal_phone', 'personal_celphone', 'personal_email'], 'expanded': False}),
         ('Professional Info',
@@ -55,7 +55,7 @@ class PersonModelView(ModelView):
 
 
 class GroupModelView(ModelView):
-    datamodel = SQLAModel(Group, db.session)
+    datamodel = SQLAModel(PersonGroup, db.session)
     related_views = [PersonModelView]
 
     label_columns = {'phone1': 'Phone (1)', 'phone2': 'Phone (2)', 'taxid': 'Tax ID'}
@@ -70,8 +70,8 @@ class PersonChartView(GroupByChartView):
 
     definitions = [
         {
-            'group' : 'group',
-            'series' : [(aggregate_count,'group')]
+            'group': 'person_group',
+            'series': [(aggregate_count,'person_group')]
         }
     ]
 

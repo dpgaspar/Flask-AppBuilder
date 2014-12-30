@@ -169,6 +169,21 @@ All your models can easily be created too (optionally).</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="python-2-and-3-compatibility">
+<h2>Python 2 and 3 Compatibility<a class="headerlink" href="#python-2-and-3-compatibility" title="Permalink to this headline">¶</a></h2>
+<p>The framework itself is compatible and has been tested for Python 2.6, 2.7 and 3.3.
+But there is still one problem in Python 3.3, the framework internationalization feature
+uses the excellent package Babel, but i&#8217;ve found an incompatibility on it for python 3.3.
+While this problem is not solved there is a limitation for Py3.3 on F.A.B. you can&#8217;t use
+Babel&#8217;s features, so on config you must only setup english:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">BABEL_DEFAULT_LOCALE</span> <span class="o">=</span> <span class="s">&#39;en&#39;</span>
+<span class="n">BABEL_DEFAULT_FOLDER</span> <span class="o">=</span> <span class="s">&#39;translations&#39;</span>
+<span class="n">LANGUAGES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;en&#39;</span><span class="p">:{</span><span class="s">&#39;flag&#39;</span><span class="p">:</span><span class="s">&#39;gb&#39;</span><span class="p">,</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;English&#39;</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -184,6 +199,7 @@ All your models can easily be created too (optionally).</p>
 <li><a class="reference internal" href="#skeleton-application">Skeleton Application</a></li>
 <li><a class="reference internal" href="#initialization">Initialization</a></li>
 <li><a class="reference internal" href="#installation-requirements">Installation Requirements</a></li>
+<li><a class="reference internal" href="#python-2-and-3-compatibility">Python 2 and 3 Compatibility</a></li>
 </ul>
 </li>
 </ul>

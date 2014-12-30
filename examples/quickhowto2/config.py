@@ -1,4 +1,5 @@
 import os
+from flask_appbuilder.security.manager import AUTH_OID, AUTH_REMOTE_USER, AUTH_DB, AUTH_LDAP, AUTH_OAUTH
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -17,6 +18,7 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 #SQLALCHEMY_DATABASE_URI = 'postgresql://scott:tiger@localhost:5432/myapp'
 #SQLALCHEMY_ECHO = True
 
+"""
 BABEL_DEFAULT_LOCALE = 'en'
 BABEL_DEFAULT_FOLDER = 'translations'
 LANGUAGES = {
@@ -27,8 +29,7 @@ LANGUAGES = {
     'zh': {'flag': 'cn', 'name': 'Chinese'},
     'ru': {'flag': 'ru', 'name': 'Russian'}
 }
-
-
+"""
 
 #------------------------------
 # GLOBALS FOR GENERAL APP's
@@ -36,10 +37,24 @@ LANGUAGES = {
 UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_URL = '/static/uploads/'
-AUTH_TYPE = 1
+AUTH_TYPE = AUTH_OID
 #AUTH_LDAP_SERVER = "ldap://dc.domain.net"
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
+
+OAUTH_PROVIDERS = [
+    {'name':'twitter', 'icon':'fa-twitter',
+        'remote_app': {
+            'consumer_key':'xBeXxg9lyElUgwZT6AZ0A',
+            'consumer_secret':'aawnSpNTOVuDCjx7HMh6uSXetjNN8zWLpZwCEU4LBrk',
+            'base_url':'https://api.twitter.com/1.1/',
+            'request_token_url':'https://api.twitter.com/oauth/request_token',
+            'access_token_url':'https://api.twitter.com/oauth/access_token',
+            'authorize_url':'https://api.twitter.com/oauth/authenticate'}
+    }
+    ]
+
+
 APP_NAME = "F.A.B. Example"
 APP_THEME = ""  # default
 #APP_THEME = "cerulean.css"      # COOL

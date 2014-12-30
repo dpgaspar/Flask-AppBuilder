@@ -37,7 +37,7 @@ you should be familiar with it's declarative syntax to define your database mode
 
 On our example application we are going to define two tables,
 a *Contact's* table that will hold the contacts detailed information,
-and a *Group* table to group our contacts or classify them.
+and a *ContactGroup* table to group our contacts or classify them.
 We could additionally define a *Gender* table, to serve the role of enumerated values for 'Male' and 'Female'.
 
 Although your not obliged to, i advise you to inherit your model classes from **Model** class.
@@ -49,12 +49,12 @@ and using it will allow you to define relations to User's.
 You can add automatic *Audit* triggered columns to your models,
 by inherit them from *AuditMixin* also. (see :doc:`api`)
 
-So, first we are going to create a *Group* table, to group our contacts
+So, first we are going to create a *ContactGroup* model, to group our contacts
 
 Define your models (models.py)
 ------------------------------
 
-The *Group* table.
+The *ContactGroup* model.
 
 ::
 
@@ -62,7 +62,7 @@ The *Group* table.
     from sqlalchemy.orm import relationship
     from flask.ext.appbuilder import Model
 
-    class Group(Model):
+    class ContactGroup(Model):
         id = Column(Integer, primary_key=True)
         name = Column(String(50), unique = True, nullable=False)
 
@@ -80,8 +80,8 @@ The *Contacts* table.
 	    birthday = Column(Date)
 	    personal_phone = Column(String(20))
 	    personal_celphone = Column(String(20))
-	    group_id = Column(Integer, ForeignKey('group.id'))
-	    group = relationship("Group")	
+	    contact_group_id = Column(Integer, ForeignKey('contact_group.id'))
+	    contact_group = relationship("ContactGroup")
 	    
 	    def __repr__(self):
                 return self.name
@@ -89,7 +89,7 @@ The *Contacts* table.
 
 Notice that SqlAlchemy properties used here like 'unique', 'nullable' and 'default', will have special
 treatment. In this case when adding a new *Contact* a query will be made to validate
-if a someone with the same name already exists. Empty name contacts will not be allowed. Column types
+if someone with the same name already exists. Empty name contacts will not be allowed. Column types
 are validated. The address field will contain 'Street' has default on add form.
 You can add your own custom validations also, take a look at :doc:`advanced`
 
@@ -97,7 +97,7 @@ You can add your own custom validations also, take a look at :doc:`advanced`
 Define your Views (views.py)
 ----------------------------
 
-Now we are going to define our view for *Group* table.
+Now we are going to define our view for *ContactGroup* model.
 This view will setup functionality for create, remove, update and show primitives for your model's definition.
 
 Inherit from *ModelView* class that inherits from *BaseCRUDView* that inherits from *BaseModelView*,
@@ -107,7 +107,7 @@ take a look at :doc:`advanced`.
 ::
 
     class GroupModelView(ModelView):
-        datamodel = SQLAModel(Group)
+        datamodel = SQLAModel(ContactGroup)
         related_views = [ContactModelView]
 
 
@@ -131,17 +131,18 @@ Let's define it::
     class ContactModelView(ModelView):
         datamodel = SQLAModel(Contact)
 
-        label_columns = {'group':'Contacts Group'}
-        list_columns = ['name','personal_celphone','birthday','group']
+        label_columns = {'contact_group':'Contacts Group'}
+        list_columns = ['name','personal_celphone','birthday','contact_group']
 
         show_fieldsets = [
-            ('Summary',{'fields':['name','address','group']}),
+            ('Summary',{'fields':['name','address','contact_group']}),
             ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
             ]
 
 Some explanation:
 
-:label_columns: defines the labels for your columns. The framework will define the missing ones for you, with a pretty version of your column names.
+:label_columns: defines the labels for your columns.
+    The framework will define the missing ones for you, with a pretty version of your column names.
 :show_fieldsets: A fieldset (Django style). You can use show_fieldsets, add_fieldsets, edit_fieldsets
     customize the show, add and edit views independently.
 
@@ -153,6 +154,14 @@ Remember you can include columns, relations or methods from a model's definition
 
     .. autoclass:: BaseCRUDView
         :members: list_columns,add_columns,edit_columns,show_columns
+
+.. note::
+
+    Fields that reference relationships display the defined related model representation
+    (on this case __repr__() methos on ContactGroup Model), so by default these fields can't be ordered.
+    To enable order by on list for relationship fields, you can (since 1.1.1) reference
+    them using dotted notation. On this example would be 'contact_group.name'.
+
 
 
 Register (views.py)
@@ -170,10 +179,35 @@ Register everything, to present the models and create the menu. Issue **create_a
 Take a look at the :doc:`api` for add_view method.
 
 .. note::
-	The icons for the menu on this examples are from font-awesome, Checkout fontAwesome `Icons <http://fontawesome.io/icons/>`_ names. Font-Awesome is already included and you can use any icon you like on menus and actions
+	The icons for the menu on this examples are from font-awesome,
+	Checkout fontAwesome `Icons <http://fontawesome.io/icons/>`_ names.
+	Font-Awesome is already included and you can use any icon you like on menus and actions
 	
-With this very few lines of code (and could be fewer), you now have a web application with detailed security for each CRUD primitives and Menu options, authentication, and form field validation. Yet you can extensively change many details, add your own triggers before or after CRUD primitives, develop your own web views and integrate them.
+With this very few lines of code (and could be fewer), you now have a web application
+with detailed security for each CRUD primitives and Menu options, authentication,
+and form field validation. Yet you can extensively change many details,
+add your own triggers before or after CRUD primitives, develop your own web views and integrate them.
 
+Exposed methods and JSON
+------------------------
+
+Your **ModelView** classes expose the following methods has flask endpoints
+
+- list
+- show
+- add
+- edit
+- delete
+- download
+- action
+- json
+
+This exposes a REST API, note the *json* method, it will return query results just like the *list*
+method, try it, you can use it on your own template implementations, it will return a JSON object
+with the columns to list, to order, the label's for the columns (already translated), the full
+query count, and of course the query results, it supports pagination also.
+
+*json* method uses the *list* method security name 'can_list'.
 
 You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto
 
