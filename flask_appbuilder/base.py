@@ -43,6 +43,7 @@ class AppBuilder(object):
                  session=None,
                  menu=None,
                  indexview=None,
+                 base_template='appbuilder/baselayout.html',
                  static_folder='static/appbuilder',
                  static_url_path='/appbuilder',
                  security_manager_class=SecurityManager):
@@ -66,6 +67,7 @@ class AppBuilder(object):
         """
         self.baseviews = []
         self.menu = menu or Menu()
+        self.base_template = base_template
         self.security_manager_class = security_manager_class
         self.indexview = indexview or IndexView
         self.static_folder = static_folder

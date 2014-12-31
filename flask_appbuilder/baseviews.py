@@ -135,6 +135,8 @@ class BaseView(object):
             :param template: The template relative path
             :param kwargs: arguments to be passed to the template
         """
+        kwargs['base_template'] = self.appbuilder.base_template
+        kwargs['appbuilder'] = self.appbuilder
         return render_template(template, **dict(list(kwargs.items()) + list(self.extra_args.items())))
 
     def _prettify_name(self, name):

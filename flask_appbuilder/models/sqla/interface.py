@@ -456,19 +456,10 @@ class SQLAInterface(BaseInterface):
     def get(self, id):
         return self.session.query(self.obj).get(id)
 
-
-    """
-        ----------- GET PK NAME -------------------
-    """
     def get_pk_name(self):
         for col_name in self.list_columns.keys():
             if self.is_pk(col_name):
                 return col_name
-
-    def get_pk_value(self, item):
-        for col_name in self.list_columns.keys():
-            if self.is_pk(col_name):
-                return getattr(item, col_name)
 
 """
     For Retro-Compatibility

@@ -1,7 +1,7 @@
 import calendar
 from flask import redirect
 from flask.ext.appbuilder import ModelView
-from flask.ext.appbuilder.models.datamodel import SQLAModel
+from flask.ext.appbuilder.models import SQLAInterface
 from flask.ext.appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
 from flask.ext.appbuilder.widgets import FormVerticalWidget, FormInlineWidget, FormHorizontalWidget, ShowBlockWidget
@@ -39,15 +39,15 @@ class PSView(ModelView):
 
 
 class ProductManufacturerView(ModelView):
-    datamodel = SQLAModel(ProductManufacturer)
+    datamodel = SQLAInterface(ProductManufacturer)
 
 
 class ProductModelView(ModelView):
-    datamodel = SQLAModel(ProductModel)
+    datamodel = SQLAInterface(ProductModel)
 
 
 class ProductView(ModelView):
-    datamodel = SQLAModel(Product)
+    datamodel = SQLAInterface(Product)
     list_columns = ['name','product_manufacturer', 'product_model']
     add_columns = ['name','product_manufacturer', 'product_model']
     edit_columns = ['name','product_manufacturer', 'product_model']
@@ -55,7 +55,7 @@ class ProductView(ModelView):
 
 
 class ContactModelView2(ModelView):
-    datamodel = SQLAModel(Contact)
+    datamodel = SQLAInterface(Contact)
     #label_columns = {'contact_groups.name': 'Contacts Group'}
     list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
     add_form_query_rel_fields = {'contact_groups':[['name',FilterStartsWith,'p']],
@@ -64,7 +64,7 @@ class ContactModelView2(ModelView):
 
 
 class ContactModelView(ModelView):
-    datamodel = SQLAModel(Contact)
+    datamodel = SQLAInterface(Contact)
 
     add_widget = FormVerticalWidget
     show_widget = ShowBlockWidget
@@ -107,17 +107,17 @@ class ContactModelView(ModelView):
 
 
 class GroupModelView(ModelView):
-    datamodel = SQLAModel(ContactGroup)
+    datamodel = SQLAInterface(ContactGroup)
     related_views = [ContactModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
     list_columns = ['name', 'extra_col']
 
 class FloatModelView(ModelView):
-    datamodel = SQLAModel(FloatModel)
+    datamodel = SQLAInterface(FloatModel)
 
 
 class ContactChartView(GroupByChartView):
-    datamodel = SQLAModel(Contact)
+    datamodel = SQLAInterface(Contact)
     chart_title = 'Grouped contacts'
     label_columns = ContactModelView.label_columns
     chart_type = 'PieChart'
@@ -143,7 +143,7 @@ def pretty_year(value):
 
 
 class ContactTimeChartView(GroupByChartView):
-    datamodel = SQLAModel(Contact)
+    datamodel = SQLAInterface(Contact)
 
     chart_title = 'Grouped Birth contacts'
     chart_type = 'AreaChart'

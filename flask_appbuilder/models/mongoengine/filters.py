@@ -1,4 +1,18 @@
+import logging
+from flask.ext.babelpkg import lazy_gettext
 from ..filters import BaseFilter, FilterRelation, BaseFilterConverter
+
+log = logging.getLogger(__name__)
+
+
+class FilterEqual(BaseFilter):
+    name = lazy_gettext('Equal to')
+
+    def apply(self, query, value):
+        if self.datamodel.is_boolean(self.column_name):
+            if value == 'y':
+                value = True
+        return query.filter(getattr(self.model, self.column_name) == value)
 
 
 class MongoEngineFilterConverter(BaseFilterConverter):
@@ -7,15 +21,4 @@ class MongoEngineFilterConverter(BaseFilterConverter):
         specific for SQLAlchemy.
 
     """
-    conversion_table = (('is_text', [FilterContains,
-                                     FilterNotContains,
-                                     FilterEqual,
-                                     FilterNotEqual]
-                                     ),
-                        ('is_string', [FilterContains,
-                                       FilterNotContains,
-                                       FilterEqual,
-                                       FilterNotEqual]),
-                        ('is_integer', [FilterEqual,
-                                        FilterNotEqual]),
-                        )
+    conversion_table = (('is_string', [FilterEqual]),)

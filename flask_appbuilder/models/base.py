@@ -173,7 +173,10 @@ class BaseInterface(object):
         """
             Returns the primary key name
         """
-        pass
+        raise NotImplementedError
+
+    def get_pk_value(self, item):
+        return getattr(item, self.get_pk_name())
 
     def get(self, pk):
         """

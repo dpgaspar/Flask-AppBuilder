@@ -1,6 +1,6 @@
 from flask_appbuilder import ModelView
 from flask_appbuilder.fieldwidgets import Select2Widget
-from flask.ext.appbuilder.models.datamodel import SQLAModel
+from flask.ext.appbuilder.models import SQLAInterface
 from .models import Employee,Department, Function, EmployeeHistory, Benefit
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from app import appbuilder, db
@@ -17,7 +17,7 @@ class Select2ROWidget(Select2Widget):
 
 
 class EmployeeHistoryView(ModelView):
-    datamodel = SQLAModel(EmployeeHistory)
+    datamodel = SQLAInterface(EmployeeHistory)
     #base_permissions = ['can_add', 'can_show']
     list_columns = ['department', 'begin_date', 'end_date']
 
@@ -36,7 +36,7 @@ class EmployeeHistoryView(ModelView):
 
 
 class EmployeeView(ModelView):
-    datamodel = SQLAModel(Employee)
+    datamodel = SQLAInterface(Employee)
 
     list_columns = ['full_name', 'department', 'employee_number']
 
@@ -56,17 +56,17 @@ class EmployeeView(ModelView):
 
 
 class FunctionView(ModelView):
-    datamodel = SQLAModel(Function)
+    datamodel = SQLAInterface(Function)
     related_views = [EmployeeView]
 
 
 class DepartmentView(ModelView):
-    datamodel = SQLAModel(Department)
+    datamodel = SQLAInterface(Department)
     related_views = [EmployeeView]
 
 
 class BenefitView(ModelView):
-    datamodel = SQLAModel(Benefit)
+    datamodel = SQLAInterface(Benefit)
     add_columns = ['name']
     edit_columns = ['name']
     show_columns = ['name']

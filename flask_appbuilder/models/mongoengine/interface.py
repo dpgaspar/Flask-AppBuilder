@@ -6,16 +6,28 @@ from mongoengine.fields import StringField, IntField
 
 class MongoEngineInterface(BaseInterface):
 
+    filter_converter_class = MongoEngineFilterConverter
+
     def __init__(self, obj, session=None):
         self.session = session
         super(MongoEngineInterface, self).__init__(obj)
 
-    def get_filters(self, search_columns=[]):
-        return Filters(MongoEngineFilterConverter, search_columns, self)
-
     def query(self, filters=None, order_column='', order_direction='',
               page=None, page_size=None):
-        return self.obj.objects
+
+        objs = self.obj.objects
+        count = len(objs)
+        start, stop = 0, count
+        if page:
+            start = page * page_size
+        if page_size:
+            stop = start + page_size
+        if order_column != '':
+            if order_direction == 'asc':
+                objs = objs.order_by('-{0}'.format(order_column))
+            else:
+                objs = objs.order_by('+{0}'.format(order_column))
+        return count, objs[start:stop]
 
     def is_string(self, col_name):
         return isinstance(self.obj._fields[col_name], StringField)
@@ -24,13 +36,13 @@ class MongoEngineInterface(BaseInterface):
         return isinstance(self.obj._fields[col_name], IntField)
 
     def is_nullable(self, col_name):
-        return self.obj.properties[col_name].nullable
+        return not self.obj._fields[col_name].required
 
     def is_unique(self, col_name):
-        return self.obj.properties[col_name].unique
+        return self.obj._fields[col_name].unique
 
     def is_pk(self, col_name):
-        return self.obj.properties[col_name].primary_key
+        return col_name == 'id'
 
     def get_columns_list(self):
         return self.obj._fields.keys()

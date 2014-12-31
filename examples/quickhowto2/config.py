@@ -73,4 +73,4 @@ APP_ICON = "/static/img/brand.jpg"
 #APP_THEME = "slate.css"          # COOL
 #APP_THEME = "spacelab.css"      # NICE
 #APP_THEME = "united.css"
-APP_THEME = "yeti.css"
+#APP_THEME = "yeti.css"

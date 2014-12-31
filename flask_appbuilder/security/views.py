@@ -166,7 +166,7 @@ class UserModelView(ModelView):
     def userinfo(self):
         widgets = self._get_show_widget(g.user.id, show_fieldsets=self.user_show_fieldsets)
         self.update_redirect()
-        return render_template(self.show_template,
+        return self.render_template(self.show_template,
                                title=self.user_info_title,
                                widgets=widgets,
                                appbuilder=self.appbuilder)
@@ -236,7 +236,7 @@ class UserDBModelView(UserModelView):
         actions['resetpasswords'] = self.actions.get('resetpasswords')
         widgets = self._get_show_widget(pk, actions=actions)
         self.update_redirect()
-        return render_template(self.show_template,
+        return self.render_template(self.show_template,
                                pk=pk,
                                title=self.show_title,
                                widgets=widgets,
@@ -251,7 +251,7 @@ class UserDBModelView(UserModelView):
         actions['resetmypassword'] = self.actions.get('resetmypassword')
         widgets = self._get_show_widget(g.user.id, actions=actions, show_fieldsets=self.user_show_fieldsets)
         self.update_redirect()
-        return render_template(self.show_template,
+        return self.render_template(self.show_template,
                                title=self.user_info_title,
                                widgets=widgets,
                                appbuilder=self.appbuilder,
@@ -349,7 +349,7 @@ class AuthDBView(AuthView):
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
             return redirect(self.appbuilder.get_url_for_index)
-        return render_template(self.login_template,
+        return self.render_template(self.login_template,
                                title=self.title,
                                form=form,
                                appbuilder=self.appbuilder)
@@ -370,7 +370,7 @@ class AuthLDAPView(AuthView):
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
             return redirect(self.appbuilder.get_url_for_index)
-        return render_template(self.login_template,
+        return self.render_template(self.login_template,
                                title=self.title,
                                form=form,
                                appbuilder=self.appbuilder)
@@ -396,7 +396,7 @@ class AuthOIDView(AuthView):
                 session['remember_me'] = form.remember_me.data
                 return self.appbuilder.sm.oid.try_login(form.openid.data, ask_for=self.oid_ask_for,
                                                         ask_for_optional=self.oid_ask_for_optional)
-            return render_template(self.login_template,
+            return self.render_template(self.login_template,
                                    title=self.title,
                                    form=form,
                                    providers=self.appbuilder.sm.openid_providers,
@@ -432,7 +432,7 @@ class AuthOAuthView(AuthView):
         if g.user is not None and g.user.is_authenticated():
             return redirect(self.appbuilder.get_url_for_index)
         if provider is None:
-            return render_template(self.login_template,
+            return self.render_template(self.login_template,
                                providers = self.appbuilder.sm.oauth_providers,
                                title=self.title,
                                appbuilder=self.appbuilder)

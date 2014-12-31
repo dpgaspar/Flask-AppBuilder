@@ -91,13 +91,16 @@ class GeneralModelConverter(object):
     def _get_label(col_name, label_columns):
         return label_columns.get(col_name, "")
 
-    def _get_related_filters(self, col_name, filter_rel_fields):
+    def _get_related_query_func(self, col_name, filter_rel_fields):
         if filter_rel_fields:
             if col_name in filter_rel_fields:
                 datamodel = self.datamodel.get_related_interface(col_name)
                 filters = datamodel.get_filters().add_filter_list(filter_rel_fields[col_name])
-                return datamodel, filters
-        return self.datamodel.get_related_interface(col_name), None
+                return lambda: datamodel.query(filters)[1]
+        return lambda: self.datamodel.get_related_interface(col_name).query()[1]
+
+    def _get_related_pk_func(self, col_name):
+        return lambda obj: self.datamodel.get_related_interface(col_name).get_pk_value(obj)
 
     def _convert_many_to_one(self, col_name, label, description,
                              lst_validators, filter_rel_fields,
@@ -107,7 +110,8 @@ class GeneralModelConverter(object):
             will use a Select box based on a query. Will only
             work with SQLAlchemy interface.
         """
-        datamodel, filters = self._get_related_filters(col_name, filter_rel_fields)
+        query_func = self._get_related_query_func(col_name, filter_rel_fields)
+        get_pk_func = self._get_related_pk_func(col_name)
         extra_classes = None
         allow_blank = True
         col = self.datamodel.get_relation_fk(col_name)
@@ -119,8 +123,8 @@ class GeneralModelConverter(object):
         form_props[col_name] = \
             QuerySelectField(label,
                              description=description,
-                             datamodel=datamodel,
-                             filters = filters,
+                             query_func=query_func,
+                             get_pk_func=get_pk_func,
                              allow_blank=allow_blank,
                              validators=lst_validators,
                              widget=Select2Widget(extra_classes=extra_classes))
@@ -129,14 +133,15 @@ class GeneralModelConverter(object):
     def _convert_many_to_many(self, col_name, label, description,
                               lst_validators, filter_rel_fields,
                               form_props):
-        datamodel, filters = self._get_related_filters(col_name, filter_rel_fields)
+        query_func = self._get_related_query_func(col_name, filter_rel_fields)
+        get_pk_func = self._get_related_pk_func(col_name)
         allow_blank = True
         form_props[col_name] = \
             QuerySelectMultipleField(label,
                                      description=description,
-                                     datamodel=datamodel,
-                                     filters=filters,
-                                     allow_blank=allow_blank,
+                                     query_func=query_func,
+                                    get_pk_func=get_pk_func,
+                                    allow_blank=allow_blank,
                                      validators=lst_validators,
                                      widget=Select2ManyWidget())
         return form_props

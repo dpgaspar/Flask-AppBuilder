@@ -10,18 +10,16 @@ from wtforms.validators import ValidationError
 
 class QuerySelectField(SelectFieldBase):
     """
-        Based on WTForms QuerySelectField, change to accept BaseInterface
-        and Filters instead of query_factory.
-        This will make this field not SQLAlchemy specific.
+        Based on WTForms QuerySelectField
     """
     widget = widgets.Select()
 
-    def __init__(self, label=None, validators=None, datamodel=None,
-                 filters=None, get_label=None, allow_blank=False,
+    def __init__(self, label=None, validators=None, query_func=None,
+                 get_pk_func=None, get_label=None, allow_blank=False,
                  blank_text='', **kwargs):
         super(QuerySelectField, self).__init__(label, validators, **kwargs)
-        self.datamodel = datamodel
-        self._filters = filters
+        self.query_func = query_func
+        self.get_pk_func = get_pk_func
 
         if get_label is None:
             self.get_label = lambda x: x
@@ -50,8 +48,8 @@ class QuerySelectField(SelectFieldBase):
 
     def _get_object_list(self):
         if self._object_list is None:
-            count, objs = self.datamodel.query(self._filters)
-            self._object_list = list((text_type(self.datamodel.get_pk_value(obj)), obj) for obj in objs)
+            objs = self.query_func()
+            self._object_list = list((text_type(self.get_pk_func(obj)), obj) for obj in objs)
         return self._object_list
 
     def iter_choices(self):
