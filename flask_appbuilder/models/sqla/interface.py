@@ -402,7 +402,7 @@ class SQLAInterface(BaseInterface):
             Returns all model's columns except pk or fk
         """
         ret_lst = list()
-        for col_name in self.list_properties.keys():
+        for col_name in self.get_columns_list():
             if (not self.is_pk(col_name)) and (not self.is_fk(col_name)):
                 ret_lst.append(col_name)
         return ret_lst
