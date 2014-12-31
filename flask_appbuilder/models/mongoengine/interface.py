@@ -15,7 +15,10 @@ class MongoEngineInterface(BaseInterface):
     def query(self, filters=None, order_column='', order_direction='',
               page=None, page_size=None):
 
-        objs = self.obj.objects
+        if filters:
+            objs = filters.apply_all(self.obj.objects)
+        else:
+            objs = self.obj.objects
         count = len(objs)
         start, stop = 0, count
         if page:
@@ -64,4 +67,4 @@ class MongoEngineInterface(BaseInterface):
         return 'id'
 
     def get(self, id):
-        return self.obj.objects(pk=id)
+        return self.obj.objects(pk=id)[0]
