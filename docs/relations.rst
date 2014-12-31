@@ -11,7 +11,7 @@ And the source code for this chapter on
 Many to One
 -----------
 
-First let's check the most simple relationship, already described on the quick how whth the contacts
+First let's check the most simple relationship, already described on the quick how to with the contacts
 application.
 
 Using a different (and slightly more complex) example. Let's assume we are building a human resources app.
@@ -72,7 +72,7 @@ This has two, one to many relations:
 
   - One employee belongs to a department and a department has many employees
 
-  - One employee belongs executes a function and a functions is executed by many employees.
+  - One employee executes a function and a function is executed by many employees.
 
 Now let's define ours views (views.py)::
 

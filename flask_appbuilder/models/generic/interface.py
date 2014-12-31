@@ -49,7 +49,9 @@ class GenericInterface(BaseInterface):
     def get_search_columns_list(self):
         return self.obj.columns
 
-    def get_order_columns_list(self):
+    def get_order_columns_list(self, list_columns=None):
+        if list_columns:
+            return list_columns
         return self.obj.columns
 
     def get_keys(self, lst):

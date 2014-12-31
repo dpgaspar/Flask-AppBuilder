@@ -18,7 +18,7 @@ class TemplateFilters(object):
     def __init__(self, app, security_manager):
         self.security_manager = security_manager
         for attr_name in dir(self):
-            if hasattr(getattr(self, attr_name),'_filter'):
+            if hasattr(getattr(self, attr_name), '_filter'):
                 attr = getattr(self, attr_name)
                 app.jinja_env.filters[attr._filter] = attr
 

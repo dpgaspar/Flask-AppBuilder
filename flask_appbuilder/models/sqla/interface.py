@@ -74,6 +74,15 @@ class SQLAInterface(BaseInterface):
 
         """
         query = self.session.query(self.obj)
+        if len(order_column.split('.')) >= 2:
+            tmp_order_column = ''
+            for join_relation in order_column.split('.')[:-1]:
+                model_relation = self.get_model_relation(join_relation)
+                query = query.join(model_relation)
+                # redefine order column name, because relationship can have a different name
+                # from the related table name.
+                tmp_order_column = tmp_order_column + model_relation.__tablename__ + '.'
+            order_column = tmp_order_column + order_column.split('.')[-1]
         query_count = self.session.query(func.count('*')).select_from(self.obj)
 
         query_count = self._get_base_query(query=query_count,
@@ -121,51 +130,92 @@ class SQLAInterface(BaseInterface):
     """
 
     def is_image(self, col_name):
-        return isinstance(self.list_columns[col_name].type, ImageColumn)
+        try:
+            return isinstance(self.list_columns[col_name].type, ImageColumn)
+        except:
+            return False
 
     def is_file(self, col_name):
-        return isinstance(self.list_columns[col_name].type, FileColumn)
+        try:
+            return isinstance(self.list_columns[col_name].type, FileColumn)
+        except:
+            return False
 
     def is_string(self, col_name):
-        return isinstance(self.list_columns[col_name].type, sa.types.String)
+        try:
+            return isinstance(self.list_columns[col_name].type, sa.types.String)
+        except:
+            return False
 
     def is_text(self, col_name):
-        return isinstance(self.list_columns[col_name].type, sa.types.Text)
+        try:
+            return isinstance(self.list_columns[col_name].type, sa.types.Text)
+        except:
+            return False
 
     def is_integer(self, col_name):
-        return isinstance(self.list_columns[col_name].type, sa.types.Integer)
+        try:
+            return isinstance(self.list_columns[col_name].type, sa.types.Integer)
+        except:
+            return False
 
     def is_float(self, col_name):
-        return isinstance(self.list_columns[col_name].type, sa.types.Float)
+        try:
+            return isinstance(self.list_columns[col_name].type, sa.types.Float)
+        except:
+            return False
 
     def is_boolean(self, col_name):
-        return isinstance(self.list_columns[col_name].type, sa.types.Boolean)
+        try:
+            return isinstance(self.list_columns[col_name].type, sa.types.Boolean)
+        except:
+            return False
 
     def is_date(self, col_name):
-        return isinstance(self.list_columns[col_name].type, sa.types.Date)
+        try:
+            return isinstance(self.list_columns[col_name].type, sa.types.Date)
+        except:
+            return False
 
     def is_datetime(self, col_name):
-        return isinstance(self.list_columns[col_name].type, sa.types.DateTime)
-
+        try:
+            return isinstance(self.list_columns[col_name].type, sa.types.DateTime)
+        except:
+            return False
 
     def is_relation(self, col_name):
-        return isinstance(self.list_properties[col_name], sa.orm.properties.RelationshipProperty)
+        try:
+            return isinstance(self.list_properties[col_name], sa.orm.properties.RelationshipProperty)
+        except:
+            return False
 
     def is_relation_many_to_one(self, col_name):
-        if self.is_relation(col_name):
-            return self.list_properties[col_name].direction.name == 'MANYTOONE'
+        try:
+            if self.is_relation(col_name):
+                return self.list_properties[col_name].direction.name == 'MANYTOONE'
+        except:
+            return False
 
     def is_relation_many_to_many(self, col_name):
-        if self.is_relation(col_name):
-            return self.list_properties[col_name].direction.name == 'MANYTOMANY'
+        try:
+            if self.is_relation(col_name):
+                return self.list_properties[col_name].direction.name == 'MANYTOMANY'
+        except:
+            return False
 
     def is_relation_one_to_one(self, col_name):
-        if self.is_relation(col_name):
-            return self.list_properties[col_name].direction.name == 'ONETOONE'
+        try:
+            if self.is_relation(col_name):
+                return self.list_properties[col_name].direction.name == 'ONETOONE'
+        except:
+            return False
 
     def is_relation_one_to_many(self, col_name):
-        if self.is_relation(col_name):
-            return self.list_properties[col_name].direction.name == 'ONETOMANY'
+        try:
+            if self.is_relation(col_name):
+                return self.list_properties[col_name].direction.name == 'ONETOMANY'
+        except:
+            return False
 
     def is_nullable(self, col_name):
         try:
@@ -334,13 +384,22 @@ class SQLAInterface(BaseInterface):
     def get_related_fks(self, related_views):
         return [view.datamodel.get_related_fk(self.obj) for view in related_views]
 
-    def get_related_fk(self, model):
-        for col_name in self.list_properties.keys():
-            if self.is_relation(col_name):
-                if model == self.get_model_relation(col_name):
-                    return col_name
-                    #return self.get_property_col(i)
-
+    def get_related_fk(self, model):                
+        def related_fk(SQLAobject,matchmodel):            
+            for col_name in SQLAobject.list_properties.keys():
+                if SQLAobject.is_relation(col_name):                    
+                    if matchmodel == SQLAobject.get_model_relation(col_name):
+                        return col_name        
+        fk=related_fk(self,model)
+        
+        ##No direct foreign key, check via relationships
+        if fk is None:
+            for col in self.list_properties.keys():
+                if self.is_relation(col):        
+                    fk=related_fk(self,self.get_model_relation(col))
+                    if fk:
+                        break        
+        return fk
 
     """
     ----------- GET METHODS -------------
@@ -378,9 +437,13 @@ class SQLAInterface(BaseInterface):
                 ret_lst.append(col_name)
         return ret_lst
 
-    def get_order_columns_list(self):
+    def get_order_columns_list(self, list_columns=None):
+        """
+            Returns the columns that are can be ordered
+        """
         ret_lst = list()
-        for col_name in self.list_properties.keys():
+        list_columns = list_columns or self.list_properties.keys()
+        for col_name in list_columns:
             if not self.is_relation(col_name):
                 ret_lst.append(col_name)
         return ret_lst

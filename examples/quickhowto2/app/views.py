@@ -15,7 +15,7 @@ from flask_appbuilder.models.filters import FilterStartsWith, FilterEqualFunctio
 from flask_appbuilder import expose, has_access, permission_name
 
 from app import db, appbuilder
-from .models import Group, Gender, Contact, FloatModel, Product, ProductManufacturer, ProductModel
+from .models import ContactGroup, Gender, Contact, FloatModel, Product, ProductManufacturer, ProductModel
 
 
 def fill_gender():
@@ -61,6 +61,8 @@ class ProductView(ModelView):
 
 class ContactModelView2(ModelView):
     datamodel = SQLAModel(Contact)
+    #label_columns = {'contact_groups.name': 'Contacts Group'}
+    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
 
 
 class ContactModelView(ModelView):
@@ -69,8 +71,8 @@ class ContactModelView(ModelView):
     add_widget = FormVerticalWidget
     show_widget = ShowBlockWidget
 
-    label_columns = {'group': 'Contacts Group'}
-    list_columns = ['name', 'personal_celphone', 'birthday', 'group']
+    label_columns = {'contact_groups': 'Contacts Group'}
+    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups']
 
     list_template = 'list_contacts.html'
     list_widget = ListThumbnail
@@ -80,21 +82,21 @@ class ContactModelView(ModelView):
     base_order = ('name', 'asc')
 
     show_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     add_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     edit_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'group']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
@@ -108,7 +110,7 @@ class ContactModelView(ModelView):
 
 
 class GroupModelView(ModelView):
-    datamodel = SQLAModel(Group)
+    datamodel = SQLAModel(ContactGroup)
     related_views = [ContactModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
@@ -125,12 +127,12 @@ class ContactChartView(GroupByChartView):
 
     definitions = [
         {
-            'group': 'group',
-            'series': [(aggregate_count, 'group')]
+            'group': 'contact_groups',
+            'series': [(aggregate_count, 'contact_groups')]
         },
         {
             'group': 'gender',
-            'series': [(aggregate_count, 'group')]
+            'series': [(aggregate_count, 'gender')]
         }
     ]
 
@@ -153,12 +155,12 @@ class ContactTimeChartView(GroupByChartView):
         {
             'group': 'month_year',
             'formatter': pretty_month_year,
-            'series': [(aggregate_count, 'group')]
+            'series': [(aggregate_count, 'contact_groups')]
         },
         {
             'group': 'year',
             'formatter': pretty_year,
-            'series': [(aggregate_count, 'group')]
+            'series': [(aggregate_count, 'contact_groups')]
         }
     ]
 

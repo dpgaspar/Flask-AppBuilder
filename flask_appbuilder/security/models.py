@@ -74,6 +74,14 @@ class RegisterUser(Model):
     registration_date = Column(DateTime, default=datetime.datetime.now, nullable=True)
     registration_hash = Column(String(256))
 
+user_role_mapper = Table('ab_role_mapper', Model.metadata,
+                                  Column('id', Integer, primary_key=True),
+                                  Column('user_id', Integer, ForeignKey('ab_user.id')),
+                                  Column('role_id', Integer, ForeignKey('ab_role.id'))
+)
+
+
+
 
 class User(Model):
     __tablename__ = 'ab_user'
@@ -88,10 +96,8 @@ class User(Model):
     last_login = Column(DateTime)
     login_count = Column(Integer)
     fail_login_count = Column(Integer)
-
-    role_id = Column(Integer, ForeignKey('ab_role.id'), nullable=False)
-    role = relationship("Role")
-
+    
+    role = relationship('Role',secondary=user_role_mapper) 
     created_on = Column(DateTime, default=datetime.datetime.now, nullable=True)
 
     changed_on = Column(DateTime, default=datetime.datetime.now, nullable=True)
