@@ -384,13 +384,22 @@ class SQLAInterface(BaseInterface):
     def get_related_fks(self, related_views):
         return [view.datamodel.get_related_fk(self.obj) for view in related_views]
 
-    def get_related_fk(self, model):
-        for col_name in self.list_properties.keys():
-            if self.is_relation(col_name):
-                if model == self.get_model_relation(col_name):
-                    return col_name
-                    #return self.get_property_col(i)
-
+    def get_related_fk(self, model):                
+        def related_fk(SQLAobject,matchmodel):            
+            for col_name in SQLAobject.list_properties.keys():
+                if SQLAobject.is_relation(col_name):                    
+                    if matchmodel == SQLAobject.get_model_relation(col_name):
+                        return col_name        
+        fk=related_fk(self,model)
+        
+        ##No direct foreign key, check via relationships
+        if fk is None:
+            for col in self.list_properties.keys():
+                if self.is_relation(col):        
+                    fk=related_fk(self,self.get_model_relation(col))
+                    if fk:
+                        break        
+        return fk
 
     """
     ----------- GET METHODS -------------
