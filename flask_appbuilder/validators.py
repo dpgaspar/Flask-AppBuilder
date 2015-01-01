@@ -1,4 +1,3 @@
-from .models.sqla.filters import FilterEqual
 from wtforms import ValidationError
 
 
@@ -22,7 +21,7 @@ class Unique(object):
 
     def __call__(self, form, field):
         filters = self.datamodel.get_filters().add_filter(self.col_name,
-                                                          FilterEqual,
+                                                          self.datamodel.FilterEqual,
                                                           field.data)
         count, obj = self.datamodel.query(filters)
         if count > 0:

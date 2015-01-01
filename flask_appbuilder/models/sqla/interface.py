@@ -3,19 +3,25 @@ import sys
 import logging
 import sqlalchemy as sa
 
+import filters
 from flask import flash
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
 
 from ..base import BaseInterface
-from .filters import SQLAFilterConverter
 from ..group import GroupByDateYear, GroupByDateMonth, GroupByCol
 from ..mixins import FileColumn, ImageColumn
 from ...filemanager import FileManager, ImageManager
 from ..._compat import as_unicode
 
 log = logging.getLogger(__name__)
+
+
+def _include_filters(obj):
+    for key in filters.__all__:
+        if not hasattr(obj, key):
+            setattr(obj, key, getattr(filters, key))
 
 
 class SQLAInterface(BaseInterface):
@@ -25,9 +31,10 @@ class SQLAInterface(BaseInterface):
     """
     session = None
 
-    filter_converter_class = SQLAFilterConverter
+    filter_converter_class = filters.SQLAFilterConverter
 
     def __init__(self, obj, session=None):
+        _include_filters(self)
         self.list_columns = dict()
         self.list_properties = dict()
 
@@ -386,7 +393,6 @@ class SQLAInterface(BaseInterface):
             if self.is_relation(col_name):
                 if model == self.get_related_model(col_name):
                     return col_name
-                    #return self.get_property_col(i)
 
 
     """

@@ -189,7 +189,7 @@ class BaseInterface(object):
 
     def get_related_interface(self, col_name):
         """
-            Returns a BaseIterface for the related model
+            Returns a BaseInterface for the related model
             of column name.
 
             :param col_name: Column name with relation
@@ -198,10 +198,10 @@ class BaseInterface(object):
         raise NotImplementedError
 
     def get_related_obj(self, col_name, value):
-        pass
+        raise NotImplementedError
 
     def get_related_fk(self, model):
-        pass
+        raise NotImplementedError
 
     def get_columns_list(self):
         """

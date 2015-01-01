@@ -1,6 +1,6 @@
 import logging, sys
 from flask import flash
-from .filters import MongoEngineFilterConverter
+import filters
 from ..._compat import as_unicode
 from ..base import BaseInterface
 from ..filters import Filters
@@ -9,12 +9,19 @@ from mongoengine.fields import StringField, IntField, BooleanField, FloatField, 
 log = logging.getLogger(__name__)
 
 
+def _include_filters(obj):
+    for key in filters.__all__:
+        if not hasattr(obj, key):
+            setattr(obj, key, getattr(filters, key))
+
+
 class MongoEngineInterface(BaseInterface):
 
-    filter_converter_class = MongoEngineFilterConverter
+    filter_converter_class = filters.MongoEngineFilterConverter
 
     def __init__(self, obj, session=None):
         self.session = session
+        _include_filters(self)
         super(MongoEngineInterface, self).__init__(obj)
 
     @property
@@ -165,12 +172,22 @@ class MongoEngineInterface(BaseInterface):
     def get_related_interface(self, col_name):
         return self.__class__(self.get_related_model(col_name))
 
+    def get_related_obj(self, col_name, value):
+        rel_model = self.get_related_model(col_name)
+        return rel_model.objects(pk=value)[0]
+
     def get_keys(self, lst):
         """
             return a list of pk values from object list
         """
         pk_name = self.get_pk_name()
         return [getattr(item, pk_name) for item in lst]
+
+    def get_related_fk(self, model):
+        for col_name in self.get_columns_list():
+            if self.is_relation(col_name):
+                if model == self.get_related_model(col_name):
+                    return col_name
 
     def get_pk_name(self):
         return 'id'

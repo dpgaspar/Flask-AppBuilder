@@ -1,10 +1,7 @@
 import logging
 from flask import Blueprint, request, redirect, session, url_for, render_template
-from flask.globals import _app_ctx_stack, _request_ctx_stack
-from werkzeug.urls import url_parse
 from .forms import GeneralModelConverter
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
-from .models.sqla.filters import FilterRelationOneToManyEqual
 from .actions import ActionItem
 from .urltools import *
 
@@ -579,7 +576,7 @@ class BaseCRUDView(BaseModelView):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
         filters = related_view.datamodel.get_filters()
-        filters.add_filter_related_view(fk, FilterRelationOneToManyEqual,
+        filters.add_filter_related_view(fk, self.datamodel.FilterRelationOneToManyEqual,
                                         self.datamodel.get_pk_value(item))
         return related_view._get_view_widget(filters=filters,
                                              order_column=order_column,
