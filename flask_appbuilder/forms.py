@@ -114,8 +114,7 @@ class GeneralModelConverter(object):
         get_pk_func = self._get_related_pk_func(col_name)
         extra_classes = None
         allow_blank = True
-        col = self.datamodel.get_relation_fk(col_name)
-        if not col.nullable:
+        if not self.datamodel.is_nullable(col_name):
             lst_validators.append(validators.DataRequired())
             allow_blank = False
         else:

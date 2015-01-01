@@ -216,6 +216,9 @@ class SQLAInterface(BaseInterface):
             return False
 
     def is_nullable(self, col_name):
+        if self.is_relation_many_to_one(col_name):
+            col = self.get_relation_fk(col_name)
+            return col.nullable
         try:
             return self.list_columns[col_name].nullable
         except:
@@ -279,7 +282,6 @@ class SQLAInterface(BaseInterface):
             log.exception("Edit record error: {0}".format(str(e)))
             self.session.rollback()
             return False
-
 
     def delete(self, item):
         try:

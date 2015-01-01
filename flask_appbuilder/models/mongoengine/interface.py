@@ -4,7 +4,7 @@ from .filters import MongoEngineFilterConverter
 from ..._compat import as_unicode
 from ..base import BaseInterface
 from ..filters import Filters
-from mongoengine.fields import StringField, IntField
+from mongoengine.fields import StringField, IntField, BooleanField, FloatField, DateTimeField, ReferenceField
 
 log = logging.getLogger(__name__)
 
@@ -16,6 +16,14 @@ class MongoEngineInterface(BaseInterface):
     def __init__(self, obj, session=None):
         self.session = session
         super(MongoEngineInterface, self).__init__(obj)
+
+    @property
+    def model_name(self):
+        """
+            Returns the models class name
+            useful for auto title on views
+        """
+        return self.obj.__name__
 
     def query(self, filters=None, order_column='', order_direction='',
               page=None, page_size=None):
@@ -38,10 +46,55 @@ class MongoEngineInterface(BaseInterface):
         return count, objs[start:stop]
 
     def is_string(self, col_name):
-        return isinstance(self.obj._fields[col_name], StringField)
+        try:
+            return isinstance(self.obj._fields[col_name], StringField)
+        except:
+            return False
 
     def is_integer(self, col_name):
-        return isinstance(self.obj._fields[col_name], IntField)
+        try:
+            return isinstance(self.obj._fields[col_name], IntField)
+        except:
+            return False
+
+    def is_float(self, col_name):
+        try:
+            return isinstance(self.obj._fields[col_name], FloatField)
+        except:
+            return False
+
+    def is_boolean(self, col_name):
+        try:
+            return isinstance(self.obj._fields[col_name], BooleanField)
+        except:
+            return False
+
+    def is_datetime(self, col_name):
+        try:
+            return isinstance(self.obj._fields[col_name], DateTimeField)
+        except:
+            return False
+
+    def is_relation(self, col_name):
+        try:
+            return isinstance(self.obj._fields[col_name], ReferenceField)
+        except:
+            return False
+
+    def is_relation_many_to_one(self, col_name):
+        try:
+            return isinstance(self.obj._fields[col_name], ReferenceField)
+        except:
+            return False
+
+    def is_relation_many_to_many(self, col_name):
+        return False
+
+    def is_relation_one_to_one(self, col_name):
+        return False
+
+    def is_relation_one_to_many(self, col_name):
+        return False
 
     def is_nullable(self, col_name):
         return not self.obj._fields[col_name].required
@@ -82,12 +135,16 @@ class MongoEngineInterface(BaseInterface):
             log.exception("Delete record error: {0}".format(str(e)))
             return False
 
-
     def get_columns_list(self):
         return self.obj._fields.keys()
 
     def get_search_columns_list(self):
-        return self.obj._fields.keys()
+        ret_lst = list()
+        for col_name in self.get_columns_list():
+            for conversion in self.filter_converter_class.conversion_table:
+                if getattr(self, conversion[0])(col_name):
+                    ret_lst.append(col_name)
+        return ret_lst
 
     def get_user_columns_list(self):
         """
@@ -101,6 +158,12 @@ class MongoEngineInterface(BaseInterface):
 
     def get_order_columns_list(self, list_columns=None):
         return self.obj._fields.keys()
+
+    def get_related_model(self, col_name):
+        return self.obj._fields[col_name].document_type
+
+    def get_related_interface(self, col_name):
+        return self.__class__(self.get_related_model(col_name))
 
     def get_keys(self, lst):
         """
