@@ -3,8 +3,8 @@ from flask import flash
 import filters
 from ..._compat import as_unicode
 from ..base import BaseInterface
-from ..filters import Filters
-from mongoengine.fields import StringField, IntField, BooleanField, FloatField, DateTimeField, ReferenceField
+from mongoengine.fields import StringField, IntField, BooleanField, FloatField, \
+    DateTimeField, ReferenceField, ListField, Document
 
 log = logging.getLogger(__name__)
 
@@ -84,7 +84,8 @@ class MongoEngineInterface(BaseInterface):
 
     def is_relation(self, col_name):
         try:
-            return isinstance(self.obj._fields[col_name], ReferenceField)
+            return isinstance(self.obj._fields[col_name], ReferenceField) or \
+                    isinstance(self.obj._fields[col_name], ListField)
         except:
             return False
 
@@ -95,7 +96,12 @@ class MongoEngineInterface(BaseInterface):
             return False
 
     def is_relation_many_to_many(self, col_name):
-        return False
+        try:
+            field = self.obj._fields[col_name]
+            return isinstance(field, ListField) and isinstance(field.field, ReferenceField)
+        except:
+            return False
+
 
     def is_relation_one_to_one(self, col_name):
         return False
@@ -167,7 +173,11 @@ class MongoEngineInterface(BaseInterface):
         return self.obj._fields.keys()
 
     def get_related_model(self, col_name):
-        return self.obj._fields[col_name].document_type
+        field = self.obj._fields[col_name]
+        if isinstance(field, ListField):
+            return field.field.document_type
+        else:
+            return field.document_type
 
     def get_related_interface(self, col_name):
         return self.__class__(self.get_related_model(col_name))
