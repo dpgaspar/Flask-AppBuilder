@@ -1,8 +1,11 @@
 import sys
 import logging
+
 from flask import Flask
 from sqlalchemy import create_engine
-from flask_appbuilder.security.models import User
+
+from flask_appbuilder.security.sqla.models import User
+
 
 logging.basicConfig(format='%(levelname)s:%(name)s:%(message)s')
 logging.getLogger().setLevel(logging.DEBUG)

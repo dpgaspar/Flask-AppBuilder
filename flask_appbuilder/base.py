@@ -4,11 +4,23 @@ from flask import Blueprint, url_for, current_app
 from .views import IndexView, UtilView
 from .filters import TemplateFilters
 from .menu import Menu
-from .security.manager import SecurityManager
 from .babel.manager import BabelManager
 from .version import VERSION_STRING
 
 log = logging.getLogger(__name__)
+
+
+def dynamic_class_import(class_path):
+    """
+        Will dynamically import a class from a string path
+        :param class_path: string with class path
+        :return: class
+    """
+    # Split first occurrence of path
+    tmp = class_path.split('.', 1)
+    package = __import__(tmp[0])
+    print package
+    return reduce(getattr, tmp[1].split('.'), package)
 
 
 class AppBuilder(object):
@@ -46,7 +58,7 @@ class AppBuilder(object):
                  base_template='appbuilder/baselayout.html',
                  static_folder='static/appbuilder',
                  static_url_path='/appbuilder',
-                 security_manager_class=SecurityManager):
+                 security_manager_class=None):
         """
             AppBuilder constructor
             
@@ -84,9 +96,11 @@ class AppBuilder(object):
         app.config.setdefault('APP_ICON', '')
         app.config.setdefault('LANGUAGES',
                               {'en': {'flag': 'gb', 'name': 'English'}})
-
+        # Set default security class to SQLAlchemy based SecurityManager
+        app.config.setdefault('SECURITY_CLASS', 'flask_appbuilder.security.sqla.manager.SecurityManager')
         self.session = session
-
+        if not self.security_manager_class:
+            self.security_manager_class = dynamic_class_import(app.config.get("SECURITY_CLASS"))
         self.sm = self.security_manager_class(self)
         self.bm = BabelManager(self)
         self._add_global_static()

@@ -4,7 +4,7 @@ import filters
 from ..._compat import as_unicode
 from ..base import BaseInterface
 from mongoengine.fields import StringField, IntField, BooleanField, FloatField, \
-    DateTimeField, ReferenceField, ListField, Document
+    DateTimeField, ReferenceField, ListField
 
 log = logging.getLogger(__name__)
 

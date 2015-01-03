@@ -1,24 +1,23 @@
 import datetime
 import logging
-from flask import render_template, flash, redirect, session, url_for, request, g
+
+from flask import flash, redirect, session, url_for, request, g
 from werkzeug.security import generate_password_hash
-from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
-from flask.ext.openid import SessionWrapper, OpenIDResponse, OpenID
 from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
-from flask.ext.babelpkg import gettext, lazy_gettext
+from flask_babelpkg import lazy_gettext
 from flask_login import login_user, logout_user
 
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import BaseView, ModelView, SimpleFormView, expose
 from flask_appbuilder.charts.views import DirectByChartView
-
 from ..fieldwidgets import BS3PasswordFieldWidget
 from ..actions import action
 from .._compat import as_unicode
 from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
-from .models import User, Permission, PermissionView, Role, ViewMenu
+from .flask_appbuilder.security.sqla.models import User, Permission, PermissionView, Role, ViewMenu
 from .decorators import has_access
+
 
 log = logging.getLogger(__name__)
 
