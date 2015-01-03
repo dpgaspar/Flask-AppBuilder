@@ -10,6 +10,7 @@ from flask_babelpkg import lazy_gettext as _
 from sqlalchemy import func
 from sqlalchemy.engine.reflection import Inspector
 
+from ...models.sqla import Base
 from .models import User, Role, PermissionView, Permission, ViewMenu
 from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
     ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserRemoteUserModelView, \

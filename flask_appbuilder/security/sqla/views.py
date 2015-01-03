@@ -11,12 +11,12 @@ from flask_login import login_user, logout_user
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import BaseView, ModelView, SimpleFormView, expose
 from flask_appbuilder.charts.views import DirectByChartView
-from ..fieldwidgets import BS3PasswordFieldWidget
-from ..actions import action
-from .._compat import as_unicode
-from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
-from .flask_appbuilder.security.sqla.models import User, Permission, PermissionView, Role, ViewMenu
-from .decorators import has_access
+from ...fieldwidgets import BS3PasswordFieldWidget
+from ...actions import action
+from ..._compat import as_unicode
+from ..forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
+from ..decorators import has_access
+from .models import User, Permission, PermissionView, Role, ViewMenu
 
 
 log = logging.getLogger(__name__)
