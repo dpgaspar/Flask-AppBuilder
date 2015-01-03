@@ -11,7 +11,7 @@ logging.getLogger().setLevel(logging.DEBUG)
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLA(app)
-appbuilder = AppBuilder(app, db.session, menu=Menu(reverse=True), base_template='new_base.html')
+appbuilder = AppBuilder(app, db.session, menu=Menu(reverse=False))
 
 """
 Only include this for SQLLite constraints

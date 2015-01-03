@@ -161,16 +161,19 @@ class MongoEngineInterface(BaseInterface):
 
     def get_user_columns_list(self):
         """
-            Returns all model's columns except pk or fk
+            Returns all model's columns except pk
         """
-        ret_lst = list()
-        for col_name in self.get_columns_list():
-            if (not self.is_pk(col_name)) and (not self.is_fk(col_name)):
-                ret_lst.append(col_name)
-        return ret_lst
+        return [col_name for col_name in self.get_columns_list() if not self.is_pk(col_name)]
 
     def get_order_columns_list(self, list_columns=None):
-        return self.obj._fields.keys()
+        """
+            Returns the columns that can be ordered
+
+            :param list_columns: optional list of columns name, if provided will
+                use this list only.
+        """
+        list_columns = list_columns or self.get_columns_list()
+        return [col_name for col_name in list_columns if not hasattr(getattr(self.obj, col_name), '__call__')]
 
     def get_related_model(self, col_name):
         field = self.obj._fields[col_name]

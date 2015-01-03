@@ -56,11 +56,9 @@ class ProductView(ModelView):
 
 class ContactModelView2(ModelView):
     datamodel = SQLAInterface(Contact)
-    #label_columns = {'contact_groups.name': 'Contacts Group'}
-    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
-    add_form_query_rel_fields = {'contact_groups':[['name',FilterStartsWith,'p']],
+    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
+    add_form_query_rel_fields = {'contact_group':[['name',FilterStartsWith,'p']],
                                  'gender':[['name',FilterStartsWith,'F']]}
-
 
 
 class ContactModelView(ModelView):
@@ -69,7 +67,7 @@ class ContactModelView(ModelView):
     add_widget = FormVerticalWidget
     show_widget = ShowBlockWidget
 
-    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
+    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
 
     list_template = 'list_contacts.html'
     list_widget = ListThumbnail
@@ -79,21 +77,21 @@ class ContactModelView(ModelView):
     base_order = ('name', 'asc')
 
     show_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     add_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     edit_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
@@ -112,6 +110,7 @@ class GroupModelView(ModelView):
     show_template = 'appbuilder/general/model/show_cascade.html'
     list_columns = ['name', 'extra_col']
 
+
 class FloatModelView(ModelView):
     datamodel = SQLAInterface(FloatModel)
 
@@ -124,8 +123,8 @@ class ContactChartView(GroupByChartView):
 
     definitions = [
         {
-            'group': 'contact_groups',
-            'series': [(aggregate_count, 'contact_groups')]
+            'group': 'contact_group.name',
+            'series': [(aggregate_count, 'contact_group')]
         },
         {
             'group': 'gender',
@@ -152,12 +151,12 @@ class ContactTimeChartView(GroupByChartView):
         {
             'group': 'month_year',
             'formatter': pretty_month_year,
-            'series': [(aggregate_count, 'contact_groups')]
+            'series': [(aggregate_count, 'contact_group')]
         },
         {
             'group': 'year',
             'formatter': pretty_year,
-            'series': [(aggregate_count, 'contact_groups')]
+            'series': [(aggregate_count, 'contact_group')]
         }
     ]
 

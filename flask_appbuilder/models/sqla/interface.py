@@ -418,7 +418,7 @@ class SQLAInterface(BaseInterface):
     #TODO get different solution, more integrated with filters
     def get_search_columns_list(self):
         ret_lst = list()
-        for col_name in self.list_properties.keys():
+        for col_name in self.get_columns_list():
             if not self.is_relation(col_name):
                 tmp_prop = self.get_property_first_col(col_name).name
                 if (not self.is_pk(tmp_prop)) and \
@@ -433,10 +433,13 @@ class SQLAInterface(BaseInterface):
 
     def get_order_columns_list(self, list_columns=None):
         """
-            Returns the columns that are can be ordered
+            Returns the columns that can be ordered
+
+            :param list_columns: optional list of columns name, if provided will
+                use this list only.
         """
         ret_lst = list()
-        list_columns = list_columns or self.list_properties.keys()
+        list_columns = list_columns or self.get_columns_list()
         for col_name in list_columns:
             if not self.is_relation(col_name):
                 if hasattr(self.obj, col_name):

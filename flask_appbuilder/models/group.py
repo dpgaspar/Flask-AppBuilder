@@ -176,10 +176,14 @@ class BaseProcessData(object):
         return g
 
     def resolve_attr(self, obj, attr):
+        if not hasattr(obj, attr):
+            # it's an inner obj attr
+            return reduce(getattr, attr.split('.'), obj)
         if hasattr(getattr(obj, attr), '__call__'):
             # its a function
             return getattr(obj, attr)()
         else:
+            # it's an attribute
             return getattr(obj, attr)
 
     def format_columns(self, *values):
@@ -270,11 +274,11 @@ class DirectProcessData(BaseProcessData):
 
 class GroupByProcessData(BaseProcessData):
 
-    def apply(self, data):
-        data = sorted(data, key=self.attrgetter(*self.group_bys_cols))
+    def apply(self, data, sort=True):
+        if sort:
+            data = sorted(data, key=self.attrgetter(*self.group_bys_cols))
         result = []
         for (grouped, items) in groupby(data, key=self.attrgetter(*self.group_bys_cols)):
-            items = list(items)
             result_item = [self.format_columns(grouped)]
             for aggr_by_col in self.aggr_by_cols:
                 result_item.append(aggr_by_col[0](items, aggr_by_col[1]))
