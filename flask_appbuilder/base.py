@@ -6,6 +6,7 @@ from .filters import TemplateFilters
 from .menu import Menu
 from .babel.manager import BabelManager
 from .version import VERSION_STRING
+from .security.sqla.manager import SecurityManager
 
 log = logging.getLogger(__name__)
 

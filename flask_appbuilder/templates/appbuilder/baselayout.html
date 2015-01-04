@@ -1,0 +1,27 @@
+{% extends 'appbuilder/init.html' %}
+{% import 'appbuilder/baselib.html' as baselib %}
+
+{% block body %}
+
+<div class="container">
+  <div class="row">
+    	  {% include 'appbuilder/flash.html' %}
+          {% block content %}
+          {% endblock %}
+  </div>
+</div>
+
+
+{% block footer %}
+    <footer>
+	<div class="img-rounded nav-fixed-bottom">
+        	<div class="container">
+        		{% include 'appbuilder/footer.html' %}
+        	</div>
+        </div>
+    </footer>
+{% endblock %}
+
+	
+{% endblock %}
+

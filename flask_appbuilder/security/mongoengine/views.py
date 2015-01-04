@@ -8,7 +8,7 @@ from wtforms.validators import EqualTo
 from flask_babelpkg import lazy_gettext
 from flask_login import login_user, logout_user
 
-from ...models.sqla.interface import SQLAInterface
+from ...models.mongoengine.interface import MongoEngineInterface
 from ...views import ModelView, SimpleFormView, expose
 from ...baseviews import BaseView
 from ...charts.views import DirectByChartView
@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 class PermissionModelView(ModelView):
     route_base = '/permissions'
     base_permissions = ['can_list']
-    datamodel = SQLAInterface(Permission)
+    datamodel = MongoEngineInterface(Permission)
 
     list_title = lazy_gettext('List Base Permissions')
     show_title = lazy_gettext('Show Base Permission')
@@ -39,7 +39,7 @@ class PermissionModelView(ModelView):
 class ViewMenuModelView(ModelView):
     route_base = '/viewmenus'
     base_permissions = ['can_list']
-    datamodel = SQLAInterface(ViewMenu)
+    datamodel = MongoEngineInterface(ViewMenu)
 
     list_title = lazy_gettext('List View Menus')
     show_title = lazy_gettext('Show View Menu')
@@ -52,7 +52,7 @@ class ViewMenuModelView(ModelView):
 class PermissionViewModelView(ModelView):
     route_base = '/permissionviews'
     base_permissions = ['can_list']
-    datamodel = SQLAInterface(PermissionView)
+    datamodel = MongoEngineInterface(PermissionView)
 
     list_title = lazy_gettext('List Permissions on Views/Menus')
     show_title = lazy_gettext('Show Permission on Views/Menus')
@@ -98,7 +98,7 @@ class ResetPasswordView(SimpleFormView):
 
 class UserModelView(ModelView):
     route_base = '/users'
-    datamodel = SQLAInterface(User)
+    datamodel = MongoEngineInterface(User)
 
     list_title = lazy_gettext('List Users')
     show_title = lazy_gettext('Show User')
@@ -274,7 +274,7 @@ class UserDBModelView(UserModelView):
 
 
 class UserStatsChartView(DirectByChartView):
-    datamodel = SQLAInterface(User)
+    datamodel = MongoEngineInterface(User)
     chart_title = lazy_gettext('User Statistics')
     label_columns = {'username': lazy_gettext('User Name'),
                      'login_count': lazy_gettext('Login count'),
@@ -301,7 +301,7 @@ class UserStatsChartView(DirectByChartView):
 class RoleModelView(ModelView):
     route_base = '/roles'
 
-    datamodel = SQLAInterface(Role)
+    datamodel = MongoEngineInterface(Role)
 
     list_title = lazy_gettext('List Roles')
     show_title = lazy_gettext('Show Role')

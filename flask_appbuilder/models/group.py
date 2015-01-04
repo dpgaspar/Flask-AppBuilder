@@ -260,9 +260,10 @@ class BaseProcessData(object):
 
 class DirectProcessData(BaseProcessData):
 
-    def apply(self, data):
+    def apply(self, data, sort=True):
         group_by = self.group_bys_cols[0]
-        data = sorted(data, key=self.attrgetter(group_by))
+        if sort:
+            data = sorted(data, key=self.attrgetter(group_by))
         result = []
         for item in data:
             result_item = [self.format_columns(self.attrgetter(group_by)(item))]

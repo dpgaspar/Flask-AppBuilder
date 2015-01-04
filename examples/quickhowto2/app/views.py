@@ -1,19 +1,12 @@
 import calendar
 from flask import redirect
-from flask.ext.appbuilder import ModelView
-from flask.ext.appbuilder.models import SQLAInterface
-from flask.ext.appbuilder.charts.views import GroupByChartView
-from flask.ext.appbuilder.models.group import aggregate_count
-from flask.ext.appbuilder.widgets import FormVerticalWidget, FormInlineWidget, FormHorizontalWidget, ShowBlockWidget
-from flask.ext.appbuilder.actions import action
+from flask_appbuilder import ModelView, GroupByChartView, aggregate_count, action
+from flask_appbuilder.models import SQLAInterface, GenericInterface
+from flask_appbuilder.widgets import FormVerticalWidget, FormInlineWidget, FormHorizontalWidget, ShowBlockWidget
 from flask_appbuilder.widgets import ListThumbnail
-from flask.ext.babelpkg import lazy_gettext as _
 from flask.ext.appbuilder.models.generic import PSSession
-from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.generic import PSModel
 from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction as FA
-from flask_appbuilder import expose, has_access, permission_name, BaseView
-from flask_appbuilder import IndexView
 
 from app import db, appbuilder
 from .models import ContactGroup, Gender, Contact, FloatModel, Product, ProductManufacturer, ProductModel
@@ -180,5 +173,3 @@ appbuilder.add_view(ProductModelView, "List Models", icon="fa-envelope", categor
 appbuilder.add_view(ProductView, "List Products", icon="fa-envelope", category="Products")
 
 appbuilder.security_cleanup()
-
-

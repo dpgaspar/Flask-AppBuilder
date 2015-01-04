@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash
 from flask import render_template, flash, redirect, session, url_for, request
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
 
-
+from flask_openid import SessionWrapper, OpenIDResponse
 from ...views import expose, PublicFormView
 from flask_babelpkg import lazy_gettext
 from .models import User, RegisterUser

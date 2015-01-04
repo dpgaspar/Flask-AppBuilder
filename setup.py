@@ -4,6 +4,7 @@ import imp
 import multiprocessing
 from setuptools import setup, find_packages
 
+
 version = imp.load_source('version', os.path.join('flask_appbuilder', 'version.py'))
 
 def fpath(name):

@@ -1,11 +1,9 @@
 import datetime
 import logging
 
-from flask import g, url_for
+from flask import g
 from flask_login import current_user
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager
-from flask_openid import OpenID
+from werkzeug.security import check_password_hash
 from flask_babelpkg import lazy_gettext as _
 from sqlalchemy import func
 from sqlalchemy.engine.reflection import Inspector
@@ -80,99 +78,11 @@ class SecurityManager(BaseSecurityManager):
                 F.A.B AppBuilder main object
             """
         super(SecurityManager, self).__init__(appbuilder)
-        app = self.appbuilder.get_app
-        # Base Security Config
-        app.config.setdefault('AUTH_ROLE_ADMIN', 'Admin')
-        app.config.setdefault('AUTH_ROLE_PUBLIC', 'Public')
-        app.config.setdefault('AUTH_TYPE', AUTH_DB)
-        # Self Registration
-        app.config.setdefault('AUTH_USER_REGISTRATION', False)
-        app.config.setdefault('AUTH_USER_REGISTRATION_ROLE', self.auth_role_public)
-        # LDAP Config
-        app.config.setdefault('AUTH_LDAP_SEARCH', '')
-        app.config.setdefault('AUTH_LDAP_BIND_FIELD', 'cn')
-        app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
-        app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
-        app.config.setdefault('AUTH_LDAP_LASTNAME_FIELD', 'sn')
-        app.config.setdefault('AUTH_LDAP_EMAIL_FIELD', 'mail')
-
-        if self.auth_type == AUTH_LDAP:
-            if 'AUTH_LDAP_SERVER' not in app.config:
-                raise Exception("No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type.")
-        if self.auth_type == AUTH_OID:
-            self.oid = OpenID(app)
-        if self.auth_type == AUTH_OAUTH:
-            from flask_oauth import OAuth
-            self.oauth = OAuth
-
-        self.lm = LoginManager(app)
-        self.lm.login_view = 'login'
-        self.lm.user_loader(self.load_user)
         self.create_db()
 
     @property
     def get_session(self):
         return self.appbuilder.get_session
-
-    @property
-    def get_url_for_registeruser(self):
-        return url_for('%s.%s' % (self.registeruser_view.endpoint, self.registeruser_view.default_view))
-
-    @property
-    def auth_type(self):
-        return self.appbuilder.get_app.config['AUTH_TYPE']
-
-    @property
-    def auth_role_admin(self):
-        return self.appbuilder.get_app.config['AUTH_ROLE_ADMIN']
-
-    @property
-    def auth_role_public(self):
-        return self.appbuilder.get_app.config['AUTH_ROLE_PUBLIC']
-
-    @property
-    def auth_ldap_server(self):
-        return self.appbuilder.get_app.config['AUTH_LDAP_SERVER']
-
-    @property
-    def auth_user_registration(self):
-        return self.appbuilder.get_app.config['AUTH_USER_REGISTRATION']
-
-    @property
-    def auth_user_registration_role(self):
-        return self.appbuilder.get_app.config['AUTH_USER_REGISTRATION_ROLE']
-
-    @property
-    def auth_ldap_search(self):
-        return self.appbuilder.get_app.config['AUTH_LDAP_SEARCH']
-
-    @property
-    def auth_ldap_bind_field(self):
-        return self.appbuilder.get_app.config['AUTH_LDAP_BIND_FIELD']
-
-    @property
-    def auth_ldap_uid_field(self):
-        return self.appbuilder.get_app.config['AUTH_LDAP_UID_FIELD']
-
-    @property
-    def auth_ldap_firstname_field(self):
-        return self.appbuilder.get_app.config['AUTH_LDAP_FIRSTNAME_FIELD']
-
-    @property
-    def auth_ldap_lastname_field(self):
-        return self.appbuilder.get_app.config['AUTH_LDAP_LASTNAME_FIELD']
-
-    @property
-    def auth_ldap_email_field(self):
-        return self.appbuilder.get_app.config['AUTH_LDAP_EMAIL_FIELD']
-
-    @property
-    def openid_providers(self):
-        return self.appbuilder.get_app.config['OPENID_PROVIDERS']
-
-    @property
-    def oauth_providers(self):
-        return self.appbuilder.get_app.config['OAUTH_PROVIDERS']
 
     def register_views(self):
         self.appbuilder.add_view_no_menu(ResetPasswordView())
@@ -226,36 +136,6 @@ class SecurityManager(BaseSecurityManager):
                                  "Permission on Views/Menus", icon="fa-link",
                                  label=_('Permission on Views/Menus'), category="Security")
 
-    def load_user(self, pk):
-        return self.get_user_by_id(int(pk))
-
-    @staticmethod
-    def before_request():
-        g.user = current_user
-
-    def _migrate_db(self):  # pragma: no cover
-        """
-            Migrate from 0.8 to 0.9, change GeneralView to ModelView
-            on ViewMenus
-        """
-        sec_view_prefixes = ['Permission', 'ViewMenu', 'PermissionView',
-                             'UserOID', 'UserLDAP', 'UserDB',
-                             'Role']
-        sec_view_old_sufix = 'GeneralView'
-        sec_view_new_sufix = 'ModelView'
-        for sec_view_prefix in sec_view_prefixes:
-            sec_view = self._find_view_menu('{0}{1}'.format(sec_view_prefix, sec_view_old_sufix))
-            if sec_view:
-                try:
-                    log.info("Migrate from 0.8 to 0.9 Changing {0}{1}".format(sec_view_prefix, sec_view_old_sufix))
-                    sec_view.name = '{0}{1}'.format(sec_view_prefix, sec_view_new_sufix)
-                    self.get_session.merge(sec_view)
-                    self.get_session.commit()
-                except Exception as e:
-                    log.error("Update ViewMenu error: {0}".format(str(e)))
-                    self.get_session.rollback()
-
-
     def create_db(self):
         try:
             engine = self.get_session.get_bind(mapper=None, clause=None)
@@ -264,31 +144,7 @@ class SecurityManager(BaseSecurityManager):
                 log.info("Security DB not found Creating all Models from Base")
                 Base.metadata.create_all(engine)
                 log.info("Security DB Created")
-            else:
-                self._migrate_db()
-            if not self.get_session.query(Role).filter_by(name=self.auth_role_admin).first():
-                role = Role()
-                role.name = self.auth_role_admin
-                self.get_session.add(role)
-                self.get_session.commit()
-                log.info("Inserted Role for public access %s" % (self.auth_role_admin))
-            if not self.get_session.query(Role).filter_by(name=self.auth_role_public).first():
-                role = Role()
-                role.name = self.auth_role_public
-                self.get_session.add(role)
-                self.get_session.commit()
-                log.info("Inserted Role for public access %s" % (self.auth_role_public))
-            if not self.get_session.query(User).all():
-                self.add_user(
-                    username=ADMIN_USER_NAME,
-                    first_name=ADMIN_USER_FIRST_NAME,
-                    last_name=ADMIN_USER_LAST_NAME,
-                    email=ADMIN_USER_EMAIL,
-                    role=self.get_session.query(Role).filter_by(name=self.auth_role_admin).first(),
-                    password=generate_password_hash(ADMIN_USER_PASSWORD)
-                )
-                log.info("Inserted initial Admin user")
-                log.info("Login using {0}/{1}".format(ADMIN_USER_NAME, ADMIN_USER_PASSWORD))
+            super(SecurityManager, self).create_db()
         except Exception as e:
             log.error(
                 "DB Creation and initialization failed, if just upgraded to 0.7.X you must migrate the DB. {0}".format(
@@ -317,6 +173,20 @@ class SecurityManager(BaseSecurityManager):
                     str(e)))
             return False
 
+    def count_users(self):
+        return self.get_session.query(func.count('*')).select_from(User).scalar()
+
+    def update_user(self, user):
+        try:
+            self.get_session.merge(user)
+            self.get_session.commit()
+        except Exception as e:
+            log.error(
+                "Error updating user to database. {0}".format(
+                    str(e)))
+            self.get_session.rollback()
+            return False
+
     """
     ----------------------------------------
         AUTHENTICATION METHODS
@@ -338,10 +208,10 @@ class SecurityManager(BaseSecurityManager):
         if user is None or (not user.is_active()):
             return None
         elif check_password_hash(user.password, password):
-            self._update_user_auth_stat(user, True)
+            self.update_user_auth_stat(user, True)
             return user
         else:
-            self._update_user_auth_stat(user, False)
+            self.update_user_auth_stat(user, False)
             return None
 
     def auth_user_ldap(self, username, password):
@@ -394,13 +264,13 @@ class SecurityManager(BaseSecurityManager):
                             first_name=ldap_user_info[self.auth_ldap_firstname_field][0],
                             last_name=ldap_user_info[self.auth_ldap_lastname_field][0],
                             email=ldap_user_info[self.auth_ldap_email_field][0],
-                            role=self.get_role_by_name(self.auth_user_registration_role)
+                            role=self.find_role(self.auth_user_registration_role)
                         )
 
-                    self._update_user_auth_stat(user)
+                    self.update_user_auth_stat(user)
                     return user
                 except ldap.INVALID_CREDENTIALS:
-                    self._update_user_auth_stat(user, False)
+                    self.update_user_auth_stat(user, False)
                     return None
             except ldap.LDAPError as e:
                 if type(e.message) == dict and 'desc' in e.message:
@@ -422,7 +292,7 @@ class SecurityManager(BaseSecurityManager):
         elif not user.is_active():
             return None
         else:
-            self._update_user_auth_stat(user)
+            self.update_user_auth_stat(user)
             return user
 
     def auth_user_remote_user(self, username):
@@ -438,50 +308,8 @@ class SecurityManager(BaseSecurityManager):
         elif not user.is_active():
             return None
         else:
-            self._update_user_auth_stat(user)
+            self.update_user_auth_stat(user)
             return user
-
-    def _update_user_auth_stat(self, user, success=True):
-        """
-            Update authentication successful to user.
-
-            :param user:
-                The authenticated user model
-        """
-        try:
-            if not user.login_count:
-                user.login_count = 0
-            elif not user.fail_login_count:
-                user.fail_login_count = 0
-            if success:
-                user.login_count += 1
-                user.fail_login_count = 0
-            else:
-                user.fail_login_count += 1
-            user.last_login = datetime.datetime.now()
-            self.get_session.merge(user)
-            self.get_session.commit()
-        except Exception as e:
-            log.error("Update user login stat: {0}".format(str(e)))
-            self.get_session.rollback()
-
-    def reset_password(self, userid, password):
-        """
-            Change/Reset a user's password for authdb.
-            Password will be hashed and saved.
-
-            :param userid:
-                the user.id to reset the password
-            :param password:
-                The clear text password to reset and save hashed on the db
-        """
-        try:
-            user = self.get_user_by_id(userid)
-            user.password = generate_password_hash(password)
-            self.get_session.commit()
-        except Exception as e:
-            log.error("Reset password: {0}".format(str(e)))
-            self.get_session.rollback()
 
     def get_user_by_id(self, pk):
         return self.get_session.query(User).get(pk)
@@ -502,18 +330,16 @@ class SecurityManager(BaseSecurityManager):
             :param view_name:
                 the name of the class view (child of BaseView)
         """
-        role = self.get_session.query(Role).filter_by(name=self.auth_role_public).first()
-        lst = role.permissions
-        if lst:
-            for i in lst:
+        permissions = self.get_public_permissions()
+        if permissions:
+            for i in permissions:
                 if (view_name == i.view_menu.name) and (permission_name == i.permission.name):
                     return True
             return False
         else:
             return False
 
-
-    def has_view_access(self, user, permission_name, view_name):
+    def _has_view_access(self, user, permission_name, view_name):
         lst = user.role.permissions
         if lst:
             for i in lst:
@@ -523,13 +349,12 @@ class SecurityManager(BaseSecurityManager):
         else:
             return False
 
-
     def has_access(self, permission_name, view_name):
         """
             Check if current user or public has access to view or menu
         """
         if current_user.is_authenticated():
-            if self.has_view_access(g.user, permission_name, view_name):
+            if self._has_view_access(g.user, permission_name, view_name):
                 return True
             else:
                 return False
@@ -546,9 +371,26 @@ class SecurityManager(BaseSecurityManager):
             PERMISSION MANAGEMENT
         ----------------------------------------
     """
+    def add_role(self, name):
+        role = self.find_role(name)
+        if role is None:
+            try:
+                role = Role()
+                role.name = name
+                self.get_session.add(role)
+                self.get_session.commit()
+                return role
+            except Exception as e:
+                log.error("Add Role: {0}".format(str(e)))
+                self.get_session.rollback()
+        return role
 
-    def get_role_by_name(self, name):
+    def find_role(self, name):
         return self.get_session.query(Role).filter_by(name=name).first()
+
+    def get_public_permissions(self):
+        role = self.get_session.query(Role).filter_by(name=self.auth_role_public).first()
+        return role.permissions
 
     def _find_permission(self, name):
         """
@@ -594,7 +436,7 @@ class SecurityManager(BaseSecurityManager):
                 self.get_session.rollback()
 
     # ----------------------------------------------
-    #       PERMITIVES VIEW MENU
+    #       PRIMITIVES VIEW MENU
     #----------------------------------------------
     def _find_view_menu(self, name):
         """
@@ -779,7 +621,6 @@ class SecurityManager(BaseSecurityManager):
                     # Role Admin must have all permissions
                     self.add_permission_role(role_admin, perm_view)
 
-
     def add_permissions_menu(self, view_menu_name):
         """
             Adds menu_access to menu on permission_view_menu
@@ -794,8 +635,13 @@ class SecurityManager(BaseSecurityManager):
             role_admin = self.get_session.query(Role).filter_by(name=self.auth_role_admin).first()
             self.add_permission_role(role_admin, pv)
 
-
     def security_cleanup(self, baseviews, menus):
+        """
+            Will cleanup from the database all unused permissions
+
+            :param baseviews: A list of BaseViews class
+            :param menus: Menu class
+        """
         viewsmenus = self.get_session.query(ViewMenu).all()
         roles = self.get_session.query(Role).all()
         for viewmenu in viewsmenus:
