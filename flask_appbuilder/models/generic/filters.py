@@ -2,11 +2,15 @@ from flask.ext.babelpkg import lazy_gettext
 from ..filters import BaseFilter, FilterRelation, BaseFilterConverter
 
 
+__all__ = ['GenericFilterConverter', 'FilterNotContains', 'FilterEqual', 'FilterContains', 'FilterNotEqual']
+
+
 class FilterContains(BaseFilter):
     name = lazy_gettext('Contains')
 
     def apply(self, query, value):
         return query.like(self.column_name, value)
+
 
 class FilterNotContains(BaseFilter):
     name = lazy_gettext('Not Contains')
@@ -27,8 +31,6 @@ class FilterNotEqual(BaseFilter):
 
     def apply(self, query, value):
         return query.not_equal(self.column_name, value)
-
-
 
 
 class GenericFilterConverter(BaseFilterConverter):

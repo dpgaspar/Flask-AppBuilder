@@ -7,6 +7,44 @@ This can be done before or after defined blocks on the page,
 without the need of developing a template from scratch because you just want to add small changes on it.
 Next is a quick description on how you can do this
 
+CSS and Javascript
+------------------
+
+Add your own CSS's or javascript application wide.
+Create the following directory structure on your project::
+
+    <Project Name>/
+        app/
+            templates/
+                appbuilder/
+                    init.html
+            static/
+                js/
+                    <your js files>
+                css/
+                    <your css files>
+
+Then on init.html add your js files and css files, use **head_css** for css's and **head_js** for javascript::
+
+    {% block head_css %}
+        {{ super() }}
+        <script src="{{url_for('static',filename='css/your_css_file.js')}}"></script>
+    {% endblock %}
+
+    {% block head_js %}
+        {{ super() }}
+        <script src="{{url_for('static',filename='js/your_js_file.js')}}"></script>
+    {% endblock %}
+
+
+If you want to import your javascript files at the end of the templates use **tail_js**::
+
+    {% block tail_js %}
+        {{ super() }}
+        <script src="{{url_for('static',filename='js/your_js_file.js')}}"></script>
+    {% endblock %}
+
+
 List Templates
 --------------
 
@@ -45,7 +83,7 @@ To insert your template section after a block do:
 
         {% block list_search scoped %}
             {{ super() }}
-            This Text will replace the search widget
+            This Text will show after the search widget
         {% endblock %}
 
 I guess you get the general ideal, make use of {{ super() }} to render the block's original content.
@@ -57,7 +95,6 @@ If you have your template on ./your_project/app/templates/list_contacts.html
 
     class ContactModelView(ModelView):
         datamodel = SQLAModel(Contact)
-
         list_template = 'list_contacts.html'
 
 

@@ -27,15 +27,18 @@
                 {% endif %}
 				{{_(item1.label)}}<b class="caret"></b></a>
 		        <ul class="dropdown-menu">
-				{% for item2 in item1.childs %}
-					{% if item2.name == '-' %}
-                        <li class="divider"></li>
+				{% set divider = False %}
+                {% for item2 in item1.childs %}
+                    {% if item2.name == '-' %}
+                        {% set divider = True %}
                     {% else %}
-                            {% if item2 | is_menu_visible %}
-					        <li>
-                                {{ menu_item(item2) }}
-                            </li>
+                        {% if item2 | is_menu_visible %}
+                            {% if divider %}
+                                <li class="divider"></li>
+                                {% set divider = False %}
                             {% endif %}
+					        <li>{{ menu_item(item2) }}</li>
+                        {% endif %}
 					{% endif %}
 				{% endfor %}
 				</ul></li>
@@ -85,8 +88,8 @@
                     <span class="icon-bar"></span>
                 </button>
                 {% if appbuilder.app_icon %}
-                	<a class="brand" href="{{appbuilder.get_url_for_index}}">
-                	<img src="{{appbuilder.app_icon}}" height="50px" width="100%">
+                	<a class="navbar-brand" href="{{appbuilder.get_url_for_index}}">
+                	<img src="{{appbuilder.app_icon}}" >
                 	</a>
                 {% else %}
                 	<span class="navbar-brand">

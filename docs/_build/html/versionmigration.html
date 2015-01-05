@@ -65,9 +65,15 @@
 <h2>Migrating from 1.1.X to 1.2.X<a class="headerlink" href="#migrating-from-1-1-x-to-1-2-x" title="Permalink to this headline">¶</a></h2>
 <p>There is a breaking feature, change your filters import like this:</p>
 <p>from:</p>
-<p>flask.ext.appbuilder.models.filters import FilterEqual, FilterRelation ....</p>
+<div class="highlight-python"><div class="highlight"><pre>flask.ext.appbuilder.models.base import Filters, BaseFilter, BaseFilterConverter
+flask.ext.appbuilder.models.filters import FilterEqual, FilterRelation ....
+</pre></div>
+</div>
 <p>to:</p>
-<p>flask.ext.appbuilder.models.sqla.filter import FilterEqual, FilterRelation ....</p>
+<div class="highlight-python"><div class="highlight"><pre>flask.ext.appbuilder.models.filters import Filters, BaseFilter, BaseFilterConverter
+flask.ext.appbuilder.models.sqla.filter import FilterEqual, FilterRelation ....
+</pre></div>
+</div>
 </div>
 <div class="section" id="migrating-from-0-9-x-to-0-10-x">
 <h2>Migrating from 0.9.X to 0.10.X<a class="headerlink" href="#migrating-from-0-9-x-to-0-10-x" title="Permalink to this headline">¶</a></h2>

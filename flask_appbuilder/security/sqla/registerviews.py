@@ -1,19 +1,21 @@
 __author__ = 'dpgaspar'
 
 import uuid
-import sys
 import logging
+
 from werkzeug.security import generate_password_hash
 from flask import render_template, flash, redirect, session, url_for, request
-from ..views import expose, PublicFormView
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
-from flask.ext.openid import SessionWrapper, OpenIDResponse, OpenID
-from flask.ext.babelpkg import gettext, lazy_gettext
+
+from flask_openid import SessionWrapper, OpenIDResponse
+from ...views import expose, PublicFormView
+from flask_babelpkg import lazy_gettext
 from .models import User, RegisterUser
-from .forms import RegisterUserOIDForm, RegisterUserDBForm, LoginForm_oid
-from ..models.sqla.interface import SQLAInterface
-from ..validators import Unique
-from .._compat import as_unicode
+from ..forms import RegisterUserOIDForm, RegisterUserDBForm, LoginForm_oid
+from ...models.sqla.interface import SQLAInterface
+from ...validators import Unique
+from ..._compat import as_unicode
+
 
 log = logging.getLogger(__name__)
 

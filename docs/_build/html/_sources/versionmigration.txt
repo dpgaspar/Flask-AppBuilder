@@ -6,13 +6,15 @@ Migrating from 1.1.X to 1.2.X
 
 There is a breaking feature, change your filters import like this:
 
-from:
+from::
 
-flask.ext.appbuilder.models.filters import FilterEqual, FilterRelation ....
+    flask.ext.appbuilder.models.base import Filters, BaseFilter, BaseFilterConverter
+    flask.ext.appbuilder.models.filters import FilterEqual, FilterRelation ....
 
-to:
+to::
 
-flask.ext.appbuilder.models.sqla.filter import FilterEqual, FilterRelation ....
+    flask.ext.appbuilder.models.filters import Filters, BaseFilter, BaseFilterConverter
+    flask.ext.appbuilder.models.sqla.filter import FilterEqual, FilterRelation ....
 
 
 Migrating from 0.9.X to 0.10.X

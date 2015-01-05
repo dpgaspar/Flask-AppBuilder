@@ -1,13 +1,19 @@
-from .filters import GenericFilterConverter
+import filters
 from ..base import BaseInterface
-from ..filters import Filters
+
+
+def _include_filters(obj):
+    for key in filters.__all__:
+        if not hasattr(obj, key):
+            setattr(obj, key, getattr(filters, key))
 
 
 class GenericInterface(BaseInterface):
 
-    filter_converter_class = GenericFilterConverter
+    filter_converter_class = filters.GenericFilterConverter
 
     def __init__(self, obj, session=None):
+        _include_filters(self)
         self.session = session
         super(GenericInterface, self).__init__(obj)
 

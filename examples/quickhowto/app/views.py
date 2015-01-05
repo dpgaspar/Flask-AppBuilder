@@ -1,6 +1,6 @@
 import calendar
 from flask.ext.appbuilder import ModelView
-from flask.ext.appbuilder.models.datamodel import SQLAModel
+from flask.ext.appbuilder.models import SQLAInterface
 from flask.ext.appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
 from flask.ext.babelpkg import lazy_gettext as _
@@ -20,7 +20,7 @@ def fill_gender():
 
 
 class ContactModelView(ModelView):
-    datamodel = SQLAModel(Contact)
+    datamodel = SQLAInterface(Contact)
 
     list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
 
@@ -49,12 +49,12 @@ class ContactModelView(ModelView):
 
 
 class GroupModelView(ModelView):
-    datamodel = SQLAModel(ContactGroup)
+    datamodel = SQLAInterface(ContactGroup)
     related_views = [ContactModelView]
 
 
 class ContactChartView(GroupByChartView):
-    datamodel = SQLAModel(Contact)
+    datamodel = SQLAInterface(Contact)
     chart_title = 'Grouped contacts'
     label_columns = ContactModelView.label_columns
     chart_type = 'PieChart'
@@ -79,7 +79,7 @@ def pretty_year(value):
 
 
 class ContactTimeChartView(GroupByChartView):
-    datamodel = SQLAModel(Contact)
+    datamodel = SQLAInterface(Contact)
 
     chart_title = 'Grouped Birth contacts'
     chart_type = 'AreaChart'

@@ -1,10 +1,7 @@
 import logging
 from flask import Blueprint, request, redirect, session, url_for, render_template
-from flask.globals import _app_ctx_stack, _request_ctx_stack
-from werkzeug.urls import url_parse
 from .forms import GeneralModelConverter
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
-from .models.sqla.filters import FilterRelationOneToManyEqual
 from .actions import ActionItem
 from .urltools import *
 
@@ -135,6 +132,8 @@ class BaseView(object):
             :param template: The template relative path
             :param kwargs: arguments to be passed to the template
         """
+        kwargs['base_template'] = self.appbuilder.base_template
+        kwargs['appbuilder'] = self.appbuilder
         return render_template(template, **dict(list(kwargs.items()) + list(self.extra_args.items())))
 
     def _prettify_name(self, name):
@@ -193,7 +192,7 @@ class BaseModelView(BaseView):
         Your sqla model you must initialize it like::
         
             class MyView(ModelView):
-                datamodel = SQLAModel(MyTable, db.session)
+                datamodel = SQLAModel(MyTable)
     """
 
     title = 'Title'
@@ -277,7 +276,7 @@ class BaseModelView(BaseView):
     def _init_properties(self):
         self.label_columns = self.label_columns or {}
         self.base_filters = self.base_filters or []
-        self._base_filters = self.datamodel.get_filters().add_filter_list(self.datamodel, self.base_filters)
+        self._base_filters = self.datamodel.get_filters().add_filter_list(self.base_filters)
         list_cols = self.datamodel.get_columns_list()
         self.search_columns = self.search_columns or self.datamodel.get_search_columns_list()
         self._gen_labels_columns(list_cols)
@@ -289,7 +288,9 @@ class BaseModelView(BaseView):
             self.search_form = conv.create_form(self.label_columns, self.search_columns)
 
 
-    def _get_search_widget(self, form=None, exclude_cols=[], widgets={}):
+    def _get_search_widget(self, form=None, exclude_cols=None, widgets=None):
+        exclude_cols = exclude_cols or []
+        widgets = widgets or {}
         widgets['search'] = self.search_widget(route_base=self.route_base,
                                                form=form,
                                                include_cols=self.search_columns,
@@ -424,32 +425,30 @@ class BaseCRUDView(BaseModelView):
     """
     add_form_query_rel_fields = None
     """
-        Add Customized query for related fields on add form.
-        Assign a list of tuples like
-        ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
+        Add Customized query for related fields to add form.
+        Assign a dictionary where the keys are the column names of
+        the related models to filter, the value for each key, is a list of lists with the
+        same format as base_filter
+        {'relation col name':[['Related model col',FilterClass,'Filter Value'],...],...}
         Add a custom filter to form related fields::
 
             class ContactModelView(ModelView):
                 datamodel = SQLAModel(Contact, db.session)
-                add_form_query_rel_fields = [('group',
-                        SQLAModel(Group, db.session),
-                        [['name',FilterStartsWith,'W']]
-                        )]
+                add_form_query_rel_fields = [('group':[['name',FilterStartsWith,'W']]}
 
     """
     edit_form_query_rel_fields = None
     """
-        Add Customized query for related fields on edit form.
-        Assign a list of tuples like
-        ('relation col name',SQLAModel,[['Related model col',FilterClass,'Filter Value'],...])
+        Add Customized query for related fields to edit form.
+        Assign a dictionary where the keys are the column names of
+        the related models to filter, the value for each key, is a list of lists with the
+        same format as base_filter
+        {'relation col name':[['Related model col',FilterClass,'Filter Value'],...],...}
         Add a custom filter to form related fields::
 
             class ContactModelView(ModelView):
                 datamodel = SQLAModel(Contact, db.session)
-                edit_form_query_rel_fields = [('group',
-                        SQLAModel(Group, db.session),
-                        [['name',FilterStartsWith,'W']]
-                        )]
+                add_form_query_rel_fields = [('group':[['name',FilterStartsWith,'W']]}
 
     """
 
@@ -501,16 +500,14 @@ class BaseCRUDView(BaseModelView):
                                              self.description_columns,
                                              self.validators_columns,
                                              self.add_form_extra_fields,
-                                             self.add_form_query_rel_fields,
-                                             self.add_form_query_cascade)
+                                             self.add_form_query_rel_fields)
         if not self.edit_form:
             self.edit_form = conv.create_form(self.label_columns,
                                               self.edit_columns,
                                               self.description_columns,
                                               self.validators_columns,
                                               self.edit_form_extra_fields,
-                                              self.edit_form_query_rel_fields,
-                                              self.edit_form_query_cascade)
+                                              self.edit_form_query_rel_fields)
 
     def _init_titles(self):
         """
@@ -578,9 +575,9 @@ class BaseCRUDView(BaseModelView):
                                  page=None, page_size=None):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
-        filters = self.datamodel.get_filters()
-        filters.add_filter_related_view(fk, FilterRelationOneToManyEqual,
-                                        related_view.datamodel, self.datamodel.get_pk_value(item))
+        filters = related_view.datamodel.get_filters()
+        filters.add_filter_related_view(fk, self.datamodel.FilterRelationOneToManyEqual,
+                                        self.datamodel.get_pk_value(item))
         return related_view._get_view_widget(filters=filters,
                                              order_column=order_column,
                                              order_direction=order_direction,

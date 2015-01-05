@@ -1,7 +1,7 @@
 import logging
 import functools
 
-from flask import flash, redirect,url_for
+from flask import flash, redirect, url_for
 from flask_babelpkg import lazy_gettext
 from .._compat import as_unicode
 

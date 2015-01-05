@@ -1,10 +1,11 @@
 from flask import Markup, url_for
-from sqlalchemy import Table, Column, Integer, Float, String, ForeignKey, Date, Text
+from sqlalchemy import Column, Integer, Float, String, ForeignKey, Text
 from sqlalchemy.orm import relationship
+
 from flask.ext.appbuilder.filemanager import ImageManager
-from flask.ext.appbuilder.models.mixins import BaseMixin, ImageColumn
 from flask.ext.appbuilder import Model
-from flask_appbuilder.security.models import User
+from flask_appbuilder.security.sqla.models import User
+
 
 class ProductType(Model):
     id = Column(Integer, primary_key=True)

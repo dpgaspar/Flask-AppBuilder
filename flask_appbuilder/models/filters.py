@@ -1,16 +1,6 @@
 import logging
 from .._compat import as_unicode
 
-"""
-# For Retro Compatibility purposes
-from .sqla.filters import (FilterContains,FilterEndsWith,
-                          FilterEqual,FilterEqualFunction,
-                          FilterGreater,FilterNotContains,
-                          FilterNotEndsWith,FilterNotEqual,
-                          FilterNotStartsWith,FilterRelationManyToManyEqual,FilterRelationOneToManyEqual,
-                          FilterRelationOneToManyNotEqual,FilterSmaller,FilterStartsWith)
-"""
-
 log = logging.getLogger(__name__)
 
 class BaseFilter(object):
@@ -46,9 +36,9 @@ class BaseFilter(object):
 
     def apply(self, query, value):
         """
-            Override this to implement you own new filters
+            Override this to implement your own new filters
         """
-        pass
+        raise NotImplementedError
 
     def __repr__(self):
         return self.name
@@ -65,13 +55,14 @@ class BaseFilterConverter(object):
     """
         Base Filter Converter, all classes responsible
         for the association of columns and possible filters
-        will inherit from this
+        will inherit from this and override the conversion_table property.
 
     """
     conversion_table = ()
     """
         When implementing your own filters you just need to define
-        the new filters, and register them overriding this property
+        the new filters, and register them overriding this property.
+        This will map a column type to all possible filters.
         use something like this::
 
             (('is_text', [FilterCustomForText,
@@ -99,68 +90,74 @@ class BaseFilterConverter(object):
         log.warning('Filter type not supported for column: %s' % col_name)
 
 
-
 class Filters(object):
     filters = []
-    """ List of instanciated filters """
+    """ List of instanciated BaseFilter classes """
     values = []
     """ list of values to apply to filters """
     _search_filters = {}
     """ dict like {'col_name':[BaseFilter1, BaseFilter2, ...], ... } """
     _all_filters = {}
 
-    def __init__(self, filter_converter, search_columns=[], datamodel=None):
+    def __init__(self, filter_converter, datamodel, search_columns=None):
+        """
+
+            :param filter_converter: Accepts BaseFilterConverter class
+            :param search_columns: restricts possible columns, accepts a list of column names
+            :param datamodel: Accepts BaseInterface class
+        """
+        search_columns = search_columns or []
         self.filter_converter = filter_converter
+        self.datamodel = datamodel
         self.clear_filters()
-        if search_columns and datamodel:
-            self._search_filters = self._get_filters(search_columns, datamodel)
-            self._all_filters = self._get_filters(datamodel.get_columns_list(), datamodel)
+        if search_columns:
+            self._search_filters = self._get_filters(search_columns)
+            self._all_filters = self._get_filters(datamodel.get_columns_list())
 
     def get_search_filters(self):
         return self._search_filters
 
-    def _get_filters(self, cols, datamodel):
+    def _get_filters(self, cols):
         filters = {}
         for col in cols:
-            lst_flt = self.filter_converter(datamodel).convert(col)
-            if lst_flt:
-                filters[col] = lst_flt
+            _filters = self.filter_converter(self.datamodel).convert(col)
+            if _filters:
+                filters[col] = _filters
         return filters
-
 
     def clear_filters(self):
         self.filters = []
         self.values = []
 
+    def _add_filter(self, filter_instance, value):
+        self.filters.append(filter_instance)
+        self.values.append(value)
+
     def add_filter_index(self, column_name, filter_instance_index, value):
         self._add_filter(self._all_filters[column_name][filter_instance_index], value)
 
-    def add_filter(self, column_name, filter_class, datamodel, value):
-        self._add_filter(filter_class(column_name, datamodel), value)
+    def add_filter(self, column_name, filter_class, value):
+        self._add_filter(filter_class(column_name, self.datamodel), value)
         return self
 
-    def add_filter_related_view(self, column_name, filter_class, datamodel, value):
-        self._add_filter(filter_class(column_name, datamodel, True), value)
+    def add_filter_related_view(self, column_name, filter_class, value):
+        self._add_filter(filter_class(column_name, self.datamodel, True), value)
         return self
 
-    def add_filter_list(self, datamodel, active_filter_list=None):
+    def add_filter_list(self, active_filter_list=None):
         for item in active_filter_list:
             column_name, filter_class, value = item
-            self._add_filter(filter_class(column_name, datamodel), value)
+            self._add_filter(filter_class(column_name, self.datamodel), value)
         return self
 
     def get_joined_filters(self, filters):
         """
             Creates a new filters class with active filters joined
         """
-        retfilters = Filters(self.filter_converter)
+        retfilters = Filters(self.filter_converter, self.datamodel)
         retfilters.filters = self.filters + filters.filters
         retfilters.values = self.values + filters.values
         return retfilters
-
-    def _add_filter(self, filter_instance, value):
-        self.filters.append(filter_instance)
-        self.values.append(value)
 
     def get_relation_cols(self):
         """

@@ -66,6 +66,42 @@ This way you can add your own html on jinja2 templates.
 This can be done before or after defined blocks on the page,
 without the need of developing a template from scratch because you just want to add small changes on it.
 Next is a quick description on how you can do this</p>
+<div class="section" id="css-and-javascript">
+<h2>CSS and Javascript<a class="headerlink" href="#css-and-javascript" title="Permalink to this headline">¶</a></h2>
+<p>Add your own CSS&#8217;s or javascript application wide.
+Create the following directory structure on your project:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;Project Name&gt;/
+    app/
+        templates/
+            appbuilder/
+                init.html
+        static/
+            js/
+                &lt;your js files&gt;
+            css/
+                &lt;your css files&gt;
+</pre></div>
+</div>
+<p>Then on init.html add your js files and css files, use <strong>head_css</strong> for css&#8217;s and <strong>head_js</strong> for javascript:</p>
+<div class="highlight-python"><div class="highlight"><pre>{% block head_css %}
+    {{ super() }}
+    &lt;script src=&quot;{{url_for(&#39;static&#39;,filename=&#39;css/you_css_file.js&#39;)}}&quot;&gt;&lt;/script&gt;
+{% endblock %}
+
+{% block head_js %}
+    {{ super() }}
+    &lt;script src=&quot;{{url_for(&#39;static&#39;,filename=&#39;js/your_js_file.js&#39;)}}&quot;&gt;&lt;/script&gt;
+{% endblock %}
+</pre></div>
+</div>
+<p>If you want to import your javascript files at the end of the templates use <strong>tail_js</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre>{% block tail_js %}
+    {{ super() }}
+    &lt;script src=&quot;{{url_for(&#39;static&#39;,filename=&#39;js/your_js_file.js&#39;)}}&quot;&gt;&lt;/script&gt;
+{% endblock %}
+</pre></div>
+</div>
+</div>
 <div class="section" id="list-templates">
 <h2>List Templates<a class="headerlink" href="#list-templates" title="Permalink to this headline">¶</a></h2>
 <p>Using the contacts app example, we are going to see how to override or insert jinja2 on specific sections
@@ -390,6 +426,7 @@ new html that shares the same look and feel has the framework.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Templates</a><ul>
+<li><a class="reference internal" href="#css-and-javascript">CSS and Javascript</a></li>
 <li><a class="reference internal" href="#list-templates">List Templates</a></li>
 <li><a class="reference internal" href="#add-templates">Add Templates</a></li>
 <li><a class="reference internal" href="#edit-templates">Edit Templates</a></li>

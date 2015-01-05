@@ -1,7 +1,6 @@
 //---------------------------------------
 // Setup date time modal views
 //---------------------------------------
-
 $(document).ready(function() {
     $('.appbuilder_datetime').datetimepicker();
     $('.appbuilder_date').datetimepicker({

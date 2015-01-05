@@ -40,7 +40,7 @@ class BaseInterface(object):
             return getattr(item, col)
 
     def get_filters(self, search_columns=[]):
-        return Filters(self.filter_converter_class, search_columns, self)
+        return Filters(self.filter_converter_class, self, search_columns)
 
     def get_values_item(self, item, show_columns):
         return [self._get_attr_value(item, col) for col in show_columns]
@@ -173,7 +173,10 @@ class BaseInterface(object):
         """
             Returns the primary key name
         """
-        pass
+        raise NotImplementedError
+
+    def get_pk_value(self, item):
+        return getattr(item, self.get_pk_name())
 
     def get(self, pk):
         """
@@ -181,14 +184,24 @@ class BaseInterface(object):
         """
         pass
 
-    def get_model_relation(self, prop):
-        pass
+    def get_related_model(self, prop):
+        raise NotImplementedError
+
+    def get_related_interface(self, col_name):
+        """
+            Returns a BaseInterface for the related model
+            of column name.
+
+            :param col_name: Column name with relation
+            :return: BaseInterface
+        """
+        raise NotImplementedError
 
     def get_related_obj(self, col_name, value):
-        pass
+        raise NotImplementedError
 
     def get_related_fk(self, model):
-        pass
+        raise NotImplementedError
 
     def get_columns_list(self):
         """

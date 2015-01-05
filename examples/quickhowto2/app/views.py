@@ -1,19 +1,12 @@
 import calendar
 from flask import redirect
-from flask.ext.appbuilder import ModelView
-from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.charts.views import GroupByChartView
-from flask.ext.appbuilder.models.group import aggregate_count
-from flask.ext.appbuilder.widgets import FormVerticalWidget, FormInlineWidget, FormHorizontalWidget, ShowBlockWidget
-from flask.ext.appbuilder.actions import action
+from flask_appbuilder import ModelView, GroupByChartView, aggregate_count, action
+from flask_appbuilder.models import SQLAInterface, GenericInterface
+from flask_appbuilder.widgets import FormVerticalWidget, FormInlineWidget, FormHorizontalWidget, ShowBlockWidget
 from flask_appbuilder.widgets import ListThumbnail
-from flask.ext.babelpkg import lazy_gettext as _
 from flask.ext.appbuilder.models.generic import PSSession
-from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.generic import PSModel
 from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction as FA
-from flask_appbuilder import expose, has_access, permission_name, BaseView
-from flask_appbuilder import IndexView
 
 from app import db, appbuilder
 from .models import ContactGroup, Gender, Contact, FloatModel, Product, ProductManufacturer, ProductModel
@@ -31,7 +24,6 @@ def fill_gender():
 sess = PSSession()
 
 
-
 class PSView(ModelView):
     datamodel = GenericInterface(PSModel, sess)
     base_permissions = ['can_list', 'can_show']
@@ -40,40 +32,35 @@ class PSView(ModelView):
 
 
 class ProductManufacturerView(ModelView):
-    datamodel = SQLAModel(ProductManufacturer)
+    datamodel = SQLAInterface(ProductManufacturer)
 
 
 class ProductModelView(ModelView):
-    datamodel = SQLAModel(ProductModel)
+    datamodel = SQLAInterface(ProductModel)
 
 
 class ProductView(ModelView):
-    datamodel = SQLAModel(Product)
+    datamodel = SQLAInterface(Product)
     list_columns = ['name','product_manufacturer', 'product_model']
     add_columns = ['name','product_manufacturer', 'product_model']
     edit_columns = ['name','product_manufacturer', 'product_model']
-
-    #add_form_query_cascade = [('product_manufacturer', 'product_model',
-    #                    SQLAModel(ProductModel, db.session),
-    #                    ['product_manufacturer',FA, 'product_manufacturer']
-    #                    )]
-
-    #edit_form_query_cascade = add_form_query_cascade
+    add_widget = FormVerticalWidget
 
 
 class ContactModelView2(ModelView):
-    datamodel = SQLAModel(Contact)
-    #label_columns = {'contact_groups.name': 'Contacts Group'}
-    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
+    datamodel = SQLAInterface(Contact)
+    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
+    add_form_query_rel_fields = {'contact_group':[['name',FilterStartsWith,'p']],
+                                 'gender':[['name',FilterStartsWith,'F']]}
 
 
 class ContactModelView(ModelView):
-    datamodel = SQLAModel(Contact)
+    datamodel = SQLAInterface(Contact)
 
     add_widget = FormVerticalWidget
     show_widget = ShowBlockWidget
 
-    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_groups.name']
+    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
 
     list_template = 'list_contacts.html'
     list_widget = ListThumbnail
@@ -83,21 +70,21 @@ class ContactModelView(ModelView):
     base_order = ('name', 'asc')
 
     show_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     add_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     edit_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'contact_groups']}),
+        ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
@@ -111,25 +98,26 @@ class ContactModelView(ModelView):
 
 
 class GroupModelView(ModelView):
-    datamodel = SQLAModel(ContactGroup)
+    datamodel = SQLAInterface(ContactGroup)
     related_views = [ContactModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
     list_columns = ['name', 'extra_col']
 
+
 class FloatModelView(ModelView):
-    datamodel = SQLAModel(FloatModel)
+    datamodel = SQLAInterface(FloatModel)
 
 
 class ContactChartView(GroupByChartView):
-    datamodel = SQLAModel(Contact)
+    datamodel = SQLAInterface(Contact)
     chart_title = 'Grouped contacts'
     label_columns = ContactModelView.label_columns
     chart_type = 'PieChart'
 
     definitions = [
         {
-            'group': 'contact_groups',
-            'series': [(aggregate_count, 'contact_groups')]
+            'group': 'contact_group.name',
+            'series': [(aggregate_count, 'contact_group')]
         },
         {
             'group': 'gender',
@@ -147,7 +135,7 @@ def pretty_year(value):
 
 
 class ContactTimeChartView(GroupByChartView):
-    datamodel = SQLAModel(Contact)
+    datamodel = SQLAInterface(Contact)
 
     chart_title = 'Grouped Birth contacts'
     chart_type = 'AreaChart'
@@ -156,12 +144,12 @@ class ContactTimeChartView(GroupByChartView):
         {
             'group': 'month_year',
             'formatter': pretty_month_year,
-            'series': [(aggregate_count, 'contact_groups')]
+            'series': [(aggregate_count, 'contact_group')]
         },
         {
             'group': 'year',
             'formatter': pretty_year,
-            'series': [(aggregate_count, 'contact_groups')]
+            'series': [(aggregate_count, 'contact_group')]
         }
     ]
 
@@ -185,5 +173,3 @@ appbuilder.add_view(ProductModelView, "List Models", icon="fa-envelope", categor
 appbuilder.add_view(ProductView, "List Products", icon="fa-envelope", category="Products")
 
 appbuilder.security_cleanup()
-
-

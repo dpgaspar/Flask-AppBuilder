@@ -1,7 +1,10 @@
 import logging
 import sys
+
 from werkzeug.security import generate_password_hash
-from flask_appbuilder.security.models import User
+
+from flask_appbuilder.security.sqla.models import User
+
 
 try:
     from app import app, db

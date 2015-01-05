@@ -1,12 +1,11 @@
 import logging
-from flask import render_template, flash, redirect, send_file, jsonify, request
-from .actions import action
+from flask import flash, redirect, send_file, jsonify
 from ._compat import as_unicode
 from flask_babelpkg import lazy_gettext
 from .filemanager import uuid_originalname
-from .security.decorators import has_access, permission_name
 from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
-from .baseviews import expose, BaseView, BaseCRUDView
+from .baseviews import BaseView, BaseCRUDView, expose
+from .security.decorators import has_access, permission_name
 from .urltools import *
 
 
@@ -120,7 +119,9 @@ class SimpleFormView(BaseView):
         """
         pass
 
-    def _get_edit_widget(self, form=None, exclude_cols=[], widgets={}):
+    def _get_edit_widget(self, form=None, exclude_cols=None, widgets=None):
+        exclude_cols = exclude_cols or []
+        widgets = widgets or {}
         widgets['edit'] = self.edit_widget(route_base=self.route_base,
                                            form=form,
                                            include_cols=self.form_columns,

@@ -3,19 +3,25 @@ import sys
 import logging
 import sqlalchemy as sa
 
+import filters
 from flask import flash
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
 
 from ..base import BaseInterface
-from .filters import SQLAFilterConverter
 from ..group import GroupByDateYear, GroupByDateMonth, GroupByCol
 from ..mixins import FileColumn, ImageColumn
 from ...filemanager import FileManager, ImageManager
 from ..._compat import as_unicode
 
 log = logging.getLogger(__name__)
+
+
+def _include_filters(obj):
+    for key in filters.__all__:
+        if not hasattr(obj, key):
+            setattr(obj, key, getattr(filters, key))
 
 
 class SQLAInterface(BaseInterface):
@@ -25,9 +31,10 @@ class SQLAInterface(BaseInterface):
     """
     session = None
 
-    filter_converter_class = SQLAFilterConverter
+    filter_converter_class = filters.SQLAFilterConverter
 
     def __init__(self, obj, session=None):
+        _include_filters(self)
         self.list_columns = dict()
         self.list_properties = dict()
 
@@ -75,7 +82,7 @@ class SQLAInterface(BaseInterface):
         if len(order_column.split('.')) >= 2:
             tmp_order_column = ''
             for join_relation in order_column.split('.')[:-1]:
-                model_relation = self.get_model_relation(join_relation)
+                model_relation = self.get_related_model(join_relation)
                 query = query.join(model_relation)
                 # redefine order column name, because relationship can have a different name
                 # from the related table name.
@@ -216,6 +223,9 @@ class SQLAInterface(BaseInterface):
             return False
 
     def is_nullable(self, col_name):
+        if self.is_relation_many_to_one(col_name):
+            col = self.get_relation_fk(col_name)
+            return col.nullable
         try:
             return self.list_columns[col_name].nullable
         except:
@@ -280,7 +290,6 @@ class SQLAInterface(BaseInterface):
             self.session.rollback()
             return False
 
-
     def delete(self, item):
         try:
             self._delete_files(item)
@@ -333,7 +342,6 @@ class SQLAInterface(BaseInterface):
             if self.is_image(file_col):
                 im.save_file(this_request.files[file_col], getattr(item, file_col))
 
-
     def _delete_files(self, item):
         for file_col in self.get_file_column_list():
             if self.is_file(file_col):
@@ -363,20 +371,18 @@ class SQLAInterface(BaseInterface):
                         return None
                 return value
 
-    def get_model_relation(self, col_name):
+    def get_related_model(self, col_name):
         return self.list_properties[col_name].mapper.class_
 
     def query_model_relation(self, col_name):
-        model = self.get_model_relation(col_name)
+        model = self.get_related_model(col_name)
         return self.session.query(model).all()
 
-    def _get_related_model(self, col_name):
-        if self.is_relation(col_name):
-            return self.get_model_relation(col_name), self.list_properties[col_name].direction.name
-        return None
+    def get_related_interface(self, col_name):
+        return self.__class__(self.get_related_model(col_name), self.session)
 
     def get_related_obj(self, col_name, value):
-        rel_model, rel_direction = self._get_related_model(col_name)
+        rel_model = self.get_related_model(col_name)
         return self.session.query(rel_model).get(value)
 
     def get_related_fks(self, related_views):
@@ -385,9 +391,8 @@ class SQLAInterface(BaseInterface):
     def get_related_fk(self, model):
         for col_name in self.list_properties.keys():
             if self.is_relation(col_name):
-                if model == self.get_model_relation(col_name):
+                if model == self.get_related_model(col_name):
                     return col_name
-                    #return self.get_property_col(i)
 
 
     """
@@ -405,7 +410,7 @@ class SQLAInterface(BaseInterface):
             Returns all model's columns except pk or fk
         """
         ret_lst = list()
-        for col_name in self.list_properties.keys():
+        for col_name in self.get_columns_list():
             if (not self.is_pk(col_name)) and (not self.is_fk(col_name)):
                 ret_lst.append(col_name)
         return ret_lst
@@ -413,7 +418,7 @@ class SQLAInterface(BaseInterface):
     #TODO get different solution, more integrated with filters
     def get_search_columns_list(self):
         ret_lst = list()
-        for col_name in self.list_properties.keys():
+        for col_name in self.get_columns_list():
             if not self.is_relation(col_name):
                 tmp_prop = self.get_property_first_col(col_name).name
                 if (not self.is_pk(tmp_prop)) and \
@@ -428,10 +433,13 @@ class SQLAInterface(BaseInterface):
 
     def get_order_columns_list(self, list_columns=None):
         """
-            Returns the columns that are can be ordered
+            Returns the columns that can be ordered
+
+            :param list_columns: optional list of columns name, if provided will
+                use this list only.
         """
         ret_lst = list()
-        list_columns = list_columns or self.list_properties.keys()
+        list_columns = list_columns or self.get_columns_list()
         for col_name in list_columns:
             if not self.is_relation(col_name):
                 if hasattr(self.obj, col_name):
@@ -459,19 +467,10 @@ class SQLAInterface(BaseInterface):
     def get(self, id):
         return self.session.query(self.obj).get(id)
 
-
-    """
-    ----------- GET PK NAME -------------------
-    """
     def get_pk_name(self):
         for col_name in self.list_columns.keys():
             if self.is_pk(col_name):
                 return col_name
-
-    def get_pk_value(self, item):
-        for col_name in self.list_columns.keys():
-            if self.is_pk(col_name):
-                return getattr(item, col_name)
 
 """
     For Retro-Compatibility
