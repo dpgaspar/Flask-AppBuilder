@@ -15,7 +15,7 @@ def get_user_id():
 class Permission(Document):
     name = StringField(max_length=100, required=True, unique=True)
 
-    def __repr__(self):
+    def __unicode__(self):
         return self.name
 
 
@@ -28,7 +28,7 @@ class ViewMenu(Document):
     def __neq__(self, other):
         return self.name != other.name
 
-    def __repr__(self):
+    def __unicode__(self):
         return self.name
 
 
@@ -36,7 +36,7 @@ class PermissionView(Document):
     permission = ReferenceField(Permission)
     view_menu = ReferenceField(ViewMenu)
 
-    def __repr__(self):
+    def __unicode__(self):
         return str(self.permission).replace('_', ' ') + ' on ' + str(self.view_menu)
 
 
@@ -44,7 +44,7 @@ class Role(Document):
     name = StringField(max_length=64, required=True, unique=True)
     permissions = ListField(ReferenceField(PermissionView))
 
-    def __repr__(self):
+    def __unicode__(self):
         return self.name
 
 
@@ -59,8 +59,8 @@ class User(Document):
     login_count = IntField()
     fail_login_count = IntField()
     role = ReferenceField(Role)
-    created_on = DateTimeField(default=datetime.datetime.now, nullable=True)
-    changed_on = DateTimeField(default=datetime.datetime.now, nullable=True)
+    created_on = DateTimeField(default=datetime.datetime.now)
+    changed_on = DateTimeField(default=datetime.datetime.now)
 
     created_by = ReferenceField('self', default=get_user_id())
     changed_by = ReferenceField('self', default=get_user_id())
@@ -80,5 +80,5 @@ class User(Document):
     def get_full_name(self):
         return u'{0} {1}'.format(self.first_name, self.last_name)
 
-    def __repr__(self):
+    def __unicode__(self):
         return self.get_full_name()

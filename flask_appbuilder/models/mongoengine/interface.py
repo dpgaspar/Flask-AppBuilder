@@ -172,8 +172,15 @@ class MongoEngineInterface(BaseInterface):
             :param list_columns: optional list of columns name, if provided will
                 use this list only.
         """
+        ret_lst = list()
         list_columns = list_columns or self.get_columns_list()
-        return [col_name for col_name in list_columns if not hasattr(getattr(self.obj, col_name), '__call__')]
+        for col_name in list_columns:
+            if hasattr(self.obj, col_name):
+                if not hasattr(getattr(self.obj, col_name), '__call__'):
+                    ret_lst.append(col_name)
+            else:
+                ret_lst.append(col_name)
+        return ret_lst
 
     def get_related_model(self, col_name):
         field = self.obj._fields[col_name]
@@ -206,4 +213,4 @@ class MongoEngineInterface(BaseInterface):
         return 'id'
 
     def get(self, id):
-        return self.obj.objects(pk=id)[0]
+        return self.obj.objects(pk=id).first()

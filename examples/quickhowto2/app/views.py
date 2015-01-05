@@ -1,7 +1,8 @@
 import calendar
 from flask import redirect
 from flask_appbuilder import ModelView, GroupByChartView, aggregate_count, action
-from flask_appbuilder.models import SQLAInterface, GenericInterface
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.widgets import FormVerticalWidget, FormInlineWidget, FormHorizontalWidget, ShowBlockWidget
 from flask_appbuilder.widgets import ListThumbnail
 from flask.ext.appbuilder.models.generic import PSSession
