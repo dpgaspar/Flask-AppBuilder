@@ -3,7 +3,6 @@ import logging
 
 from flask import g
 from flask_login import current_user
-from werkzeug.security import check_password_hash
 from flask_babelpkg import lazy_gettext as _
 from sqlalchemy import func
 from sqlalchemy.engine.reflection import Inspector
@@ -150,6 +149,12 @@ class SecurityManager(BaseSecurityManager):
                 "DB Creation and initialization failed, if just upgraded to 0.7.X you must migrate the DB. {0}".format(
                     str(e)))
 
+    def find_user(self, username=None, email=None):
+        if username:
+            return self.get_session.query(User).filter(func.lower(User.username) == func.lower(username)).first()
+        elif email:
+            return self.get_session.query(User).filter_by(email=email).first()
+        
     def add_user(self, username, first_name, last_name, email, role, password=''):
         """
             Generic function to create user
@@ -186,130 +191,6 @@ class SecurityManager(BaseSecurityManager):
                     str(e)))
             self.get_session.rollback()
             return False
-
-    """
-    ----------------------------------------
-        AUTHENTICATION METHODS
-    ----------------------------------------
-    """
-
-    def auth_user_db(self, username, password):
-        """
-            Method for authenticating user, auth db style
-
-            :param username:
-                The username
-            :param password:
-                The password, will be tested against hashed password on db
-        """
-        if username is None or username == "":
-            return None
-        user = self.get_session.query(User).filter_by(username=username).first()
-        if user is None or (not user.is_active()):
-            return None
-        elif check_password_hash(user.password, password):
-            self.update_user_auth_stat(user, True)
-            return user
-        else:
-            self.update_user_auth_stat(user, False)
-            return None
-
-    def auth_user_ldap(self, username, password):
-        """
-            Method for authenticating user, auth LDAP style.
-            depends on ldap module that is not mandatory requirement
-            for F.A.B.
-
-            :param username:
-                The username
-            :param password:
-                The password
-        """
-        if username is None or username == "":
-            return None
-        user = self.get_session.query(User).filter_by(username=username).first()
-        if user is not None and (not user.is_active()):
-            return None
-        else:
-            try:
-                import ldap
-            except:
-                raise Exception("No ldap library for python.")
-            try:
-                con = ldap.initialize(self.auth_ldap_server)
-                con.set_option(ldap.OPT_REFERRALS, 0)
-                try:
-                    if not self.auth_ldap_search:
-                        bind_username = username
-                    else:
-                        filter = "%s=%s" % (self.auth_ldap_uid_field, username)
-                        bind_username_array = con.search_s(self.auth_ldap_search,
-                                                               ldap.SCOPE_SUBTREE,
-                                                               filter,
-                                                               [self.auth_ldap_firstname_field,
-                                                                self.auth_ldap_lastname_field,
-                                                                self.auth_ldap_email_field
-                                                               ])
-                        if bind_username_array == []:
-                            return None
-                        else:
-                            bind_username = bind_username_array[0][0]
-                            ldap_user_info = bind_username_array[0][1]
-
-                    con.bind_s(bind_username, password)
-
-                    if self.auth_user_registration and user is None:
-                        user = self.add_user(
-                            username=username,
-                            first_name=ldap_user_info[self.auth_ldap_firstname_field][0],
-                            last_name=ldap_user_info[self.auth_ldap_lastname_field][0],
-                            email=ldap_user_info[self.auth_ldap_email_field][0],
-                            role=self.find_role(self.auth_user_registration_role)
-                        )
-
-                    self.update_user_auth_stat(user)
-                    return user
-                except ldap.INVALID_CREDENTIALS:
-                    self.update_user_auth_stat(user, False)
-                    return None
-            except ldap.LDAPError as e:
-                if type(e.message) == dict and 'desc' in e.message:
-                    log.error("LDAP Error {0}".format(e.message['desc']))
-                    return None
-                else:
-                    log.error(e)
-                    return None
-
-    def auth_user_oid(self, email):
-        """
-            OpenID user Authentication
-
-            :type self: User model
-        """
-        user = self.get_session.query(User).filter_by(email=email).first()
-        if user is None:
-            return None
-        elif not user.is_active():
-            return None
-        else:
-            self.update_user_auth_stat(user)
-            return user
-
-    def auth_user_remote_user(self, username):
-        """
-            REMOTE_USER user Authentication
-
-            :type self: User model
-        """
-        # Will use case insensitive query
-        user = self.get_session.query(User).filter(func.lower(User.username) == func.lower(username)).first()
-        if user is None:
-            return None
-        elif not user.is_active():
-            return None
-        else:
-            self.update_user_auth_stat(user)
-            return user
 
     def get_user_by_id(self, pk):
         return self.get_session.query(User).get(pk)

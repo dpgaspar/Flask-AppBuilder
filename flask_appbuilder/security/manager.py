@@ -1,7 +1,7 @@
 import datetime
 import logging
 from flask import url_for, g
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, current_user
 from flask_openid import OpenID
 
@@ -216,12 +216,133 @@ class BaseSecurityManager(AbstractSecurityManager):
         user.last_login = datetime.datetime.now()
         self.update_user(user)
 
+    def auth_user_db(self, username, password):
+        """
+            Method for authenticating user, auth db style
+
+            :param username:
+                The username
+            :param password:
+                The password, will be tested against hashed password on db
+        """
+        if username is None or username == "":
+            return None
+        user = self.find_user(username=username)
+        if user is None or (not user.is_active()):
+            return None
+        elif check_password_hash(user.password, password):
+            self.update_user_auth_stat(user, True)
+            return user
+        else:
+            self.update_user_auth_stat(user, False)
+            return None
+
+    def auth_user_ldap(self, username, password):
+        """
+            Method for authenticating user, auth LDAP style.
+            depends on ldap module that is not mandatory requirement
+            for F.A.B.
+
+            :param username:
+                The username
+            :param password:
+                The password
+        """
+        if username is None or username == "":
+            return None
+        user = self.find_user(username=username)
+        if user is not None and (not user.is_active()):
+            return None
+        else:
+            try:
+                import ldap
+            except:
+                raise Exception("No ldap library for python.")
+            try:
+                con = ldap.initialize(self.auth_ldap_server)
+                con.set_option(ldap.OPT_REFERRALS, 0)
+                try:
+                    if not self.auth_ldap_search:
+                        bind_username = username
+                    else:
+                        filter = "%s=%s" % (self.auth_ldap_uid_field, username)
+                        bind_username_array = con.search_s(self.auth_ldap_search,
+                                                               ldap.SCOPE_SUBTREE,
+                                                               filter,
+                                                               [self.auth_ldap_firstname_field,
+                                                                self.auth_ldap_lastname_field,
+                                                                self.auth_ldap_email_field
+                                                               ])
+                        if bind_username_array == []:
+                            return None
+                        else:
+                            bind_username = bind_username_array[0][0]
+                            ldap_user_info = bind_username_array[0][1]
+
+                    con.bind_s(bind_username, password)
+
+                    if self.auth_user_registration and user is None:
+                        user = self.add_user(
+                            username=username,
+                            first_name=ldap_user_info[self.auth_ldap_firstname_field][0],
+                            last_name=ldap_user_info[self.auth_ldap_lastname_field][0],
+                            email=ldap_user_info[self.auth_ldap_email_field][0],
+                            role=self.find_role(self.auth_user_registration_role)
+                        )
+
+                    self.update_user_auth_stat(user)
+                    return user
+                except ldap.INVALID_CREDENTIALS:
+                    self.update_user_auth_stat(user, False)
+                    return None
+            except ldap.LDAPError as e:
+                if type(e.message) == dict and 'desc' in e.message:
+                    log.error("LDAP Error {0}".format(e.message['desc']))
+                    return None
+                else:
+                    log.error(e)
+                    return None
+
+
+    def auth_user_oid(self, email):
+        """
+            OpenID user Authentication
+
+            :type self: User model
+        """
+        user = self.find_user(email=email)
+        if user is None or (not user.is_active()):
+            return None
+        else:
+            self.update_user_auth_stat(user)
+            return user
+
+    def auth_user_remote_user(self, username):
+        """
+            REMOTE_USER user Authentication
+
+            :type self: User model
+        """
+        user = self.find_user(username=username)
+        if user is None or (not user.is_active()):
+            return None
+        else:
+            self.update_user_auth_stat(user)
+            return user
+
+
     #---------------------------------------
     #    INTERFACE METHODS
     #---------------------------------------
     def get_user_by_id(self, pk):
         """
             Generic function to return user by it's id (pk)
+        """
+        raise NotImplementedError
+
+    def find_user(self, username=None, email=None):
+        """
+            Generic function find a user by it's username or email
         """
         raise NotImplementedError
 
@@ -245,46 +366,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    def auth_user_db(self, username, password):
-        """
-            Method for authenticating user, auth db style
-
-            :param username:
-                The username
-            :param password:
-                The password, will be tested against hashed password on db
-        """
-        raise NotImplementedError
-
-    def auth_user_ldap(self, username, password):
-        """
-            Method for authenticating user, auth LDAP style.
-            depends on ldap module that is not mandatory requirement
-            for F.A.B.
-
-            :param username:
-                The username
-            :param password:
-                The password
-        """
-        raise NotImplementedError
-
-    def auth_user_oid(self, email):
-        """
-            OpenID user Authentication
-
-            :type self: User model
-        """
-        raise NotImplementedError
-
-    def auth_user_remote_user(self, username):
-        """
-            REMOTE_USER user Authentication
-
-            :type self: User model
-        """
-        raise NotImplementedError
-
     def find_role(self, name):
         raise NotImplementedError
 
@@ -303,3 +384,4 @@ class BaseSecurityManager(AbstractSecurityManager):
     @staticmethod
     def before_request():
         g.user = current_user
+
