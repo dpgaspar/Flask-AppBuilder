@@ -4,16 +4,45 @@ from ..filters import BaseFilter, FilterRelation, BaseFilterConverter
 
 log = logging.getLogger(__name__)
 
-
 __all__ = ['MongoEngineFilterConverter', 'FilterEqual', 'FilterContains', 'FilterNotContains',
-           'FilterNotStartsWith', 'FilterStartsWith','FilterRelationOneToManyEqual']
+           'FilterNotStartsWith', 'FilterStartsWith', 'FilterRelationOneToManyEqual']
 
 
 class FilterEqual(BaseFilter):
     name = lazy_gettext('Equal to')
 
     def apply(self, query, value):
+        if self.datamodel.is_boolean(self.column_name):
+            if value == 'y':
+                value = True
         flt = {'%s' % self.column_name: value}
+        return query.filter(**flt)
+
+
+class FilterNotEqual(BaseFilter):
+    name = lazy_gettext('Not Equal to')
+
+    def apply(self, query, value):
+        if self.datamodel.is_boolean(self.column_name):
+            if value == 'y':
+                value = True
+        flt = {'%s__ne' % self.column_name: value}
+        return query.filter(**flt)
+
+
+class FilterGreater(BaseFilter):
+    name = lazy_gettext('Greater than')
+
+    def apply(self, query, value):
+        flt = {'%s__gt' % self.column_name: value}
+        return query.filter(**flt)
+
+
+class FilterSmaller(BaseFilter):
+    name = lazy_gettext('Smaller than')
+
+    def apply(self, query, value):
+        flt = {'%s__lt' % self.column_name: value}
         return query.filter(**flt)
 
 
@@ -57,7 +86,7 @@ class FilterRelationOneToManyEqual(FilterRelation):
         print "APPLY %s %s %s %s" % (self.model, self.column_name, value, rel_obj)
         flt = {'%s' % self.column_name: rel_obj}
         return query.filter(**flt)
-        #return query.filter(getattr(self.model, self.column_name) == rel_obj)
+        # return query.filter(getattr(self.model, self.column_name) == rel_obj)
 
 
 class MongoEngineFilterConverter(BaseFilterConverter):
@@ -68,7 +97,22 @@ class MongoEngineFilterConverter(BaseFilterConverter):
     """
     conversion_table = (('is_relation_many_to_one', [FilterRelationOneToManyEqual]),
                         ('is_string', [FilterEqual,
+                                       FilterNotEqual,
                                        FilterStartsWith,
                                        FilterNotStartsWith,
                                        FilterContains,
-                                       FilterNotContains]))
+                                       FilterNotContains]),
+                        ('is_boolean', [FilterEqual,
+                                        FilterNotEqual]),
+                        ('is_datetime', [FilterEqual,
+                                         FilterNotEqual,
+                                         FilterGreater,
+                                         FilterSmaller]),
+                        ('is_integer', [FilterEqual,
+                                         FilterNotEqual,
+                                         FilterGreater,
+                                         FilterSmaller]),
+                        ('is_float', [FilterEqual,
+                                         FilterNotEqual,
+                                         FilterGreater,
+                                         FilterSmaller]))

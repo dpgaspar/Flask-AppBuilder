@@ -39,6 +39,9 @@ class PermissionView(Document):
     def __unicode__(self):
         return str(self.permission).replace('_', ' ') + ' on ' + str(self.view_menu)
 
+    def __repr__(self):
+        return str(self.permission).replace('_', ' ') + ' on ' + str(self.view_menu)
+
 
 class Role(Document):
     name = StringField(max_length=64, required=True, unique=True)
