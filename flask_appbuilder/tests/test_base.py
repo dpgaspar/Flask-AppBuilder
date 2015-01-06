@@ -97,6 +97,10 @@ class FlaskTestCase(unittest.TestCase):
             datamodel = SQLAModel(Model2)
             list_columns = ['field_integer', 'field_float', 'field_string', 'field_method', 'group.field_string']
 
+            edit_form_query_rel_fields = {'group':[['field_string', FilterEqual, 'G2']]}
+
+            add_form_query_rel_fields = {('group':[['field_string', FilterEqual, 'G1']]
+                                  
         class Model1View(ModelView):
             datamodel = SQLAModel(Model1)
             related_views = [Model2View]
