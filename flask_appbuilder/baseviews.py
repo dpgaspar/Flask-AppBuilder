@@ -257,6 +257,9 @@ class BaseModelView(BaseView):
         """
             Constructor
         """
+        datamodel = kwargs.get('datamodel', None)
+        if datamodel:
+            self.datamodel = datamodel
         self._init_properties()
         self._init_forms()
         self._init_titles()

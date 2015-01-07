@@ -6,7 +6,6 @@ from .filters import TemplateFilters
 from .menu import Menu
 from .babel.manager import BabelManager
 from .version import VERSION_STRING
-from .security.sqla.manager import SecurityManager
 
 log = logging.getLogger(__name__)
 
@@ -20,7 +19,6 @@ def dynamic_class_import(class_path):
     # Split first occurrence of path
     tmp = class_path.split('.', 1)
     package = __import__(tmp[0])
-    print package
     return reduce(getattr, tmp[1].split('.'), package)
 
 
@@ -97,8 +95,9 @@ class AppBuilder(object):
         app.config.setdefault('APP_ICON', '')
         app.config.setdefault('LANGUAGES',
                               {'en': {'flag': 'gb', 'name': 'English'}})
-        # Set default security class to SQLAlchemy based SecurityManager
-        app.config.setdefault('SECURITY_CLASS', 'flask_appbuilder.security.sqla.manager.SecurityManager')
+        if self.security_manager_class is None:
+            from flask_appbuilder.security.sqla.manager import SecurityManager
+            self.security_manager_class = SecurityManager
         self.session = session
         if not self.security_manager_class:
             self.security_manager_class = dynamic_class_import(app.config.get("SECURITY_CLASS"))
