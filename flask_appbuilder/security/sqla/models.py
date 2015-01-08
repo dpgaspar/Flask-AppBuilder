@@ -75,7 +75,7 @@ class RegisterUser(Model):
     registration_hash = Column(String(256))
 
 
-class User(Model):
+class User(type):
     __tablename__ = 'ab_user'
     id = Column(Integer, Sequence('seq_ab_user_pk'), primary_key=True)
     first_name = Column(String(64), nullable=False)

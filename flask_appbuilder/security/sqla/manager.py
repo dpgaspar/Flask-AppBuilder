@@ -2,7 +2,7 @@ import logging
 
 from sqlalchemy import func
 from sqlalchemy.engine.reflection import Inspector
-
+from flask_appbuilder.models.sqla import Model
 from ...models.sqla.interface import SQLAInterface
 from ...models.sqla import Base
 from ..views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
@@ -73,7 +73,6 @@ class SecurityManager(BaseSecurityManager):
         if not self.user_model:
             from .models import User
             self.user_model = User
-
         if not self.role_model:
             from .models import Role
             self.role_model = Role
@@ -86,12 +85,16 @@ class SecurityManager(BaseSecurityManager):
         if not self.viewmenu_model:
             from .models import ViewMenu
             self.viewmenu_model = ViewMenu
-        setattr(self.userdbmodelview,'datamodel',SQLAInterface(self.user_model))
-        setattr(self.userstatschartview,'datamodel',SQLAInterface(self.user_model))
-        setattr(self.rolemodelview ,'datamodel',SQLAInterface(self.role_model))
-        setattr(self.permissionmodelview,'datamodel',SQLAInterface(self.permission_model))
-        setattr(self.viewmenumodelview,'datamodel',SQLAInterface(self.viewmenu_model))
-        setattr(self.permissionviewmodelview,'datamodel',SQLAInterface(self.permissionview_model))
+        bases = self.user_model.__bases__
+        print bases
+        self.user_model = type(self.user_model.__class__.__name__, (bases, Model,), dict(self.user_model.__dict__))
+        print dir(self.user_model)
+        setattr(self.userdbmodelview, 'datamodel', SQLAInterface(self.user_model))
+        setattr(self.userstatschartview, 'datamodel', SQLAInterface(self.user_model))
+        setattr(self.rolemodelview, 'datamodel', SQLAInterface(self.role_model))
+        setattr(self.permissionmodelview, 'datamodel', SQLAInterface(self.permission_model))
+        setattr(self.viewmenumodelview, 'datamodel', SQLAInterface(self.viewmenu_model))
+        setattr(self.permissionviewmodelview, 'datamodel', SQLAInterface(self.permissionview_model))
 
 
         super(SecurityManager, self).__init__(appbuilder)
