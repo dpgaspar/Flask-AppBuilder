@@ -71,12 +71,21 @@ class SecurityManager(BaseSecurityManager):
                 F.A.B AppBuilder main object
             """
         if not self.user_model:
-            from .models import User, Role, PermissionView, Permission, ViewMenu
+            from .models import User
             self.user_model = User
+
+        if not self.role_model:
+            from .models import Role
             self.role_model = Role
-            self.permission_model = Permission
-            self.viewmenu_model = ViewMenu
+        if not self.permissionview_model:
+            from .models import PermissionView
             self.permissionview_model = PermissionView
+        if not self.permission_model:
+            from .models import Permission
+            self.permission_model = Permission
+        if not self.viewmenu_model:
+            from .models import ViewMenu
+            self.viewmenu_model = ViewMenu
         setattr(self.userdbmodelview,'datamodel',SQLAInterface(self.user_model))
         setattr(self.userstatschartview,'datamodel',SQLAInterface(self.user_model))
         setattr(self.rolemodelview ,'datamodel',SQLAInterface(self.role_model))
