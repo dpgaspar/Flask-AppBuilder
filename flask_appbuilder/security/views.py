@@ -106,8 +106,7 @@ class UserModelView(ModelView):
                      'password': lazy_gettext('Password'),
                      'active': lazy_gettext('Is Active?'),
                      'email': lazy_gettext('EMail'),
-                     'role': lazy_gettext('Role'),
-                     'role.name': lazy_gettext('Role'),
+                     'roles': lazy_gettext('Role'),
                      'last_login': lazy_gettext('Last login'),
                      'login_count': lazy_gettext('Login count'),
                      'fail_login_count': lazy_gettext('Failed login count'),
@@ -124,15 +123,15 @@ class UserModelView(ModelView):
                                'Please use a good password policy, this application does not check this for you'),
                            'active': lazy_gettext('Its not a good policy to remove a user, just make it inactive'),
                            'email': lazy_gettext('The users email, this will also be used for OID auth'),
-                           'role': lazy_gettext(
+                           'roles': lazy_gettext(
                                'The user role on the application, this will associate with a list of permissions'),
                            'conf_password': lazy_gettext('Please rewrite the users password to confirm')}
 
-    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'role.name']
+    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles']
 
     show_fieldsets = [
         (lazy_gettext('User info'),
-         {'fields': ['username', 'active', 'role', 'login_count']}),
+         {'fields': ['username', 'active', 'roles', 'login_count']}),
         (lazy_gettext('Personal Info'),
          {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
         (lazy_gettext('Audit Info'),
@@ -142,16 +141,16 @@ class UserModelView(ModelView):
 
     user_show_fieldsets = [
         (lazy_gettext('User info'),
-         {'fields': ['username', 'active', 'role', 'login_count']}),
+         {'fields': ['username', 'active', 'roles', 'login_count']}),
         (lazy_gettext('Personal Info'),
          {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
     ]
 
-    search_columns = ['first_name', 'last_name', 'username', 'email', 'role', 'active',
+    search_columns = ['first_name', 'last_name', 'username', 'email', 'roles', 'active',
                       'created_by', 'changed_by', 'changed_on', 'changed_by', 'login_count']
 
-    add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
-    edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role']
+    add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles']
+    edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles']
     user_info_title = lazy_gettext("Your user information")
 
 
@@ -220,7 +219,7 @@ class UserDBModelView(UserModelView):
                                                                 'Passwords must match'))],
                                                             widget=BS3PasswordFieldWidget())}
 
-    add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'role', 'password', 'conf_password']
+    add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'password', 'conf_password']
 
 
     @expose('/show/pk', methods=['GET'])

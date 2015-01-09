@@ -63,19 +63,14 @@ class Role(Model):
         return self.name
 
 
-class RegisterUser(Model):
-    __tablename__ = 'ab_register_user'
-    id = Column(Integer, Sequence('seq_ab_register_user_pk'), primary_key=True)
-    first_name = Column(String(64), nullable=False)
-    last_name = Column(String(64), nullable=False)
-    username = Column(String(32), unique=True, nullable=False)
-    password = Column(String(256))
-    email = Column(String(64), nullable=False)
-    registration_date = Column(DateTime, default=datetime.datetime.now, nullable=True)
-    registration_hash = Column(String(256))
+assoc_user_role = Table('ab_user_role', Model.metadata,
+                                  Column('id', Integer, Sequence('seq_ab_user_role_pk'), primary_key=True),
+                                  Column('user_id', Integer, ForeignKey('ab_user.id')),
+                                  Column('role_id', Integer, ForeignKey('ab_role.id'))
+)
 
 
-class User(type):
+class User(Model):
     __tablename__ = 'ab_user'
     id = Column(Integer, Sequence('seq_ab_user_pk'), primary_key=True)
     first_name = Column(String(64), nullable=False)
@@ -84,16 +79,11 @@ class User(type):
     password = Column(String(256))
     active = Column(Boolean)
     email = Column(String(64), unique=True, nullable=False)
-
     last_login = Column(DateTime)
     login_count = Column(Integer)
     fail_login_count = Column(Integer)
-
-    role_id = Column(Integer, ForeignKey('ab_role.id'), nullable=False)
-    role = relationship("Role")
-
+    roles = relationship('Role', secondary=assoc_user_role, backref='user')
     created_on = Column(DateTime, default=datetime.datetime.now, nullable=True)
-
     changed_on = Column(DateTime, default=datetime.datetime.now, nullable=True)
 
     @declared_attr
@@ -135,4 +125,16 @@ class User(type):
 
     def __repr__(self):
         return self.get_full_name()
+
+
+class RegisterUser(Model):
+    __tablename__ = 'ab_register_user'
+    id = Column(Integer, Sequence('seq_ab_register_user_pk'), primary_key=True)
+    first_name = Column(String(64), nullable=False)
+    last_name = Column(String(64), nullable=False)
+    username = Column(String(32), unique=True, nullable=False)
+    password = Column(String(256))
+    email = Column(String(64), nullable=False)
+    registration_date = Column(DateTime, default=datetime.datetime.now, nullable=True)
+    registration_hash = Column(String(256))
 

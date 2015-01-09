@@ -459,14 +459,16 @@ class BaseSecurityManager(AbstractSecurityManager):
             return False
 
     def _has_view_access(self, user, permission_name, view_name):
-        lst = user.role.permissions
-        if lst:
-            for i in lst:
-                if (view_name == i.view_menu.name) and (permission_name == i.permission.name):
-                    return True
-            return False
-        else:
-            return False
+        roles = user.roles
+        for role in roles:
+            permissions = role.permissions
+            if permissions:
+                for permission in permissions:
+                    if (view_name == permission.view_menu.name) and (permission_name == permission.permission.name):
+                        return True
+                return False
+            else:
+                return False
 
     def has_access(self, permission_name, view_name):
         """

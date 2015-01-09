@@ -61,7 +61,7 @@ class User(Document):
     last_login = DateTimeField()
     login_count = IntField()
     fail_login_count = IntField()
-    role = ReferenceField(Role)
+    roles = ListField(ReferenceField(Role))
     created_on = DateTimeField(default=datetime.datetime.now)
     changed_on = DateTimeField(default=datetime.datetime.now)
 

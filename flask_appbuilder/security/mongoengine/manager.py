@@ -83,7 +83,7 @@ class SecurityManager(BaseSecurityManager):
             user.username = username
             user.email = email
             user.active = True
-            user.role = role
+            user.roles.append(role)
             user.password = password
             user.save()
             log.info("Added user %s to user list." % username)
