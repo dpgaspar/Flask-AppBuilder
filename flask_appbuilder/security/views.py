@@ -222,7 +222,7 @@ class UserDBModelView(UserModelView):
     add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'password', 'conf_password']
 
 
-    @expose('/show/pk', methods=['GET'])
+    @expose('/show/<pk>', methods=['GET'])
     @has_access
     def show(self, pk):
         actions = {}
