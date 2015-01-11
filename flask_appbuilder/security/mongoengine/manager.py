@@ -1,18 +1,14 @@
-import datetime
 import logging
 
-from flask import g
-from flask_login import current_user
-
+from ...models.mongoengine.interface import MongoEngineInterface
 from .models import User, Role, PermissionView, Permission, ViewMenu
-from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
-    ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserRemoteUserModelView, \
+from ..views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
+    ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserRemoteUserModelView,\
     RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
 #from .registerviews import RegisterUserDBView, RegisterUserOIDView
 from ..manager import BaseSecurityManager
 
 log = logging.getLogger(__name__)
-
 
 
 class SecurityManager(BaseSecurityManager):
@@ -23,6 +19,14 @@ class SecurityManager(BaseSecurityManager):
         If you want to change anything just inherit and override, then
         pass your own security manager to AppBuilder.
     """
+    user_model = User
+    """ Override to set your own User Model """
+    role_model = Role
+    """ Override to set your own User Model """
+    permission_model = Permission
+    viewmenu_model = ViewMenu
+    permissionview_model = PermissionView
+
     userdbmodelview = UserDBModelView
     """ Override if you want your own user db view """
     userldapmodelview = UserLDAPModelView
@@ -63,6 +67,12 @@ class SecurityManager(BaseSecurityManager):
             param appbuilder:
                 F.A.B AppBuilder main object
             """
+        self.userdbmodelview.datamodel = MongoEngineInterface(self.user_model)
+        self.userstatschartview.datamodel = MongoEngineInterface(self.user_model)
+        self.rolemodelview.datamodel = MongoEngineInterface(self.role_model)
+        self.permissionmodelview.datamodel=MongoEngineInterface(self.permission_model)
+        self.viewmenumodelview.datamodel=MongoEngineInterface(self.viewmenu_model)
+        self.permissionviewmodelview.datamodel=MongoEngineInterface(self.permissionview_model)
         super(SecurityManager, self).__init__(appbuilder)
         self.create_db()
 

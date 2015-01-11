@@ -83,10 +83,17 @@ class FilterRelationOneToManyEqual(FilterRelation):
 
     def apply(self, query, value):
         rel_obj = self.datamodel.get_related_obj(self.column_name, value)
-        print "APPLY %s %s %s %s" % (self.model, self.column_name, value, rel_obj)
         flt = {'%s' % self.column_name: rel_obj}
         return query.filter(**flt)
-        # return query.filter(getattr(self.model, self.column_name) == rel_obj)
+
+
+class FilterRelationManyToManyEqual(FilterRelation):
+    name = lazy_gettext('Relation as Many')
+
+    def apply(self, query, value):
+        rel_obj = self.datamodel.get_related_obj(self.column_name, value)
+        flt = {'%s__%s' % (self.column_name, 'icontains'): rel_obj}
+        return query.filter(**flt)
 
 
 class MongoEngineFilterConverter(BaseFilterConverter):
@@ -96,6 +103,10 @@ class MongoEngineFilterConverter(BaseFilterConverter):
 
     """
     conversion_table = (('is_relation_many_to_one', [FilterRelationOneToManyEqual]),
+                        ('is_relation_one_to_one', [FilterRelationOneToManyEqual]),
+                        ('is_relation_many_to_many', [FilterRelationManyToManyEqual]),
+                        ('is_relation_one_to_many', [FilterRelationManyToManyEqual]),
+
                         ('is_string', [FilterEqual,
                                        FilterNotEqual,
                                        FilterStartsWith,

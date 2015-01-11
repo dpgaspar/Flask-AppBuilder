@@ -304,6 +304,17 @@ class RoleModelView(ModelView):
     order_columns = ['name']
     search_columns = ['name']
 
+    @action("Copy Role", lazy_gettext('Copy Role'), lazy_gettext('Copy the selected roles?'), icon='fa-folder', single=False)
+    def copy_role(self, items):
+        self.update_redirect()
+        for item in items:
+            new_role = item.__class__()
+            new_role.name = item.name
+            new_role.permissions = item.permissions
+            new_role.name = new_role.name + ' copy'
+            self.datamodel.add(new_role)
+        return redirect(self.get_redirect())
+
 
 class AuthView(BaseView):
     route_base = ''

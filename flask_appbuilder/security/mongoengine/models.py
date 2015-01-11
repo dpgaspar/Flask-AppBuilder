@@ -50,6 +50,9 @@ class Role(Document):
     def __unicode__(self):
         return self.name
 
+    def __repr__(self):
+        return self.name
+
 
 class User(Document):
     first_name = StringField(max_length=64, required=True)
