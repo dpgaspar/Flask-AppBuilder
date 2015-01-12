@@ -2,7 +2,7 @@
 // Setup date time modal views
 //---------------------------------------
 $(document).ready(function() {
-    $('.appbuilder_datetime').datetimepicker();
+    $('.appbuilder_datetime').datetimepicker({pickTime: false});
     $('.appbuilder_date').datetimepicker({
         pickTime: false });
     $(".my_select2").select2({placeholder: "Select a State", allowClear: true});
