@@ -1,7 +1,7 @@
 Versions
 ========
 
-Improvements and Bug fixes on 1.2.2
+Improvements and Bug fixes on 1.3.0
 -----------------------------------
 
 - New, block template **head_js** on init.html, affects all templates, better js override or add.

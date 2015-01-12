@@ -1,10 +1,22 @@
 Versions
 ========
 
-Improvements and Bug fixes on 1.2.2
+Improvements and Bug fixes on 1.3.0
 -----------------------------------
 
 - New, block template **head_js** on init.html, affects all templates, better js override or add.
+- New, base_template parameter on AppBuilder to override the top template, better css and js inclusion.
+- Fix, fixed menu brand with image (APP_ICON), better display.
+- New, included boostrap-theme THEME.
+- Fix, internal API change, BaseIterface/SQLAInterface method get_model_relation new name: get_related_model.
+- New, internal QuerySelectField QuerySelectMultipleField based on BaseInterface.
+- New, edit_form_query_rel_fields, add_form_query_rel_fields changed, accepts dict instead of list (BREAKING CHANGE).
+- Fix, Filter rework datamodel is no longer optional for construct (BREAKING CHANGE).
+- Fix, Filter methods no longer require datamodel parameter (BREAKING CHANGE).
+- Fix, All SQLAlchemy Filter's moved to flask.ext.appbuilder.models.sqla.filters.
+- New, All Filters are accessible from datamodel class, ex: datamodel.FilterEqual
+- New, Charts will be database ordered (better performance), and can accept dotted cols on relations.
+- Fix, on menus with dividers if next item has no permission, divider was shown.
 
 Improvements and Bug fixes on 1.2.1
 -----------------------------------

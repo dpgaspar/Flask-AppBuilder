@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Customizing" href="customizing.html" />
-    <link rel="prev" title="Base Configuration" href="config.html" />
+    <link rel="prev" title="Actions" href="actions.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -48,7 +48,7 @@
           <a href="customizing.html" title="Customizing"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="config.html" title="Base Configuration"
+          <a href="actions.html" title="Actions"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -117,27 +117,20 @@ You can still use F.A.B. show template using Jinja2 blocks, take a look at the <
 <li><p class="first">You can create a custom query filter for all related columns like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
-    <span class="n">add_form_query_rel_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;group&#39;</span><span class="p">,</span>
-                <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
-                <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;W&#39;</span><span class="p">]]</span>
-                <span class="p">)]</span>
+    <span class="n">add_form_query_rel_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;group&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;W&#39;</span><span class="p">]]}</span>
 </pre></div>
 </div>
 </li>
 </ul>
-<p>This will filter list combo on Contact&#8217;s model related with Group model. The combo will be filtered with entries that start with W. You can define individual filters for add and edit. Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>
-If you want to filter multiple related fields just add tuples to the list, remember you can add multiple filters for each field also, take a look at the <em>base_filter</em> property:</p>
+<p>This will filter list combo on Contact&#8217;s model related with ContactGroup model.
+The combo will be filtered with entries that start with W.
+You can define individual filters for add and edit. Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>
+If you want to filter multiple related fields just add new keys to the dictionary,
+remember you can add multiple filters for each field also, take a look at the <em>base_filter</em> property:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
-    <span class="n">add_form_query_rel_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;group&#39;</span><span class="p">,</span>
-                <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
-                <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;W&#39;</span><span class="p">]]</span>
-                <span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;gender&#39;</span><span class="p">,</span>
-                <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Gender</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
-                <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;M&#39;</span><span class="p">]]</span>
-                <span class="p">)</span>
-    <span class="p">]</span>
+    <span class="n">add_form_query_rel_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;group&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;W&#39;</span><span class="p">]],</span>
+                                <span class="s">&#39;gender&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;M&#39;</span><span class="p">]]}</span>
 </pre></div>
 </div>
 <ul>
@@ -248,7 +241,7 @@ with <em>Not Null</em> (Required) or Unique constraints:</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="config.html" title="previous chapter">Base Configuration</a></li>
+      <li>Previous: <a href="actions.html" title="previous chapter">Actions</a></li>
       <li>Next: <a href="customizing.html" title="next chapter">Customizing</a></li>
   </ul></li>
 </ul>

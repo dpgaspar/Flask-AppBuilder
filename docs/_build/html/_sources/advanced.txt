@@ -70,26 +70,19 @@ Forms
 
     class ContactModelView(ModelView):
         datamodel = SQLAModel(Contact)
-        add_form_query_rel_fields = [('group',
-                    SQLAModel(Group, db.session),
-                    [['name',FilterStartsWith,'W']]
-                    )]
+        add_form_query_rel_fields = {'group': [['name',FilterStartsWith,'W']]}
 
 
-This will filter list combo on Contact's model related with Group model. The combo will be filtered with entries that start with W. You can define individual filters for add and edit. Take a look at the :doc:`api`
-If you want to filter multiple related fields just add tuples to the list, remember you can add multiple filters for each field also, take a look at the *base_filter* property::
+This will filter list combo on Contact's model related with ContactGroup model.
+The combo will be filtered with entries that start with W.
+You can define individual filters for add and edit. Take a look at the :doc:`api`
+If you want to filter multiple related fields just add new keys to the dictionary,
+remember you can add multiple filters for each field also, take a look at the *base_filter* property::
 
     class ContactModelView(ModelView):
         datamodel = SQLAModel(Contact)
-        add_form_query_rel_fields = [('group',
-                    SQLAModel(Group, db.session),
-                    [['name',FilterStartsWith,'W']]
-                    ),
-                    ('gender',
-                    SQLAModel(Gender, db.session),
-                    [['name',FilterStartsWith,'M']]
-                    )
-        ]
+        add_form_query_rel_fields = {'group': [['name',FilterStartsWith,'W']],
+                                    'gender': [['name',FilterStartsWith,'M']]}
 
 
 - You can define your own Add, Edit forms to override the automatic form creation::

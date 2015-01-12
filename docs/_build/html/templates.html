@@ -85,7 +85,7 @@ Create the following directory structure on your project:</p>
 <p>Then on init.html add your js files and css files, use <strong>head_css</strong> for css&#8217;s and <strong>head_js</strong> for javascript:</p>
 <div class="highlight-python"><div class="highlight"><pre>{% block head_css %}
     {{ super() }}
-    &lt;script src=&quot;{{url_for(&#39;static&#39;,filename=&#39;css/you_css_file.js&#39;)}}&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;{{url_for(&#39;static&#39;,filename=&#39;css/your_css_file.js&#39;)}}&quot;&gt;&lt;/script&gt;
 {% endblock %}
 
 {% block head_js %}
@@ -161,7 +161,7 @@ each block:</p>
 
     {% block list_search scoped %}
         {{ super() }}
-        This Text will replace the search widget
+        This Text will show after the search widget
     {% endblock %}
 </pre></div>
 </div>
@@ -170,7 +170,6 @@ To use your templates override <strong>list_template</strong> to your templates 
 <p>If you have your template on ./your_project/app/templates/list_contacts.html</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
-
     <span class="n">list_template</span> <span class="o">=</span> <span class="s">&#39;list_contacts.html&#39;</span>
 </pre></div>
 </div>

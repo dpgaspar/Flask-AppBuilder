@@ -7,9 +7,9 @@ It will help you adhere to the DRY (Don't repat yourself) principle.
 
 Keep in mind that it must be possible to develop directly on Flask/Jinja2 for custom pages or flows,
 that painlessly integrate with the framework.
-But the framework itself should go further than an admin scaffolding package.
-It should have builtin presentation alternatives, and behaviour.
-Should be highly configurable, and should have extra goodies.
+This the framework goes further than an admin scaffolding package.
+It has builtin presentation, and behaviour alternatives and you can easily build your own.
+It's highly configurable, and has some extra goodies.
 
 It's intended to lower errors, bugs and project's time to deliver.
 
@@ -25,6 +25,7 @@ Includes:
 
   - Database
       - SQLAlchemy, multiple database support: sqlite, MySQL, ORACLE, MSSQL, DB2 etc.
+      - MongoDB, using mongoEngine, still partial support (only normalized).
       - Multiple database connections support (Vertical partitioning).
       - Easy mixin audit to models (created/changed by user, and timestamps).
   - Security

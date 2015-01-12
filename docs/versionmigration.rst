@@ -1,6 +1,81 @@
 Version Migration
 =================
 
+Migrating from 1.2.X to 1.3.X
+------------------------------
+
+There are some breaking features:
+
+1 - Security models have changed, user's can have multiple roles, not just one. So you have to migrate you db.
+
+- The security models schema have changed.
+
+    If you are using sqlite, mysql or pgsql, use the following procedure:
+
+        1 - *Backup your DB*.
+
+        2 - If you haven't already, upgrade to flask-appbuilder 1.3.0.
+
+        3 - Issue the following commands, on your project folder where config.py exists::
+
+            cd /your-main-project-folder/
+            wget https://raw.github.com/dpgaspar/Flask-AppBuilder/master/bin/migrate_db_1.3.py
+            python migrate_db_1.3.py
+
+        4 - Test and Run (if you have a run.py for development) ::
+
+            python run.py
+
+    If not (DB is not sqlite, mysql or pgsql), you will have to alter the schema your self. use the following procedure:
+
+        1 - *Backup your DB*.
+
+        2 - If you haven't already, upgrade to flask-appbuilder 0.7.0.
+
+        3 - issue the corresponding DDL commands to:
+
+        ALTER TABLE ab_user MODIFY COLUMN password VARCHAR(256)
+
+        ALTER TABLE ab_user ADD COLUMN login_count INTEGER
+
+        ALTER TABLE ab_user ADD COLUMN created_on DATETIME
+
+        ALTER TABLE ab_user ADD COLUMN changed_on DATETIME
+
+        ALTER TABLE ab_user ADD COLUMN created_by_fk INTEGER
+
+        ALTER TABLE ab_user ADD COLUMN changed_by_fk INTEGER
+
+        ALTER TABLE ab_user ADD COLUMN last_login DATETIME
+
+        ALTER TABLE ab_user ADD COLUMN fail_login_count INTEGER
+
+
+2 - Security. If you were already extending security, this is even more encouraged from now on, but internally many things have
+changed. So, modules have changes and changed place, each backend engine will have it's SecurityManager, and views
+are common to all of them. Change:
+
+from::
+
+    from flask.ext.appbuilder.security.sqla.views import UserDBModelView
+    from flask.ext.appbuilder.security.manager import SecurityManager
+
+
+to::
+
+    from flask.ext.appbuilder.security.views import UserDBModelView
+    from flask.ext.appbuilder.security.sqla.manager import SecurityManager
+
+3 - SQLAInteface, SQLAModel. If you were importing like the following, change:
+
+from::
+
+    from flask.ext.appbuilder.models import SQLAInterface
+
+to::
+
+    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
+
 Migrating from 1.1.X to 1.2.X
 ------------------------------
 

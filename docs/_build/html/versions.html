@@ -57,10 +57,22 @@
             
   <div class="section" id="versions">
 <h1>Versions<a class="headerlink" href="#versions" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="improvements-and-bug-fixes-on-1-2-2">
-<h2>Improvements and Bug fixes on 1.2.2<a class="headerlink" href="#improvements-and-bug-fixes-on-1-2-2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="improvements-and-bug-fixes-on-1-3-0">
+<h2>Improvements and Bug fixes on 1.3.0<a class="headerlink" href="#improvements-and-bug-fixes-on-1-3-0" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>New, block template <strong>head_js</strong> on init.html, affects all templates, better js override or add.</li>
+<li>New, base_template parameter on AppBuilder to override the top template, better css and js inclusion.</li>
+<li>Fix, fixed menu brand with image (APP_ICON), better display.</li>
+<li>New, included boostrap-theme THEME.</li>
+<li>Fix, internal API change, BaseIterface/SQLAInterface method get_model_relation new name: get_related_model.</li>
+<li>New, internal QuerySelectField QuerySelectMultipleField based on BaseInterface.</li>
+<li>New, edit_form_query_rel_fields, add_form_query_rel_fields changed, accepts dict instead of list (BREAKING CHANGE).</li>
+<li>Fix, Filter rework datamodel is no longer optional for construct (BREAKING CHANGE).</li>
+<li>Fix, Filter methods no longer require datamodel parameter (BREAKING CHANGE).</li>
+<li>Fix, All SQLAlchemy Filter&#8217;s moved to flask.ext.appbuilder.models.sqla.filters.</li>
+<li>New, All Filters are accessible from datamodel class, ex: datamodel.FilterEqual</li>
+<li>New, Charts will be database ordered (better performance), and can accept dotted cols on relations.</li>
+<li>Fix, on menus with dividers if next item has no permission, divider was shown.</li>
 </ul>
 </div>
 <div class="section" id="improvements-and-bug-fixes-on-1-2-1">
@@ -697,7 +709,7 @@ to flask.ext.appbuilder.models.filter. (BREAKING CHANGE)</li>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Versions</a><ul>
-<li><a class="reference internal" href="#improvements-and-bug-fixes-on-1-2-2">Improvements and Bug fixes on 1.2.2</a></li>
+<li><a class="reference internal" href="#improvements-and-bug-fixes-on-1-3-0">Improvements and Bug fixes on 1.3.0</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-1-2-1">Improvements and Bug fixes on 1.2.1</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-1-2-0">Improvements and Bug fixes on 1.2.0</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-1-1-3">Improvements and Bug fixes on 1.1.3</a></li>
