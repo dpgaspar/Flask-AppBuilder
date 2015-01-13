@@ -24,6 +24,7 @@ There are some breaking features:
 
         4 - Test and Run (if you have a run.py for development) ::
 
+
             python run.py
 
     If not (DB is not sqlite, mysql or pgsql), you will have to alter the schema your self. use the following procedure:
@@ -35,20 +36,6 @@ There are some breaking features:
         3 - issue the corresponding DDL commands to:
 
         ALTER TABLE ab_user MODIFY COLUMN password VARCHAR(256)
-
-        ALTER TABLE ab_user ADD COLUMN login_count INTEGER
-
-        ALTER TABLE ab_user ADD COLUMN created_on DATETIME
-
-        ALTER TABLE ab_user ADD COLUMN changed_on DATETIME
-
-        ALTER TABLE ab_user ADD COLUMN created_by_fk INTEGER
-
-        ALTER TABLE ab_user ADD COLUMN changed_by_fk INTEGER
-
-        ALTER TABLE ab_user ADD COLUMN last_login DATETIME
-
-        ALTER TABLE ab_user ADD COLUMN fail_login_count INTEGER
 
 
 2 - Security. If you were already extending security, this is even more encouraged from now on, but internally many things have
@@ -75,6 +62,28 @@ from::
 to::
 
     from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
+
+4 - Filters, filters import moved::
+
+to::
+
+    from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction, FilterEqual
+
+5 - Filters, filtering relationship fields (rendered with select2) changed:
+
+from::
+
+    edit_form_query_rel_fields = [('group',
+                                   SQLAModel(Model1, self.db.session),
+                                   [['field_string', FilterEqual, 'G2']]
+                                  )
+                                ]
+
+to::
+
+    edit_form_query_rel_fields = {'group':[['field_string', FilterEqual, 'G2']]}
+
+
 
 Migrating from 1.1.X to 1.2.X
 ------------------------------
