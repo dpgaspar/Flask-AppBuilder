@@ -71,6 +71,10 @@ class SecurityManager(BaseSecurityManager):
                 F.A.B AppBuilder main object
             """
         self.userdbmodelview.datamodel = SQLAInterface(self.user_model)
+        self.userldapmodelview.datamodel = SQLAInterface(self.user_model)
+        self.useroidmodelview.datamodel = SQLAInterface(self.user_model)
+        self.useroauthmodelview.datamodel = SQLAInterface(self.user_model)
+        self.userremoteusermodelview.datamodel = SQLAInterface(self.user_model)
         self.userstatschartview.datamodel = SQLAInterface(self.user_model)
         self.rolemodelview.datamodel = SQLAInterface(self.role_model)
         self.permissionmodelview.datamodel=SQLAInterface(self.permission_model)

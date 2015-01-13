@@ -68,6 +68,10 @@ class SecurityManager(BaseSecurityManager):
                 F.A.B AppBuilder main object
             """
         self.userdbmodelview.datamodel = MongoEngineInterface(self.user_model)
+        self.userldapmodelview.datamodel = MongoEngineInterface(self.user_model)
+        self.useroidmodelview.datamodel = MongoEngineInterface(self.user_model)
+        self.useroauthmodelview.datamodel = MongoEngineInterface(self.user_model)
+        self.userremoteusermodelview.datamodel = MongoEngineInterface(self.user_model)
         self.userstatschartview.datamodel = MongoEngineInterface(self.user_model)
         self.rolemodelview.datamodel = MongoEngineInterface(self.role_model)
         self.permissionmodelview.datamodel=MongoEngineInterface(self.permission_model)
