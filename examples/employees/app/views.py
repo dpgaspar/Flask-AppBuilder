@@ -10,12 +10,6 @@ def department_query():
     return db.session.query(Department)
 
 
-class Select2ROWidget(Select2Widget):
-    def __call__(self, field, **kwargs):
-        kwargs['readonly'] = 'true'
-        return super(Select2ROWidget, self).__call__(field, **kwargs)
-
-
 class EmployeeHistoryView(ModelView):
     datamodel = SQLAInterface(EmployeeHistory)
     #base_permissions = ['can_add', 'can_show']
@@ -28,7 +22,7 @@ class EmployeeView(ModelView):
     list_columns = ['full_name', 'department', 'employee_number']
     edit_form_extra_fields = {'department':  QuerySelectField('Department',
                                 query_factory=department_query,
-                                widget=Select2ROWidget())}
+                                widget=Select2Widget(extra_classes="readonly"))}
 
 
     related_views = [EmployeeHistoryView]

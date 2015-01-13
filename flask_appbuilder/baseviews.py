@@ -579,8 +579,17 @@ class BaseCRUDView(BaseModelView):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
         filters = related_view.datamodel.get_filters()
-        filters.add_filter_related_view(fk, self.datamodel.FilterRelationOneToManyEqual,
+        # Check if it's a many to one model relation
+        if related_view.datamodel.is_relation_many_to_one(fk):
+            filters.add_filter_related_view(fk, self.datamodel.FilterRelationOneToManyEqual,
                                         self.datamodel.get_pk_value(item))
+        # Check if it's a many to many model relation
+        elif related_view.datamodel.is_relation_many_to_many(fk):
+            filters.add_filter_related_view(fk, self.datamodel.FilterRelationManyToManyEqual,
+                                        self.datamodel.get_pk_value(item))
+        else:
+            log.error("Can't find relation on related view {0}".format(related_view.name))
+            return None
         return related_view._get_view_widget(filters=filters,
                                              order_column=order_column,
                                              order_direction=order_direction,

@@ -17,6 +17,9 @@ Improvements and Bug fixes on 1.3.0
 - New, All Filters are accessible from datamodel class, ex: datamodel.FilterEqual
 - New, Charts will be database ordered (better performance), and can accept dotted cols on relations.
 - Fix, on menus with dividers if next item has no permission, divider was shown.
+- New, Bootstrap update to 3.3.1
+- New, Select2 update to 3.5.1
+- New, support for many to many relations on ModelView related_view.
 
 Improvements and Bug fixes on 1.2.1
 -----------------------------------

@@ -455,7 +455,6 @@ class SQLAInterface(BaseInterface):
     def get_image_column_list(self):
         return [i.name for i in self.obj.__mapper__.columns if isinstance(i.type, ImageColumn)]
 
-
     def get_property_first_col(self, col_name):
         # support for only one col for pk and fk
         return self.list_properties[col_name].columns[0]
