@@ -20,6 +20,7 @@ Improvements and Bug fixes on 1.3.0
 - New, Bootstrap update to 3.3.1
 - New, Select2 update to 3.5.1
 - New, support for many to many relations on ModelView related_view.
+- New, AppBuilder.add_link supports endpoint names on href parameter, internally will try to use url_for(href).
 
 Improvements and Bug fixes on 1.2.1
 -----------------------------------
