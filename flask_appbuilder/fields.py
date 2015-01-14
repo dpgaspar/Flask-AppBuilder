@@ -131,6 +131,8 @@ class QuerySelectMultipleField(QuerySelectField):
             raise ValidationError(self.gettext('Not a valid choice'))
         elif self.data:
             obj_list = list(x[1] for x in self._get_object_list())
+            if not isinstance(self.data, list):
+                self.data = [self.data]
             for v in self.data:
                 if v not in obj_list:
                     raise ValidationError(self.gettext('Not a valid choice'))
