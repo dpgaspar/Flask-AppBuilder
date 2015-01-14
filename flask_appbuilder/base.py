@@ -236,7 +236,7 @@ class AppBuilder(object):
             :param name:
                 The string name that identifies the menu.
             :param href:
-                Override the generated href for the menu.
+                Override the generated href for the menu. You can use an url string or an endpoint name
                 if non provided default_view from view will be set as href.
             :param icon:
                 Font-Awesome icon name, optional.
@@ -288,7 +288,7 @@ class AppBuilder(object):
             :param name:
                 The string name that identifies the menu.
             :param href:
-                Override the generated href for the menu.
+                Override the generated href for the menu. You can use an url string or an endpoint name
             :param icon:
                 Font-Awesome icon name, optional.
             :param label:

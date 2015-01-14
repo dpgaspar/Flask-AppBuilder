@@ -27,7 +27,10 @@ class MenuItem(object):
             else:
                 return url_for('%s.%s' % (self.baseview.endpoint, self.baseview.default_view))
         else:
-            return self.href
+            try:
+                return url_for(self.href)
+            except:
+                return self.href
 
     def __repr__(self):
         return self.name

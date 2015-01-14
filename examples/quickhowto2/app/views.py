@@ -172,5 +172,5 @@ appbuilder.add_view(ProductManufacturerView, "List Manufacturer", icon="fa-folde
                     category_icon='fa-envelope')
 appbuilder.add_view(ProductModelView, "List Models", icon="fa-envelope", category="Products")
 appbuilder.add_view(ProductView, "List Products", icon="fa-envelope", category="Products")
-
+appbuilder.add_link("ContacModelView_lnk","ContactModelView.add", icon="fa-envelope", label="Add Contact")
 appbuilder.security_cleanup()
