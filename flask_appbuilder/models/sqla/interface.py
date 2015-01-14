@@ -3,7 +3,7 @@ import sys
 import logging
 import sqlalchemy as sa
 
-import filters
+from . import filters
 from flask import flash
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
