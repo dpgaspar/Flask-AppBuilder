@@ -158,9 +158,7 @@ class GroupByChartView(BaseChartView):
         widgets = widgets or dict()
         joined_filters = filters.get_joined_filters(self._base_filters)
         # check if order_column may be database ordered
-        print order_column
         if not self.datamodel.get_order_columns_list([order_column]):
-            print "PYTHON SORT"
             order_column = ''
             order_direction = ''
         count, lst = self.datamodel.query(filters=joined_filters,
