@@ -1,6 +1,6 @@
 import logging, sys
 from flask import flash
-import filters
+from . import filters
 from ..._compat import as_unicode
 from ..base import BaseInterface
 from mongoengine.fields import StringField, IntField, BooleanField, FloatField, \

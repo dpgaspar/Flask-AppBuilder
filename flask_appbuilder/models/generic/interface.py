@@ -1,4 +1,4 @@
-import filters
+from . import filters
 from ..base import BaseInterface
 
 
