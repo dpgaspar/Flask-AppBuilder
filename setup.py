@@ -27,11 +27,14 @@ setup(
     long_description=desc(),
     packages=find_packages(),
     package_data={'': ['LICENSE']},
-    scripts=['bin/hash_db_password.py'],
+    entry_points={'console_scripts': [
+          'fabmanager = flask_appbuilder.console:cli',
+      ]},
     include_package_data=True,
     zip_safe=False,
     platforms='any',
     install_requires=[
+        'click>=3.0',
         'Flask>=0.10',
         'Flask-BabelPkg>=0.9.4',
         'Flask-Login>=0.2.0',

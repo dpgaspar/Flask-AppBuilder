@@ -1,3 +1,4 @@
+click>=3.0
 Flask>=0.10
 Flask-BabelPkg>=0.9
 Flask-Login>=0.2.0
