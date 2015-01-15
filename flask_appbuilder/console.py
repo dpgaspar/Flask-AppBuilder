@@ -57,7 +57,6 @@ def resetpassword(app, appbuilder, username, password):
 @click.option('--lastname', default='user', prompt='User last name')
 @click.option('--email', default='admin@fab.org', prompt='Email')
 @click.password_option()
-@click.pass_context
 def createadmin(app, appbuilder, username, firstname, lastname, email, password):
     """
         Creates an admin user
@@ -67,13 +66,13 @@ def createadmin(app, appbuilder, username, firstname, lastname, email, password)
     _appbuilder.sm.add_user(username, firstname, lastname, email, role_admin, password)
     click.echo(click.style('Admin User {0} created.'.format(username), fg='green'))
 
+
 @cli_app.command("run")
 @click.option('--app', default='app', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 @click.option('--host', default='0.0.0.0')
 @click.option('--port', default=8080)
 @click.option('--debug', default=True)
-@click.pass_context
 def run(app, appbuilder, host, port, debug):
     """
         Runs Flask dev web server.
