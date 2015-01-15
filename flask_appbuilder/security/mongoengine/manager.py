@@ -1,5 +1,5 @@
 import logging
-
+from werkzeug.security import generate_password_hash
 from ...models.mongoengine.interface import MongoEngineInterface
 from .models import User, Role, PermissionView, Permission, ViewMenu
 from ..views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
@@ -98,7 +98,7 @@ class SecurityManager(BaseSecurityManager):
             user.email = email
             user.active = True
             user.roles.append(role)
-            user.password = password
+            user.password = generate_password_hash(password)
             user.save()
             log.info("Added user %s to user list." % username)
             return user

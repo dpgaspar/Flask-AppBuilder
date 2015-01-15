@@ -17,12 +17,6 @@ AUTH_LDAP = 2
 AUTH_REMOTE_USER = 3
 AUTH_OAUTH = 4
 
-ADMIN_USER_NAME = 'admin'
-ADMIN_USER_PASSWORD = 'general'
-ADMIN_USER_EMAIL = 'admin@fab.org'
-ADMIN_USER_FIRST_NAME = 'Admin'
-ADMIN_USER_LAST_NAME = 'User'
-
 
 class AbstractSecurityManager(BaseManager):
     """
@@ -278,16 +272,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.add_role(self.auth_role_public):
             log.info("Inserted Role for public access %s" % (self.auth_role_public))
         if self.count_users() == 0:
-            self.add_user(
-                    username=ADMIN_USER_NAME,
-                    first_name=ADMIN_USER_FIRST_NAME,
-                    last_name=ADMIN_USER_LAST_NAME,
-                    email=ADMIN_USER_EMAIL,
-                    role=self.find_role(self.auth_role_admin),
-                    password=generate_password_hash(ADMIN_USER_PASSWORD)
-                )
-            log.info("Inserted initial Admin user")
-            log.info("Login using {0}/{1}".format(ADMIN_USER_NAME, ADMIN_USER_PASSWORD))
+            log.warning("No user yet created, use fabmanager command to do it.")
 
     def reset_password(self, userid, password):
         """
@@ -473,16 +458,10 @@ class BaseSecurityManager(AbstractSecurityManager):
             Check if current user or public has access to view or menu
         """
         if current_user.is_authenticated():
-            if self._has_view_access(g.user, permission_name, view_name):
-                return True
-            else:
-                return False
+            return self._has_view_access(g.user, permission_name, view_name)
         else:
-            if self.is_item_public(permission_name, view_name):
-                return True
-            else:
-                return False
-        return False
+            return self.is_item_public(permission_name, view_name)
+
 
     def add_permissions_view(self, base_permissions, view_menu):
         """

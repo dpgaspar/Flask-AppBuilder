@@ -2,6 +2,7 @@ import logging
 
 from sqlalchemy import func
 from sqlalchemy.engine.reflection import Inspector
+from werkzeug.security import generate_password_hash
 from ...models.sqla.interface import SQLAInterface
 from ...models.sqla import Base
 from ..views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
@@ -120,7 +121,7 @@ class SecurityManager(BaseSecurityManager):
             user.email = email
             user.active = True
             user.roles.append(role)
-            user.password = password
+            user.password = generate_password_hash(password)
             self.get_session.add(user)
             self.get_session.commit()
             log.info("Added user %s to user list." % username)
