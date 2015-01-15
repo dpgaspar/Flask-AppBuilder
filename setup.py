@@ -34,6 +34,7 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
+        'colorama>=0.3',
         'click>=3.0',
         'Flask>=0.10',
         'Flask-BabelPkg>=0.9.4',

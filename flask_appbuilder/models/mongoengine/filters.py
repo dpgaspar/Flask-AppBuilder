@@ -5,7 +5,7 @@ from ..filters import BaseFilter, FilterRelation, BaseFilterConverter
 log = logging.getLogger(__name__)
 
 __all__ = ['MongoEngineFilterConverter', 'FilterEqual', 'FilterContains', 'FilterNotContains',
-           'FilterNotStartsWith', 'FilterStartsWith', 'FilterRelationOneToManyEqual']
+           'FilterNotStartsWith', 'FilterStartsWith', 'FilterRelationOneToManyEqual', 'FilterRelationManyToManyEqual']
 
 
 class FilterEqual(BaseFilter):

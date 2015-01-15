@@ -33,13 +33,13 @@ def resetpassword(username, password):
         click.echo('User {0} not found.'.format(username))
     else:
         _appbuilder.sm.reset_password(user.id, password)
-        click.echo('User {0} reseted.'.format(username))
+        click.echo(click.style('User {0} reseted.'.format(username), fg='green'))
 
 @cli.command("createadmin")
-@click.option('--username', default='admin', prompt='The username')
-@click.option('--firstname', default='admin', prompt='The username')
-@click.option('--lastname', default='user', prompt='The username')
-@click.option('--email', default='admin@fab.org', prompt='The username')
+@click.option('--username', default='admin', prompt='Username')
+@click.option('--firstname', default='admin', prompt='User first name')
+@click.option('--lastname', default='user', prompt='User last name')
+@click.option('--email', default='admin@fab.org', prompt='Email')
 @click.password_option()
 def createadmin(username, firstname, lastname, email, password):
     """
@@ -47,7 +47,25 @@ def createadmin(username, firstname, lastname, email, password):
     """
     role_admin = _appbuilder.sm.find_role(_appbuilder.sm.auth_role_admin)
     _appbuilder.sm.add_user(username, firstname, lastname, email, role_admin, password)
-    click.echo('Admin User {0} created.'.format(username))
+    click.echo(click.style('Admin User {0} created.'.format(username), fg='green'))
+
+@cli.command("run")
+@click.option('--host', default='0.0.0.0')
+@click.option('--port', default=8080)
+@click.option('--debug', default=True)
+def run(host, port, debug):
+    """
+        Runs Flask dev web server.
+    """
+    _appbuilder.get_app.run(host=host, port=port, debug=debug)
+
+@cli.command("version")
+def version():
+    """
+        Flask-AppBuilder package version
+    """
+    click.echo(click.style('F.A.B Version: {0}.'.format(_appbuilder.version), bg='blue', fg='white'))
+
 
 
 if __name__ == '__main__':
