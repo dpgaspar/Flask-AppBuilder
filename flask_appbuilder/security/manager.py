@@ -461,7 +461,6 @@ class BaseSecurityManager(AbstractSecurityManager):
     def _has_view_access(self, user, permission_name, view_name):
         roles = user.roles
         for role in roles:
-            print role
             permissions = role.permissions
             if permissions:
                 for permission in permissions:
