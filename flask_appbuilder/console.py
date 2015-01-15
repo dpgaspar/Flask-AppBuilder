@@ -9,25 +9,39 @@
 import click
 import os
 import sys
+from StringIO import StringIO
+from zipfile import ZipFile
+from urllib import urlopen
 
-_appbuilder = None
+
+def import_application(app_package, appbuilder):
+    try:
+        sys.path.append(os.getcwd())
+        _app = __import__(app_package)
+        return getattr(_app, appbuilder)
+    except:
+        click.echo(click.style('Was unable to import {0}.{1}'.format(app_package, appbuilder), fg='red'))
+        exit(3)
 
 @click.group()
-@click.option('--app', default='app', help='Your application init directory')
-@click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
-def cli(app, appbuilder):
-    global _appbuilder
-    sys.path.append(os.getcwd())
-    _app = __import__(app)
-    _appbuilder = getattr(_app, appbuilder)
+def cli_app():
+    """
+        This is a set of commands to ease the creation and maintenance
+        of your flask-appbuilder applications.
+    """
+    pass
 
-@cli.command("resetpassword")
+
+@cli_app.command("resetpassword")
+@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 @click.option('--username', default='admin', prompt='The username', help='Resets the password for a particular user.')
 @click.password_option()
-def resetpassword(username, password):
+def resetpassword(app, appbuilder, username, password):
     """
         Resets a user's password
     """
+    _appbuilder = import_application(app, appbuilder)
     user = _appbuilder.sm.find_user(username=username)
     if not user:
         click.echo('User {0} not found.'.format(username))
@@ -35,31 +49,51 @@ def resetpassword(username, password):
         _appbuilder.sm.reset_password(user.id, password)
         click.echo(click.style('User {0} reseted.'.format(username), fg='green'))
 
-@cli.command("createadmin")
+@cli_app.command("createadmin")
+@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 @click.option('--username', default='admin', prompt='Username')
 @click.option('--firstname', default='admin', prompt='User first name')
 @click.option('--lastname', default='user', prompt='User last name')
 @click.option('--email', default='admin@fab.org', prompt='Email')
 @click.password_option()
-def createadmin(username, firstname, lastname, email, password):
+@click.pass_context
+def createadmin(app, appbuilder, username, firstname, lastname, email, password):
     """
         Creates an admin user
     """
+    _appbuilder = import_application(app, appbuilder)
     role_admin = _appbuilder.sm.find_role(_appbuilder.sm.auth_role_admin)
     _appbuilder.sm.add_user(username, firstname, lastname, email, role_admin, password)
     click.echo(click.style('Admin User {0} created.'.format(username), fg='green'))
 
-@cli.command("run")
+@cli_app.command("run")
+@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 @click.option('--host', default='0.0.0.0')
 @click.option('--port', default=8080)
 @click.option('--debug', default=True)
-def run(host, port, debug):
+@click.pass_context
+def run(app, appbuilder, host, port, debug):
     """
         Runs Flask dev web server.
     """
+    _appbuilder = import_application(app, appbuilder)
     _appbuilder.get_app.run(host=host, port=port, debug=debug)
 
-@cli.command("babel-extract")
+@cli_app.command("version")
+@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
+def version(app, appbuilder):
+    """
+        Flask-AppBuilder package version
+    """
+    _appbuilder = import_application(app, appbuilder)
+    click.echo(click.style('F.A.B Version: {0}.'.format(_appbuilder.version), bg='blue', fg='white'))
+
+
+
+@cli_app.command("babel-extract")
 @click.option('--config', default='./babel/babel.cfg')
 @click.option('--input', default='.')
 @click.option('--output', default='./babel/messages.pot')
@@ -74,23 +108,34 @@ def babel_extract(config, input, output, target):
     os.popen('pybabel update -N -i {0} -d {1}'.format(output, target))
     click.echo(click.style('Finish, you can start your translations', fg='green'))
 
-@cli.command("babel-compile")
-@click.option('--target', default='app/translations')
-def babel_extract(target):
+
+@cli_app.command("babel-compile")
+@click.option('--target', default='app/translations', help="The target directory where translations reside")
+def babel_compile(target):
     """
         Babel, Compiles all translations
     """
     click.echo(click.style('Starting Compile target:{0}'.format(target), fg='green'))
     os.popen('pybabel compile -f -d {0}'.format(target))
 
-@cli.command("version")
-def version():
+@cli_app.command("createapp")
+@click.option('--name', prompt="Your new app name", help="Your application name, directory will have this name")
+def createapp(name):
     """
-        Flask-AppBuilder package version
+        Create a Skeleton application
     """
-    click.echo(click.style('F.A.B Version: {0}.'.format(_appbuilder.version), bg='blue', fg='white'))
+    try:
+        url = urlopen("https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip")
+        zipfile = ZipFile(StringIO(url.read()))
+        zipfile.extractall()
+        os.rename("Flask-AppBuilder-Skeleton-master", name)
+        click.echo(click.style('Downloaded the skeleton app, good coding!', fg='green'))
+    except:
+        click.echo(click.style('Something went wrong', fg='red'))
+        click.echo(click.style('Try downloading from https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip', fg='green'))
 
-
+def cli():
+    cli_app()
 
 if __name__ == '__main__':
-    cli()
+    cli_app()
