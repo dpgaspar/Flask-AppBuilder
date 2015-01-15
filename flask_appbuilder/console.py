@@ -59,6 +59,30 @@ def run(host, port, debug):
     """
     _appbuilder.get_app.run(host=host, port=port, debug=debug)
 
+@cli.command("babel-extract")
+@click.option('--config', default='./babel/babel.cfg')
+@click.option('--input', default='.')
+@click.option('--output', default='./babel/messages.pot')
+@click.option('--target', default='app/translations')
+def babel_extract(config, input, output, target):
+    """
+        Babel, Extracts and updates all messages marked for translation
+    """
+    click.echo(click.style('Starting Extractions config:{0} input:{1} output:{2}'.format(config, input, output), fg='green'))
+    os.popen('pybabel extract -F {0} -k lazy_gettext -o {1} {2}'.format(config, output, input))
+    click.echo(click.style('Starting Update target:{0}'.format(target), fg='green'))
+    os.popen('pybabel update -N -i {0} -d {1}'.format(output, target))
+    click.echo(click.style('Finish, you can start your translations', fg='green'))
+
+@cli.command("babel-compile")
+@click.option('--target', default='app/translations')
+def babel_extract(target):
+    """
+        Babel, Compiles all translations
+    """
+    click.echo(click.style('Starting Compile target:{0}'.format(target), fg='green'))
+    os.popen('pybabel compile -f -d {0}'.format(target))
+
 @cli.command("version")
 def version():
     """
