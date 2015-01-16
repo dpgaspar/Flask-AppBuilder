@@ -82,9 +82,9 @@ class SecurityManager(BaseSecurityManager):
 
     def find_user(self, username=None, email=None):
         if username:
-            return User.objects(username=username).first()
+            return self.user_model.objects(username=username).first()
         elif email:
-            return User.objects(email=email).first()
+            return self.user_model.objects(email=email).first()
 
     def get_all_users(self):
         return User.objects
@@ -94,7 +94,7 @@ class SecurityManager(BaseSecurityManager):
             Generic function to create user
         """
         try:
-            user = User()
+            user = self.user_model()
             user.first_name = first_name
             user.last_name = last_name
             user.username = username
@@ -112,7 +112,7 @@ class SecurityManager(BaseSecurityManager):
             return False
 
     def count_users(self):
-        return len(User.objects)
+        return len(self.user_model.objects)
 
     def update_user(self, user):
         try:
@@ -124,7 +124,7 @@ class SecurityManager(BaseSecurityManager):
             return False
 
     def get_user_by_id(self, pk):
-        return User.objects(pk=pk).first()
+        return self.user_model.objects(pk=pk).first()
 
     def load_user(self, pk):
         return self.get_user_by_id(pk)
@@ -139,7 +139,7 @@ class SecurityManager(BaseSecurityManager):
         role = self.find_role(name)
         if role is None:
             try:
-                role = Role(name=name)
+                role = self.role_model(name=name)
                 role.save()
                 return role
             except Exception as e:
@@ -147,10 +147,10 @@ class SecurityManager(BaseSecurityManager):
         return role
 
     def find_role(self, name):
-        return Role.objects(name=name).first()
+        return self.role_model.objects(name=name).first()
 
     def get_all_roles(self):
-        return Role.objects
+        return self.role_model.objects
 
     def get_public_permissions(self):
         role = self.find_role(self.auth_role_public)
@@ -160,7 +160,7 @@ class SecurityManager(BaseSecurityManager):
         """
             Finds and returns a Permission by name
         """
-        return Permission.objects(name=name).first()
+        return self.permission_model.objects(name=name).first()
 
     def add_permission(self, name):
         """
@@ -172,7 +172,7 @@ class SecurityManager(BaseSecurityManager):
         perm = self.find_permission(name)
         if perm is None:
             try:
-                perm = Permission(name=name)
+                perm = self.permission_model(name=name)
                 perm.save()
                 return perm
             except Exception as e:
@@ -200,10 +200,10 @@ class SecurityManager(BaseSecurityManager):
         """
             Finds and returns a ViewMenu by name
         """
-        return ViewMenu.objects(name=name).first()
+        return self.viewmenu_model.objects(name=name).first()
 
     def get_all_view_menu(self):
-        return ViewMenu.objects
+        return self.viewmenu_model.objects
 
     def add_view_menu(self, name):
         """
@@ -214,7 +214,7 @@ class SecurityManager(BaseSecurityManager):
         view_menu = self.find_view_menu(name)
         if view_menu is None:
             try:
-                view_menu = ViewMenu(name=name)
+                view_menu = self.viewmenu_model(name=name)
                 view_menu.save()
                 return view_menu
             except Exception as e:
@@ -244,7 +244,7 @@ class SecurityManager(BaseSecurityManager):
         """
         permission = self.find_permission(permission_name)
         view_menu = self.find_view_menu(view_menu_name)
-        return PermissionView.objects(permission=permission, view_menu=view_menu).first()
+        return self.permissionview_model.objects(permission=permission, view_menu=view_menu).first()
 
     def find_permissions_view_menu(self, view_menu):
         """
@@ -253,7 +253,7 @@ class SecurityManager(BaseSecurityManager):
             :param view_menu: ViewMenu object
             :return: list of PermissionView objects
         """
-        return PermissionView.objects(view_menu=view_menu)
+        return self.permissionview_model.objects(view_menu=view_menu)
 
     def add_permission_view_menu(self, permission_name, view_menu_name):
         """
@@ -266,7 +266,7 @@ class SecurityManager(BaseSecurityManager):
         """
         vm = self.add_view_menu(view_menu_name)
         perm = self.add_permission(permission_name)
-        pv = PermissionView()
+        pv = self.permissionview_model()
         pv.view_menu, pv.permission = vm, perm
         try:
             pv.save()
@@ -281,7 +281,7 @@ class SecurityManager(BaseSecurityManager):
             # delete permission on view
             pv.delete()
             # if no more permission on permission view, delete permission
-            pv = PermissionView.objects(permission=pv.permission)
+            pv = self.permissionview_model.objects(permission=pv.permission)
             if not pv:
                 self.del_permission(pv.permission.name)
             log.info("Removed Permission View: %s" % (str(permission_name)))
