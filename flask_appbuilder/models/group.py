@@ -45,7 +45,11 @@ def aggregate_avg(items, col):
         Function to use on Group by Charts.
         accepts a list and returns the average of the list's items
     """
-    return aggregate_sum(items, col) / aggregate_count(items, col)
+    try:
+        return aggregate_sum(items, col) / aggregate_count(items, col)
+    except:
+        log.warning('Zero division on aggregate_avg')
+        return 0.0
 
 
 class BaseGroupBy(object):

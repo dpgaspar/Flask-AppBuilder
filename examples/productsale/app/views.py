@@ -1,7 +1,7 @@
 from models import Product, ProductType
 from flask.ext.appbuilder.views import ModelView, BaseView
 from flask.ext.appbuilder.charts.views import ChartView
-from flask.ext.appbuilder.models import SQLAInterface
+from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
 from flask.ext.appbuilder.widgets import ListBlock, ShowBlockWidget
 
 from app import appbuilder, db

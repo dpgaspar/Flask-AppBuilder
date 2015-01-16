@@ -21,6 +21,7 @@ Improvements and Bug fixes on 1.3.0
 - New, Select2 update to 3.5.1
 - New, support for many to many relations on ModelView related_view.
 - New, AppBuilder.add_link supports endpoint names on href parameter, internally will try to use url_for(href).
+- Fix, Zero division catch on aggregate average function.
 
 Improvements and Bug fixes on 1.2.1
 -----------------------------------
