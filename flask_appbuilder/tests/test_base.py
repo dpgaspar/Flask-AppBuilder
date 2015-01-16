@@ -71,7 +71,7 @@ class FlaskTestCase(unittest.TestCase):
     def setUp(self):
         from flask import Flask
         from flask.ext.appbuilder import AppBuilder
-        from flask.ext.appbuilder.models.datamodel import SQLAModel
+        from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
         from flask.ext.appbuilder.views import ModelView
 
         self.app = Flask(__name__)
@@ -94,7 +94,7 @@ class FlaskTestCase(unittest.TestCase):
 
 
         class Model2View(ModelView):
-            datamodel = SQLAModel(Model2)
+            datamodel = SQLAInterface(Model2)
             list_columns = ['field_integer', 'field_float', 'field_string', 'field_method', 'group.field_string']
 
             edit_form_query_rel_fields = {'group':[['field_string', FilterEqual, 'G2']]}
@@ -102,37 +102,37 @@ class FlaskTestCase(unittest.TestCase):
             add_form_query_rel_fields = {'group':[['field_string', FilterEqual, 'G1']]}
 
         class Model1View(ModelView):
-            datamodel = SQLAModel(Model1)
+            datamodel = SQLAInterface(Model1)
             related_views = [Model2View]
             list_columns = ['field_string','field_file']
 
         class Model1CompactView(CompactCRUDMixin, ModelView):
-            datamodel = SQLAModel(Model1)
+            datamodel = SQLAInterface(Model1)
 
 
         class Model1Filtered1View(ModelView):
-            datamodel = SQLAModel(Model1)
+            datamodel = SQLAInterface(Model1)
             base_filters = [['field_string', FilterStartsWith, 'a']]
 
 
         class Model1MasterView(MasterDetailView):
-            datamodel = SQLAModel(Model1)
+            datamodel = SQLAInterface(Model1)
             related_views = [Model2View]
 
 
         class Model1Filtered2View(ModelView):
-            datamodel = SQLAModel(Model1)
+            datamodel = SQLAInterface(Model1)
             base_filters = [['field_integer', FilterEqual, 0]]
 
 
         class Model2ChartView(ChartView):
-            datamodel = SQLAModel(Model2)
+            datamodel = SQLAInterface(Model2)
             chart_title = 'Test Model1 Chart'
             group_by_columns = ['field_string']
 
 
         class Model2GroupByChartView(GroupByChartView):
-            datamodel = SQLAModel(Model2)
+            datamodel = SQLAInterface(Model2)
             chart_title = 'Test Model1 Chart'
 
             definitions = [
@@ -146,7 +146,7 @@ class FlaskTestCase(unittest.TestCase):
             ]
             
         class Model2DirectByChartView(DirectByChartView):
-            datamodel = SQLAModel(Model2)
+            datamodel = SQLAInterface(Model2)
             chart_title = 'Test Model1 Chart'
 
             definitions = [
@@ -157,21 +157,21 @@ class FlaskTestCase(unittest.TestCase):
             ]
 
         class Model2TimeChartView(TimeChartView):
-            datamodel = SQLAModel(Model2)
+            datamodel = SQLAInterface(Model2)
             chart_title = 'Test Model1 Chart'
             group_by_columns = ['field_date']
 
         class Model2DirectChartView(DirectChartView):
-            datamodel = SQLAModel(Model2)
+            datamodel = SQLAInterface(Model2)
             chart_title = 'Test Model1 Chart'
             direct_columns = {'stat1': ('group', 'field_integer')}
 
         class Model1MasterView(MasterDetailView):
-            datamodel = SQLAModel(Model1)
+            datamodel = SQLAInterface(Model1)
             related_views = [Model2View]
 
         class Model1MasterChartView(MasterDetailView):
-            datamodel = SQLAModel(Model1)
+            datamodel = SQLAInterface(Model1)
             related_views = [Model2DirectByChartView]
 
 
@@ -191,7 +191,8 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view(Model2DirectChartView, "Model2 Direct Chart")
 
         self.appbuilder.add_view(PSView, "Generic DS PS View", category='PSView')
-
+        role_admin = self.appbuilder.sm.find_role('Admin')
+        self.appbuilder.sm.add_user('admin','admin','user','admin@fab.org',role_admin,'general')
 
     def tearDown(self):
         self.appbuilder = None
