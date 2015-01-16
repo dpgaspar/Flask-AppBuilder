@@ -1,4 +1,4 @@
-from flask.ext.appbuilder.models.datamodel import SQLAModel
+from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
 from flask.ext.appbuilder.views import MasterDetailView
 from flask.ext.appbuilder import ModelView
 from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
@@ -18,7 +18,7 @@ def fill_gender():
 
 
 class ContactGeneralView(ModelView):
-    datamodel = SQLAModel(Contact)
+    datamodel = SQLAInterface(Contact)
 
     label_columns = {'contact_grouo': 'Contacts Group'}
     list_columns = ['name', 'personal_phone', 'contact_group']
@@ -47,29 +47,15 @@ class ContactGeneralView(ModelView):
     ]
 
 
-class ContactTimeChartView(TimeChartView):
-    chart_title = 'Grouped Birth contacts'
-    chart_type = 'AreaChart'
-    label_columns = ContactGeneralView.label_columns
-    group_by_columns = ['birthday']
-    datamodel = SQLAModel(Contact)
-
 
 class GroupMasterView(MasterDetailView):
-    datamodel = SQLAModel(ContactGroup)
+    datamodel = SQLAInterface(ContactGroup)
     related_views = [ContactGeneralView]
 
 
 class GroupGeneralView(ModelView):
-    datamodel = SQLAModel(ContactGroup)
+    datamodel = SQLAInterface(ContactGroup)
     related_views = [ContactGeneralView]
-
-
-class ContactChartView(ChartView):
-    chart_title = 'Grouped contacts'
-    label_columns = ContactGeneralView.label_columns
-    group_by_columns = ['contact_grouo', 'gender']
-    datamodel = SQLAModel(Contact)
 
 
 fixed_translations_import = [
@@ -85,7 +71,4 @@ appbuilder.add_view(GroupMasterView, "List Groups", icon="fa-folder-open-o", cat
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(GroupGeneralView, "Manage Groups", icon="fa-folder-open-o", category="Contacts")
 appbuilder.add_view(ContactGeneralView, "List Contacts", icon="fa-envelope", category="Contacts")
-appbuilder.add_separator("Contacts")
-appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
-appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
 
