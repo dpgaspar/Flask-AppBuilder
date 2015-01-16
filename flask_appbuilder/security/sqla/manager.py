@@ -78,9 +78,9 @@ class SecurityManager(BaseSecurityManager):
         self.userremoteusermodelview.datamodel = SQLAInterface(self.user_model)
         self.userstatschartview.datamodel = SQLAInterface(self.user_model)
         self.rolemodelview.datamodel = SQLAInterface(self.role_model)
-        self.permissionmodelview.datamodel=SQLAInterface(self.permission_model)
-        self.viewmenumodelview.datamodel=SQLAInterface(self.viewmenu_model)
-        self.permissionviewmodelview.datamodel=SQLAInterface(self.permissionview_model)
+        self.permissionmodelview.datamodel = SQLAInterface(self.permission_model)
+        self.viewmenumodelview.datamodel = SQLAInterface(self.viewmenu_model)
+        self.permissionviewmodelview.datamodel = SQLAInterface(self.permissionview_model)
 
         super(SecurityManager, self).__init__(appbuilder)
         self.create_db()
@@ -108,7 +108,11 @@ class SecurityManager(BaseSecurityManager):
             return self.get_session.query(self.user_model).filter(func.lower(self.user_model.username) == func.lower(username)).first()
         elif email:
             return self.get_session.query(self.user_model).filter_by(email=email).first()
-        
+
+    def get_all_users(self):
+        return self.get_session.query(self.user_model).all()
+
+
     def add_user(self, username, first_name, last_name, email, role, password=''):
         """
             Generic function to create user

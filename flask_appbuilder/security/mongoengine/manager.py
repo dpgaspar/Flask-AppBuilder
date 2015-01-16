@@ -85,7 +85,10 @@ class SecurityManager(BaseSecurityManager):
             return User.objects(username=username).first()
         elif email:
             return User.objects(email=email).first()
-        
+
+    def get_all_users(self):
+        return User.objects
+
     def add_user(self, username, first_name, last_name, email, role, password=''):
         """
             Generic function to create user

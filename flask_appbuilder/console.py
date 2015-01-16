@@ -32,12 +32,12 @@ def cli_app():
     pass
 
 
-@cli_app.command("resetpassword")
+@cli_app.command("reset-password")
 @click.option('--app', default='app', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 @click.option('--username', default='admin', prompt='The username', help='Resets the password for a particular user.')
 @click.password_option()
-def resetpassword(app, appbuilder, username, password):
+def reset_password(app, appbuilder, username, password):
     """
         Resets a user's password
     """
@@ -49,7 +49,7 @@ def resetpassword(app, appbuilder, username, password):
         _appbuilder.sm.reset_password(user.id, password)
         click.echo(click.style('User {0} reseted.'.format(username), fg='green'))
 
-@cli_app.command("createadmin")
+@cli_app.command("create-admin")
 @click.option('--app', default='app', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 @click.option('--username', default='admin', prompt='Username')
@@ -57,7 +57,7 @@ def resetpassword(app, appbuilder, username, password):
 @click.option('--lastname', default='user', prompt='User last name')
 @click.option('--email', default='admin@fab.org', prompt='Email')
 @click.password_option()
-def createadmin(app, appbuilder, username, firstname, lastname, email, password):
+def create_admin(app, appbuilder, username, firstname, lastname, email, password):
     """
         Creates an admin user
     """
@@ -91,6 +91,41 @@ def version(app, appbuilder):
     click.echo(click.style('F.A.B Version: {0}.'.format(_appbuilder.version), bg='blue', fg='white'))
 
 
+@cli_app.command("security-cleanup")
+@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
+def security_cleanup(app, appbuilder):
+    """
+        Flask-AppBuilder package version
+    """
+    _appbuilder = import_application(app, appbuilder)
+    _appbuilder.security_cleanup()
+    click.echo(click.style('Finished security cleanup', fg='green'))
+
+
+@cli_app.command("list-views")
+@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
+def list_users(app, appbuilder):
+    """
+        Flask-AppBuilder package version
+    """
+    _appbuilder = import_application(app, appbuilder)
+    for view in _appbuilder.baseviews:
+        click.echo('{0} : {1}'.format(view, view.route_base))
+
+
+@cli_app.command("list-users")
+@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
+def list_users(app, appbuilder):
+    """
+        Flask-AppBuilder package version
+    """
+    _appbuilder = import_application(app, appbuilder)
+    for user in _appbuilder.sm.get_all_users():
+        click.echo(user)
+
 
 @cli_app.command("babel-extract")
 @click.option('--config', default='./babel/babel.cfg')
@@ -117,9 +152,9 @@ def babel_compile(target):
     click.echo(click.style('Starting Compile target:{0}'.format(target), fg='green'))
     os.popen('pybabel compile -f -d {0}'.format(target))
 
-@cli_app.command("createapp")
+@cli_app.command("create-app")
 @click.option('--name', prompt="Your new app name", help="Your application name, directory will have this name")
-def createapp(name):
+def create_app(name):
     """
         Create a Skeleton application
     """

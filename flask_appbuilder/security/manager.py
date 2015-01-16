@@ -560,6 +560,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
+    def get_all_users(self):
+        """
+            Generic function that returns all exsiting users
+        """
+        raise NotImplementedError
+
     def add_user(self, username, first_name, last_name, email, role, password=''):
         """
             Generic function to create user
