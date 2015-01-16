@@ -7,8 +7,6 @@ so that you can immediately have a running application (without any models yet) 
 
 Checkout installation video on `YouTube <http://youtu.be/ZrqFDroqqWE>`_
 
-.. note:: Remember the initial user is **'admin'** password **'general'**.
-
 Using pip
 ---------
 
@@ -46,12 +44,10 @@ Using pip
 
         $ sudo apt-get install python-virtualenv
 
-    Once you have virtualenv installed, :
+    Next create a virtualenv:
 
     ::
 
-        $ mkdir myproject
-        $ cd myproject
         $ virtualenv venv
         New python executable in venv/bin/python
         Installing distribute............done.
@@ -66,27 +62,35 @@ Using pip
         (venv)$ pip install flask-appbuilder
 
 
-Skeleton Application
---------------------
+    Once you have virtualenv installed, use **fabmanager** the command line tool to create your first app.
+    So create a skeleton application and the first admin user:
 
-After installing F.A.B. you probably want a simple quick start.
-You can use one of the examples, or clone the base skeleton application::
+    ::
 
-    $ git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
-    $ cd Flask-AppBuilder-Skeleton
+        (venv)$ fabmanager create-app
+        Your new app name: first_app
+        Downloaded the skeleton app, good coding!
+        (venv)$ cd first_app
+        (venv)$ fabmanager create-admin
+        Username [admin]:
+        User first name [admin]:
+        User last name [user]:
+        Email [admin@fab.org]:
+        Password:
+        Repeat for confirmation:
 
+    The framework will immediately insert all possible permissions on the database, these will be associated with
+    the *Admin* role that belongs to the *admin* user you just created. Your ready to run:
 
-This is a running boilerplate. You can simply run it on a development server, like this::
+    ::
+        (venv)$ fabmanager run
 
-    $ python run.py
+    This will start a web development server
 
-That's it!! When you run the development server you may notice the log,
-informing you about creating all the needed security tables,
-creating the initial 'admin' user, roles, as well as all the minimal permissions.
+    You now have a running development server on http://localhost:8080.
 
-You now have a running development server on http://localhost:8080.
-
-The git clone of the skeleton is not actually needed for you to run AppBuilder, but it's a good way to start.
+    The skeleton application is not actually needed for you to run AppBuilder, but it's a good way to start.
+    This first application is SQLAlchemy based.
 
 Initialization
 --------------
@@ -95,8 +99,9 @@ When starting your application for the first time,
 all AppBuilder security tables will be created for you.
 All your models can easily be created too (optionally).
 
-**The initial 'admin' user password will be 'general'**. Change it on your first access using the application.
-(Click the username on the navigation bar, then choose 'Reset Password')
+.. note:: Since version 1.3.0 no admin user is automatically created, you must use **fabmanager** to do it.
+There are lot's of other useful options you can use with **fabmanager** to reset user's password,
+list all your users and views, etc.
 
 Installation Requirements
 -------------------------

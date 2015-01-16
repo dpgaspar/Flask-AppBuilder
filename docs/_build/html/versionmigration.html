@@ -64,17 +64,73 @@
 <div class="section" id="migrating-from-1-2-x-to-1-3-x">
 <h2>Migrating from 1.2.X to 1.3.X<a class="headerlink" href="#migrating-from-1-2-x-to-1-3-x" title="Permalink to this headline">¶</a></h2>
 <p>There are some breaking features:</p>
-<p>1 - If you were already extending security, this is even more encouraged from now on, but internally many things have
+<p>1 - Security models have changed, user&#8217;s can have multiple roles, not just one. So you have to migrate you db.</p>
+<ul>
+<li><p class="first">The security models schema have changed.</p>
+<blockquote>
+<div><p>If you are using sqlite, mysql or pgsql, use the following procedure:</p>
+<blockquote>
+<div><p>1 - <em>Backup your DB</em>.</p>
+<p>2 - If you haven&#8217;t already, upgrade to flask-appbuilder 1.3.0.</p>
+<p>3 - Issue the following commands, on your project folder where config.py exists:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd /your-main-project-folder/
+wget https://raw.github.com/dpgaspar/Flask-AppBuilder/master/bin/migrate_db_1.3.py
+python migrate_db_1.3.py
+</pre></div>
+</div>
+<p>4 - Test and Run (if you have a run.py for development)</p>
+<div class="highlight-python"><div class="highlight"><pre>python run.py
+</pre></div>
+</div>
+</div></blockquote>
+<p>If not (DB is not sqlite, mysql or pgsql), you will have to alter the schema your self. use the following procedure:</p>
+<blockquote>
+<div><p>1 - <em>Backup your DB</em>.</p>
+<p>2 - If you haven&#8217;t already, upgrade to flask-appbuilder 0.7.0.</p>
+<p>3 - issue the corresponding DDL commands to:</p>
+<p>ALTER TABLE ab_user MODIFY COLUMN password VARCHAR(256)</p>
+</div></blockquote>
+</div></blockquote>
+</li>
+</ul>
+<p>2 - Security. If you were already extending security, this is even more encouraged from now on, but internally many things have
 changed. So, modules have changes and changed place, each backend engine will have it&#8217;s SecurityManager, and views
-are common to all of them:</p>
+are common to all of them. Change:</p>
 <p>from:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.security.sqla.views</span> <span class="kn">import</span> <span class="n">UserDBModelView</span>
-<span class="kn">from</span> <span class="nn">flask_appbuilder.security.manager</span> <span class="kn">import</span> <span class="n">SecurityManager</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.sqla.views</span> <span class="kn">import</span> <span class="n">UserDBModelView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.manager</span> <span class="kn">import</span> <span class="n">SecurityManager</span>
 </pre></div>
 </div>
 <p>to:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.security.views</span> <span class="kn">import</span> <span class="n">UserDBModelView</span>
-<span class="kn">from</span> <span class="nn">flask_appbuilder.security.sqla.manager</span> <span class="kn">import</span> <span class="n">SecurityManager</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.views</span> <span class="kn">import</span> <span class="n">UserDBModelView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.sqla.manager</span> <span class="kn">import</span> <span class="n">SecurityManager</span>
+</pre></div>
+</div>
+<p>3 - SQLAInteface, SQLAModel. If you were importing like the following, change:</p>
+<p>from:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+</pre></div>
+</div>
+<p>to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+</pre></div>
+</div>
+<p>4 - Filters, filters import moved:</p>
+<p>to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.models.sqla.filters</span> <span class="kn">import</span> <span class="n">FilterStartsWith</span><span class="p">,</span> <span class="n">FilterEqualFunction</span><span class="p">,</span> <span class="n">FilterEqual</span>
+</pre></div>
+</div>
+<p>5 - Filters, filtering relationship fields (rendered with select2) changed:</p>
+<p>from:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">edit_form_query_rel_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;group&#39;</span><span class="p">,</span>
+                               <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Model1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
+                               <span class="p">[[</span><span class="s">&#39;field_string&#39;</span><span class="p">,</span> <span class="n">FilterEqual</span><span class="p">,</span> <span class="s">&#39;G2&#39;</span><span class="p">]]</span>
+                              <span class="p">)</span>
+                            <span class="p">]</span>
+</pre></div>
+</div>
+<p>to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">edit_form_query_rel_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;group&#39;</span><span class="p">:[[</span><span class="s">&#39;field_string&#39;</span><span class="p">,</span> <span class="n">FilterEqual</span><span class="p">,</span> <span class="s">&#39;G2&#39;</span><span class="p">]]}</span>
 </pre></div>
 </div>
 </div>

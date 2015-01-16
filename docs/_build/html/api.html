@@ -110,7 +110,7 @@ Will hold your flask app object, all your views, and security classes.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>name</strong> &#8211; The string name that identifies the menu.</li>
-<li><strong>href</strong> &#8211; Override the generated href for the menu.</li>
+<li><strong>href</strong> &#8211; Override the generated href for the menu. You can use an url string or an endpoint name</li>
 <li><strong>icon</strong> &#8211; Font-Awesome icon name, optional.</li>
 <li><strong>label</strong> &#8211; The label that will be displayed on the menu, if absent param name will be used</li>
 <li><strong>category</strong> &#8211; The menu category where the menu will be included,
@@ -150,7 +150,7 @@ if non provided the view will be accessible as a top menu.</li>
 <li><strong>baseview</strong> &#8211; A BaseView type class instantiated or not.
 This method will instantiate the class for you if needed.</li>
 <li><strong>name</strong> &#8211; The string name that identifies the menu.</li>
-<li><strong>href</strong> &#8211; Override the generated href for the menu.
+<li><strong>href</strong> &#8211; Override the generated href for the menu. You can use an url string or an endpoint name
 if non provided default_view from view will be set as href.</li>
 <li><strong>icon</strong> &#8211; Font-Awesome icon name, optional.</li>
 <li><strong>label</strong> &#8211; The label that will be displayed on the menu, if absent param name will be used</li>

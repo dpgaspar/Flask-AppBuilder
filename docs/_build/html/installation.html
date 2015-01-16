@@ -65,10 +65,6 @@
 I do advise you to additionally install the base skeleton application
 so that you can immediately have a running application (without any models yet) and an easy to grow boilerplate.</p>
 <p>Checkout installation video on <a class="reference external" href="http://youtu.be/ZrqFDroqqWE">YouTube</a></p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Remember the initial user is <strong>&#8216;admin&#8217;</strong> password <strong>&#8216;general&#8217;</strong>.</p>
-</div>
 <div class="section" id="using-pip">
 <h2>Using pip<a class="headerlink" href="#using-pip" title="Permalink to this headline">¶</a></h2>
 <ul>
@@ -101,10 +97,8 @@ Maybe it’s even in your package manager. If you use a debian system (like Ubun
 <div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get install python-virtualenv
 </pre></div>
 </div>
-<p>Once you have virtualenv installed, :</p>
-<div class="highlight-python"><div class="highlight"><pre>$ mkdir myproject
-$ cd myproject
-$ virtualenv venv
+<p>Next create a virtualenv:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ virtualenv venv
 New python executable in venv/bin/python
 Installing distribute............done.
 $ . venv/bin/activate
@@ -116,35 +110,47 @@ it will install all the dependencies and these will be isolated from your system
 <div class="highlight-python"><div class="highlight"><pre>(venv)$ pip install flask-appbuilder
 </pre></div>
 </div>
+<p>Once you have virtualenv installed, use <strong>fabmanager</strong> the command line tool to create your first app.
+So create a skeleton application and the first admin user:</p>
+<div class="highlight-python"><div class="highlight"><pre>(venv)$ fabmanager create-app
+Your new app name: first_app
+Downloaded the skeleton app, good coding!
+(venv)$ cd first_app
+(venv)$ fabmanager create-admin
+Username [admin]:
+User first name [admin]:
+User last name [user]:
+Email [admin@fab.org]:
+Password:
+Repeat for confirmation:
+</pre></div>
+</div>
+<p>The framework will immediately insert all possible permissions on the database, these will be associated with
+the <em>Admin</em> role that belongs to the <em>admin</em> user you just created. Your ready to run:</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd><p class="first last">(venv)$ fabmanager run</p>
+</dd>
+</dl>
+<p>This will start a web development server</p>
+<p>You now have a running development server on <a class="reference external" href="http://localhost:8080">http://localhost:8080</a>.</p>
+<p>The skeleton application is not actually needed for you to run AppBuilder, but it&#8217;s a good way to start.
+This first application is SQLAlchemy based.</p>
 </div></blockquote>
 </li>
 </ul>
-</div>
-<div class="section" id="skeleton-application">
-<h2>Skeleton Application<a class="headerlink" href="#skeleton-application" title="Permalink to this headline">¶</a></h2>
-<p>After installing F.A.B. you probably want a simple quick start.
-You can use one of the examples, or clone the base skeleton application:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
-$ cd Flask-AppBuilder-Skeleton
-</pre></div>
-</div>
-<p>This is a running boilerplate. You can simply run it on a development server, like this:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ python run.py
-</pre></div>
-</div>
-<p>That&#8217;s it!! When you run the development server you may notice the log,
-informing you about creating all the needed security tables,
-creating the initial &#8216;admin&#8217; user, roles, as well as all the minimal permissions.</p>
-<p>You now have a running development server on <a class="reference external" href="http://localhost:8080">http://localhost:8080</a>.</p>
-<p>The git clone of the skeleton is not actually needed for you to run AppBuilder, but it&#8217;s a good way to start.</p>
 </div>
 <div class="section" id="initialization">
 <h2>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h2>
 <p>When starting your application for the first time,
 all AppBuilder security tables will be created for you.
 All your models can easily be created too (optionally).</p>
-<p><strong>The initial &#8216;admin&#8217; user password will be &#8216;general&#8217;</strong>. Change it on your first access using the application.
-(Click the username on the navigation bar, then choose &#8216;Reset Password&#8217;)</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Since version 1.3.0 no admin user is automatically created, you must use <strong>fabmanager</strong> to do it.</p>
+</div>
+<p>There are lot&#8217;s of other useful options you can use with <strong>fabmanager</strong> to reset user&#8217;s password,
+list all your users and views, etc.</p>
 </div>
 <div class="section" id="installation-requirements">
 <h2>Installation Requirements<a class="headerlink" href="#installation-requirements" title="Permalink to this headline">¶</a></h2>
@@ -196,7 +202,6 @@ Babel&#8217;s features, so on config you must only setup english:</p>
   <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
 <li><a class="reference internal" href="#using-pip">Using pip</a></li>
-<li><a class="reference internal" href="#skeleton-application">Skeleton Application</a></li>
 <li><a class="reference internal" href="#initialization">Initialization</a></li>
 <li><a class="reference internal" href="#installation-requirements">Installation Requirements</a></li>
 <li><a class="reference internal" href="#python-2-and-3-compatibility">Python 2 and 3 Compatibility</a></li>

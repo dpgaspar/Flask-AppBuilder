@@ -17,6 +17,15 @@ Improvements and Bug fixes on 1.3.0
 - New, All Filters are accessible from datamodel class, ex: datamodel.FilterEqual
 - New, Charts will be database ordered (better performance), and can accept dotted cols on relations.
 - Fix, on menus with dividers if next item has no permission, divider was shown.
+- New, Bootstrap update to 3.3.1
+- New, Select2 update to 3.5.1
+- New, support for many to many relations on ModelView related_view.
+- New, AppBuilder.add_link supports endpoint names on href parameter, internally will try to use url_for(href).
+- Fix, Zero division catch on aggregate average function.
+- (TODO) - fabmanager support for factory apps.
+- (TODO) - DOCS
+- (TODO) - Corrigir exemplo simpleview2 (base_template).
+- (TODO) - criar exemplo de utilização de base_template.
 
 Improvements and Bug fixes on 1.2.1
 -----------------------------------

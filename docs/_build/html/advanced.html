@@ -181,17 +181,10 @@ remember you can add multiple filters for each field also, take a look at the <e
                                 <span class="n">widget</span><span class="o">=</span><span class="n">BS3TextFieldROWidget</span><span class="p">())}</span>
 </pre></div>
 </div>
-<p>For select fields based on  a query use something like this on your views:</p>
+<p>For select fields to be readonly is a special case, but it&#8217;s solved in a simpler way:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># Define the field query</span>
 <span class="k">def</span> <span class="nf">department_query</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Department</span><span class="p">)</span>
-
-<span class="c"># Define your field widget</span>
-<span class="k">class</span> <span class="nc">Select2ROWidget</span><span class="p">(</span><span class="n">Select2Widget</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;disabled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;true&#39;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Select2ROWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__call__</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
 
 <span class="k">class</span> <span class="nc">EmployeeView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Employee</span><span class="p">)</span>
@@ -201,7 +194,7 @@ remember you can add multiple filters for each field also, take a look at the <e
     <span class="c"># override the &#39;department&#39; field, to make it readonly on edit form</span>
     <span class="n">edit_form_extra_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;department&#39;</span><span class="p">:</span>  <span class="n">QuerySelectField</span><span class="p">(</span><span class="s">&#39;Department&#39;</span><span class="p">,</span>
                                 <span class="n">query_factory</span><span class="o">=</span><span class="n">department_query</span><span class="p">,</span>
-                                <span class="n">widget</span><span class="o">=</span><span class="n">Select2ROWidget</span><span class="p">())}</span>
+                                <span class="n">widget</span><span class="o">=</span><span class="n">Select2Widget</span><span class="p">(</span><span class="n">extra_classes</span><span class="o">=</span><span class="s">&quot;readonly&quot;</span><span class="p">))}</span>
 </pre></div>
 </div>
 <ul class="simple">
