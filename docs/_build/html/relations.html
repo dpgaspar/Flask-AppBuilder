@@ -130,24 +130,24 @@ So we have an Employees table with some related data.</p>
 </div></blockquote>
 <p>Now let&#8217;s define ours views (views.py):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">ModelView</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.datamodel</span> <span class="kn">import</span> <span class="n">SQLAModel</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
 <span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Employee</span><span class="p">,</span><span class="n">Department</span><span class="p">,</span> <span class="n">Function</span><span class="p">,</span> <span class="n">EmployeeHistory</span>
 <span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">appbuilder</span>
 
 
 <span class="k">class</span> <span class="nc">EmployeeView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Employee</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Employee</span><span class="p">)</span>
 
     <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;full_name&#39;</span><span class="p">,</span> <span class="s">&#39;department&#39;</span><span class="p">,</span> <span class="s">&#39;employee_number&#39;</span><span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">FunctionView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Function</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Function</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">EmployeeView</span><span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">DepartmentView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Department</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Department</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">EmployeeView</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -210,7 +210,7 @@ then add the relation to benefit on the Employee model:</p>
 <p>On your views (views.py) it would be nice to create a menu entry for benefits, so that HR can
 add the available benefits:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">BenefitView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Benefit</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Benefit</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">EmployeeView</span><span class="p">]</span>
     <span class="n">add_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
     <span class="n">edit_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
@@ -244,14 +244,14 @@ when he is/was allocated to it. It&#8217;s a special kind of association table.<
 <p>We want the history to be shown on the employee show/detail view, has a list history. for this
 we need to create a view for employee history and tell F.A.B to make a relation to it:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">EmployeeHistoryView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">EmployeeHistory</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">EmployeeHistory</span><span class="p">)</span>
     <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;department&#39;</span><span class="p">,</span> <span class="s">&#39;begin_date&#39;</span><span class="p">,</span> <span class="s">&#39;end_date&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Then change the employee view, this time we do not want a tab to navigate to the relation, we want to show
 it on the same page cascading:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">EmployeeView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Employee</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Employee</span><span class="p">)</span>
     <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;full_name&#39;</span><span class="p">,</span> <span class="s">&#39;department&#39;</span><span class="p">,</span> <span class="s">&#39;employee_number&#39;</span><span class="p">]</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">EmployeeHistoryView</span><span class="p">]</span>
     <span class="n">show_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/show_cascade.html&#39;</span>

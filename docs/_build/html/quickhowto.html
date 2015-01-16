@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
-    <link rel="next" title="Chart Views" href="quickcharts.html" />
+    <link rel="next" title="Model Views on MongoDB (Quick How to)" href="quickhowto_mongo.html" />
     <link rel="prev" title="Base Views" href="views.html" />
    
   
@@ -45,7 +45,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="quickcharts.html" title="Chart Views"
+          <a href="quickhowto_mongo.html" title="Model Views on MongoDB (Quick How to)"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="views.html" title="Base Views"
@@ -71,7 +71,6 @@
 <p>you now have the following directory structure:</p>
 <div class="highlight-python"><div class="highlight"><pre>&lt;your project name&gt;/
     config.py : All the application&#39;s configuration
-    run.py    : A runner mainly for debug
     app/
         __init__.py : Application&#39;s initialization
         models.py : Declare your database models here
@@ -86,6 +85,12 @@
 <p>Let&#8217;s create a very simple contacts application.
 F.A.B uses the excellent SQLAlchemy ORM package, and it&#8217;s Flask extension.
 you should be familiar with it&#8217;s declarative syntax to define your database models on F.A.B.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Since 1.3.0 there is partial support for <strong>MongoDB</strong> using MongoEngine. You can declare any <em>normalized</em>
+database schema, just like on SQLAlchemy, and use ModelView and CharView&#8217;s exactly the same way. Next releases
+will gradually support non normalized schemas for MongoDB.</p>
+</div>
 <p>On our example application we are going to define two tables,
 a <em>Contact&#8217;s</em> table that will hold the contacts detailed information,
 and a <em>ContactGroup</em> table to group our contacts or classify them.
@@ -142,8 +147,11 @@ This view will setup functionality for create, remove, update and show primitive
 <p>Inherit from <em>ModelView</em> class that inherits from <em>BaseCRUDView</em> that inherits from <em>BaseModelView</em>,
 so you can override all their public properties to configure many details for your CRUD primitives.
 take a look at <a class="reference internal" href="advanced.html"><em>Advanced Configuration</em></a>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">ContactGroup</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">ModelView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+
+<span class="k">class</span> <span class="nc">GroupModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">ContactGroup</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactModelView</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -171,7 +179,7 @@ will relate 1/N relations automatically, it will display a show or edit view wit
 <p>But where is ContactModelView ? (that was a reference in <em>related_views</em> list)</p>
 <p>Let&#8217;s define it:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 
     <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;contact_group&#39;</span><span class="p">:</span><span class="s">&#39;Contacts Group&#39;</span><span class="p">}</span>
     <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s">&#39;birthday&#39;</span><span class="p">,</span><span class="s">&#39;contact_group&#39;</span><span class="p">]</span>
@@ -310,7 +318,7 @@ query count, and of course the query results, it supports pagination also.</p>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="views.html" title="previous chapter">Base Views</a></li>
-      <li>Next: <a href="quickcharts.html" title="next chapter">Chart Views</a></li>
+      <li>Next: <a href="quickhowto_mongo.html" title="next chapter">Model Views on MongoDB (Quick How to)</a></li>
   </ul></li>
 </ul>
   <h3>This Page</h3>

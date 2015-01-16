@@ -65,7 +65,7 @@
 <h2>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h2>
 <p>To block or set the allowed permissions on a view, just set the <em>base_permissions</em> property with the base permissions</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
     <span class="n">base_permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;can_add&#39;</span><span class="p">,</span><span class="s">&#39;can_delete&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -116,7 +116,7 @@ You can still use F.A.B. show template using Jinja2 blocks, take a look at the <
 <ul>
 <li><p class="first">You can create a custom query filter for all related columns like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
     <span class="n">add_form_query_rel_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;group&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;W&#39;</span><span class="p">]]}</span>
 </pre></div>
 </div>
@@ -187,7 +187,7 @@ remember you can add multiple filters for each field also, take a look at the <e
     <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Department</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">EmployeeView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Employee</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Employee</span><span class="p">)</span>
 
     <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;employee_number&#39;</span><span class="p">,</span> <span class="s">&#39;full_name&#39;</span><span class="p">,</span> <span class="s">&#39;department&#39;</span><span class="p">]</span>
 

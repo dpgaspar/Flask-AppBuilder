@@ -16,7 +16,6 @@ you now have the following directory structure::
 
     <your project name>/
         config.py : All the application's configuration
-        run.py    : A runner mainly for debug
         app/
             __init__.py : Application's initialization
             models.py : Declare your database models here
@@ -34,6 +33,10 @@ Simple contacts application
 Let's create a very simple contacts application.
 F.A.B uses the excellent SQLAlchemy ORM package, and it's Flask extension.
 you should be familiar with it's declarative syntax to define your database models on F.A.B.
+
+.. note:: Since 1.3.0 there is partial support for **MongoDB** using MongoEngine. You can declare any *normalized*
+   database schema, just like on SQLAlchemy, and use ModelView and CharView's exactly the same way. Next releases
+   will gradually support non normalized schemas for MongoDB.
 
 On our example application we are going to define two tables,
 a *Contact's* table that will hold the contacts detailed information,
@@ -106,8 +109,11 @@ take a look at :doc:`advanced`.
 
 ::
 
+    from flask.ext.appbuilder import ModelView
+    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
+
     class GroupModelView(ModelView):
-        datamodel = SQLAModel(ContactGroup)
+        datamodel = SQLAInterface(ContactGroup)
         related_views = [ContactModelView]
 
 
@@ -129,7 +135,7 @@ But where is ContactModelView ? (that was a reference in *related_views* list)
 Let's define it::
 
     class ContactModelView(ModelView):
-        datamodel = SQLAModel(Contact)
+        datamodel = SQLAInterface(Contact)
 
         label_columns = {'contact_group':'Contacts Group'}
         list_columns = ['name','personal_celphone','birthday','contact_group']
@@ -161,7 +167,6 @@ Remember you can include columns, relations or methods from a model's definition
     (on this case __repr__() methos on ContactGroup Model), so by default these fields can't be ordered.
     To enable order by on list for relationship fields, you can (since 1.1.1) reference
     them using dotted notation. On this example would be 'contact_group.name'.
-
 
 
 Register (views.py)

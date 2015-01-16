@@ -9,7 +9,7 @@ To block or set the allowed permissions on a view, just set the *base_permission
 ::
 
     class GroupModelView(ModelView):
-        datamodel = SQLAModel(Group)
+        datamodel = SQLAInterface(Group)
         base_permissions = ['can_add','can_delete']
 
 With this initial config, the framework will only create 'can_add' and 'can_delete'
@@ -69,7 +69,7 @@ Forms
 - You can create a custom query filter for all related columns like this::
 
     class ContactModelView(ModelView):
-        datamodel = SQLAModel(Contact)
+        datamodel = SQLAInterface(Contact)
         add_form_query_rel_fields = {'group': [['name',FilterStartsWith,'W']]}
 
 
@@ -134,7 +134,7 @@ For select fields to be readonly is a special case, but it's solved in a simpler
         return db.session.query(Department)
 
     class EmployeeView(ModelView):
-        datamodel = SQLAModel(Employee)
+        datamodel = SQLAInterface(Employee)
 
         list_columns = ['employee_number', 'full_name', 'department']
 

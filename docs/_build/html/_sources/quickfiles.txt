@@ -8,6 +8,9 @@ Define your model (models.py)
 
 ::
 
+    from flask.ext.appbuilder import Model
+    from flask.ext.appbuilder.model.mixins import ImageColumn
+
     class Person(Model):
         id = Column(Integer, primary_key=True)
         name = Column(String(150), unique = True, nullable=False)    	
@@ -32,8 +35,11 @@ Define your Views (views.py)
 
 ::
 
+    from flask.ext.appbuilder import ModelView
+    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
+
     class PersonModelView(ModelView):
-        datamodel = SQLAModel(Person)
+        datamodel = SQLAInterface(Person)
 
         list_widget = ListThumbnail
 

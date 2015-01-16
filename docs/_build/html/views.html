@@ -215,7 +215,7 @@ Next use <strong>Flask</strong> <strong>render_template</strong> to render your 
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Update redirect, on version 0.10.3, the redirect algorithm was reviewed, and uses session cookies to keep
-5 records of navigation history, these are very usefull to redirect back, keeping url arguments, and
+5 records of navigation history, these are very useful to redirect back, keeping url arguments, and
 improving UI experience. You must call <em>self.update_redirect()</em> to insert the current url into the
 navigation history. Sometimes you may want to skip the update, for example on form validation errors, so that
 the <em>back</em> operation won&#8217;t send you to the same form, prior to the validation error.</p>
@@ -228,14 +228,15 @@ the <em>back</em> operation won&#8217;t send you to the same form, prior to the 
 because when they do F.A.B. can automatically generate them and you can add or remove fields,
 as well as custom validators. For this you can use ModelView instead.</p>
 <p>To create a custom form view, first define your WTF form fields, but inherit them from F.A.B. <em>DynamicForm</em>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.wtf</span> <span class="kn">import</span> <span class="n">Form</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">BooleanField</span><span class="p">,</span> <span class="n">TextAreaField</span><span class="p">,</span> <span class="n">PasswordField</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">wtforms</span> <span class="kn">import</span> <span class="n">Form</span><span class="p">,</span> <span class="n">StringField</span>
+<span class="kn">from</span> <span class="nn">wtforms.validators</span> <span class="kn">import</span> <span class="n">DataRequired</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.forms</span> <span class="kn">import</span> <span class="n">DynamicForm</span>
 
 <span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">DynamicForm</span><span class="p">):</span>
-    <span class="n">field1</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">((</span><span class="s">&#39;Field1&#39;</span><span class="p">),</span>
+    <span class="n">field1</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">((</span><span class="s">&#39;Field1&#39;</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;Your field number one!&#39;</span><span class="p">),</span>
-        <span class="n">validators</span> <span class="o">=</span> <span class="p">[</span><span class="n">Required</span><span class="p">()])</span>
-    <span class="n">field2</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">((</span><span class="s">&#39;Field2&#39;</span><span class="p">),</span>
+        <span class="n">validators</span> <span class="o">=</span> <span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">field2</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">((</span><span class="s">&#39;Field2&#39;</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;Your field number two!&#39;</span><span class="p">))</span>
 </pre></div>
 </div>

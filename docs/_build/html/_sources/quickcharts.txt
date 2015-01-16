@@ -18,7 +18,7 @@ These charts can display multiple series, based on columns or methods defined on
 You can display multiple charts on the same view.
 
 Let's create a simple model first, the gold is to display a chart showing the unemployment evolution
-versus the percentage of the population with higher education::
+versus the percentage of the population with higher education, our model will be::
 
     class CountryStats(Model):
         id = Column(Integer, primary_key=True)
@@ -40,8 +40,11 @@ we must create a function to calculate the *college_perc*::
 
 Now we are ready to define our view::
 
+    from flask.ext.appbuilder.charts.views import DirectByChartView
+    from flask.ext.appbuilder.model.sqla.interface import SQLAInterface
+
     class CountryDirectChartView(DirectByChartView):
-        datamodel = SQLAModel(CountryStats)
+        datamodel = SQLAInterface(CountryStats)
         chart_title = 'Direct Data Example'
 
         definitions = [
@@ -73,9 +76,10 @@ Where 'label' and 'formatter' are optional parameters.
 So on the same view you can have multiple direct chart definitions, like this::
 
     from flask.ext.appbuilder.charts.views import DirectByChartView
+    from flask.ext.appbuilder.model.sqla.interface import SQLAInterface
 
     class CountryDirectChartView(DirectByChartView):
-        datamodel = SQLAModel(CountryStats)
+        datamodel = SQLAInterface(CountryStats)
         chart_title = 'Direct Data Example'
 
         definitions = [
@@ -125,6 +129,8 @@ support has many countries has we like.
 The gold is to display a chart showing the unemployment
 versus the percentage of the population with higher education per country::
 
+    from flask.ext.appbuilder import Model
+
     class Country(Model):
         id = Column(Integer, primary_key=True)
         name = Column(String(50), unique = True, nullable=False)
@@ -157,9 +163,11 @@ Now we are ready to define our view::
 
     from flask.ext.appbuilder.charts.views import GroupByChartView
     from flask.ext.appbuilder.models.group import aggregate_count, aggregate_sum, aggregate_avg
+    from flask.ext.appbuilder.model.sqla.interface import SQLAInterface
+
 
     class CountryGroupByChartView(GroupByChartView):
-        datamodel = SQLAModel(CountryStats)
+        datamodel = SQLAInterface(CountryStats)
         chart_title = 'Statistics'
 
         definitions = [
@@ -187,13 +195,14 @@ A different and interesting example is to group data monthly from all countries,
     import calendar
     from flask.ext.appbuilder.charts.views import GroupByChartView
     from flask.ext.appbuilder.models.group import aggregate_count, aggregate_sum, aggregate_avg
+    from flask.ext.appbuilder.model.sqla.interface import SQLAInterface
 
     def pretty_month_year(value):
         return calendar.month_name[value.month] + ' ' + str(value.year)
 
 
     class CountryGroupByChartView(GroupByChartView):
-        datamodel = SQLAModel(CountryStats)
+        datamodel = SQLAInterface(CountryStats)
         chart_title = 'Statistics'
 
         definitions = [

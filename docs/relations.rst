@@ -77,24 +77,24 @@ This has two, one to many relations:
 Now let's define ours views (views.py)::
 
     from flask.ext.appbuilder import ModelView
-    from flask.ext.appbuilder.models.datamodel import SQLAModel
+    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
     from .models import Employee,Department, Function, EmployeeHistory
     from app import appbuilder
 
 
     class EmployeeView(ModelView):
-        datamodel = SQLAModel(Employee)
+        datamodel = SQLAInterface(Employee)
 
         list_columns = ['full_name', 'department', 'employee_number']
 
 
     class FunctionView(ModelView):
-        datamodel = SQLAModel(Function)
+        datamodel = SQLAInterface(Function)
         related_views = [EmployeeView]
 
 
     class DepartmentView(ModelView):
-        datamodel = SQLAModel(Department)
+        datamodel = SQLAInterface(Department)
         related_views = [EmployeeView]
 
 
@@ -162,7 +162,7 @@ On your views (views.py) it would be nice to create a menu entry for benefits, s
 add the available benefits::
 
     class BenefitView(ModelView):
-        datamodel = SQLAModel(Benefit)
+        datamodel = SQLAInterface(Benefit)
         related_views = [EmployeeView]
         add_columns = ['name']
         edit_columns = ['name']
@@ -198,14 +198,14 @@ We want the history to be shown on the employee show/detail view, has a list his
 we need to create a view for employee history and tell F.A.B to make a relation to it::
 
     class EmployeeHistoryView(ModelView):
-        datamodel = SQLAModel(EmployeeHistory)
+        datamodel = SQLAInterface(EmployeeHistory)
         list_columns = ['department', 'begin_date', 'end_date']
 
 Then change the employee view, this time we do not want a tab to navigate to the relation, we want to show
 it on the same page cascading::
 
     class EmployeeView(ModelView):
-        datamodel = SQLAModel(Employee)
+        datamodel = SQLAInterface(Employee)
         list_columns = ['full_name', 'department', 'employee_number']
         related_views = [EmployeeHistoryView]
         show_template = 'appbuilder/general/model/show_cascade.html'

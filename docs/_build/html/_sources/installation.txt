@@ -83,6 +83,7 @@ Using pip
     the *Admin* role that belongs to the *admin* user you just created. Your ready to run:
 
     ::
+
         (venv)$ fabmanager run
 
     This will start a web development server

@@ -34,6 +34,7 @@ Contents:
 
    views
    quickhowto
+   quickhowto_mongo
    quickcharts
    quickfiles
    quickminimal

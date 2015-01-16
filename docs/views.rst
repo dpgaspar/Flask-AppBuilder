@@ -159,7 +159,7 @@ Next use **Flask** **render_template** to render your new template.
 .. note::
 
     Update redirect, on version 0.10.3, the redirect algorithm was reviewed, and uses session cookies to keep
-    5 records of navigation history, these are very usefull to redirect back, keeping url arguments, and 
+    5 records of navigation history, these are very useful to redirect back, keeping url arguments, and
     improving UI experience. You must call *self.update_redirect()* to insert the current url into the
     navigation history. Sometimes you may want to skip the update, for example on form validation errors, so that
     the *back* operation won't send you to the same form, prior to the validation error.
@@ -178,14 +178,15 @@ To create a custom form view, first define your WTF form fields, but inherit the
 
 ::
 
-    from flask.ext.wtf import Form, TextField, BooleanField, TextAreaField, PasswordField
+    from wtforms import Form, StringField
+    from wtforms.validators import DataRequired
     from flask.ext.appbuilder.forms import DynamicForm
 
     class MyForm(DynamicForm):
-        field1 = TextField(('Field1'),
+        field1 = StringField(('Field1'),
             description=('Your field number one!'),
-            validators = [Required()])
-        field2 = TextField(('Field2'),
+            validators = [DataRequired()])
+        field2 = StringField(('Field2'),
             description=('Your field number two!'))
 
 

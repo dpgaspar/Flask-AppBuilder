@@ -12,10 +12,12 @@ Just use the @action decorator on your own functions. Here's an example
 
 ::
 
-    from flask.ext.appbuilder.actions import action  
+    from flask.ext.appbuilder.actions import action
+    from flask.ext.appbuilder import ModeView
+    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
 
     class GroupModelView(ModelView):
-        datamodel = SQLAModel(Group)
+        datamodel = SQLAInterface(Group)
         related_views = [ContactModelView]
 	
         @action("myaction","Do something on this record","Do you really want to?","fa-rocket")

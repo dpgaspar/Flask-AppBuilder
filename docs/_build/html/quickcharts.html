@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Model Views with Files and Images" href="quickfiles.html" />
-    <link rel="prev" title="Model Views (Quick How to)" href="quickhowto.html" />
+    <link rel="prev" title="Model Views on MongoDB" href="quickhowto_mongo.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -48,7 +48,7 @@
           <a href="quickfiles.html" title="Model Views with Files and Images"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="quickhowto.html" title="Model Views (Quick How to)"
+          <a href="quickhowto_mongo.html" title="Model Views on MongoDB"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Flask AppBuilder</a> &raquo;</li> 
       </ul>
@@ -87,7 +87,7 @@
 <p>These charts can display multiple series, based on columns or methods defined on models.
 You can display multiple charts on the same view.</p>
 <p>Let&#8217;s create a simple model first, the gold is to display a chart showing the unemployment evolution
-versus the percentage of the population with higher education:</p>
+versus the percentage of the population with higher education, our model will be:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CountryStats</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">stat_date</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Date</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -108,8 +108,11 @@ we must create a function to calculate the <em>college_perc</em>:</p>
 </pre></div>
 </div>
 <p>Now we are ready to define our view:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CountryDirectChartView</span><span class="p">(</span><span class="n">DirectByChartView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.charts.views</span> <span class="kn">import</span> <span class="n">DirectByChartView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.model.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+
+<span class="k">class</span> <span class="nc">CountryDirectChartView</span><span class="p">(</span><span class="n">DirectByChartView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Direct Data Example&#39;</span>
 
     <span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
@@ -138,9 +141,10 @@ we must create a function to calculate the <em>college_perc</em>:</p>
 <p>Where &#8216;label&#8217; and &#8216;formatter&#8217; are optional parameters.
 So on the same view you can have multiple direct chart definitions, like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.charts.views</span> <span class="kn">import</span> <span class="n">DirectByChartView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.model.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
 
 <span class="k">class</span> <span class="nc">CountryDirectChartView</span><span class="p">(</span><span class="n">DirectByChartView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Direct Data Example&#39;</span>
 
     <span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
@@ -209,7 +213,9 @@ You can display multiple charts on the same view. This data can be grouped and a
 support has many countries has we like.
 The gold is to display a chart showing the unemployment
 versus the percentage of the population with higher education per country:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Country</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">Model</span>
+
+<span class="k">class</span> <span class="nc">Country</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
@@ -240,9 +246,11 @@ versus the percentage of the population with higher education per country:</p>
 <p>Now we are ready to define our view:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.charts.views</span> <span class="kn">import</span> <span class="n">GroupByChartView</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.group</span> <span class="kn">import</span> <span class="n">aggregate_count</span><span class="p">,</span> <span class="n">aggregate_sum</span><span class="p">,</span> <span class="n">aggregate_avg</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.model.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+
 
 <span class="k">class</span> <span class="nc">CountryGroupByChartView</span><span class="p">(</span><span class="n">GroupByChartView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Statistics&#39;</span>
 
     <span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
@@ -269,13 +277,14 @@ unemployment and college formation, grouped by country.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">calendar</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.charts.views</span> <span class="kn">import</span> <span class="n">GroupByChartView</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.group</span> <span class="kn">import</span> <span class="n">aggregate_count</span><span class="p">,</span> <span class="n">aggregate_sum</span><span class="p">,</span> <span class="n">aggregate_avg</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.model.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
 
 <span class="k">def</span> <span class="nf">pretty_month_year</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">calendar</span><span class="o">.</span><span class="n">month_name</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">month</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">CountryGroupByChartView</span><span class="p">(</span><span class="n">GroupByChartView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Statistics&#39;</span>
 
     <span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
@@ -396,7 +405,7 @@ Notice that the label_columns are from and already defined <em>ContactModelView<
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="quickhowto.html" title="previous chapter">Model Views (Quick How to)</a></li>
+      <li>Previous: <a href="quickhowto_mongo.html" title="previous chapter">Model Views on MongoDB</a></li>
       <li>Next: <a href="quickfiles.html" title="next chapter">Model Views with Files and Images</a></li>
   </ul></li>
 </ul>

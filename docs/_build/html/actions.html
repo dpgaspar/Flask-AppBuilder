@@ -68,9 +68,11 @@ This is a powerful feature, you can easily add custom functionality to your db r
 like mass delete, sending emails with record information, special mass update etc.</p>
 <p>Just use the &#64;action decorator on your own functions. Here&#8217;s an example</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.actions</span> <span class="kn">import</span> <span class="n">action</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">ModeView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
 
 <span class="k">class</span> <span class="nc">GroupModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactModelView</span><span class="p">]</span>
 
     <span class="nd">@action</span><span class="p">(</span><span class="s">&quot;myaction&quot;</span><span class="p">,</span><span class="s">&quot;Do something on this record&quot;</span><span class="p">,</span><span class="s">&quot;Do you really want to?&quot;</span><span class="p">,</span><span class="s">&quot;fa-rocket&quot;</span><span class="p">)</span>
