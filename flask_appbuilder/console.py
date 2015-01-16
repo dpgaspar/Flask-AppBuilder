@@ -23,6 +23,11 @@ def import_application(app_package, appbuilder):
         click.echo(click.style('Was unable to import {0}.{1}'.format(app_package, appbuilder), fg='red'))
         exit(3)
 
+def echo_header(title):
+    click.echo(click.style(title, fg='green'))
+    click.echo(click.style('-'*len(title), fg='green'))
+
+
 @click.group()
 def cli_app():
     """
@@ -108,11 +113,12 @@ def security_cleanup(app, appbuilder):
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 def list_users(app, appbuilder):
     """
-        Flask-AppBuilder package version
+        List all registered views
     """
     _appbuilder = import_application(app, appbuilder)
+    echo_header('List of registered views')
     for view in _appbuilder.baseviews:
-        click.echo('{0} : {1}'.format(view, view.route_base))
+        click.echo('View:{0} | Route:{1} | Perms:{2}'.format(view.__class__.__name__, view.route_base, view.base_permissions))
 
 
 @cli_app.command("list-users")
@@ -120,11 +126,12 @@ def list_users(app, appbuilder):
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 def list_users(app, appbuilder):
     """
-        Flask-AppBuilder package version
+        List all users on the database 
     """
     _appbuilder = import_application(app, appbuilder)
+    echo_header('List of users')
     for user in _appbuilder.sm.get_all_users():
-        click.echo(user)
+        click.echo('username:{0} | email:{1} | role:{2}'.format(user.username, user.email, user.roles))
 
 
 @cli_app.command("babel-extract")
