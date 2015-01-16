@@ -24,6 +24,8 @@ Improvements and Bug fixes on 1.3.0
 - Fix, Zero division catch on aggregate average function.
 - (TODO) - fabmanager support for factory apps.
 - (TODO) - DOCS
+- (TODO) - Corrigir exemplo simpleview2 (base_template).
+- (TODO) - criar exemplo de utilização de base_template.
 
 Improvements and Bug fixes on 1.2.1
 -----------------------------------
