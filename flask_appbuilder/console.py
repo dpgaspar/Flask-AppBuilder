@@ -152,6 +152,7 @@ def babel_compile(target):
     click.echo(click.style('Starting Compile target:{0}'.format(target), fg='green'))
     os.popen('pybabel compile -f -d {0}'.format(target))
 
+
 @cli_app.command("create-app")
 @click.option('--name', prompt="Your new app name", help="Your application name, directory will have this name")
 def create_app(name):
