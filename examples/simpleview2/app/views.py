@@ -27,10 +27,8 @@ class MyView(BaseView):
         # do something with param1
         # and render template with param
         param1 = 'Goodbye %s' % (param1)
-        return render_template('method3.html',
-                               param1 = param1,
-                               appbuilder=self.appbuilder)
-
+        return self.render_template('method3.html',
+                               param1=param1)
 
 
 appbuilder.add_view(MyView(), "Method1", category='My View')

@@ -1,4 +1,4 @@
-from flask.ext.appbuilder Model
+from flask.ext.appbuilder import Model
 
 """
 
@@ -8,4 +8,3 @@ AuditMixin will add automatic timestamp of created and modified by who
 
 
 """
-        

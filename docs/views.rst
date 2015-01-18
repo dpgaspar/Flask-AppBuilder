@@ -144,9 +144,8 @@ inside it create a file name 'method3.html'
         # and render template with param
         param1 = 'Goodbye %s' % (param1)
         self.update_redirect()
-        return render_template('method3.html',
-                               param1 = param1,
-                               appbuilder=self.appbuilder)
+        return self.render_template('method3.html',
+                               param1 = param1)
 
 3 - Create a menu link to your new method::
 
@@ -164,6 +163,10 @@ Next use **Flask** **render_template** to render your new template.
     navigation history. Sometimes you may want to skip the update, for example on form validation errors, so that
     the *back* operation won't send you to the same form, prior to the validation error.
 
+.. note::
+
+    Since version 1.3.0, you must render all your views templates like *self.render_template* this
+    is because the base_template (that can be overridden) and appbuilder are now always passed to the template.
 
 SimpleFormView
 --------------

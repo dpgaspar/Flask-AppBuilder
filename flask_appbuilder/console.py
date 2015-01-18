@@ -33,6 +33,15 @@ def cli_app():
     """
         This is a set of commands to ease the creation and maintenance
         of your flask-appbuilder applications.
+
+        All commands that import your app will assume by default that
+        your running on your projects directory just before the app directory.
+        will assume also that on the __init__.py your initializing AppBuilder
+        like this (using a var named appbuilder) just like the skeleton app::
+
+        appbuilder = AppBuilder(......)
+
+        If your using different namings use app and appbuilder parameters.
     """
     pass
 
@@ -84,6 +93,22 @@ def run(app, appbuilder, host, port, debug):
     """
     _appbuilder = import_application(app, appbuilder)
     _appbuilder.get_app.run(host=host, port=port, debug=debug)
+
+
+@cli_app.command("create-db")
+@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
+def create_db(app, appbuilder):
+    """
+        Create all your database objects (SQLAlchemy specific).
+    """
+    from flask_appbuilder.models.sqla import Base
+
+    _appbuilder = import_application(app, appbuilder)
+    engine = _appbuilder.get_session.get_bind(mapper=None, clause=None)
+    Base.metadata.create_all(engine)
+    click.echo(click.style('DB objects created', fg='green'))
+
 
 @cli_app.command("version")
 @click.option('--app', default='app', help='Your application init directory (package)')
