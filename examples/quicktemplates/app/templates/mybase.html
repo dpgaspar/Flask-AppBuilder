@@ -1,8 +1,67 @@
 {% extends 'appbuilder/baselayout.html' %}
+{% import 'appbuilder/baselib.html' as baselib with context %}
+
 
 {% block head_css %}
     {{ super() }}
     <link href="{{url_for('static',filename='css/landing-page.css')}}" rel="stylesheet">
+{% endblock %}
+
+
+{% block navbar %}
+{% set languages = appbuilder.languages %}
+        {% set menu = appbuilder.menu %}
+
+<div class="navbar {{menu.extra_classes}}" role="navigation">
+   <div class="container">
+        <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                {% if appbuilder.app_icon %}
+                	<a class="navbar-brand" href="{{appbuilder.get_url_for_index}}">
+                	<img src="{{appbuilder.app_icon}}" >
+                	</a>
+                {% else %}
+                	<span class="navbar-brand">
+                	<a href="{{appbuilder.get_url_for_index}}">
+                	{{ appbuilder.app_name }}
+                	</a>
+                	</span>
+                {% endif %}
+        </div>
+            <div class="navbar-collapse collapse">
+               <ul class="nav navbar-nav navbar-right">
+                {{ baselib.locale_menu(languages) }}
+                {% if not current_user.is_anonymous() %}
+				    <li><a href="{{appbuilder.get_url_for_logout}}">
+                    <i class="fa fa-sign-out"></i>{{_("Logout")}}</a></li>
+                    <li><a class="pull-right" href="{{appbuilder.get_url_for_userinfo}}">
+                    <i class="fa fa-user"></i> {{g.user.get_full_name()}}</a></li>
+                {% else %}
+                    <li><a href="{{appbuilder.get_url_for_login}}">
+                    <i class="fa fa-sign-in"></i>{{_("Login")}}</a></li>
+                {% endif %}
+                </ul>
+        </div>
+   </div>
+</div>
+
+{% endblock %}
+
+{% block body %}
+HELLO
+ <div class="col-md-2" role="navigation">
+                <ul class="nav nav-pills nav-stacked">
+                        {{ baselib.menu_block(menu)}}
+                </ul>
+                </div>
+
+            <div class="col-md-10" role="container">
+                {{ super() }}
+                    </div>
 {% endblock %}
 
 {% block footer %}
