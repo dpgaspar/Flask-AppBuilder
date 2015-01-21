@@ -1,15 +1,15 @@
 Security
 ========
 
-The Authentication methods
---------------------------
+Supported Authentication Types
+------------------------------
 
 You have four types of authentication methods
 
-  - **Database type authentications**: username and password style that is queried from the database to match. Passwords are kept hashed on the database.
-  - **Open ID**: Uses the user's email field to authenticate on Gmail, Yahoo etc...
-  - **LDAP**: Authentication against an LDAP server, like Microsoft Active Directory.
-  - **REMOTE_USER**: Reads the *REMOTE_USER* web server environ var, and verifies if it's authorized with the framework users table.
+  :Database Authentication: username and password style that is queried from the database to match. Passwords are kept hashed on the database.
+  :Open ID: Uses the user's email field to authenticate on Gmail, Yahoo etc...
+  :LDAP: Authentication against an LDAP server, like Microsoft Active Directory.
+  :REMOTE_USER: Reads the *REMOTE_USER* web server environ var, and verifies if it's authorized with the framework users table.
        It's the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
        is configured to use kerberos, no need for the user to login with username and password on F.A.B.
 
@@ -20,15 +20,17 @@ The session is preserved and encrypted using Flask-Login, OpenID requires Flask-
 Role based
 ----------
 
-Each user belongs to a role, and a role holds permissions on views and menus, so a user has permissions on views and menus.
+Each user has multiple roles, and a role holds permissions on views and menus, so a user has permissions on views and menus.
 
 There are two special roles, you can define their names on the :doc:`config`
 
-	- Admin Role: The framework will assign all the existing permission on views and menus to this role, automatically, this role is for authenticated users only.	 
+	:Admin Role: The framework will assign all the existing permission on views and menus to this role, automatically, this role is for authenticated users only.
 
-	- Public Role: This is a special role for non authenticated users, you can assign all the permissions on views and menus to this role, and everyone will access specific parts of you application.
+	:Public Role: This is a special role for non authenticated users, you can assign all the permissions on views and menus to this role, and everyone will access specific parts of you application.
 	
 Of course you can create any additional role you want and configure them as you like.
+
+.. notes:: User's with multiple roles is only possible since 1.3.0 version.
 
 Permissions
 -----------
@@ -57,7 +59,7 @@ If you extend your view with some exposed method via the @expose decorator and y
 use the @has_access decorator::
 
     class MyModelView(ModelView):
-        datamodel = SQLAModel(Group, db.session)
+        datamodel = SQLAInterdace(Group)
     	
         @has_access
         @expose('/mymethod/')
@@ -76,23 +78,26 @@ You can use the @permission_name to override the permission's name to whatever y
 
 Take a look at :doc:`api`
 
-
 Automatic Cleanup
 -----------------
 
 All your permissions and views are added automatically to the backend and associated with the 'Admin' *role*.
-The same applies to removing them, to some extent. But, if you change the name of a view or menu the framework
-will add the new *Views* and *Menus* names to the backend, but, will not delete the old ones. This can generate unwanted
-names on the security basically *garbage*. To clean it use the *security_cleanup* method,
-use it after you have registered all your views
+The same applies to removing them. But, if you change the name of a view or menu, the framework
+will add the new *Views* and *Menus* names to the backend, but will not delete the old ones. It will generate unwanted
+names on the security models, basically *garbage*. To clean them, use the *security_cleanup* method.
 
+Using security_cleanup is not always necessary, but using it after code rework, will guarantee that the permissions, and
+associated permissions to menus and views are exactly what exists on your app. It will prevent orphaned permission names
+ and associations.
+
+Use the cleanup after you have registered all your views.
 ::
 
-    appbuilder.add_view(GroupModelView(), "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-    appbuilder.add_view(ContactModelView(), "List Contacts", icon="fa-envelope", category="Contacts")
+    appbuilder.add_view(GroupModelView, "List Groups", category="Contacts")
+    appbuilder.add_view(ContactModelView, "List Contacts", category="Contacts")
     appbuilder.add_separator("Contacts")
-    appbuilder.add_view(ContactChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")
-    appbuilder.add_view(ContactTimeChartView(), "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
+    appbuilder.add_view(ContactChartView, "Contacts Chart", category="Contacts")
+    appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", category="Contacts")
 
     appbuilder.security_cleanup()
 
@@ -104,10 +109,11 @@ no overhead is added when starting your site.
 Auditing
 --------
 
-All user's creation and modification are audited, on the show detail for each user you can check who created the user and when and who has last changed it.
+All user's creation and modification are audited.
+On the show detail for each user you can check who created the user and when and who has last changed it.
 
-You can check also a total login count (successful login), and the last failed logins (these are reset if a successful login then occurred).
-
+You can check also, a total login count (successful login), and the last failed logins
+(these are reset if a successful login occurred).
 
 Your Custom Security
 --------------------
@@ -120,7 +126,7 @@ First i advise you to create security.py and add the following to it::
 
     from flask import redirect
     from flask_appbuilder.security.views import UserDBModelView
-    from flask_appbuilder.security.manager import SecurityManager
+    from flask_appbuilder.security.sqla.manager import SecurityManager
     from flask.ext.appbuilder.actions import action
 
 
@@ -151,7 +157,84 @@ correspondent lower case properties on **SecurityManager** (just like on the giv
 
 Take a look and run the example on `Employees example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/employees>`_
 
-Study the source code of `SecurityManager <https://github.com/dpgaspar/Flask-AppBuilder/blob/master/flask_appbuilder/security/manager.py>`_
+Study the source code of `BaseSecurityManager <https://github.com/dpgaspar/Flask-AppBuilder/blob/master/flask_appbuilder/security/manager.py>`_
+
+Extending the User Model
+------------------------
+
+If you want to extend the **User** Model with extra columns specific to your application (since 1.3.0) you
+can easily do it. Use the same type of approach as explained earlier.
+
+First extend the User Model (create a sec_models.py file)::
+
+    from flask_appbuilder.security.sqla.models import User
+    from sqlalchemy import Column, Integer, ForeignKey, String, Sequence, Table
+    from sqlalchemy.orm import relationship, backref
+    from flask_appbuilder import Model
+
+    class MyUser(User):
+        extra = Column(String(256))
+
+
+Next define a new User view, just like the default User view but with the extra column (create a sec_view.py)::
+
+    from flask_appbuilder.security.views import UserDBModelView
+    from flask_babelpkg import lazy_gettext
+
+    class MyUserDBModelView(UserDBModelView):
+        """
+            View that add DB specifics to User view.
+            Override to implement your own custom view.
+            Then override userdbmodelview property on SecurityManager
+        """
+
+        show_fieldsets = [
+            (lazy_gettext('User info'),
+             {'fields': ['username', 'active', 'roles', 'login_count', 'extra']}),
+            (lazy_gettext('Personal Info'),
+             {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
+            (lazy_gettext('Audit Info'),
+             {'fields': ['last_login', 'fail_login_count', 'created_on',
+                         'created_by', 'changed_on', 'changed_by'], 'expanded': False}),
+        ]
+
+        user_show_fieldsets = [
+            (lazy_gettext('User info'),
+             {'fields': ['username', 'active', 'roles', 'login_count', 'extra']}),
+            (lazy_gettext('Personal Info'),
+             {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
+        ]
+
+        add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'extra', 'password', 'conf_password']
+        list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles']
+        edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'extra']
+
+Next create your own SecurityManager class, overriding your model and view for User (create a sec.py)::
+
+    from flask_appbuilder.security.sqla.manager import SecurityManager
+    from .sec_models import MyUser
+    from .sec_views import MyUserDBModelView
+
+    class MySecurityManager(SecurityManager):
+        user_model = MyUser
+        userdbmodelview = MyUserDBModelView
+
+Finally (as shown on the previous example) tell F.A.B. to use your SecurityManager class, so when initializing
+**AppBuilder** (on __init__.py)::
+
+    from flask import Flask
+    from flask.ext.appbuilder import SQLA, AppBuilder
+    from flask.ext.appbuilder.menu import Menu
+    from .sec import MySecurityManager
+
+    app = Flask(__name__)
+    app.config.from_object('config')
+    db = SQLA(app)
+    appbuilder = AppBuilder(app, db.session, menu=Menu(reverse=False), security_manager_class=MySecurityManager)
+
+    from app import views
+
+Now you'll have your extended User model as the authenticated user, *g.user* will have your model with the extra col.
 
 Some images:
 

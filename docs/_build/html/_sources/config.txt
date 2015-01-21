@@ -9,7 +9,9 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +-----------------------------------+--------------------------------------------+-----------+
 | Key                               | Description                                | Mandatory |
 +===================================+============================================+===========+
-| SQLALCHEMY_DATABASE_URI           | Database connection string                 |   Yes     |
+| SQLALCHEMY_DATABASE_URI           | DB connection string (flask-sqlalchemy)    |   Cond.   |
++-----------------------------------+--------------------------------------------+-----------+
+| MONGODB_SETTINGS                  | DB connection string (flask-mongoengine)   |   Cond.   |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_TYPE = 0 | 1 | 2 | 3         | This is the authentication type            |   Yes     |
 |                                   |  - 0 = Open ID                             |           |

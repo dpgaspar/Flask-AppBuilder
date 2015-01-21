@@ -61,38 +61,46 @@
             
   <div class="section" id="security">
 <h1>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="the-authentication-methods">
-<h2>The Authentication methods<a class="headerlink" href="#the-authentication-methods" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="supported-authentication-types">
+<h2>Supported Authentication Types<a class="headerlink" href="#supported-authentication-types" title="Permalink to this headline">¶</a></h2>
 <p>You have four types of authentication methods</p>
 <blockquote>
-<div><ul>
-<li><p class="first"><strong>Database type authentications</strong>: username and password style that is queried from the database to match. Passwords are kept hashed on the database.</p>
-</li>
-<li><p class="first"><strong>Open ID</strong>: Uses the user&#8217;s email field to authenticate on Gmail, Yahoo etc...</p>
-</li>
-<li><p class="first"><strong>LDAP</strong>: Authentication against an LDAP server, like Microsoft Active Directory.</p>
-</li>
-<li><dl class="first docutils">
-<dt><strong>REMOTE_USER</strong>: Reads the <em>REMOTE_USER</em> web server environ var, and verifies if it&#8217;s authorized with the framework users table.</dt>
-<dd><p class="first last">It&#8217;s the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
-is configured to use kerberos, no need for the user to login with username and password on F.A.B.</p>
-</dd>
-</dl>
-</li>
-</ul>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Database Authentication:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">username and password style that is queried from the database to match. Passwords are kept hashed on the database.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Open ID:</th><td class="field-body">Uses the user&#8217;s email field to authenticate on Gmail, Yahoo etc...</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">LDAP:</th><td class="field-body">Authentication against an LDAP server, like Microsoft Active Directory.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">REMOTE_USER:</th><td class="field-body">Reads the <em>REMOTE_USER</em> web server environ var, and verifies if it&#8217;s authorized with the framework users table.
+It&#8217;s the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
+is configured to use kerberos, no need for the user to login with username and password on F.A.B.</td>
+</tr>
+</tbody>
+</table>
 </div></blockquote>
 <p>Configure the authentication type on config.py, take a look at <a class="reference internal" href="config.html"><em>Base Configuration</em></a></p>
 <p>The session is preserved and encrypted using Flask-Login, OpenID requires Flask-OpenID.</p>
 </div>
 <div class="section" id="role-based">
 <h2>Role based<a class="headerlink" href="#role-based" title="Permalink to this headline">¶</a></h2>
-<p>Each user belongs to a role, and a role holds permissions on views and menus, so a user has permissions on views and menus.</p>
+<p>Each user has multiple roles, and a role holds permissions on views and menus, so a user has permissions on views and menus.</p>
 <p>There are two special roles, you can define their names on the <a class="reference internal" href="config.html"><em>Base Configuration</em></a></p>
 <blockquote>
-<div><ul class="simple">
-<li>Admin Role: The framework will assign all the existing permission on views and menus to this role, automatically, this role is for authenticated users only.</li>
-<li>Public Role: This is a special role for non authenticated users, you can assign all the permissions on views and menus to this role, and everyone will access specific parts of you application.</li>
-</ul>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Admin Role:</th><td class="field-body">The framework will assign all the existing permission on views and menus to this role, automatically, this role is for authenticated users only.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Public Role:</th><td class="field-body">This is a special role for non authenticated users, you can assign all the permissions on views and menus to this role, and everyone will access specific parts of you application.</td>
+</tr>
+</tbody>
+</table>
 </div></blockquote>
 <p>Of course you can create any additional role you want and configure them as you like.</p>
 </div>
@@ -124,7 +132,7 @@ is configured to use kerberos, no need for the user to login with username and p
 <p>If you extend your view with some exposed method via the &#64;expose decorator and you want to protect it
 use the &#64;has_access decorator:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterdace</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
 
     <span class="nd">@has_access</span>
     <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/mymethod/&#39;</span><span class="p">)</span>
@@ -147,15 +155,19 @@ if there is no need for granular permissions on a group of methods, for this use
 <div class="section" id="automatic-cleanup">
 <h2>Automatic Cleanup<a class="headerlink" href="#automatic-cleanup" title="Permalink to this headline">¶</a></h2>
 <p>All your permissions and views are added automatically to the backend and associated with the &#8216;Admin&#8217; <em>role</em>.
-The same applies to removing them, to some extent. But, if you change the name of a view or menu the framework
-will add the new <em>Views</em> and <em>Menus</em> names to the backend, but, will not delete the old ones. This can generate unwanted
-names on the security basically <em>garbage</em>. To clean it use the <em>security_cleanup</em> method,
-use it after you have registered all your views</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupModelView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-folder-open-o&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s">&#39;fa-envelope&#39;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactModelView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+The same applies to removing them. But, if you change the name of a view or menu, the framework
+will add the new <em>Views</em> and <em>Menus</em> names to the backend, but will not delete the old ones. It will generate unwanted
+names on the security models, basically <em>garbage</em>. To clean them, use the <em>security_cleanup</em> method.</p>
+<p>Using security_cleanup is not always necessary, but using it after code rework, will guarantee that the permissions, and
+associated permissions to menus and views are exactly what exists on your app. It will prevent orphaned permission names</p>
+<blockquote>
+<div>and associations.</div></blockquote>
+<p>Use the cleanup after you have registered all your views.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupModelView</span><span class="p">,</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactModelView</span><span class="p">,</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_separator</span><span class="p">(</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactChartView</span><span class="p">(),</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-dashboard&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactTimeChartView</span><span class="p">(),</span> <span class="s">&quot;Contacts Birth Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-dashboard&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactChartView</span><span class="p">,</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactTimeChartView</span><span class="p">,</span> <span class="s">&quot;Contacts Birth Chart&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
 
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">security_cleanup</span><span class="p">()</span>
 </pre></div>
@@ -166,8 +178,10 @@ no overhead is added when starting your site.</p>
 </div>
 <div class="section" id="auditing">
 <h2>Auditing<a class="headerlink" href="#auditing" title="Permalink to this headline">¶</a></h2>
-<p>All user&#8217;s creation and modification are audited, on the show detail for each user you can check who created the user and when and who has last changed it.</p>
-<p>You can check also a total login count (successful login), and the last failed logins (these are reset if a successful login then occurred).</p>
+<p>All user&#8217;s creation and modification are audited.
+On the show detail for each user you can check who created the user and when and who has last changed it.</p>
+<p>You can check also, a total login count (successful login), and the last failed logins
+(these are reset if a successful login occurred).</p>
 </div>
 <div class="section" id="your-custom-security">
 <h2>Your Custom Security<a class="headerlink" href="#your-custom-security" title="Permalink to this headline">¶</a></h2>
@@ -177,7 +191,7 @@ If you want to add, for example, actions to the list of users you can do it in a
 <p>First i advise you to create security.py and add the following to it:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">redirect</span>
 <span class="kn">from</span> <span class="nn">flask_appbuilder.security.views</span> <span class="kn">import</span> <span class="n">UserDBModelView</span>
-<span class="kn">from</span> <span class="nn">flask_appbuilder.security.manager</span> <span class="kn">import</span> <span class="n">SecurityManager</span>
+<span class="kn">from</span> <span class="nn">flask_appbuilder.security.sqla.manager</span> <span class="kn">import</span> <span class="n">SecurityManager</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.actions</span> <span class="kn">import</span> <span class="n">action</span>
 
 
@@ -208,7 +222,81 @@ If you want to add, for example, actions to the list of users you can do it in a
 <p>You can extend or create from scratch your own, and then tell F.A.B. to use them instead, by overriding their
 correspondent lower case properties on <strong>SecurityManager</strong> (just like on the given example).</p>
 <p>Take a look and run the example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/employees">Employees example</a></p>
-<p>Study the source code of <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/blob/master/flask_appbuilder/security/manager.py">SecurityManager</a></p>
+<p>Study the source code of <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/blob/master/flask_appbuilder/security/manager.py">BaseSecurityManager</a></p>
+</div>
+<div class="section" id="extending-the-user-model">
+<h2>Extending the User Model<a class="headerlink" href="#extending-the-user-model" title="Permalink to this headline">¶</a></h2>
+<p>If you want to extend the <strong>User</strong> Model with extra columns specific to your application (since 1.3.0) you
+can easily do it. Use the same type of approach as explained earlier.</p>
+<p>First extend the User Model (create a sec_models.py file):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.security.sqla.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Table</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span><span class="p">,</span> <span class="n">backref</span>
+<span class="kn">from</span> <span class="nn">flask_appbuilder</span> <span class="kn">import</span> <span class="n">Model</span>
+
+<span class="k">class</span> <span class="nc">MyUser</span><span class="p">(</span><span class="n">User</span><span class="p">):</span>
+    <span class="n">extra</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">256</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Next define a new User view, just like the default User view but with the extra column (create a sec_view.py):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.security.views</span> <span class="kn">import</span> <span class="n">UserDBModelView</span>
+<span class="kn">from</span> <span class="nn">flask_babelpkg</span> <span class="kn">import</span> <span class="n">lazy_gettext</span>
+
+<span class="k">class</span> <span class="nc">MyUserDBModelView</span><span class="p">(</span><span class="n">UserDBModelView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View that add DB specifics to User view.</span>
+<span class="sd">        Override to implement your own custom view.</span>
+<span class="sd">        Then override userdbmodelview property on SecurityManager</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">show_fieldsets</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;User info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;active&#39;</span><span class="p">,</span> <span class="s">&#39;roles&#39;</span><span class="p">,</span> <span class="s">&#39;login_count&#39;</span><span class="p">,</span> <span class="s">&#39;extra&#39;</span><span class="p">]}),</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Personal Info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;first_name&#39;</span><span class="p">,</span> <span class="s">&#39;last_name&#39;</span><span class="p">,</span> <span class="s">&#39;email&#39;</span><span class="p">],</span> <span class="s">&#39;expanded&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}),</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Audit Info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;last_login&#39;</span><span class="p">,</span> <span class="s">&#39;fail_login_count&#39;</span><span class="p">,</span> <span class="s">&#39;created_on&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;created_by&#39;</span><span class="p">,</span> <span class="s">&#39;changed_on&#39;</span><span class="p">,</span> <span class="s">&#39;changed_by&#39;</span><span class="p">],</span> <span class="s">&#39;expanded&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">}),</span>
+    <span class="p">]</span>
+
+    <span class="n">user_show_fieldsets</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;User info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;active&#39;</span><span class="p">,</span> <span class="s">&#39;roles&#39;</span><span class="p">,</span> <span class="s">&#39;login_count&#39;</span><span class="p">,</span> <span class="s">&#39;extra&#39;</span><span class="p">]}),</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Personal Info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;first_name&#39;</span><span class="p">,</span> <span class="s">&#39;last_name&#39;</span><span class="p">,</span> <span class="s">&#39;email&#39;</span><span class="p">],</span> <span class="s">&#39;expanded&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}),</span>
+    <span class="p">]</span>
+
+    <span class="n">add_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;first_name&#39;</span><span class="p">,</span> <span class="s">&#39;last_name&#39;</span><span class="p">,</span> <span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;active&#39;</span><span class="p">,</span> <span class="s">&#39;email&#39;</span><span class="p">,</span> <span class="s">&#39;roles&#39;</span><span class="p">,</span> <span class="s">&#39;extra&#39;</span><span class="p">,</span> <span class="s">&#39;password&#39;</span><span class="p">,</span> <span class="s">&#39;conf_password&#39;</span><span class="p">]</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;first_name&#39;</span><span class="p">,</span> <span class="s">&#39;last_name&#39;</span><span class="p">,</span> <span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;email&#39;</span><span class="p">,</span> <span class="s">&#39;active&#39;</span><span class="p">,</span> <span class="s">&#39;roles&#39;</span><span class="p">]</span>
+    <span class="n">edit_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;first_name&#39;</span><span class="p">,</span> <span class="s">&#39;last_name&#39;</span><span class="p">,</span> <span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;active&#39;</span><span class="p">,</span> <span class="s">&#39;email&#39;</span><span class="p">,</span> <span class="s">&#39;roles&#39;</span><span class="p">,</span> <span class="s">&#39;extra&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Next create your own SecurityManager class, overriding your model and view for User (create a sec.py):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.security.sqla.manager</span> <span class="kn">import</span> <span class="n">SecurityManager</span>
+<span class="kn">from</span> <span class="nn">.sec_models</span> <span class="kn">import</span> <span class="n">MyUser</span>
+<span class="kn">from</span> <span class="nn">.sec_views</span> <span class="kn">import</span> <span class="n">MyUserDBModelView</span>
+
+<span class="k">class</span> <span class="nc">MySecurityManager</span><span class="p">(</span><span class="n">SecurityManager</span><span class="p">):</span>
+    <span class="n">user_model</span> <span class="o">=</span> <span class="n">MyUser</span>
+    <span class="n">userdbmodelview</span> <span class="o">=</span> <span class="n">MyUserDBModelView</span>
+</pre></div>
+</div>
+<p>Finally (as shown on the previous example) tell F.A.B. to use your SecurityManager class, so when initializing
+<strong>AppBuilder</strong> (on __init__.py):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">SQLA</span><span class="p">,</span> <span class="n">AppBuilder</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.menu</span> <span class="kn">import</span> <span class="n">Menu</span>
+<span class="kn">from</span> <span class="nn">.sec</span> <span class="kn">import</span> <span class="n">MySecurityManager</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">SQLA</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">Menu</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span> <span class="n">security_manager_class</span><span class="o">=</span><span class="n">MySecurityManager</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">views</span>
+</pre></div>
+</div>
+<p>Now you&#8217;ll have your extended User model as the authenticated user, <em>g.user</em> will have your model with the extra col.</p>
 <p>Some images:</p>
 <a class="reference internal image-reference" href="_images/security.png"><img alt="_images/security.png" src="_images/security.png" style="width: 100%;" /></a>
 </div>
@@ -223,12 +311,13 @@ correspondent lower case properties on <strong>SecurityManager</strong> (just li
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Security</a><ul>
-<li><a class="reference internal" href="#the-authentication-methods">The Authentication methods</a></li>
+<li><a class="reference internal" href="#supported-authentication-types">Supported Authentication Types</a></li>
 <li><a class="reference internal" href="#role-based">Role based</a></li>
 <li><a class="reference internal" href="#permissions">Permissions</a></li>
 <li><a class="reference internal" href="#automatic-cleanup">Automatic Cleanup</a></li>
 <li><a class="reference internal" href="#auditing">Auditing</a></li>
 <li><a class="reference internal" href="#your-custom-security">Your Custom Security</a></li>
+<li><a class="reference internal" href="#extending-the-user-model">Extending the User Model</a></li>
 </ul>
 </li>
 </ul>

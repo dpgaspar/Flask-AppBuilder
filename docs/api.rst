@@ -101,10 +101,10 @@ flask.ext.appbuilder.security
 
 .. automodule:: flask.ext.appbuilder.security.manager
 
-SecurityManager
----------------
+BaseSecurityManager
+-------------------
 
-    .. autoclass:: SecurityManager
+    .. autoclass:: BaseSecurityManager
         :members:
 
 BaseRegisterUser

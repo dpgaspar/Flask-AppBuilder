@@ -56,7 +56,7 @@ Contents:
    i18n
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    security
    user_registration

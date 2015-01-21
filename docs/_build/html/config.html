@@ -78,10 +78,14 @@
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>SQLALCHEMY_DATABASE_URI</td>
-<td>Database connection string</td>
-<td>Yes</td>
+<td>DB connection string (flask-sqlalchemy)</td>
+<td>Cond.</td>
 </tr>
-<tr class="row-odd"><td>AUTH_TYPE = 0 | 1 | 2 | 3</td>
+<tr class="row-odd"><td>MONGODB_SETTINGS</td>
+<td>DB connection string (flask-mongoengine)</td>
+<td>Cond.</td>
+</tr>
+<tr class="row-even"><td>AUTH_TYPE = 0 | 1 | 2 | 3</td>
 <td><dl class="first last docutils">
 <dt>This is the authentication type</dt>
 <dd><ul class="first last">
@@ -103,27 +107,27 @@
 </td>
 <td>Yes</td>
 </tr>
-<tr class="row-even"><td>AUTH_USER_REGISTRATION =
+<tr class="row-odd"><td>AUTH_USER_REGISTRATION =
 True|False</td>
 <td>Set to True to enable user self
 registration</td>
 <td>No</td>
 </tr>
-<tr class="row-odd"><td>AUTH_USER_REGISTRATION_ROLE</td>
+<tr class="row-even"><td>AUTH_USER_REGISTRATION_ROLE</td>
 <td>Set role name, to be assign when a user
 registers himself. This role must already
 exist. Mandatory when using user
 registration</td>
 <td>Cond.</td>
 </tr>
-<tr class="row-even"><td>AUTH_LDAP_SERVER</td>
+<tr class="row-odd"><td>AUTH_LDAP_SERVER</td>
 <td>define your ldap server when AUTH_TYPE=2
 example:
 AUTH_TYPE = 2
 AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8220;</td>
 <td>Cond.</td>
 </tr>
-<tr class="row-odd"><td>AUTH_LDAP_SEARCH</td>
+<tr class="row-even"><td>AUTH_LDAP_SEARCH</td>
 <td>define your ldap server to do indirect
 bind by searching for the bind field.
 Comment out or leave blank to do direct
@@ -134,7 +138,7 @@ AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.
 AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;</td>
 <td>No</td>
 </tr>
-<tr class="row-even"><td>AUTH_LDAP_BIND_FIELD</td>
+<tr class="row-odd"><td>AUTH_LDAP_BIND_FIELD</td>
 <td>if doing an indirect bind to ldap, this
 is the field to bind to.
 Default is &#8220;cn&#8221;.
@@ -145,7 +149,7 @@ AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;
 AUTH_LDAP_BIND_FIELD = &#8220;cn&#8221;</td>
 <td>No</td>
 </tr>
-<tr class="row-odd"><td>AUTH_LDAP_UID_FIELD</td>
+<tr class="row-even"><td>AUTH_LDAP_UID_FIELD</td>
 <td>if doing an indirect bind to ldap, this
 is the field that matches the username
 when searching for the account to bind
@@ -157,7 +161,7 @@ AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;
 AUTH_LDAP_UID_FIELD = &#8220;uid&#8221;</td>
 <td>No</td>
 </tr>
-<tr class="row-even"><td>AUTH_LDAP_FIRSTNAME_FIELD</td>
+<tr class="row-odd"><td>AUTH_LDAP_FIRSTNAME_FIELD</td>
 <td>sets the field in the ldap directory that
 stores the user&#8217;s first name. This field
 is used to propagate user&#8217;s first name
@@ -170,7 +174,7 @@ AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;
 AUTH_LDAP_FIRSTNAME_FIELD = &#8220;givenName&#8221;</td>
 <td>No</td>
 </tr>
-<tr class="row-odd"><td>AUTH_LDAP_LASTNAME_FIELD</td>
+<tr class="row-even"><td>AUTH_LDAP_LASTNAME_FIELD</td>
 <td>sets the field in the ldap directory that
 stores the user&#8217;s last name. This field
 is used to propagate user&#8217;s last name
@@ -183,7 +187,7 @@ AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;
 AUTH_LDAP_LASTNAME_FIELD = &#8220;sn&#8221;</td>
 <td>No</td>
 </tr>
-<tr class="row-even"><td>AUTH_LDAP_EMAIL_FIELD</td>
+<tr class="row-odd"><td>AUTH_LDAP_EMAIL_FIELD</td>
 <td>sets the field in the ldap directory that
 stores the user&#8217;s email address. This
 field is used to propagate user&#8217;s email
@@ -196,54 +200,54 @@ AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;
 AUTH_LDAP_EMAIL_FIELD = &#8220;mail&#8221;</td>
 <td>No</td>
 </tr>
-<tr class="row-odd"><td>AUTH_ROLE_ADMIN</td>
+<tr class="row-even"><td>AUTH_ROLE_ADMIN</td>
 <td>Configure the name of the admin role.</td>
 <td>No</td>
 </tr>
-<tr class="row-even"><td>AUTH_ROLE_PUBLIC</td>
+<tr class="row-odd"><td>AUTH_ROLE_PUBLIC</td>
 <td>Special Role that holds the public
 permissions, no authentication needed.</td>
 <td>No</td>
 </tr>
-<tr class="row-odd"><td>APP_NAME</td>
+<tr class="row-even"><td>APP_NAME</td>
 <td>The name of your application.</td>
 <td>No</td>
 </tr>
-<tr class="row-even"><td>APP_THEME</td>
+<tr class="row-odd"><td>APP_THEME</td>
 <td>Various themes for you to choose
 from (bootwatch).</td>
 <td>No</td>
 </tr>
-<tr class="row-odd"><td>APP_ICON</td>
+<tr class="row-even"><td>APP_ICON</td>
 <td>path of your application icons
 will be shown on the left side of the menu</td>
 <td>No</td>
 </tr>
-<tr class="row-even"><td>UPLOAD_FOLDER</td>
+<tr class="row-odd"><td>UPLOAD_FOLDER</td>
 <td>Files upload folder.
 Mandatory for file uploads.</td>
 <td>No</td>
 </tr>
-<tr class="row-odd"><td>IMG_UPLOAD_FOLDER</td>
+<tr class="row-even"><td>IMG_UPLOAD_FOLDER</td>
 <td>Image upload folder.
 Mandatory for image uploads.</td>
 <td>No</td>
 </tr>
-<tr class="row-even"><td>IMG_UPLOAD_URL</td>
+<tr class="row-odd"><td>IMG_UPLOAD_URL</td>
 <td>Image relative URL.
 Mandatory for image uploads.</td>
 <td>No</td>
 </tr>
-<tr class="row-odd"><td>IMG_SIZE</td>
+<tr class="row-even"><td>IMG_SIZE</td>
 <td>tuple to define image resize.
 (width, height, True|False).</td>
 <td>No</td>
 </tr>
-<tr class="row-even"><td>BABEL_DEFAULT_LOCALE</td>
+<tr class="row-odd"><td>BABEL_DEFAULT_LOCALE</td>
 <td>Babel&#8217;s default language.</td>
 <td>No</td>
 </tr>
-<tr class="row-odd"><td>LANGUAGES</td>
+<tr class="row-even"><td>LANGUAGES</td>
 <td>A dictionary mapping
 the existing languages with the countries
 name and flag</td>

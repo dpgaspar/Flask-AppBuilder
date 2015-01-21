@@ -24,16 +24,35 @@ def dynamic_class_import(class_path):
 
 class AppBuilder(object):
     """
-        This is the base class for the all framework.
+
+
+        This is the base class for all the framework.
+        This is were you will register all your views and create the menu structure.
         Will hold your flask app object, all your views, and security classes.
         
-        initialize your application like this::
-            
+        initialize your application like this for SQLAlchemy::
+
+            from flask import Flask
+            from flask.ext.appbuilder import SQLA, AppBuilder
+
             app = Flask(__name__)
             app.config.from_object('config')
-            db = SQLAlchemy(app)
-            appbuilder = AppBuilder(app, db)
-        
+            db = SQLA(app)
+            appbuilder = AppBuilder(app, db.session)
+
+        When using MongoEngine::
+
+            from flask import Flask
+            from flask_appbuilder import AppBuilder
+            from flask_appbuilder.security.mongoengine.manager import SecurityManager
+            from flask_mongoengine import MongoEngine
+
+            app = Flask(__name__)
+            app.config.from_object('config')
+            dbmongo = MongoEngine(app)
+            appbuilder = AppBuilder(app, security_manager_class=SecurityManager)
+
+        You can also create everything as an application factory.
     """
     baseviews = []
     security_manager_class = None
