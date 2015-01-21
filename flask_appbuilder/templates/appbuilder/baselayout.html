@@ -10,8 +10,9 @@
 
     <div class="container">
       <div class="row">
-
-              {% include 'appbuilder/flash.html' %}
+              {% block messages %}
+                {% include 'appbuilder/flash.html' %}
+              {% endblock %}
               {% block content %}
               {% endblock %}
       </div>

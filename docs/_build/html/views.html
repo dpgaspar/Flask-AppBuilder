@@ -200,9 +200,8 @@ inside it create a file name &#8216;method3.html&#8217;</p>
     <span class="c"># and render template with param</span>
     <span class="n">param1</span> <span class="o">=</span> <span class="s">&#39;Goodbye </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param1</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;method3.html&#39;</span><span class="p">,</span>
-                           <span class="n">param1</span> <span class="o">=</span> <span class="n">param1</span><span class="p">,</span>
-                           <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="s">&#39;method3.html&#39;</span><span class="p">,</span>
+                           <span class="n">param1</span> <span class="o">=</span> <span class="n">param1</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>3 - Create a menu link to your new method:</p>
@@ -219,6 +218,11 @@ Next use <strong>Flask</strong> <strong>render_template</strong> to render your 
 improving UI experience. You must call <em>self.update_redirect()</em> to insert the current url into the
 navigation history. Sometimes you may want to skip the update, for example on form validation errors, so that
 the <em>back</em> operation won&#8217;t send you to the same form, prior to the validation error.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Since version 1.3.0, you must render all your views templates like <em>self.render_template</em> this
+is because the base_template (that can be overridden) and appbuilder are now always passed to the template.</p>
 </div>
 </div>
 <div class="section" id="simpleformview">

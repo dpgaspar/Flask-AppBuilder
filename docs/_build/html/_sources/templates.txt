@@ -1,7 +1,7 @@
 Templates
 =========
 
-F.A.B. uses jinja2, all automatic templates can be overridden entirely or partially.
+F.A.B. uses jinja2, all the framework templates can be overridden entirely or partially.
 This way you can add your own html on jinja2 templates.
 This can be done before or after defined blocks on the page,
 without the need of developing a template from scratch because you just want to add small changes on it.
@@ -10,21 +10,27 @@ Next is a quick description on how you can do this
 CSS and Javascript
 ------------------
 
-Add your own CSS's or javascript application wide.
-Create the following directory structure on your project::
+To add your own CSS's or javascript application wide.
+You will need to tell the framework to use your own base *jinja2* template, this
+template is extended by all the templates. It's very simple, first create your own
+template on you **templates** directory.
 
-    <Project Name>/
-        app/
-            templates/
-                appbuilder/
-                    init.html
-            static/
-                js/
-                    <your js files>
-                css/
-                    <your css files>
+On a simple application structure create *mybase.html* (or whatever name you want)::
 
-Then on init.html add your js files and css files, use **head_css** for css's and **head_js** for javascript::
+    <my_project>
+        <app>
+            __init__.py
+            models.py
+            views.py
+            <templates>
+                **mybase.html**
+
+
+Then on mybase.html add your js files and css files, use **head_css** for css's and **head_js** for javascript.
+These are *jinja2* blocks, F.A.B. uses them so that you can override or extend critical parts of the default
+templates, making it easy to change the UI, without having to develop your own from scratch::
+
+    {% extends 'appbuilder/baselayout.html' %}
 
     {% block head_css %}
         {{ super() }}
@@ -43,6 +49,41 @@ If you want to import your javascript files at the end of the templates use **ta
         {{ super() }}
         <script src="{{url_for('static',filename='js/your_js_file.js')}}"></script>
     {% endblock %}
+
+Finally tell the framework to use it, instead of the default base template,
+when initializing on __init__.py use the *base_template* parameter::
+
+    appbuilder = AppBuilder(app, db.session, base_template='mybase.html')
+
+You have an example that changes the way the menu is displayed on
+`examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quicktemplates>`_
+
+This main structure of jinja2 on the baselayout template is::
+
+        {% block head_meta %}
+            ... HTML Meta
+        {% endblock %}
+        {% block head_css %}
+            ... CSS imports (bootstrap, fontAwesome, select2, fab specific etc...
+        {% endblock %}
+        {% block head_js %}
+            ... JS imports (JQuery, fab specific)
+        {% endblock %}
+        {% block body %}
+            {% block navbar %}
+                ... The navigation bar (Menu)
+            {% endblock %}
+             {% block messages %}
+                ... Where the flask flash messages are shown ("Added row", etc)
+              {% endblock %}
+              {% block content %}
+                ... All the content goes here, forms, lists, index, charts etc..
+              {% endblock %}
+            {% block footer %}
+                ... The footer, by default its almost empty.
+            {% endblock %}
+        {% block tail_js %}
+        {% endblock %}
 
 
 List Templates
@@ -170,7 +211,7 @@ each block:
         - End Block "edit_form"
     - End Block "content"
 
-To insert your template section before the a block, say "edit_form" just create your own template like this:
+To insert your template section before the edit widget, just create your own template like this:
 
 ::
 

@@ -25,7 +25,6 @@ Improvements and Bug fixes on 1.3.0
 - (TODO) - fabmanager create-app para SQLA e MongoDB com diferentes esqueletos.
 - (TODO) - fabmanager support for factory apps.
 - (TODO) - DOCS (Security, custom, templates).
-- (TODO) - Corrigir exemplo simpleview2 (base_template).
 - (TODO) - criar exemplo de utilização de base_template.
 
 Improvements and Bug fixes on 1.2.1
