@@ -52,6 +52,18 @@ There are some breaking features:
 
         INSERT INTO ab_user_role (user_id,role_id) SELECT id,role_id from ab_user;
 
+        If you created a new install with 1.2 (and not earlier) then on postgres and oracle, you will need to rename a few sequences with:
+        
+        alter sequence seq_ab_permission_pk rename to ab_permission_id_seq;
+        alter sequence seq_ab_view_menu_pk rename to ab_view_menu_id_seq;
+        alter sequence seq_permission_view_pk rename to ab_permission_view_id_seq;
+        alter sequence seq_ab_permission_view_role_pk rename to ab_permission_view_role_id_seq;
+        alter sequence seq_ab_role_pk rename to ab_role_id_seq;
+        alter sequence seq_ab_user_role_pk rename to ab_user_role_id_seq;
+        alter sequence seq_ab_user_pk rename to ab_user_id_seq;
+        alter sequence seq_ab_register_user_pk rename to ab_register_user_id_seq;
+        
+        
 2 - Security. If you were already extending security, this is even more encouraged from now on, but internally many things have
 changed. So, modules have changes and changed place, each backend engine will have it's SecurityManager, and views
 are common to all of them. Change:

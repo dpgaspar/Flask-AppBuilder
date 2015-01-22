@@ -69,9 +69,29 @@ conn = engine.connect()
 log.info("Database identified has {0}".format(conn.engine.name))
 check_engine_support(conn)
 
+db.session.remove()
 db.create_all()
 
 conn.execute("INSERT INTO ab_user_role (user_id,role_id) SELECT id,role_id from ab_user")
+
+if conn.engine.name == 'postgresql':
+    sequenceremap={ 'seq_ab_permission_pk':'ab_permission_id_seq',
+                    'seq_ab_view_menu_pk' :'ab_view_menu_id_seq',
+                    'seq_permission_view_pk': 'ab_permission_view_id_seq',
+                    'seq_ab_permission_view_role_pk': 'ab_permission_view_role_id_seq',
+                    'seq_ab_role_pk rename': 'ab_role_id_seq',
+                    'seq_ab_user_role_pk': 'ab_user_role_id_seq',
+                    'seq_ab_user_pk': 'ab_user_id_seq',
+                    'seq_ab_register_user_pk': 'ab_register_user_id_seq'
+                }
+                    
+    for seq in sequenceremap.keys():
+        checksequence=conn.execute("SELECT 0 from pg_class where relname=%s;", seq)
+        if checksequence.fetchone() is not None:            
+            conn.execute("alter sequence %s rename to %s;" % (seq,sequenceremap[seq]))
+    
+
+
 
 #alter_column(conn, User, User.password)
 #add_column(conn, User, User.login_count)
