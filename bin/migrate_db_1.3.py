@@ -17,8 +17,8 @@ logging.getLogger().setLevel(logging.DEBUG)
 log = logging.getLogger('Database Migration to 1.3')
 
 if len(sys.argv) < 2:
-    print "Without typical app structure use parameter to config"
-    print "Use example for sqlite: python migrate_db_1.3.py sqlite:////home/user/application/app.db"
+    log.info("Without typical app structure use parameter to config")
+    log.info("Use example for sqlite: python migrate_db_1.3.py sqlite:////home/user/application/app.db")
     exit()
 con_str = sys.argv[1]
 app = Flask(__name__)
