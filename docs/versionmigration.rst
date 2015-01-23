@@ -31,13 +31,39 @@ There are some breaking features:
 
         1 - *Backup your DB*.
 
-        2 - If you haven't already, upgrade to flask-appbuilder 0.7.0.
+        2 - If you haven't already, upgrade to flask-appbuilder 1.3.0.
 
         3 - issue the corresponding DDL commands to:
 
-        ALTER TABLE ab_user MODIFY COLUMN password VARCHAR(256)
+        CREATE TABLE ab_user_role (
+                    id serial NOT NULL PRIMEY KEY,
+                    user_id integer,
+                    role_id integer
+        );
 
+        
+        For postgres and databases with foreign keys:
 
+        ALTER TABLE ONLY ab_user_role ADD CONSTRAINT ab_user_role_role_id_fkey FOREIGN KEY (role_id) REFERENCES ab_role(id);
+
+        ALTER TABLE ONLY ab_user_role ADD CONSTRAINT ab_user_role_user_id_fkey FOREIGN KEY (user_id) REFERENCES ab_user(id);
+
+        To have all users start with the role they currently are assigned, run:
+
+        INSERT INTO ab_user_role (user_id,role_id) SELECT id,role_id from ab_user;
+
+        If you created a new install with 1.2 (and not earlier) then on postgres and oracle, you will need to rename a few sequences with:
+        
+        alter sequence seq_ab_permission_pk rename to ab_permission_id_seq;
+        alter sequence seq_ab_view_menu_pk rename to ab_view_menu_id_seq;
+        alter sequence seq_permission_view_pk rename to ab_permission_view_id_seq;
+        alter sequence seq_ab_permission_view_role_pk rename to ab_permission_view_role_id_seq;
+        alter sequence seq_ab_role_pk rename to ab_role_id_seq;
+        alter sequence seq_ab_user_role_pk rename to ab_user_role_id_seq;
+        alter sequence seq_ab_user_pk rename to ab_user_id_seq;
+        alter sequence seq_ab_register_user_pk rename to ab_register_user_id_seq;
+        
+        
 2 - Security. If you were already extending security, this is even more encouraged from now on, but internally many things have
 changed. So, modules have changes and changed place, each backend engine will have it's SecurityManager, and views
 are common to all of them. Change:
