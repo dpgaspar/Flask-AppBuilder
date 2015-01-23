@@ -13,9 +13,9 @@ OPENID_PROVIDERS = [
     {'name': 'Flickr', 'url': 'http://www.flickr.com/<username>'},
     {'name': 'MyOpenID', 'url': 'https://www.myopenid.com'}]
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+#SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 #SQLALCHEMY_DATABASE_URI = 'mysql://root:password@localhost/quickhowto'
-#SQLALCHEMY_DATABASE_URI = 'postgresql://fab:password@localhost:5432/quickhowto2'
+SQLALCHEMY_DATABASE_URI = 'postgresql://fab:password@localhost:5432/quickhowto2'
 #SQLALCHEMY_ECHO = True
 
 """

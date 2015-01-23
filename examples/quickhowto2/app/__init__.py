@@ -3,6 +3,7 @@ from flask import Flask
 from flask.ext.appbuilder import SQLA, AppBuilder
 from flask.ext.appbuilder.menu import Menu
 from .sec import MySecurityManager
+from .indexview import MyIndexView
 #from sqlalchemy.engine import Engine
 #from sqlalchemy import event
 
@@ -12,7 +13,10 @@ logging.getLogger().setLevel(logging.DEBUG)
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLA(app)
-appbuilder = AppBuilder(app, db.session, menu=Menu(reverse=False), security_manager_class=MySecurityManager)
+
+
+appbuilder = AppBuilder(app, db.session, indexview=MyIndexView,
+                        menu=Menu(reverse=False), security_manager_class=MySecurityManager)
 
 """
 Only include this for SQLLite constraints
@@ -23,7 +27,6 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
 """    
-from flask import session, request, url_for, redirect, flash
 
 from app import views
 

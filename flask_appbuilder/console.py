@@ -110,6 +110,29 @@ def create_db(app, appbuilder):
     click.echo(click.style('DB objects created', fg='green'))
 
 
+@cli_app.command("upgrade-db")
+@click.option('--config', default='config', help='Your application config file path')
+def upgrade_db(config):
+    """
+        Upgrade your database after F.A.B. upgrade if necessary (SQLAlchemy only)
+
+        Version 1.3.0 upgrade needs database upgrade read version migration on docs for
+        further details.
+    """
+    from flask import Flask
+    from flask_appbuilder import SQLA
+    from flask_appbuilder.security.sqla.models import User
+    app = Flask(__name__)
+    app.config.from_object(config)
+    db = SQLA(app)
+    db.create_all()
+    click.echo(click.style('Beginning user migration', fg='green'))
+    for user in db.session.query(User).all():
+        user.roles.append(user.role)
+        db.session.commit()
+        click.echo(click.style('Altered user {0}'.format(user.username), fg='green'))
+
+
 @cli_app.command("version")
 @click.option('--app', default='app', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
