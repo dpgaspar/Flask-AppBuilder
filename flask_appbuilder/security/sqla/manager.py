@@ -112,7 +112,6 @@ class SecurityManager(BaseSecurityManager):
     def get_all_users(self):
         return self.get_session.query(self.user_model).all()
 
-
     def add_user(self, username, first_name, last_name, email, role, password=''):
         """
             Generic function to create user
@@ -124,6 +123,7 @@ class SecurityManager(BaseSecurityManager):
             user.username = username
             user.email = email
             user.active = True
+            user.role = role
             user.roles.append(role)
             user.password = generate_password_hash(password)
             self.get_session.add(user)

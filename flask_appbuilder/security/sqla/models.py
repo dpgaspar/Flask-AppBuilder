@@ -82,6 +82,8 @@ class User(Model):
     last_login = Column(DateTime)
     login_count = Column(Integer)
     fail_login_count = Column(Integer)
+    role_id = Column(Integer, default=1, ForeignKey('ab_role.id'))
+    role = relationship('Role')
     roles = relationship('Role', secondary=assoc_user_role, backref='user')
     created_on = Column(DateTime, default=datetime.datetime.now, nullable=True)
     changed_on = Column(DateTime, default=datetime.datetime.now, nullable=True)

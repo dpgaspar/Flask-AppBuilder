@@ -112,7 +112,8 @@ def create_db(app, appbuilder):
 
 @cli_app.command("upgrade-db")
 @click.option('--config', default='config', help='Your application config file path')
-def upgrade_db(config):
+@click.option('--backup', default='no', prompt='Have you backup your database?')
+def upgrade_db(config, backup):
     """
         Upgrade your database after F.A.B. upgrade if necessary (SQLAlchemy only)
 
@@ -122,15 +123,47 @@ def upgrade_db(config):
     from flask import Flask
     from flask_appbuilder import SQLA
     from flask_appbuilder.security.sqla.models import User
+
+    if not backup.lower() in ('yes', 'y'):
+        click.echo(click.style('Please backup first', fg='red'))
+        exit(0)
+    sys.path.append(os.getcwd())
+    sequenceremap={ 'seq_ab_permission_pk':'ab_permission_id_seq',
+                    'seq_ab_view_menu_pk' :'ab_view_menu_id_seq',
+                    'seq_permission_view_pk': 'ab_permission_view_id_seq',
+                    'seq_ab_permission_view_role_pk': 'ab_permission_view_role_id_seq',
+                    'seq_ab_role_pk rename': 'ab_role_id_seq',
+                    'seq_ab_user_role_pk': 'ab_user_role_id_seq',
+                    'seq_ab_user_pk': 'ab_user_id_seq',
+                    'seq_ab_register_user_pk': 'ab_register_user_id_seq'
+                }
     app = Flask(__name__)
     app.config.from_object(config)
     db = SQLA(app)
     db.create_all()
-    click.echo(click.style('Beginning user migration', fg='green'))
+    click.echo(click.style('Beginning user migration, hope you have backed up first', fg='green'))
     for user in db.session.query(User).all():
         user.roles.append(user.role)
         db.session.commit()
         click.echo(click.style('Altered user {0}'.format(user.username), fg='green'))
+    if db.engine.name == 'postgresql':
+        click.echo(click.style('Your using PostgreSQL going to change your sequence names', fg='green'))
+        for seq in sequenceremap.keys():
+            try:
+                checksequence=db.engine.execute("SELECT 0 from pg_class where relname=%s;", seq)
+                if checksequence.fetchone() is not None:
+                    db.engine.execute("alter sequence %s rename to %s;" % (seq, sequenceremap[seq]))
+                click.echo(click.style('Altered sequence from {0} {1}'.format(seq,sequenceremap[seq]), fg='green'))
+            except:
+                click.echo(click.style('Error Altering sequence from {0} to {1}'.format(seq,sequenceremap[seq]), fg='red'))
+    if db.engine.name == 'oracle':
+        click.echo(click.style('Your using PostgreSQL going to change your sequence names', fg='green'))
+        for seq in sequenceremap.keys():
+            try:
+                db.engine.execute("rename %s to %s;" % (seq, sequenceremap[seq]))
+                click.echo(click.style('Altered sequence from {0} to {1}'.format(seq, sequenceremap[seq]), fg='green'))
+            except:
+                click.echo(click.style('Error Altering sequence from {0} to {1}'.format(seq, sequenceremap[seq]), fg='red'))
 
 
 @cli_app.command("version")
