@@ -131,24 +131,6 @@ def upgrade_db(config, backup):
         role_id = Column(Integer, ForeignKey('ab_role.id'))
         role = relationship('Role')
 
-    del_column_stmt = {'mysql': 'ALTER TABLE %s DROP COLUMN %s',
-                    'postgresql': 'ALTER TABLE %s DROP COLUMN %s',
-                    'oracle': 'ALTER TABLE %s DROP COLUMN %s',
-                    'mssql': 'ALTER TABLE %s DROP COLUMN %s'}
-
-    def del_column(conn, table, column):
-        try:
-            log.info("Going to alter Column {0} on {1}".format(column_name, table_name))
-            conn.execute(add_column_stmt[conn.engine.name] % (table_name, column_name))
-            log.info("Deleted Column {0} on {1}".format(column_name, table_name))
-        except Exception as e:
-            log.error("Error deleting Column {0} on {1}: {2}".format(column_name, table_name, str(e)))
-
-
-    if not backup.lower() in ('yes', 'y'):
-        click.echo(click.style('Please backup first', fg='red'))
-        exit(0)
-    sys.path.append(os.getcwd())
     sequenceremap={ 'seq_ab_permission_pk':'ab_permission_id_seq',
                     'seq_ab_view_menu_pk' :'ab_view_menu_id_seq',
                     'seq_permission_view_pk': 'ab_permission_view_id_seq',
@@ -158,6 +140,39 @@ def upgrade_db(config, backup):
                     'seq_ab_user_pk': 'ab_user_id_seq',
                     'seq_ab_register_user_pk': 'ab_register_user_id_seq'
                 }
+
+    del_column_stmt = {'mysql': 'ALTER TABLE %s DROP COLUMN %s',
+                    'postgresql': 'ALTER TABLE %s DROP COLUMN %s',
+                    'oracle': 'ALTER TABLE %s DROP COLUMN %s',
+                    'mssql': 'ALTER TABLE %s DROP COLUMN %s'}
+
+    del_foreign_stmt = {'mysql': 'ALTER TABLE %s DROP FOREIGN KEY %s',
+                    'postgresql': 'ALTER TABLE %s DROP CONSTRAINT %s',
+                    'oracle': 'ALTER TABLE %s DROP CONSTRAINT %s',
+                    'mssql': 'ALTER TABLE %s DROP CONSTRAINT %s'}
+
+    def del_column(conn, table, column):
+        try:
+            log.info("Going to delete Column {0} on {1}".format(column_name, table_name))
+            conn.execute(del_column_stmt[conn.engine.name] % (table_name, column_name))
+            log.info("Deleted Column {0} on {1}".format(column_name, table_name))
+        except Exception as e:
+            log.error("Error deleting Column {0} on {1}: {2}".format(column_name, table_name, str(e)))
+
+    def del_foreign_key(conn, table, column):
+        try:
+            log.info("Going to drop FK {0} on {1}".format(column_name, table_name))
+            conn.execute(del_foreign_stmt[conn.engine.name] % (table_name, column_name))
+            log.info("Droped FK {0} on {1}".format(column_name, table_name))
+        except Exception as e:
+            log.error("Error droping FK {0} on {1}: {2}".format(column_name, table_name, str(e)))
+
+
+    if not backup.lower() in ('yes', 'y'):
+        click.echo(click.style('Please backup first', fg='red'))
+        exit(0)
+    sys.path.append(os.getcwd())
+    
     app = Flask(__name__)
     app.config.from_object(config)
     db = SQLA(app)
