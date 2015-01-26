@@ -123,7 +123,6 @@ class SecurityManager(BaseSecurityManager):
             user.username = username
             user.email = email
             user.active = True
-            user.role = role
             user.roles.append(role)
             user.password = generate_password_hash(password)
             self.get_session.add(user)

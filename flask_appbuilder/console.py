@@ -123,6 +123,14 @@ def upgrade_db(config, backup):
     from flask import Flask
     from flask_appbuilder import SQLA
     from flask_appbuilder.security.sqla.models import User
+    from sqlalchemy import Column, Integer, ForeignKey
+    from sqlalchemy.orm import relationship
+
+
+    class UpgProxyUser(User):
+        role_id = Column(Integer, ForeignKey('ab_role.id'))
+        role = relationship('Role')
+
 
     if not backup.lower() in ('yes', 'y'):
         click.echo(click.style('Please backup first', fg='red'))
@@ -141,12 +149,23 @@ def upgrade_db(config, backup):
     app.config.from_object(config)
     db = SQLA(app)
     db.create_all()
+
+    # Upgrade Users append role on roles, allows 1.3.0 multiple roles for user.
     click.echo(click.style('Beginning user migration, hope you have backed up first', fg='green'))
-    for user in db.session.query(User).all():
+    for user in db.session.query(UpgProxyUser).all():
         user.roles.append(user.role)
         db.session.commit()
         click.echo(click.style('Altered user {0}'.format(user.username), fg='green'))
+    db.session.remove()
+
+    # POSTGRESQL
     if db.engine.name == 'postgresql':
+        click.echo(click.style('Your using PostgreSQL going to drop role col and FK', fg='green'))
+        try:
+            db.engine.execute("ALTER TABLE ab_user DROP CONSTRAINT ab_user_role_id_fkey")
+            db.engine.execute("ALTER TABLE ab_user DROP COLUMN role_id")
+        except:
+            click.echo(click.style('Error droping col and fk for User.role', fg='red'))
         click.echo(click.style('Your using PostgreSQL going to change your sequence names', fg='green'))
         for seq in sequenceremap.keys():
             try:
@@ -156,6 +175,7 @@ def upgrade_db(config, backup):
                 click.echo(click.style('Altered sequence from {0} {1}'.format(seq,sequenceremap[seq]), fg='green'))
             except:
                 click.echo(click.style('Error Altering sequence from {0} to {1}'.format(seq,sequenceremap[seq]), fg='red'))
+    # ORACLE
     if db.engine.name == 'oracle':
         click.echo(click.style('Your using PostgreSQL going to change your sequence names', fg='green'))
         for seq in sequenceremap.keys():
