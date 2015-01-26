@@ -185,16 +185,12 @@ def upgrade_db(config, backup):
         db.session.commit()
         click.echo(click.style('Altered user {0}'.format(user.username), fg='green'))
     db.session.remove()
-
+    
+    del_foreign_key(db, 'ab_user', 'ab_user_role_id_fkey')
+    del_column(db, 'ab_user', 'role_id')
+    
     # POSTGRESQL
     if db.engine.name == 'postgresql':
-        click.echo(click.style('Your using PostgreSQL going to drop role col and FK', fg='green'))
-        try:
-            db.engine.execute("ALTER TABLE ab_user DROP CONSTRAINT ab_user_role_id_fkey")
-            db.engine.execute("ALTER TABLE ab_user DROP COLUMN role_id")
-        except:
-            click.echo(click.style('Error droping col and fk for User.role', fg='red'))
-        click.echo(click.style('Your using PostgreSQL going to change your sequence names', fg='green'))
         for seq in sequenceremap.keys():
             try:
                 checksequence=db.engine.execute("SELECT 0 from pg_class where relname=%s;", seq)
