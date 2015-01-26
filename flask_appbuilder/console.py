@@ -131,21 +131,18 @@ def upgrade_db(config, backup):
         role_id = Column(Integer, ForeignKey('ab_role.id'))
         role = relationship('Role')
 
-    del_column_stmt = {'mysql': 'ALTER TABLE %s ADD COLUMN %s %s',
-                   'sqlite': 'ALTER TABLE %s ADD COLUMN %s %s',
-                   'postgresql': 'ALTER TABLE %s ADD COLUMN %s %s'}
+    del_column_stmt = {'mysql': 'ALTER TABLE %s DROP COLUMN %s',
+                    'postgresql': 'ALTER TABLE %s DROP COLUMN %s',
+                    'oracle': 'ALTER TABLE %s DROP COLUMN %s',
+                    'mssql': 'ALTER TABLE %s DROP COLUMN %s'}
 
-
-    def add_column(conn, table, column):
-        table_name = table.__tablename__
-        column_name = column.key
-        column_type = column.type.compile(conn.dialect)
+    def del_column(conn, table, column):
         try:
             log.info("Going to alter Column {0} on {1}".format(column_name, table_name))
-            conn.execute(add_column_stmt[conn.engine.name] % (table_name, column_name, column_type))
-            log.info("Added Column {0} on {1}".format(column_name, table_name))
+            conn.execute(add_column_stmt[conn.engine.name] % (table_name, column_name))
+            log.info("Deleted Column {0} on {1}".format(column_name, table_name))
         except Exception as e:
-            log.error("Error adding Column {0} on {1}: {2}".format(column_name, table_name, str(e)))
+            log.error("Error deleting Column {0} on {1}: {2}".format(column_name, table_name, str(e)))
 
 
     if not backup.lower() in ('yes', 'y'):
