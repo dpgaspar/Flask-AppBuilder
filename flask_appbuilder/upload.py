@@ -161,7 +161,6 @@ class FileUploadField(fields.TextField):
             setattr(obj, name, filename)
 
 
-
 class ImageUploadField(fields.TextField):
     """
         Image upload field.

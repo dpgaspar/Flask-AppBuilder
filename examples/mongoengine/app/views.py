@@ -1,4 +1,5 @@
 import calendar
+from flask import url_for
 from flask.ext.appbuilder import ModelView
 from flask_appbuilder.models.mongoengine.interface import MongoEngineInterface
 from flask_appbuilder.charts.views import GroupByChartView
@@ -18,7 +19,6 @@ class ContactModelView(ModelView):
 class GroupModelView(ModelView):
     datamodel = MongoEngineInterface(ContactGroup)
     related_views = [ContactModelView]
-    base_permissions = ['can_list', 'can_show']
     search_columns = ['name']
 
 

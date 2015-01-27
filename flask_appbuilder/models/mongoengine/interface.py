@@ -4,7 +4,7 @@ from . import filters
 from ..._compat import as_unicode
 from ..base import BaseInterface
 from mongoengine.fields import StringField, IntField, BooleanField, FloatField, \
-    DateTimeField, ReferenceField, ListField
+    DateTimeField, ReferenceField, ListField, FileField
 
 log = logging.getLogger(__name__)
 
@@ -81,6 +81,13 @@ class MongoEngineInterface(BaseInterface):
             return isinstance(self.obj._fields[col_name], DateTimeField)
         except:
             return False
+
+    def is_gridfs_file(self, col_name):
+        try:
+            return isinstance(self.obj._fields[col_name], FileField)
+        except:
+            return False
+
 
     def is_relation(self, col_name):
         try:

@@ -17,6 +17,7 @@ from .upload import (BS3FileUploadFieldWidget,
                      BS3ImageUploadFieldWidget,
                      FileUploadField,
                      ImageUploadField)
+from .models.mongoengine.fields import MongoFileField
 from .validators import Unique
 
 try:
@@ -36,6 +37,7 @@ class FieldConverter(object):
     """
     conversion_table = (('is_image', ImageUploadField, BS3ImageUploadFieldWidget),
                         ('is_file', FileUploadField, BS3FileUploadFieldWidget),
+                        ('is_gridfs_file', MongoFileField, BS3FileUploadFieldWidget),
                         ('is_text', TextAreaField, BS3TextAreaFieldWidget),
                         ('is_string', StringField, BS3TextFieldWidget),
                         ('is_integer', IntegerField, BS3TextFieldWidget),
