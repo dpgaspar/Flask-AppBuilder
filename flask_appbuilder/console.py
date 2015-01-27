@@ -112,12 +112,12 @@ def create_db(app, appbuilder):
 
 @cli_app.command("upgrade-db")
 @click.option('--config', default='config', help='Your application config file path')
-@click.option('--backup', default='no', prompt='Have you backup your database?')
+@click.option('--backup', default='no', prompt='Going to upgrade your DB to version 1.3.0, Did you backup your database?')
 def upgrade_db(config, backup):
     """
         Upgrade your database after F.A.B. upgrade if necessary (SQLAlchemy only)
 
-        Version 1.3.0 upgrade needs database upgrade read version migration on docs for
+        Version 1.3.0 upgrade needs database upgrade, read version migration on docs for
         further details.
     """
     from flask import Flask
@@ -151,21 +151,29 @@ def upgrade_db(config, backup):
                     'oracle': 'ALTER TABLE %s DROP CONSTRAINT %s',
                     'mssql': 'ALTER TABLE %s DROP CONSTRAINT %s'}
 
-    def del_column(conn, table, column):
+    def del_column(conn, table_name, column_name):
         try:
-            log.info("Going to delete Column {0} on {1}".format(column_name, table_name))
-            conn.execute(del_column_stmt[conn.engine.name] % (table_name, column_name))
-            log.info("Deleted Column {0} on {1}".format(column_name, table_name))
+            if conn.engine.name in del_column_stmt:
+                click.echo(click.style("Going to delete Column {0} on {1}".format(column_name, table_name), fg='green'))
+                conn.engine.execute(del_column_stmt[conn.engine.name] % (table_name, column_name))
+                click.echo(click.style("Deleted Column {0} on {1}".format(column_name, table_name), fg='green'))
+            else:
+                click.echo(click.style("Engine {0} not supported for auto upgrade, del column {1}.{2} yourself" \
+                                       .format(conn.engine.name, table_name, column_name), fg='red'))
         except Exception as e:
-            log.error("Error deleting Column {0} on {1}: {2}".format(column_name, table_name, str(e)))
+            click.echo(click.style("Error deleting Column {0} on {1}: {2}".format(column_name, table_name, str(e)), fg='red'))
 
-    def del_foreign_key(conn, table, column):
+    def del_foreign_key(conn, table_name, column_name):
         try:
-            log.info("Going to drop FK {0} on {1}".format(column_name, table_name))
-            conn.execute(del_foreign_stmt[conn.engine.name] % (table_name, column_name))
-            log.info("Droped FK {0} on {1}".format(column_name, table_name))
+            if conn.engine.name in del_foreign_stmt:
+                click.echo(click.style("Going to drop FK {0} on {1}".format(column_name, table_name), fg='green'))
+                conn.engine.execute(del_foreign_stmt[conn.engine.name] % (table_name, column_name))
+                click.echo(click.style("Droped FK {0} on {1}".format(column_name, table_name), fg='green'))
+            else:
+                click.echo(click.style("Engine {0} not supported for auto upgrade, del FK {1}.{2} yourself" \
+                                       .format(conn.engine.name, table_name, column_name), fg='red'))
         except Exception as e:
-            log.error("Error droping FK {0} on {1}: {2}".format(column_name, table_name, str(e)))
+            click.echo(click.style("Error droping FK {0} on {1}: {2}".format(column_name, table_name, str(e)), fg='red'))
 
 
     if not backup.lower() in ('yes', 'y'):
@@ -180,12 +188,21 @@ def upgrade_db(config, backup):
 
     # Upgrade Users append role on roles, allows 1.3.0 multiple roles for user.
     click.echo(click.style('Beginning user migration, hope you have backed up first', fg='green'))
-    for user in db.session.query(UpgProxyUser).all():
-        user.roles.append(user.role)
-        db.session.commit()
-        click.echo(click.style('Altered user {0}'.format(user.username), fg='green'))
+    try:
+        for user in db.session.query(UpgProxyUser).all():
+            user.roles.append(user.role)
+            db.session.commit()
+            click.echo(click.style('Altered user {0}'.format(user.username), fg='green'))
+    except:
+            click.echo(click.style('Error on Upgrade, DB is probably already compliant', fg='green'))
+            exit(0)
     db.session.remove()
-    
+
+    if db.engine.name == 'sqlite':
+        click.echo(click.style('\n------------------\nTo finish the upgrade you must download and execute the following sql\n\
+        Download from https://github.com/dpgaspar/Flask-AppBuilder/tree/master/bin/sqlite_upgrade_1.3.sql', fg='green'))
+        exit(0)
+
     del_foreign_key(db, 'ab_user', 'ab_user_role_id_fkey')
     del_column(db, 'ab_user', 'role_id')
     

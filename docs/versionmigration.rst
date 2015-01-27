@@ -6,11 +6,11 @@ Migrating from 1.2.X to 1.3.X
 
 There are some breaking features:
 
-1 - Security models have changed, user's can have multiple roles, not just one. So you have to migrate you db.
+1 - Security models have changed, user's can have multiple roles, not just one. So you have to upgrade your db.
 
 - The security models schema have changed.
 
-    If you are using sqlite, mysql or pgsql, use the following procedure:
+    If you are using sqlite, mysql, pgsql, mssql or oracle, use the following procedure:
 
         1 - *Backup your DB*.
 
@@ -18,52 +18,16 @@ There are some breaking features:
 
         3 - Issue the following commands, on your project folder where config.py exists::
 
-            cd /your-main-project-folder/
-            wget https://raw.github.com/dpgaspar/Flask-AppBuilder/master/bin/migrate_db_1.3.py
-            python migrate_db_1.3.py
+            $ cd /your-main-project-folder/
+            $ fabmanager upgrade-db
 
         4 - Test and Run (if you have a run.py for development) ::
 
+            $ fabmanager run
 
-            python run.py
+    For **sqlite** you'll have to drop role_id columns and FK yourself. follow the script instructions to finish the upgrade.
 
-    If not (DB is not sqlite, mysql or pgsql), you will have to alter the schema your self. use the following procedure:
 
-        1 - *Backup your DB*.
-
-        2 - If you haven't already, upgrade to flask-appbuilder 1.3.0.
-
-        3 - issue the corresponding DDL commands to:
-
-        CREATE TABLE ab_user_role (
-                    id serial NOT NULL PRIMEY KEY,
-                    user_id integer,
-                    role_id integer
-        );
-
-        
-        For postgres and databases with foreign keys:
-
-        ALTER TABLE ONLY ab_user_role ADD CONSTRAINT ab_user_role_role_id_fkey FOREIGN KEY (role_id) REFERENCES ab_role(id);
-
-        ALTER TABLE ONLY ab_user_role ADD CONSTRAINT ab_user_role_user_id_fkey FOREIGN KEY (user_id) REFERENCES ab_user(id);
-
-        To have all users start with the role they currently are assigned, run:
-
-        INSERT INTO ab_user_role (user_id,role_id) SELECT id,role_id from ab_user;
-
-        If you created a new install with 1.2 (and not earlier) then on postgres and oracle, you will need to rename a few sequences with:
-        
-        alter sequence seq_ab_permission_pk rename to ab_permission_id_seq;
-        alter sequence seq_ab_view_menu_pk rename to ab_view_menu_id_seq;
-        alter sequence seq_permission_view_pk rename to ab_permission_view_id_seq;
-        alter sequence seq_ab_permission_view_role_pk rename to ab_permission_view_role_id_seq;
-        alter sequence seq_ab_role_pk rename to ab_role_id_seq;
-        alter sequence seq_ab_user_role_pk rename to ab_user_role_id_seq;
-        alter sequence seq_ab_user_pk rename to ab_user_id_seq;
-        alter sequence seq_ab_register_user_pk rename to ab_register_user_id_seq;
-        
-        
 2 - Security. If you were already extending security, this is even more encouraged from now on, but internally many things have
 changed. So, modules have changes and changed place, each backend engine will have it's SecurityManager, and views
 are common to all of them. Change:
