@@ -1,5 +1,5 @@
 from wtforms import fields
-from ...upload import BS3FileUploadFieldWidget
+from ...upload import BS3FileUploadFieldWidget, BS3ImageUploadFieldWidget
 from werkzeug.datastructures import FileStorage
 
 try:
@@ -51,3 +51,10 @@ class MongoFileField(fields.FileField):
                 func(self.data.stream,
                      filename=self.data.filename,
                      content_type=self.data.content_type)
+
+
+class MongoImageField(MongoFileField):
+    """
+        GridFS file field.
+    """
+    widget = BS3ImageUploadFieldWidget()

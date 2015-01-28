@@ -1,7 +1,7 @@
 import datetime
 from flask import url_for, Markup
 from mongoengine import Document
-from mongoengine import DateTimeField, StringField, ReferenceField, ListField, FileField
+from mongoengine import DateTimeField, StringField, ReferenceField, ListField, FileField, ImageField
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
@@ -9,6 +9,7 @@ mindate = datetime.date(datetime.MINYEAR, 1, 1)
 class ContactGroup(Document):
     name = StringField(max_length=60, required=True, unique=True)
     file = FileField()
+    image = ImageField(size=(250, 250, True), thumbnail_size=(20, 20, True))
 
     def __unicode__(self):
         return self.name
@@ -18,7 +19,12 @@ class ContactGroup(Document):
 
     def download(self):
         return Markup(
-            '<a href="' + url_for('GroupModelView.download', filename=str(self.file)) + '">Download</a>')
+            '<a href="' + url_for('GroupModelView.mongo_download', pk=str(self.id)) + '">Download {0}</a>'.format(self.file.name))
+
+    def image_show(self):
+        return Markup('<a href="' + url_for('GroupModelView.show',pk=str(self.id)) + \
+                      '" class="thumbnail"><img src="' + url_for('GroupModelView.img',pk=str(self.id)) + \
+                      '" alt="Photo" class="img-rounded img-responsive"></a>')
 
 
 class Gender(Document):

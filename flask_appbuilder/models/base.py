@@ -87,6 +87,9 @@ class BaseInterface(object):
     def is_gridfs_file(self, col_name):
         return False
 
+    def is_gridfs_image(self, col_name):
+        return False
+
     def is_string(self, col_name):
         return False
 

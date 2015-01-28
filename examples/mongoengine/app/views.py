@@ -1,5 +1,6 @@
 import calendar
-from flask import url_for
+from flask_appbuilder import expose, has_access
+from flask import url_for, make_response, Response
 from flask.ext.appbuilder import ModelView
 from flask_appbuilder.models.mongoengine.interface import MongoEngineInterface
 from flask_appbuilder.charts.views import GroupByChartView
@@ -20,7 +21,23 @@ class GroupModelView(ModelView):
     datamodel = MongoEngineInterface(ContactGroup)
     related_views = [ContactModelView]
     search_columns = ['name']
+    show_columns = ['name', 'download']
+    list_columns = ['name', 'download']
 
+    @expose('/mongo_download/<pk>')
+    @has_access
+    def mongo_download(self, pk):
+        item = self.datamodel.get(pk)
+        file = item.file.read()
+        response = make_response(file)
+        response.headers["Content-Disposition"] = "attachment; filename={0}".format(item.file.name)
+        return response
+
+    @expose('/img/<pk>')
+    def img(self, pk):
+        item = self.datamodel.get(pk)
+        mime_type = item.image.content_type
+        return Response(item.image.read(),mimetype=mime_type,direct_passthrough=True)
 
 class TagsModelView(ModelView):
     datamodel = MongoEngineInterface(Tags)
