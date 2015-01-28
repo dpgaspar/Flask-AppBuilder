@@ -18,13 +18,27 @@ class ContactGroup(Document):
         return self.name
 
     def download(self):
-        return Markup(
-            '<a href="' + url_for('GroupModelView.mongo_download', pk=str(self.id)) + '">Download {0}</a>'.format(self.file.name))
+        if self.file:
+            return Markup(
+                '<a href="' + url_for('GroupModelView.mongo_download', pk=str(self.id)) + '">Download {0}</a>'.format(self.file.name))
+        else:
+            return Markup('')
 
     def image_show(self):
-        return Markup('<a href="' + url_for('GroupModelView.show',pk=str(self.id)) + \
+        if self.image:
+            return Markup('<a href="' + url_for('GroupModelView.show',pk=str(self.id)) + \
                       '" class="thumbnail"><img src="' + url_for('GroupModelView.img',pk=str(self.id)) + \
                       '" alt="Photo" class="img-rounded img-responsive"></a>')
+        else:
+            return Markup('')
+
+    def image_thumb(self):
+        if self.image:
+            return Markup('<a href="' + url_for('GroupModelView.show',pk=str(self.id)) + \
+                      '" class="thumbnail"><img src="' + url_for('GroupModelView.img_thumb',pk=str(self.id)) + \
+                      '" alt="Photo" class="img-rounded img-responsive"></a>')
+        else:
+            return Markup('')
 
 
 class Gender(Document):

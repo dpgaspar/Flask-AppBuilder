@@ -114,7 +114,6 @@ class MongoEngineInterface(BaseInterface):
         except:
             return False
 
-
     def is_relation_one_to_one(self, col_name):
         return False
 
@@ -134,7 +133,7 @@ class MongoEngineInterface(BaseInterface):
         try:
             col = self.obj._fields[col_name]
             if col.max_length:
-                return col.max.length
+                return col.max_length
             else:
                 return -1
         except:
@@ -144,7 +143,7 @@ class MongoEngineInterface(BaseInterface):
         try:
             col = self.obj._fields[col_name]
             if col.min_length:
-                return col.min.length
+                return col.min_length
             else:
                 return -1
         except:
