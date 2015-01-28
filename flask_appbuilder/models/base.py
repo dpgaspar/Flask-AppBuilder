@@ -141,6 +141,12 @@ class BaseInterface(object):
     def is_fk(self, col_name):
         return False
 
+    def get_max_length(self, col_name):
+        return -1
+
+    def get_min_length(self, col_name):
+        return -1
+
     """
     -----------------------------------------
            FUNCTIONS FOR CRUD OPERATIONS

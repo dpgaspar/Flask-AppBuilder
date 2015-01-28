@@ -249,6 +249,17 @@ class SQLAInterface(BaseInterface):
         except:
             return False
 
+    def get_max_length(self, col_name):
+        try:
+            col = self.list_columns[col_name]
+            if col.type.length:
+                return col.type.length
+            else:
+                return -1
+        except:
+                return -1
+
+    
 
     """
     -----------------------------------------
