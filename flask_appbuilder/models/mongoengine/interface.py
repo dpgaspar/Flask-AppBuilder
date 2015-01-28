@@ -130,6 +130,26 @@ class MongoEngineInterface(BaseInterface):
     def is_pk(self, col_name):
         return col_name == 'id'
 
+    def get_max_length(self, col_name):
+        try:
+            col = self.obj._fields[col_name]
+            if col.max_length:
+                return col.max.length
+            else:
+                return -1
+        except:
+                return -1
+
+    def get_min_length(self, col_name):
+        try:
+            col = self.obj._fields[col_name]
+            if col.min_length:
+                return col.min.length
+            else:
+                return -1
+        except:
+                return -1
+
     def add(self, item):
         try:
             item.save()

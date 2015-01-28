@@ -151,6 +151,7 @@ class GeneralModelConverter(object):
     def _convert_simple(self, col_name, label, description, lst_validators, form_props):
         max = self.datamodel.get_max_length(col_name)
         min = self.datamodel.get_min_length(col_name)
+        print "MIN %s MAX %s" % (min, max)
         if max != -1 or min != -1:
             lst_validators.append(validators.Length(max=max, min=min))
         if not self.datamodel.is_nullable(col_name):
