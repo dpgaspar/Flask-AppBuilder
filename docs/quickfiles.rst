@@ -1,7 +1,8 @@
 Model Views with Files and Images
 =================================
 
-You can implement views with images or files embedded on the model's definition
+You can implement views with images or files embedded on the model's definition. You can do it using SQLAlchemy or
+MongoDB (MongoEngine). When using SQLAlchemy files and images are saved on the filesystem, on MongoDB on the db.
 
 Define your model (models.py)
 -----------------------------
@@ -47,11 +48,14 @@ Define your Views (views.py)
         list_columns = ['photo_img', 'name']
         show_columns = ['photo_img','name']
 
-Notice that we are overriding the *list_widget*, the widget that is normally used by ModelView. This will display a thumbnail list, excellent for displaying images.
+Notice that we are overriding the *list_widget*, the widget that is normally used by ModelView.
+This will display a thumbnail list, excellent for displaying images.
 
-We are not using the *image* column but the method *photo_img* we have created. This method will display the image and link it to the show view.
+We're not using the *image* column but the method *photo_img* we have created.
+This method will display the image and link it to the show view.
 
-And that's it! images will be saved on the server. Their file names will result in the concatenation of UUID with their original name. They will be resized for optimization.
+And that's it! images will be saved on the server.
+Their file names will result in the concatenation of UUID with their original name. They will be resized for optimization.
 
 .. note::
     You can define image resizing using configuration key *IMG_SIZE*
