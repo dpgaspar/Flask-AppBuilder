@@ -140,6 +140,13 @@ class ImageManager(FileManager):
 
     # Saving
     def save_file(self, data, filename):
+        """
+            Saves an image File
+
+            :param data: FileStorage from Flask form upload field
+            :param filename: Filename with full path
+
+        """
         if data and isinstance(data, FileStorage):
             try:
                 self.image = Image.open(data)
@@ -147,7 +154,7 @@ class ImageManager(FileManager):
                 raise ValidationError('Invalid image: %s' % e)
 
         path = self.get_path(filename)
-
+        # If Path does not exist, create it
         if not op.exists(op.dirname(path)):
             os.makedirs(os.path.dirname(path), self.permission)
 
@@ -175,6 +182,12 @@ class ImageManager(FileManager):
                             format)
 
     def resize(self, image, size):
+        """
+            Resizes the image
+
+            :param image: The image object
+            :param size: size is PIL tuple (width, heigth, force) ex: (200,100,True)
+        """
         (width, height, force) = size
 
         if image.size[0] > width or image.size[1] > height:

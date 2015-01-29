@@ -8,37 +8,12 @@ mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 class ContactGroup(Document):
     name = StringField(max_length=60, required=True, unique=True)
-    file = FileField()
-    image = ImageField(size=(250, 250, True), thumbnail_size=(20, 20, True))
 
     def __unicode__(self):
         return self.name
 
     def __repr__(self):
         return self.name
-
-    def download(self):
-        if self.file:
-            return Markup(
-                '<a href="' + url_for('GroupModelView.mongo_download', pk=str(self.id)) + '">Download {0}</a>'.format(self.file.name))
-        else:
-            return Markup('')
-
-    def image_show(self):
-        if self.image:
-            return Markup('<a href="' + url_for('GroupModelView.show',pk=str(self.id)) + \
-                      '" class="thumbnail"><img src="' + url_for('GroupModelView.img',pk=str(self.id)) + \
-                      '" alt="Photo" class="img-rounded img-responsive"></a>')
-        else:
-            return Markup('')
-
-    def image_thumb(self):
-        if self.image:
-            return Markup('<a href="' + url_for('GroupModelView.show',pk=str(self.id)) + \
-                      '" class="thumbnail"><img src="' + url_for('GroupModelView.img_thumb',pk=str(self.id)) + \
-                      '" alt="Photo" class="img-rounded img-responsive"></a>')
-        else:
-            return Markup('')
 
 
 class Gender(Document):

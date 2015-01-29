@@ -21,29 +21,6 @@ class GroupModelView(ModelView):
     datamodel = MongoEngineInterface(ContactGroup)
     related_views = [ContactModelView]
     search_columns = ['name']
-    show_columns = ['name', 'download', 'image_show']
-    list_columns = ['name', 'download', 'image_thumb']
-
-    @expose('/mongo_download/<pk>')
-    @has_access
-    def mongo_download(self, pk):
-        item = self.datamodel.get(pk)
-        file = item.file.read()
-        response = make_response(file)
-        response.headers["Content-Disposition"] = "attachment; filename={0}".format(item.file.name)
-        return response
-
-    @expose('/img/<pk>')
-    def img(self, pk):
-        item = self.datamodel.get(pk)
-        mime_type = item.image.content_type
-        return Response(item.image.read(),mimetype=mime_type,direct_passthrough=True)
-
-    @expose('/img_thumb/<pk>')
-    def img_thumb(self, pk):
-        item = self.datamodel.get(pk)
-        mime_type = item.image.content_type
-        return Response(item.image.thumbnail.read(),mimetype=mime_type,direct_passthrough=True)
 
 
 class TagsModelView(ModelView):
