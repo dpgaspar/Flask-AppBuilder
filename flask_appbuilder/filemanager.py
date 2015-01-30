@@ -76,6 +76,11 @@ class FileManager(object):
 
 
 class ImageManager(FileManager):
+    """
+        Image Manager will manage your image files referenced on SQLAlchemy Model
+        will save files on IMG_UPLOAD_FOLDER as <uuid>_sep_<filename>
+    """
+
     keep_image_formats = ('PNG',)
 
     def __init__(self, base_path=None,
@@ -93,8 +98,7 @@ class ImageManager(FileManager):
 
         ctx = app_stack.top
         if 'IMG_SIZE' in ctx.app.config and not max_size:
-            max_size = ctx.app.config['IMG_SIZE']
-        self.max_size = max_size or (300, 200, True)
+            self.max_size = ctx.app.config['IMG_SIZE']
 
         if 'IMG_UPLOAD_URL' in ctx.app.config and not relative_path:
             relative_path = ctx.app.config['IMG_UPLOAD_URL']
