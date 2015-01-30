@@ -259,4 +259,4 @@ def uuid_originalname(uuid_filename):
 def thumbgen_filename(filename):
     name, ext = op.splitext(filename)
     return '%s_thumb%s' % (name, ext)
-    
+
