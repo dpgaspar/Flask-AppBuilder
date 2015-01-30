@@ -161,7 +161,7 @@ class FileUploadField(fields.TextField):
             setattr(obj, name, filename)
 
 
-class ImageUploadField(fields.TextField):
+class ImageUploadField(fields.StringField):
     """
         Image upload field.
     """
@@ -174,7 +174,6 @@ class ImageUploadField(fields.TextField):
         self.imagemanager = imagemanager or ImageManager()
         self._should_delete = False
         super(ImageUploadField, self).__init__(label, validators, **kwargs)
-
 
     def pre_validate(self, form):
         if (self.data and
@@ -189,9 +188,10 @@ class ImageUploadField(fields.TextField):
                 self._should_delete = True
         return super(ImageUploadField, self).process(formdata, data)
 
-
     def populate_obj(self, obj, name):
         field = getattr(obj, name, None)
+        size = obj.__mapper__.columns[name].type.size
+        thumbnail_size = obj.__mapper__.columns[name].type.thumbnail_size
         if field:
             # If field should be deleted, clean it up
             if self._should_delete:
@@ -204,7 +204,7 @@ class ImageUploadField(fields.TextField):
                 self.imagemanager.delete_file(field)
 
             filename = self.imagemanager.generate_name(obj, self.data)
-            filename = self.imagemanager.save_file(self.data, filename)
+            filename = self.imagemanager.save_file(self.data, filename, size, thumbnail_size)
 
             setattr(obj, name, filename)
-    
+

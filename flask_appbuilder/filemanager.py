@@ -139,7 +139,7 @@ class ImageManager(FileManager):
             os.remove(path)
 
     # Saving
-    def save_file(self, data, filename):
+    def save_file(self, data, filename, size=None, thumbnail_size=None):
         """
             Saves an image File
 
@@ -147,6 +147,8 @@ class ImageManager(FileManager):
             :param filename: Filename with full path
 
         """
+        max_size = size or self.max_size
+        thumbnail_size = thumbnail_size or self.thumbnail_size
         if data and isinstance(data, FileStorage):
             try:
                 self.image = Image.open(data)
@@ -160,24 +162,25 @@ class ImageManager(FileManager):
 
         # Figure out format
         filename, format = self.get_save_format(filename, self.image)
-        if self.image and (self.image.format != format or self.max_size):
-            if self.max_size:
-                image = self.resize(self.image, self.max_size)
+        if self.image and (self.image.format != format or max_size):
+            if max_size:
+                image = self.resize(self.image, max_size)
             else:
                 image = self.image
             self.save_image(image, self.get_path(filename), format)
         else:
             data.seek(0)
             data.save(path)
-        self.save_thumbnail(data, filename, format)
+        self.save_thumbnail(data, filename, format, thumbnail_size)
 
         return filename
 
-    def save_thumbnail(self, data, filename, format):
-        if self.image and self.thumbnail_size:
+    def save_thumbnail(self, data, filename, format, thumbnail_size=None):
+        thumbnail_size = thumbnail_size or self.thumbnail_size
+        if self.image and thumbnail_size:
             path = self.get_path(self.thumbnail_fn(filename))
 
-            self.save_image(self.resize(self.image, self.thumbnail_size),
+            self.save_image(self.resize(self.image, thumbnail_size),
                             path,
                             format)
 

@@ -24,7 +24,7 @@ class PersonModelView(ModelView):
                      'business_function': 'Business Function',
                      'business_phone': 'Business Phone', 'business_celphone': 'Business Celphone',
                      'business_email': 'Business Email', 'notes': 'Notes', 'person_group': 'Group', 'person_group_id': 'Group'}
-    list_columns = ['photo_img', 'name', 'personal_celphone', 'business_celphone', 'birthday', 'group']
+    list_columns = ['photo_img', 'name', 'personal_celphone', 'business_celphone', 'birthday', 'person_group']
 
     show_fieldsets = [
         ('Summary', {'fields': ['photo_img', 'name', 'address', 'person_group']}),
