@@ -9,8 +9,18 @@ from flask.ext.babelpkg import lazy_gettext as _
 
 
 from app import appbuilder
-from .models import ContactGroup, Contact, Tags
+from .models import ContactGroup, Contact, Tags, Gender
 
+
+
+def fill_gender():
+    try:
+        g1 = Gender(name='Male')
+        g1.save()
+        g2 = Gender(name='Female')
+        g2.save()
+    except:
+        pass
 
 class ContactModelView(ModelView):
     datamodel = MongoEngineInterface(Contact)
@@ -108,4 +118,5 @@ appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", cat
 appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
 
 appbuilder.security_cleanup()
+fill_gender()
 

@@ -16,15 +16,10 @@ class PersonModelView(ModelView):
     add_title = 'Add Contact'
     edit_title = 'Edit Contact'
 
-    list_widget = ListThumbnail
+    #list_widget = ListThumbnail
 
-    label_columns = {'name': 'Name', 'photo': 'Photo', 'photo_img': 'Photo', 'address': 'Address',
-                     'birthday': 'Birthday', 'personal_phone': 'Personal Phone',
-                     'personal_celphone': 'Personal Celphone', 'personal_email': 'Personal Email',
-                     'business_function': 'Business Function',
-                     'business_phone': 'Business Phone', 'business_celphone': 'Business Celphone',
-                     'business_email': 'Business Email', 'notes': 'Notes', 'person_group': 'Group', 'person_group_id': 'Group'}
-    list_columns = ['photo_img', 'name', 'personal_celphone', 'business_celphone', 'birthday', 'person_group']
+    label_columns = {'person_group_id': 'Group', 'photo_img': 'Photo', 'photo_img_thumbnail': 'Photo'}
+    list_columns = ['photo_img_thumbnail', 'name', 'personal_celphone', 'business_celphone', 'birthday', 'person_group']
 
     show_fieldsets = [
         ('Summary', {'fields': ['photo_img', 'name', 'address', 'person_group']}),

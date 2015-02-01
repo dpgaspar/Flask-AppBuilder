@@ -61,7 +61,8 @@
             
   <div class="section" id="model-views-with-files-and-images">
 <h1>Model Views with Files and Images<a class="headerlink" href="#model-views-with-files-and-images" title="Permalink to this headline">¶</a></h1>
-<p>You can implement views with images or files embedded on the model&#8217;s definition</p>
+<p>You can implement views with images or files embedded on the model&#8217;s definition. You can do it using SQLAlchemy or
+MongoDB (MongoEngine). When using SQLAlchemy, files and images are saved on the filesystem, on MongoDB on the db (GridFS).</p>
 <div class="section" id="define-your-model-models-py">
 <h2>Define your model (models.py)<a class="headerlink" href="#define-your-model-models-py" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">Model</span>
@@ -70,22 +71,41 @@
 <span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">photo</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">ImageColumn</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span> <span class="p">)</span>
+    <span class="n">photo</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">ImageColumn</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="bp">True</span><span class="p">),</span> <span class="n">thumbnail_size</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="bp">True</span><span class="p">)))</span>
 
     <span class="k">def</span> <span class="nf">photo_img</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">ImageManager</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;&#39;</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; alt=&quot;Photo&quot; class=&quot;img-rounded img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span>\
+             <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;&#39;</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">)</span> <span class="o">+</span>\
+              <span class="s">&#39;&quot; alt=&quot;Photo&quot; class=&quot;img-rounded img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span>\
+             <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">photo_img_thumbnail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">ImageManager</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span>\
+             <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;&#39;</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">get_url_thumbnail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">)</span> <span class="o">+</span>\
+              <span class="s">&#39;&quot; alt=&quot;Photo&quot; class=&quot;img-rounded img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span>\
+             <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Create an additional method in this case <em>photo_img</em>, to inject your own custom HTML, to show your saved images. In this example the customized method is showing the images, and linking them with the show view.</p>
-<p>Later reference this method like it&#8217;s a column on your view.</p>
+<p>Create two additional methods in this case <em>photo_img</em> and <em>photo_img_thumbnail</em>, to inject your own custom HTML,
+to show your saved images. In this example the customized method is showing the images, and linking them with the show view.
+Notice how the methods are calling <em>get_url</em> and <em>get_url_thumbnail</em> from ImageManager, these are returning the
+url for the images, each image is saved on the filesystem using the global config <strong>IMG_UPLOAD_FOLDER</strong>.
+Each image will have two files with different sizes, images are saved as &lt;uuid&gt;_sep_&lt;filename&gt;, and &lt;uuid&gt;_sep_&lt;filename&gt;_thumb</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The &#8220;ImageColumn&#8221; type, is an extended type from Flask-AppBuilder.</p>
 </div>
+<p>Later reference this method like it&#8217;s a column on your view.</p>
+<p>To implement image or file support using GridFS from MongoDB is even easier, take a look at the example:</p>
+<p><a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/mongoimages">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/mongoimages</a></p>
 </div>
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
@@ -97,14 +117,17 @@
 
     <span class="n">list_widget</span> <span class="o">=</span> <span class="n">ListThumbnail</span>
 
-    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;Name&#39;</span><span class="p">,</span><span class="s">&#39;photo&#39;</span><span class="p">:</span><span class="s">&#39;Photo&#39;</span><span class="p">,</span><span class="s">&#39;photo_img&#39;</span><span class="p">:</span><span class="s">&#39;Photo&#39;</span><span class="p">}</span>
-    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;photo_img&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">]</span>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;Name&#39;</span><span class="p">,</span><span class="s">&#39;photo&#39;</span><span class="p">:</span><span class="s">&#39;Photo&#39;</span><span class="p">,</span><span class="s">&#39;photo_img&#39;</span><span class="p">:</span><span class="s">&#39;Photo&#39;</span><span class="p">,</span> <span class="s">&#39;photo_img_thumbnail&#39;</span><span class="p">:</span><span class="s">&#39;Photo&#39;</span><span class="p">}</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;photo_img_thumbnail&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">]</span>
     <span class="n">show_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;photo_img&#39;</span><span class="p">,</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Notice that we are overriding the <em>list_widget</em>, the widget that is normally used by ModelView. This will display a thumbnail list, excellent for displaying images.</p>
-<p>We are not using the <em>image</em> column but the method <em>photo_img</em> we have created. This method will display the image and link it to the show view.</p>
-<p>And that&#8217;s it! images will be saved on the server. Their file names will result in the concatenation of UUID with their original name. They will be resized for optimization.</p>
+<p>We are overriding the <em>list_widget</em>, the widget that is normally used by ModelView.
+This will display a thumbnail list, excellent for displaying images.</p>
+<p>We&#8217;re not using the <em>image</em> column but the methods <em>photo_img</em> and <em>photo_img_thumbnail</em> we have created.
+These methods will display the images and link them to show view.</p>
+<p>And that&#8217;s it! images will be saved on the server.
+Their file names will result in the concatenation of UUID with their original name. They will be resized for optimization.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">You can define image resizing using configuration key <em>IMG_SIZE</em></p>

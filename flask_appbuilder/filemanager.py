@@ -130,15 +130,18 @@ class ImageManager(FileManager):
             return filename.filename
         return self.relative_path + filename
 
+    def get_url_thumbnail(self, filename):
+        if isinstance(filename, FileStorage):
+            return filename.filename
+        return self.relative_path + thumbgen_filename(filename)
+
     # Deletion
     def delete_file(self, filename):
         super(ImageManager, self).delete_file(filename)
-
         self.delete_thumbnail(filename)
 
     def delete_thumbnail(self, filename):
         path = self.get_path(self.thumbnail_fn(filename))
-
         if op.exists(path):
             os.remove(path)
 

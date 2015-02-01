@@ -23,6 +23,7 @@ Improvements and Bug fixes on 1.3.0
 - New, AppBuilder.add_link supports endpoint names on href parameter, internally will try to use url_for(href).
 - Fix, Zero division catch on aggregate average function.
 - New, added form validators for field min and max length.
+- New, Image size can be configured per column, ImageColumn support size and thumbnail size parameters.
 - (TODO) - fabmanager create-app para SQLA e MongoDB com diferentes esqueletos.
 - (TODO) - fabmanager support for factory apps.
 

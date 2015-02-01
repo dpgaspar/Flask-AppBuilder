@@ -70,15 +70,16 @@ class Contact(Document):
     def image_show(self):
         if self.image:
             return Markup('<a href="' + url_for('ContactModelView.show',pk=str(self.id)) + \
-                      '" class="thumbnail"><img src="' + url_for('ContactModelView.img',pk=str(self.id)) + \
+                      '" class="thumbnail"><img src="' + url_for('ContactModelView.img', pk=str(self.id)) + \
                       '" alt="Photo" class="img-rounded img-responsive"></a>')
         else:
             return Markup('')
 
     def image_thumb_show(self):
+        print self.image, self.id
         if self.image:
             return Markup('<a href="' + url_for('ContactModelView.show',pk=str(self.id)) + \
-                      '" class="thumbnail"><img src="' + url_for('ContactModelView.img_thumb',pk=str(self.id)) + \
+                      '" class="thumbnail"><img src="' + url_for('ContactModelView.img_thumb', pk=str(self.id)) + \
                       '" alt="Photo" class="img-rounded img-responsive"></a>')
         else:
             return Markup('')

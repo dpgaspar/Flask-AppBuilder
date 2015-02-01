@@ -309,15 +309,22 @@ def babel_compile(target):
 
 @cli_app.command("create-app")
 @click.option('--name', prompt="Your new app name", help="Your application name, directory will have this name")
-def create_app(name):
+@click.option('-engine', prompt="Your engine type, SQLAlchemy or MongoEngine", type=click.Choice(['SQLAlchemy', 'MongoEngine']),
+              default='SQLAlchemy', help='Write your engine type')
+def create_app(name, engine):
     """
         Create a Skeleton application
     """
     try:
-        url = urlopen("https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip")
+        if engine.lower() =='sqlalchemy':
+            url = urlopen("https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip")
+            dirname = "Flask-AppBuilder-Skeleton-master"
+        elif engine.lower() =='mongoengine':
+            url = urlopen("https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-me/archive/master.zip")
+            dirname = "Flask-AppBuilder-Skeleton-me-master"
         zipfile = ZipFile(StringIO(url.read()))
         zipfile.extractall()
-        os.rename("Flask-AppBuilder-Skeleton-master", name)
+        os.rename(dirname, name)
         click.echo(click.style('Downloaded the skeleton app, good coding!', fg='green'))
     except:
         click.echo(click.style('Something went wrong', fg='red'))

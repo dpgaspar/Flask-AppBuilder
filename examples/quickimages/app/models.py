@@ -26,7 +26,7 @@ class Person(Model):
     name =  Column(String(150), unique = True, nullable=False)
     address =  Column(String(564))
     birthday = Column(Date)
-    photo = Column(ImageColumn(thumbnail_size=(10,10,True), size=(300, 300, True)))
+    photo = Column(ImageColumn(thumbnail_size=(30, 30, True), size=(300, 300, True)))
     personal_phone = Column(String(20))
     personal_celphone = Column(String(20))
     personal_email = Column(String(64))
@@ -41,15 +41,20 @@ class Person(Model):
     def photo_img(self):
         im = ImageManager()
         if self.photo:
-            return Markup('<a href="' + url_for('PersonModelView.show',pk=str(self.id)) + '" class="thumbnail"><img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"></a>')
+            return Markup('<a href="' + url_for('PersonModelView.show',pk=str(self.id)) +\
+                          '" class="thumbnail"><img src="' + im.get_url(self.photo) +\
+                          '" alt="Photo" class="img-rounded img-responsive"></a>')
         else:
-            return Markup('<a href="'+ url_for('PersonModelView.show',pk=str(self.id)) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
+            return Markup('<a href="'+ url_for('PersonModelView.show',pk=str(self.id)) +\
+                          '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
 
-
-    def photo_img(self):
+    def photo_img_thumbnail(self):
         im = ImageManager()
         if self.photo:
-            return Markup('<a href="' + url_for('PersonModelView.show',pk=str(self.id)) + '" class="thumbnail"><img src="' + im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"></a>')
+            return Markup('<a href="' + url_for('PersonModelView.show',pk=str(self.id)) +\
+                          '" class="thumbnail"><img src="' + im.get_url_thumbnail(self.photo) +\
+                          '" alt="Photo" class="img-rounded img-responsive"></a>')
         else:
-            return Markup('<a href="'+ url_for('PersonModelView.show',pk=str(self.id)) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
+            return Markup('<a href="'+ url_for('PersonModelView.show',pk=str(self.id)) +\
+                          '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
         
