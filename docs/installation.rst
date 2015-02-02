@@ -81,7 +81,7 @@ Using pip
         Repeat for confirmation:
 
     .. note:: There are two type of skeletons available you can choose from SQLAlchemy default or MongoEngine for
-    MongoDB. To use the MongoEngine skeleton you need to install flask-mongoengine extension.
+            MongoDB. **To use the MongoEngine skeleton you need to install flask-mongoengine extension.**
 
     The framework will immediately insert all possible permissions on the database, these will be associated with
     the *Admin* role that belongs to the *admin* user you just created. Your ready to run:
