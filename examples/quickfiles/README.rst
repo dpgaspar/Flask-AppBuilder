@@ -1,15 +1,15 @@
-Base Skeleton to start your application using Flask-AppBuilder
---------------------------------------------------------------
+SQLAlchemy and Files Example
+----------------------------
 
-- Install it::
+Simple application using file upload and download associated with projects.
 
-	pip install flask-appbuilder
-	git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
+Create an Admin user::
 
-- Run it::
-
-	python run.py
+    $ fabmanager create-admin
 
 
-That's it!!
+Run it::
+
+    $ fabmanager run
+
 
