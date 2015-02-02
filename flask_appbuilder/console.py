@@ -328,7 +328,7 @@ def create_app(name, engine):
         click.echo(click.style('Downloaded the skeleton app, good coding!', fg='green'))
     except:
         click.echo(click.style('Something went wrong', fg='red'))
-        click.echo(click.style('Try downloading from https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip', fg='green'))
+        click.echo(click.style('Try downloading from {0}'.format(url), fg='green'))
 
 def cli():
     cli_app()

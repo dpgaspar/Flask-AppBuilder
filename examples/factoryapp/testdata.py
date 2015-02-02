@@ -3,12 +3,7 @@ from flask.ext.appbuilder import SQLA
 from app.models import ContactGroup, Gender, Contact
 import random
 from datetime import datetime
-
-app = Flask(__name__)
-app.config.from_object('config')
-db = SQLA(app)
-db.create_all()
-
+from app import db
 
 
 def get_random_name(names_list, size=1):
@@ -54,3 +49,7 @@ for i in range(1, 50):
         print("inserted {0}".format(c))
     except:
         db.session.rollback()
+
+#role_admin = appbuilder.sm.find_role(appbuilder.sm.auth_role_admin)
+#appbuilder.sm.add_user('admin', 'Admin', 'User', 'admin@fab.org', role_admin, 'general')
+
