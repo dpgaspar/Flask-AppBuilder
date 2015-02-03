@@ -27,6 +27,7 @@ Contents:
 
    intro
    installation
+   fabmanager
    config
 
 .. toctree::
