@@ -47,6 +47,7 @@ Includes:
 
   - Database
       - SQLAlchemy, multiple database support: sqlite, MySQL, ORACLE, MSSQL, DB2 etc.
+      - Partial support for MongoDB using MongoEngine.
       - Multiple database connections support (Vertical partitioning).
       - Easy mixin audit to models (created/changed by user, and timestamps).
   - Security
