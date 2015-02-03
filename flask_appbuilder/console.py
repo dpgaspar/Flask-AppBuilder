@@ -248,7 +248,7 @@ def version(app, appbuilder):
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 def security_cleanup(app, appbuilder):
     """
-        Flask-AppBuilder package version
+        Cleanup unused permissions from views and roles.
     """
     _appbuilder = import_application(app, appbuilder)
     _appbuilder.security_cleanup()
