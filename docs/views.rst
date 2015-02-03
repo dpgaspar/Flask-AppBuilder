@@ -137,6 +137,8 @@ inside it create a file name 'method3.html'
 
 2 - Add the following method on your *MyView* class::
 
+    from flask import render_template
+    
     @expose('/method3/<string:param1>')
     @has_access
     def method3(self, param1):
