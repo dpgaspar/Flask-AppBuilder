@@ -45,10 +45,9 @@ You're welcome to report bugs, propose new features, or even better contribute t
 Your Projects
 -------------
 
-If you would like to share your projects built with F.A.B. and join the list, just send me the link.
+If you would like to share your projects and join the list, just send me the link.
 
-`Flog <http://demo-ninmesara.rhcloud.com/>`_
-
+- `Flog <http://demo-ninmesara.rhcloud.com/>`_
 
 Includes:
 ---------
