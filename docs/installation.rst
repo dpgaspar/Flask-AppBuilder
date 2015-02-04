@@ -5,7 +5,7 @@ Installation is straightforward, using the normal python package install.
 I do advise you to additionally install the base skeleton application
 so that you can immediately have a running application (without any models yet) and an easy to grow boilerplate.
 
-Checkout installation video on `YouTube <http://youtu.be/ZrqFDroqqWE>`_
+Checkout installation video on `YouTube <http://youtu.be/xvum4vfwldg>`_
 
 Using pip
 ---------
