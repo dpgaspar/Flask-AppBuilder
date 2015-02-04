@@ -42,6 +42,14 @@ You're welcome to report bugs, propose new features, or even better contribute t
 
 `Contribute <https://github.com/dpgaspar/Flask-AppBuilder/fork>`_
 
+Your Projects
+-------------
+
+If you would like to share your projects built with F.A.B. and join the list, just send me the link.
+
+`Flog <http://demo-ninmesara.rhcloud.com/>`_
+
+
 Includes:
 ---------
 
@@ -143,6 +151,7 @@ Depends on:
 -----------
 
 - flask
+- click
 - flask-sqlalchemy
 - flask-login
 - flask-openid
