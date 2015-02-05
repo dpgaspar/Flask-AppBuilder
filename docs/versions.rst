@@ -4,12 +4,15 @@ Versions
 Improvements and Bug fixes on 1.3.1
 -----------------------------------
 
+- (TODO) Fix, Charts with multiple series not showing all series.
+- (TODO) Fix, Charts aggregate_avg problem.
 - (TODO) Fix, pt translation for change_by, created_by etc...
 - (TODO) Fix, back buttom on lists moved to first place.
 - (TODO) Fix, pagination start on 1.
 - (TODO) Fix, pagination configurable or step 10.
 - (TODO) Fix, changed menu item "User's Statistics" to "User Statistics".
 - (TODO) Fix, changed menu item "Permission on Views/Menus" to "Permissions on Views/Menus".
+- (TODO) Fix, Relation/No Relation filter labels changed to Only/All But.
 
 Improvements and Bug fixes on 1.3.0
 -----------------------------------
