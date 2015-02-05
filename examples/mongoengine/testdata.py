@@ -38,5 +38,5 @@ for i in range(1, 1000):
     day = random.choice(range(1, 28))
     c.birthday = datetime(year, month, day)
     c.save()
-    print c
+    print("{0} inserted".format(c.name))
 
