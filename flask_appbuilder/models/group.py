@@ -284,6 +284,7 @@ class GroupByProcessData(BaseProcessData):
             data = sorted(data, key=self.attrgetter(*self.group_bys_cols))
         result = []
         for (grouped, items) in groupby(data, key=self.attrgetter(*self.group_bys_cols)):
+            items = list(items)
             result_item = [self.format_columns(grouped)]
             for aggr_by_col in self.aggr_by_cols:
                 result_item.append(aggr_by_col[0](items, aggr_by_col[1]))

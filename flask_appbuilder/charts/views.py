@@ -167,7 +167,7 @@ class GroupByChartView(BaseChartView):
         if not definition:
             definition = self.definitions[0]
         group = self.get_group_by_class(definition)
-        value_columns = group.to_json(group.apply(lst, sort=order_column==''), self.label_columns)
+        value_columns = group.to_json(group.apply(lst, sort=order_column == ''), self.label_columns)
         widgets['chart'] = self.chart_widget(route_base=self.route_base,
                                              chart_title=self.chart_title,
                                              chart_type=self.chart_type,
