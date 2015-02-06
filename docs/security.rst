@@ -30,7 +30,7 @@ There are two special roles, you can define their names on the :doc:`config`
 	
 Of course you can create any additional role you want and configure them as you like.
 
-.. notes:: User's with multiple roles is only possible since 1.3.0 version.
+.. note:: User's with multiple roles is only possible since 1.3.0 version.
 
 Permissions
 -----------
