@@ -9,7 +9,7 @@
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.2.0/cerulean/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.2.0/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
@@ -39,7 +39,7 @@
   </head>
   <body>
 
-  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+  <div id="navbar" class="navbar  navbar-default navbar-fixed-top">
     <div class="container">
       <div class="navbar-header">
         <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
@@ -213,7 +213,7 @@
 <span id="appbuilder"></span><h3>AppBuilder<a class="headerlink" href="#module-flask.ext.appbuilder.base" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="flask.ext.appbuilder.base.AppBuilder">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.base.</tt><tt class="descname">AppBuilder</tt><big>(</big><em>app=None</em>, <em>session=None</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>base_template='appbuilder/baselayout.html'</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em>, <em>security_manager_class=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.base.</tt><tt class="descname">AppBuilder</tt><big>(</big><em>app=None</em>, <em>session=None</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>base_template='appbuilder/baselayout.html'</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em>, <em>security_manager_class=None</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/base.html#AppBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the base class for all the framework.
 This is were you will register all your views and create the menu structure.
 Will hold your flask app object, all your views, and security classes.</p>
@@ -242,7 +242,7 @@ Will hold your flask app object, all your views, and security classes.</p>
 <p>You can also create everything as an application factory.</p>
 <dl class="method">
 <dt id="flask.ext.appbuilder.base.AppBuilder.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>app=None</em>, <em>session=None</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>base_template='appbuilder/baselayout.html'</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em>, <em>security_manager_class=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.__init__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__init__</tt><big>(</big><em>app=None</em>, <em>session=None</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>base_template='appbuilder/baselayout.html'</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em>, <em>security_manager_class=None</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/base.html#AppBuilder.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>AppBuilder constructor</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -265,7 +265,7 @@ Will hold your flask app object, all your views, and security classes.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.base.AppBuilder.add_link">
-<tt class="descname">add_link</tt><big>(</big><em>name</em>, <em>href</em>, <em>icon=''</em>, <em>label=''</em>, <em>category=''</em>, <em>category_icon=''</em>, <em>category_label=''</em>, <em>baseview=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.add_link" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add_link</tt><big>(</big><em>name</em>, <em>href</em>, <em>icon=''</em>, <em>label=''</em>, <em>category=''</em>, <em>category_icon=''</em>, <em>category_label=''</em>, <em>baseview=None</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/base.html#AppBuilder.add_link"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.add_link" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add your own links to menu using this method</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -289,7 +289,7 @@ if non provided the view will be accessible as a top menu.</li>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.base.AppBuilder.add_separator">
-<tt class="descname">add_separator</tt><big>(</big><em>category</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.add_separator" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add_separator</tt><big>(</big><em>category</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/base.html#AppBuilder.add_separator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.add_separator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a separator to the menu, you will sequentially create the menu</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -303,7 +303,7 @@ if non provided the view will be accessible as a top menu.</li>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.base.AppBuilder.add_view">
-<tt class="descname">add_view</tt><big>(</big><em>baseview</em>, <em>name</em>, <em>href=''</em>, <em>icon=''</em>, <em>label=''</em>, <em>category=''</em>, <em>category_icon=''</em>, <em>category_label=''</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.add_view" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add_view</tt><big>(</big><em>baseview</em>, <em>name</em>, <em>href=''</em>, <em>icon=''</em>, <em>label=''</em>, <em>category=''</em>, <em>category_icon=''</em>, <em>category_label=''</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/base.html#AppBuilder.add_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.add_view" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add your views associated with menus using this method.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -346,7 +346,7 @@ if non provided the view will be acessible as a top menu.</li>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.base.AppBuilder.add_view_no_menu">
-<tt class="descname">add_view_no_menu</tt><big>(</big><em>baseview</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.add_view_no_menu" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add_view_no_menu</tt><big>(</big><em>baseview</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/base.html#AppBuilder.add_view_no_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.add_view_no_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add your views without creating a menu.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -360,7 +360,7 @@ if non provided the view will be acessible as a top menu.</li>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.base.AppBuilder.app_icon">
-<tt class="descname">app_icon</tt><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.app_icon" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">app_icon</tt><a class="reference internal" href="_modules/flask/ext/appbuilder/base.html#AppBuilder.app_icon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.app_icon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the App icon location</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -374,7 +374,7 @@ if non provided the view will be acessible as a top menu.</li>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.base.AppBuilder.app_name">
-<tt class="descname">app_name</tt><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.app_name" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">app_name</tt><a class="reference internal" href="_modules/flask/ext/appbuilder/base.html#AppBuilder.app_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.app_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the App name</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -388,7 +388,7 @@ if non provided the view will be acessible as a top menu.</li>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.base.AppBuilder.app_theme">
-<tt class="descname">app_theme</tt><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.app_theme" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">app_theme</tt><a class="reference internal" href="_modules/flask/ext/appbuilder/base.html#AppBuilder.app_theme"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.app_theme" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the App theme name</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -402,7 +402,7 @@ if non provided the view will be acessible as a top menu.</li>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.base.AppBuilder.get_app">
-<tt class="descname">get_app</tt><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.get_app" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_app</tt><a class="reference internal" href="_modules/flask/ext/appbuilder/base.html#AppBuilder.get_app"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.get_app" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get current or configured flask app</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -416,7 +416,7 @@ if non provided the view will be acessible as a top menu.</li>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.base.AppBuilder.get_session">
-<tt class="descname">get_session</tt><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.get_session" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_session</tt><a class="reference internal" href="_modules/flask/ext/appbuilder/base.html#AppBuilder.get_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.get_session" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current sqlalchemy session.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -430,7 +430,7 @@ if non provided the view will be acessible as a top menu.</li>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.base.AppBuilder.security_cleanup">
-<tt class="descname">security_cleanup</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.security_cleanup" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">security_cleanup</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/base.html#AppBuilder.security_cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.security_cleanup" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is useful if you have changed the name of your menus or classes,
 changing them will leave behind permissions that are not associated with anything.</p>
 <p>You can use it always or just sometimes to
@@ -441,7 +441,7 @@ that is no longer part of any registered view or menu.</p>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.base.AppBuilder.version">
-<tt class="descname">version</tt><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.version" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">version</tt><a class="reference internal" href="_modules/flask/ext/appbuilder/base.html#AppBuilder.version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current F.A.B. version</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -461,7 +461,7 @@ that is no longer part of any registered view or menu.</p>
 <span id="flask-ext-appbuilder-security-decorators"></span><h2>flask.ext.appbuilder.security.decorators<a class="headerlink" href="#module-flask.ext.appbuilder.security.decorators" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="flask.ext.appbuilder.security.decorators.has_access">
-<tt class="descclassname">flask.ext.appbuilder.security.decorators.</tt><tt class="descname">has_access</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.decorators.has_access" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">flask.ext.appbuilder.security.decorators.</tt><tt class="descname">has_access</tt><big>(</big><em>f</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/decorators.html#has_access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.decorators.has_access" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this decorator to enable granular security permissions to your methods.
 Permissions will be associated to a role, and roles are associated to users.</p>
 <p>By default the permission&#8217;s name is the methods name.</p>
@@ -469,7 +469,7 @@ Permissions will be associated to a role, and roles are associated to users.</p>
 
 <dl class="function">
 <dt id="flask.ext.appbuilder.security.decorators.permission_name">
-<tt class="descclassname">flask.ext.appbuilder.security.decorators.</tt><tt class="descname">permission_name</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.decorators.permission_name" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">flask.ext.appbuilder.security.decorators.</tt><tt class="descname">permission_name</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/decorators.html#permission_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.decorators.permission_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this decorator to override the name of the permission.
 has_access will use the methods name has the permission name
 if you want to override this add this decorator to your methods.
@@ -511,7 +511,7 @@ like on the following example.</p>
 <span id="flask-ext-appbuilder-baseviews"></span><h2>flask.ext.appbuilder.baseviews<a class="headerlink" href="#module-flask.ext.appbuilder.baseviews" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="flask.ext.appbuilder.baseviews.expose">
-<tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">expose</tt><big>(</big><em>url='/'</em>, <em>methods=('GET'</em>, <em>)</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.expose" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">expose</tt><big>(</big><em>url='/'</em>, <em>methods=('GET'</em>, <em>)</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#expose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.expose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this decorator to expose views on your view classes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -532,7 +532,7 @@ like on the following example.</p>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.baseviews.BaseView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">BaseView</tt><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">BaseView</tt><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#BaseView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView" title="Permalink to this definition">¶</a></dt>
 <dd><p>All views inherit from this class. it&#8217;s constructor will register your exposed urls on flask as a Blueprint.</p>
 <p>This class does not expose any urls, but provides a common base for all views.</p>
 <p>Extend this class if you want to expose methods for your own templates</p>
@@ -549,7 +549,7 @@ Use it like this if you want to restrict your view to readonly:</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseView.create_blueprint">
-<tt class="descname">create_blueprint</tt><big>(</big><em>appbuilder</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.create_blueprint" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">create_blueprint</tt><big>(</big><em>appbuilder</em>, <em>endpoint=None</em>, <em>static_folder=None</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#BaseView.create_blueprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.create_blueprint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create Flask blueprint. You will generally not use it</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -580,13 +580,13 @@ Use it like this if you want to restrict your view to readonly:</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseView.get_redirect">
-<tt class="descname">get_redirect</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.get_redirect" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_redirect</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#BaseView.get_redirect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.get_redirect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the previous url.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseView.render_template">
-<tt class="descname">render_template</tt><big>(</big><em>template</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.render_template" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">render_template</tt><big>(</big><em>template</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#BaseView.render_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.render_template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this method on your own endpoints, will pass the extra_args
 to the templates.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -623,7 +623,7 @@ to the templates.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseView.update_redirect">
-<tt class="descname">update_redirect</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.update_redirect" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">update_redirect</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#BaseView.update_redirect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.update_redirect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call it on your own endpoint&#8217;s to update the back history navigation.
 If you bypass it, the next submit or back will go over it.</p>
 </dd></dl>
@@ -637,7 +637,7 @@ If you bypass it, the next submit or back will go over it.</p>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.baseviews.BaseModelView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">BaseModelView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">BaseModelView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#BaseModelView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class of ModelView and ChartView, all properties are inherited
 Customize ModelView and ChartView overriding this properties</p>
 <dl class="attribute">
@@ -723,7 +723,7 @@ If you want to limit the search (<em>filter</em>) columns possibilities, define 
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">BaseCRUDView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">BaseCRUDView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#BaseCRUDView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for ModelView, all properties are inherited
 Customize ModelView overriding this properties</p>
 <dl class="attribute">
@@ -931,37 +931,37 @@ Use it to control the order of the display</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.post_add">
-<tt class="descname">post_add</tt><big>(</big><em>item</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.post_add" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">post_add</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#BaseCRUDView.post_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.post_add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this, will be called after update</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.post_delete">
-<tt class="descname">post_delete</tt><big>(</big><em>item</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.post_delete" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">post_delete</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#BaseCRUDView.post_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.post_delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this, will be called after delete</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.post_update">
-<tt class="descname">post_update</tt><big>(</big><em>item</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.post_update" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">post_update</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#BaseCRUDView.post_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.post_update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this, will be called after update</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.pre_add">
-<tt class="descname">pre_add</tt><big>(</big><em>item</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.pre_add" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">pre_add</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#BaseCRUDView.pre_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.pre_add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this, will be called before add</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.pre_delete">
-<tt class="descname">pre_delete</tt><big>(</big><em>item</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.pre_delete" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">pre_delete</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#BaseCRUDView.pre_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.pre_delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this, will be called before delete</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.pre_update">
-<tt class="descname">pre_update</tt><big>(</big><em>item</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.pre_update" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">pre_update</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#BaseCRUDView.pre_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.pre_update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this, will be called before update</p>
 </dd></dl>
 
@@ -1036,7 +1036,7 @@ Use it to control the order of the display</p>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.views.IndexView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">IndexView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.IndexView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">IndexView</tt><a class="reference internal" href="_modules/flask/ext/appbuilder/views.html#IndexView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.IndexView" title="Permalink to this definition">¶</a></dt>
 <dd><p>A simple view that implements the index for the site</p>
 </dd></dl>
 
@@ -1047,7 +1047,7 @@ Use it to control the order of the display</p>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.views.SimpleFormView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">SimpleFormView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">SimpleFormView</tt><a class="reference internal" href="_modules/flask/ext/appbuilder/views.html#SimpleFormView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView" title="Permalink to this definition">¶</a></dt>
 <dd><p>View for presenting your own forms
 Inherit from this view to provide some base processing for your customized form views.</p>
 <p>Notice that this class inherits from BaseView so all properties from the parent class can be overridden also.</p>
@@ -1072,13 +1072,13 @@ Inherit from this view to provide some base processing for your customized form 
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.views.SimpleFormView.form_get">
-<tt class="descname">form_get</tt><big>(</big><em>form</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_get" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">form_get</tt><big>(</big><em>form</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/views.html#SimpleFormView.form_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this method to implement your form processing</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.views.SimpleFormView.form_post">
-<tt class="descname">form_post</tt><big>(</big><em>form</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_post" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">form_post</tt><big>(</big><em>form</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/views.html#SimpleFormView.form_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_post" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this method to implement your form processing</p>
 </dd></dl>
 
@@ -1097,7 +1097,7 @@ Inherit from this view to provide some base processing for your customized form 
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.views.PublicFormView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">PublicFormView</tt><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">PublicFormView</tt><a class="reference internal" href="_modules/flask/ext/appbuilder/views.html#PublicFormView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView" title="Permalink to this definition">¶</a></dt>
 <dd><p>View for presenting your own forms
 Inherit from this view to provide some base processing for your customized form views.</p>
 <p>Notice that this class inherits from BaseView so all properties from the parent class can be overridden also.</p>
@@ -1134,13 +1134,13 @@ Inherit from this view to provide some base processing for your customized form 
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.views.PublicFormView.form_get">
-<tt class="descname">form_get</tt><big>(</big><em>form</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView.form_get" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">form_get</tt><big>(</big><em>form</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/views.html#PublicFormView.form_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView.form_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this method to implement your form processing</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.views.PublicFormView.form_post">
-<tt class="descname">form_post</tt><big>(</big><em>form</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView.form_post" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">form_post</tt><big>(</big><em>form</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/views.html#PublicFormView.form_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView.form_post" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this method to implement your form processing</p>
 </dd></dl>
 
@@ -1159,18 +1159,18 @@ Inherit from this view to provide some base processing for your customized form 
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.views.ModelView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">ModelView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.ModelView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">ModelView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/views.html#ModelView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.ModelView" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and list from your database tables, inherit your views from this class.</p>
 <p>Notice that this class inherits from BaseCRUDView and BaseModelView so all properties from the parent class can be overriden.</p>
 <dl class="method">
 <dt id="flask.ext.appbuilder.views.ModelView.action">
-<tt class="descname">action</tt><big>(</big><em>name</em>, <em>pk</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.ModelView.action" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">action</tt><big>(</big><em>name</em>, <em>pk</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/views.html#ModelView.action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.ModelView.action" title="Permalink to this definition">¶</a></dt>
 <dd><p>Action method to handle actions from a show view</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.views.ModelView.action_post">
-<tt class="descname">action_post</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.ModelView.action_post" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">action_post</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/views.html#ModelView.action_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.ModelView.action_post" title="Permalink to this definition">¶</a></dt>
 <dd><p>Action method to handle multiple records selected from a list view</p>
 </dd></dl>
 
@@ -1183,7 +1183,7 @@ Inherit from this view to provide some base processing for your customized form 
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.views.MasterDetailView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">MasterDetailView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.MasterDetailView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">MasterDetailView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/views.html#MasterDetailView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.MasterDetailView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements behaviour for controlling two CRUD views
 linked by PK and FK, in a master/detail type with
 two lists.</p>
@@ -1211,7 +1211,7 @@ two lists.</p>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.views.CompactCRUDMixin">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">CompactCRUDMixin</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.views.CompactCRUDMixin" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.views.</tt><tt class="descname">CompactCRUDMixin</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/views.html#CompactCRUDMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.CompactCRUDMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mix with ModelView to implement a list with add and edit on the same page.</p>
 </dd></dl>
 
@@ -1222,7 +1222,7 @@ two lists.</p>
 <span id="flask-ext-appbuilder-actions"></span><h2>flask.ext.appbuilder.actions<a class="headerlink" href="#module-flask.ext.appbuilder.actions" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="flask.ext.appbuilder.actions.action">
-<tt class="descclassname">flask.ext.appbuilder.actions.</tt><tt class="descname">action</tt><big>(</big><em>name</em>, <em>text</em>, <em>confirmation=None</em>, <em>icon=None</em>, <em>multiple=True</em>, <em>single=True</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.actions.action" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">flask.ext.appbuilder.actions.</tt><tt class="descname">action</tt><big>(</big><em>name</em>, <em>text</em>, <em>confirmation=None</em>, <em>icon=None</em>, <em>multiple=True</em>, <em>single=True</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/actions.html#action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.actions.action" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this decorator to expose actions</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1251,10 +1251,10 @@ unconditionally.</li>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.security.manager.</tt><tt class="descname">BaseSecurityManager</tt><big>(</big><em>appbuilder</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.security.manager.</tt><tt class="descname">BaseSecurityManager</tt><big>(</big><em>appbuilder</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permission">
-<tt class="descname">add_permission</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permission" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add_permission</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.add_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permission" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a permission to the backend, model permission</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1268,7 +1268,7 @@ unconditionally.</li>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permission_role">
-<tt class="descname">add_permission_role</tt><big>(</big><em>role</em>, <em>perm_view</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permission_role" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add_permission_role</tt><big>(</big><em>role</em>, <em>perm_view</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.add_permission_role"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permission_role" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add permission-ViewMenu object to Role</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1286,7 +1286,7 @@ unconditionally.</li>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permission_view_menu">
-<tt class="descname">add_permission_view_menu</tt><big>(</big><em>permission_name</em>, <em>view_menu_name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permission_view_menu" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add_permission_view_menu</tt><big>(</big><em>permission_name</em>, <em>view_menu_name</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.add_permission_view_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permission_view_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a permission on a view or menu to the backend</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1304,7 +1304,7 @@ unconditionally.</li>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permissions_menu">
-<tt class="descname">add_permissions_menu</tt><big>(</big><em>view_menu_name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permissions_menu" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add_permissions_menu</tt><big>(</big><em>view_menu_name</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.add_permissions_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permissions_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds menu_access to menu on permission_view_menu</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1318,7 +1318,7 @@ unconditionally.</li>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permissions_view">
-<tt class="descname">add_permissions_view</tt><big>(</big><em>base_permissions</em>, <em>view_menu</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permissions_view" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add_permissions_view</tt><big>(</big><em>base_permissions</em>, <em>view_menu</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.add_permissions_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permissions_view" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a permission on a view menu to the backend</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1336,13 +1336,13 @@ unconditionally.</li>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.add_user">
-<tt class="descname">add_user</tt><big>(</big><em>username</em>, <em>first_name</em>, <em>last_name</em>, <em>email</em>, <em>role</em>, <em>password=''</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_user" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add_user</tt><big>(</big><em>username</em>, <em>first_name</em>, <em>last_name</em>, <em>email</em>, <em>role</em>, <em>password=''</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.add_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic function to create user</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.add_view_menu">
-<tt class="descname">add_view_menu</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_view_menu" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add_view_menu</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.add_view_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_view_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a view or menu to the backend, model view_menu
 param name:</p>
 <blockquote>
@@ -1351,7 +1351,7 @@ param name:</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_db">
-<tt class="descname">auth_user_db</tt><big>(</big><em>username</em>, <em>password</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_db" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">auth_user_db</tt><big>(</big><em>username</em>, <em>password</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.auth_user_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method for authenticating user, auth db style</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1369,7 +1369,7 @@ param name:</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_ldap">
-<tt class="descname">auth_user_ldap</tt><big>(</big><em>username</em>, <em>password</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_ldap" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">auth_user_ldap</tt><big>(</big><em>username</em>, <em>password</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.auth_user_ldap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_ldap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method for authenticating user, auth LDAP style.
 depends on ldap module that is not mandatory requirement
 for F.A.B.</p>
@@ -1389,7 +1389,7 @@ for F.A.B.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_oid">
-<tt class="descname">auth_user_oid</tt><big>(</big><em>email</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_oid" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">auth_user_oid</tt><big>(</big><em>email</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.auth_user_oid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_oid" title="Permalink to this definition">¶</a></dt>
 <dd><p>OpenID user Authentication</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1401,7 +1401,7 @@ for F.A.B.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_remote_user">
-<tt class="descname">auth_user_remote_user</tt><big>(</big><em>username</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_remote_user" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">auth_user_remote_user</tt><big>(</big><em>username</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.auth_user_remote_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_remote_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>REMOTE_USER user Authentication</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1449,13 +1449,13 @@ for F.A.B.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.count_users">
-<tt class="descname">count_users</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.count_users" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">count_users</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.count_users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.count_users" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic function to count the existing users</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.del_permission">
-<tt class="descname">del_permission</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.del_permission" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">del_permission</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.del_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.del_permission" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes a permission from the backend, model permission</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1469,7 +1469,7 @@ for F.A.B.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.del_permission_role">
-<tt class="descname">del_permission_role</tt><big>(</big><em>role</em>, <em>perm_view</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.del_permission_role" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">del_permission_role</tt><big>(</big><em>role</em>, <em>perm_view</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.del_permission_role"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.del_permission_role" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove permission-ViewMenu object to Role</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1487,7 +1487,7 @@ for F.A.B.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.del_view_menu">
-<tt class="descname">del_view_menu</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.del_view_menu" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">del_view_menu</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.del_view_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.del_view_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes a ViewMenu from the backend</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1501,19 +1501,19 @@ for F.A.B.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.find_permission">
-<tt class="descname">find_permission</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_permission" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">find_permission</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.find_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_permission" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds and returns a Permission by name</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.find_permission_view_menu">
-<tt class="descname">find_permission_view_menu</tt><big>(</big><em>permission_name</em>, <em>view_menu_name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_permission_view_menu" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">find_permission_view_menu</tt><big>(</big><em>permission_name</em>, <em>view_menu_name</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.find_permission_view_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_permission_view_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds and returns a PermissionView by names</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.find_permissions_view_menu">
-<tt class="descname">find_permissions_view_menu</tt><big>(</big><em>view_menu</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_permissions_view_menu" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">find_permissions_view_menu</tt><big>(</big><em>view_menu</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.find_permissions_view_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_permissions_view_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds all permissions from ViewMenu, returns list of PermissionView</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1529,37 +1529,37 @@ for F.A.B.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.find_user">
-<tt class="descname">find_user</tt><big>(</big><em>username=None</em>, <em>email=None</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_user" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">find_user</tt><big>(</big><em>username=None</em>, <em>email=None</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.find_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic function find a user by it&#8217;s username or email</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.find_view_menu">
-<tt class="descname">find_view_menu</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_view_menu" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">find_view_menu</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.find_view_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_view_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds and returns a ViewMenu by name</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.get_all_users">
-<tt class="descname">get_all_users</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_all_users" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_all_users</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.get_all_users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_all_users" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic function that returns all exsiting users</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.get_user_by_id">
-<tt class="descname">get_user_by_id</tt><big>(</big><em>pk</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_user_by_id" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_user_by_id</tt><big>(</big><em>pk</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.get_user_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_user_by_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic function to return user by it&#8217;s id (pk)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.has_access">
-<tt class="descname">has_access</tt><big>(</big><em>permission_name</em>, <em>view_name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.has_access" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">has_access</tt><big>(</big><em>permission_name</em>, <em>view_name</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.has_access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.has_access" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if current user or public has access to view or menu</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.is_item_public">
-<tt class="descname">is_item_public</tt><big>(</big><em>permission_name</em>, <em>view_name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.is_item_public" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">is_item_public</tt><big>(</big><em>permission_name</em>, <em>view_name</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.is_item_public"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.is_item_public" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if view has public permissions</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1619,7 +1619,7 @@ for F.A.B.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.reset_password">
-<tt class="descname">reset_password</tt><big>(</big><em>userid</em>, <em>password</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.reset_password" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">reset_password</tt><big>(</big><em>userid</em>, <em>password</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.reset_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.reset_password" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change/Reset a user&#8217;s password for authdb.
 Password will be hashed and saved.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1650,7 +1650,7 @@ Password will be hashed and saved.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.security_cleanup">
-<tt class="descname">security_cleanup</tt><big>(</big><em>baseviews</em>, <em>menus</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.security_cleanup" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">security_cleanup</tt><big>(</big><em>baseviews</em>, <em>menus</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.security_cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.security_cleanup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Will cleanup from the database all unused permissions</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1668,7 +1668,7 @@ Password will be hashed and saved.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.update_user">
-<tt class="descname">update_user</tt><big>(</big><em>user</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.update_user" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">update_user</tt><big>(</big><em>user</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.update_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.update_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic function to create user</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1682,7 +1682,7 @@ Password will be hashed and saved.</p>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.update_user_auth_stat">
-<tt class="descname">update_user_auth_stat</tt><big>(</big><em>user</em>, <em>success=True</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.update_user_auth_stat" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">update_user_auth_stat</tt><big>(</big><em>user</em>, <em>success=True</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/manager.html#BaseSecurityManager.update_user_auth_stat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.update_user_auth_stat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update authentication successful to user.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1742,7 +1742,7 @@ Password will be hashed and saved.</p>
 <span id="flask-ext-appbuilder-filemanager"></span><h2>flask.ext.appbuilder.filemanager<a class="headerlink" href="#module-flask.ext.appbuilder.filemanager" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="flask.ext.appbuilder.filemanager.get_file_original_name">
-<tt class="descclassname">flask.ext.appbuilder.filemanager.</tt><tt class="descname">get_file_original_name</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.filemanager.get_file_original_name" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">flask.ext.appbuilder.filemanager.</tt><tt class="descname">get_file_original_name</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/filemanager.html#get_file_original_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.filemanager.get_file_original_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this function to get the user&#8217;s original filename.
 Filename is concatenated with &lt;UUID&gt;_sep_&lt;FILE NAME&gt;, to avoid collisions.
 Use this function on your models on an aditional function</p>
@@ -1771,21 +1771,21 @@ Use this function on your models on an aditional function</p>
 <span id="aggr-functions-for-group-by-charts"></span><h2>Aggr Functions for Group By Charts<a class="headerlink" href="#module-flask.ext.appbuilder.models.group" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="flask.ext.appbuilder.models.group.aggregate_count">
-<tt class="descclassname">flask.ext.appbuilder.models.group.</tt><tt class="descname">aggregate_count</tt><big>(</big><em>items</em>, <em>col</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.group.aggregate_count" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">flask.ext.appbuilder.models.group.</tt><tt class="descname">aggregate_count</tt><big>(</big><em>items</em>, <em>col</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/models/group.html#aggregate_count"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.group.aggregate_count" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to use on Group by Charts.
 accepts a list and returns the count of the list&#8217;s items</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="flask.ext.appbuilder.models.group.aggregate_avg">
-<tt class="descclassname">flask.ext.appbuilder.models.group.</tt><tt class="descname">aggregate_avg</tt><big>(</big><em>items</em>, <em>col</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.group.aggregate_avg" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">flask.ext.appbuilder.models.group.</tt><tt class="descname">aggregate_avg</tt><big>(</big><em>items</em>, <em>col</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/models/group.html#aggregate_avg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.group.aggregate_avg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to use on Group by Charts.
 accepts a list and returns the average of the list&#8217;s items</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="flask.ext.appbuilder.models.group.aggregate_sum">
-<tt class="descclassname">flask.ext.appbuilder.models.group.</tt><tt class="descname">aggregate_sum</tt><big>(</big><em>items</em>, <em>col</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.group.aggregate_sum" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">flask.ext.appbuilder.models.group.</tt><tt class="descname">aggregate_sum</tt><big>(</big><em>items</em>, <em>col</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/models/group.html#aggregate_sum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.group.aggregate_sum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to use on Group by Charts.
 accepts a list and returns the sum of the list&#8217;s items</p>
 </dd></dl>
@@ -1798,7 +1798,7 @@ accepts a list and returns the sum of the list&#8217;s items</p>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.charts.views.BaseChartView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">BaseChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.BaseChartView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">BaseChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/charts/views.html#BaseChartView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.charts.views.BaseChartView" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the base class for all chart views. 
 Use SimpleByChartView or GroupByChartView, override their properties and these
 to customise your charts</p>
@@ -1867,7 +1867,7 @@ to customise your charts</p>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.charts.views.DirectByChartView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">DirectByChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.DirectByChartView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">DirectByChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/charts/views.html#DirectByChartView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.charts.views.DirectByChartView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this class to display charts with multiple series,
 based on columns or methods defined on models.
 You can display multiple charts on the same view.</p>
@@ -1930,7 +1930,7 @@ to apply the aggregation</td>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.charts.views.GroupByChartView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">GroupByChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.GroupByChartView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">GroupByChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/charts/views.html#GroupByChartView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.charts.views.GroupByChartView" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
 <dt id="flask.ext.appbuilder.charts.views.GroupByChartView.definitions">
 <tt class="descname">definitions</tt><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.charts.views.GroupByChartView.definitions" title="Permalink to this definition">¶</a></dt>
@@ -1990,7 +1990,7 @@ to apply the aggregation</td>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.charts.views.ChartView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">ChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.ChartView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">ChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/charts/views.html#ChartView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.charts.views.ChartView" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>DEPRECATED</strong></p>
 <p>Provides a simple (and hopefully nice) way to draw charts on your application.</p>
 <p>This will show Google Charts based on group by of your tables.</p>
@@ -2003,7 +2003,7 @@ to apply the aggregation</td>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.charts.views.TimeChartView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">TimeChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.TimeChartView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">TimeChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/charts/views.html#TimeChartView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.charts.views.TimeChartView" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>DEPRECATED</strong></p>
 <p>Provides a simple way to draw some time charts on your application.</p>
 <p>This will show Google Charts based on count and group by month and year for your tables.</p>
@@ -2016,7 +2016,7 @@ to apply the aggregation</td>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.charts.views.DirectChartView">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">DirectChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.charts.views.DirectChartView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.charts.views.</tt><tt class="descname">DirectChartView</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/charts/views.html#DirectChartView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.charts.views.DirectChartView" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>DEPRECATED</strong></p>
 <p>This class is responsible for displaying a Google chart with
 direct model values. Chart widget uses json.
@@ -2037,12 +2037,12 @@ No group by is processed, example:</p>
 <span id="flask-ext-appbuilder-models-mixins"></span><h2>flask.ext.appbuilder.models.mixins<a class="headerlink" href="#module-flask.ext.appbuilder.models.mixins" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="flask.ext.appbuilder.models.mixins.BaseMixin">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.mixins.</tt><tt class="descname">BaseMixin</tt><a class="headerlink" href="#flask.ext.appbuilder.models.mixins.BaseMixin" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.mixins.</tt><tt class="descname">BaseMixin</tt><a class="reference internal" href="_modules/flask/ext/appbuilder/models/mixins.html#BaseMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.mixins.BaseMixin" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
 <dt id="flask.ext.appbuilder.models.mixins.AuditMixin">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.mixins.</tt><tt class="descname">AuditMixin</tt><a class="headerlink" href="#flask.ext.appbuilder.models.mixins.AuditMixin" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.mixins.</tt><tt class="descname">AuditMixin</tt><a class="reference internal" href="_modules/flask/ext/appbuilder/models/mixins.html#AuditMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.mixins.AuditMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>AuditMixin
 Mixin for models, adds 4 columns to stamp, time and user on creation and modification
 will create the following columns:</p>
@@ -2067,7 +2067,7 @@ will create the following columns:</p>
 <blockquote>
 <div><dl class="class">
 <dt id="flask.ext.appbuilder.models.mixins.FileColumn">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.mixins.</tt><tt class="descname">FileColumn</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.mixins.FileColumn" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.mixins.</tt><tt class="descname">FileColumn</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/models/mixins.html#FileColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.mixins.FileColumn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extends SQLAlchemy to support and mostly identify a File Column</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.models.mixins.FileColumn.impl">
@@ -2079,7 +2079,7 @@ will create the following columns:</p>
 
 <dl class="class">
 <dt id="flask.ext.appbuilder.models.mixins.ImageColumn">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.mixins.</tt><tt class="descname">ImageColumn</tt><big>(</big><em>thumbnail_size=(20</em>, <em>20</em>, <em>True)</em>, <em>size=(100</em>, <em>100</em>, <em>True)</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.mixins.ImageColumn" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.mixins.</tt><tt class="descname">ImageColumn</tt><big>(</big><em>thumbnail_size=(20</em>, <em>20</em>, <em>True)</em>, <em>size=(100</em>, <em>100</em>, <em>True)</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/models/mixins.html#ImageColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.mixins.ImageColumn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extends SQLAlchemy to support and mostly identify an Image Column</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.models.mixins.ImageColumn.impl">
@@ -2099,12 +2099,12 @@ will create the following columns:</p>
 <span id="flask-ext-appbuilder-models-generic"></span><h2>flask.ext.appbuilder.models.generic<a class="headerlink" href="#module-flask.ext.appbuilder.models.generic" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="flask.ext.appbuilder.models.generic.GenericColumn">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.generic.</tt><tt class="descname">GenericColumn</tt><big>(</big><em>col_type</em>, <em>primary_key=False</em>, <em>unique=False</em>, <em>nullable=False</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericColumn" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.generic.</tt><tt class="descname">GenericColumn</tt><big>(</big><em>col_type</em>, <em>primary_key=False</em>, <em>unique=False</em>, <em>nullable=False</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/models/generic.html#GenericColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericColumn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
 <dt id="flask.ext.appbuilder.models.generic.GenericModel">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.generic.</tt><tt class="descname">GenericModel</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericModel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.generic.</tt><tt class="descname">GenericModel</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/models/generic.html#GenericModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic Model class to define generic purpose models to use
 with the framework.</p>
 <p>Use GenericSession much like SQLAlchemy&#8217;s Session Class.
@@ -2120,7 +2120,7 @@ Extend GenericSession to implement specific engine features.</p>
 
 <dl class="class">
 <dt id="flask.ext.appbuilder.models.generic.GenericSession">
-<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.generic.</tt><tt class="descname">GenericSession</tt><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">flask.ext.appbuilder.models.generic.</tt><tt class="descname">GenericSession</tt><a class="reference internal" href="_modules/flask/ext/appbuilder/models/generic.html#GenericSession"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class is a base, you should subclass it
 to implement your own generic data source.</p>
 <p>Override at least the <strong>all</strong> method.</p>
@@ -2128,33 +2128,33 @@ to implement your own generic data source.</p>
 based on your data generation on the <strong>all</strong> method.</p>
 <dl class="method">
 <dt id="flask.ext.appbuilder.models.generic.GenericSession.all">
-<tt class="descname">all</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.all" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">all</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/models/generic.html#GenericSession.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.all" title="Permalink to this definition">¶</a></dt>
 <dd><p>SQLA like &#8216;all&#8217; method, will populate all rows and apply all
 filters and orders to it.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.models.generic.GenericSession.clear">
-<tt class="descname">clear</tt><big>(</big><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.clear" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">clear</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/models/generic.html#GenericSession.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes the entire store</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.models.generic.GenericSession.delete_all">
-<tt class="descname">delete_all</tt><big>(</big><em>model_cls</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.delete_all" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">delete_all</tt><big>(</big><em>model_cls</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/models/generic.html#GenericSession.delete_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.delete_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes all objects of type model_cls</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.models.generic.GenericSession.get">
-<tt class="descname">get</tt><big>(</big><em>pk</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.get" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get</tt><big>(</big><em>pk</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/models/generic.html#GenericSession.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the object for the key
 Override it for efficiency.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="flask.ext.appbuilder.models.generic.GenericSession.query">
-<tt class="descname">query</tt><big>(</big><em>model_cls</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.query" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">query</tt><big>(</big><em>model_cls</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/models/generic.html#GenericSession.query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.generic.GenericSession.query" title="Permalink to this definition">¶</a></dt>
 <dd><p>SQLAlchemy query like method</p>
 </dd></dl>
 

@@ -9,7 +9,7 @@
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.2.0/cerulean/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.2.0/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
@@ -39,7 +39,7 @@
   </head>
   <body>
 
-  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+  <div id="navbar" class="navbar  navbar-default navbar-fixed-top">
     <div class="container">
       <div class="navbar-header">
         <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
@@ -259,7 +259,7 @@ additionally add <strong>&#64;has_access</strong> decorator to tell flask that t
 <p>You can find this example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2</a></p>
 <span class="target" id="module-flask.ext.appbuilder.baseviews"></span><dl class="function">
 <dt id="flask.ext.appbuilder.baseviews.expose">
-<tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">expose</tt><big>(</big><em>url='/'</em>, <em>methods=('GET'</em>, <em>)</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.baseviews.expose" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">expose</tt><big>(</big><em>url='/'</em>, <em>methods=('GET'</em>, <em>)</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#expose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.expose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this decorator to expose views on your view classes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -277,7 +277,7 @@ additionally add <strong>&#64;has_access</strong> decorator to tell flask that t
 
 <span class="target" id="module-flask.ext.appbuilder.security.decorators"></span><dl class="function">
 <dt id="flask.ext.appbuilder.security.decorators.has_access">
-<tt class="descclassname">flask.ext.appbuilder.security.decorators.</tt><tt class="descname">has_access</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#flask.ext.appbuilder.security.decorators.has_access" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">flask.ext.appbuilder.security.decorators.</tt><tt class="descname">has_access</tt><big>(</big><em>f</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/decorators.html#has_access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.decorators.has_access" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this decorator to enable granular security permissions to your methods.
 Permissions will be associated to a role, and roles are associated to users.</p>
 <p>By default the permission&#8217;s name is the methods name.</p>
