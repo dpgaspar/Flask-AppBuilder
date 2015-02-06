@@ -47,7 +47,7 @@ Your Projects
 
 If you would like to share your projects and join the list, just send me the link.
 
-- `Flog <http://demo-ninmesara.rhcloud.com/>`_
+- `Flog <http://demo-ninmesara.rhcloud.com/category/about>`_
 
 Includes:
 ---------
