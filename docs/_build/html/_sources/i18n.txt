@@ -13,16 +13,20 @@ F.A.B. has support for seven languages (planning for some more):
  - Russian
  - German
 
-This means that all messages, views and menus generated from the framework can be translated to these languages.
+This means that all messages, builtin on the framework are translated to these languages.
 
-You can add your own translations for your application, using Flask-BabelPkg, this is a fork from Flask-Babel, created because it was not possible to separate package translations from the application translations.
+You can add your own translations for your application, using Flask-BabelPkg, this is a fork from Flask-Babel,
+created because it was not possible to separate package translations from the application translations.
 
-You can add your own translations, and your own language support. Take a look at `Flask-Babel <http://pythonhosted.org/Flask-Babel>`_ for setup an babel initial configuration.  
+You can add your own translations, and your own language support.
+Take a look at `Flask-Babel <http://pythonhosted.org/Flask-Babel>`_ for setup an babel initial configuration.
 
-Babel Quick How to Config
--------------------------
+Initial Configuration
+---------------------
 
-On you projects root create a directory named babel, then create and edit a file named babel.cfg with the following content::
+On you projects root create a directory named babel,
+then create and edit a file named babel.cfg with the following content (this configuration is already made on the
+base skeleton application)::
 
 	[python: **.py]
 	[jinja2: **/templates/**.html]
@@ -30,24 +34,24 @@ On you projects root create a directory named babel, then create and edit a file
 	
 Next extract your strings to be translated, execute on you projects root::
 
-	pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
-	
-Finaly create your translations, for example to portuguese, spanish and german, execute on you projects root::
+    $ fabmanager extract
 
-	pybabel init -i ./babel/messages.pot -d app/translations -l de
+If you want to, or if your using a version prior to 1.3.0 you can use::
+
+	pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
+
+Finally create your translations, for example to portuguese, spanish and german, execute on you projects root::
+
+	pybabel init -i ./babel/messages.pot -d app/translations -l pt
 	pybabel init -i ./babel/messages.pot -d app/translations -l es
 	pybabel init -i ./babel/messages.pot -d app/translations -l de
 
-If your using Flask-AppBuilder-Skeleton use the provided script::
-
-	./babel_init.sh pt
-	./babel_init.sh es
-	./babel_init.sh de
 
 Quick How to
 ------------
 
-Let's work with the contacts application example, so you want to add translations for the menus "List Groups" and "List Contacts".
+Let's work with the contacts application example,
+so you want to add translations for the menus "List Groups" and "List Contacts".
 
 ::
 
@@ -64,13 +68,13 @@ Let's work with the contacts application example, so you want to add translation
     genapp.add_view(ContactModelView(), "List Contacts",icon = "earphone", label=_('List Contacts'),
                         category = "Contacts")
 
-1 - Run the folowing extraction script::
+1 - Run the extraction, from the root directory of your project::
+
+    $ fabmanager extract
+
+If you want to, or if your using a version prior to 1.3.0 you can use::
 
     pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
-    
-    - If your using Flask-AppBuilder-Skeleton use the provided script::
-    
-    	./babel_extract.sh
 
 2 - Make your translations
 
@@ -102,19 +106,11 @@ Let's work with the contacts application example, so you want to add translation
         msgid "List Contacts"
         msgstr "Lista de Contactos"
 
-3 - Run the babel extraction again::
+3 - Compile your translations, from the root directory of your project::
 
-    pybabel update -i ./babel/messages.pot -d app/translations
-	
-	- If your using Flask-AppBuilder-Skeleton use the provided script::
-    
-    	./babel_extract.sh
+    $ fabmanager compile
 
-4 - Run the compilation:
-
-    pybabel compile -d app/translations
-
-5 - Add your language support to the framework
+4 - Add your language support to the framework
 
      - On config tell the framework the languages you support.
        With this you will render a menu with the corresponding country flags.
