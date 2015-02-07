@@ -27,7 +27,7 @@ You can use use this kind of view to implement your own custom pages,
 attached to a menu or linked from any point of your site.
 
 Decorate your url routing methods with **@expose**.
-additionally add **@has_access** decorator to tell flask that this is a security protected method.
+ Additionally add **@has_access** decorator to tell flask that this is a security protected method.
 
 Using the Flask-AppBuilder-Skeleton (take a look at the :doc:`installation` chapter). Edit views.py file and add::
 
