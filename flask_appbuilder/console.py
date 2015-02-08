@@ -9,10 +9,22 @@
 import click
 import os
 import sys
-from StringIO import StringIO
 from zipfile import ZipFile
-from urllib import urlopen
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib2 import urlopen
+try:
+    # Py2
+    from StringIO import StringIO
+except ImportError:
+    # For Python 3.0 and later
+    from io import StringIO
 
+SQLA_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip'
+MONGOENGIE_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-me/archive/master.zip'
 
 def import_application(app_package, appbuilder):
     sys.path.append(os.getcwd())
@@ -309,26 +321,29 @@ def babel_compile(target):
 
 @cli_app.command("create-app")
 @click.option('--name', prompt="Your new app name", help="Your application name, directory will have this name")
-@click.option('-engine', prompt="Your engine type, SQLAlchemy or MongoEngine", type=click.Choice(['SQLAlchemy', 'MongoEngine']),
+@click.option('--engine', prompt="Your engine type, SQLAlchemy or MongoEngine", type=click.Choice(['SQLAlchemy', 'MongoEngine']),
               default='SQLAlchemy', help='Write your engine type')
 def create_app(name, engine):
     """
-        Create a Skeleton application
+        Create a Skeleton application (needs internet connection to github)
     """
     try:
         if engine.lower() =='sqlalchemy':
-            url = urlopen("https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip")
+            url = urlopen(SQLA_REPO_URL)
             dirname = "Flask-AppBuilder-Skeleton-master"
         elif engine.lower() =='mongoengine':
-            url = urlopen("https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-me/archive/master.zip")
+            url = urlopen(MONGOENGIE_REPO_URL)
             dirname = "Flask-AppBuilder-Skeleton-me-master"
         zipfile = ZipFile(StringIO(url.read()))
         zipfile.extractall()
         os.rename(dirname, name)
         click.echo(click.style('Downloaded the skeleton app, good coding!', fg='green'))
-    except:
-        click.echo(click.style('Something went wrong', fg='red'))
-        click.echo(click.style('Try downloading from {0}'.format(url), fg='green'))
+    except Exception as e:
+        click.echo(click.style('Something went wrong {0}'.format(e), fg='red'))
+        if engine.lower() =='sqlalchemy':
+            click.echo(click.style('Try downloading from {0}'.format(SQLA_REPO_URL), fg='green'))
+        elif engine.lower() =='mongoengine':
+            click.echo(click.style('Try downloading from {0}'.format(MONGOENGIE_REPO_URL), fg='green'))
 
 def cli():
     cli_app()

@@ -4,20 +4,16 @@ import os
 import string
 import random
 import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
-from sqlalchemy.orm import relationship
-from flask.ext.appbuilder import Model, SQLA
-from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqual
-from flask_appbuilder.models.mixins import FileColumn, ImageColumn
+from flask_mongoengine import MongoEngine
+from mongoengine import Document
+from mongoengine import IntField, FloatField, DateTimeField, StringField, ReferenceField, ListField, FileField, ImageField
+from flask_appbuilder.models.mongoengine.filters import FilterStartsWith, FilterEqual
 from flask_appbuilder.views import MasterDetailView, CompactCRUDMixin
 from flask_appbuilder.charts.views import (ChartView, TimeChartView,
                                            DirectChartView, GroupByChartView,
                                            DirectByChartView)
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
 
-from flask.ext.appbuilder.models.generic import PSSession
-from flask_appbuilder.models.generic.interface import GenericInterface
-from flask_appbuilder.models.generic import PSModel
 
 import logging
 
@@ -39,27 +35,27 @@ DEFAULT_ADMIN_PASSWORD = 'general'
 log = logging.getLogger(__name__)
 
 
-class Model1(Model):
-    id = Column(Integer, primary_key=True)
-    field_string = Column(String(50), unique=True, nullable=False)
-    field_integer = Column(Integer())
-    field_float = Column(Float())
-    field_date = Column(Date())
-    field_file = FileColumn()
-    field_image = ImageColumn()
+class Model1(Document):
+    field_string = StringField(unique=True, required=True)
+    field_integer = IntField()
+    field_float = FloatField()
+    field_date = DateTimeField()
+    field_file = FileField()
+    field_image = ImageField()
 
     def __repr__(self):
         return str(self.field_string)
 
+    def __unicode__(self):
+        return self.field_string
 
-class Model2(Model):
-    id = Column(Integer, primary_key=True)
-    field_string = Column(String(50), unique=True, nullable=False)
-    field_integer = Column(Integer())
-    field_float = Column(Float())
-    field_date = Column(Date())
-    group_id = Column(Integer, ForeignKey('model1.id'), nullable=False)
-    group = relationship("Model1")
+
+class Model2(Document):
+    field_string = StringField(unique=True, required=True)
+    field_integer = IntField()
+    field_float = FloatField()
+    field_date = DateTimeField()
+    group = ReferenceField(Model1, required=True)
 
     def __repr__(self):
         return str(self.field_string)
@@ -71,30 +67,23 @@ class Model2(Model):
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):
         from flask import Flask
-        from flask.ext.appbuilder import AppBuilder
-        from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
-        from flask.ext.appbuilder.views import ModelView
+        from flask_appbuilder import AppBuilder
+        from flask_appbuilder.models.mongoengine.interface import MongoEngineInterface
+        from flask_appbuilder import ModelView
+        from flask_appbuilder.security.mongoengine.manager import SecurityManager
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'
+        self.app.config['MONGODB_SETTINGS'] = {'DB': 'test'}
         self.app.config['CSRF_ENABLED'] = False
         self.app.config['SECRET_KEY'] = 'thisismyscretkey'
         self.app.config['WTF_CSRF_ENABLED'] = False
 
-        self.db = SQLA(self.app)
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-
-        sess = PSSession()
-
-        class PSView(ModelView):
-            datamodel = GenericInterface(PSModel, sess)
-            base_permissions = ['can_list', 'can_show']
-            list_columns = ['UID', 'C', 'CMD', 'TIME']
-            search_columns = ['UID', 'C', 'CMD']
+        self.db = MongoEngine(self.app)
+        self.appbuilder = AppBuilder(self.app, security_manager_class=SecurityManager)
 
         class Model2View(ModelView):
-            datamodel = SQLAInterface(Model2)
+            datamodel = MongoEngineInterface(Model2)
             list_columns = ['field_integer', 'field_float', 'field_string', 'field_method', 'group.field_string']
 
             edit_form_query_rel_fields = {'group':[['field_string', FilterEqual, 'G2']]}
@@ -102,36 +91,27 @@ class FlaskTestCase(unittest.TestCase):
             add_form_query_rel_fields = {'group':[['field_string', FilterEqual, 'G1']]}
 
         class Model1View(ModelView):
-            datamodel = SQLAInterface(Model1)
+            datamodel = MongoEngineInterface(Model1)
             related_views = [Model2View]
             list_columns = ['field_string','field_file']
 
         class Model1CompactView(CompactCRUDMixin, ModelView):
-            datamodel = SQLAInterface(Model1)
+            datamodel = MongoEngineInterface(Model1)
 
         class Model1Filtered1View(ModelView):
-            datamodel = SQLAInterface(Model1)
+            datamodel = MongoEngineInterface(Model1)
             base_filters = [['field_string', FilterStartsWith, 'a']]
 
-
         class Model1MasterView(MasterDetailView):
-            datamodel = SQLAInterface(Model1)
+            datamodel = MongoEngineInterface(Model1)
             related_views = [Model2View]
 
-
         class Model1Filtered2View(ModelView):
-            datamodel = SQLAInterface(Model1)
+            datamodel = MongoEngineInterface(Model1)
             base_filters = [['field_integer', FilterEqual, 0]]
 
-
-        class Model2ChartView(ChartView):
-            datamodel = SQLAInterface(Model2)
-            chart_title = 'Test Model1 Chart'
-            group_by_columns = ['field_string']
-
-
         class Model2GroupByChartView(GroupByChartView):
-            datamodel = SQLAInterface(Model2)
+            datamodel = MongoEngineInterface(Model2)
             chart_title = 'Test Model1 Chart'
 
             definitions = [
@@ -145,7 +125,7 @@ class FlaskTestCase(unittest.TestCase):
             ]
             
         class Model2DirectByChartView(DirectByChartView):
-            datamodel = SQLAInterface(Model2)
+            datamodel = MongoEngineInterface(Model2)
             chart_title = 'Test Model1 Chart'
 
             definitions = [
@@ -155,22 +135,17 @@ class FlaskTestCase(unittest.TestCase):
                 }
             ]
 
-        class Model2TimeChartView(TimeChartView):
-            datamodel = SQLAInterface(Model2)
-            chart_title = 'Test Model1 Chart'
-            group_by_columns = ['field_date']
-
         class Model2DirectChartView(DirectChartView):
-            datamodel = SQLAInterface(Model2)
+            datamodel = MongoEngineInterface(Model2)
             chart_title = 'Test Model1 Chart'
             direct_columns = {'stat1': ('group', 'field_integer')}
 
         class Model1MasterView(MasterDetailView):
-            datamodel = SQLAInterface(Model1)
+            datamodel = MongoEngineInterface(Model1)
             related_views = [Model2View]
 
         class Model1MasterChartView(MasterDetailView):
-            datamodel = SQLAInterface(Model1)
+            datamodel = MongoEngineInterface(Model1)
             related_views = [Model2DirectByChartView]
 
 
@@ -183,15 +158,15 @@ class FlaskTestCase(unittest.TestCase):
 
         self.appbuilder.add_view(Model2View, "Model2")
         self.appbuilder.add_view(Model2View, "Model2 Add", href='/model2view/add')
-        self.appbuilder.add_view(Model2ChartView, "Model2 Chart")
         self.appbuilder.add_view(Model2GroupByChartView, "Model2 Group By Chart")
         self.appbuilder.add_view(Model2DirectByChartView, "Model2 Direct By Chart")
-        self.appbuilder.add_view(Model2TimeChartView, "Model2 Time Chart")
         self.appbuilder.add_view(Model2DirectChartView, "Model2 Direct Chart")
 
-        self.appbuilder.add_view(PSView, "Generic DS PS View", category='PSView')
         role_admin = self.appbuilder.sm.find_role('Admin')
-        self.appbuilder.sm.add_user('admin','admin','user','admin@fab.org',role_admin,'general')
+        try:
+            self.appbuilder.sm.add_user('admin', 'admin', 'user', 'admin@fab.org', role_admin, 'general')
+        except:
+            pass
 
     def tearDown(self):
         self.appbuilder = None
@@ -218,8 +193,7 @@ class FlaskTestCase(unittest.TestCase):
     def insert_data(self):
         for x, i in zip(string.ascii_letters[:23], range(23)):
             model = Model1(field_string="%stest" % (x), field_integer=i)
-            self.db.session.add(model)
-            self.db.session.commit()
+            model.save()
 
     def insert_data2(self):
         models1 = [Model1(field_string='G1'),
@@ -227,8 +201,7 @@ class FlaskTestCase(unittest.TestCase):
                    Model1(field_string='G3')]
         for model1 in models1:
             try:
-                self.db.session.add(model1)
-                self.db.session.commit()
+                model1.save()
                 for x, i in zip(string.ascii_letters[:10], range(10)):
                     model = Model2(field_string="%stest" % (x),
                                    field_integer=random.randint(1, 10),
@@ -239,31 +212,19 @@ class FlaskTestCase(unittest.TestCase):
                     day = random.choice(range(1, 28))
                     model.field_date = datetime.datetime(year, month, day)
 
-                    self.db.session.add(model)
-                    self.db.session.commit()
+                    model.save()
             except Exception as e:
                 print("ERROR {0}".format(str(e)))                                                      
-                self.db.session.rollback()
 
+    def clean_data(self):
+        Model1.drop_collection()
+        Model2.drop_collection()
 
     def test_fab_views(self):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 25)  # current minimal views are 11
-        
-
-    def test_model_creation(self):
-        """
-            Test Model creation
-        """
-        from sqlalchemy.engine.reflection import Inspector
-
-        engine = self.db.session.get_bind(mapper=None, clause=None)
-        inspector = Inspector.from_engine(engine)
-        # Check if tables exist
-        ok_('model1' in inspector.get_table_names())
-        ok_('model2' in inspector.get_table_names())
+        eq_(len(self.appbuilder.baseviews), 22)  # current minimal views are 11
 
     def test_index(self):
         """
@@ -311,16 +272,18 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test Security reset password
         """
+        from flask_appbuilder.security.mongoengine.models import User
         client = self.app.test_client()
 
         # Try Reset My password
-        rv = client.get('/users/action/resetmypassword/1', follow_redirects=True)
+        user = User.objects.filter(**{'username': 'admin'})[0]
+        rv = client.get('/users/action/resetmypassword/{0}'.format(user.id), follow_redirects=True)
         data = rv.data.decode('utf-8')
         ok_(ACCESS_IS_DENIED in data)
 
         #Reset My password
         rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        rv = client.get('/users/action/resetmypassword/1', follow_redirects=True)
+        rv = client.get('/users/action/resetmypassword/{0}'.format(user.id), follow_redirects=True)
         data = rv.data.decode('utf-8')
         ok_("Reset Password Form" in data)
         rv = client.post('/resetmypassword/form',
@@ -334,7 +297,7 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
 
         #Reset Password Admin
-        rv = client.get('/users/action/resetpasswords/1', follow_redirects=True)
+        rv = client.get('/users/action/resetpasswords/{0}'.format(user.id), follow_redirects=True)
         data = rv.data.decode('utf-8')
         ok_("Reset Password Form" in data)
         rv = client.post('/resetmypassword/form',
@@ -360,30 +323,30 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
-        #with open('test.txt', 'rb') as fp:
         rv = client.post('/model1view/add',
                              data=dict(field_string='test1', field_integer='1',
                                        field_float='0.12',
-                                       field_date='2014-01-01'), follow_redirects=True)
+                                       field_date='2014-01-01 23:10:07'), follow_redirects=True)
         eq_(rv.status_code, 200)
 
-        model = self.db.session.query(Model1).first()
+        model = Model1.objects[0]
         eq_(model.field_string, u'test1')
         eq_(model.field_integer, 1)
 
-        rv = client.post('/model1view/edit/1',
+        model1 = Model1.objects(field_string='test1')[0]
+        rv = client.post('/model1view/edit/{0}'.format(model1.id),
                          data=dict(field_string='test2', field_integer='2'), follow_redirects=True)
         eq_(rv.status_code, 200)
 
-        model = self.db.session.query(Model1).first()
+        model = Model1.objects[0]
         eq_(model.field_string, u'test2')
         eq_(model.field_integer, 2)
 
-        rv = client.get('/model1view/delete/1', follow_redirects=True)
+        rv = client.get('/model1view/delete/{0}'.format(model.id), follow_redirects=True)
         eq_(rv.status_code, 200)
-        model = self.db.session.query(Model1).first()
-        eq_(model, None)
-
+        model = Model1.objects
+        eq_(len(model), 0)
+        self.clean_data()
 
     def test_query_rel_fields(self):
         """
@@ -396,15 +359,17 @@ class FlaskTestCase(unittest.TestCase):
         # Base filter string starts with
         rv = client.get('/model2view/add')
         data = rv.data.decode('utf-8')
+        print data
         ok_('G1' in data)
         ok_('G2' not in data)
 
+        model2 = Model2.objects[0]
         # Base filter string starts with
-        rv = client.get('/model2view/edit/1')
+        rv = client.get('/model2view/edit/{0}'.format(model2.id))
         data = rv.data.decode('utf-8')
         ok_('G2' in data)
         ok_('G1' not in data)
-
+        self.clean_data()
 
     def test_model_list_order(self):
         """
@@ -427,7 +392,7 @@ class FlaskTestCase(unittest.TestCase):
         data = rv.data.decode('utf-8')
         # TODO
         # VALIDATE LIST IS ORDERED
-
+        self.clean_data()
 
 
     def test_model_add_validation(self):
@@ -447,7 +412,7 @@ class FlaskTestCase(unittest.TestCase):
         data = rv.data.decode('utf-8')
         ok_(UNIQUE_VALIDATION_STRING in data)
 
-        model = self.db.session.query(Model1).all()
+        model = Model1.objects()
         eq_(len(model), 1)
 
         rv = client.post('/model1view/add',
@@ -456,8 +421,9 @@ class FlaskTestCase(unittest.TestCase):
         data = rv.data.decode('utf-8')
         ok_(NOTNULL_VALIDATION_STRING in data)
 
-        model = self.db.session.query(Model1).all()
+        model = Model1.objects()
         eq_(len(model), 1)
+        self.clean_data()
 
     def test_model_edit_validation(self):
         """
@@ -468,19 +434,21 @@ class FlaskTestCase(unittest.TestCase):
 
         client.post('/model1view/add',
                     data=dict(field_string='test1', field_integer='1'), follow_redirects=True)
+        model1 = Model1.objects(field_string='test1')[0]
         client.post('/model1view/add',
                     data=dict(field_string='test2', field_integer='1'), follow_redirects=True)
-        rv = client.post('/model1view/edit/1',
+        rv = client.post('/model1view/edit/{0}'.format(model1.id),
                          data=dict(field_string='test2', field_integer='2'), follow_redirects=True)
         eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
         ok_(UNIQUE_VALIDATION_STRING in data)
 
-        rv = client.post('/model1view/edit/1',
+        rv = client.post('/model1view/edit/{0}'.format(model1.id),
                          data=dict(field_string='', field_integer='2'), follow_redirects=True)
         eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
         ok_(NOTNULL_VALIDATION_STRING in data)
+        self.clean_data()
 
     def test_model_base_filter(self):
         """
@@ -489,7 +457,7 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data()
-        models = self.db.session.query(Model1).all()
+        models = Model1.objects()
         eq_(len(models), 23)
 
         # Base filter string starts with
@@ -503,6 +471,7 @@ class FlaskTestCase(unittest.TestCase):
         data = rv.data.decode('utf-8')
         ok_('atest' in data)
         ok_('btest' not in data)
+        self.clean_data()
 
     def test_model_list_method_field(self):
         """
@@ -515,6 +484,7 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
         ok_('field_method_value' in data)
+        self.clean_data()
 
     def test_compactCRUDMixin(self):
         """
@@ -525,6 +495,7 @@ class FlaskTestCase(unittest.TestCase):
         self.insert_data2()
         rv = client.get('/model1compactview/list/')
         eq_(rv.status_code, 200)
+        self.clean_data()
 
     def test_charts_view(self):
         """
@@ -534,21 +505,17 @@ class FlaskTestCase(unittest.TestCase):
         self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data2()
         log.info("CHART TEST")
-        rv = client.get('/model2chartview/chart/')
-        eq_(rv.status_code, 200)
         rv = client.get('/model2groupbychartview/chart/')
         eq_(rv.status_code, 200)
         rv = client.get('/model2directbychartview/chart/')
         eq_(rv.status_code, 200)
-        rv = client.get('/model2timechartview/chart/')
-        eq_(rv.status_code, 200)
         rv = client.get('/model2directchartview/chart/')
         #eq_(rv.status_code, 200)
+        self.clean_data()
 
+    """
     def test_master_detail_view(self):
-        """
-            Test Master detail view
-        """
+
         client = self.app.test_client()
         self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data2()
@@ -556,8 +523,8 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
         rv = client.get('/model1masterview/list/1')
         eq_(rv.status_code, 200)
-
         rv = client.get('/model1masterchartview/list/')
         eq_(rv.status_code, 200)
         rv = client.get('/model1masterchartview/list/1')
         eq_(rv.status_code, 200)
+    """

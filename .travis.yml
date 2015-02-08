@@ -6,6 +6,8 @@ python:
 install:
   - "pip install -r requirements.txt --use-mirrors"
   - "pip install coveralls"
+services:
+  - mongodb
 script:
   - nosetests -v flask_appbuilder/tests
   - coverage run --source=flask_appbuilder --omit=*messages.py*,*baseapp.py* setup.py test

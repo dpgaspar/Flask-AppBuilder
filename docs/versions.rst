@@ -4,6 +4,11 @@ Versions
 Improvements and Bug fixes on 1.3.1
 -----------------------------------
 
+- #90 Py3 compact fix for urllib and StringIO.
+
+Improvements and Bug fixes on 1.3.1
+-----------------------------------
+
 - Fix, Group by chart with multiple series not displaying data.
 
 Improvements and Bug fixes on 1.3.0
