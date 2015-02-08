@@ -6,6 +6,7 @@ python:
 install:
   - "pip install -r requirements.txt --use-mirrors"
   - "pip install coveralls"
+  - "pip install flask-mongoengine"
 services:
   - mongodb
 script:
