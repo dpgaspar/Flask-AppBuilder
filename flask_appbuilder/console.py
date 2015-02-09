@@ -338,12 +338,14 @@ def create_app(name, engine):
         zipfile.extractall()
         os.rename(dirname, name)
         click.echo(click.style('Downloaded the skeleton app, good coding!', fg='green'))
+        return True
     except Exception as e:
         click.echo(click.style('Something went wrong {0}'.format(e), fg='red'))
         if engine.lower() =='sqlalchemy':
             click.echo(click.style('Try downloading from {0}'.format(SQLA_REPO_URL), fg='green'))
         elif engine.lower() =='mongoengine':
             click.echo(click.style('Try downloading from {0}'.format(MONGOENGIE_REPO_URL), fg='green'))
+        return False
 
 def cli():
     cli_app()

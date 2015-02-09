@@ -4,6 +4,8 @@ import os
 import string
 import random
 import datetime
+from flask_appbuilder.console import create_app
+from click.testing import CliRunner
 
 import logging
 
@@ -20,14 +22,13 @@ class FlaskTestCase(unittest.TestCase):
     def tearDown(self):
         log.debug("TEAR DOWN")
 
-
     def test_create_app(self):
         """
             Test create app
         """
-        out = os.popen('fabmanager create-app --name myapp --engine SQLAlchemy').read()
-        ok_("Downloaded the skeleton app, good coding!" in out)
-
+        runner = CliRunner()
+        result = runner.invoke(create_app, input='myapp\nSQLAlchemy\n')
+        ok_('Downloaded the skeleton app, good coding!' in result.output)
 
         
 
