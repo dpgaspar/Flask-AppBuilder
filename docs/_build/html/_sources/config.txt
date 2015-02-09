@@ -6,6 +6,8 @@ Configuration keys
 
 Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap 3.1.1 base theme:
 
+    .. cssclass:: table-bordered table-hover
+
 +-----------------------------------+--------------------------------------------+-----------+
 | Key                               | Description                                | Mandatory |
 +===================================+============================================+===========+
@@ -30,7 +32,9 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_SERVER                  | define your ldap server when AUTH_TYPE=2   |   Cond.   |
 |                                   | example:                                   |           |
+|                                   |                                            |           |
 |                                   | AUTH_TYPE = 2                              |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_SEARCH                  | define your ldap server to do indirect     |   No      |
@@ -38,17 +42,24 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | Comment out or leave blank to do direct    |           | 
 |                                   | bind to ldap server.                       |           |
 |                                   | example:                                   |           |
+|                                   |                                            |           |
 |                                   | AUTH_TYPE = 2                              |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_BIND_FIELD              | if doing an indirect bind to ldap, this    |   No      |
 |                                   | is the field to bind to.                   |           |
 |                                   | Default is "cn".                           |           | 
 |                                   | example:                                   |           |
+|                                   |                                            |           |
 |                                   | AUTH_TYPE = 2                              |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_BIND_FIELD = "cn"                |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_UID_FIELD               | if doing an indirect bind to ldap, this    |   No      |
@@ -56,9 +67,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | when searching for the account to bind     |           | 
 |                                   | to.                                        |           |
 |                                   | example:                                   |           |
+|                                   |                                            |           |
 |                                   | AUTH_TYPE = 2                              |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_UID_FIELD = "uid"                |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_FIRSTNAME_FIELD         | sets the field in the ldap directory that  |   No      |
@@ -67,9 +82,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | into the User database.                    |           |
 |                                   | Default is "givenName".                    |           | 
 |                                   | example:                                   |           |
+|                                   |                                            |           |
 |                                   | AUTH_TYPE = 2                              |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_FIRSTNAME_FIELD = "givenName"    |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_LASTNAME_FIELD          | sets the field in the ldap directory that  |   No      |
@@ -78,9 +97,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | into the User database.                    |           |
 |                                   | Default is "sn".                           |           | 
 |                                   | example:                                   |           |
+|                                   |                                            |           |
 |                                   | AUTH_TYPE = 2                              |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_LASTNAME_FIELD = "sn"            |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_EMAIL_FIELD             | sets the field in the ldap directory that  |   No      |
@@ -89,9 +112,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | address into the User database.            |           |
 |                                   | Default is "mail".                         |           | 
 |                                   | example:                                   |           |
+|                                   |                                            |           |
 |                                   | AUTH_TYPE = 2                              |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_EMAIL_FIELD = "mail"             |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_ROLE_ADMIN                   | Configure the name of the admin role.      |   No      |
@@ -116,7 +143,7 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | IMG_UPLOAD_URL                    | Image relative URL.                        |   No      |
 |                                   | Mandatory for image uploads.               |           |
 +-----------------------------------+--------------------------------------------+-----------+
-| IMG_SIZE                          | tuple to define image resize.              |   No      |
+| IMG_SIZE                          | tuple to define default image resize.      |   No      |
 |                                   | (width, height, True|False).               |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | BABEL_DEFAULT_LOCALE              | Babel's default language.                  |   No      |

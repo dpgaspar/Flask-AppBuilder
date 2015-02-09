@@ -184,7 +184,7 @@
 <div class="section" id="configuration-keys">
 <h2>Configuration keys<a class="headerlink" href="#configuration-keys" title="Permalink to this headline">¶</a></h2>
 <p>Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap 3.1.1 base theme:</p>
-<table border="1" class="docutils">
+<table border="1" class="table-bordered table-hover docutils">
 <colgroup>
 <col width="39%" />
 <col width="49%" />
@@ -241,83 +241,90 @@ registration</td>
 <td>Cond.</td>
 </tr>
 <tr class="row-odd"><td>AUTH_LDAP_SERVER</td>
-<td>define your ldap server when AUTH_TYPE=2
-example:
-AUTH_TYPE = 2
-AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8220;</td>
+<td><p class="first">define your ldap server when AUTH_TYPE=2
+example:</p>
+<p>AUTH_TYPE = 2</p>
+<p class="last">AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8220;</p>
+</td>
 <td>Cond.</td>
 </tr>
 <tr class="row-even"><td>AUTH_LDAP_SEARCH</td>
-<td>define your ldap server to do indirect
+<td><p class="first">define your ldap server to do indirect
 bind by searching for the bind field.
 Comment out or leave blank to do direct
 bind to ldap server.
-example:
-AUTH_TYPE = 2
-AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8221;
-AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;</td>
+example:</p>
+<p>AUTH_TYPE = 2</p>
+<p>AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8220;</p>
+<p class="last">AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;</p>
+</td>
 <td>No</td>
 </tr>
 <tr class="row-odd"><td>AUTH_LDAP_BIND_FIELD</td>
-<td>if doing an indirect bind to ldap, this
+<td><p class="first">if doing an indirect bind to ldap, this
 is the field to bind to.
 Default is &#8220;cn&#8221;.
-example:
-AUTH_TYPE = 2
-AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8221;
-AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;
-AUTH_LDAP_BIND_FIELD = &#8220;cn&#8221;</td>
+example:</p>
+<p>AUTH_TYPE = 2</p>
+<p>AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8220;</p>
+<p>AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;</p>
+<p class="last">AUTH_LDAP_BIND_FIELD = &#8220;cn&#8221;</p>
+</td>
 <td>No</td>
 </tr>
 <tr class="row-even"><td>AUTH_LDAP_UID_FIELD</td>
-<td>if doing an indirect bind to ldap, this
+<td><p class="first">if doing an indirect bind to ldap, this
 is the field that matches the username
 when searching for the account to bind
 to.
-example:
-AUTH_TYPE = 2
-AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8221;
-AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;
-AUTH_LDAP_UID_FIELD = &#8220;uid&#8221;</td>
+example:</p>
+<p>AUTH_TYPE = 2</p>
+<p>AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8220;</p>
+<p>AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;</p>
+<p class="last">AUTH_LDAP_UID_FIELD = &#8220;uid&#8221;</p>
+</td>
 <td>No</td>
 </tr>
 <tr class="row-odd"><td>AUTH_LDAP_FIRSTNAME_FIELD</td>
-<td>sets the field in the ldap directory that
+<td><p class="first">sets the field in the ldap directory that
 stores the user&#8217;s first name. This field
 is used to propagate user&#8217;s first name
 into the User database.
 Default is &#8220;givenName&#8221;.
-example:
-AUTH_TYPE = 2
-AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8221;
-AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;
-AUTH_LDAP_FIRSTNAME_FIELD = &#8220;givenName&#8221;</td>
+example:</p>
+<p>AUTH_TYPE = 2</p>
+<p>AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8220;</p>
+<p>AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;</p>
+<p class="last">AUTH_LDAP_FIRSTNAME_FIELD = &#8220;givenName&#8221;</p>
+</td>
 <td>No</td>
 </tr>
 <tr class="row-even"><td>AUTH_LDAP_LASTNAME_FIELD</td>
-<td>sets the field in the ldap directory that
+<td><p class="first">sets the field in the ldap directory that
 stores the user&#8217;s last name. This field
 is used to propagate user&#8217;s last name
 into the User database.
 Default is &#8220;sn&#8221;.
-example:
-AUTH_TYPE = 2
-AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8221;
-AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;
-AUTH_LDAP_LASTNAME_FIELD = &#8220;sn&#8221;</td>
+example:</p>
+<p>AUTH_TYPE = 2</p>
+<p>AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8220;</p>
+<p>AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;</p>
+<p class="last">AUTH_LDAP_LASTNAME_FIELD = &#8220;sn&#8221;</p>
+</td>
 <td>No</td>
 </tr>
 <tr class="row-odd"><td>AUTH_LDAP_EMAIL_FIELD</td>
-<td>sets the field in the ldap directory that
+<td><p class="first">sets the field in the ldap directory that
 stores the user&#8217;s email address. This
 field is used to propagate user&#8217;s email
 address into the User database.
 Default is &#8220;mail&#8221;.
-example:
-AUTH_TYPE = 2
-AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8221;
-AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;
-AUTH_LDAP_EMAIL_FIELD = &#8220;mail&#8221;</td>
+example:</p>
+<p>AUTH_TYPE = 2</p>
+<p>AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8220;</p>
+<p>AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;</p>
+<p class="last">AUTH_LDAP_EMAIL_FIELD = &#8220;mail&#8221;</p>
+</td>
 <td>No</td>
 </tr>
 <tr class="row-even"><td>AUTH_ROLE_ADMIN</td>
@@ -359,7 +366,7 @@ Mandatory for image uploads.</td>
 <td>No</td>
 </tr>
 <tr class="row-even"><td>IMG_SIZE</td>
-<td>tuple to define image resize.
+<td>tuple to define default image resize.
 (width, height, True|False).</td>
 <td>No</td>
 </tr>
