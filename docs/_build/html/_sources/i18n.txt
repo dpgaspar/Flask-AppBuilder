@@ -58,9 +58,8 @@ so you want to add translations for the menus "List Groups" and "List Contacts".
     from flask.ext.babelpkg import lazy_gettext as _
 
     class GroupModelView(ModelView):
-        datamodel = SQLAModel(ContactGroup)
+        datamodel = SQLAInterface(ContactGroup)
         related_views = [ContactModelView]
-
         label_columns = {'name':_('Name')}
 
     genapp.add_view(GroupModelView(), "List Groups",icon = "th-large", label=_('List Groups'),
