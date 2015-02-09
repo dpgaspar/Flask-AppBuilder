@@ -33,20 +33,20 @@ flask.ext.appbuilder.baseviews
 BaseView
 --------
 
-    .. autoclass:: BaseView
-        :members:
+.. autoclass:: BaseView
+    :members:
 
 BaseModelView
 -------------
 
-    .. autoclass:: BaseModelView
-        :members:
+.. autoclass:: BaseModelView
+    :members:
 
 BaseCRUDView
 ------------
 
-    .. autoclass:: BaseCRUDView
-        :members:
+.. autoclass:: BaseCRUDView
+    :members:
 
 flask.ext.appbuilder.views
 ==========================
@@ -56,38 +56,38 @@ flask.ext.appbuilder.views
 IndexView
 ---------
 
-    .. autoclass:: IndexView
-        :members:
+.. autoclass:: IndexView
+    :members:
 
 SimpleFormView
 --------------
 
-    .. autoclass:: SimpleFormView
-        :members:
+.. autoclass:: SimpleFormView
+    :members:
 
 PublicFormView
 --------------
 
-    .. autoclass:: PublicFormView
-        :members:
+.. autoclass:: PublicFormView
+    :members:
 
 ModelView
 -----------
 
-    .. autoclass:: ModelView
-        :members:
+.. autoclass:: ModelView
+    :members:
 
 MasterDetailView
 ----------------
 
-    .. autoclass:: MasterDetailView
-        :members:
+.. autoclass:: MasterDetailView
+    :members:
 
 CompactCRUDMixin
 ----------------
 
-    .. autoclass:: CompactCRUDMixin
-        :members:
+.. autoclass:: CompactCRUDMixin
+    :members:
 
 flask.ext.appbuilder.actions
 ============================
@@ -104,8 +104,8 @@ flask.ext.appbuilder.security
 BaseSecurityManager
 -------------------
 
-    .. autoclass:: BaseSecurityManager
-        :members:
+.. autoclass:: BaseSecurityManager
+    :members:
 
 BaseRegisterUser
 ----------------
@@ -139,38 +139,38 @@ flask.ext.appbuilder.charts.views
 BaseChartView
 -------------
 
-    .. autoclass:: BaseChartView
-        :members:
+.. autoclass:: BaseChartView
+    :members:
 
 DirectByChartView
 -----------------
 
-    .. autoclass:: DirectByChartView
-        :members:
+.. autoclass:: DirectByChartView
+    :members:
 
 GroupByChartView
 ----------------
 
-    .. autoclass:: GroupByChartView
-        :members:
+.. autoclass:: GroupByChartView
+    :members:
 
 (Deprecated) ChartView
 ----------------------
 
-    .. autoclass:: ChartView
-        :members:
+.. autoclass:: ChartView
+    :members:
 
 (Deprecated) TimeChartView
 --------------------------
 
-    .. autoclass:: TimeChartView
-        :members:
+.. autoclass:: TimeChartView
+    :members:
 
 (Deprecated) DirectChartView
 ----------------------------
 
-    .. autoclass:: DirectChartView
-        :members:
+.. autoclass:: DirectChartView
+    :members:
 
 
 flask.ext.appbuilder.models.mixins
@@ -187,11 +187,11 @@ flask.ext.appbuilder.models.mixins
 Extra Columns
 -------------
 
-    .. autoclass:: FileColumn
-        :members:
+.. autoclass:: FileColumn
+    :members:
 
-    .. autoclass:: ImageColumn
-        :members:
+.. autoclass:: ImageColumn
+    :members:
 
 Generic Data Source (Beta)
 --------------------------
