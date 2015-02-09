@@ -16,12 +16,7 @@ try:
 except ImportError:
     # Fall back to Python 2's urllib2
     from urllib2 import urlopen
-try:
-    # Py2
-    from StringIO import StringIO
-except ImportError:
-    # For Python 3.0 and later
-    from io import StringIO
+from io import BytesIO
 
 SQLA_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip'
 MONGOENGIE_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-me/archive/master.zip'
@@ -334,7 +329,7 @@ def create_app(name, engine):
         elif engine.lower() =='mongoengine':
             url = urlopen(MONGOENGIE_REPO_URL)
             dirname = "Flask-AppBuilder-Skeleton-me-master"
-        zipfile = ZipFile(StringIO(url.read()))
+        zipfile = ZipFile(BytesIO(url.read()))
         zipfile.extractall()
         os.rename(dirname, name)
         click.echo(click.style('Downloaded the skeleton app, good coding!', fg='green'))
