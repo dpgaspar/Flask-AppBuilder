@@ -4,6 +4,7 @@ import os
 import string
 import random
 import datetime
+import shutil
 from flask_appbuilder.console import create_app
 from click.testing import CliRunner
 
@@ -29,6 +30,9 @@ class FlaskTestCase(unittest.TestCase):
         runner = CliRunner()
         result = runner.invoke(create_app, input='myapp\nSQLAlchemy\n')
         ok_('Downloaded the skeleton app, good coding!' in result.output)
-
+        shutil.rmtree('myapp')
+        result = runner.invoke(create_app, input='myapp\nMongoEngine\n')
+        ok_('Downloaded the skeleton app, good coding!' in result.output)
+        shutil.rmtree('myapp')
         
 
