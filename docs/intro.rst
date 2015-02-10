@@ -7,9 +7,10 @@ It will help you adhere to the DRY (Don't repeat yourself) principle.
 
 Keep in mind that it it possible to develop directly on Flask/Jinja2 for custom pages or flows,
 that painlessly integrate with the framework.
+
 This framework goes further than an admin scaffolding package.
-It has builtin presentation, and behaviour alternatives and you can easily build your own.
-It's highly configurable, and has some extra goodies.
+It has builtin presentation and behaviour alternatives, and you can easily build your own.
+It's highly configurable, and ships with extra goodies.
 
 It's intended to lower errors, bugs and project's time to deliver.
 
@@ -52,7 +53,7 @@ Includes:
       - Field sets for Form's (Django style).
   - i18n
       - Support for multi-language via Babel
-  - Bootstrap 3.1.1 CSS and js, with Select2 and DatePicker
+  - Bootstrap 3.3.1 CSS and js, with Select2 and DatePicker
   - Font-Awesome icons, for menu icons and actions.
 
 
