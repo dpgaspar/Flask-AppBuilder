@@ -1,11 +1,13 @@
 import calendar
-from flask import redirect
+from flask import redirect, flash
+from .forms import TestForm
+from flask_appbuilder._compat import as_unicode
 from flask_appbuilder import ModelView, GroupByChartView, aggregate_count, action
+from flask_appbuilder.views import SimpleFormView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.widgets import FormVerticalWidget, FormInlineWidget, FormHorizontalWidget, ShowBlockWidget
 from flask_appbuilder.widgets import ListThumbnail
-from flask.ext.appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic import PSModel
 from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction as FA
 
@@ -22,14 +24,15 @@ def fill_gender():
         db.session.rollback()
 
 
-sess = PSSession()
+class TestForm(SimpleFormView):
+    form = TestForm
+    form_title = 'This is my Test Form'
+    default_view = 'this_form_get'
+    message = 'My form submitted'
 
-
-class PSView(ModelView):
-    datamodel = GenericInterface(PSModel, sess)
-    base_permissions = ['can_list', 'can_show']
-    list_columns = ['UID', 'C', 'CMD', 'TIME']
-    search_columns = ['UID', 'C', 'CMD']
+    def form_post(self, form):
+        # process form
+        flash(as_unicode(self.message), 'info')
 
 
 class ProductManufacturerView(ModelView):
@@ -157,7 +160,6 @@ class ContactTimeChartView(GroupByChartView):
 
 fill_gender()
 
-appbuilder.add_view(PSView, "List PS", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
 appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts",
                     category_icon='fa-envelope')
 appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
@@ -172,5 +174,7 @@ appbuilder.add_view(ProductManufacturerView, "List Manufacturer", icon="fa-folde
 appbuilder.add_view(ProductModelView, "List Models", icon="fa-envelope", category="Products")
 appbuilder.add_view(ProductView, "List Products", icon="fa-envelope", category="Products")
 appbuilder.add_link("ContacModelView_lnk","ContactModelView.add", icon="fa-envelope", label="Add Contact")
+appbuilder.add_view(TestForm, "My form View", icon="fa-group", label='My Test form')
+
 appbuilder.add_link("Index","MyIndexView.index")
 appbuilder.security_cleanup()
