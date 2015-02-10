@@ -2,11 +2,12 @@ Command Line Manager
 ====================
 
 Since version 1.3.0 F.A.B. has a command line manager, you can use it for many development tasks.
-Many of the commands are design to import **AppBuilder** class initialized by your application.
+
+Many of the commands are designed to import **AppBuilder** class initialized by your application.
 By default it will assume your application follows the skeleton structure, so it will try to import
 appbuilder from *app/__init__.py*. You can pass your own info to where appbuilder is being initialized.
 
-Take a quick look to the current possibilities. The bold ones require your appbuilder.
+Take a quick look to the current possibilities. The bold ones require to import your appbuilder.
 
   - babel-compile - Babel, Compiles all translations
 
@@ -42,7 +43,7 @@ Command Line uses the excelent click package, so you can have a detailed help fo
     Options:
     --name TEXT                     Your application name, directory will have
                                   this name
-    -engine [SQLAlchemy|MongoEngine]
+    --engine [SQLAlchemy|MongoEngine]
                                   Write your engine type
     --help                          Show this message and exit.
 
