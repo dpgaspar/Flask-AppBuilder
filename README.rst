@@ -26,7 +26,7 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 1.3.2*.
+*New 1.3.3*.
 
 If you're already using F.A.B.
 read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.
@@ -151,10 +151,9 @@ Depends on:
 
 - flask
 - click
+- colorama
 - flask-sqlalchemy
 - flask-login
 - flask-openid
 - flask-wtform
 - flask-Babel
-
-

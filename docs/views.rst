@@ -202,7 +202,7 @@ Implement *form_get* and *form_post* to implement your form pre-processing and p
 
 ::
 
-    from flask_appbuilder.views import SimpleFormView
+    from flask_appbuilder import SimpleFormView
     from flask.ext.babelpkg import lazy_gettext as _
 
 
