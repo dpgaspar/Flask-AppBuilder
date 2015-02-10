@@ -6,6 +6,7 @@ import random
 import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.orm import relationship
+from flask import request, session
 from flask.ext.appbuilder import Model, SQLA
 from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqual
 from flask_appbuilder.models.mixins import FileColumn, ImageColumn
@@ -252,6 +253,16 @@ class FlaskTestCase(unittest.TestCase):
         """
         eq_(len(self.appbuilder.baseviews), 25)  # current minimal views are 11
         
+    def test_back(self):
+        """
+            Test Back functionality
+        """
+        with self.app.test_client() as c:
+            self.login(c, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+            rv = c.get('/model1view/list/')
+            rv = c.get('/model2view/list/')
+            rv = c.get('/back', follow_redirects=True)
+            assert '/model1view/list/' == request.path
 
     def test_model_creation(self):
         """
