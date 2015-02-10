@@ -11,6 +11,8 @@ Flask App Builder
 	:alt: Downloads
 .. image:: https://coveralls.io/repos/dpgaspar/Flask-AppBuilder/badge.png?branch=master
     :target: https://coveralls.io/r/dpgaspar/Flask-AppBuilder
+.. image:: https://landscape.io/github/dpgaspar/Flask-AppBuilder/1.3.2/badges
+    :target: https://landscape.io/github/dpgaspar/Flask-AppBuilder/1.3.2
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto CRUD generation for your models, google charts and much more.
