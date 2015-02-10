@@ -221,7 +221,6 @@ class PublicFormView(BaseView):
         return widgets
 
 
-
 class ModelView(BaseCRUDView):
     """
         This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and list from your database tables, inherit your views from this class.
