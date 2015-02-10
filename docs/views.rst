@@ -181,18 +181,30 @@ as well as custom validators. For this you can use ModelView instead.
 
 To create a custom form view, first define your WTF form fields, but inherit them from F.A.B. *DynamicForm*.
 
+from wtforms import StringField
+from flask_babelpkg import lazy_gettext
+from wtforms.validators import DataRequired
+from flask_appbuilder.fieldwidgets import BS3TextFieldWidget
+from flask_appbuilder.forms import DynamicForm
+
+
+class TestForm(DynamicForm):
+    TestFieldOne = StringField(lazy_gettext('Test Field One'), validators=[DataRequired()], widget=BS3TextFieldWidget())
+    TestFieldTwo = StringField(lazy_gettext('Test Field One'), validators=[DataRequired()], widget=BS3TextFieldWidget())
+
 ::
 
     from wtforms import Form, StringField
     from wtforms.validators import DataRequired
+    from flask_appbuilder.fieldwidgets import BS3TextFieldWidget
     from flask.ext.appbuilder.forms import DynamicForm
 
     class MyForm(DynamicForm):
         field1 = StringField(('Field1'),
             description=('Your field number one!'),
-            validators = [DataRequired()])
+            validators = [DataRequired()], widget=BS3TextFieldWidget())
         field2 = StringField(('Field2'),
-            description=('Your field number two!'))
+            description=('Your field number two!'), widget=BS3TextFieldWidget())
 
 
 Now define your form view to expose urls, create a menu entry, create security accesses, define pre and post processing.
@@ -206,10 +218,8 @@ Implement *form_get* and *form_post* to implement your form pre-processing and p
 
 
     class MyFormView(SimpleFormView):
-        route_base = '/myform'
-
+        default_view = 'this_form_get'
         form = MyForm
-        redirect_url = '/myform'
         form_title = 'This is my first form view'
 
         message = 'My form submitted'
@@ -218,7 +228,7 @@ Implement *form_get* and *form_post* to implement your form pre-processing and p
             # process form
             flash(as_unicode(self.message), 'info')
 
-    appbuilder.add_view(MyFormView, "My form View", href="/myform", icon="fa-group", label=_('My form View'),
+    appbuilder.add_view(MyFormView, "My form View", icon="fa-group", label=_('My form View'),
                          category="My Forms", category_icon="fa-cogs")
 
 
