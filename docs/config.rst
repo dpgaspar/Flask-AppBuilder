@@ -4,7 +4,7 @@ Base Configuration
 Configuration keys
 ------------------
 
-Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap 3.1.1 base theme:
+Use config.py to configure the following parameters. By default it will use SQLLITE DB, and bootstrap's default theme:
 
     .. cssclass:: table-bordered table-hover
 
