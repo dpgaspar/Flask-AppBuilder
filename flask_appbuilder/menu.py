@@ -9,7 +9,7 @@ class MenuItem(object):
     baseview = None
     childs = []
 
-    def __init__(self, name, href="", icon="", label="", childs=[], baseview=None):
+    def __init__(self, name, href="", icon="", label="", childs=None, baseview=None):
         self.name = name
         self.href = href
         self.icon = icon
@@ -52,7 +52,7 @@ class Menu(object):
     def get_list(self):
         return self.menu
 
-    def find(self, name, menu=[]):
+    def find(self, name, menu=None):
         """
             Finds a menu item by name and returns it.
 

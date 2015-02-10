@@ -48,7 +48,7 @@ class BaseChartView(BaseModelView):
 
     def __init__(self, **kwargs):
         self._init_titles()
-        super(BaseModelView, self).__init__(**kwargs)
+        super(BaseChartView, self).__init__(**kwargs)
 
 
     def _init_titles(self):
@@ -115,7 +115,7 @@ class GroupByChartView(BaseChartView):
     ProcessClass = GroupByProcessData
 
     def __init__(self, **kwargs):
-        super(BaseChartView, self).__init__(**kwargs)
+        super(GroupByChartView, self).__init__(**kwargs)
         for definition in self.definitions:
             col = definition.get('group')
             try:
@@ -257,7 +257,7 @@ class BaseSimpleGroupByChartView(BaseChartView):
         if not self.group_by_columns:
             raise Exception('Base Chart View property <group_by_columns> must not be empty')
         else:
-            super(BaseChartView, self).__init__(**kwargs)
+            super(BaseSimpleGroupByChartView, self).__init__(**kwargs)
 
     def _get_chart_widget(self, filters=None,
                           order_column='',

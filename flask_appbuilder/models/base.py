@@ -39,7 +39,8 @@ class BaseInterface(object):
             # its attribute
             return getattr(item, col)
 
-    def get_filters(self, search_columns=[]):
+    def get_filters(self, search_columns=None):
+        search_columns = search_columns or []
         return Filters(self.filter_converter_class, self, search_columns)
 
     def get_values_item(self, item, show_columns):

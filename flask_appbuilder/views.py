@@ -209,7 +209,9 @@ class PublicFormView(BaseView):
         """
         pass
 
-    def _get_edit_widget(self, form=None, exclude_cols=[], widgets={}):
+    def _get_edit_widget(self, form=None, exclude_cols=None, widgets=None):
+        exclude_cols = exclude_cols or []
+        widgets = widgets or {}
         widgets['edit'] = self.edit_widget(route_base=self.route_base,
                                            form=form,
                                            include_cols=self.form_columns,
