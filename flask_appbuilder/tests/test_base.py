@@ -259,9 +259,10 @@ class FlaskTestCase(unittest.TestCase):
         """
         with self.app.test_client() as c:
             self.login(c, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-            rv = c.get('/model1view/list/')
+            rv = c.get('/model1view/list/?_flt_0_field_string=f')
             rv = c.get('/model2view/list/')
             rv = c.get('/back', follow_redirects=True)
+            assert request.args['_flt_0_field_string'] == u'f'
             assert '/model1view/list/' == request.path
 
     def test_model_creation(self):
