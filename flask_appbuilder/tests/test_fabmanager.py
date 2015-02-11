@@ -5,7 +5,7 @@ import string
 import random
 import datetime
 import shutil
-from flask_appbuilder.console import create_app
+from flask_appbuilder.console import create_app, create_admin
 from click.testing import CliRunner
 
 import logging
@@ -34,5 +34,20 @@ class FlaskTestCase(unittest.TestCase):
         result = runner.invoke(create_app, input='myapp\nMongoEngine\n')
         ok_('Downloaded the skeleton app, good coding!' in result.output)
         shutil.rmtree('myapp')
-        
+
+    def test_create_admin(self):
+        """
+            Test create admin
+        """
+        runner = CliRunner()
+        result = runner.invoke(create_app, input='myapp\nSQLAlchemy\n')
+        ok_('Downloaded the skeleton app, good coding!' in result.output)
+        result = runner.invoke(create_admin, ['--username', 'admin2',
+                                              '--firstname', 'admin2',
+                                              '--lastname', 'user',
+                                              '--email', 'admin2@fab.org',
+                                              '--password', 'password'])
+        print result.output
+        #ok_('Downloaded the skeleton app, good coding!' in result.output)
+
 
