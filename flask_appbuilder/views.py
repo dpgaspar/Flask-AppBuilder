@@ -232,15 +232,21 @@ class RestCRUDView(BaseCRUDView):
     @has_access
     @permission_name('can_list')
     def read(self):
-        if get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+        """
+            Parameters are passed as JSON with the following structure
+
+            { 'order_colum':'<COLUMN_NAME>',
+              'order_direction':'<asc|desc>',
+              'page':'<PAGE NUMBER>',
+              'page_size':'<PAGE SIZE>',
+              'filter' : [['<COLUMN_NAME>','<FILTER TYPE>','<VALUE>']...]
+            }
+        """
+        if 'order_column' in response.json and 'order_direction' in response.json:
+           order_column = request.json['order_column']
+           order_direction = request.json['order_direction']
         else:
-            order_column, order_direction = '', ''
-        page = get_page_args().get(self.__class__.__name__)
-        page_size = get_page_size_args().get(self.__class__.__name__)
-        get_filter_args(self._filters)
-        if not order_column and self.base_order:
-            order_column, order_direction = self.base_order
+           order_column, order_direction = self.base_order or '', '' 
         joined_filters = self._filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         result = [item.to_json() for item in lst]
