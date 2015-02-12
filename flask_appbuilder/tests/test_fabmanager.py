@@ -42,6 +42,7 @@ class FlaskTestCase(unittest.TestCase):
         runner = CliRunner()
         result = runner.invoke(create_app, input='myapp\nSQLAlchemy\n')
         ok_('Downloaded the skeleton app, good coding!' in result.output)
+        os.chdir('myapp')
         result = runner.invoke(create_admin, ['--username', 'admin2',
                                               '--firstname', 'admin2',
                                               '--lastname', 'user',

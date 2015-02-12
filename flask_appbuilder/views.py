@@ -53,6 +53,7 @@ class SimpleFormView(BaseView):
     form_template = 'appbuilder/general/model/edit.html'
 
     edit_widget = FormWidget
+    """ Form widget to override """
     form_title = ''
     """ The form title to be displayed """
     form_columns = None
@@ -60,6 +61,10 @@ class SimpleFormView(BaseView):
     form = None
     """ The WTF form to render """
     form_fieldsets = None
+    """ Form field sets """
+    default_view = 'this_form_get'
+    """ The form view default entry endpoint """
+
 
     def _init_vars(self):
         self.form_columns = self.form_columns or []
@@ -221,6 +226,53 @@ class PublicFormView(BaseView):
         return widgets
 
 
+class RestCRUDView(BaseCRUDView):
+
+    @expose('/api', methods=['GET'])
+    @has_access
+    @permission_name('can_list')
+    def read(self):
+        if get_order_args().get(self.__class__.__name__):
+            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+        else:
+            order_column, order_direction = '', ''
+        page = get_page_args().get(self.__class__.__name__)
+        page_size = get_page_size_args().get(self.__class__.__name__)
+        get_filter_args(self._filters)
+        if not order_column and self.base_order:
+            order_column, order_direction = self.base_order
+        joined_filters = self._filters.get_joined_filters(self._base_filters)
+        count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
+        result = [item.to_json() for item in lst]
+        return jsonify(label_columns=self.label_columns,
+                        include_columns=self.list_columns,
+                        order_columns=self.order_columns,
+                        page=page,
+                        page_size=page_size,
+                        count=count,
+                        modelview_name=self.__class__.__name__,
+                        result=result)
+
+
+    @expose('/api', methods=['POST'])
+    @has_access
+    @permission_name('can_add')
+    def create(self):
+        pass
+
+    @expose('/api/<pk>', methods=['PUT'])
+    @has_access
+    @permission_name('can_edit')
+    def update(self, pk):
+        pass
+
+    @has_access
+    @expose('/api/<pk>', methods=['DELETE'])
+    @permission_name('can_delete')
+    def delete(self, pk):
+        pass
+
+
 class ModelView(BaseCRUDView):
     """
         This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and list from your database tables, inherit your views from this class.
@@ -243,8 +295,7 @@ class ModelView(BaseCRUDView):
         widgets = self._list()
         return self.render_template(self.list_template,
                                title=self.list_title,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder)
+                               widgets=widgets)
 
     """
     --------------------------------
@@ -261,7 +312,6 @@ class ModelView(BaseCRUDView):
                                pk=pk,
                                title=self.show_title,
                                widgets=widgets,
-                               appbuilder=self.appbuilder,
                                related_views=self._related_views)
 
     """
@@ -280,25 +330,7 @@ class ModelView(BaseCRUDView):
         else:
             return self.render_template(self.add_template,
                                    title=self.add_title,
-                                   widgets=widget,
-                                   appbuilder=self.appbuilder)
-
-    @has_access
-    @permission_name('add')
-    @expose('/add_post', methods=['POST'])
-    def add_post(self):
-        get_filter_args(self._filters)
-        exclude_cols = self._filters.get_relation_cols()
-
-        item = self.datamodel.obj()
-        form = self.add_form.refresh()
-        form.populate_obj(item)
-        widget = self._get_add_widget(form=form, exclude_cols=exclude_cols)
-        return self.render_template(self.add_template,
-                                   title=self.add_title,
-                                   widgets=widget,
-                                   appbuilder=self.appbuilder)
-
+                                   widgets=widget)
 
     """
     ---------------------------
@@ -316,9 +348,7 @@ class ModelView(BaseCRUDView):
             return self.render_template(self.edit_template,
                                    title=self.edit_title,
                                    widgets=widgets,
-                                   appbuilder=self.appbuilder,
                                    related_views=self._related_views)
-
 
     """
     ---------------------------
@@ -393,7 +423,6 @@ class ModelView(BaseCRUDView):
             items = [self.datamodel.get(pk) for pk in pks]
             return action.func(items)
         else:
-            print("INVALID ACCESS ON {0} {1}".format(name, self.__class__.__name__))
             flash(as_unicode(lazy_gettext("Access is Denied")), "danger")
             return redirect('.')
 
@@ -443,8 +472,7 @@ class MasterDetailView(BaseCRUDView):
                                title=self.list_title,
                                widgets=widgets,
                                related_views=related_views,
-                               master_div_width=self.master_div_width,
-                               appbuilder=self.appbuilder)
+                               master_div_width=self.master_div_width)
 
 
 
@@ -471,8 +499,7 @@ class CompactCRUDMixin(BaseCRUDView):
         list_widgets = self._list()
         return self.render_template(self.list_template,
                                title=self.list_title,
-                               widgets=list_widgets,
-                               appbuilder=self.appbuilder)
+                               widgets=list_widgets)
 
     @expose('/add/', methods=['GET', 'POST'])
     @has_access
