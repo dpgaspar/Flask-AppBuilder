@@ -1,3 +1,4 @@
+import datetime
 import logging
 from functools import reduce
 from flask_babelpkg import lazy_gettext
@@ -46,7 +47,7 @@ class BaseInterface(object):
     def get_values_item(self, item, show_columns):
         return [self._get_attr_value(item, col) for col in show_columns]
 
-    def get_values(self, lst, list_columns):
+    def _get_values(self, lst, list_columns):
         """
             Get Values: formats values for list template.
             returns [{'col_name':'col_value',....},{'col_name':'col_value',....}]
@@ -64,9 +65,39 @@ class BaseInterface(object):
             retlst.append(retdict)
         return retlst
 
+    def get_values(self, lst, list_columns):
+        """
+            Get Values: formats values for list template.
+            returns [{'col_name':'col_value',....},{'col_name':'col_value',....}]
+
+            :param lst:
+                The list of item objects from query
+            :param list_columns:
+                The list of columns to include
+        """
+        for item in lst:
+            retdict = {}
+            for col in list_columns:
+                retdict[col] = self._get_attr_value(item, col)
+            yield retdict
+
+    def get_values_json(self, lst, list_columns):
+        result = []
+        for item in self.get_values(lst, list_columns):
+            for key, value in list(item.items()):
+                if isinstance(value, datetime.datetime) or isinstance(value, datetime.date):
+                    value = value.isoformat()
+                    item[key] = value
+                if isinstance(value, list):
+                    item[key] = [str(v) for v in value]
+            result.append(item)
+        return result
+
+
+
     """
         Returns the models class name
-        usefull for auto title on views
+        useful for auto title on views
     """
     @property
     def model_name(self):

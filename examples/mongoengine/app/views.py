@@ -14,7 +14,7 @@ from .models import ContactGroup, Contact, Tags
 
 class ContactModelView(ModelView):
     datamodel = MongoEngineInterface(Contact)
-    list_columns = ['name', 'personal_celphone', 'birthday','contact_group']
+    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
 
 
 class GroupModelView(ModelView):

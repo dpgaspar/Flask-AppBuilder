@@ -10,7 +10,7 @@
 
     {{ lib.render_list_header(can_add, page, page_size, count, filters, actions, modelview_name) }}
 
-	{% if value_columns %}
+	{% if count > 0 %}
 	<div class="table-responsive">
 	<table class="table table-bordered table-hover">
 	<thead>

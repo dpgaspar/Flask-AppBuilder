@@ -1,7 +1,12 @@
 Versions
 ========
 
-Improvements and Bug fixes on 1.3.1
+Improvements and Bug fixes on 1.3.3
+-----------------------------------
+
+- BaseInterface.get_values changed to iterator (does not return list but list iterator).
+
+Improvements and Bug fixes on 1.3.2
 -----------------------------------
 
 - #90 Py3 compact fix for urllib and StringIO.
