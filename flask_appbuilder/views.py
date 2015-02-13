@@ -1,5 +1,5 @@
 import logging
-from flask import flash, redirect, send_file, jsonify
+from flask import flash, redirect, send_file, jsonify, make_response
 from ._compat import as_unicode
 from flask_babelpkg import lazy_gettext
 from .filemanager import uuid_originalname
@@ -227,10 +227,19 @@ class PublicFormView(BaseView):
 
 
 class RestCRUDView(BaseCRUDView):
+    """
+        This class view exposes REST method for CRUD operations on you models
+    """
+
+    def _label_columns_json(self):
+        ret = {}
+        for key, value in list(self.label_columns.items()):
+            ret[key] = str(value)
+        return ret
 
     @expose('/api', methods=['GET'])
     @has_access
-    @permission_name('can_list')
+    @permission_name('list')
     def read(self):
         """
             Parameters are passed as JSON with the following structure
@@ -242,44 +251,52 @@ class RestCRUDView(BaseCRUDView):
               'filter' : [['<COLUMN_NAME>','<FILTER TYPE>','<VALUE>']...]
             }
         """
-        if 'order_column' in response.json and 'order_direction' in response.json:
-           order_column = request.json['order_column']
-           order_direction = request.json['order_direction']
+        # Get arguments for ordering
+        request_json = request.json or {}
+        if 'order_column' in request_json and 'order_direction' in request_json :
+            order_column = request_json ['order_column']
+            order_direction = request_json['order_direction']
         else:
-           order_column, order_direction = self.base_order or '', '' 
+            order_column, order_direction = (self.base_order) or ('', '')
+        #Get arguments for pagination
+        page = request_json .get('page')
+        page_size = request_json .get('page_size')
+
         joined_filters = self._filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         result = [item.to_json() for item in lst]
-        return jsonify(label_columns=self.label_columns,
-                        include_columns=self.list_columns,
+        ret_json = jsonify(label_columns=self._label_columns_json(),
+                        list_columns=self.list_columns,
                         order_columns=self.order_columns,
                         page=page,
                         page_size=page_size,
                         count=count,
                         modelview_name=self.__class__.__name__,
                         result=result)
-
+        response = make_response(ret_json, 200)
+        response.headers['Content-Type'] = "application/json"
+        return response
 
     @expose('/api', methods=['POST'])
     @has_access
-    @permission_name('can_add')
+    @permission_name('add')
     def create(self):
         pass
 
     @expose('/api/<pk>', methods=['PUT'])
     @has_access
-    @permission_name('can_edit')
+    @permission_name('edit')
     def update(self, pk):
         pass
 
     @has_access
     @expose('/api/<pk>', methods=['DELETE'])
-    @permission_name('can_delete')
+    @permission_name('delete')
     def delete(self, pk):
         pass
 
 
-class ModelView(BaseCRUDView):
+class ModelView(RestCRUDView):
     """
         This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and list from your database tables, inherit your views from this class.
 
