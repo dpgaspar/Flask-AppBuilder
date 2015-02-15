@@ -2,7 +2,7 @@ import calendar
 from flask import redirect, flash
 from .forms import TestForm
 from flask_appbuilder._compat import as_unicode
-from flask_appbuilder import ModelView, GroupByChartView, aggregate_count, action
+from flask_appbuilder import ModelView, GroupByChartView, aggregate_count, action, expose
 from flask_appbuilder.views import SimpleFormView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.generic.interface import GenericInterface
@@ -56,6 +56,10 @@ class ContactModelView2(ModelView):
     list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
     add_form_query_rel_fields = {'contact_group':[['name',FilterStartsWith,'p']],
                                  'gender':[['name',FilterStartsWith,'F']]}
+
+    @expose('/jsonexp')
+    def jsonexp(self):
+        return self.render_template('list_json.html')
 
 
 class ContactModelView(ModelView):

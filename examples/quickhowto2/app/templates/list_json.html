@@ -1,0 +1,83 @@
+{% extends 'appbuilder/baselayout.html' %}
+
+{% import 'appbuilder/general/lib.html' as lib %}
+
+
+{% block content %}
+
+
+{{ super() }}
+
+<input class=" filter_val form-control" id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
+
+<div class="table-responsive">
+<table class="table table-bordered table-hover">
+	<thead id="thead">
+	</thead>
+	<tbody id="tbody">
+    </tbody>
+</table>
+</div>
+
+<script type="text/javascript">
+
+function updateTHead(labels, listColumns) {
+    $body = $('#thead');
+    $row = $('<tr />');
+
+    for (var key in listColumns) {
+        var column = listColumns[key];
+        $col = $('<th />');
+        $col.append(labels[column]);
+        $row.append($col);
+        console.log(labels[column]);
+    }
+    var $el = $($row).appendTo($body);
+}
+
+
+function updateTBody(listColumns, data) {
+    $body = $('#tbody');
+
+    for (var key in data) {
+        var obj = data[key];
+        $row = $('<tr />');
+        for (var key in listColumns) {
+            var column = listColumns[key];
+            $col = $('<td />');
+            $col.append(obj[column]);
+            $row.append($col);
+        }
+        var $el = $($row).appendTo($body);
+    }
+}
+
+function updateTable(labels, listColumns, data) {
+    updateTHead(labels, listColumns);
+    updateTBody(listColumns, data);
+}
+
+
+function getData(filters) {
+    $.ajax({
+      type: "GET",
+      url: "/contactmodelview2/api",
+      data: { 'filter' : [['name','0',filters]] }
+    })
+      .done(function( result ) {
+        console.log( "Data: " + JSON.stringify(result.result, undefined, 2 ));
+        updateTable(result.label_columns, result.list_columns, result.result);
+      });
+}
+
+getData();
+
+$('input').keypress(function() {
+    getData();
+});
+
+
+</script>
+
+
+{% endblock %}

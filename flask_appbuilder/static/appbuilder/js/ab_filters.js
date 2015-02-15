@@ -27,29 +27,28 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
     {
         var $el = $('<tr />').appendTo($container);
 
-	addRemoveFilter($el, name, labels[name]);
+	    addRemoveFilter($el, name, labels[name]);
         var i_option = addFilterOptionsValue($el, name, filter_name);
 	
         var $field = $(form[name])
         // if form item complex like <div><input bla></div>, datetime
         if ( $("input", $($field)).html() != undefined ) {
-		$field_inner = $("input", $field)
-		$field_inner.attr('name', '_flt_' + i_option + '_' + name);
-		$field_inner.val(value);
-		$field_inner.attr('class', ' filter_val ' + $field_inner.attr('class'));
-	}
-	else {
-		if (($field.attr( 'type')) == 'checkbox') {
-			$field.attr( 'checked', true );
-		}
-		$field.attr('name', '_flt_' + i_option + '_' + name);	
-		$field.val(value);
-        	$field.attr('class', ' filter_val ' + $field.attr('class'));
-	
-	}
+            $field_inner = $("input", $field)
+            $field_inner.attr('name', '_flt_' + i_option + '_' + name);
+            $field_inner.val(value);
+            $field_inner.attr('class', ' filter_val ' + $field_inner.attr('class'));
+	    }
+        else {
+            if (($field.attr( 'type')) == 'checkbox') {
+                $field.attr( 'checked', true );
+            }
+            $field.attr('name', '_flt_' + i_option + '_' + name);
+            $field.val(value);
+            $field.attr('class', ' filter_val ' + $field.attr('class'));
+        }
         $el.append(
-        	$('<td/>').append($field)
-        );;
+            $('<td/>').append($field)
+            );;
     }
 
 	function addRemoveFilter($el, name, label)
