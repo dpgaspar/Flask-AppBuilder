@@ -8,6 +8,7 @@
 
 {{ super() }}
 
+
 <input class=" filter_val form-control" id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
 
 <div class="table-responsive">
@@ -21,6 +22,13 @@
 
 <script type="text/javascript">
 
+var can_add = {{ "true" if "can_add" | is_item_visible(modelview_name) else "false" }};
+var can_show = {{ "true" if "can_show" | is_item_visible(modelview_name) else "false" }};
+var can_edit = {{ "true" if "can_edit" | is_item_visible(modelview_name) else "false" }};
+var can_delete = {{ "true" if "can_delete" | is_item_visible(modelview_name) else "false" }};
+var actions = {{ actions | get_actions_on_list(modelview_name) }};
+
+
 function updateTHead(labels, listColumns) {
     $body = $('#thead');
     $body.empty();
@@ -31,11 +39,9 @@ function updateTHead(labels, listColumns) {
         $col = $('<th />');
         $col.append(labels[column]);
         $row.append($col);
-        console.log(labels[column]);
     }
     var $el = $($row).appendTo($body);
 }
-
 
 function updateTBody(listColumns, data) {
     $body = $('#tbody');
@@ -58,23 +64,26 @@ function updateTable(labels, listColumns, data) {
     updateTBody(listColumns, data);
 }
 
-
 function getData(filters) {
-    var base_url = "/contactmodelview2/api?_flt_2_name=" + filters;
+    if (filters == "" || filters == null ) {
+        var base_url = "/contactmodelview2/api";
+    }
+    else {
+        var base_url = "/contactmodelview2/api?_flt_0_name=" + filters;
+    }
 
     $.ajax({
       type: "GET",
       url: base_url
     })
       .done(function( result ) {
-        console.log( "Data: " + JSON.stringify(result.result, undefined, 2 ));
         updateTable(result.label_columns, result.list_columns, result.result);
       });
 }
 
 getData();
 
-$('input').keypress(function(e) {
+$('.filter_val').keyup(function(e) {
     getData($(this).val());
 });
 

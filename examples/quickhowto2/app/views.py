@@ -59,7 +59,7 @@ class ContactModelView2(ModelView):
 
     @expose('/jsonexp')
     def jsonexp(self):
-        return self.render_template('list_json.html')
+        return self.render_template('list_json.html', modelview_name=self.__class__.__name__)
 
 
 class ContactModelView(ModelView):
