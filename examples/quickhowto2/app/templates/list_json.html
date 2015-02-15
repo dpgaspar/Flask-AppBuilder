@@ -23,6 +23,7 @@
 
 function updateTHead(labels, listColumns) {
     $body = $('#thead');
+    $body.empty();
     $row = $('<tr />');
 
     for (var key in listColumns) {
@@ -38,7 +39,7 @@ function updateTHead(labels, listColumns) {
 
 function updateTBody(listColumns, data) {
     $body = $('#tbody');
-
+    $body.empty();
     for (var key in data) {
         var obj = data[key];
         $row = $('<tr />');
@@ -59,10 +60,11 @@ function updateTable(labels, listColumns, data) {
 
 
 function getData(filters) {
+    var base_url = "/contactmodelview2/api?_flt_2_name=" + filters;
+
     $.ajax({
       type: "GET",
-      url: "/contactmodelview2/api",
-      data: { 'filter' : [['name','0',filters]] }
+      url: base_url
     })
       .done(function( result ) {
         console.log( "Data: " + JSON.stringify(result.result, undefined, 2 ));
@@ -72,8 +74,8 @@ function getData(filters) {
 
 getData();
 
-$('input').keypress(function() {
-    getData();
+$('input').keypress(function(e) {
+    getData($(this).val());
 });
 
 

@@ -252,24 +252,14 @@ class RestCRUDView(BaseCRUDView):
             }
         """
         # Get arguments for ordering
-        request_json = request.json or {}
-        print request_json, request
-        if 'order_column' in request_json and 'order_direction' in request_json :
-            order_column = request_json ['order_column']
-            order_direction = request_json['order_direction']
+        if get_order_args().get(self.__class__.__name__):
+            order_column, order_direction = get_order_args().get(self.__class__.__name__)
         else:
-            order_column, order_direction = (self.base_order) or ('', '')
-        #Get arguments for pagination
-        page = request_json .get('page')
-        page_size = request_json .get('page_size')
-
+            order_column, order_direction = '', ''
+        page = get_page_args().get(self.__class__.__name__)
+        page_size = get_page_size_args().get(self.__class__.__name__)
+        get_filter_args(self._filters)
         joined_filters = self._filters.get_joined_filters(self._base_filters)
-        if 'filters' in request_json:
-            print "FILTERS!!!!"
-            filters = request_json['filters']
-            for _filter in filters:
-                joined_filters.add_filter_index(_filter[0], int(_filter[1]), _filter[2])
-
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         result = self.datamodel.get_values_json(lst, self.list_columns)
         ret_json = jsonify(label_columns=self._label_columns_json(),
