@@ -18,17 +18,33 @@ app.config(['$interpolateProvider', function($interpolateProvider) {
 app.controller("TableCtrl", function($scope, $http) {
 
   $scope.filter = "";
+  $scope.order_column = "";
+  $scope.order_direction = "";
 
   function ajaxGet() {
-  $http.get('/contactmodelview2/api').
-    success(function(data, status, headers, config) {
-      $scope.data = data;
-      console.log($scope.data.result);
-    }).
-    error(function(data, status, headers, config) {
-      // log error
+      if ($scope.filter == "" ) {
+        var base_url = "/contactmodelview2/api";
+      }
+      else {
+        var base_url = "/contactmodelview2/api?_flt_0_name=" + $scope.filter;
+      }
+
+      $http.get(base_url).
+        success(function(data, status, headers, config) {
+          $scope.data = data;
+        }).
+        error(function(data, status, headers, config) {
+          // log error
+        });
+   }
+   $scope.$watch('filter', function (value) {
+        ajaxGet();
     });
+
+    function orderClick(colName) {
+        alert(colName);
     }
+
    ajaxGet();
 });
 
@@ -40,22 +56,27 @@ app.controller("TableCtrl", function($scope, $http) {
 {% block content %}
 {{ super() }}
 
-<input class=" filter_val form-control" id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
-
-<div  ng-app="myApp" class="table-responsive">
+<div  ng-app="myApp" >
 <div ng-controller="TableCtrl">
-<table class="table table-bordered table-hover">
-	<thead id="thead">
-	</thead>
-	<tbody id="tbody">
-        <tr ng-repeat="row in data.result">
-            <td ng-repeat="col in data.list_columns">{[row[col] ]}</td>
-        </tr>
-    </tbody>
-</table>
-</div>
-</div>
 
+    <input class=" filter_val form-control" ng-model='filter' id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
+
+    <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <thead id="thead">
+        <tr><th ng-repeat="col in data.list_columns">
+            <a href="#" ng-click="orderClick({[data.label_columns[col] ]})">{[data.label_columns[col] ]}</a>
+        </th></tr>
+        </thead>
+        <tbody id="tbody">
+            <tr ng-repeat="row in data.result">
+                <td ng-repeat="col in data.list_columns">{[row[col] ]}</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+</div>
 
 
 {% endblock %}
