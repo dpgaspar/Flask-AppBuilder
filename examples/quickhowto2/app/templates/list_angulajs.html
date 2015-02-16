@@ -1,0 +1,56 @@
+{% extends 'appbuilder/baselayout.html' %}
+
+{% import 'appbuilder/general/lib.html' as lib %}
+
+{% block head_js %}
+{{ super() }}
+<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+
+<script type="text/javascript">
+
+var app = angular.module('myApp', []);
+
+app.config(['$interpolateProvider', function($interpolateProvider) {
+  $interpolateProvider.startSymbol('{[');
+  $interpolateProvider.endSymbol(']}');
+}]);
+
+app.controller("TableCtrl", function($scope, $http) {
+  $http.get('/contactmodelview2/api').
+    success(function(data, status, headers, config) {
+      $scope.data = data;
+      console.log($scope.data.result);
+    }).
+    error(function(data, status, headers, config) {
+      // log error
+    });
+});
+
+
+</script>
+{% endblock %}
+
+
+{% block content %}
+
+
+{{ super() }}
+
+
+<input class=" filter_val form-control" id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
+
+<div  ng-app="myApp" class="table-responsive">
+<div ng-controller="TableCtrl">
+<table class="table table-bordered table-hover">
+	<thead id="thead">
+	</thead>
+	<tbody id="tbody">
+        <tr ng-repeat="row in data.result"><td>{[row.name]}</td></tr>
+    </tbody>
+</table>
+</div>
+</div>
+
+
+
+{% endblock %}
