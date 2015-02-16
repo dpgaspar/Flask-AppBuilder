@@ -1,6 +1,6 @@
 from flask.ext.appbuilder.baseviews import BaseView
 from flask.ext.appbuilder.baseviews import expose
-from app import appbuilder
+from . import appbuilder
 
 class MyView(BaseView):
     route_base = "/myview"

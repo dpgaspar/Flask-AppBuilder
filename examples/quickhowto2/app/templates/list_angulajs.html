@@ -16,6 +16,10 @@ app.config(['$interpolateProvider', function($interpolateProvider) {
 }]);
 
 app.controller("TableCtrl", function($scope, $http) {
+
+  $scope.filter = "";
+
+  function ajaxGet() {
   $http.get('/contactmodelview2/api').
     success(function(data, status, headers, config) {
       $scope.data = data;
@@ -24,6 +28,8 @@ app.controller("TableCtrl", function($scope, $http) {
     error(function(data, status, headers, config) {
       // log error
     });
+    }
+   ajaxGet();
 });
 
 
@@ -32,10 +38,7 @@ app.controller("TableCtrl", function($scope, $http) {
 
 
 {% block content %}
-
-
 {{ super() }}
-
 
 <input class=" filter_val form-control" id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
 
@@ -45,7 +48,9 @@ app.controller("TableCtrl", function($scope, $http) {
 	<thead id="thead">
 	</thead>
 	<tbody id="tbody">
-        <tr ng-repeat="row in data.result"><td>{[row.name]}</td></tr>
+        <tr ng-repeat="row in data.result">
+            <td ng-repeat="col in data.list_columns">{[row[col] ]}</td>
+        </tr>
     </tbody>
 </table>
 </div>
