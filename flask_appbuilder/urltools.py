@@ -78,7 +78,7 @@ def get_order_args():
     for arg in request.args:
         re_match = re.findall('_oc_(.*)', arg)
         if re_match:
-            orders[re_match[0]] = (request.args.get(arg),request.args.get('_od_' + re_match[0]))
+            orders[re_match[0]] = (request.args.get(arg), request.args.get('_od_' + re_match[0]))
     return orders
 
 def get_filter_args(filters):

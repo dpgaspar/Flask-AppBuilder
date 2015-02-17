@@ -1,10 +1,24 @@
 {% extends 'appbuilder/baselayout.html' %}
 
 {% import 'appbuilder/general/lib.html' as lib %}
+{% include 'appbuilder/general/alert.html' %}
 
 {% block head_js %}
 {{ super() }}
 <script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+
+<script type="text/javascript">
+var can_show = {{ "true" if "can_show" | is_item_visible(modelview_name) else "false" }};
+var can_add = {{ "true" if "can_add" | is_item_visible(modelview_name) else "false" }};
+var can_edit = {{ "true" if "can_edit" | is_item_visible(modelview_name) else "false" }};
+var can_delete = {{ "true" if "can_delete" | is_item_visible(modelview_name) else "false" }};
+var base_url = "{{ url_for(modelview_name + ".read") }}";
+var show_url = "{{ url_for(modelview_name + ".show", pk="") }}";
+var add_url = "{{ url_for(modelview_name + ".add") }}";
+var edit_url = "{{ url_for(modelview_name + ".edit", pk="") }}";
+var delete_url = "{{ url_for(modelview_name + ".delete", pk="") }}";
+
+</script>
 
 <script type="text/javascript">
 
@@ -20,16 +34,25 @@ app.controller("TableCtrl", function($scope, $http) {
   $scope.filter = "";
   $scope.order_column = "";
   $scope.order_direction = "";
+  $scope.base_url = base_url;
+  $scope.show_url = show_url;
+  $scope.add_url = add_url;
+  $scope.edit_url = edit_url;
+  $scope.delete_url = delete_url;
+
 
   function ajaxGet() {
-      if ($scope.filter == "" ) {
-        var base_url = "/contactmodelview2/api";
+      var query_string = "";
+      var get_params = {};
+      if ($scope.filter != "" ) {
+        get_params['_flt_0_name'] = $scope.filter;
       }
-      else {
-        var base_url = "/contactmodelview2/api?_flt_0_name=" + $scope.filter;
+      if ($scope.order_column != "") {
+        get_params['_oc_ContactModelView2'] = $scope.order_column;
+        get_params['_od_ContactModelView2'] = $scope.order_direction;
       }
-
-      $http.get(base_url).
+      console.log("GET", get_params);
+      $http.get($scope.base_url, { params : get_params }).
         success(function(data, status, headers, config) {
           $scope.data = data;
         }).
@@ -41,11 +64,36 @@ app.controller("TableCtrl", function($scope, $http) {
         ajaxGet();
     });
 
-    function orderClick(colName) {
-        alert(colName);
+    $scope.orderClick = function(col) {
+        if ($scope.order_column == col) {
+            if ($scope.order_direction == 'asc') {
+                $scope.order_direction = 'desc';
+            }
+            else {
+                $scope.order_direction = 'asc';
+            }
+        }
+        else {
+            $scope.order_column = col;
+            $scope.order_direction = 'asc';
+        }
+        ajaxGet();
     }
 
-   ajaxGet();
+    $scope.getOrderType = function(col) {
+        if ($scope.order_column == col) {
+            if ($scope.order_direction == 'asc') {
+                return 2;
+            }
+            else {
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    ajaxGet();
+    console.log($scope);
 });
 
 
@@ -64,12 +112,34 @@ app.controller("TableCtrl", function($scope, $http) {
     <div class="table-responsive">
     <table class="table table-bordered table-hover">
         <thead id="thead">
-        <tr><th ng-repeat="col in data.list_columns">
-            <a href="#" ng-click="orderClick({[data.label_columns[col] ]})">{[data.label_columns[col] ]}</a>
+        <tr>
+        <th class="col-md-1 col-lg-1 col-sm-1" ></th>
+        <th ng-repeat="col in data.list_columns">
+            <a href="#" ng-click="orderClick(col)">{[data.label_columns[col];]}
+                <i ng-if="getOrderType(col) == 2" class="animate-switch fa fa-chevron-up pull-right"></i>
+                <i ng-if="getOrderType(col) == 1" class="animate-switch fa fa-chevron-down pull-right"></i>
+                <i ng-if="getOrderType(col) == 0" class="animate-switch fa fa-arrows-v pull-right"></i>
+            </a>
         </th></tr>
         </thead>
         <tbody id="tbody">
             <tr ng-repeat="row in data.result">
+                <td><center>
+                    <div class="btn-group btn-group-xs" style="display: flex;">
+                        <a href="{[show_url + data.pks[$index]]}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
+                        title="{{_('Show record')}}">
+                        <i class="fa fa-search"></i>
+                        </a>
+                        <a href="{[edit_url + data.pks[$index]]}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
+                        title="{{_('Show record')}}">
+                        <i class="fa fa-edit"></i>
+                        </a>
+                        <a data-text="{{ _('You sure you want to delete this item?') }}" data-href="{[delete_url + data.pks[$index]]}" class="btn btn-sm btn-primary confirm" rel="tooltip"
+                        title="{{_('Delete record')}}" data-toggle="modal" data-target="#modal-confirm" href="#">
+                        <i class="fa fa-eraser"></i>
+                        </a>
+                    </div>
+                </center></td>
                 <td ng-repeat="col in data.list_columns">{[row[col] ]}</td>
             </tr>
         </tbody>
