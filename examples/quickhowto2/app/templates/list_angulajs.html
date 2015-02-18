@@ -15,111 +15,30 @@ var show_url = "{{ url_for(modelview_name + ".show", pk="") }}";
 var add_url = "{{ url_for(modelview_name + ".add") }}";
 var edit_url = "{{ url_for(modelview_name + ".edit", pk="") }}";
 var delete_url = "{{ url_for(modelview_name + ".delete", pk="") }}";
-
 </script>
 
-<script type="text/javascript">
+<script src="{{url_for('static',filename='js/app.js')}}"></script>
+<script src="{{url_for('static',filename='js/Controllers/TableCrtl.js')}}"></script>
+<script src="{{url_for('static',filename='js/Directives/btnDirectives.js')}}"></script>
 
-var app = angular.module('myApp', []);
-
-app.config(['$interpolateProvider', function($interpolateProvider) {
-  $interpolateProvider.startSymbol('{[');
-  $interpolateProvider.endSymbol(']}');
-}]);
-
-app.controller("TableCtrl", function($scope, $http) {
-
-  $scope.filter = "";
-  $scope.order_column = "";
-  $scope.order_direction = "";
-  $scope.base_url = base_url;
-  $scope.show_url = show_url;
-  $scope.add_url = add_url;
-  $scope.edit_url = edit_url;
-  $scope.delete_url = delete_url;
-  $scope.can_show = can_show;
-  $scope.can_add = can_add;
-  $scope.can_edit = can_edit;
-  $scope.can_delete = can_delete;
-
-
-  function ajaxGet() {
-      var query_string = "";
-      var get_params = {};
-      if ($scope.filter != "" ) {
-        get_params['_flt_0_name'] = $scope.filter;
-      }
-      if ($scope.order_column != "") {
-        get_params['_oc_ContactModelView2'] = $scope.order_column;
-        get_params['_od_ContactModelView2'] = $scope.order_direction;
-      }
-      console.log("GET", get_params);
-      $http.get($scope.base_url, { params : get_params }).
-        success(function(data, status, headers, config) {
-          $scope.data = data;
-        }).
-        error(function(data, status, headers, config) {
-          // log error
-        });
-   }
-   $scope.$watch('filter', function (value) {
-        ajaxGet();
-    });
-
-    $scope.orderClick = function(col) {
-        if ($scope.order_column == col) {
-            if ($scope.order_direction == 'asc') {
-                $scope.order_direction = 'desc';
-            }
-            else {
-                $scope.order_direction = 'asc';
-            }
-        }
-        else {
-            $scope.order_column = col;
-            $scope.order_direction = 'asc';
-        }
-        ajaxGet();
-    }
-
-    $scope.getOrderType = function(col) {
-        if ($scope.order_column == col) {
-            if ($scope.order_direction == 'asc') {
-                return 2;
-            }
-            else {
-                return 1;
-            }
-        }
-        return 0;
-    }
-
-    ajaxGet();
-    console.log($scope);
-});
-
-
-</script>
 {% endblock %}
 
 
 {% block content %}
-{{ super() }}
 {% include 'appbuilder/general/confirm.html' %}
 {% include 'appbuilder/general/alert.html' %}
 
+{{ super() }}
 
-<div  ng-app="myApp" >
+
+<div  ng-app="FAB" >
 <div ng-controller="TableCtrl">
 
     <input class=" filter_val form-control" ng-model='filter' id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
 
     <div class="well well-sm">
         	&nbsp;
-            <a ng-if="can_add" href="{[add_url]}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
-            title="{{_('Add a new record')}}">
-            <i class="fa fa-plus"></i>
-            </a>
+            <btn-add ng-if="can_add" url={[add_url]} tip-text="{{_('Add a new record')}}"/>
         <div class="pull-right">
 			<strong>{{ _('Record Count') }}:</strong> {[ data.count ]}
 		</div>
@@ -132,9 +51,9 @@ app.controller("TableCtrl", function($scope, $http) {
         <th class="col-md-1 col-lg-1 col-sm-1" ></th>
         <th ng-repeat="col in data.list_columns">
             <a href="#" ng-click="orderClick(col)">{[data.label_columns[col];]}
-                <i ng-if="getOrderType(col) == 2" class="animate-switch fa fa-chevron-up pull-right"></i>
-                <i ng-if="getOrderType(col) == 1" class="animate-switch fa fa-chevron-down pull-right"></i>
-                <i ng-if="getOrderType(col) == 0" class="animate-switch fa fa-arrows-v pull-right"></i>
+                <i ng-if="getOrderType(col) == 2" class="fa fa-chevron-up pull-right"></i>
+                <i ng-if="getOrderType(col) == 1" class="fa fa-chevron-down pull-right"></i>
+                <i ng-if="getOrderType(col) == 0" class="fa fa-arrows-v pull-right"></i>
             </a>
         </th></tr>
         </thead>
