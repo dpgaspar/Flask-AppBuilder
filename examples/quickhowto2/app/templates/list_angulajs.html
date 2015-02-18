@@ -37,6 +37,10 @@ app.controller("TableCtrl", function($scope, $http) {
   $scope.add_url = add_url;
   $scope.edit_url = edit_url;
   $scope.delete_url = delete_url;
+  $scope.can_show = can_show;
+  $scope.can_add = can_add;
+  $scope.can_edit = can_edit;
+  $scope.can_delete = can_delete;
 
 
   function ajaxGet() {
@@ -101,11 +105,25 @@ app.controller("TableCtrl", function($scope, $http) {
 
 {% block content %}
 {{ super() }}
+{% include 'appbuilder/general/confirm.html' %}
+{% include 'appbuilder/general/alert.html' %}
+
 
 <div  ng-app="myApp" >
 <div ng-controller="TableCtrl">
 
     <input class=" filter_val form-control" ng-model='filter' id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
+
+    <div class="well well-sm">
+        	&nbsp;
+            <a ng-if="can_add" href="{[add_url]}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
+            title="{{_('Add a new record')}}">
+            <i class="fa fa-plus"></i>
+            </a>
+        <div class="pull-right">
+			<strong>{{ _('Record Count') }}:</strong> {[ data.count ]}
+		</div>
+    </div>
 
     <div class="table-responsive">
     <table class="table table-bordered table-hover">
@@ -129,7 +147,7 @@ app.controller("TableCtrl", function($scope, $http) {
                         <i class="fa fa-search"></i>
                         </a>
                         <a href="{[edit_url + data.pks[$index]]}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
-                        title="{{_('Show record')}}">
+                        title="{{_('Edit record')}}">
                         <i class="fa fa-edit"></i>
                         </a>
                         <a data-text="{{ _('You sure you want to delete this item?') }}" data-href="{[delete_url + data.pks[$index]]}" class="btn btn-sm btn-primary confirm" rel="tooltip"
