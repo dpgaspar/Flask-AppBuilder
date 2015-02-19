@@ -1,5 +1,5 @@
 
-app.controller("TableCtrl", function($scope, $http) {
+app.controller("TableCtrl", function($scope, $http, modelRestService) {
 
   $scope.filter = "";
   $scope.order_column = "";
@@ -15,31 +15,21 @@ app.controller("TableCtrl", function($scope, $http) {
   $scope.can_delete = can_delete;
   $scope.modelview_name = modelview_name;
 
-  function ajaxGet() {
-      var query_string = "";
-      var get_params = {};
-      if ($scope.filter != "" ) {
-        get_params['_flt_0_name'] = $scope.filter;
-      }
-      if ($scope.order_column != "") {
-        get_params['_oc_' + $scope.modelview_name] = $scope.order_column;
-        get_params['_od_' + $scope.modelview_name] = $scope.order_direction;
-      }
-      console.log("GET", get_params);
-      $http.get($scope.base_url, { params : get_params }).
-        success(function(data, status, headers, config) {
-          $scope.data = data;
-        }).
-        error(function(data, status, headers, config) {
-          // log error
-        });
-   }
+  function query() {
+    modelRestService.query($scope.modelview_name,
+                            $scope.base_url,
+                            $scope.filter,
+                            $scope.order_column,
+                            $scope.order_direction)
+    .then(function( data ) {
+        $scope.data = data;
+    });
+  }
 
    $scope.delete = function(pk) {
       $http.delete($scope.base_url + '/' + pk).
         success(function(data, status, headers, config) {
-          console.log("DELETE", data);
-          ajaxGet();
+          query();
         }).
         error(function(data, status, headers, config) {
           // log error
@@ -47,7 +37,7 @@ app.controller("TableCtrl", function($scope, $http) {
    }
 
    $scope.$watch('filter', function (value) {
-        ajaxGet();
+        query();
     });
 
 
@@ -65,7 +55,7 @@ app.controller("TableCtrl", function($scope, $http) {
             $scope.order_column = col;
             $scope.order_direction = 'asc';
         }
-        ajaxGet();
+        query();
     }
 
     $scope.getOrderType = function(col) {
@@ -80,6 +70,6 @@ app.controller("TableCtrl", function($scope, $http) {
         return 0;
     }
 
-    ajaxGet();
+    query();
     console.log($scope);
 });
