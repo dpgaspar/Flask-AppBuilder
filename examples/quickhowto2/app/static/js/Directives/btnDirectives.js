@@ -8,9 +8,7 @@ app.directive('btnAdd', function() {
         tipText: '@',
         url: '@'
         },
-      template: '<a href="{[url]}" class="btn btn-sm btn-primary" \
-                data-toggle="tooltip" rel="tooltip" title="{[tipText]}">\
-                <i class="fa fa-plus"></i></a>'
+      templateUrl: '/static/angularAssets/btnAdd.html'
   };
 });
 
@@ -24,9 +22,7 @@ app.directive('btnShow', function() {
         tipText: '@',
         url: '@'
         },
-      template: '<a href="{[url]}" class="btn btn-sm btn-primary" \
-                data-toggle="tooltip" rel="tooltip" title="{[tipText]}">\
-                <i class="fa fa-search"></i></a>'
+      templateUrl: '/static/angularAssets/btnShow.html'
   };
 });
 
@@ -41,9 +37,7 @@ app.directive('btnEdit', function() {
         tipText: '@',
         url: '@'
         },
-      template: '<a href="{[url]}" class="btn btn-sm btn-primary" \
-                data-toggle="tooltip" rel="tooltip" title="{[tipText]}">\
-                <i class="fa fa-edit"></i></a>'
+      templateUrl: '/static/angularAssets/btnEdit.html'
   };
 });
 

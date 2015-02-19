@@ -237,9 +237,19 @@ class RestCRUDView(BaseCRUDView):
             ret[key] = str(value)
         return ret
 
-    @expose('/api', methods=['GET'])
-    @has_access
-    @permission_name('list')
+    @expose('/api', methods=['GET', 'POST'])
+    @expose('/api/<pk>', methods=['PUT', 'DELETE'])
+    def api(self, pk=""):
+        if request.method == 'GET':
+            return self.api_read()
+        if request.method == 'POST':
+            return self.api_create()
+        if request.method == 'PUT':
+            return self.api_update(pk)
+        if request.method == 'DELETE':
+            return self.api_delete(pk)
+
+
     def api_read(self):
         """
             Parameters are passed as JSON with the following structure
@@ -276,21 +286,12 @@ class RestCRUDView(BaseCRUDView):
         response.headers['Content-Type'] = "application/json"
         return response
 
-    @expose('/api', methods=['POST'])
-    @has_access
-    @permission_name('add')
     def api_create(self):
         pass
 
-    @expose('/api/<pk>', methods=['PUT'])
-    @has_access
-    @permission_name('edit')
     def api_update(self, pk):
         pass
 
-    @has_access
-    @expose('/api/<pk>', methods=['DELETE'])
-    @permission_name('delete')
     def api_delete(self, pk):
         item = self.datamodel.get(pk)
         self.pre_delete(item)
