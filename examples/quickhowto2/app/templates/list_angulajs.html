@@ -10,11 +10,12 @@ var can_show = {{ "true" if "can_show" | is_item_visible(modelview_name) else "f
 var can_add = {{ "true" if "can_add" | is_item_visible(modelview_name) else "false" }};
 var can_edit = {{ "true" if "can_edit" | is_item_visible(modelview_name) else "false" }};
 var can_delete = {{ "true" if "can_delete" | is_item_visible(modelview_name) else "false" }};
-var base_url = "{{ url_for(modelview_name + ".read") }}";
+var base_url = "{{ url_for(modelview_name + ".api_read") }}";
 var show_url = "{{ url_for(modelview_name + ".show", pk="") }}";
 var add_url = "{{ url_for(modelview_name + ".add") }}";
 var edit_url = "{{ url_for(modelview_name + ".edit", pk="") }}";
 var delete_url = "{{ url_for(modelview_name + ".delete", pk="") }}";
+var modelview_name = "{{modelview_name}}";
 </script>
 
 <script src="{{url_for('static',filename='js/app.js')}}"></script>
@@ -65,7 +66,7 @@ var delete_url = "{{ url_for(modelview_name + ".delete", pk="") }}";
                             <btn-edit ng-if="can_edit" url="{[edit_url + data.pks[$index]]}" tip-text="{{_('Edit record')}}"></btn-edit>
                             <btn-delete ng-if="can_delete" url="{[delete_url + data.pks[$index]]}" tip-text="{{_('Delete record')}}"></btn-delete>
 
-                        <a data-text="{{ _('You sure you want to delete this item?') }}" data-href="{[delete_url + data.pks[$index]]}" class="btn btn-sm btn-primary confirm" rel="tooltip"
+                        <a data-text="{{ _('You sure you want to delete this item?') }}" ng-click="delete(data.pks[$index])" class="btn btn-sm btn-primary confirm" rel="tooltip"
                         title="{{_('Delete record')}}" data-toggle="modal" data-target="#modal-confirm" href="#">
                         <i class="fa fa-eraser"></i>
                         </a>

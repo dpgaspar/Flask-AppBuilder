@@ -240,7 +240,7 @@ class RestCRUDView(BaseCRUDView):
     @expose('/api', methods=['GET'])
     @has_access
     @permission_name('list')
-    def read(self):
+    def api_read(self):
         """
             Parameters are passed as JSON with the following structure
 
@@ -279,20 +279,27 @@ class RestCRUDView(BaseCRUDView):
     @expose('/api', methods=['POST'])
     @has_access
     @permission_name('add')
-    def create(self):
+    def api_create(self):
         pass
 
     @expose('/api/<pk>', methods=['PUT'])
     @has_access
     @permission_name('edit')
-    def update(self, pk):
+    def api_update(self, pk):
         pass
 
     @has_access
     @expose('/api/<pk>', methods=['DELETE'])
     @permission_name('delete')
-    def delete(self, pk):
-        pass
+    def api_delete(self, pk):
+        item = self.datamodel.get(pk)
+        self.pre_delete(item)
+        self.datamodel.delete(item)
+        self.post_delete(item)
+        response = make_response(jsonify({'result': True}), 200)
+        response.headers['Content-Type'] = "application/json"
+        return response
+
 
 
 class ModelView(RestCRUDView):

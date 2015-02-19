@@ -13,7 +13,7 @@ app.controller("TableCtrl", function($scope, $http) {
   $scope.can_add = can_add;
   $scope.can_edit = can_edit;
   $scope.can_delete = can_delete;
-
+  $scope.modelview_name = modelview_name;
 
   function ajaxGet() {
       var query_string = "";
@@ -22,8 +22,8 @@ app.controller("TableCtrl", function($scope, $http) {
         get_params['_flt_0_name'] = $scope.filter;
       }
       if ($scope.order_column != "") {
-        get_params['_oc_ContactModelView2'] = $scope.order_column;
-        get_params['_od_ContactModelView2'] = $scope.order_direction;
+        get_params['_oc_' + $scope.modelview_name] = $scope.order_column;
+        get_params['_od_' + $scope.modelview_name] = $scope.order_direction;
       }
       console.log("GET", get_params);
       $http.get($scope.base_url, { params : get_params }).
@@ -34,9 +34,23 @@ app.controller("TableCtrl", function($scope, $http) {
           // log error
         });
    }
+
+   $scope.delete = function(pk) {
+      $http.delete($scope.base_url + '/' + pk).
+        success(function(data, status, headers, config) {
+          console.log("DELETE", data);
+          ajaxGet();
+        }).
+        error(function(data, status, headers, config) {
+          // log error
+        });
+   }
+
    $scope.$watch('filter', function (value) {
         ajaxGet();
     });
+
+
 
     $scope.orderClick = function(col) {
         if ($scope.order_column == col) {
