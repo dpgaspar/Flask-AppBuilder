@@ -14,6 +14,7 @@ app.controller("TableCtrl", function($scope, $http, modelRestService) {
   $scope.can_edit = can_edit;
   $scope.can_delete = can_delete;
   $scope.modelview_name = modelview_name;
+  $scope.page_size = page_size;
 
   function query() {
     modelRestService.query($scope.modelview_name,
@@ -40,9 +41,14 @@ app.controller("TableCtrl", function($scope, $http, modelRestService) {
         query();
     });
 
+   $scope.range = function(min, max, step){
+        step = step || 1;
+        var input = [];
+        for (var i = min; i <= max; i += step) input.push(i);
+        return input;
+   };
 
-
-    $scope.orderClick = function(col) {
+   $scope.orderClick = function(col) {
         if ($scope.order_column == col) {
             if ($scope.order_direction == 'asc') {
                 $scope.order_direction = 'desc';
@@ -56,7 +62,7 @@ app.controller("TableCtrl", function($scope, $http, modelRestService) {
             $scope.order_direction = 'asc';
         }
         query();
-    }
+   }
 
     $scope.getOrderType = function(col) {
         if ($scope.order_column == col) {

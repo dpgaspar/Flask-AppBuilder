@@ -59,7 +59,9 @@ class ContactModelView2(ModelView):
 
     @expose('/jsonexp')
     def jsonexp(self):
-        return self.render_template('list_angulajs.html', modelview_name=self.__class__.__name__)
+        return self.render_template('list_angulajs.html',
+                                    modelview_name=self.__class__.__name__,
+                                    page_size = self.page_size)
 
 
 class ContactModelView(ModelView):

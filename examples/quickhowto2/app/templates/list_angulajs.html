@@ -16,6 +16,7 @@ var add_url = "{{ url_for(modelview_name + ".add") }}";
 var edit_url = "{{ url_for(modelview_name + ".edit", pk="") }}";
 var delete_url = "{{ url_for(modelview_name + ".delete", pk="") }}";
 var modelview_name = "{{modelview_name}}";
+var page_size = "{{page_size}}";
 </script>
 
 <script src="{{url_for('static',filename='js/app.js')}}"></script>
@@ -39,6 +40,17 @@ var modelview_name = "{{modelview_name}}";
     <input class=" filter_val form-control" ng-model='filter' id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
 
     <div class="well well-sm">
+            <div class="btn-group">
+                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                {{_('Page size')}}<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                            <li ng-repeat="page_size_elem in range(5,35,5)" ng-class="{active: page_size == page_size_elem}">
+                                <a href="#" ng-click="page_size = page_size_elem">{[page_size_elem]}</a>
+                            </li>
+                </ul>
+            </div>
+
         	&nbsp;
             <btn-add ng-if="can_add" url={[add_url]} tip-text="{{_('Add a new record')}}"></btn-add>
         <div class="pull-right">
