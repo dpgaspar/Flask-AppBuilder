@@ -17,6 +17,7 @@ var edit_url = "{{ url_for(modelview_name + ".edit", pk="") }}";
 var delete_url = "{{ url_for(modelview_name + ".delete", pk="") }}";
 var modelview_name = "{{modelview_name}}";
 var page_size = "{{page_size}}";
+var page = "{{page}}";
 </script>
 
 <script src="{{url_for('static',filename='js/app.js')}}"></script>
@@ -46,13 +47,13 @@ var page_size = "{{page_size}}";
                 </button>
                 <ul class="dropdown-menu" role="menu">
                             <li ng-repeat="page_size_elem in range(5,35,5)" ng-class="{active: page_size == page_size_elem}">
-                                <a href="#" ng-click="page_size = page_size_elem">{[page_size_elem]}</a>
+                                <a href="#" ng-click="pageSizeClick(page_size_elem)">{[page_size_elem]}</a>
                             </li>
                 </ul>
             </div>
 
         	&nbsp;
-            <btn-add ng-if="can_add" url={[add_url]} tip-text="{{_('Add a new record')}}"></btn-add>
+            <ab-btn-add ng-if="can_add" url={[add_url]} tip-text="{{_('Add a new record')}}"></ab-btn-add>
         <div class="pull-right">
 			<strong>{{ _('Record Count') }}:</strong> {[ data.count ]}
 		</div>
@@ -75,9 +76,9 @@ var page_size = "{{page_size}}";
             <tr ng-repeat="row in data.result">
                 <td><center>
                     <div class="btn-group btn-group-xs" style="display: flex;">
-                            <btn-show ng-if="can_show" url="{[show_url + data.pks[$index]]}" tip-text="{{_('Show record')}}"></btn-show>
-                            <btn-edit ng-if="can_edit" url="{[edit_url + data.pks[$index]]}" tip-text="{{_('Edit record')}}"></btn-edit>
-                            <btn-delete ng-if="can_delete" url="{[delete_url + data.pks[$index]]}" tip-text="{{_('Delete record')}}"></btn-delete>
+                            <ab-btn-show ng-if="can_show" url="{[show_url + data.pks[$index]]}" tip-text="{{_('Show record')}}"></ab-btn-show>
+                            <ab-btn-edit ng-if="can_edit" url="{[edit_url + data.pks[$index]]}" tip-text="{{_('Edit record')}}"></ab-btn-edit>
+                            <ab-btn-delete ng-if="can_delete" url="{[delete_url + data.pks[$index]]}" tip-text="{{_('Delete record')}}"></ab-btn-delete>
 
                         <a data-text="{{ _('You sure you want to delete this item?') }}" ng-click="delete(data.pks[$index])" class="btn btn-sm btn-primary confirm" rel="tooltip"
                         title="{{_('Delete record')}}" data-toggle="modal" data-target="#modal-confirm" href="#">

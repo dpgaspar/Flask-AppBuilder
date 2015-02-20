@@ -20,6 +20,12 @@ app.service("modelRestService", function($http, $q) {
         		get_params['_oc_' + modelview_name] = order_column;
 	        	get_params['_od_' + modelview_name] = order_direction;
               	}
+                if (page) {
+			get_params['_page_' + modelview_name] = page;
+		} 
+                if (page_size) {
+			get_params['_psize_' + modelview_name] = page_size;
+		}
 	      	console.log("GET", get_params);
       	      	var request = $http.get(base_url, { params : get_params });
               	return(request.then(handleSuccess, handleError ));

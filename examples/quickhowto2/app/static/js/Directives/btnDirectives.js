@@ -1,4 +1,4 @@
-app.directive('btnAdd', function() {
+app.directive('abBtnAdd', function() {
   return {
 
       restrict: 'AE',
@@ -8,11 +8,11 @@ app.directive('btnAdd', function() {
         tipText: '@',
         url: '@'
         },
-      templateUrl: '/static/angularAssets/btnAdd.html'
+      templateUrl: '/static/angularAssets/abBtnAdd.html'
   };
 });
 
-app.directive('btnShow', function() {
+app.directive('abBtnShow', function() {
   return {
 
       restrict: 'AE',
@@ -22,12 +22,12 @@ app.directive('btnShow', function() {
         tipText: '@',
         url: '@'
         },
-      templateUrl: '/static/angularAssets/btnShow.html'
+      templateUrl: '/static/angularAssets/abBtnShow.html'
   };
 });
 
 
-app.directive('btnEdit', function() {
+app.directive('abBtnEdit', function() {
   return {
 
       restrict: 'AE',
@@ -37,11 +37,11 @@ app.directive('btnEdit', function() {
         tipText: '@',
         url: '@'
         },
-      templateUrl: '/static/angularAssets/btnEdit.html'
+      templateUrl: '/static/angularAssets/abBtnEdit.html'
   };
 });
 
-app.directive('btnDelete', function() {
+app.directive('abBtnDelete', function() {
   return {
 
       restrict: 'AE',
@@ -56,3 +56,18 @@ app.directive('btnDelete', function() {
                 <i class="fa fa-eraser"></i></a>'
   };
 });
+
+app.directive('abMenuPageSize', function() {
+  return {
+
+      restrict: 'AE',
+      replace: 'true',
+      scope: 'true',
+      scope: {
+        tipText: '@',
+        url: '@'
+        },
+      templateUrl: '/static/angularAssets/abMenuPageSize.html'
+  };
+});
+
