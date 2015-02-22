@@ -64,10 +64,22 @@ app.directive('abMenuPageSize', function() {
       replace: 'true',
       scope: 'true',
       scope: {
-        tipText: '@',
-        url: '@'
+        min: '@',
+        max: '@',
+        step: '@',
+        pageSize: '@',
+        title: '@',
+        url: '@',
+        onClick: '&'
         },
-      templateUrl: '/static/angularAssets/abMenuPageSize.html'
+      templateUrl: '/static/angularAssets/abMenuPageSize.html',
+      controller: function ($scope) {
+            $scope.selPageSize = function (page_size) {
+                $scope.onClick()(page_size);
+            };
+            $scope.range = function() {
+                return [1,2,3,10,20];
+            };
+      },
   };
 });
-

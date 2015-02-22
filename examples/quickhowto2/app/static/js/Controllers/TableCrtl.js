@@ -1,4 +1,5 @@
 
+
 app.controller("TableCtrl", function($scope, $http, modelRestService) {
 
   $scope.filter = "";

@@ -16,8 +16,8 @@ var add_url = "{{ url_for(modelview_name + ".add") }}";
 var edit_url = "{{ url_for(modelview_name + ".edit", pk="") }}";
 var delete_url = "{{ url_for(modelview_name + ".delete", pk="") }}";
 var modelview_name = "{{modelview_name}}";
-var page_size = "{{page_size}}";
-var page = "{{page}}";
+var page_size = {{page_size}};
+var page = {{0 if not page else page}};
 </script>
 
 <script src="{{url_for('static',filename='js/app.js')}}"></script>
@@ -51,7 +51,8 @@ var page = "{{page}}";
                             </li>
                 </ul>
             </div>
-
+            <ab-menu-page-size on-click="pageSizeClick" min="1" max="20" step="1" title="{{_('Page size')}}" page-size="{[page_size]}">
+            </ab-menu-page-size>
         	&nbsp;
             <ab-btn-add ng-if="can_add" url={[add_url]} tip-text="{{_('Add a new record')}}"></ab-btn-add>
         <div class="pull-right">
