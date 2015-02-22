@@ -45,13 +45,6 @@ app.controller("TableCtrl", function($scope, $http, modelRestService) {
         query();
     });
 
-   $scope.range = function(min, max, step){
-        step = step || 1;
-        var input = [];
-        for (var i = min; i <= max; i += step) input.push(i);
-        return input;
-   };
-
    $scope.orderClick = function(col) {
         if ($scope.order_column == col) {
             if ($scope.order_direction == 'asc') {
@@ -70,6 +63,11 @@ app.controller("TableCtrl", function($scope, $http, modelRestService) {
 
     $scope.pageSizeClick = function(page_size) {
         $scope.page_size = page_size;
+        query();
+    }
+
+    $scope.pageClick = function(page) {
+        $scope.page = page;
         query();
     }
 

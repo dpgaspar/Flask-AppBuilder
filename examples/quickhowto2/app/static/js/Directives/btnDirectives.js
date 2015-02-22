@@ -57,9 +57,63 @@ app.directive('abBtnDelete', function() {
   };
 });
 
-app.directive('abMenuPageSize', function() {
+app.directive('abPagination', function() {
   return {
 
+      restrict: 'AE',
+      replace: 'true',
+      scope: 'false',
+      scope: {
+        page: '=',
+        pageSize: '=',
+        count: '=',
+        numPages: '@',
+        onClick: '&'
+        },
+      templateUrl: '/static/angularAssets/abPagination.html',
+      controller: function ($scope) {
+
+            $scope.initVars = function() {
+                $scope.init_page = 0;
+                $scope.pages = Math.round($scope.count / $scope.pageSize);
+                console.log($scope.pages, $scope.count, $scope.pageSize, $scope.count / $scope.pageSize);
+                $scope.min = $scope.page - 3;
+                $scope.max = $scope.page + 3 + 1;
+                if ($scope.min < 0) {
+                    $scope.max = $scope.max - $scope.min;
+                    $scope.min = 0;
+                }
+                if ($scope.max >= $scope.pages) {
+                    $scope.min = $scope.min - $scope.max + $scope.pages;
+                    $scope.max = $scope.pages;
+                }
+
+            };
+            $scope.initVars();
+            console.log("DUMP", $scope);
+            $scope.selPage = function (page) {
+                if (page >= 0 && page <= $scope.pages) {
+                    $scope.page = page;
+                    $scope.initVars();
+                    $scope.onClick()(page);
+                }
+            };
+
+
+            $scope.range = function(min, max, step) {
+                step = step || 1;
+                var input = [];
+                for (var i = min; i <= max; i += step) input.push(i);
+                return input;
+            };
+
+      },
+  };
+});
+
+
+app.directive('abMenuPageSize', function() {
+  return {
       restrict: 'AE',
       replace: 'true',
       scope: 'true',
@@ -78,7 +132,13 @@ app.directive('abMenuPageSize', function() {
                 $scope.onClick()(page_size);
             };
             $scope.range = function() {
-                return [1,2,3,10,20];
+                $scope.min = parseInt($scope.min);
+                $scope.max = parseInt($scope.max);
+                $scope.step = parseInt($scope.step);
+                $scope.step = $scope.step || 1;
+                var input = [];
+                for (var i = $scope.min; i <= $scope.max; i += $scope.step) input.push(i);
+                return input;
             };
       },
   };
