@@ -64,9 +64,9 @@ app.directive('abPagination', function() {
       replace: 'true',
       scope: 'false',
       scope: {
-        page: '=',
-        pageSize: '=',
-        count: '=',
+        page: '@',
+        pageSize: '@',
+        count: '@',
         size: '@',
         onClick: '&'
         },
@@ -81,8 +81,11 @@ app.directive('abPagination', function() {
                 else {
                     $scope.size = 6;
                 }
-                $scope.count = $scope.count || 0
-                $scope.pages = Math.round($scope.count / $scope.pageSize);
+                $scope.count = parseInt($scope.count) || 0;
+                $scope.page = parseInt($scope.page);
+                $scope.pageSize = parseInt($scope.pageSize);
+              
+                $scope.pages = Math.floor($scope.count / $scope.pageSize);
                 $scope.min = $scope.page - ($scope.size/2);
                 $scope.max = $scope.page + ($scope.size/2);
                 if ($scope.min < 0) {
