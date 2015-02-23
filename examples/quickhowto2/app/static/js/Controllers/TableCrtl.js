@@ -5,7 +5,8 @@ app.controller("TableCtrl", function($scope, $http, modelRestService) {
   $scope.filter = "";
   $scope.order_column = "";
   $scope.order_direction = "";
-  $scope.base_url = base_url;
+  $scope.base_url_read = base_url_read;
+  $scope.base_url_delete = base_url_delete;
   $scope.show_url = show_url;
   $scope.add_url = add_url;
   $scope.edit_url = edit_url;
@@ -20,7 +21,7 @@ app.controller("TableCtrl", function($scope, $http, modelRestService) {
 
   function query() {
     modelRestService.query($scope.modelview_name,
-                            $scope.base_url,
+                            $scope.base_url_read,
                             $scope.filter,
                             $scope.order_column,
                             $scope.order_direction,
@@ -32,7 +33,7 @@ app.controller("TableCtrl", function($scope, $http, modelRestService) {
   }
 
    $scope.delete = function(pk) {
-      $http.delete($scope.base_url + '/' + pk).
+      $http.delete($scope.base_url_delete + pk).
         success(function(data, status, headers, config) {
           query();
         }).

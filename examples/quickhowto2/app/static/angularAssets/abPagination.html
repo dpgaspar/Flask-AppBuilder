@@ -11,7 +11,7 @@
     <li ng-class="{disabled: page >= pages}">
             <a href="javascript:void(0)" ng-click="selPage(page + 1)">&gt;</a>
     </li>
-    <li ng-class="{disabled: max >= pages}">
+    <li ng-class="{disabled: max > pages}">
         <a href="javascript:void(0)" ng-click="selPage(pages)">&raquo;</a>
     </li>
 </ul>

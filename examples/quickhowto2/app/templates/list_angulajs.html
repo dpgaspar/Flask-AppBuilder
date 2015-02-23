@@ -10,7 +10,8 @@ var can_show = {{ "true" if "can_show" | is_item_visible(modelview_name) else "f
 var can_add = {{ "true" if "can_add" | is_item_visible(modelview_name) else "false" }};
 var can_edit = {{ "true" if "can_edit" | is_item_visible(modelview_name) else "false" }};
 var can_delete = {{ "true" if "can_delete" | is_item_visible(modelview_name) else "false" }};
-var base_url = "{{ url_for(modelview_name + ".api") }}";
+var base_url_read = "{{ url_for(modelview_name + ".api_read") }}";
+var base_url_delete = "{{ url_for(modelview_name + ".api_delete", pk="") }}";
 var show_url = "{{ url_for(modelview_name + ".show", pk="") }}";
 var add_url = "{{ url_for(modelview_name + ".add") }}";
 var edit_url = "{{ url_for(modelview_name + ".edit", pk="") }}";
@@ -18,10 +19,17 @@ var delete_url = "{{ url_for(modelview_name + ".delete", pk="") }}";
 var modelview_name = "{{modelview_name}}";
 var page_size = {{page_size}};
 var page = {{0 if not page else page}};
+
+var form_fields = {{ form_fields | tojson | safe }};
+var search_filters = {{ search_filters | tojson | safe }};
+var active_filters = {{ active_filters | tojson | safe }};
+var label_columns = {{ label_columns | tojson | safe }};
+
 </script>
 
 <script src="{{url_for('static',filename='js/app.js')}}"></script>
 <script src="{{url_for('static',filename='js/Services/modelRestService.js')}}"></script>
+<script src="{{url_for('static',filename='js/Controllers/SearchCrtl.js')}}"></script>
 <script src="{{url_for('static',filename='js/Controllers/TableCrtl.js')}}"></script>
 <script src="{{url_for('static',filename='js/Directives/btnDirectives.js')}}"></script>
 
@@ -36,6 +44,30 @@ var page = {{0 if not page else page}};
 
 
 <div  ng-app="FAB" >
+<div ng-controller="SearchCtrl">
+    <form id="filter_form" class="form-search" method="get">
+
+    <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        {{_("Add Filter")}}
+      <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li ng-repeat="(col, filters) in search_filters">
+                <a href="javascript:void(0)" name={[col]} class="filter btn" onclick="return false;">
+                {[ label_columns[col] ]}</a>
+            </li>
+
+        </ul>
+    </div>
+
+    <table class="table table-responsive table-hover filters">
+
+    </table>
+
+</form>
+</div>
+
 <div ng-controller="TableCtrl">
 
     <input class=" filter_val form-control" ng-model='filter' id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
@@ -69,9 +101,9 @@ var page = {{0 if not page else page}};
             <tr ng-repeat="row in data.result">
                 <td><center>
                     <div class="btn-group btn-group-xs" style="display: flex;">
-                            <ab-btn-show ng-if="can_show" url="{[show_url + data.pks[$index]]}" tip-text="{{_('Show record')}}"></ab-btn-show>
-                            <ab-btn-edit ng-if="can_edit" url="{[edit_url + data.pks[$index]]}" tip-text="{{_('Edit record')}}"></ab-btn-edit>
-                            <ab-btn-delete ng-if="can_delete" url="{[delete_url + data.pks[$index]]}" tip-text="{{_('Delete record')}}"></ab-btn-delete>
+                        <ab-btn-show ng-if="can_show" url="{[show_url + data.pks[$index]]}" tip-text="{{_('Show record')}}"></ab-btn-show>
+                        <ab-btn-edit ng-if="can_edit" url="{[edit_url + data.pks[$index]]}" tip-text="{{_('Edit record')}}"></ab-btn-edit>
+                        <ab-btn-delete ng-if="can_delete" url="{[delete_url + data.pks[$index]]}" tip-text="{{_('Delete record')}}"></ab-btn-delete>
 
                         <a data-text="{{ _('You sure you want to delete this item?') }}" ng-click="delete(data.pks[$index])" class="btn btn-sm btn-primary confirm" rel="tooltip"
                         title="{{_('Delete record')}}" data-toggle="modal" data-target="#modal-confirm" href="#">

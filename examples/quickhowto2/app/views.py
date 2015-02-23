@@ -59,9 +59,21 @@ class ContactModelView2(ModelView):
 
     @expose('/jsonexp')
     def jsonexp(self):
+        form_fields = {}
+        search_filters = {}
+        dict_filters = self._filters.get_search_filters()
+        form = self.search_form.refresh()
+        for col in self.search_columns:
+            form_fields[col] = form[col]()
+            search_filters[col] = [as_unicode(flt.name) for flt in dict_filters[col]]
+        active_filters = self._filters.get_filters_values_tojson()
         return self.render_template('list_angulajs.html',
                                     modelview_name=self.__class__.__name__,
-                                    page_size = self.page_size)
+                                    page_size=self.page_size,
+                                    form_fields=form_fields,
+                                    search_filters=search_filters,
+                                    label_columns=self._label_columns_json(),
+                                    active_filters=active_filters)
 
 
 class ContactModelView(ModelView):
