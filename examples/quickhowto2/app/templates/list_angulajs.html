@@ -3,7 +3,7 @@
 
 {% block head_js %}
 {{ super() }}
-<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.3.10/angular.min.js"></script>
+<script src="{{url_for('static',filename='js/angular.min.js')}}"></script>
 
 <script type="text/javascript">
 var can_show = {{ "true" if "can_show" | is_item_visible(modelview_name) else "false" }};
@@ -41,7 +41,7 @@ var page = {{0 if not page else page}};
     <input class=" filter_val form-control" ng-model='filter' id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
 
     <div class="well well-sm">
-            <ab-pagination page="page" page-size="page_size" count="data.count" on-click="pageClick"></ab-pagination>
+            <ab-pagination size="4" page="page" page-size="page_size" count="data.count" on-click="pageClick"></ab-pagination>
 
             <ab-menu-page-size on-click="pageSizeClick" min="5" max="35" step="5" title="{{_('Page size')}}" page-size="{[page_size]}">
             </ab-menu-page-size>

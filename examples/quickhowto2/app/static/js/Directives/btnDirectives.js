@@ -67,7 +67,7 @@ app.directive('abPagination', function() {
         page: '=',
         pageSize: '=',
         count: '=',
-        numPages: '@',
+        size: '@',
         onClick: '&'
         },
       templateUrl: '/static/angularAssets/abPagination.html',
@@ -75,22 +75,28 @@ app.directive('abPagination', function() {
 
             $scope.initVars = function() {
                 $scope.init_page = 0;
+                if ($scope.size) {
+                    $scope.size = parseInt($scope.size);
+                }
+                else {
+                    $scope.size = 6;
+                }
+                $scope.count = $scope.count || 0
                 $scope.pages = Math.round($scope.count / $scope.pageSize);
-                console.log($scope.pages, $scope.count, $scope.pageSize, $scope.count / $scope.pageSize);
-                $scope.min = $scope.page - 3;
-                $scope.max = $scope.page + 3 + 1;
+                $scope.min = $scope.page - ($scope.size/2);
+                $scope.max = $scope.page + ($scope.size/2);
                 if ($scope.min < 0) {
                     $scope.max = $scope.max - $scope.min;
                     $scope.min = 0;
                 }
                 if ($scope.max >= $scope.pages) {
-                    $scope.min = $scope.min - $scope.max + $scope.pages;
                     $scope.max = $scope.pages;
-                }
+                    $scope.min = $scope.min - $scope.max + $scope.pages;
 
+                }
             };
             $scope.initVars();
-            console.log("DUMP", $scope);
+
             $scope.selPage = function (page) {
                 if (page >= 0 && page <= $scope.pages) {
                     $scope.page = page;
@@ -99,14 +105,13 @@ app.directive('abPagination', function() {
                 }
             };
 
-
             $scope.range = function(min, max, step) {
+                $scope.initVars();
                 step = step || 1;
                 var input = [];
                 for (var i = min; i <= max; i += step) input.push(i);
                 return input;
             };
-
       },
   };
 });
