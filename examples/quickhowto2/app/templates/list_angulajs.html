@@ -55,7 +55,7 @@ var label_columns = {{ label_columns | tojson | safe }};
 </form>
 </div>
 
-<div ng-controller="TableCtrl" base="{{modelview_name}}">
+<div ng-controller="TableCtrl" base="{{api_url}}">
 
     <input class=" filter_val form-control" ng-model='filter' id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
 

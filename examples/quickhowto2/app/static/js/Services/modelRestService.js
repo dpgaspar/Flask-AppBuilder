@@ -7,7 +7,8 @@ app.service("modelRestService", function($http, $q) {
 		query: query,
 		create: create,
 		update: update,
-		remove: remove
+		remove: remove,
+                getInfo: getInfo
 	});
 
     function getInfo(base_url) {

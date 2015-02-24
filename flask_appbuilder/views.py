@@ -264,6 +264,9 @@ class RestCRUDView(BaseCRUDView):
                         modelview_name = view_name,
                         api_urls=api_urls,
                         modelview_urls=modelview_urls)
+        response = make_response(ret_json, 200)
+        response.headers['Content-Type'] = "application/json"
+        return response
 
 
     @expose('/api/read', methods=['GET'])

@@ -1,13 +1,14 @@
 
 
-app.controller("TableCtrl", function($scope, $http, modelRestService, base) {
+app.controller("TableCtrl", function($scope, $http, $attrs, modelRestService) {
 
   $scope.filter = "";
   $scope.order_column = "";
   $scope.order_direction = "";
   $scope.page_size = 10;
-  $scope.page = 1;
-  $scope.base_url = base;
+  $scope.page = 0;
+  $scope.base_url = $attrs.base;
+  
 
   function init() {
     modelRestService.getInfo($scope.base_url).then(function(data) {
@@ -22,11 +23,12 @@ app.controller("TableCtrl", function($scope, $http, modelRestService, base) {
         $scope.can_edit = data.can_edit;
         $scope.can_delete = data.can_delete;
         $scope.modelview_name = data.modelview_name;
-        console.log($scope);
+        query();
     });
   }
 
   function query() {
+    if (!$scope.modelview_name) return;
     modelRestService.query($scope.modelview_name,
                             $scope.base_url_read,
                             $scope.filter,
@@ -91,6 +93,4 @@ app.controller("TableCtrl", function($scope, $http, modelRestService, base) {
         return 0;
     }
     init();
-    query();
-    console.log($scope);
 });

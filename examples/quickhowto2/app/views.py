@@ -1,5 +1,5 @@
 import calendar
-from flask import redirect, flash
+from flask import redirect, flash, url_for
 from .forms import TestForm
 from flask_appbuilder._compat import as_unicode
 from flask_appbuilder import ModelView, GroupByChartView, aggregate_count, action, expose
@@ -68,7 +68,7 @@ class ContactModelView2(ModelView):
             search_filters[col] = [as_unicode(flt.name) for flt in dict_filters[col]]
         active_filters = self._filters.get_filters_values_tojson()
         return self.render_template('list_angulajs.html',
-                                    modelview_name=self.__class__.__name__,
+                                    api_url=url_for(self.__class__.__name__ + '.api'),
                                     form_fields=form_fields,
                                     search_filters=search_filters,
                                     label_columns=self._label_columns_json(),
