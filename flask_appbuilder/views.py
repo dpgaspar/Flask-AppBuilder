@@ -237,17 +237,34 @@ class RestCRUDView(BaseCRUDView):
             ret[key] = str(value)
         return ret
 
-    @expose('/api', methods=['GET', 'POST'])
-    @expose('/api/<pk>', methods=['PUT', 'DELETE'])
-    def api(self, pk=""):
-        if request.method == 'GET':
-            return self.api_read()
-        if request.method == 'POST':
-            return self.api_create()
-        if request.method == 'PUT':
-            return self.api_update(pk)
-        if request.method == 'DELETE':
-            return self.api_delete(pk)
+    @expose('/api', methods=['GET'])
+    def api(self):
+        view_name = self.__class__.__name__
+        api_urls = dict()
+        api_urls['read'] = url_for(view_name + ".api_read")
+        api_urls['delete'] = url_for(view_name + ".api_delete", pk="")
+        api_urls['create'] = url_for(view_name + ".api_create")
+        api_urls['update'] = url_for(view_name + ".api_update", pk="")
+        modelview_urls = dict()
+        modelview_urls['show'] = url_for(view_name + ".show", pk="")
+        modelview_urls['add'] = url_for(view_name + ".add")
+        modelview_urls['edit'] = url_for(view_name + ".edit", pk="")
+        can_show = self.appbuilder.sm.has_access('can_show', view_name)
+        can_edit = self.appbuilder.sm.has_access('can_edit', view_name)
+        can_add = self.appbuilder.sm.has_access('can_add', view_name)
+        can_delete = self.appbuilder.sm.has_access('can_delete', view_name)
+        ret_json = jsonify(can_show = can_show,
+                           can_add = can_add,
+                           can_edit = can_edit,
+                           can_delete = can_delete,
+                        label_columns=self._label_columns_json(),
+                           list_columns=self.list_columns,
+                        order_columns=self.order_columns,
+                        page_size=self.page_size,
+                        modelview_name = view_name,
+                        api_urls=api_urls,
+                        modelview_urls=modelview_urls)
+
 
     @expose('/api/read', methods=['GET'])
     def api_read(self):

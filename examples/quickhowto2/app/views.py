@@ -69,7 +69,6 @@ class ContactModelView2(ModelView):
         active_filters = self._filters.get_filters_values_tojson()
         return self.render_template('list_angulajs.html',
                                     modelview_name=self.__class__.__name__,
-                                    page_size=self.page_size,
                                     form_fields=form_fields,
                                     search_filters=search_filters,
                                     label_columns=self._label_columns_json(),

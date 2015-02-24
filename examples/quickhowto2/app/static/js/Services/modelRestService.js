@@ -10,6 +10,11 @@ app.service("modelRestService", function($http, $q) {
 		remove: remove
 	});
 
+    function getInfo(base_url) {
+        var request = $http.get(base_url);
+        return(request.then(handleSuccess, handleError ));
+    }
+
 	function query(modelview_name, base_url, filter, order_column, order_direction, page, page_size) {
 		var query_string = "";
 		var get_params = {};
@@ -27,8 +32,8 @@ app.service("modelRestService", function($http, $q) {
 			get_params['_psize_' + modelview_name] = page_size;
 		}
 	      	console.log("GET", get_params);
-      	      	var request = $http.get(base_url, { params : get_params });
-              	return(request.then(handleSuccess, handleError ));
+      	    var request = $http.get(base_url, { params : get_params });
+            return(request.then(handleSuccess, handleError ));
 	}
 
 	function remove(base_url, pk) {

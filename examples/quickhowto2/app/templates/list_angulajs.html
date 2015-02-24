@@ -6,19 +6,6 @@
 <script src="{{url_for('static',filename='js/angular.min.js')}}"></script>
 
 <script type="text/javascript">
-var can_show = {{ "true" if "can_show" | is_item_visible(modelview_name) else "false" }};
-var can_add = {{ "true" if "can_add" | is_item_visible(modelview_name) else "false" }};
-var can_edit = {{ "true" if "can_edit" | is_item_visible(modelview_name) else "false" }};
-var can_delete = {{ "true" if "can_delete" | is_item_visible(modelview_name) else "false" }};
-var base_url_read = "{{ url_for(modelview_name + ".api_read") }}";
-var base_url_delete = "{{ url_for(modelview_name + ".api_delete", pk="") }}";
-var show_url = "{{ url_for(modelview_name + ".show", pk="") }}";
-var add_url = "{{ url_for(modelview_name + ".add") }}";
-var edit_url = "{{ url_for(modelview_name + ".edit", pk="") }}";
-var delete_url = "{{ url_for(modelview_name + ".delete", pk="") }}";
-var modelview_name = "{{modelview_name}}";
-var page_size = {{page_size}};
-var page = {{0 if not page else page}};
 
 var form_fields = {{ form_fields | tojson | safe }};
 var search_filters = {{ search_filters | tojson | safe }};
@@ -68,7 +55,7 @@ var label_columns = {{ label_columns | tojson | safe }};
 </form>
 </div>
 
-<div ng-controller="TableCtrl">
+<div ng-controller="TableCtrl" base="{{modelview_name}}">
 
     <input class=" filter_val form-control" ng-model='filter' id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
 
