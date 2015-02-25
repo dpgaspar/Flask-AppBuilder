@@ -78,6 +78,7 @@ app.directive('abBtnEdit', function() {
             },
       controller: function ($scope) {
           $scope.dataPlacement = $scope.dataPlacement || 'bottom';
+
       }
   };
 });
@@ -90,11 +91,29 @@ app.directive('abBtnDelete', function() {
       scope: 'true',
       scope: {
         tipText: '@',
-        url: '@'
+        url: '@',
+        onOk: '&',
+        pk: '@',
+        dataPlacement: '@'
         },
-      template: '<a href="{[url]}" class="btn btn-sm btn-primary" \
-                data-toggle="tooltip" rel="tooltip" title="{[tipText]}">\
-                <i class="fa fa-eraser"></i></a>'
+      templateUrl: '/static/angularAssets/abBtnDelete.html',
+      link: function link ( scope, element, attrs ) {
+                $(element).hover(function(){
+                // on mouseenter
+                $(element).tooltip({container:'.row'});
+                $(element).tooltip('show');
+                }, function(){
+                // on mouseleave
+                   $(element).tooltip('hide');
+                });
+            },
+      controller: function ($scope) {
+          $scope.dataPlacement = $scope.dataPlacement || 'bottom';
+          $scope.callback = function() {
+            console.log("CALLBACK", $scope.pk);
+            $scope.onOk($scope.pk);
+          }
+      }
   };
 });
 
@@ -225,81 +244,44 @@ app.directive('dynamic', function ($compile) {
 });
 
 
-app.directive('abModalOkCandel', function($compile) {
+app.directive('abModalOkCancel', function($http, $compile) {
   return {
 
-      restrict: 'AE',
-      replace: 'true',
+      restrict: 'A',
       scope: 'true',
       scope: {
-        tipText: '@',
-        url: '@',
-        dataPlacement: '@'
-        },
-      templateUrl: '/static/angularAssets/abBtnAdd.html',
-      link: function link ( scope, element, attrs ) {
-                $(element).hover(function(){
-                // on mouseenter
-                $(element).tooltip('show');
-                }, function(){
-                // on mouseleave
-                   $(element).tooltip('hide');
-                });
-            },
-      controller: function ($scope) {
-          $scope.dataPlacement = $scope.dataPlacement || 'bottom';
-      }
-  };
-});
+        titleText: '@',
+        bodyText: '@',
+        okText: '@',
+        cancelText: '@',
+        onOk: '&'
 
-angular.module('yourAppDep').directive('formModal', ['$http', '$compile', function($http, $compile) {
-  return {
-    scope: {
-      ...
-    },
-    compile: function(element, cAtts){
-      var template,
+        },
+      compile: function(element, cAtts){
+        var template,
         $element,
         loader;
 
-      loader = $http.get('templates/form_modal.html')
-        .success(function(data) {
-          template = data;
-        });
-
-      //return the Link function
-      return function(scope, element, lAtts) {
-        loader.then(function() {
-          //compile templates/form_modal.html and wrap it in a jQuery object
-          $element = $( $compile(template)(scope) );
-        });
-
-        //called by form_modal.html cancel button
-        scope.close = function() {
-          $element.modal('hide');
-        };
-
-        //called by form_modal.html form ng-submit
-        scope.submit = function() {
-          var result = scope.formSubmit();
-
-          if (Object.isObject(result)) {
-            result.success(function() {
-              $element.modal('hide');
+          loader = $http.get('/static/angularAssets/abModalOkCancel.html')
+            .success(function(data) {
+              template = data;
             });
-          } else if (result === false) {
-            //noop
-          } else {
-            $element.modal('hide');
-          }
-        };
-
-        element.on('click', function(e) {
-          e.preventDefault();
-          $element.modal('show');
-        });
-      };
-    }
-  }
-}]);
+          return function(scope, element, lAtts) {
+            loader.then(function() {
+              //compile templates/form_modal.html and wrap it in a jQuery object
+              $element = $( $compile(template)(scope) );
+            });
+            element.on('click', function(e) {
+                e.preventDefault();
+                $element.modal('show');
+            });
+            scope.clickOk = function() {
+                console.log('OK');
+                scope.onOk()();
+                $element.modal('hide');
+            };
+        }
+      }
+  };
+});
 

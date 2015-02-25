@@ -47,6 +47,7 @@ app.controller("TableCtrl", function($scope, $http, $attrs, modelRestService) {
   }
 
    $scope.delete = function(pk) {
+      console.log('DELETE',pk);
       $http.delete($scope.base_url_delete + pk).
         success(function(data, status, headers, config) {
           query();
