@@ -6,13 +6,22 @@ app.directive('abBtnAdd', function($compile) {
       scope: 'true',
       scope: {
         tipText: '@',
-        url: '@'
+        url: '@',
+        dataPlacement: '@'
         },
       templateUrl: '/static/angularAssets/abBtnAdd.html',
       link: function link ( scope, element, attrs ) {
-            el = $compile(element.contents())(scope);
-            $(element.contents).tooltip({container:'.row', 'placement': 'bottom'});
-            }
+		$(element).hover(function(){
+                // on mouseenter
+                $(element).tooltip('show');
+                }, function(){
+                // on mouseleave
+                   $(element).tooltip('hide');
+                });
+            },
+      controller: function ($scope) {
+          $scope.dataPlacement = $scope.dataPlacement || 'bottom';
+      }
   };
 });
 
@@ -24,9 +33,23 @@ app.directive('abBtnShow', function() {
       scope: 'true',
       scope: {
         tipText: '@',
-        url: '@'
+        url: '@',
+        dataPlacement: '@'
         },
-      templateUrl: '/static/angularAssets/abBtnShow.html'
+      templateUrl: '/static/angularAssets/abBtnShow.html',
+      link: function link ( scope, element, attrs ) {
+                $(element).hover(function(){
+                // on mouseenter
+                $(element).tooltip({container:'.row'});
+                $(element).tooltip('show');
+                }, function(){
+                // on mouseleave
+                   $(element).tooltip('hide');
+                });
+            },
+      controller: function ($scope) {
+          $scope.dataPlacement = $scope.dataPlacement || 'bottom';
+      }
   };
 });
 
@@ -39,9 +62,23 @@ app.directive('abBtnEdit', function() {
       scope: 'true',
       scope: {
         tipText: '@',
-        url: '@'
+        url: '@',
+        dataPlacement: '@'
         },
-      templateUrl: '/static/angularAssets/abBtnEdit.html'
+      templateUrl: '/static/angularAssets/abBtnEdit.html',
+      link: function link ( scope, element, attrs ) {
+                $(element).hover(function(){
+                // on mouseenter
+                $(element).tooltip({container:'.row'});
+                $(element).tooltip('show');
+                }, function(){
+                // on mouseleave
+                   $(element).tooltip('hide');
+                });
+            },
+      controller: function ($scope) {
+          $scope.dataPlacement = $scope.dataPlacement || 'bottom';
+      }
   };
 });
 
@@ -186,3 +223,83 @@ app.directive('dynamic', function ($compile) {
       }
     };
 });
+
+
+app.directive('abModalOkCandel', function($compile) {
+  return {
+
+      restrict: 'AE',
+      replace: 'true',
+      scope: 'true',
+      scope: {
+        tipText: '@',
+        url: '@',
+        dataPlacement: '@'
+        },
+      templateUrl: '/static/angularAssets/abBtnAdd.html',
+      link: function link ( scope, element, attrs ) {
+                $(element).hover(function(){
+                // on mouseenter
+                $(element).tooltip('show');
+                }, function(){
+                // on mouseleave
+                   $(element).tooltip('hide');
+                });
+            },
+      controller: function ($scope) {
+          $scope.dataPlacement = $scope.dataPlacement || 'bottom';
+      }
+  };
+});
+
+angular.module('yourAppDep').directive('formModal', ['$http', '$compile', function($http, $compile) {
+  return {
+    scope: {
+      ...
+    },
+    compile: function(element, cAtts){
+      var template,
+        $element,
+        loader;
+
+      loader = $http.get('templates/form_modal.html')
+        .success(function(data) {
+          template = data;
+        });
+
+      //return the Link function
+      return function(scope, element, lAtts) {
+        loader.then(function() {
+          //compile templates/form_modal.html and wrap it in a jQuery object
+          $element = $( $compile(template)(scope) );
+        });
+
+        //called by form_modal.html cancel button
+        scope.close = function() {
+          $element.modal('hide');
+        };
+
+        //called by form_modal.html form ng-submit
+        scope.submit = function() {
+          var result = scope.formSubmit();
+
+          if (Object.isObject(result)) {
+            result.success(function() {
+              $element.modal('hide');
+            });
+          } else if (result === false) {
+            //noop
+          } else {
+            $element.modal('hide');
+          }
+        };
+
+        element.on('click', function(e) {
+          e.preventDefault();
+          $element.modal('show');
+        });
+      };
+    }
+  }
+}]);
+
