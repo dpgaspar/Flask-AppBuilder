@@ -253,16 +253,26 @@ class RestCRUDView(BaseCRUDView):
         can_edit = self.appbuilder.sm.has_access('can_edit', view_name)
         can_add = self.appbuilder.sm.has_access('can_add', view_name)
         can_delete = self.appbuilder.sm.has_access('can_delete', view_name)
+        form_fields = {}
+        search_filters = {}
+        dict_filters = self._filters.get_search_filters()
+        form = self.search_form.refresh()
+        for col in self.search_columns:
+            form_fields[col] = form[col]()
+            search_filters[col] = [as_unicode(flt.name) for flt in dict_filters[col]]
+
         ret_json = jsonify(can_show = can_show,
                            can_add = can_add,
                            can_edit = can_edit,
                            can_delete = can_delete,
                         label_columns=self._label_columns_json(),
-                           list_columns=self.list_columns,
+                        list_columns=self.list_columns,
                         order_columns=self.order_columns,
                         page_size=self.page_size,
                         modelview_name = view_name,
                         api_urls=api_urls,
+                        search_filters=search_filters,
+                        search_fields=form_fields,
                         modelview_urls=modelview_urls)
         response = make_response(ret_json, 200)
         response.headers['Content-Type'] = "application/json"

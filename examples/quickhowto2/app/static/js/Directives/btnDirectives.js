@@ -1,4 +1,4 @@
-app.directive('abBtnAdd', function() {
+app.directive('abBtnAdd', function($compile) {
   return {
 
       restrict: 'AE',
@@ -8,7 +8,11 @@ app.directive('abBtnAdd', function() {
         tipText: '@',
         url: '@'
         },
-      templateUrl: '/static/angularAssets/abBtnAdd.html'
+      templateUrl: '/static/angularAssets/abBtnAdd.html',
+      link: function link ( scope, element, attrs ) {
+            el = $compile(element.contents())(scope);
+            $(element.contents).tooltip({container:'.row', 'placement': 'bottom'});
+            }
   };
 });
 
@@ -56,6 +60,7 @@ app.directive('abBtnDelete', function() {
                 <i class="fa fa-eraser"></i></a>'
   };
 });
+
 
 app.directive('abPagination', function() {
   return {
@@ -152,3 +157,32 @@ app.directive('abMenuPageSize', function() {
   };
 });
 
+
+app.directive('dynamic', function ($compile) {
+    return {
+      restrict: 'A',
+      replace: true,
+      scope: { dynamic: '=dynamic'},
+      link: function postLink(scope, element, attrs) {
+        scope.$watch( 'dynamic' , function(html){
+          element.html(html);
+          if (angular.element(html).hasClass('appbuilder_date')) {
+            $(element).datetimepicker({pickTime: false });
+          }
+          if (angular.element(html).hasClass('appbuilder_datetime')) {
+            $(element).datetimepicker();
+          }
+          // REALLY STUPID
+
+          $compile(element.contents())(scope);
+          // $('.appbuilder_datetime').datetimepicker({pickTime: false});
+          //  $('.appbuilder_date').datetimepicker({
+          //      pickTime: false });
+          //  $(".my_select2").select2({placeholder: "Select a State", allowClear: true});;
+          //  $(".my_select2.readonly").select2("readonly",true)
+          //  $("a").tooltip({container:'.row', 'placement': 'bottom'});
+
+        });
+      }
+    };
+});

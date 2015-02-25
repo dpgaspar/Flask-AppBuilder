@@ -23,6 +23,11 @@ app.controller("TableCtrl", function($scope, $http, $attrs, modelRestService) {
         $scope.can_edit = data.can_edit;
         $scope.can_delete = data.can_delete;
         $scope.modelview_name = data.modelview_name;
+        $scope.search_filters = data.search_filters;
+        $scope.search_fields = data.search_fields;
+        $scope.label_columns = data.label_columns;
+        $scope.active_filters = [];
+        console.log("INIT", $scope);
         query();
     });
   }
@@ -52,6 +57,7 @@ app.controller("TableCtrl", function($scope, $http, $attrs, modelRestService) {
    }
 
    $scope.$watch('filter', function (value) {
+        $scope.page = 0;
         query();
     });
 
@@ -73,12 +79,25 @@ app.controller("TableCtrl", function($scope, $http, $attrs, modelRestService) {
 
     $scope.pageSizeClick = function(page_size) {
         $scope.page_size = page_size;
+        $scope.page = 0;
         query();
     }
 
     $scope.pageClick = function(page) {
         $scope.page = page;
         query();
+    }
+
+    $scope.addFilter = function(col) {
+        search_field = {html: $scope.search_fields[col],
+                        col: col,
+                        options: $scope.search_filters[col],
+                        label: $scope.label_columns[col]};
+        $scope.active_filters.push(search_field);
+    }
+
+    $scope.removeFilter = function(index) {
+        $scope.active_filters.splice(index, 1);
     }
 
     $scope.getOrderType = function(col) {
