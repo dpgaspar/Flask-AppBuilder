@@ -30,7 +30,8 @@ var label_columns = {{ label_columns | tojson | safe }};
 
 
 <div ng-controller="TableCtrl" base="{{api_url}}">
-    <a href="#" ab-modal-ok-cancel title-text="TITLE" body-text="BODY...." ok-text="OK" cancel-text="Cancel">Cenas</a>
+    <a href="#" ab-modal-ok-cancel title-text="TITLE {[1+1]}" body-text="BODY...." ok-text="OK" cancel-text="Cancel">Cenas</a>
+    <a href="#" ab-modal-ok-cancel title-text="Title {[2+2]}" body-text="Body" ok-text="OK" cancel-text="Cancel" on-ok="callback">cenas2</a>
     <form id="filter_form" class="form-search" method="get">
         <div class="btn-group">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -97,12 +98,7 @@ var label_columns = {{ label_columns | tojson | safe }};
                     <div class="btn-group btn-group-xs" style="display: flex;">
                         <ab-btn-show ng-if="can_show" url="{[show_url + data.pks[$index]]}" tip-text="{{_('Show record')}}"></ab-btn-show>
                         <ab-btn-edit ng-if="can_edit" url="{[edit_url + data.pks[$index]]}" tip-text="{{_('Edit record')}}"></ab-btn-edit>
-                        <ab-btn-delete ng-if="can_delete" on-ok="delete" pk="{[data.pks[$index]]}" tip-text="{{_('Delete record')}}"></ab-btn-delete>
-
-                        <a data-text="{{ _('You sure you want to delete this item?') }}" ng-click="delete(data.pks[$index])" class="btn btn-sm btn-primary confirm" rel="tooltip"
-                        title="{{_('Delete record')}}" data-toggle="modal" data-target="#modal-confirm" href="#">
-                        <i class="fa fa-eraser"></i>
-                        </a>
+                        <ab-btn-delete ng-if="can_delete" tip-text="{{_('Delete record')}}"></ab-btn-delete>
                     </div>
                 </center></td>
                 <td ng-repeat="col in data.list_columns">{[row[col] ]}</td>

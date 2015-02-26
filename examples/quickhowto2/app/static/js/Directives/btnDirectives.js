@@ -92,8 +92,6 @@ app.directive('abBtnDelete', function() {
       scope: {
         tipText: '@',
         url: '@',
-        onOk: '&',
-        pk: '@',
         dataPlacement: '@'
         },
       templateUrl: '/static/angularAssets/abBtnDelete.html',
@@ -109,10 +107,6 @@ app.directive('abBtnDelete', function() {
             },
       controller: function ($scope) {
           $scope.dataPlacement = $scope.dataPlacement || 'bottom';
-          $scope.callback = function() {
-            console.log("CALLBACK", $scope.pk);
-            $scope.onOk($scope.pk);
-          }
       }
   };
 });
