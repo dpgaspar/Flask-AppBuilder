@@ -8,8 +8,8 @@ app.service("modelRestService", function($http, $q) {
 		create: create,
 		update: update,
 		remove: remove,
-                getInfo: getInfo
-	});
+        getInfo: getInfo
+    });
 
     function getInfo(base_url) {
         var request = $http.get(base_url);
@@ -67,3 +67,45 @@ app.service("modelRestService", function($http, $q) {
 	    }
 }
 );
+
+
+app.factory("modelRestManager", function($q, modelRestService) {
+
+  var base_url = "";
+  var config = {};
+
+  return {
+    // Load config parameters in Sync
+    init: function(base_url) {
+      base_url = base_url;
+      $q.all([modelRestService.getInfo(base_url)]).then(function(data) {
+        console.log("INIT");
+        config = data;
+        });
+      return this;
+    },
+
+    query: function(filter, order_column, order_direction, page, page_size) {
+        return modelRestService(config.modelview_name,
+                            config.api_urls.read,
+                            filter,
+                            order_column,
+                            order_direction,
+                            page,
+                            page_size);
+    },
+
+    getBaseUrl: function() {
+      return base_url;
+    },
+
+    getConfig: function() {
+        return config;
+    }
+
+  };
+
+
+
+});
+

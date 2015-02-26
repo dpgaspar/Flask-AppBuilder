@@ -16,3 +16,4 @@ app.factory("loadingManager", function($rootScope) {
   };
 
 });
+
