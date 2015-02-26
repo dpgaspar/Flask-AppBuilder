@@ -1,6 +1,6 @@
 
 
-app.controller("TableCtrl", function($scope, $http, $attrs, modelRestService) {
+app.controller("TableCtrl", function($scope, $http, $attrs, modelRestService, loadingManager) {
 
   $scope.filter = "";
   $scope.order_column = "";
@@ -34,6 +34,7 @@ app.controller("TableCtrl", function($scope, $http, $attrs, modelRestService) {
 
   function query() {
     if (!$scope.modelview_name) return;
+    loadingManager.loading();
     modelRestService.query($scope.modelview_name,
                             $scope.base_url_read,
                             $scope.filter,
@@ -43,6 +44,7 @@ app.controller("TableCtrl", function($scope, $http, $attrs, modelRestService) {
                             $scope.page_size)
     .then(function( data ) {
         $scope.data = data;
+        loadingManager.loaded();
     });
   }
 

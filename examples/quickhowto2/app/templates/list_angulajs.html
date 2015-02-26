@@ -28,7 +28,13 @@ var label_columns = {{ label_columns | tojson | safe }};
 
 <div  ng-app="FAB" >
 
-
+<img src="/static/img/loading.gif" ng-show="loading" style="margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%)
+    background-color: inherit; border: none;">
 <div ng-controller="TableCtrl" base="{{api_url}}">
     <a href="#" ab-modal-ok-cancel title-text="TITLE {[1+1]}" body-text="BODY...." ok-text="OK" cancel-text="Cancel">Cenas</a>
     <a href="#" ab-modal-ok-cancel title-text="Title {[2+2]}" body-text="Body" ok-text="OK" cancel-text="Cancel" on-ok="callback">cenas2</a>
