@@ -15,6 +15,7 @@ var label_columns = {{ label_columns | tojson | safe }};
 <script src="{{url_for('static',filename='js/app.js')}}"></script>
 <script src="{{url_for('static',filename='js/Services/modelRestService.js')}}"></script>
 <script src="{{url_for('static',filename='js/Controllers/SearchCrtl.js')}}"></script>
+<script src="{{url_for('static',filename='js/Controllers/alertCtrl.js')}}"></script>
 <script src="{{url_for('static',filename='js/Controllers/TableCrtl.js')}}"></script>
 <script src="{{url_for('static',filename='js/Directives/btnDirectives.js')}}"></script>
 
@@ -35,6 +36,12 @@ var label_columns = {{ label_columns | tojson | safe }};
     margin-right: -50%;
     transform: translate(-50%, -50%)
     background-color: inherit; border: none;">
+<div ng-controller="alertsCtrl">
+        <div ng-repeat="alert in alerts" class="alert alert{[alert.severity]}">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+</div>
+
 <div ng-controller="TableCtrl" base="{{api_url}}">
     <a href="#" ab-modal-ok-cancel title-text="TITLE {[1+1]}" body-text="BODY...." ok-text="OK" cancel-text="Cancel">Cenas</a>
     <a href="#" ab-modal-ok-cancel title-text="Title {[2+2]}" body-text="Body" ok-text="OK" cancel-text="Cancel" on-ok="callback">cenas2</a>
