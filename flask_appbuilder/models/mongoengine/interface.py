@@ -152,30 +152,30 @@ class MongoEngineInterface(BaseInterface):
     def add(self, item):
         try:
             item.save()
-            flash(as_unicode(self.add_row_message), 'success')
+            self.message = (as_unicode(self.add_row_message), 'success')
             return True
         except Exception as e:
-            flash(as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception("Add record error: {0}".format(str(e)))
             return False
 
     def edit(self, item):
         try:
             item.save()
-            flash(as_unicode(self.edit_row_message), 'success')
+            self.message = (as_unicode(self.edit_row_message), 'success')
             return True
         except Exception as e:
-            flash(as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception("Edit record error: {0}".format(str(e)))
             return False
 
     def delete(self, item):
         try:
             item.delete()
-            flash(as_unicode(self.delete_row_message), 'success')
+            self.message = (as_unicode(self.delete_row_message), 'success')
             return True
         except Exception as e:
-            flash(as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception("Delete record error: {0}".format(str(e)))
             return False
 

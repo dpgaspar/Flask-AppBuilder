@@ -328,9 +328,13 @@ class RestCRUDView(BaseCRUDView):
     def api_delete(self, pk):
         item = self.datamodel.get(pk)
         self.pre_delete(item)
-        self.datamodel.delete(item)
-        self.post_delete(item)
-        response = make_response(jsonify({'result': True}), 200)
+        if self.datamodel.delete(item):
+            self.post_delete(item)
+            http_return_code = 200
+        else:
+            http_return_code = 500
+        response = make_response(jsonify({'message': self.datamodel.message[0],
+                                              'severity': self.datamodel.message[1]}), http_return_code)
         response.headers['Content-Type'] = "application/json"
         return response
 

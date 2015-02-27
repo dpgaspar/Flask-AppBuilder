@@ -26,6 +26,9 @@ class BaseInterface(object):
     edit_integrity_error_message = lazy_gettext('Integrity error, probably unique constraint')
     general_error_message = lazy_gettext('General Error')
 
+    """ Tuple with message and text with severity type ex: ("Added Row", "info") """
+    message = ()
+
     def __init__(self, obj):
         self.obj = obj
 
@@ -82,6 +85,9 @@ class BaseInterface(object):
             yield retdict
 
     def get_values_json(self, lst, list_columns):
+        """
+            Converts list of objects from query to JSON
+        """
         result = []
         for item in self.get_values(lst, list_columns):
             for key, value in list(item.items()):
@@ -92,8 +98,6 @@ class BaseInterface(object):
                     item[key] = [str(v) for v in value]
             result.append(item)
         return result
-
-
 
     """
         Returns the models class name

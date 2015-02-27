@@ -4,7 +4,6 @@ import logging
 import sqlalchemy as sa
 
 from . import filters
-from flask import flash
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
@@ -271,15 +270,15 @@ class SQLAInterface(BaseInterface):
         try:
             self.session.add(item)
             self.session.commit()
-            flash(as_unicode(self.add_row_message), 'success')
+            self.message = (as_unicode(self.add_row_message), 'success')
             return True
         except IntegrityError as e:
-            flash(as_unicode(self.add_integrity_error_message), 'warning')
+            self.message = (as_unicode(self.add_integrity_error_message), 'warning')
             log.warning("Add record integrity error: {0}".format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
-            flash(as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception("Add record error: {0}".format(str(e)))
             self.session.rollback()
             return False
@@ -288,15 +287,15 @@ class SQLAInterface(BaseInterface):
         try:
             self.session.merge(item)
             self.session.commit()
-            flash(as_unicode(self.edit_row_message), 'success')
+            self.message = (as_unicode(self.edit_row_message), 'success')
             return True
         except IntegrityError as e:
-            flash(as_unicode(self.edit_integrity_error_message), 'warning')
+            self.message = (as_unicode(self.edit_integrity_error_message), 'warning')
             log.warning("Edit record integrity error: {0}".format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
-            flash(as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception("Edit record error: {0}".format(str(e)))
             self.session.rollback()
             return False
@@ -306,15 +305,15 @@ class SQLAInterface(BaseInterface):
             self._delete_files(item)
             self.session.delete(item)
             self.session.commit()
-            flash(as_unicode(self.delete_row_message), 'success')
+            self.message = (as_unicode(self.delete_row_message), 'success')
             return True
         except IntegrityError as e:
-            flash(as_unicode(self.delete_integrity_error_message), 'warning')
+            self.message = (as_unicode(self.delete_integrity_error_message), 'warning')
             log.warning("Delete record integrity error: {0}".format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
-            flash(as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception("Delete record error: {0}".format(str(e)))
             self.session.rollback()
             return False
@@ -325,15 +324,15 @@ class SQLAInterface(BaseInterface):
                 self._delete_files(item)
                 self.session.delete(item)
             self.session.commit()
-            flash(as_unicode(self.delete_row_message), 'success')
+            self.message = (as_unicode(self.delete_row_message), 'success')
             return True
         except IntegrityError as e:
-            flash(as_unicode(self.delete_integrity_error_message), 'warning')
+            self.message = (as_unicode(self.delete_integrity_error_message), 'warning')
             log.warning("Delete record integrity error: {0}".format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
-            flash(as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception("Delete record error: {0}".format(str(e)))
             self.session.rollback()
             return False

@@ -34,6 +34,10 @@ app.controller("TableCtrl", function($scope, $http, $attrs, ApiService, loadingM
         $scope.active_filters = [];
         console.log("INIT", $scope);
         read();
+    },
+    function(reason) {
+        loadingManager.loaded();
+        alertsManager.addAlert(reason, "danger");
     });
   }
 
@@ -53,22 +57,21 @@ app.controller("TableCtrl", function($scope, $http, $attrs, ApiService, loadingM
     },
     function(reason) {
         loadingManager.loaded();
-        alertsManager.addAlert("Error: " + reason, "danger"); 
+        alertsManager.addAlert(reason, "danger");
     });
   }
 
    $scope.remove = function(pk) {
-      console.log('REMOVE',pk);
       loadingManager.loading();
       ApiService.remove($scope.base_url_delete, pk).
         then(function(data) {
           loadingManager.loaded();
-          alertsManager.addAlert("Row Deleted", "info");
+          alertsManager.addAlert(data.message, "info");
           read();
         },
         function(reason) {
           loadingManager.loaded();
-          alertsManager.addAlert("Error: " + reason, "danger");
+          alertsManager.addAlert(reason, "danger");
           // log error
         });
    }

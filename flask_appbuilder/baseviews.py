@@ -1,5 +1,5 @@
 import logging
-from flask import Blueprint, request, redirect, session, url_for, render_template
+from flask import Blueprint, session, flash, render_template
 from .forms import GeneralModelConverter
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
 from .actions import ActionItem
@@ -750,8 +750,9 @@ class BaseCRUDView(BaseModelView):
                 item = self.datamodel.obj()
                 form.populate_obj(item)
                 self.pre_add(item)
-                self.datamodel.add(item)
-                self.post_add(item)
+                if self.datamodel.add(item):
+                    self.post_add(item)
+                flash(*self.datamodel.message)
                 return None
             else:
                 is_valid_form = False
@@ -784,8 +785,9 @@ class BaseCRUDView(BaseModelView):
             if form.validate():
                 form.populate_obj(item)
                 self.pre_update(item)
-                self.datamodel.edit(item)
-                self.post_update(item)
+                if self.datamodel.edit(item):
+                    self.post_update(item)
+                flash(*self.datamodel.message)
                 return None
             else:
                 is_valid_form = False
@@ -809,8 +811,9 @@ class BaseCRUDView(BaseModelView):
         """
         item = self.datamodel.get(pk)
         self.pre_delete(item)
-        self.datamodel.delete(item)
-        self.post_delete(item)
+        if self.datamodel.delete(item):
+            self.post_delete(item)
+        flash(*self.datamodel.message)
         self.update_redirect()
 
     """

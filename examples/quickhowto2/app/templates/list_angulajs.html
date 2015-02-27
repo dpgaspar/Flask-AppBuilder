@@ -191,7 +191,7 @@ var label_columns = {{ label_columns | tojson | safe }};
                     <div class="btn-group btn-group-xs" style="display: flex;">
                         <ab-btn-show ng-if="can_show" url="{[show_url + data.pks[$index]]}" tip-text="{{_('Show record')}}"></ab-btn-show>
                         <ab-btn-edit ng-if="can_edit" url="{[edit_url + data.pks[$index]]}" tip-text="{{_('Edit record')}}"></ab-btn-edit>
-                        <ab-btn-delete ng-if="can_delete" tip-text="{{_('Delete record')}}"></ab-btn-delete>
+                        <ab-btn-delete ng-if="can_delete" on-click="remove(data.pks[$index])" tip-text="{{_('Delete record')}}"></ab-btn-delete>
                     </div>
                 </center></td>
                 <td ng-repeat="col in data.list_columns">{[row[col] ]}</td>
