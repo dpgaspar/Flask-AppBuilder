@@ -38,7 +38,7 @@ app.service("ApiService", function($http, $q) {
 	}
 
 	function remove(base_url, pk) {
-		var request = $http.delete(base_url + '/' + pk);
+		var request = $http.delete(base_url + pk);
 		return( request.then( handleSuccess, handleError ) );
 	}
 

@@ -60,7 +60,7 @@ app.controller("TableCtrl", function($scope, $http, $attrs, ApiService, loadingM
    $scope.remove = function(pk) {
       console.log('REMOVE',pk);
       loadingManager.loading();
-      ApiService.remove(pk).
+      ApiService.remove($scope.base_url_delete, pk).
         then(function(data) {
           loadingManager.loaded();
           alertsManager.addAlert("Row Deleted", "info");

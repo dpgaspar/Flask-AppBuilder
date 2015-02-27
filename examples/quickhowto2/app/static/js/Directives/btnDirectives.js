@@ -92,6 +92,7 @@ app.directive('abBtnDelete', function() {
       scope: {
         tipText: '@',
         url: '@',
+        onClick: '&',
         dataPlacement: '@'
         },
       templateUrl: '/static/angularAssets/abBtnDelete.html',
@@ -103,6 +104,10 @@ app.directive('abBtnDelete', function() {
                   }, function(){
                   // on mouseleave
                   $(element).tooltip('hide');
+                });
+                $(element).click(function(){
+                    scope.onClick();
+                    $(element).tooltip('hide');
                 });
             },
       controller: function ($scope) {
