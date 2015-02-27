@@ -97,16 +97,17 @@ app.directive('abBtnDelete', function() {
       templateUrl: '/static/angularAssets/abBtnDelete.html',
       link: function link ( scope, element, attrs ) {
                 $(element).hover(function(){
-                // on mouseenter
-                $(element).tooltip({container:'.row'});
-                $(element).tooltip('show');
-                }, function(){
-                // on mouseleave
-                   $(element).tooltip('hide');
+                  // on mouseenter
+                  $(element).tooltip({container:'.row'});
+                  $(element).tooltip('show');
+                  }, function(){
+                  // on mouseleave
+                  $(element).tooltip('hide');
                 });
             },
       controller: function ($scope) {
           $scope.dataPlacement = $scope.dataPlacement || 'bottom';
+
       }
   };
 });

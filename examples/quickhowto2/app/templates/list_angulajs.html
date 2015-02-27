@@ -13,10 +13,10 @@ var label_columns = {{ label_columns | tojson | safe }};
 </script>
 
 <script src="{{url_for('static',filename='js/app.js')}}"></script>
-<script src="{{url_for('static',filename='js/Services/modelRestService.js')}}"></script>
-<script src="{{url_for('static',filename='js/Controllers/SearchCrtl.js')}}"></script>
-<script src="{{url_for('static',filename='js/Controllers/alertCtrl.js')}}"></script>
-<script src="{{url_for('static',filename='js/Controllers/TableCrtl.js')}}"></script>
+<script src="{{url_for('static',filename='js/Services/apiService.js')}}"></script>
+<script src="{{url_for('static',filename='js/Controllers/searchCtrl.js')}}"></script>
+<script src="{{url_for('static',filename='js/Controllers/alertsCtrl.js')}}"></script>
+<script src="{{url_for('static',filename='js/Controllers/tableCtrl.js')}}"></script>
 <script src="{{url_for('static',filename='js/Directives/btnDirectives.js')}}"></script>
 
 {% endblock %}
@@ -36,9 +36,10 @@ var label_columns = {{ label_columns | tojson | safe }};
     margin-right: -50%;
     transform: translate(-50%, -50%)
     background-color: inherit; border: none;">
+
 <div ng-controller="alertsCtrl">
-        <div ng-repeat="alert in alerts" class="alert alert{[alert.severity]}">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <div ng-repeat="alert in alerts" class="alert alert-{[alert.severity]}">{[alert.message]}
+            <button type="button" class="close" ng-click="removeAlert(alert.message)" data-dismiss="alert">&times;</button>
         </div>
 </div>
 
@@ -111,7 +112,7 @@ var label_columns = {{ label_columns | tojson | safe }};
                     <div class="btn-group btn-group-xs" style="display: flex;">
                         <ab-btn-show ng-if="can_show" url="{[show_url + data.pks[$index]]}" tip-text="{{_('Show record')}}"></ab-btn-show>
                         <ab-btn-edit ng-if="can_edit" url="{[edit_url + data.pks[$index]]}" tip-text="{{_('Edit record')}}"></ab-btn-edit>
-                        <ab-btn-delete ng-if="can_delete" tip-text="{{_('Delete record')}}"></ab-btn-delete>
+                        <ab-btn-delete ng-if="can_delete" on-click="remove(data.pks[$index])" tip-text="{{_('Delete record')}}"></ab-btn-delete>
                     </div>
                 </center></td>
                 <td ng-repeat="col in data.list_columns">{[row[col] ]}</td>

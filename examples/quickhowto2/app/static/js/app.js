@@ -22,19 +22,21 @@ app.factory("alertsManager", function() {
   return {
     alerts: [],
 
-    addMessage: function(message, severity) {
+    addAlert: function(message, severity) {
         if (!this.alerts) {
             this.alerts = [{message: message, severity: severity}];
         }
         else {
             this.alerts.push({message: message, severity: severity});
         }
+        console.log(this.alerts);
     },
-    removeMessage: function(message) {
-      if (this.alerts) {
-        $rootScope.messages.splice(0 ,1);
+    removeAlert: function(message) {
+      for (var index in this.alerts) {
+        if (this.alerts[index].message == message) {
+          this.alerts.splice(index,1);
+	}
       }
     }
   };
 });
-
