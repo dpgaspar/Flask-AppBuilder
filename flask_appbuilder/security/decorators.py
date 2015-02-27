@@ -1,13 +1,14 @@
 import logging
 import functools
 
-from flask import flash, redirect, url_for
+from flask import flash, redirect, url_for, make_response, jsonify
 from flask_babelpkg import lazy_gettext
 from .._compat import as_unicode
 
 log = logging.getLogger(__name__)
 
 PERMISSION_PREFIX = 'can_'
+
 
 def has_access(f):
     """
@@ -31,6 +32,36 @@ def has_access(f):
         return redirect(url_for(self.appbuilder.sm.auth_view.__class__.__name__ + ".login"))
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
+
+
+def has_access_api(f):
+    """
+        Use this decorator to enable granular security permissions to your API methods.
+        Permissions will be associated to a role, and roles are associated to users.
+
+        By default the permission's name is the methods name.
+
+        this will return a message and HTTP 401 is case of unauthorized access.
+    """
+    if hasattr(f, '_permission_name'):
+        permission_str = f._permission_name
+    else:
+        permission_str = f.__name__
+
+    def wraps(self, *args, **kwargs):
+        permission_str = PERMISSION_PREFIX + f._permission_name
+        if self.appbuilder.sm.has_access(permission_str, self.__class__.__name__):
+            return f(self, *args, **kwargs)
+        else:
+            log.warning("Access is Denied for: {0} on: {1}".format(permission_str, self.__class__.__name__))
+            response = make_response(jsonify({'message': str(lazy_gettext("Access is Denied")),
+                                              'severity': 'danger'}), 401)
+            response.headers['Content-Type'] = "application/json"
+            return response
+        return redirect(url_for(self.appbuilder.sm.auth_view.__class__.__name__ + ".login"))
+    f._permission_name = permission_str
+    return functools.update_wrapper(wraps, f)
+
 
 
 def permission_name(name):

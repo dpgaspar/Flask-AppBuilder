@@ -5,7 +5,7 @@ from flask_babelpkg import lazy_gettext
 from .filemanager import uuid_originalname
 from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
 from .baseviews import BaseView, BaseCRUDView, expose
-from .security.decorators import has_access, permission_name
+from .security.decorators import has_access, permission_name, has_access_api
 from .urltools import *
 
 
@@ -238,6 +238,8 @@ class RestCRUDView(BaseCRUDView):
         return ret
 
     @expose('/api', methods=['GET'])
+    @has_access_api
+    @permission_name('list')
     def api(self):
         view_name = self.__class__.__name__
         api_urls = dict()
@@ -279,6 +281,8 @@ class RestCRUDView(BaseCRUDView):
         return response
 
 
+    @has_access_api
+    @permission_name('list')
     @expose('/api/read', methods=['GET'])
     def api_read(self):
         """
@@ -317,14 +321,20 @@ class RestCRUDView(BaseCRUDView):
         return response
 
     @expose('/api/create', methods=['POST'])
+    @has_access_api
+    @permission_name('add')
     def api_create(self):
         pass
 
     @expose('/api/update/<pk>', methods=['PUT'])
+    @has_access_api
+    @permission_name('edit')
     def api_update(self, pk):
         pass
 
     @expose('/api/delete/<pk>', methods=['DELETE'])
+    @has_access_api
+    @permission_name('delete')
     def api_delete(self, pk):
         item = self.datamodel.get(pk)
         self.pre_delete(item)
