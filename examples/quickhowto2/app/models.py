@@ -1,3 +1,4 @@
+from flask import Markup
 import datetime
 import math
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
@@ -13,6 +14,10 @@ class ContactGroup(Model):
 
     def extra_col(self):
         return "EXTRA {0}".format(self.id)
+
+    def extra_col2(self):
+        return Markup("<h2>" + self.name + "</h2>")
+
 
     def __repr__(self):
         return self.name

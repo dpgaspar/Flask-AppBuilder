@@ -82,12 +82,12 @@ var label_columns = {{ label_columns | tojson | safe }};
     <input class=" filter_val form-control" ng-model='filter' id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
 
     <div class="well well-sm">
-            <ab-pagination size="4" page="{[page]}" page-size="{[page_size]}" count="{[data.count]}" on-click="pageClick"></ab-pagination>
+        <ab-pagination size="4" page="{[page]}" page-size="{[page_size]}" count="{[data.count]}" on-click="pageClick"></ab-pagination>
 
-            <ab-menu-page-size on-click="pageSizeClick" min="5" max="35" step="5" title="{{_('Page size')}}" page-size="{[page_size]}">
-            </ab-menu-page-size>
+        <ab-menu-page-size on-click="pageSizeClick" min="5" max="35" step="5" title="{{_('Page size')}}" page-size="{[page_size]}">
+        </ab-menu-page-size>
         	&nbsp;
-            <ab-btn-add ng-if="can_add" url={[add_url]} tip-text="{{_('Add a new record')}}"></ab-btn-add>
+        <ab-btn-add ng-if="can_add" url={[add_url]} tip-text="{{_('Add a new record')}}"></ab-btn-add>
         <div class="pull-right">
 			<strong>{{ _('Record Count') }}:</strong> {[ data.count ]}
 		</div>
@@ -115,7 +115,7 @@ var label_columns = {{ label_columns | tojson | safe }};
                         <ab-btn-delete ng-if="can_delete" on-click="remove(data.pks[$index])" tip-text="{{_('Delete record')}}"></ab-btn-delete>
                     </div>
                 </center></td>
-                <td ng-repeat="col in data.list_columns">{[row[col] ]}</td>
+                <td ng-repeat="col in data.list_columns" dynamic="row[col]">{[row[col] ]}</td>
             </tr>
         </tbody>
     </table>
@@ -133,7 +133,7 @@ var label_columns = {{ label_columns | tojson | safe }};
             </button>
             <ul class="dropdown-menu">
                 <li ng-repeat="(col, filters) in search_filters">
-                    <a href="javascript:void(0)" name={[col]} class="filter btn" ng-click="addFilter(col)">
+                    <a href="javascript:void(0)" name="{[col]}" class="filter btn" ng-click="addFilter(col)">
                     {[ label_columns[col] ]}</a>
                 </li>
 
@@ -194,7 +194,7 @@ var label_columns = {{ label_columns | tojson | safe }};
                         <ab-btn-delete ng-if="can_delete" on-click="remove(data.pks[$index])" tip-text="{{_('Delete record')}}"></ab-btn-delete>
                     </div>
                 </center></td>
-                <td ng-repeat="col in data.list_columns">{[row[col] ]}</td>
+                <td ng-repeat="col in data.list_columns" dynamic="row[col]">{[row[col] ]}</td>
             </tr>
         </tbody>
     </table>
