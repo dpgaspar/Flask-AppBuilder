@@ -368,7 +368,6 @@ class RestCRUDView(BaseCRUDView):
             result = datamodel.query(filters)[1]
         else:
             result = self.datamodel.get_related_interface(col_name).query()[1]
-        print result
         ret_json = dict()
         for item in result:
             pk = self.datamodel.get_related_interface(col_name).get_pk_value(item)

@@ -83,6 +83,9 @@ var label_columns = {{ label_columns | tojson | safe }};
                 <td class="col-lg-1 col-md-1 col-sm-1">
                     <select class="my_select2 form-control ng-scope" data-placeholder="Select Value" id="{[active_filter.col]}" name="{[active_filter.col]}" style="width:250px">
                     <option ng-repeat="(key, value) in active_filter.options" value="{[key]}">{[value]}</option>
+                    </select>
+                        <ab-select data="active_filter.options"></ab-select>
+                    <ab-date format="yyyy-MM-dd" ></ab-date>
                 </td>
                 <td dynamic="active_filter.html"></td>
             </tr>

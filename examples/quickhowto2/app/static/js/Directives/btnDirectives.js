@@ -117,6 +117,53 @@ app.directive('abBtnDelete', function() {
   };
 });
 
+app.directive('abSelect', function() {
+  return {
+
+      restrict: 'AE',
+      replace: 'true',
+      scope: 'true',
+      scope: {
+        data: '=',
+        id: '@',
+        name: '@',
+        dataPlaceholder: '@'
+        },
+      templateUrl: '/static/angularAssets/abSelect.html',
+      link: function postLink(scope, element, attrs) {
+          $(element).select2({placeholder: "Select a State", allowClear: true});
+
+        }
+  };
+});
+
+app.directive('abDate', function() {
+  return {
+
+      restrict: 'AE',
+      replace: 'true',
+      scope: 'true',
+      scope: {
+        format: '@',
+        value: '@',
+        language: "@",
+        daysOfWeekDisabled: "@",
+        minViewMode: "@"
+        },
+      templateUrl: '/static/angularAssets/abDate.html',
+      link: function postLink(scope, element, attrs) {
+          if (!scope.format) { scope.format = "yyyy-MM-dd"; }
+          if (!scope.language) { scope.language = "en"; }
+          if (!scope.daysOfWeekDisabled) { scope.daysOfWeekDisabled = ""; }
+          if (!scope.minViewMode) { scope.minViewMode = "0"; }
+          minVM = parseInt(scope.minViewMode)
+          $(element).datetimepicker({pickTime: false, format: scope.format, language: scope.language,
+                                    daysOfWeekDisabled: scope.daysOfWeekDisabled,
+                                    minViewMode: minVM});
+      }
+  };
+});
+
 
 app.directive('abPagination', function() {
   return {
