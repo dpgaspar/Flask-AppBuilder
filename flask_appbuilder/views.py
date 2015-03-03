@@ -39,7 +39,6 @@ class UtilView(BaseView):
         return redirect(self.get_redirect())
 
 
-
 class SimpleFormView(BaseView):
     """
         View for presenting your own forms
@@ -89,9 +88,9 @@ class SimpleFormView(BaseView):
         widgets = self._get_edit_widget(form=form)
         self.update_redirect()
         return self.render_template(self.form_template,
-                               title=self.form_title,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder
+                                    title=self.form_title,
+                                    widgets=widgets,
+                                    appbuilder=self.appbuilder
         )
 
     def form_get(self, form):
@@ -181,9 +180,9 @@ class PublicFormView(BaseView):
         widgets = self._get_edit_widget(form=form)
         self.update_redirect()
         return self.render_template(self.form_template,
-                               title=self.form_title,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder
+                                    title=self.form_title,
+                                    widgets=widgets,
+                                    appbuilder=self.appbuilder
         )
 
     def form_get(self, form):
@@ -237,20 +236,30 @@ class RestCRUDView(BaseCRUDView):
             ret[key] = str(value)
         return ret
 
+    def _get_api_urls(self, api_urls=None):
+        view_name = self.__class__.__name__
+        api_urls = api_urls or {}
+        api_urls['read'] = url_for(view_name + ".api_read")
+        api_urls['delete'] = url_for(view_name + ".api_delete", pk="")
+        api_urls['create'] = url_for(view_name + ".api_create")
+        api_urls['update'] = url_for(view_name + ".api_update", pk="")
+        return api_urls
+
+    def _get_modelview_urls(self, modelview_urls=None):
+        view_name = self.__class__.__name__
+        modelview_urls = modelview_urls or {}
+        modelview_urls['show'] = url_for(view_name + ".show", pk="")
+        modelview_urls['add'] = url_for(view_name + ".add")
+        modelview_urls['edit'] = url_for(view_name + ".edit", pk="")
+        return modelview_urls
+
     @expose('/api', methods=['GET'])
     @has_access_api
     @permission_name('list')
     def api(self):
         view_name = self.__class__.__name__
-        api_urls = dict()
-        api_urls['read'] = url_for(view_name + ".api_read")
-        api_urls['delete'] = url_for(view_name + ".api_delete", pk="")
-        api_urls['create'] = url_for(view_name + ".api_create")
-        api_urls['update'] = url_for(view_name + ".api_update", pk="")
-        modelview_urls = dict()
-        modelview_urls['show'] = url_for(view_name + ".show", pk="")
-        modelview_urls['add'] = url_for(view_name + ".add")
-        modelview_urls['edit'] = url_for(view_name + ".edit", pk="")
+        api_urls = self._get_api_urls()
+        modelview_urls = self._get_modelview_urls()
         can_show = self.appbuilder.sm.has_access('can_show', view_name)
         can_edit = self.appbuilder.sm.has_access('can_edit', view_name)
         can_add = self.appbuilder.sm.has_access('can_add', view_name)
@@ -263,19 +272,19 @@ class RestCRUDView(BaseCRUDView):
             form_fields[col] = form[col]()
             search_filters[col] = [as_unicode(flt.name) for flt in dict_filters[col]]
 
-        ret_json = jsonify(can_show = can_show,
-                           can_add = can_add,
-                           can_edit = can_edit,
-                           can_delete = can_delete,
-                        label_columns=self._label_columns_json(),
-                        list_columns=self.list_columns,
-                        order_columns=self.order_columns,
-                        page_size=self.page_size,
-                        modelview_name = view_name,
-                        api_urls=api_urls,
-                        search_filters=search_filters,
-                        search_fields=form_fields,
-                        modelview_urls=modelview_urls)
+        ret_json = jsonify(can_show=can_show,
+                           can_add=can_add,
+                           can_edit=can_edit,
+                           can_delete=can_delete,
+                           label_columns=self._label_columns_json(),
+                           list_columns=self.list_columns,
+                           order_columns=self.order_columns,
+                           page_size=self.page_size,
+                           modelview_name=view_name,
+                           api_urls=api_urls,
+                           search_filters=search_filters,
+                           search_fields=form_fields,
+                           modelview_urls=modelview_urls)
         response = make_response(ret_json, 200)
         response.headers['Content-Type'] = "application/json"
         return response
@@ -308,14 +317,14 @@ class RestCRUDView(BaseCRUDView):
         result = self.datamodel.get_values_json(lst, self.list_columns)
         pks = self.datamodel.get_keys(lst)
         ret_json = jsonify(label_columns=self._label_columns_json(),
-                        list_columns=self.list_columns,
-                        order_columns=self.order_columns,
-                        page=page,
-                        page_size=page_size,
-                        count=count,
-                        modelview_name=self.__class__.__name__,
-                        pks = pks,
-                        result=result)
+                           list_columns=self.list_columns,
+                           order_columns=self.order_columns,
+                           page=page,
+                           page_size=page_size,
+                           count=count,
+                           modelview_name=self.__class__.__name__,
+                           pks=pks,
+                           result=result)
         response = make_response(ret_json, 200)
         response.headers['Content-Type'] = "application/json"
         return response
@@ -344,10 +353,30 @@ class RestCRUDView(BaseCRUDView):
         else:
             http_return_code = 500
         response = make_response(jsonify({'message': self.datamodel.message[0],
-                                              'severity': self.datamodel.message[1]}), http_return_code)
+                                          'severity': self.datamodel.message[1]}), http_return_code)
         response.headers['Content-Type'] = "application/json"
         return response
 
+    @expose('/api/column/<col_name>', methods=['GET'])
+    @has_access_api
+    @permission_name('list')
+    def api_column(self, col_name):
+        filter_rel_fields = self.add_form_query_rel_fields
+        if filter_rel_fields and filter_rel_fields.get(col_name):
+            datamodel = self.datamodel.get_related_interface(col_name)
+            filters = datamodel.get_filters().add_filter_list(filter_rel_fields[col_name])
+            result = datamodel.query(filters)[1]
+        else:
+            result = self.datamodel.get_related_interface(col_name).query()[1]
+        print result
+        ret_json = dict()
+        for item in result:
+            pk = self.datamodel.get_related_interface(col_name).get_pk_value(item)
+            ret_json[pk] = str(item)
+        ret_json = jsonify(ret_json)
+        response = make_response(ret_json, 200)
+        response.headers['Content-Type'] = "application/json"
+        return response
 
 
 class ModelView(RestCRUDView):
@@ -365,14 +394,15 @@ class ModelView(RestCRUDView):
             LIST
     --------------------------------
     """
+
     @expose('/list/')
     @has_access
     def list(self):
 
         widgets = self._list()
         return self.render_template(self.list_template,
-                               title=self.list_title,
-                               widgets=widgets)
+                                    title=self.list_title,
+                                    widgets=widgets)
 
     """
     --------------------------------
@@ -386,10 +416,10 @@ class ModelView(RestCRUDView):
 
         widgets = self._show(pk)
         return self.render_template(self.show_template,
-                               pk=pk,
-                               title=self.show_title,
-                               widgets=widgets,
-                               related_views=self._related_views)
+                                    pk=pk,
+                                    title=self.show_title,
+                                    widgets=widgets,
+                                    related_views=self._related_views)
 
     """
     ---------------------------
@@ -406,8 +436,8 @@ class ModelView(RestCRUDView):
             return redirect(self.get_redirect())
         else:
             return self.render_template(self.add_template,
-                                   title=self.add_title,
-                                   widgets=widget)
+                                        title=self.add_title,
+                                        widgets=widget)
 
     """
     ---------------------------
@@ -423,9 +453,9 @@ class ModelView(RestCRUDView):
             return redirect(self.get_redirect())
         else:
             return self.render_template(self.edit_template,
-                                   title=self.edit_title,
-                                   widgets=widgets,
-                                   related_views=self._related_views)
+                                        title=self.edit_title,
+                                        widgets=widgets,
+                                        related_views=self._related_views)
 
     """
     ---------------------------
@@ -457,13 +487,13 @@ class ModelView(RestCRUDView):
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         result = [item.to_json() for item in lst]
         return jsonify(label_columns=self.label_columns,
-                        include_columns=self.list_columns,
-                        order_columns=self.order_columns,
-                        page=page,
-                        page_size=page_size,
-                        count=count,
-                        modelview_name=self.__class__.__name__,
-                        result=result)
+                       include_columns=self.list_columns,
+                       order_columns=self.order_columns,
+                       page=page,
+                       page_size=page_size,
+                       count=count,
+                       modelview_name=self.__class__.__name__,
+                       result=result)
 
 
     @expose('/download/<string:filename>')
@@ -540,17 +570,16 @@ class MasterDetailView(BaseCRUDView):
         if pk:
             item = self.datamodel.get(pk)
             widgets = self._get_related_views_widgets(item, orders=orders,
-                                                     pages=pages, page_sizes=page_sizes, widgets=widgets)
+                                                      pages=pages, page_sizes=page_sizes, widgets=widgets)
             related_views = self._related_views
         else:
             related_views = []
 
         return self.render_template(self.list_template,
-                               title=self.list_title,
-                               widgets=widgets,
-                               related_views=related_views,
-                               master_div_width=self.master_div_width)
-
+                                    title=self.list_title,
+                                    widgets=widgets,
+                                    related_views=related_views,
+                                    master_div_width=self.master_div_width)
 
 
 class CompactCRUDMixin(BaseCRUDView):
@@ -575,8 +604,8 @@ class CompactCRUDMixin(BaseCRUDView):
     def list(self):
         list_widgets = self._list()
         return self.render_template(self.list_template,
-                               title=self.list_title,
-                               widgets=list_widgets)
+                                    title=self.list_title,
+                                    widgets=list_widgets)
 
     @expose('/add/', methods=['GET', 'POST'])
     @has_access
@@ -607,6 +636,7 @@ class CompactCRUDMixin(BaseCRUDView):
             self._session_form_action = request.url
             self._session_form_title = self.edit_title
             return redirect(self.get_redirect())
+
 
 """
     This is for retro compatibility

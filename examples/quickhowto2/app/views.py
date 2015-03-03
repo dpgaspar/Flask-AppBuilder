@@ -54,8 +54,7 @@ class ProductView(ModelView):
 class ContactModelView2(ModelView):
     datamodel = SQLAInterface(Contact)
     list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
-    add_form_query_rel_fields = {'contact_group':[['name',FilterStartsWith,'p']],
-                                 'gender':[['name',FilterStartsWith,'F']]}
+    add_form_query_rel_fields = {'gender':[['name',FilterStartsWith,'F']]}
 
     @expose('/jsonexp')
     def jsonexp(self):
