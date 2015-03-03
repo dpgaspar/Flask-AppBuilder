@@ -45,7 +45,12 @@ var label_columns = {{ label_columns | tojson | safe }};
 </div>
 
 
-<ab-model-table base="{{api_url}}" ui-texts="{add_text: '{{_('Add a new record')}} '}">
+<ab-model-table base="{{api_url}}" ui-texts="{add_text: '{{_('Add a new record')}}',
+                                              show_text: '{{_('Show record')}}',
+                                              edit_text: '{{_('Edit record')}}',
+                                               delete_text: '{{_('Delete record')}}',
+                                               count_text: '{{_('Record Count')}}',
+                                                page_size_text: '{{_('Page size')}}' }">
 </ab-model-table>
 
 

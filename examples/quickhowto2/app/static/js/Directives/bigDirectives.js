@@ -19,7 +19,6 @@ app.directive('abModelTable', function($compile, ApiService, loadingManager, ale
 
 
           function init() {
-            console.log($scope.uiTexts);
             loadingManager.loading();
             ApiService.getInfo($scope.base_url).then(function(data) {
                 loadingManager.loaded();

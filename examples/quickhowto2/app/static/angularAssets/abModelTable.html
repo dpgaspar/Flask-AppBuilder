@@ -2,12 +2,12 @@
 <div class="well well-sm">
         <ab-pagination size="4" page="{[page]}" page-size="{[page_size]}" count="{[data.count]}" on-click="pageClick"></ab-pagination>
 
-        <ab-menu-page-size on-click="pageSizeClick" min="5" max="35" step="5" title="{{_('Page size')}}" page-size="{[page_size]}">
+        <ab-menu-page-size on-click="pageSizeClick" min="5" max="35" step="5" title="{[uiTexts.page_size_text]}" page-size="{[page_size]}">
         </ab-menu-page-size>
         	&nbsp;
         <ab-btn-add ng-if="can_add" url={[add_url]} tip-text="{[uiTexts.add_text]}"></ab-btn-add>
         <div class="pull-right">
-			<strong>{{ _('Record Count') }}:</strong> {[ data.count ]}
+			<strong>{[uiTexts.count_text]}:</strong> {[ data.count ]}
 		</div>
     </div>
 
@@ -28,9 +28,9 @@
             <tr ng-repeat="row in data.result">
                 <td><center>
                     <div class="btn-group btn-group-xs" style="display: flex;">
-                        <ab-btn-show ng-if="can_show" url="{[show_url + data.pks[$index]]}" tip-text="{{_('Show record')}}"></ab-btn-show>
-                        <ab-btn-edit ng-if="can_edit" url="{[edit_url + data.pks[$index]]}" tip-text="{{_('Edit record')}}"></ab-btn-edit>
-                        <ab-btn-delete ng-if="can_delete" on-click="remove(data.pks[$index])" tip-text="{{_('Delete record')}}"></ab-btn-delete>
+                        <ab-btn-show ng-if="can_show" url="{[show_url + data.pks[$index]]}" tip-text="{[uiTexts.show_text]}"></ab-btn-show>
+                        <ab-btn-edit ng-if="can_edit" url="{[edit_url + data.pks[$index]]}" tip-text="{[uiTexts.edit_text]}"></ab-btn-edit>
+                        <ab-btn-delete ng-if="can_delete" on-click="remove(data.pks[$index])" tip-text="{[uiTexts.delete_text]}"></ab-btn-delete>
                     </div>
                 </center></td>
                 <td ng-repeat="col in data.list_columns" dynamic="row[col]">{[row[col] ]}</td>
