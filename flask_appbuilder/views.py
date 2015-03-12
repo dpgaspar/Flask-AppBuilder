@@ -295,14 +295,6 @@ class RestCRUDView(BaseCRUDView):
     @expose('/api/read', methods=['GET'])
     def api_read(self):
         """
-            Parameters are passed as JSON with the following structure
-
-            { 'order_colum':'<COLUMN_NAME>',
-              'order_direction':'<asc|desc>',
-              'page':'<PAGE NUMBER>',
-              'page_size':'<PAGE SIZE>',
-              'filter' : [['<COLUMN_NAME>','<FILTER TYPE>','<VALUE>']...]
-            }
         """
         # Get arguments for ordering
         if get_order_args().get(self.__class__.__name__):
@@ -333,7 +325,32 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name('add')
     def api_create(self):
-        pass
+        is_valid_form = True
+        get_filter_args(self._filters)
+        exclude_cols = self._filters.get_relation_cols()
+        form = self.add_form.refresh()
+
+        self._fill_form_exclude_cols(exclude_cols, form)
+        if form.validate():
+            item = self.datamodel.obj()
+            form.populate_obj(item)
+            self.pre_add(item)
+            if self.datamodel.add(item):
+                self.post_add(item)
+                http_return_code = 200
+            else:
+                http_return_code = 500
+        else:
+            is_valid_form = False
+        if is_valid_form:
+            response = make_response(jsonify({'message': self.datamodel.message[0],
+                                          'severity': self.datamodel.message[1]}), http_return_code)
+        else:
+            # TODO return dict with errors
+            response = make_response(jsonify({'message': 'Invalid form',
+                                          'severity': 'warning'}), 500)
+        return response
+
 
     @expose('/api/update/<pk>', methods=['PUT'])
     @has_access_api
@@ -380,9 +397,12 @@ class RestCRUDView(BaseCRUDView):
 
 class ModelView(RestCRUDView):
     """
-        This is the CRUD generic view. If you want to automatically implement create, edit, delete, show, and list from your database tables, inherit your views from this class.
+        This is the CRUD generic view.
+        If you want to automatically implement create, edit,
+        delete, show, and list from your database tables, inherit your views from this class.
 
-        Notice that this class inherits from BaseCRUDView and BaseModelView so all properties from the parent class can be overriden.
+        Notice that this class inherits from BaseCRUDView and BaseModelView
+        so all properties from the parent class can be overriden.
     """
 
     def __init__(self, **kwargs):
