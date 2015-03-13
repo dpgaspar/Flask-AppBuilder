@@ -185,6 +185,8 @@ class BaseModelView(BaseView):
     """
         The base class of ModelView and ChartView, all properties are inherited
         Customize ModelView and ChartView overriding this properties
+
+        This class supports all the basics for query
     """
 
     datamodel = None
@@ -301,6 +303,16 @@ class BaseModelView(BaseView):
                                                filters=self._filters
         )
         return widgets
+
+    def _label_columns_json(self):
+        """
+            Prepares dict with labels to be JSON serializable
+        """
+        ret = {}
+        for key, value in list(self.label_columns.items()):
+            ret[key] = str(value)
+        return ret
+
 
 
 class BaseCRUDView(BaseModelView):
@@ -831,6 +843,7 @@ class BaseCRUDView(BaseModelView):
             rel_obj = self.datamodel.get_related_obj(filter_key, filter_value)
             field = getattr(form, filter_key)
             field.data = rel_obj
+
 
     def pre_update(self, item):
         """

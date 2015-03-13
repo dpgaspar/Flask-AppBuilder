@@ -230,13 +230,16 @@ class RestCRUDView(BaseCRUDView):
         This class view exposes REST method for CRUD operations on you models
     """
 
-    def _label_columns_json(self):
-        ret = {}
-        for key, value in list(self.label_columns.items()):
-            ret[key] = str(value)
-        return ret
+    def _search_form_json(self):
+        pass
 
     def _get_api_urls(self, api_urls=None):
+        """
+            Completes a dict with the CRUD urls of the API.
+
+        :param api_urls: A dict with the urls {'<FUNCTION>':'<URL>',...}
+        :return: A dict with the CRUD urls of the base API.
+        """
         view_name = self.__class__.__name__
         api_urls = api_urls or {}
         api_urls['read'] = url_for(view_name + ".api_read")
@@ -260,10 +263,14 @@ class RestCRUDView(BaseCRUDView):
         view_name = self.__class__.__name__
         api_urls = self._get_api_urls()
         modelview_urls = self._get_modelview_urls()
+        #
+        # Collects the CRUD permissions
         can_show = self.appbuilder.sm.has_access('can_show', view_name)
         can_edit = self.appbuilder.sm.has_access('can_edit', view_name)
         can_add = self.appbuilder.sm.has_access('can_add', view_name)
         can_delete = self.appbuilder.sm.has_access('can_delete', view_name)
+        #
+        # Prepares the form with the search fields make it JSON serializable
         form_fields = {}
         search_filters = {}
         dict_filters = self._filters.get_search_filters()
