@@ -9,7 +9,6 @@ Improvements and Bug fixes on 1.3.3
 - Interface datamodels do not flash messages, they log messages on public property tuple 'message'.
 - Issue #113, changed html5shiv and respond to import after bootstrap.
 
-
 Improvements and Bug fixes on 1.3.2
 -----------------------------------
 
