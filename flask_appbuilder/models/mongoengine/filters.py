@@ -96,6 +96,14 @@ class FilterRelationManyToManyEqual(FilterRelation):
         return query.filter(**flt)
 
 
+class FilterEqualFunction(BaseFilter):
+    name = "Filter view with a function"
+
+    def apply(self, query, func):
+        flt = {'%s' % self.column_name: func()}
+        return query.filter(**flt)
+
+
 class MongoEngineFilterConverter(BaseFilterConverter):
     """
         Class for converting columns into a supported list of filters

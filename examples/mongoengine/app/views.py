@@ -1,8 +1,9 @@
 import calendar
 from flask_appbuilder import expose, has_access
-from flask import url_for, make_response, Response
+from flask import url_for, make_response, Response, g
 from flask.ext.appbuilder import ModelView
 from flask_appbuilder.models.mongoengine.interface import MongoEngineInterface
+from  flask.ext.appbuilder.models.mongoengine.filters import FilterEqualFunction
 from flask_appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
 from flask.ext.babelpkg import lazy_gettext as _
@@ -11,6 +12,9 @@ from flask.ext.babelpkg import lazy_gettext as _
 from app import appbuilder
 from .models import ContactGroup, Contact, Tags
 
+
+def get_user():
+    return g.user.id
 
 class ContactModelView(ModelView):
     datamodel = MongoEngineInterface(Contact)
@@ -21,7 +25,7 @@ class GroupModelView(ModelView):
     datamodel = MongoEngineInterface(ContactGroup)
     related_views = [ContactModelView]
     search_columns = ['name']
-
+    base_filters = [['owner', FilterEqualFunction, get_user],]
 
 class TagsModelView(ModelView):
     datamodel = MongoEngineInterface(Tags)
