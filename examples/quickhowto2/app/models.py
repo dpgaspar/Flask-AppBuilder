@@ -10,7 +10,7 @@ mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 class ContactGroup(Model):
     id = Column(Integer, primary_key=True)
-    name = Column(String(50), unique = True, nullable=False)
+    name = Column(String(50), unique=True, nullable=False)
 
     def extra_col(self):
         return "EXTRA {0}".format(self.id)

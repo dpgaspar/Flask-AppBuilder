@@ -24,7 +24,7 @@ class GroupModelView(ModelView):
     datamodel = MongoEngineInterface(ContactGroup)
     related_views = [ContactModelView]
     search_columns = ['name']
-  
+
 class TagsModelView(ModelView):
     datamodel = MongoEngineInterface(Tags)
 

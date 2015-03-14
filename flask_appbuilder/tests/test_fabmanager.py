@@ -35,20 +35,4 @@ class FlaskTestCase(unittest.TestCase):
         ok_('Downloaded the skeleton app, good coding!' in result.output)
         shutil.rmtree('myapp')
 
-    def test_create_admin(self):
-        """
-            Test create admin
-        """
-        runner = CliRunner()
-        result = runner.invoke(create_app, input='myapp\nSQLAlchemy\n')
-        ok_('Downloaded the skeleton app, good coding!' in result.output)
-        os.chdir('myapp')
-        result = runner.invoke(create_admin, ['--username', 'admin2',
-                                              '--firstname', 'admin2',
-                                              '--lastname', 'user',
-                                              '--email', 'admin2@fab.org',
-                                              '--password', 'password'])
-        print result.output
-        #ok_('Downloaded the skeleton app, good coding!' in result.output)
-
 
