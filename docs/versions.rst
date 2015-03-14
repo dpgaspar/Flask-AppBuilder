@@ -8,6 +8,8 @@ Improvements and Bug fixes on 1.3.3
 - REST CRUD API added.
 - Interface datamodels do not flash messages, they log messages on public property tuple 'message'.
 - Issue #113, changed html5shiv and respond to import after bootstrap.
+- Issue #117, added FilterEqualFunction to MongoDB filters.
+
 
 Improvements and Bug fixes on 1.3.2
 -----------------------------------

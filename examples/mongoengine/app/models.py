@@ -9,7 +9,6 @@ mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
 class ContactGroup(Document):
     name = StringField(max_length=60, required=True, unique=True)
-    owner = ReferenceField(User, required=True)
 
     def __unicode__(self):
         return self.name
