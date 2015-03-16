@@ -183,6 +183,12 @@ Register everything, to present the models and create the menu. Issue **create_a
 
 Take a look at the :doc:`api` for add_view method.
 
+
+You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto
+
+Live quickhowto `Demo <http://flaskappbuilder.pythonanywhere.com/>`_ (login with guest/welcome).
+
+
 .. note::
 	The icons for the menu on this examples are from font-awesome,
 	Checkout fontAwesome `Icons <http://fontawesome.io/icons/>`_ names.
@@ -220,6 +226,8 @@ is case of success or errors, take a close look at the following table for a des
 +--------------+-------------------------------------------------------+-----------------+--------+
 | /api/read    | Queries models data, receives args as list            | can_list        | GET    |
 +--------------+-------------------------------------------------------+-----------------+--------+
+| /api/column  | Returns results for related column                    | can_list        | GET    |
++--------------+-------------------------------------------------------+-----------------+--------+
 | /api/create  | Receives a form as POST and creates record            | can_add         | POST   |
 +--------------+-------------------------------------------------------+-----------------+--------+
 | /api/update  | Receives a form as PUT and updates record             | can_edit        | PUT    |
@@ -227,11 +235,81 @@ is case of success or errors, take a close look at the following table for a des
 | /api/delete  | Deletes record                                        | can_delete      | DELETE |
 +--------------+-------------------------------------------------------+-----------------+--------+
 
+REST API
+--------
 
+This API is still BETA and will subject to change.
 
-You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto
+URL=/api
+--------
 
-Live quickhowto `Demo <http://flaskappbuilder.pythonanywhere.com/>`_ (login with guest/welcome).
+The root of the API returns information about the available methods, like their URL's using url_for from Flask.
+The users permissions on this view, labels etc...
+
+Let's take a close look at the returned JSON structure from this method. The returned object is a dictionary containing
+the following keys:
+
+:api_urls: Dictionary with All builtin CRUD methods and their URL's
+:can_add: User's permission on this view. Returns true or false.
+:can_delete: User's permission on this view. Returns true or false.
+:can_edit: User's permission on this view. Returns true or false.
+:can_show: User's permission on this view. Returns true or false.
+:can_update: User's permission on this view. Returns true or false.
+:label_columns: Dictionary for label_columns exactly equal as the ModelView property
+:list_columns: The columns to use when listing.
+:modelview_name: The name of the ModelView class.
+:modelview_urls: Dictionary with the UI's URLS for Add, Edit and Show.
+:order_columns: List with the columns allowed to do order by commands.
+:page_size: The default page size.
+:search_fields: Dictionary with column names as keys, and WTForm html fields as values.
+:search_filters: Dictionary with column names as keys and a List with allowed operations for filters as values.
+
+URL=/api/read
+-------------
+
+This is the read method of the API, will query your model with filter, ordering and paging operations.
+
+Let's take a close look at the returned JSON structure from this method. The returned object is a dictionary containing
+the following keys:
+
+:count: Returns an Int with the total number of records.
+:label_columns: Dictionary for label_columns exactly equal as the ModelView property
+:list_columns: The columns to use when listing.
+:modelview_name: The name of the ModelView class.
+:order_columns: List with the columns allowed to do order by commands.
+:page: Returns an Int, with the page on some page size where the result is located.
+:page_size: Returns an Int with the current page size.
+:pks: Returns a List with the results private keys.
+:result: Returns a List with a dictionary for each record.
+
+This method accepts as parameters the following:
+
+:Set page size: _psize_<YOUR MODEL VIEW>=<PAGE SIZE>
+:Set page: _page_<YOUR MODEL VIEW>=<PAGE>
+:Order by column: _oc_<<YOUR MODEL VIEW>=<COLUMN NAME>
+:Order by direction: _od_<<YOUR MODEL VIEW>=<asc|desc>
+:Filters: _flt_<INDEX of the search operations for this column>_<COLUMN NANE>=<VALUE> example: _flt_0_name=A
+
+URL=/api/delete/<PK>
+--------------------
+
+Deletes a record from the model only accepts HTTP DELETE operations. if you want to delete a record with 8 as primary
+key issue an HTTP DELETE to the following URL: htpp://localhost:8080/contactmodelview/delete/8
+
+It will return a dictionary that on case of success will have the folowing keys (returns HTTP 200):
+
+{
+"message": "Deleted Row",
+"severity": "success"
+}
+
+In case of error (returns HTTP 500):
+
+{
+"message": "General Error <class 'sqlalchemy.orm.exc.UnmappedInstanceError'>",
+"severity": "danger"
+}
+
 
 Some images:
 
