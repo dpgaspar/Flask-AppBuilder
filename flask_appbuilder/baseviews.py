@@ -607,7 +607,6 @@ class BaseCRUDView(BaseModelView):
                                              order_direction=order_direction,
                                              page=page, page_size=page_size)
 
-
     def _get_related_views_widgets(self, item, orders=None,
                                    pages=None, page_sizes=None,
                                    widgets=None, **args):

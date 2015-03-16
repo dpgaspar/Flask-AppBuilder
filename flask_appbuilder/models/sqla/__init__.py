@@ -1,8 +1,13 @@
 import logging
 import re
 import datetime
-from sqlalchemy.ext.declarative import declarative_base, as_declarative
+from sqlalchemy.ext.declarative import declarative_base
 from flask.ext.sqlalchemy import SQLAlchemy, _BoundDeclarativeMeta, _QueryProperty
+
+try:
+    from sqlalchemy.ext.declarative import as_declarative
+except ImportError:
+    from sqlalchemy.ext.declarative.api import as_declarative
 
 try:
     from sqlalchemy.orm.util import identity_key

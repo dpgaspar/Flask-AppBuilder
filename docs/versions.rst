@@ -9,7 +9,8 @@ Improvements and Bug fixes on 1.3.3
 - Interface datamodels do not flash messages, they log messages on public property tuple 'message'.
 - Issue #113, changed html5shiv and respond to import after bootstrap.
 - Issue #117, added FilterEqualFunction to MongoDB filters.
-
+- Issue #118, SQLAlchemy version 0.9.9 does not have as_declarative decorator, temp fix by fixing to 0.9.8.
+- New, json exposed method was removed from ModelView you must use API now.
 
 Improvements and Bug fixes on 1.3.2
 -----------------------------------

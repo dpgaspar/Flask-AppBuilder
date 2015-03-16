@@ -193,8 +193,8 @@ with detailed security for each CRUD primitives and Menu options, authentication
 and form field validation. Yet you can extensively change many details,
 add your own triggers before or after CRUD primitives, develop your own web views and integrate them.
 
-Exposed methods and JSON
-------------------------
+Exposed methods
+---------------
 
 Your **ModelView** classes expose the following methods has flask endpoints
 
@@ -205,14 +205,29 @@ Your **ModelView** classes expose the following methods has flask endpoints
 - delete
 - download
 - action
-- json
+- API methods
 
-This exposes a REST API, note the *json* method, it will return query results just like the *list*
-method, try it, you can use it on your own template implementations, it will return a JSON object
-with the columns to list, to order, the label's for the columns (already translated), the full
-query count, and of course the query results, it supports pagination also.
+This exposes a REST API (not completely strict). But you have a true REST API using API methods.
+Each method as it's own security permission, so you can control accesses at this level.
 
-*json* method uses the *list* method security name 'can_list'.
+The API methods take the same arguments as list, show, add, edit and delete, but return JSON and HTTP return codes
+is case of success or errors, take a close look at the following table for a description of each method.
+
++--------------+-------------------------------------------------------+-----------------+--------+
+| URL          | Description                                           | Permission Name | HTTP   |
++==============+=======================================================+=================+========+
+| /api         | Return the existing API URL's                         | can_list        | GET    |
++--------------+-------------------------------------------------------+-----------------+--------+
+| /api/read    | Queries models data, receives args as list            | can_list        | GET    |
++--------------+-------------------------------------------------------+-----------------+--------+
+| /api/create  | Receives a form as POST and creates record            | can_add         | POST   |
++--------------+-------------------------------------------------------+-----------------+--------+
+| /api/update  | Receives a form as PUT and updates record             | can_edit        | PUT    |
++--------------+-------------------------------------------------------+-----------------+--------+
+| /api/delete  | Deletes record                                        | can_delete      | DELETE |
++--------------+-------------------------------------------------------+-----------------+--------+
+
+
 
 You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto
 

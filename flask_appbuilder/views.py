@@ -363,7 +363,38 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name('edit')
     def api_update(self, pk):
-        pass
+        is_valid_form = True
+        get_filter_args(self._filters)
+        exclude_cols = self._filters.get_relation_cols()
+
+        item = self.datamodel.get(pk)
+        # convert pk to correct type, if pk is non string type.
+        pk = self.datamodel.get_pk_value(item)
+
+        form = self.edit_form.refresh(request.form)
+        # fill the form with the suppressed cols, generated from exclude_cols
+        self._fill_form_exclude_cols(exclude_cols, form)
+        # trick to pass unique validation
+        form._id = pk
+        if form.validate():
+            form.populate_obj(item)
+            self.pre_update(item)
+            if self.datamodel.edit(item):
+                self.post_update(item)
+                http_return_code = 200
+            else:
+                http_return_code = 500
+        else:
+            is_valid_form = False
+        if is_valid_form:
+            response = make_response(jsonify({'message': self.datamodel.message[0],
+                                          'severity': self.datamodel.message[1]}), http_return_code)
+        else:
+            # TODO return dict with from errors validation
+            response = make_response(jsonify({'message': 'Invalid form',
+                                          'severity': 'warning'}), 500)
+        return response
+
 
     @expose('/api/delete/<pk>', methods=['DELETE'])
     @has_access_api
@@ -494,33 +525,6 @@ class ModelView(RestCRUDView):
     def delete(self, pk):
         self._delete(pk)
         return redirect(self.get_redirect())
-
-
-    @has_access
-    @permission_name('list')
-    @expose('/json')
-    def json(self):
-        if get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = get_order_args().get(self.__class__.__name__)
-        else:
-            order_column, order_direction = '', ''
-        page = get_page_args().get(self.__class__.__name__)
-        page_size = get_page_size_args().get(self.__class__.__name__)
-        get_filter_args(self._filters)
-        if not order_column and self.base_order:
-            order_column, order_direction = self.base_order
-        joined_filters = self._filters.get_joined_filters(self._base_filters)
-        count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
-        result = [item.to_json() for item in lst]
-        return jsonify(label_columns=self.label_columns,
-                       include_columns=self.list_columns,
-                       order_columns=self.order_columns,
-                       page=page,
-                       page_size=page_size,
-                       count=count,
-                       modelview_name=self.__class__.__name__,
-                       result=result)
-
 
     @expose('/download/<string:filename>')
     @has_access

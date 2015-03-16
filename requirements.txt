@@ -1,6 +1,5 @@
 colorama>=0.3
 click>=3.0
-sqlalchemy==0.9.8
 Flask>=0.10
 Flask-BabelPkg>=0.9
 Flask-Login>=0.2.0
