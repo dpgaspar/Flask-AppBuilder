@@ -238,7 +238,8 @@ is case of success or errors, take a close look at the following table for a des
 REST API
 --------
 
-This API is still BETA and will subject to change.
+This API is still BETA and will be subject to change. In the future F.A.B. will probably use AngularJS
+to display the UI interface using AJAX.
 
 URL=/api
 --------

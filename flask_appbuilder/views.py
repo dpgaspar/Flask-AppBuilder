@@ -296,7 +296,6 @@ class RestCRUDView(BaseCRUDView):
         response.headers['Content-Type'] = "application/json"
         return response
 
-
     @has_access_api
     @permission_name('list')
     @expose('/api/read', methods=['GET'])

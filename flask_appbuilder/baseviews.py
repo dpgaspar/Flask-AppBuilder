@@ -23,8 +23,8 @@ def expose(url='/', methods=('GET',)):
             f._urls = []
         f._urls.append((url, methods))
         return f
-
     return wrap
+
 
 
 class BaseView(object):
