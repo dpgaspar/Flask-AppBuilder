@@ -35,10 +35,6 @@ class TestForm(SimpleFormView):
         flash(as_unicode(self.message), 'info')
 
 
-class ProductManufacturerView(ModelView):
-    datamodel = SQLAInterface(ProductManufacturer)
-
-
 class ProductModelView(ModelView):
     datamodel = SQLAInterface(ProductModel)
 
@@ -49,6 +45,11 @@ class ProductView(ModelView):
     add_columns = ['name','product_manufacturer', 'product_model']
     edit_columns = ['name','product_manufacturer', 'product_model']
     add_widget = FormVerticalWidget
+
+
+class ProductManufacturerView(ModelView):
+    datamodel = SQLAInterface(ProductManufacturer)
+    related_views = [ProductModelView, ProductView]
 
 
 class ContactModelView2(ModelView):
