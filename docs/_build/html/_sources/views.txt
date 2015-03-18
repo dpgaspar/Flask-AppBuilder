@@ -16,6 +16,28 @@ Additionally you can have granular security (method access security) that can be
 The views documented on this chapter are the building blocks of F.A.B, but the juicy part is on the next chapter
 with ModelView, ChartView and others.
 
+Class View Diagram Tree
+-----------------------
+
+All class views tree reflect functionality each layer is responsible for a certain goal. You will be essentially using
+BaseViews, IndexViews and the leafs ModelView, chart views and form views.
+
+.. image:: ./images/fab_object_view_diag.png
+    :width: 100%
+
+Next is a summary explanation of each class:
+
+:BaseView: Collects all the exposed methods, creates the Flask blueprint and registers the URLs, initializes base permissions.
+:UtilView: Implements exposes **back** for special back UI functionality.
+:IndexView: Special view for rendering the index page.
+:SimpleFormView: Subclass it to render WTForms.
+:PublicFormView: Same as SimpleFormView but with public access only.
+:BaseModelView: Class responsible for an initial datamodel layer, implements search form and filters.
+:BaseChartView: Basic chart view functionality.
+:GroupByChartView: Subclass it to render Google charts with group by queries.
+
+
+
 BaseView
 --------
 

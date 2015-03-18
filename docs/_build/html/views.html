@@ -128,6 +128,7 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Base Views</a><ul>
+<li><a class="reference internal" href="#class-view-diagram-tree">Class View Diagram Tree</a></li>
 <li><a class="reference internal" href="#baseview">BaseView</a></li>
 <li><a class="reference internal" href="#simpleformview">SimpleFormView</a></li>
 </ul>
@@ -192,6 +193,36 @@ Additionally you can have granular security (method access security) that can be
 (take a look at <a class="reference internal" href="security.html"><em>Security</em></a> for more detail).</p>
 <p>The views documented on this chapter are the building blocks of F.A.B, but the juicy part is on the next chapter
 with ModelView, ChartView and others.</p>
+<div class="section" id="class-view-diagram-tree">
+<h2>Class View Diagram Tree<a class="headerlink" href="#class-view-diagram-tree" title="Permalink to this headline">¶</a></h2>
+<p>All class views tree reflect functionality each layer is responsible for a certain goal. You will be essentially using
+BaseViews, IndexViews and the leafs ModelView, chart views and form views.</p>
+<a class="reference internal image-reference" href="_images/fab_object_view_diag.png"><img alt="_images/fab_object_view_diag.png" src="_images/fab_object_view_diag.png" style="width: 100%;" /></a>
+<p>Next is a summary explanation of each class:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">BaseView:</th><td class="field-body">Collects all the exposed methods, creates the Flask blueprint and registers the URLs, initializes base permissions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">UtilView:</th><td class="field-body">Implements exposes <strong>back</strong> for special back UI functionality.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">IndexView:</th><td class="field-body">Special view for rendering the index page.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">SimpleFormView:</th><td class="field-body">Subclass it to render WTForms.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">PublicFormView:</th><td class="field-body">Same as SimpleFormView but with public access only.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">BaseModelView:</th><td class="field-body">Class responsible for an initial datamodel layer, implements search form and filters.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">BaseChartView:</th><td class="field-body">Basic chart view functionality.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">GroupByChartView:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Subclass it to render Google charts with group by queries.</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="baseview">
 <h2>BaseView<a class="headerlink" href="#baseview" title="Permalink to this headline">¶</a></h2>
 <p>All views inherit from this class.
