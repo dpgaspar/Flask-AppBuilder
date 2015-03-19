@@ -1,11 +1,15 @@
-Employees
----------
+Quick How to Example
+--------------------
 
-Simple example that uses relationships and security view customization.
+Simple contacts application.
 
 Create an Admin user::
 
     $ fabmanager create-admin
+
+Insert test data::
+
+    $ python testdata.py
 
 Run it::
 

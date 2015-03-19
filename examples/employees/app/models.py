@@ -60,8 +60,8 @@ class Employee(Model):
     function = relationship("Function")
     benefits = relationship('Benefit', secondary=assoc_benefits_employee, backref='employee')
 
-    begin_date = Column(Date, default=today, nullable=False)
-    end_date = Column(Date, nullable=True)
+    begin_date = Column(Date, default=datetime.date.today(), nullable=True)
+    end_date = Column(Date, default=datetime.date.today(), nullable=True)
 
     def __repr__(self):
         return self.full_name
