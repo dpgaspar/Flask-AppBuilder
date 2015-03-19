@@ -4,6 +4,11 @@ Versions
 Improvements and Bug fixes on 1.3.3
 -----------------------------------
 
+- Issue #119, confirm HTML is included at the begining of body see baselayout.html.
+
+Improvements and Bug fixes on 1.3.3
+-----------------------------------
+
 - BaseInterface.get_values changed to iterator (does not return list but list iterator).
 - REST CRUD API added.
 - Interface datamodels do not flash messages, they log messages on public property tuple 'message'.
