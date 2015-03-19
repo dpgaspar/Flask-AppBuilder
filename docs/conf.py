@@ -33,7 +33,8 @@ from flask_appbuilder.version import VERSION_STRING
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'sphinxcontrib.blockdiag'
 ]
 
 #
@@ -121,6 +122,8 @@ html_theme_options = {
 'navbar_class': "navbar ",
 'bootswatch_theme': "flatly",
 'bootstrap_version': "3",
+'navbar_links':[("Diagrams", "diagrams")],
+'source_link_position': "xxx",
 }
 
 #html_theme_options = {'github_fork': 'dpgaspar/Flask-AppBuilder'}

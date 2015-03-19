@@ -16,6 +16,7 @@ Additionally you can have granular security (method access security) that can be
 The views documented on this chapter are the building blocks of F.A.B, but the juicy part is on the next chapter
 with ModelView, ChartView and others.
 
+
 BaseView
 --------
 
