@@ -27,10 +27,12 @@ var AdminActions = function() {
             return false;
         }
 
-        if ( confirm(confirmation) ) {
+        if (!!confirmation) {
+            $('#modal-confirm').modal('show');
+        }
+        else {
             form_submit();
         }
-
     };
 
     this.execute_single = function(url, confirmation) {
@@ -38,7 +40,10 @@ var AdminActions = function() {
         action_url = url;
         action_confirmation = confirmation;
 
-        if ( confirm(confirmation) ) {
+        if (!!confirmation) {
+                $('#modal-confirm').modal('show');
+        }
+        else {
             window.location.href = action_url;
         }
     };
