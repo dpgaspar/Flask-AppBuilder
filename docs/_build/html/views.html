@@ -37,7 +37,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 
   </head>
-  <body role="document">
+  <body>
   
   <a href="https://github.com/dpgaspar/Flask-AppBuilder"
      class="visible-desktop hidden-xs"><img
@@ -70,6 +70,8 @@
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
+            
+                <li><a href="diagrams.html">Diagrams</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -128,7 +130,6 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Base Views</a><ul>
-<li><a class="reference internal" href="#class-view-diagram-tree">Class View Diagram Tree</a></li>
 <li><a class="reference internal" href="#baseview">BaseView</a></li>
 <li><a class="reference internal" href="#simpleformview">SimpleFormView</a></li>
 </ul>
@@ -153,12 +154,6 @@
             
             
             
-            
-              <li class="hidden-sm">
-<div id="sourcelink">
-  <a href="_sources/views.txt"
-     rel="nofollow">Source</a>
-</div></li>
             
           </ul>
 
@@ -193,36 +188,6 @@ Additionally you can have granular security (method access security) that can be
 (take a look at <a class="reference internal" href="security.html"><em>Security</em></a> for more detail).</p>
 <p>The views documented on this chapter are the building blocks of F.A.B, but the juicy part is on the next chapter
 with ModelView, ChartView and others.</p>
-<div class="section" id="class-view-diagram-tree">
-<h2>Class View Diagram Tree<a class="headerlink" href="#class-view-diagram-tree" title="Permalink to this headline">¶</a></h2>
-<p>All class views tree reflect functionality each layer is responsible for a certain goal. You will be essentially using
-BaseViews, IndexViews and the leafs ModelView, chart views and form views.</p>
-<a class="reference internal image-reference" href="_images/fab_object_view_diag.png"><img alt="_images/fab_object_view_diag.png" src="_images/fab_object_view_diag.png" style="width: 100%;" /></a>
-<p>Next is a summary explanation of each class:</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">BaseView:</th><td class="field-body">Collects all the exposed methods, creates the Flask blueprint and registers the URLs, initializes base permissions.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">UtilView:</th><td class="field-body">Implements exposes <strong>back</strong> for special back UI functionality.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">IndexView:</th><td class="field-body">Special view for rendering the index page.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">SimpleFormView:</th><td class="field-body">Subclass it to render WTForms.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">PublicFormView:</th><td class="field-body">Same as SimpleFormView but with public access only.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">BaseModelView:</th><td class="field-body">Class responsible for an initial datamodel layer, implements search form and filters.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">BaseChartView:</th><td class="field-body">Basic chart view functionality.</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">GroupByChartView:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Subclass it to render Google charts with group by queries.</td>
-</tr>
-</tbody>
-</table>
-</div>
 <div class="section" id="baseview">
 <h2>BaseView<a class="headerlink" href="#baseview" title="Permalink to this headline">¶</a></h2>
 <p>All views inherit from this class.
@@ -307,7 +272,7 @@ attached to a menu or linked from any point of your site.</p>
 <p>You can find this example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2</a></p>
 <span class="target" id="module-flask.ext.appbuilder.baseviews"></span><dl class="function">
 <dt id="flask.ext.appbuilder.baseviews.expose">
-<code class="descclassname">flask.ext.appbuilder.baseviews.</code><code class="descname">expose</code><span class="sig-paren">(</span><em>url='/'</em>, <em>methods=('GET'</em>, <em>)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/baseviews.html#expose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.expose" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">flask.ext.appbuilder.baseviews.</tt><tt class="descname">expose</tt><big>(</big><em>url='/'</em>, <em>methods=('GET'</em>, <em>)</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/baseviews.html#expose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.expose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this decorator to expose views on your view classes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -325,7 +290,7 @@ attached to a menu or linked from any point of your site.</p>
 
 <span class="target" id="module-flask.ext.appbuilder.security.decorators"></span><dl class="function">
 <dt id="flask.ext.appbuilder.security.decorators.has_access">
-<code class="descclassname">flask.ext.appbuilder.security.decorators.</code><code class="descname">has_access</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/decorators.html#has_access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.decorators.has_access" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">flask.ext.appbuilder.security.decorators.</tt><tt class="descname">has_access</tt><big>(</big><em>f</em><big>)</big><a class="reference internal" href="_modules/flask/ext/appbuilder/security/decorators.html#has_access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.decorators.has_access" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this decorator to enable granular security permissions to your methods.
 Permissions will be associated to a role, and roles are associated to users.</p>
 <p>By default the permission&#8217;s name is the methods name.</p>
@@ -452,7 +417,7 @@ Notice also how label uses babel&#8217;s lazy_gettext as _(&#8216;text&#8217;) f
     </p>
     <p>
         &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3.<br/>
     </p>
   </div>
 </footer>
