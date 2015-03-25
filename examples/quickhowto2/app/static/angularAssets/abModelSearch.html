@@ -1,0 +1,35 @@
+<form id="filter_form" class="form-search" method="get">
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            {{_("Add Filter")}}
+          <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li ng-repeat="(col, filters) in search_filters">
+                    <a href="javascript:void(0)" name={[col]} class="filter btn" ng-click="addFilter(col)">
+                    {[ label_columns[col] ]}</a>
+                </li>
+
+            </ul>
+        </div>
+
+        <table class="table table-bordered table-hover">
+            <tbody>
+            <tr ng-repeat="active_filter in active_filters">
+
+                <td class="col-lg-1 col-md-1" >
+                    <a href="#" ng-click="removeFilter($index)" class="btn"><span class="close-icon">&times;</span>&nbsp;
+                    {[active_filter.label]}</a>
+                </td>
+                <td class="col-lg-1 col-md-1 col-sm-1">
+                    <select class="my_select2 form-control ng-scope" data-placeholder="Select Value" id="{[active_filter.col]}" name="{[active_filter.col]}" style="width:250px">
+                    <option ng-repeat="(key, value) in active_filter.options" value="{[key]}">{[value]}</option>
+                    </select>
+                        <ab-select data="active_filter.options"></ab-select>
+                    <ab-date format="yyyy-MM-dd" ></ab-date>
+                </td>
+                <td dynamic="active_filter.html"></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
