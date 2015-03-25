@@ -19,7 +19,7 @@ class EmployeeHistoryView(ModelView):
 class EmployeeView(ModelView):
     datamodel = SQLAInterface(Employee)
 
-    list_columns = ['full_name', 'department', 'employee_number']
+    list_columns = ['full_name', 'department.name', 'employee_number']
     edit_form_extra_fields = {'department':  QuerySelectField('Department',
                                 query_factory=department_query,
                                 widget=Select2Widget(extra_classes="readonly"))}

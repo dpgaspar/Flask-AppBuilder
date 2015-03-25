@@ -44,15 +44,19 @@ var label_columns = {{ label_columns | tojson | safe }};
         </div>
 </div>
 
+<div ng-controller="ModelCtrl" base_url="{{api_url}}">
 
-<ab-model-table base="{{api_url}}" ui-texts="{add_text: '{{_('Add a new record')}}',
+<ab-model-search></ab-model-search>
+<ab-model-table init="init()" base="{{api_url}}" ui-texts="{add_text: '{{_('Add a new record')}}',
                                               show_text: '{{_('Show record')}}',
                                               edit_text: '{{_('Edit record')}}',
                                                delete_text: '{{_('Delete record')}}',
                                                count_text: '{{_('Record Count')}}',
                                                 page_size_text: '{{_('Page size')}}' }">
-</ab-model-table>
 
+
+</ab-model-table>
+</div>
 
 <div ng-controller="TableCtrl" base="{{api_url}}">
     <a href="#" ab-modal-ok-cancel title-text="TITLE {[1+1]}" body-text="BODY...." ok-text="OK" cancel-text="Cancel">Cenas</a>

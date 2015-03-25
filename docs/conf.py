@@ -33,7 +33,8 @@ from flask_appbuilder.version import VERSION_STRING
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'sphinxcontrib.blockdiag'
 ]
 
 #

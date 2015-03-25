@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.3.4
+-----------------------------------
+
+- Issue #119, confirm HTML is included at the begining of body see baselayout.html.
+
 Improvements and Bug fixes on 1.3.3
 -----------------------------------
 
