@@ -100,7 +100,7 @@ var AdminActions = function() {
     //------------------------------------------
     $('#modal-confirm').on('show.bs.modal', function(e) {
         if (multiple || single) {
-            $('.modal-text').text(action_confirmation);
+            $('.modal-text').html(action_confirmation);
         }
     });
 

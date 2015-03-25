@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.3.5
+-----------------------------------
+
+- Issue #115, Modal text is now html instead of text.
+
 Improvements and Bug fixes on 1.3.4
 -----------------------------------
 
