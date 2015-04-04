@@ -106,6 +106,39 @@ def run(app, appbuilder, host, port, debug):
     _appbuilder = import_application(app, appbuilder)
     _appbuilder.get_app.run(host=host, port=port, debug=debug)
 
+@cli_app.command("shell")
+@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
+def shell(app, appbuilder):
+    """
+        Runs an interactive shell.
+    """
+    _appbuilder = import_application(app, appbuilder)
+
+    app = _appbuilder.get_app
+
+    banner = 'Python %s on %s\nApp: %s%s\nInstance: %s' % (
+        sys.version,
+        sys.platform,
+        app.import_name,
+        app.debug and ' [debug]' or '',
+        app.instance_path,
+    )
+    ctx = {}
+
+    # Support the regular Python interpreter startup script if someone
+    # is using it.
+    startup = os.environ.get('PYTHONSTARTUP')
+    if startup and os.path.isfile(startup):
+        with open(startup, 'r') as f:
+            eval(compile(f.read(), startup, 'exec'), ctx)
+
+    ctx.update(app.make_shell_context())
+
+    import code
+
+    code.interact(banner=banner, local=ctx)
+
 
 @cli_app.command("create-db")
 @click.option('--app', default='app', help='Your application init directory (package)')
