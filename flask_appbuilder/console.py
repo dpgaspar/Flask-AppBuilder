@@ -109,7 +109,9 @@ def run(app, appbuilder, host, port, debug):
 @cli_app.command("shell")
 @click.option('--app', default='app', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
-def shell(app, appbuilder):
+@click.option('--no-bpython', is_flag=True, help='Use bpython as shell')
+@click.option('--no-ipython', is_flag=True, help='Use ipython as shell')
+def shell(app, appbuilder, no_bpython, no_ipython):
     """
         Runs an interactive shell.
     """
@@ -134,6 +136,24 @@ def shell(app, appbuilder):
             eval(compile(f.read(), startup, 'exec'), ctx)
 
     ctx.update(app.make_shell_context())
+
+    if not no_bpython:
+        try:
+            from bpython import embed
+
+            embed(banner=banner, locals_=ctx)
+            return
+        except ImportError:
+            pass
+
+    if not no_ipython:
+        try:
+             from IPython import embed
+
+             embed(banner1=banner, user_ns=ctx)
+             return
+        except ImportError:
+            pass
 
     import code
 
