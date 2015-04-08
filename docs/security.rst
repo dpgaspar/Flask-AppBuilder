@@ -115,6 +115,26 @@ On the show detail for each user you can check who created the user and when and
 You can check also, a total login count (successful login), and the last failed logins
 (these are reset if a successful login occurred).
 
+If your using SQLAlchemy you can mix auditing to your models in a simple way. Mix AuditMixin class to your models::
+
+    from flask_appbuilder.models.mixins import AuditMixin
+    from flask_appbuilder import Model
+    from sqlalchemy import Column, Integer, String
+
+
+    class Project(AuditMixin, Model):
+        id = Column(Integer, primary_key=True)
+        name = Column(String(150), unique=True, nullable=False)
+
+This will add the following columns to your model:
+
+- created_on: The date and time of the record creation.
+- changed_on: The last date and time of record update.
+- created_by: Who created the record.
+- changed_by: Who last modified the record.
+
+These columns will be automatically updated by the framework upon creation or update of records.
+
 Your Custom Security
 --------------------
 
