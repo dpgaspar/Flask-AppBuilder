@@ -136,7 +136,7 @@ This will add the following columns to your model:
 These columns will be automatically updated by the framework upon creation or update of records. So you should
 exclude them from add and edit form. Using our example you will define our view like this::
 
-    class ProjectModelView(CompactCRUDMixin, ModelView):
+    class ProjectModelView(ModelView):
         datamodel = SQLAModel(Project)
         add_columns = ['name']
         edit_columns = ['name']
