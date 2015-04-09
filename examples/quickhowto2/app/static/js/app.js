@@ -61,3 +61,34 @@ app.factory("alertsManager", function() {
     }
   };
 });
+
+app.factory("filterManager", function() {
+    return {
+        filters = {} // keep track of filters from various views
+
+        addFilter: function(viewName, colName, filterType, value) {
+           filter = [colName, filterType, value];
+           if !(viewName in filters) { 
+               filters[viewName] = [filter];
+           }
+           else {
+               filters[viewName].push(filter);
+           }
+           console.log(filters);
+        },
+        removeFilter: function(viewName, colName, filterType, value) {
+           if !(viewName in filters) { return; }
+           _filters = filters[viewName];
+           for (i = 0; index < _filters.length; i++)
+           {
+               if ((_filters[i][0] == colName) & (_filters[i][1] == filterType) & (_filters[i][2] == value)) {
+                   _filters.splice(i,1);
+               }
+           }
+           console.log(filters);
+        }
+
+    };    
+});
+
+

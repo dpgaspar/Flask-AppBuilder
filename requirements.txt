@@ -6,5 +6,3 @@ Flask-Login>=0.2.0
 Flask-OpenID>=1.2.0
 Flask-SQLAlchemy>=0.16
 Flask-WTF>=0.9.1
-
-

@@ -1,5 +1,5 @@
 from flask import Markup, url_for
-from flask_appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
+from flask_appbuilder.models.mixins import AuditMixin, FileColumn
 from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from flask_appbuilder import Model
