@@ -1,5 +1,5 @@
 import calendar
-from flask import redirect, flash, url_for
+from flask import redirect, flash, url_for, Markup
 from .forms import TestForm
 from flask_appbuilder._compat import as_unicode
 from flask_appbuilder import ModelView, GroupByChartView, aggregate_count, action, expose
@@ -102,7 +102,7 @@ class ContactModelView(ModelView):
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
-    @action("muldelete", "Delete", "Delete all Really?", "fa-rocket")
+    @action("muldelete", "Delete", Markup("<p>Delete all Really?</p><p>Ok then...</p>"), "fa-rocket")
     def muldelete(self, items):
         self.datamodel.delete_all(items)
         self.update_redirect()
