@@ -133,7 +133,14 @@ This will add the following columns to your model:
 - created_by: Who created the record.
 - changed_by: Who last modified the record.
 
-These columns will be automatically updated by the framework upon creation or update of records.
+These columns will be automatically updated by the framework upon creation or update of records. So you should
+exclude them from add and edit form. Using our example you will define our view like this::
+
+    class ProjectModelView(CompactCRUDMixin, ModelView):
+        datamodel = SQLAModel(Project)
+        add_columns = ['name']
+        edit_columns = ['name']
+
 
 Your Custom Security
 --------------------
