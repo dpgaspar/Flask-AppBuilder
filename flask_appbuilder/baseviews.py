@@ -26,6 +26,18 @@ def expose(url='/', methods=('GET',)):
     return wrap
 
 
+def expose_api(name=None, url=None, methods=('GET',), description=''):
+    def wrap(self, f):
+        name = name or f.__name__
+        url = url or "/api/{0}".format(name)
+        if not hasattr(f, '_urls'):
+            f._urls = []
+            f._extra = []
+        f._urls.append((url, methods))
+        f._extra.append((name, description))
+        return f
+    return wrap
+
 
 class BaseView(object):
     """
@@ -60,6 +72,7 @@ class BaseView(object):
     """ the default view for this BaseView, to be used with url_for (method name) """
     extra_args = None
     """ dictionary for injecting extra arguments into template """
+    _apis = None
 
     def __init__(self):
         """
@@ -77,6 +90,7 @@ class BaseView(object):
             self.base_permissions = list(self.base_permissions)
         if not self.extra_args:
             self.extra_args = dict()
+        self._apis = dict()
 
     def create_blueprint(self, appbuilder,
                          endpoint=None,

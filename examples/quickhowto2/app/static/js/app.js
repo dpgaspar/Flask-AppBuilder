@@ -19,25 +19,6 @@ app.factory("loadingManager", function($rootScope) {
 });
 
 
-app.factory("filterManager", function() {
-    return {
-        filters: {}, // TYPE: { 'MODELVIEW_NAME': [[COL, FILTER_TYPE, VALUE],[COL, FILTER_TYPE, VALUE]...], ... }
-
-        addFilter: function(modelview_name, col, filter_type, value) {
-            filter = [col, filter_type, value];
-            if (!filters[modelview_name]) {
-                filters[modelview_name] = [filter];
-            }
-            else {
-                filters[modelview_name].push(filter);
-            }
-        },
-        removeFilter: function(modelview_name, index) {
-            filters[modelview_name].splice(index, 1);
-        }
-    };
-});
-
 
 app.factory("alertsManager", function() {
   return {
@@ -64,11 +45,11 @@ app.factory("alertsManager", function() {
 
 app.factory("filterManager", function() {
     return {
-        filters = {} // keep track of filters from various views
+        filters: {}, // TYPE: { 'MODELVIEW_NAME': [[COL, FILTER_TYPE, VALUE],[COL, FILTER_TYPE, VALUE]...], ... }
 
         addFilter: function(viewName, colName, filterType, value) {
            filter = [colName, filterType, value];
-           if !(viewName in filters) { 
+           if (!(viewName in filters)) {
                filters[viewName] = [filter];
            }
            else {
@@ -77,7 +58,7 @@ app.factory("filterManager", function() {
            console.log(filters);
         },
         removeFilter: function(viewName, colName, filterType, value) {
-           if !(viewName in filters) { return; }
+           if (!(viewName in filters)) { return; }
            _filters = filters[viewName];
            for (i = 0; index < _filters.length; i++)
            {

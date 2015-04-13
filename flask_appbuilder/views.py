@@ -196,8 +196,10 @@ class PublicFormView(BaseView):
         self._init_vars()
         form = self.form.refresh()
         if form.validate_on_submit():
-            self.form_post(form)
-            return redirect(self.get_redirect())
+            response = self.form_post(form)
+            if not response:
+                return redirect(self.get_redirect())
+            return response
         else:
             widgets = self._get_edit_widget(form=form)
             return self.render_template(
@@ -209,7 +211,10 @@ class PublicFormView(BaseView):
 
     def form_post(self, form):
         """
-            Override this method to implement your form processing
+            Override this method to implement your form processing on a successful post
+
+            If you return null the form will redirect back, alternatively you can return a redirect or
+            render_template.
         """
         pass
 

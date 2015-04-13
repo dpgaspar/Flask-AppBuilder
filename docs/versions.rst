@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.3.6
+-----------------------------------
+
+- SimpleFormView.form_post can return null to redirect back or a Flask response (render or redirect).
+
 Improvements and Bug fixes on 1.3.5
 -----------------------------------
 
