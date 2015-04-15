@@ -3,7 +3,7 @@ from flask import redirect, flash, url_for, Markup
 from .forms import TestForm
 from flask_appbuilder._compat import as_unicode
 from flask_appbuilder import ModelView, GroupByChartView, aggregate_count, action, expose
-from flask_appbuilder.views import SimpleFormView
+from flask_appbuilder.views import SimpleFormView, MultipleView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.widgets import FormVerticalWidget, FormInlineWidget, FormHorizontalWidget, ShowBlockWidget
@@ -120,6 +120,10 @@ class FloatModelView(ModelView):
     datamodel = SQLAInterface(FloatModel)
 
 
+class MultipleViewsExp(MultipleView):
+    views = [ContactModelView, GroupModelView]
+
+
 class ContactChartView(GroupByChartView):
     datamodel = SQLAInterface(Contact)
     chart_title = 'Grouped contacts'
@@ -173,6 +177,7 @@ appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", cate
 appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
 appbuilder.add_view(ContactModelView2, "List Contacts 2", icon="fa-envelope", category="Contacts")
 appbuilder.add_view(FloatModelView, "List Float Model", icon="fa-envelope", category="Contacts")
+appbuilder.add_view(MultipleViewsExp, "Multiple Views", icon="fa-envelope", category="Contacts")
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
 appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")

@@ -291,7 +291,7 @@ class AppBuilder(object):
         if not self._view_exists(baseview):
             baseview.appbuilder = self
             self.baseviews.append(baseview)
-            self._process_ref_related_views()
+            self._process_inner_views()
             if self.app:
                 self.register_blueprint(baseview)
                 self._add_permission(baseview)
@@ -352,7 +352,7 @@ class AppBuilder(object):
         if not self._view_exists(baseview):
             baseview.appbuilder = self
             self.baseviews.append(baseview)
-            self._process_ref_related_views()
+            self._process_inner_views()
             if self.app:
                 self.register_blueprint(baseview, endpoint=endpoint, static_folder=static_folder)
                 self._add_permission(baseview)
@@ -407,14 +407,13 @@ class AppBuilder(object):
                 return True
         return False
 
-    def _process_ref_related_views(self):
+    def _process_inner_views(self):
         try:
             for view in self.baseviews:
-                if hasattr(view, 'related_views'):
-                    for rel_class in view.related_views:
-                        for v in self.baseviews:
-                            if isinstance(v, rel_class) and v not in view._related_views:
-                                view._related_views.append(v)
+                for inner_class in view.inner_views:
+                    for v in self.baseviews:
+                        if isinstance(v, inner_class) and v not in view._related_views:
+                            view._related_views.append(v)
         except:
             raise Exception('Use related_views with classes, not instances')
 

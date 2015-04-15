@@ -1,0 +1,16 @@
+{% extends "appbuilder/base.html" %}
+{% import 'appbuilder/general/lib.html' as lib %}
+
+{% block content %}
+
+{{ lib.panel_begin(title) }}
+	{% block list_list scoped %}
+        {% for view in views %}
+            <div>
+            {{ view()|safe }}
+            </div>
+        {% endfor %}
+	{% endblock %}
+{{ lib.panel_end() }}
+
+{% endblock %}

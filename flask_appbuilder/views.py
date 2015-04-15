@@ -4,7 +4,7 @@ from ._compat import as_unicode
 from flask_babelpkg import lazy_gettext
 from .filemanager import uuid_originalname
 from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
-from .baseviews import BaseView, BaseCRUDView, expose
+from .baseviews import BaseView, BaseCRUDView, expose, expose_api
 from .security.decorators import has_access, permission_name, has_access_api
 from .urltools import *
 
@@ -247,6 +247,7 @@ class RestCRUDView(BaseCRUDView):
         """
         view_name = self.__class__.__name__
         api_urls = api_urls or {}
+        print self._apis
         api_urls['read'] = url_for(view_name + ".api_read")
         api_urls['delete'] = url_for(view_name + ".api_delete", pk="")
         api_urls['create'] = url_for(view_name + ".api_create")
@@ -260,6 +261,7 @@ class RestCRUDView(BaseCRUDView):
         modelview_urls['add'] = url_for(view_name + ".add")
         modelview_urls['edit'] = url_for(view_name + ".edit", pk="")
         return modelview_urls
+
 
     @expose('/api', methods=['GET'])
     @has_access_api
@@ -301,9 +303,9 @@ class RestCRUDView(BaseCRUDView):
         response.headers['Content-Type'] = "application/json"
         return response
 
+    @expose_api(name='read', url='/api/read', methods=['GET'])
     @has_access_api
     @permission_name('list')
-    @expose('/api/read', methods=['GET'])
     def api_read(self):
         """
         """
@@ -332,7 +334,7 @@ class RestCRUDView(BaseCRUDView):
         response.headers['Content-Type'] = "application/json"
         return response
 
-    @expose('/api/create', methods=['POST'])
+    @expose_api(name='create', url='/api/create', methods=['POST'])
     @has_access_api
     @permission_name('add')
     def api_create(self):
@@ -363,7 +365,7 @@ class RestCRUDView(BaseCRUDView):
         return response
 
 
-    @expose('/api/update/<pk>', methods=['PUT'])
+    @expose_api(name='update', url='/api/update/<pk>', methods=['PUT'])
     @has_access_api
     @permission_name('edit')
     def api_update(self, pk):
@@ -400,7 +402,7 @@ class RestCRUDView(BaseCRUDView):
         return response
 
 
-    @expose('/api/delete/<pk>', methods=['DELETE'])
+    @expose_api(name='delete', url='/api/delete/<pk>', methods=['DELETE'])
     @has_access_api
     @permission_name('delete')
     def api_delete(self, pk):
@@ -416,7 +418,7 @@ class RestCRUDView(BaseCRUDView):
         response.headers['Content-Type'] = "application/json"
         return response
 
-    @expose('/api/column/<col_name>', methods=['GET'])
+    @expose_api(name='column', url='/api/column/<col_name>', methods=['GET'])
     @has_access_api
     @permission_name('list')
     def api_column(self, col_name):
@@ -614,6 +616,46 @@ class MasterDetailView(BaseCRUDView):
                                     widgets=widgets,
                                     related_views=related_views,
                                     master_div_width=self.master_div_width)
+
+
+class MultipleView(BaseView):
+
+    list_template = 'appbuilder/general/model/multiple_views.html'
+
+    views = None
+    " A list of ModelView's to render on the same page "
+    _views = None
+
+    def __init__(self, **kwargs):
+        super(MultipleView, self).__init__(**kwargs)
+        self._views = list()
+        for view in self.views:
+            for v in self.appbuilder.baseviews:
+                if isinstance(v, view) and v not in self._views:
+                    self._views.append(v)
+
+    @expose('/list/')
+    @has_access
+    def list(self):
+        pages = get_page_args()
+        page_sizes = get_page_size_args()
+        orders = get_order_args()
+        _views = list()
+        for view in self._views:
+            if orders.get(view.__class__.__name__):
+                order_column, order_direction = orders.get(view.__class__.__name__)
+            else:
+                order_column, order_direction = '', ''
+            page = pages.get(view.__class__.__name__)
+            page_size = page_sizes.get(view.__class__.__name__)
+            _views.append(view._get_view_widget(order_column=order_column,
+                                                order_direction=order_direction,
+                                                page=page, page_size=page_size))
+
+        return self.render_template(self.list_template,
+                                    title=self.list_title,
+                                    views = _views)
+
 
 
 class CompactCRUDMixin(BaseCRUDView):

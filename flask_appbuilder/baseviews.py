@@ -26,15 +26,15 @@ def expose(url='/', methods=('GET',)):
     return wrap
 
 
-def expose_api(name=None, url=None, methods=('GET',), description=''):
-    def wrap(self, f):
-        name = name or f.__name__
-        url = url or "/api/{0}".format(name)
+def expose_api(name='', url='', methods=('GET',), description=''):
+    def wrap(f):
+        api_name = name or f.__name__
+        api_url = url or "/api/{0}".format(name)
         if not hasattr(f, '_urls'):
             f._urls = []
-            f._extra = []
-        f._urls.append((url, methods))
-        f._extra.append((name, description))
+            f._extra = {}
+        f._urls.append((api_url, methods))
+        f._extra[api_name] = (api_url, f.__name__, description)
         return f
     return wrap
 
@@ -91,6 +91,10 @@ class BaseView(object):
         if not self.extra_args:
             self.extra_args = dict()
         self._apis = dict()
+        for attr_name in dir(self):
+            if hasattr(getattr(self, attr_name), '_extra'):
+                _extra = getattr(getattr(self, attr_name), '_extra')
+                for key in _extra: self._apis[key] = _extra[key]
 
     def create_blueprint(self, appbuilder,
                          endpoint=None,
@@ -193,6 +197,21 @@ class BaseView(object):
         session['page_history'] = page_history.to_json()
         url = page_history.pop() or index_url
         return url
+
+    @property
+    def inner_views(self):
+        """
+            Will return a list with views that need to be initialized.
+            Normally related_views from ModelView
+        """
+        return []
+
+    @inner_views.setter
+    def inner_views(self, views):
+        """
+            Sets initialized inner views
+        """
+        pass
 
 
 class BaseModelView(BaseView):
@@ -716,6 +735,22 @@ class BaseCRUDView(BaseModelView):
                                            fieldsets=self.edit_fieldsets
         )
         return widgets
+
+    @property
+    def inner_views(self):
+        """
+            Will return a list with views that need to be initialized.
+            Normally related_views from ModelView
+        """
+        return self.related_views
+
+    @inner_views.setter
+    def inner_views(self, views):
+        """
+            Sets initialized inner views
+        """
+        self._related_views = views
+
 
     """
     -----------------------------------------------------
