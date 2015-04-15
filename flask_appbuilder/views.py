@@ -660,7 +660,8 @@ class MultipleView(BaseView):
                                                 page=page, page_size=page_size))
         print views_widgets
         return self.render_template(self.list_template,
-                                    views=views_widgets)
+                                    views=self._views,
+                                    views_widgets=views_widgets)
 
 
 
