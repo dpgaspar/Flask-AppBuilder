@@ -408,13 +408,10 @@ class AppBuilder(object):
         return False
 
     def _process_inner_views(self):
-        try:
-            for view in self.baseviews:
-                for inner_class in view.inner_views:
-                    for v in self.baseviews:
-                        if isinstance(v, inner_class) and v not in view._related_views:
-                            view._related_views.append(v)
-        except:
-            raise Exception('Use related_views with classes, not instances')
+        for view in self.baseviews:
+            for inner_class in view.get_uninit_inner_views():
+                for v in self.baseviews:
+                    if isinstance(v, inner_class) and v not in view.get_init_inner_views():
+                        view.get_init_inner_views().append(v)
 
 

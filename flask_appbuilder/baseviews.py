@@ -198,16 +198,14 @@ class BaseView(object):
         url = page_history.pop() or index_url
         return url
 
-    @property
-    def inner_views(self):
+    def get_uninit_inner_views(self):
         """
             Will return a list with views that need to be initialized.
             Normally related_views from ModelView
         """
         return []
 
-    @inner_views.setter
-    def inner_views(self, views):
+    def get_init_inner_views(self, views):
         """
             Sets initialized inner views
         """
@@ -736,20 +734,15 @@ class BaseCRUDView(BaseModelView):
         )
         return widgets
 
-    @property
-    def inner_views(self):
+    def get_uninit_inner_views(self):
         """
             Will return a list with views that need to be initialized.
             Normally related_views from ModelView
         """
         return self.related_views
 
-    @inner_views.setter
-    def inner_views(self, views):
-        """
-            Sets initialized inner views
-        """
-        self._related_views = views
+    def get_init_inner_views(self):
+        return self._related_views
 
 
     """

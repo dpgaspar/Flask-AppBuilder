@@ -628,11 +628,18 @@ class MultipleView(BaseView):
 
     def __init__(self, **kwargs):
         super(MultipleView, self).__init__(**kwargs)
-        self._views = list()
-        for view in self.views:
-            for v in self.appbuilder.baseviews:
-                if isinstance(v, view) and v not in self._views:
-                    self._views.append(v)
+        self.views = self.views or list()
+        self._views = self._views or list()
+
+    def get_uninit_inner_views(self):
+        """
+            Will return a list with views that need to be initialized.
+            Normally related_views from ModelView
+        """
+        return self.views
+
+    def get_init_inner_views(self):
+        return self._views
 
     @expose('/list/')
     @has_access
@@ -640,7 +647,7 @@ class MultipleView(BaseView):
         pages = get_page_args()
         page_sizes = get_page_size_args()
         orders = get_order_args()
-        _views = list()
+        views_widgets = list()
         for view in self._views:
             if orders.get(view.__class__.__name__):
                 order_column, order_direction = orders.get(view.__class__.__name__)
@@ -648,13 +655,12 @@ class MultipleView(BaseView):
                 order_column, order_direction = '', ''
             page = pages.get(view.__class__.__name__)
             page_size = page_sizes.get(view.__class__.__name__)
-            _views.append(view._get_view_widget(order_column=order_column,
+            views_widgets.append(view._get_view_widget(filters=view._base_filters, order_column=order_column,
                                                 order_direction=order_direction,
                                                 page=page, page_size=page_size))
-
+        print views_widgets
         return self.render_template(self.list_template,
-                                    title=self.list_title,
-                                    views = _views)
+                                    views=views_widgets)
 
 
 

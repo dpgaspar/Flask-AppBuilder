@@ -5,6 +5,7 @@ Improvements and Bug fixes on 1.3.6
 -----------------------------------
 
 - SimpleFormView.form_post can return null to redirect back or a Flask response (render or redirect).
+- Changed the way related views are initialized, no bind to the related_views property.
 
 Improvements and Bug fixes on 1.3.5
 -----------------------------------
