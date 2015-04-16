@@ -247,7 +247,6 @@ class RestCRUDView(BaseCRUDView):
         """
         view_name = self.__class__.__name__
         api_urls = api_urls or {}
-        print self._apis
         api_urls['read'] = url_for(view_name + ".api_read")
         api_urls['delete'] = url_for(view_name + ".api_delete", pk="")
         api_urls['create'] = url_for(view_name + ".api_create")
