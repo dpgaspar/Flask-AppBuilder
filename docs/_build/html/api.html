@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.3.5',
+        VERSION:     '1.3.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.3.5</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.3.6</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -146,6 +146,7 @@
 <li><a class="reference internal" href="#simpleformview">SimpleFormView</a></li>
 <li><a class="reference internal" href="#publicformview">PublicFormView</a></li>
 <li><a class="reference internal" href="#modelview">ModelView</a></li>
+<li><a class="reference internal" href="#multipleview">MultipleView</a></li>
 <li><a class="reference internal" href="#masterdetailview">MasterDetailView</a></li>
 <li><a class="reference internal" href="#compactcrudmixin">CompactCRUDMixin</a></li>
 </ul>
@@ -589,9 +590,22 @@ Use it like this if you want to restrict your view to readonly:</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="flask.ext.appbuilder.baseviews.BaseView.get_init_inner_views">
+<code class="descname">get_init_inner_views</code><span class="sig-paren">(</span><em>views</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/baseviews.html#BaseView.get_init_inner_views"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.get_init_inner_views" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets initialized inner views</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseView.get_redirect">
 <code class="descname">get_redirect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/baseviews.html#BaseView.get_redirect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.get_redirect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the previous url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.baseviews.BaseView.get_uninit_inner_views">
+<code class="descname">get_uninit_inner_views</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/baseviews.html#BaseView.get_uninit_inner_views"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.get_uninit_inner_views" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will return a list with views that need to be initialized.
+Normally related_views from ModelView</p>
 </dd></dl>
 
 <dl class="method">
@@ -898,6 +912,13 @@ Add a custom filter to form related fields:</p>
 <p>alias of <code class="xref py py-class docutils literal"><span class="pre">FormWidget</span></code></p>
 </dd></dl>
 
+<dl class="method">
+<dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.get_uninit_inner_views">
+<code class="descname">get_uninit_inner_views</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/baseviews.html#BaseCRUDView.get_uninit_inner_views"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.get_uninit_inner_views" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will return a list with views that need to be initialized.
+Normally related_views from ModelView</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.list_columns">
 <code class="descname">list_columns</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.list_columns" title="Permalink to this definition">¶</a></dt>
@@ -1155,7 +1176,9 @@ Inherit from this view to provide some base processing for your customized form 
 <dl class="method">
 <dt id="flask.ext.appbuilder.views.PublicFormView.form_post">
 <code class="descname">form_post</code><span class="sig-paren">(</span><em>form</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/views.html#PublicFormView.form_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView.form_post" title="Permalink to this definition">¶</a></dt>
-<dd><p>Override this method to implement your form processing</p>
+<dd><p>Override this method to implement your form processing on a successful post</p>
+<p>If you return null the form will redirect back, alternatively you can return a redirect or
+render_template.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -1187,6 +1210,32 @@ so all properties from the parent class can be overriden.</p>
 <dt id="flask.ext.appbuilder.views.ModelView.action_post">
 <code class="descname">action_post</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/views.html#ModelView.action_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.ModelView.action_post" title="Permalink to this definition">¶</a></dt>
 <dd><p>Action method to handle multiple records selected from a list view</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="multipleview">
+<h3>MultipleView<a class="headerlink" href="#multipleview" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="flask.ext.appbuilder.views.MultipleView">
+<em class="property">class </em><code class="descclassname">flask.ext.appbuilder.views.</code><code class="descname">MultipleView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/views.html#MultipleView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.MultipleView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this view to render multiple views on the same page, exposed on the list endpoint.</p>
+<p>example (after defining GroupModelView and ContactModelView):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MultipleViewsExp</span><span class="p">(</span><span class="n">MultipleView</span><span class="p">):</span>
+    <span class="n">views</span> <span class="o">=</span> <span class="p">[</span><span class="n">GroupModelView</span><span class="p">,</span> <span class="n">ContactModelView</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.MultipleView.list_template">
+<code class="descname">list_template</code><em class="property"> = 'appbuilder/general/model/multiple_views.html'</em><a class="headerlink" href="#flask.ext.appbuilder.views.MultipleView.list_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this to implement your own template for the list endpoint</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.views.MultipleView.views">
+<code class="descname">views</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.MultipleView.views" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of ModelView&#8217;s to render on the same page</p>
 </dd></dl>
 
 </dd></dl>
@@ -1872,7 +1921,7 @@ accepts a list and returns the sum of the list&#8217;s items</p>
 <dt id="flask.ext.appbuilder.charts.views.BaseChartView">
 <em class="property">class </em><code class="descclassname">flask.ext.appbuilder.charts.views.</code><code class="descname">BaseChartView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/charts/views.html#BaseChartView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.charts.views.BaseChartView" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the base class for all chart views. 
-Use SimpleByChartView or GroupByChartView, override their properties and these
+Use DirectByChartView or GroupByChartView, override their properties and these
 to customise your charts</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.charts.views.BaseChartView.chart_3d">
@@ -1959,23 +2008,16 @@ to apply the aggregation</td>
 </tbody>
 </table>
 <p>The <strong>definitions</strong> property respects the following grammar:</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>definitions = [</dt>
-<dd><blockquote class="first">
-<div><dl class="docutils">
-<dt>{</dt>
-<dd>&#8216;label&#8217;: &#8216;label for chart definition&#8217;,
-&#8216;group&#8217;: &#8216;&lt;COLNAME&gt;&#8217;|&#8217;&lt;MODEL FUNCNAME&gt;&#8217;,
-&#8216;formatter&#8217;: &lt;FUNC FORMATTER FOR GROUP COL&gt;,
-&#8216;series&#8217;: [&#8216;&lt;COLNAME&gt;&#8217;|&#8217;&lt;MODEL FUNCNAME&gt;&#8217;,...]</dd>
-</dl>
-<p>}, ...</p>
-</div></blockquote>
-<p class="last">]</p>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre>definitions = [
+        {
+         &#39;label&#39;: &#39;label for chart definition&#39;,
+         &#39;group&#39;: &#39;&lt;COLNAME&gt;&#39;|&#39;&lt;MODEL FUNCNAME&gt;&#39;,
+         &#39;formatter&#39;: &lt;FUNC FORMATTER FOR GROUP COL&gt;,
+         &#39;series&#39;: [&#39;&lt;COLNAME&gt;&#39;|&#39;&lt;MODEL FUNCNAME&gt;&#39;,...]
+        }, ...
+      ]
+</pre></div>
+</div>
 <p>example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CountryDirectChartView</span><span class="p">(</span><span class="n">DirectByChartView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>

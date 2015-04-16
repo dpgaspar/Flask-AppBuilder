@@ -163,10 +163,10 @@ Remember you can include columns, relations or methods from a model's definition
 
 .. note::
 
-    Fields that reference relationships display the defined related model representation
-    (on this case __repr__() methos on ContactGroup Model), so by default these fields can't be ordered.
+    Fields that reference relationships, will display the defined related model representation
+    (on this case __repr__() methods on ContactGroup Model), so by default these fields can't be ordered.
     To enable order by on list for relationship fields, you can (since 1.1.1) reference
-    them using dotted notation. On this example would be 'contact_group.name'.
+    them using dotted notation. On this example you can reference them using 'contact_group.name'.
 
 
 Register (views.py)
@@ -190,14 +190,26 @@ Live quickhowto `Demo <http://flaskappbuilder.pythonanywhere.com/>`_ (login with
 
 
 .. note::
-	The icons for the menu on this examples are from font-awesome,
-	Checkout fontAwesome `Icons <http://fontawesome.io/icons/>`_ names.
+	The icons for the menu on this example are from font-awesome,
+	Checkout fontAwesome `Icons <http://fontawesome.io/icons/>`_  names.
 	Font-Awesome is already included and you can use any icon you like on menus and actions
 	
 With this very few lines of code (and could be fewer), you now have a web application
 with detailed security for each CRUD primitives and Menu options, authentication,
 and form field validation. Yet you can extensively change many details,
 add your own triggers before or after CRUD primitives, develop your own web views and integrate them.
+
+Some images:
+
+.. image:: ./images/login_db.png
+    :width: 100%
+
+.. image:: ./images/group_list.png
+    :width: 100%
+
+.. image:: ./images/contact_list.png
+    :width: 100%
+
 
 Exposed methods
 ---------------
@@ -213,7 +225,7 @@ Your **ModelView** classes expose the following methods has flask endpoints
 - action
 - API methods
 
-This exposes a REST API (not completely strict). But you have a true REST API using API methods.
+This exposes a REST API (not completely strict). You also have an AJAX REST API.
 Each method as it's own security permission, so you can control accesses at this level.
 
 The API methods take the same arguments as list, show, add, edit and delete, but return JSON and HTTP return codes
@@ -311,15 +323,48 @@ In case of error (returns HTTP 500):
 "severity": "danger"
 }
 
+Extra Views
+-----------
 
-Some images:
+F.A.B. as some extra views like **ModelView** but with different behaviours. You can radically change the way a ModelView
+looks like using various approaches like changing CRUD templates or widgets, CSS, inserting or injecting your own
+HTML etc, take a look at :doc:`templates`, :doc:`advanced`, :doc:`customizing`.
 
-.. image:: ./images/login_db.png
-    :width: 100%
+Yet the framework brings 3 extra subclasses from BaseCRUDView (**ModelView** is a subclass of **BaseCRUDView**, this means
+that it implements complete CRUD based on models as well as JSON exposure). This views implement alternative CRUD GUI.
 
-.. image:: ./images/group_list.png
-    :width: 100%
+For rendering multiple views (subclasses of BaseModelView) on the same page use **MultipleView**.
+Using our previous example you could render the Group list and Contact list on the same page, to do it
+add the following view after the definition of **GroupModelView** and **ContactModelView**::
 
-.. image:: ./images/contact_list.png
-    :width: 100%
+First remember to import::
+
+    from flask.ext.appbuilder import MultipleView
+
+Then define your View::
+
+    class MultipleViewsExp(MultipleView):
+        views = [GroupModelView, ContactModelView]
+
+Then register the view with a menu::
+
+    appbuilder.add_view(MultipleViewsExp, "Multiple Views", icon="fa-envelope", category="Contacts")
+
+You can render as many views on the same page as you want, this includes Chart type views also,
+take a look at :doc:`quickcharts` to learn about Chart views.
+
+Another interesting alternative view is the **MasterDetailView** as the name implies it implements a master detail
+GUI, it will render a menu version of a chosen model and then relate with a previous defined BaseModelView subclass
+of you choice.
+Again using the Contact application example::
+
+
+    class GroupMasterView(MasterDetailView):
+        datamodel = SQLAInterface(ContactGroup)
+        related_views = [ContactModelView]
+
+The datamodel is the master and the **related_views** property are the views to be filtered by the user's selection
+of the group. You can define as many detail views as you like and again you can even include Chart type views
+(they are subclasses of BaseModelView), remember there must be a model relation between the master and the details,
+and again the framework will figure out how to relate them by inspecting the backend defined relationships.
 

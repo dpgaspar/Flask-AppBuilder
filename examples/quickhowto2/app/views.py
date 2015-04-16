@@ -120,10 +120,6 @@ class FloatModelView(ModelView):
     datamodel = SQLAInterface(FloatModel)
 
 
-class MultipleViewsExp(MultipleView):
-    views = [ContactModelView, GroupModelView]
-
-
 class ContactChartView(GroupByChartView):
     datamodel = SQLAInterface(Contact)
     chart_title = 'Grouped contacts'
@@ -140,6 +136,10 @@ class ContactChartView(GroupByChartView):
             'series': [(aggregate_count, 'gender')]
         }
     ]
+
+
+class MultipleViewsExp(MultipleView):
+    views = [ContactChartView, GroupModelView]
 
 
 def pretty_month_year(value):

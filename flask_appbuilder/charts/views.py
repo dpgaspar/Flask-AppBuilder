@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 class BaseChartView(BaseModelView):
     """
         This is the base class for all chart views. 
-        Use SimpleByChartView or GroupByChartView, override their properties and these
+        Use DirectByChartView or GroupByChartView, override their properties and these
         to customise your charts
     """
 
@@ -215,7 +215,7 @@ class DirectByChartView(GroupByChartView):
         :series: A list of tuples with the aggregation function and the column name
                 to apply the aggregation
 
-        The **definitions** property respects the following grammar:
+        The **definitions** property respects the following grammar::
 
             definitions = [
                     {

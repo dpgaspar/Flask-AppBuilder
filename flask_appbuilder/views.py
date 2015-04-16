@@ -357,11 +357,11 @@ class RestCRUDView(BaseCRUDView):
             is_valid_form = False
         if is_valid_form:
             response = make_response(jsonify({'message': self.datamodel.message[0],
-                                          'severity': self.datamodel.message[1]}), http_return_code)
+                                              'severity': self.datamodel.message[1]}), http_return_code)
         else:
             # TODO return dict with errors
             response = make_response(jsonify({'message': 'Invalid form',
-                                          'severity': 'warning'}), 500)
+                                              'severity': 'warning'}), 500)
         return response
 
 
@@ -394,11 +394,11 @@ class RestCRUDView(BaseCRUDView):
             is_valid_form = False
         if is_valid_form:
             response = make_response(jsonify({'message': self.datamodel.message[0],
-                                          'severity': self.datamodel.message[1]}), http_return_code)
+                                              'severity': self.datamodel.message[1]}), http_return_code)
         else:
             # TODO return dict with from errors validation
             response = make_response(jsonify({'message': 'Invalid form',
-                                          'severity': 'warning'}), 500)
+                                              'severity': 'warning'}), 500)
         return response
 
 
@@ -619,8 +619,17 @@ class MasterDetailView(BaseCRUDView):
 
 
 class MultipleView(BaseView):
+    """
+        Use this view to render multiple views on the same page, exposed on the list endpoint.
 
+        example (after defining GroupModelView and ContactModelView)::
+
+            class MultipleViewsExp(MultipleView):
+                views = [GroupModelView, ContactModelView]
+
+    """
     list_template = 'appbuilder/general/model/multiple_views.html'
+    """ Override this to implement your own template for the list endpoint """
 
     views = None
     " A list of ModelView's to render on the same page "
@@ -632,10 +641,6 @@ class MultipleView(BaseView):
         self._views = self._views or list()
 
     def get_uninit_inner_views(self):
-        """
-            Will return a list with views that need to be initialized.
-            Normally related_views from ModelView
-        """
         return self.views
 
     def get_init_inner_views(self):
@@ -655,14 +660,14 @@ class MultipleView(BaseView):
                 order_column, order_direction = '', ''
             page = pages.get(view.__class__.__name__)
             page_size = page_sizes.get(view.__class__.__name__)
-            views_widgets.append(view._get_view_widget(filters=view._base_filters, order_column=order_column,
-                                                order_direction=order_direction,
-                                                page=page, page_size=page_size))
-        print views_widgets
+            views_widgets.append(view._get_view_widget(filters=view._base_filters,
+                                                       order_column=order_column,
+                                                       order_direction=order_direction,
+                                                       page=page, page_size=page_size))
+        self.update_redirect()
         return self.render_template(self.list_template,
                                     views=self._views,
                                     views_widgets=views_widgets)
-
 
 
 class CompactCRUDMixin(BaseCRUDView):

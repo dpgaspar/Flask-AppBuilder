@@ -77,6 +77,12 @@ ModelView
 .. autoclass:: ModelView
     :members:
 
+MultipleView
+----------------
+
+.. autoclass:: MultipleView
+    :members:
+
 MasterDetailView
 ----------------
 

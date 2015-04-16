@@ -6,6 +6,8 @@ Improvements and Bug fixes on 1.3.6
 
 - SimpleFormView.form_post can return null to redirect back or a Flask response (render or redirect).
 - Changed the way related views are initialized, no bind to the related_views property.
+- #144 New MultipleView for rendering multiple BaseViews on the same page.
+- Can now import all views from flask.ext.appbuilder.
 
 Improvements and Bug fixes on 1.3.5
 -----------------------------------
