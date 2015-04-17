@@ -138,6 +138,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
         app.config.setdefault('AUTH_LDAP_LASTNAME_FIELD', 'sn')
         app.config.setdefault('AUTH_LDAP_EMAIL_FIELD', 'mail')
+        app.config.setdefault('AUTH_LDAP_MANAGER', False)
+        app.config.setdefault('AUTH_LDAP_MANAGER_DN', '')
+        app.config.setdefault('AUTH_LDAP_MANAGER_PASSWORD', '')
 
         if self.auth_type == AUTH_LDAP:
             if 'AUTH_LDAP_SERVER' not in app.config:
@@ -203,6 +206,18 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_email_field(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_EMAIL_FIELD']
+
+    @property
+    def auth_ldap_manager(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_MANAGER']
+
+    @property
+    def auth_ldap_manager_dn(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_MANAGER_DN']
+
+    @property
+    def auth_ldap_manager_password(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_MANAGER_PASSWORD']
 
     @property
     def openid_providers(self):
@@ -352,6 +367,10 @@ class BaseSecurityManager(AbstractSecurityManager):
             try:
                 con = ldap.initialize(self.auth_ldap_server)
                 con.set_option(ldap.OPT_REFERRALS, 0)
+
+                if self.auth_ldap_manager :
+                    con.bind_s(self.auth_ldap_manager_dn, self.auth_ldap_manager_password)
+
                 try:
                     if not self.auth_ldap_search:
                         bind_username = username
@@ -370,7 +389,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                             bind_username = bind_username_array[0][0]
                             ldap_user_info = bind_username_array[0][1]
 
-                    con.bind_s(bind_username, password)
+                    test_con = ldap.initialize(self.auth_ldap_server)
+                    test_con.set_option(ldap.OPT_REFERRALS, 0)
+                    test_con.bind_s(bind_username, password)
 
                     if self.auth_user_registration and user is None:
                         user = self.add_user(
