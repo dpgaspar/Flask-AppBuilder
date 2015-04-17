@@ -134,6 +134,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         # LDAP Config
         app.config.setdefault('AUTH_LDAP_SEARCH', '')
         app.config.setdefault('AUTH_LDAP_BIND_FIELD', 'cn')
+        app.config.setdefault('AUTH_LDAP_BIND_FIRST', False)
+        app.config.setdefault('AUTH_LDAP_ALLOW_SELF_SIGNED', False)
         app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
         app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
         app.config.setdefault('AUTH_LDAP_LASTNAME_FIELD', 'sn')
@@ -203,6 +205,14 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_email_field(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_EMAIL_FIELD']
+
+    @property
+    def auth_ldap_bind_first(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_BIND_FIRST']
+
+    @property
+    def auth_ldap_allow_self_signed(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_ALLOW_SELF_SIGNED']
 
     @property
     def openid_providers(self):
@@ -350,9 +360,15 @@ class BaseSecurityManager(AbstractSecurityManager):
             except:
                 raise Exception("No ldap library for python.")
             try:
+                if self.auth_ldap_allow_self_signed:
+                    ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
+
                 con = ldap.initialize(self.auth_ldap_server)
                 con.set_option(ldap.OPT_REFERRALS, 0)
                 try:
+                    if self.auth_ldap_bind_first:
+                        con.bind_s(username, password)
+
                     if not self.auth_ldap_search:
                         bind_username = username
                     else:
@@ -370,7 +386,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                             bind_username = bind_username_array[0][0]
                             ldap_user_info = bind_username_array[0][1]
 
-                    con.bind_s(bind_username, password)
+                    if not self.auth_ldap_bind_first:
+                        con.bind_s(bind_username, password)
 
                     if self.auth_user_registration and user is None:
                         user = self.add_user(

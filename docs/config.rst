@@ -121,6 +121,12 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   |                                            |           |
 |                                   | AUTH_LDAP_EMAIL_FIELD = "mail"             |           |
 +-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_BIND_FIRST              | Try to bind with the LDAP server before    |   No      |
+|                                   | searching for the user information         |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_ALLOW_SELF_SIGNED       | Allow LDAP authentication to use self      |   No      |
+|                                   | signed certificates                        |           |
++-----------------------------------+--------------------------------------------+-----------+
 | AUTH_ROLE_ADMIN                   | Configure the name of the admin role.      |   No      |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_ROLE_PUBLIC                  | Special Role that holds the public         |   No      |
