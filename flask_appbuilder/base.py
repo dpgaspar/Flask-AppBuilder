@@ -107,8 +107,14 @@ class AppBuilder(object):
         if app is not None:
             self.init_app(app, session)
 
-
     def init_app(self, app, session):
+        """
+            Will initialize the Flask app, supporting the app factory pattern.
+
+            :param app:
+            :param session: The SQLAlchemy session
+
+        """
         app.config.setdefault('APP_NAME', 'F.A.B.')
         app.config.setdefault('APP_THEME', '')
         app.config.setdefault('APP_ICON', '')
@@ -118,8 +124,6 @@ class AppBuilder(object):
             from flask_appbuilder.security.sqla.manager import SecurityManager
             self.security_manager_class = SecurityManager
         self.session = session
-        if not self.security_manager_class:
-            self.security_manager_class = dynamic_class_import(app.config.get("SECURITY_CLASS"))
         self.sm = self.security_manager_class(self)
         self.bm = BabelManager(self)
         self._add_global_static()

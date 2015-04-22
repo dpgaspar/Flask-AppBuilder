@@ -37,8 +37,12 @@ LANGUAGES = {
 UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_URL = '/static/uploads/'
-AUTH_TYPE = AUTH_DB
-#AUTH_LDAP_SERVER = "ldap://dc.domain.net"
+AUTH_TYPE = AUTH_LDAP
+AUTH_LDAP_SERVER = "ldap://10.1.0.100"
+
+AUTH_USER_REGISTRATION = True
+AUTH_USER_REGISTRATION_ROLE = 'User'
+AUTH_LDAP_BIND_FIRST = True
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
 

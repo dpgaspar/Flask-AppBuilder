@@ -359,16 +359,15 @@ class BaseSecurityManager(AbstractSecurityManager):
                 import ldap
             except:
                 raise Exception("No ldap library for python.")
+                return None
             try:
                 if self.auth_ldap_allow_self_signed:
                     ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
-
                 con = ldap.initialize(self.auth_ldap_server)
                 con.set_option(ldap.OPT_REFERRALS, 0)
                 try:
                     if self.auth_ldap_bind_first:
                         con.bind_s(username, password)
-
                     if not self.auth_ldap_search:
                         bind_username = username
                     else:
@@ -380,12 +379,11 @@ class BaseSecurityManager(AbstractSecurityManager):
                                                                 self.auth_ldap_lastname_field,
                                                                 self.auth_ldap_email_field
                                                                ])
-                        if bind_username_array == []:
+                        if not bind_username_array:
                             return None
                         else:
                             bind_username = bind_username_array[0][0]
                             ldap_user_info = bind_username_array[0][1]
-
                     if not self.auth_ldap_bind_first:
                         con.bind_s(bind_username, password)
 
