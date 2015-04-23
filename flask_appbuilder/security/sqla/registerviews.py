@@ -126,7 +126,7 @@ class BaseRegisterUser(PublicFormView):
                                                email=reg.email,
                                                first_name=reg.first_name,
                                                last_name=reg.last_name,
-                                               role=self.appbuilder.sm.get_role_by_name(
+                                               role=self.appbuilder.sm.find_role(
                                                        self.appbuilder.sm.auth_user_registration_role),
                                                password=reg.password):
                 raise Exception('Could not add user to DB')
