@@ -1,6 +1,12 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.3.7
+-----------------------------------
+
+- Changed length of username model field from 32 to 64 characters.
+- Changed LDAP Auth and registration logic.
+
 Improvements and Bug fixes on 1.3.6
 -----------------------------------
 

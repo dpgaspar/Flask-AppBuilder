@@ -57,7 +57,7 @@ class Role(Document):
 class User(Document):
     first_name = StringField(max_length=64, required=True)
     last_name = StringField(max_length=64, required=True)
-    username = StringField(max_length=32, required=True, unique=True)
+    username = StringField(max_length=64, required=True, unique=True)
     password = StringField(max_length=256)
     active = BooleanField()
     email = StringField(max_length=64, required=True, unique=True)
