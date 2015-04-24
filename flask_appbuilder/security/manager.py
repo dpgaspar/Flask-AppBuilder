@@ -23,6 +23,7 @@ class AbstractSecurityManager(BaseManager):
         Abstract SecurityManager class, declares all methods used by the
         framework. There is no assumptions about security models or auth types.
     """
+
     def add_permissions_view(self, base_permissions, view_menu):
         """
             Adds a permission on a view menu to the backend
@@ -71,7 +72,6 @@ class AbstractSecurityManager(BaseManager):
 
 
 class BaseSecurityManager(AbstractSecurityManager):
-
     auth_view = None
     """ The obj instance for authentication view """
     user_view = None
@@ -134,7 +134,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         # LDAP Config
         app.config.setdefault('AUTH_LDAP_SEARCH', '')
         app.config.setdefault('AUTH_LDAP_BIND_FIELD', 'cn')
-        app.config.setdefault('AUTH_LDAP_BIND_FIRST', False)
+        app.config.setdefault('AUTH_LDAP_BIND_PASSWORD', '')
         app.config.setdefault('AUTH_LDAP_ALLOW_SELF_SIGNED', False)
         app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
         app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
@@ -191,6 +191,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config['AUTH_LDAP_BIND_FIELD']
 
     @property
+    def auth_ldap_bind_password(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_BIND_PASSWORD']
+
+    @property
     def auth_ldap_uid_field(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_UID_FIELD']
 
@@ -231,8 +235,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             self.auth_view = self.authdbview()
             if self.auth_user_registration:
                 pass
-                #self.registeruser_view = self.registeruserdbview()
-                #self.appbuilder.add_view_no_menu(self.registeruser_view)
+                # self.registeruser_view = self.registeruserdbview()
+                # self.appbuilder.add_view_no_menu(self.registeruser_view)
         elif self.auth_type == AUTH_LDAP:
             self.user_view = self.userldapmodelview
             self.auth_view = self.authldapview()
@@ -247,8 +251,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             self.auth_view = self.authoidview()
             if self.auth_user_registration:
                 pass
-                #self.registeruser_view = self.registeruseroidview()
-                #self.appbuilder.add_view_no_menu(self.registeruser_view)
+                # self.registeruser_view = self.registeruseroidview()
+                # self.appbuilder.add_view_no_menu(self.registeruser_view)
 
         self.appbuilder.add_view_no_menu(self.auth_view)
 
@@ -278,7 +282,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def create_db(self):
         if self.add_role(self.auth_role_admin):
-                    log.info("Inserted Role for public access %s" % (self.auth_role_admin))
+            log.info("Inserted Role for public access %s" % (self.auth_role_admin))
         if self.add_role(self.auth_role_public):
             log.info("Inserted Role for public access %s" % (self.auth_role_public))
         if self.count_users() == 0:
@@ -338,6 +342,38 @@ class BaseSecurityManager(AbstractSecurityManager):
             self.update_user_auth_stat(user, False)
             return None
 
+
+    def _search_ldap(self, ldap, con, username):
+        """
+            Searches LDAP for user, assumes ldap_search is set.
+
+            :param ldap: The ldap module reference
+            :param con: The ldap connection
+            :param username: username to match with auth_ldap_uid_field
+            :return: ldap object array
+        """
+        filter_str = "%s=%s" % (self.auth_ldap_uid_field, username)
+        user = con.search_s(self.auth_ldap_search,
+                            ldap.SCOPE_SUBTREE,
+                            filter_str,
+                            [self.auth_ldap_firstname_field,
+                             self.auth_ldap_lastname_field,
+                             self.auth_ldap_email_field
+                            ])
+        if user:
+            if not user[0][0]:
+                return None
+        return user
+
+    def _bind_ldap(self, ldap, con, username, password):
+        try:
+            log.debug("LDAP bind with: {0}".format(username))
+            con.bind_s(username, password)
+            return True
+        except ldap.INVALID_CREDENTIALS:
+            return False
+
+
     def auth_user_ldap(self, username, password):
         """
             Method for authenticating user, auth LDAP style.
@@ -365,42 +401,32 @@ class BaseSecurityManager(AbstractSecurityManager):
                     ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
                 con = ldap.initialize(self.auth_ldap_server)
                 con.set_option(ldap.OPT_REFERRALS, 0)
-                try:
-                    if self.auth_ldap_bind_first:
-                        con.bind_s(username, password)
-                    if not self.auth_ldap_search:
-                        bind_username = username
-                    else:
-                        filter = "%s=%s" % (self.auth_ldap_uid_field, username)
-                        bind_username_array = con.search_s(self.auth_ldap_search,
-                                                               ldap.SCOPE_SUBTREE,
-                                                               filter,
-                                                               [self.auth_ldap_firstname_field,
-                                                                self.auth_ldap_lastname_field,
-                                                                self.auth_ldap_email_field
-                                                               ])
-                        if not bind_username_array:
-                            return None
-                        else:
-                            bind_username = bind_username_array[0][0]
-                            ldap_user_info = bind_username_array[0][1]
-                    if not self.auth_ldap_bind_first:
-                        con.bind_s(bind_username, password)
-
+                # Authenticate user
+                if not self._bind_ldap(ldap, con, username, password):
+                    if user: self.update_user_auth_stat(user, False)
+                    return None
+                # If user does not exist on the DB and not self user registration, go away
+                if not user and not self.auth_user_registration:
+                    return None
+                # User does not exist, create one.
+                elif not user and self.auth_user_registration:
+                    new_user = self._search_ldap(ldap, con, username)
+                    if not new_user:
+                        log.warning("User self registration failed no LDAP object found for: {0}".format(username))
+                        return None
+                    ldap_user_info = new_user[0][1]
                     if self.auth_user_registration and user is None:
                         user = self.add_user(
-                            username=username,
-                            first_name=ldap_user_info[self.auth_ldap_firstname_field][0],
-                            last_name=ldap_user_info[self.auth_ldap_lastname_field][0],
-                            email=ldap_user_info[self.auth_ldap_email_field][0],
-                            role=self.find_role(self.auth_user_registration_role)
-                        )
+                                username=username,
+                                first_name=ldap_user_info.get(self.auth_ldap_firstname_field, [username])[0],
+                                last_name=ldap_user_info.get(self.auth_ldap_lastname_field, [username])[0],
+                                email=ldap_user_info.get(self.auth_ldap_email_field, [username + '@email.notfound'])[0],
+                                role=self.find_role(self.auth_user_registration_role)
+                            )
 
-                    self.update_user_auth_stat(user)
-                    return user
-                except ldap.INVALID_CREDENTIALS:
-                    self.update_user_auth_stat(user, False)
-                    return None
+                self.update_user_auth_stat(user)
+                return user
+
             except ldap.LDAPError as e:
                 if type(e.message) == dict and 'desc' in e.message:
                     log.error("LDAP Error {0}".format(e.message['desc']))
@@ -440,6 +466,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             PERMISSION ACCESS CHECK
         ----------------------------------------
     """
+
     def is_item_public(self, permission_name, view_name):
         """
             Check if view has public permissions
@@ -557,10 +584,10 @@ class BaseSecurityManager(AbstractSecurityManager):
                 self.del_view_menu(viewmenu.name)
 
 
-    #---------------------------------------
-    #    INTERFACE ABSTRACT METHODS
-    #---------------------------------------
-    #------------------------------------
+    # ---------------------------------------
+    # INTERFACE ABSTRACT METHODS
+    # ---------------------------------------
+    # ------------------------------------
     # PRIMITIVES FOR USERS
     #------------------------------------
     def get_user_by_id(self, pk):
