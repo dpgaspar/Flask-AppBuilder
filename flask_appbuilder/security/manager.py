@@ -45,7 +45,7 @@ class AbstractSecurityManager(BaseManager):
 
     def register_views(self):
         """
-            Generic function to create views
+            Generic function to create the security views
         """
         raise NotImplementedError
 
@@ -257,12 +257,14 @@ class BaseSecurityManager(AbstractSecurityManager):
                                                   category="Security", category_icon="fa-cogs",
                                                   category_label=_('Security'))
 
-        role_view = self.appbuilder.add_view(self.rolemodelview, "List Roles", icon="fa-group", label=_('List Roles'),
+        role_view = self.appbuilder.add_view(self.rolemodelview, "List Roles",
+                                             icon="fa-group", label=_('List Roles'),
                                              category="Security", category_icon="fa-cogs")
         role_view.related_views = [self.user_view.__class__]
 
         self.appbuilder.add_view(self.userstatschartview,
-                                 "User's Statistics", icon="fa-bar-chart-o", label=_("User's Statistics"),
+                                 "User's Statistics", icon="fa-bar-chart-o",
+                                 label=_("User's Statistics"),
                                  category="Security")
 
         self.appbuilder.menu.add_separator("Security")
@@ -277,8 +279,11 @@ class BaseSecurityManager(AbstractSecurityManager):
                                  label=_('Permission on Views/Menus'), category="Security")
 
     def create_db(self):
+        """
+            Setups the DB, creates admin and public roles if they don't exist.
+        """
         if self.add_role(self.auth_role_admin):
-                    log.info("Inserted Role for public access %s" % (self.auth_role_admin))
+                    log.info("Inserted Role for Admin access %s" % (self.auth_role_admin))
         if self.add_role(self.auth_role_public):
             log.info("Inserted Role for public access %s" % (self.auth_role_public))
         if self.count_users() == 0:
