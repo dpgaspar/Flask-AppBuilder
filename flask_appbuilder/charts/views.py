@@ -188,7 +188,7 @@ class GroupByChartView(BaseChartView):
                                          order_column=self.definitions[group_by]['group'],
                                          order_direction='asc')
         widgets = self._get_search_widget(form=form, widgets=widgets)
-
+        self.update_redirect()
         return self.render_template(self.chart_template, route_base=self.route_base,
                                title=self.chart_title,
                                label_columns=self.label_columns,
