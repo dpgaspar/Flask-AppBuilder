@@ -249,7 +249,7 @@ class BaseProcessData(object):
         for item in data:
             row = {'c': []}
             if not isinstance(item[0], tuple):
-                row['c'].append({'v': str(item[0])})
+                row['c'].append({'v': str(as_unicode(item[0]))})
             else:
                 for group_col_data in item[0]:
                     row['c'].append({'v': str(group_col_data)})
