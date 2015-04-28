@@ -3,7 +3,7 @@ import datetime
 import calendar
 import logging
 from itertools import groupby
-from flask.ext.babelpkg import lazy_gettext as _
+from flask_babelpkg import lazy_gettext as _
 from flask_appbuilder._compat import as_unicode
 
 
@@ -155,6 +155,14 @@ class GroupByDateMonth(BaseGroupBy):
 
 
 class BaseProcessData(object):
+    """
+        Base class to process data. It will group data by one or many columns or functions.
+        The aggregation is made by an already defined function, or by a custom function
+
+        :group_bys_cols: A list of columns or functions to group data.
+        :aggr_by_cols: A list of tuples [(<AGGR FUNC>,'<COLNAME>'),...].
+        :formatter_by_cols: A dict.
+    """
 
     group_bys_cols = None
     # ['<COLNAME>',<FUNC>, ....]
@@ -227,14 +235,30 @@ class BaseProcessData(object):
 
 
     def to_json(self, data, labels=None):
+        """
+            Will return a dict with Google JSON structure for charts
+
+            The Google structure::
+
+                {
+                    cols: [{id:<COL_NAME>, label:<LABEL FOR COL>, type: <COL TYPE>}, ...]
+                    rows: [{c: [{v: <COL VALUE}, ...], ... ]
+                }
+
+            :param data:
+            :param labels: dict with labels to include on Google JSON strcut
+            :return: dict with Google JSON structure
+        """
         labels = labels or dict()
         json_data = dict()
         json_data['cols'] = []
+        # Create Structure to identify the grouped columns
         for group_col in self.group_bys_cols:
             label = '' or as_unicode(labels[group_col])
             json_data['cols'].append({'id': group_col,
                                       'label': label,
                                       'type': 'string'})
+        # Create Structure to identify the Aggregated columns
         for aggr_col in self.aggr_by_cols:
             if isinstance(aggr_col, tuple):
                 label_key = aggr_col[0].__name__ + aggr_col[1]
@@ -249,13 +273,13 @@ class BaseProcessData(object):
         for item in data:
             row = {'c': []}
             if not isinstance(item[0], tuple):
-                row['c'].append({'v': str(as_unicode(item[0]))})
+                row['c'].append({'v': '{0}'.format(item[0])})
             else:
                 for group_col_data in item[0]:
-                    row['c'].append({'v': str(group_col_data)})
+                    row['c'].append({'v': '{0}'.format(group_col_data)})
             for col_data in item[1:]:
                 if isinstance(col_data, datetime.date):
-                    row['c'].append({'v': (str(col_data))})
+                    row['c'].append({'v': '{0}'.format(col_data)})
                 else:
                     row['c'].append({'v': col_data})
             json_data['rows'].append(row)

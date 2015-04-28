@@ -37,7 +37,7 @@ LANGUAGES = {
 UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_URL = '/static/uploads/'
-AUTH_TYPE = AUTH_LDAP
+AUTH_TYPE = AUTH_DB
 AUTH_LDAP_SERVER = "ldap://10.1.0.100"
 AUTH_LDAP_SEARCH = "dc=home,dc=local"
 AUTH_LDAP_UID_FIELD = 'userPrincipalName'

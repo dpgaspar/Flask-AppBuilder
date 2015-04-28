@@ -7,7 +7,7 @@ from flask_appbuilder.views import SimpleFormView, MultipleView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.widgets import FormVerticalWidget, FormInlineWidget, FormHorizontalWidget, ShowBlockWidget
-from flask_appbuilder.widgets import ListThumbnail
+from flask_appbuilder.widgets import ListThumbnail, ListWidget
 from flask_appbuilder.models.generic import PSModel
 from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction as FA
 
@@ -52,10 +52,16 @@ class ProductManufacturerView(ModelView):
     related_views = [ProductModelView, ProductView]
 
 
+class MyListWidget(ListWidget):
+     template = 'widgets/list.html'
+
 class ContactModelView2(ModelView):
     datamodel = SQLAInterface(Contact)
     list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
     add_form_query_rel_fields = {'gender':[['name',FilterStartsWith,'F']]}
+    list_template = 'mylist.html'
+    list_widget = MyListWidget
+    extra_args = {'widget_arg':'WIDGET'}
 
     @expose('/jsonexp')
     def jsonexp(self):
