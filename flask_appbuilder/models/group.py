@@ -269,6 +269,7 @@ class BaseProcessData(object):
             json_data['cols'].append({'id': aggr_col,
                                       'label': label,
                                       'type': 'number'})
+        # Create Structure with the data
         json_data['rows'] = []
         for item in data:
             row = {'c': []}
@@ -302,7 +303,13 @@ class DirectProcessData(BaseProcessData):
 
 
 class GroupByProcessData(BaseProcessData):
+    """
+        Groups by data by chosen columns (property group_bys_cols).
 
+        :data: A list of objects
+        :sort: boolean, if true python will sort the data
+        :return: A List of lists with group column and aggregation
+    """
     def apply(self, data, sort=True):
         if sort:
             data = sorted(data, key=self.attrgetter(*self.group_bys_cols))

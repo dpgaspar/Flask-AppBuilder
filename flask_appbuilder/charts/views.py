@@ -14,8 +14,8 @@ log = logging.getLogger(__name__)
 class BaseChartView(BaseModelView):
     """
         This is the base class for all chart views. 
-        Use DirectByChartView or GroupByChartView, override their properties and these
-        to customise your charts
+        Use DirectByChartView or GroupByChartView, override their properties and their base classes
+        (BaseView, BaseModelView, BaseChartView) to customise your charts
     """
 
     chart_template = 'appbuilder/general/charts/chart.html'
@@ -118,12 +118,14 @@ class GroupByChartView(BaseChartView):
         super(GroupByChartView, self).__init__(**kwargs)
         for definition in self.definitions:
             col = definition.get('group')
+            # Setup labels
             try:
                 self.label_columns[col] = definition.get('label') or self.label_columns[col]
             except Exception:
                 self.label_columns[col] = self._prettify_column(col)
             if not definition.get('label'):
                 definition['label'] = self.label_columns[col]
+            # Setup Series
             for serie in definition['series']:
                 if isinstance(serie, tuple):
                     if hasattr(serie[0], '_label'):
@@ -136,6 +138,9 @@ class GroupByChartView(BaseChartView):
 
 
     def get_group_by_class(self, definition):
+        """
+            intantiates the processing class (Direct or Grouped) and returns it.
+        """
         group_by = definition['group']
         series = definition['series']
         if 'formatter' in definition:
