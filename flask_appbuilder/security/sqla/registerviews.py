@@ -4,7 +4,7 @@ import uuid
 import logging
 
 from werkzeug.security import generate_password_hash
-from flask import render_template, flash, redirect, session, url_for, request
+from flask import flash, redirect, session, url_for, request
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
 
 from flask_openid import SessionWrapper, OpenIDResponse
@@ -71,7 +71,7 @@ class BaseRegisterUser(PublicFormView):
         msg = Message()
         msg.subject = self.email_subject
         url = url_for('.activation', _external=True, activation_hash=register_user.registration_hash)
-        msg.html = render_template(self.email_template,
+        msg.html = self.render_template(self.email_template,
                                    url=url,
                                    username=register_user.username,
                                    first_name=register_user.first_name,
@@ -126,7 +126,7 @@ class BaseRegisterUser(PublicFormView):
                                                email=reg.email,
                                                first_name=reg.first_name,
                                                last_name=reg.last_name,
-                                               role=self.appbuilder.sm.get_role_by_name(
+                                               role=self.appbuilder.sm.find_role(
                                                        self.appbuilder.sm.auth_user_registration_role),
                                                password=reg.password):
                 raise Exception('Could not add user to DB')
@@ -137,7 +137,7 @@ class BaseRegisterUser(PublicFormView):
             self.appbuilder.get_session.rollback()
             return redirect(self.appbuilder.get_url_for_index)
         self.appbuilder.get_session.commit()
-        return render_template(self.activation_template,
+        return self.render_template(self.activation_template,
                                username=reg.username,
                                first_name=reg.first_name,
                                last_name=reg.last_name,
