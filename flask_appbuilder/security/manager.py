@@ -7,15 +7,9 @@ from flask_openid import OpenID
 from flask_babelpkg import lazy_gettext as _
 
 from ..basemanager import BaseManager
+from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, AUTH_REMOTE_USER, AUTH_OAUTH
 
 log = logging.getLogger(__name__)
-
-# Constants for supported authentication types
-AUTH_OID = 0
-AUTH_DB = 1
-AUTH_LDAP = 2
-AUTH_REMOTE_USER = 3
-AUTH_OAUTH = 4
 
 
 class AbstractSecurityManager(BaseManager):

@@ -2,12 +2,11 @@ import logging
 import functools
 
 from flask import flash, redirect, url_for, make_response, jsonify
-from flask_babelpkg import lazy_gettext
 from .._compat import as_unicode
+from ..const import LOGMSG_ERR_SEC_ACCESS_DENIED, FLAMSG_ERR_SEC_ACCESS_DENIED, PERMISSION_PREFIX
 
 log = logging.getLogger(__name__)
 
-PERMISSION_PREFIX = 'can_'
 
 
 def has_access(f):
@@ -27,8 +26,8 @@ def has_access(f):
         if self.appbuilder.sm.has_access(permission_str, self.__class__.__name__):
             return f(self, *args, **kwargs)
         else:
-            log.warning("Access is Denied for: {0} on: {1}".format(permission_str, self.__class__.__name__))
-            flash(as_unicode(lazy_gettext("Access is Denied")), "danger")
+            log.warning(LOGMSG_ERR_SEC_ACCESS_DENIED.format(permission_str, self.__class__.__name__))
+            flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
         return redirect(url_for(self.appbuilder.sm.auth_view.__class__.__name__ + ".login"))
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
@@ -53,8 +52,8 @@ def has_access_api(f):
         if self.appbuilder.sm.has_access(permission_str, self.__class__.__name__):
             return f(self, *args, **kwargs)
         else:
-            log.warning("Access is Denied for: {0} on: {1}".format(permission_str, self.__class__.__name__))
-            response = make_response(jsonify({'message': str(lazy_gettext("Access is Denied")),
+            log.warning(LOGMSG_ERR_SEC_ACCESS_DENIED.format(permission_str, self.__class__.__name__))
+            response = make_response(jsonify({'message': str(FLAMSG_ERR_SEC_ACCESS_DENIED),
                                               'severity': 'danger'}), 401)
             response.headers['Content-Type'] = "application/json"
             return response

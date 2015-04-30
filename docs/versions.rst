@@ -7,6 +7,7 @@ Improvements and Bug fixes on 1.3.7
 - Fix, Changed length of username model field from 32 to 64 characters.
 - Fix, Changed LDAP Auth and registration logic.
 - Fix, Redirect update missing on chart views
+- Fix, Charts with unicode data.
 
 Improvements and Bug fixes on 1.3.6
 -----------------------------------
