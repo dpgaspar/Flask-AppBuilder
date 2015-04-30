@@ -6,7 +6,11 @@ from .filters import TemplateFilters
 from .menu import Menu
 from .babel.manager import BabelManager
 from .version import VERSION_STRING
-
+from .const import LOGMSG_WAR_FAB_VIEW_EXISTS, \
+                   LOGMSG_ERR_FAB_ADD_PERMISSION_MENU, \
+                   LOGMSG_INF_FAB_ADD_VIEW, \
+                   LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW
+                   
 log = logging.getLogger(__name__)
 
 
@@ -227,7 +231,7 @@ class AppBuilder(object):
         try:
             self.sm.add_permissions_menu(name)
         except Exception as e:
-            log.error("Add Permission on Menu Error: {0}".format(str(e)))
+            log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_MENU.format(str(e)))
 
     def _add_menu_permissions(self):
         for category in self.menu.get_list():
@@ -290,7 +294,7 @@ class AppBuilder(object):
                 appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
         baseview = self._check_and_init(baseview)
-        log.info("Registering class %s on menu %s.%s" % (baseview.__class__.__name__, category, name))
+        log.info(LOGMSG_INF_FAB_ADD_VIEW.format(baseview.__class__.__name__, name))
 
         if not self._view_exists(baseview):
             baseview.appbuilder = self
@@ -351,7 +355,7 @@ class AppBuilder(object):
                     
         """
         baseview = self._check_and_init(baseview)
-        log.info("Registering class %s" % baseview.__class__.__name__)
+        log.info(LOGMSG_INF_FAB_ADD_VIEW.format(baseview.__class__.__name__, ""))
 
         if not self._view_exists(baseview):
             baseview.appbuilder = self
@@ -361,7 +365,7 @@ class AppBuilder(object):
                 self.register_blueprint(baseview, endpoint=endpoint, static_folder=static_folder)
                 self._add_permission(baseview)
         else:
-            log.warning("View already exists {0} ignoring".format(baseview.__class__.__name__))
+            log.warning(LOGMSG_WAR_FAB_VIEW_EXISTS.format(baseview.__class__.__name__))
         return baseview
 
     def security_cleanup(self):
@@ -400,7 +404,7 @@ class AppBuilder(object):
         try:
             self.sm.add_permissions_view(baseview.base_permissions, baseview.__class__.__name__)
         except Exception as e:
-            log.error("Add Permission on View Error: {0}".format(str(e)))
+            log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW.format(str(e)))
 
     def register_blueprint(self, baseview, endpoint=None, static_folder=None):
         self.get_app.register_blueprint(baseview.create_blueprint(self, endpoint=endpoint, static_folder=static_folder))
