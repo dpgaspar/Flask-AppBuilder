@@ -7,7 +7,8 @@ from flask_openid import OpenID
 from flask_babelpkg import lazy_gettext as _
 
 from ..basemanager import BaseManager
-from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, AUTH_REMOTE_USER, AUTH_OAUTH
+from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
+                    AUTH_REMOTE_USER, AUTH_OAUTH
 
 log = logging.getLogger(__name__)
 
@@ -227,10 +228,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_type == AUTH_DB:
             self.user_view = self.userdbmodelview
             self.auth_view = self.authdbview()
-            if self.auth_user_registration:
-                pass
-                # self.registeruser_view = self.registeruserdbview()
-                # self.appbuilder.add_view_no_menu(self.registeruser_view)
+            
         elif self.auth_type == AUTH_LDAP:
             self.user_view = self.userldapmodelview
             self.auth_view = self.authldapview()

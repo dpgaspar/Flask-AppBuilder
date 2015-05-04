@@ -3,14 +3,15 @@ import logging
 from sqlalchemy import func
 from sqlalchemy.engine.reflection import Inspector
 from werkzeug.security import generate_password_hash
-from ...models.sqla.interface import SQLAInterface
-from ...models.sqla import Base
+from .registerviews import RegisterUserDBView, RegisterUserOIDView
+from .models import User, Permission, PermissionView, RegisterUser, ViewMenu, Role
+from ..manager import BaseSecurityManager
 from ..views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
     ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserRemoteUserModelView, \
     RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
-from .registerviews import RegisterUserDBView, RegisterUserOIDView
-from ..manager import BaseSecurityManager
-from .models import User, Permission, PermissionView, RegisterUser, ViewMenu, Role
+from ...models.sqla.interface import SQLAInterface
+from ...models.sqla import Base
+from ...const import LOGMSG_ERR_SEC_CREATE_DB, AUTH_DB
 
 log = logging.getLogger(__name__)
 
@@ -89,6 +90,13 @@ class SecurityManager(BaseSecurityManager):
     def get_session(self):
         return self.appbuilder.get_session
 
+    def register_views(self):
+        if self.auth_user_registration and self.auth_type == AUTH_DB:
+            self.registeruser_view = self.registeruserdbview()
+            self.appbuilder.add_view_no_menu(self.registeruser_view)
+        super(SecurityManager, self).register_views()
+
+
     def create_db(self):
         try:
             engine = self.get_session.get_bind(mapper=None, clause=None)
@@ -99,9 +107,8 @@ class SecurityManager(BaseSecurityManager):
                 log.info("Security DB Created")
             super(SecurityManager, self).create_db()
         except Exception as e:
-            log.error(
-                "DB Creation and initialization failed, if just upgraded to 0.7.X you must migrate the DB. {0}".format(
-                    str(e)))
+            log.error(LOGMSG_ERR_SEC_CREATE_DB.format(str(e)))
+            exit(1)
 
     def find_user(self, username=None, email=None):
         if username:
@@ -112,7 +119,7 @@ class SecurityManager(BaseSecurityManager):
     def get_all_users(self):
         return self.get_session.query(self.user_model).all()
 
-    def add_user(self, username, first_name, last_name, email, role, password=''):
+    def add_user(self, username, first_name, last_name, email, role, password='', hashed_password=''):
         """
             Generic function to create user
         """
@@ -124,7 +131,10 @@ class SecurityManager(BaseSecurityManager):
             user.email = email
             user.active = True
             user.roles.append(role)
-            user.password = generate_password_hash(password)
+            if hashed_password:
+                user.password = hashed_password
+            else:
+                user.password = generate_password_hash(password)
             self.get_session.add(user)
             self.get_session.commit()
             log.info("Added user %s to user list." % username)

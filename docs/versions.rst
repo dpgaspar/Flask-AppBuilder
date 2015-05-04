@@ -8,6 +8,7 @@ Improvements and Bug fixes on 1.3.7
 - Fix, Changed LDAP Auth and registration logic.
 - Fix, Redirect update missing on chart views
 - Fix, Charts with unicode data.
+- New, add_user on data interfaces accepts new parameter for hashed_password.
 
 Improvements and Bug fixes on 1.3.6
 -----------------------------------

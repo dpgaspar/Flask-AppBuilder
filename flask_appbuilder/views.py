@@ -7,7 +7,7 @@ from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
 from .baseviews import BaseView, BaseCRUDView, expose, expose_api
 from .security.decorators import has_access, permission_name, has_access_api
 from .urltools import *
-
+from .const import FLAMSG_ERR_SEC_ACCESS_DENIED
 
 log = logging.getLogger(__name__)
 
@@ -549,7 +549,7 @@ class ModelView(RestCRUDView):
             return action.func(self.datamodel.get(pk))
         else:
             print("INVALID ACCESS ON {0}".format(self.__class__.__name__))
-            flash(as_unicode(lazy_gettext("Access is Denied")), "danger")
+            flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
             return redirect('.')
 
 

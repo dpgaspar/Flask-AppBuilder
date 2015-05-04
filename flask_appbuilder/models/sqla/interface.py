@@ -13,6 +13,7 @@ from ..group import GroupByDateYear, GroupByDateMonth, GroupByCol
 from ..mixins import FileColumn, ImageColumn
 from ...filemanager import FileManager, ImageManager
 from ..._compat import as_unicode
+from ...const import __all_dbi__
 
 log = logging.getLogger(__name__)
 
@@ -274,12 +275,12 @@ class SQLAInterface(BaseInterface):
             return True
         except IntegrityError as e:
             self.message = (as_unicode(self.add_integrity_error_message), 'warning')
-            log.warning("Add record integrity error: {0}".format(str(e)))
+            log.warning(LOGMSG_WAR_DBI_ADD_INTEGRITY.format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
             self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
-            log.exception("Add record error: {0}".format(str(e)))
+            log.exception(LOGMSG_ERR_DBI_ADD_GENERIC.format(str(e)))
             self.session.rollback()
             return False
 
@@ -291,12 +292,12 @@ class SQLAInterface(BaseInterface):
             return True
         except IntegrityError as e:
             self.message = (as_unicode(self.edit_integrity_error_message), 'warning')
-            log.warning("Edit record integrity error: {0}".format(str(e)))
+            log.warning(LOGMSG_WAR_DBI_EDIT_INTEGRITY.format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
             self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
-            log.exception("Edit record error: {0}".format(str(e)))
+            log.exception(LOGMSG_ERR_DBI_EDIT_GENERIC.format(str(e)))
             self.session.rollback()
             return False
 
@@ -309,12 +310,12 @@ class SQLAInterface(BaseInterface):
             return True
         except IntegrityError as e:
             self.message = (as_unicode(self.delete_integrity_error_message), 'warning')
-            log.warning("Delete record integrity error: {0}".format(str(e)))
+            log.warning(LOGMSG_WAR_DBI_DEL_INTEGRITY.format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
             self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
-            log.exception("Delete record error: {0}".format(str(e)))
+            log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
             self.session.rollback()
             return False
 
@@ -328,12 +329,12 @@ class SQLAInterface(BaseInterface):
             return True
         except IntegrityError as e:
             self.message = (as_unicode(self.delete_integrity_error_message), 'warning')
-            log.warning("Delete record integrity error: {0}".format(str(e)))
+            log.warning(LOGMSG_WAR_DBI_DEL_INTEGRITY.format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
             self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
-            log.exception("Delete record error: {0}".format(str(e)))
+            log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
             self.session.rollback()
             return False
 
