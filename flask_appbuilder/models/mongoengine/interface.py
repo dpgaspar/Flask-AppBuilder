@@ -1,8 +1,10 @@
 import logging, sys
 from flask import flash
 from . import filters
-from ..._compat import as_unicode
 from ..base import BaseInterface
+from ..._compat import as_unicode
+from ...const import LOGMSG_ERR_DBI_ADD_GENERIC, LOGMSG_ERR_DBI_EDIT_GENERIC, LOGMSG_ERR_DBI_DEL_GENERIC, \
+                     LOGMSG_WAR_DBI_ADD_INTEGRITY, LOGMSG_WAR_DBI_EDIT_INTEGRITY, LOGMSG_WAR_DBI_DEL_INTEGRITY
 from mongoengine.fields import StringField, IntField, BooleanField, FloatField, \
     DateTimeField, ReferenceField, ListField, FileField, ImageField
 
@@ -156,7 +158,7 @@ class MongoEngineInterface(BaseInterface):
             return True
         except Exception as e:
             self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
-            log.exception("Add record error: {0}".format(str(e)))
+            log.exception(LOGMSG_ERR_DBI_ADD_GENERIC.format(str(e)))
             return False
 
     def edit(self, item):
@@ -166,7 +168,7 @@ class MongoEngineInterface(BaseInterface):
             return True
         except Exception as e:
             self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
-            log.exception("Edit record error: {0}".format(str(e)))
+            log.exception(LOGMSG_ERR_DBI_EDIT_GENERIC.format(str(e)))
             return False
 
     def delete(self, item):
@@ -176,7 +178,7 @@ class MongoEngineInterface(BaseInterface):
             return True
         except Exception as e:
             self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
-            log.exception("Delete record error: {0}".format(str(e)))
+            log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
             return False
 
     def get_columns_list(self):

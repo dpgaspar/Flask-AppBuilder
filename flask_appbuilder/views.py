@@ -548,7 +548,6 @@ class ModelView(RestCRUDView):
             action = self.actions.get(name)
             return action.func(self.datamodel.get(pk))
         else:
-            print("INVALID ACCESS ON {0}".format(self.__class__.__name__))
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
             return redirect('.')
 
@@ -565,7 +564,7 @@ class ModelView(RestCRUDView):
             items = [self.datamodel.get(pk) for pk in pks]
             return action.func(items)
         else:
-            flash(as_unicode(lazy_gettext("Access is Denied")), "danger")
+            flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
             return redirect('.')
 
 
