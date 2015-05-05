@@ -137,7 +137,7 @@ class SecurityManager(BaseSecurityManager):
                 user.password = generate_password_hash(password)
             self.get_session.add(user)
             self.get_session.commit()
-            log.info("Added user %s to user list." % username)
+            log.info("Added user %s." % username)
             return user
         except Exception as e:
             log.error(
