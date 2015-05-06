@@ -331,7 +331,7 @@ class SecurityManager(BaseSecurityManager):
             pv = self.get_session.query(self.permissionview_model).filter_by(permission=pv.permission).all()
             if not pv:
                 self.del_permission(pv.permission.name)
-            log.info(c.LOGMSG_INF_SEC_DEL_PERMVIEW.format(str(permission_name)))
+            log.info(c.LOGMSG_INF_SEC_DEL_PERMVIEW.format(permission_name, view_menu_name))
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_DEL_PERMVIEW.format(str(e)))
             self.get_session.rollback()

@@ -406,7 +406,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 # If user does not exist on the DB and not self user registration, go away
                 if not user and not self.auth_user_registration:
                     return None
-                # User does not exist, create one.
+                # User does not exist, create one if self registration.
                 elif not user and self.auth_user_registration:
                     new_user = self._search_ldap(ldap, con, username)
                     if not new_user:

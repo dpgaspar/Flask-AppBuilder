@@ -49,8 +49,8 @@ LOGMSG_WAR_SEC_NOLDAP_OBJ = "User self registration failed no LDAP object found 
 
 LOGMSG_INF_SEC_ADD_PERMVIEW = "Created Permission View: {0}"
 """ Info when adding permission view, format with permission view class string """
-LOGMSG_INF_SEC_DEL_PERMVIEW = "Removed Permission View: {0}"
-""" Info when deleting permission view, format with permission view class string """
+LOGMSG_INF_SEC_DEL_PERMVIEW = "Removed Permission View: {0} on {1}"
+""" Info when deleting permission view, format with permission name and view name """
 LOGMSG_INF_SEC_ADD_PERMROLE = "Added Permission {0} to role {1}"
 """ Info when adding permission to role, format with permission view class string and role name """
 LOGMSG_INF_SEC_DEL_PERMROLE = "Removed Permission {0} to role {1}"
