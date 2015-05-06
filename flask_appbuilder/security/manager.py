@@ -8,8 +8,11 @@ from flask_babelpkg import lazy_gettext as _
 
 from ..basemanager import BaseManager
 from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
-                    AUTH_REMOTE_USER, AUTH_OAUTH
-
+                    AUTH_REMOTE_USER, AUTH_OAUTH, \
+                    LOGMSG_ERR_SEC_AUTH_LDAP, \
+                    LOGMSG_WAR_SEC_NO_USER, \
+                    LOGMSG_WAR_SEC_NOLDAP_OBJ
+                    
 log = logging.getLogger(__name__)
 
 
@@ -278,12 +281,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
             Setups the DB, creates admin and public roles if they don't exist.
         """
-        if self.add_role(self.auth_role_admin):
-            log.info("Inserted Role for Admin access %s" % (self.auth_role_admin))
-        if self.add_role(self.auth_role_public):
-            log.info("Inserted Role for public access %s" % (self.auth_role_public))
+        self.add_role(self.auth_role_admin)
+        self.add_role(self.auth_role_public)
         if self.count_users() == 0:
-            log.warning("No user yet created, use fabmanager command to do it.")
+            log.warning(LOGMSG_WAR_SEC_NO_USER)
 
     def reset_password(self, userid, password):
         """
@@ -409,7 +410,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 elif not user and self.auth_user_registration:
                     new_user = self._search_ldap(ldap, con, username)
                     if not new_user:
-                        log.warning("User self registration failed no LDAP object found for: {0}".format(username))
+                        log.warning(LOGMSG_WAR_SEC_NOLDAP_OBJ.format(username))
                         return None
                     ldap_user_info = new_user[0][1]
                     if self.auth_user_registration and user is None:
@@ -426,7 +427,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
             except ldap.LDAPError as e:
                 if type(e.message) == dict and 'desc' in e.message:
-                    log.error("LDAP Error {0}".format(e.message['desc']))
+                    log.error(LOGMSG_ERR_SEC_AUTH_LDAP.format(e.message['desc']))
                     return None
                 else:
                     log.error(e)

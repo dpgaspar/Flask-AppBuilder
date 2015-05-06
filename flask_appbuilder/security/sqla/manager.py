@@ -11,7 +11,7 @@ from ..views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, 
     RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
 from ...models.sqla.interface import SQLAInterface
 from ...models.sqla import Base
-from ...const import LOGMSG_ERR_SEC_CREATE_DB, AUTH_DB
+from ... import const as c
 
 log = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ class SecurityManager(BaseSecurityManager):
             SecurityManager contructor
             param appbuilder:
                 F.A.B AppBuilder main object
-            """
+        """
         self.userdbmodelview.datamodel = SQLAInterface(self.user_model)
         self.userldapmodelview.datamodel = SQLAInterface(self.user_model)
         self.useroidmodelview.datamodel = SQLAInterface(self.user_model)
@@ -91,7 +91,7 @@ class SecurityManager(BaseSecurityManager):
         return self.appbuilder.get_session
 
     def register_views(self):
-        if self.auth_user_registration and self.auth_type == AUTH_DB:
+        if self.auth_user_registration and self.auth_type == c.AUTH_DB:
             self.registeruser_view = self.registeruserdbview()
             self.appbuilder.add_view_no_menu(self.registeruser_view)
         super(SecurityManager, self).register_views()
@@ -102,12 +102,12 @@ class SecurityManager(BaseSecurityManager):
             engine = self.get_session.get_bind(mapper=None, clause=None)
             inspector = Inspector.from_engine(engine)
             if 'ab_user' not in inspector.get_table_names():
-                log.info("Security DB not found Creating all Models from Base")
+                log.info(c.LOGMSG_INF_SEC_NO_DB)
                 Base.metadata.create_all(engine)
-                log.info("Security DB Created")
+                log.info(c.LOGMSG_INF_SEC_ADD_DB)
             super(SecurityManager, self).create_db()
         except Exception as e:
-            log.error(LOGMSG_ERR_SEC_CREATE_DB.format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_CREATE_DB.format(str(e)))
             exit(1)
 
     def find_user(self, username=None, email=None):
@@ -137,12 +137,10 @@ class SecurityManager(BaseSecurityManager):
                 user.password = generate_password_hash(password)
             self.get_session.add(user)
             self.get_session.commit()
-            log.info("Added user %s." % username)
+            log.info(c.LOGMSG_INF_SEC_ADD_USER.format(username))
             return user
         except Exception as e:
-            log.error(
-                "Error adding new user to database. {0}".format(
-                    str(e)))
+            log.error(c.LOGMSG_ERR_SEC_ADD_USER.format(str(e)))
             return False
 
     def count_users(self):
@@ -152,10 +150,9 @@ class SecurityManager(BaseSecurityManager):
         try:
             self.get_session.merge(user)
             self.get_session.commit()
+            log.info(c.LOGMSG_INF_SEC_UPD_USER.format(user))
         except Exception as e:
-            log.error(
-                "Error updating user to database. {0}".format(
-                    str(e)))
+            log.error(c.LOGMSG_ERR_SEC_UPD_USER.format(str(e)))
             self.get_session.rollback()
             return False
 
@@ -175,9 +172,10 @@ class SecurityManager(BaseSecurityManager):
                 role.name = name
                 self.get_session.add(role)
                 self.get_session.commit()
+                log.info(c.LOGMSG_INF_SEC_ADD_ROLE.format(name))
                 return role
             except Exception as e:
-                log.error("Add Role: {0}".format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_ROLE.format(str(e)))
                 self.get_session.rollback()
         return role
 
@@ -214,7 +212,7 @@ class SecurityManager(BaseSecurityManager):
                 self.get_session.commit()
                 return perm
             except Exception as e:
-                log.error("Add Permission: {0}".format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_PERMISSION.format(str(e)))
                 self.get_session.rollback()
         return perm
 
@@ -231,7 +229,7 @@ class SecurityManager(BaseSecurityManager):
                 self.get_session.delete(perm)
                 self.get_session.commit()
             except Exception as e:
-                log.error("Del Permission Error: {0}".format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
                 self.get_session.rollback()
 
     # ----------------------------------------------
@@ -261,7 +259,7 @@ class SecurityManager(BaseSecurityManager):
                 self.get_session.commit()
                 return view_menu
             except Exception as e:
-                log.error("Add View Menu Error: {0}".format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_VIEWMENU.format(str(e)))
                 self.get_session.rollback()
         return view_menu
 
@@ -278,7 +276,7 @@ class SecurityManager(BaseSecurityManager):
                 self.get_session.delete(obj)
                 self.get_session.commit()
             except Exception as e:
-                log.error("Del Permission Error: {0}".format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
                 self.get_session.rollback()
 
     #----------------------------------------------
@@ -317,10 +315,10 @@ class SecurityManager(BaseSecurityManager):
         try:
             self.get_session.add(pv)
             self.get_session.commit()
-            log.info("Created Permission View: %s" % (str(pv)))
+            log.info(c.LOGMSG_INF_SEC_ADD_PERMVIEW.format(str(pv)))
             return pv
         except Exception as e:
-            log.error("Creation of Permission View Error: {0}".format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_ADD_PERMVIEW.format(str(e)))
             self.get_session.rollback()
 
     def del_permission_view_menu(self, permission_name, view_menu_name):
@@ -333,9 +331,9 @@ class SecurityManager(BaseSecurityManager):
             pv = self.get_session.query(self.permissionview_model).filter_by(permission=pv.permission).all()
             if not pv:
                 self.del_permission(pv.permission.name)
-            log.info("Removed Permission View: %s" % (str(permission_name)))
+            log.info(c.LOGMSG_INF_SEC_DEL_PERMVIEW.format(str(permission_name)))
         except Exception as e:
-            log.error("Remove Permission from View Error: {0}".format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_DEL_PERMVIEW.format(str(e)))
             self.get_session.rollback()
 
     def exist_permission_on_views(self, lst, item):
@@ -364,9 +362,9 @@ class SecurityManager(BaseSecurityManager):
                 role.permissions.append(perm_view)
                 self.get_session.merge(role)
                 self.get_session.commit()
-                log.info("Added Permission %s to role %s" % (str(perm_view), role.name))
+                log.info(c.LOGMSG_INF_SEC_ADD_PERMROLE.format(str(perm_view), role.name))
             except Exception as e:
-                log.error("Add Permission to Role Error: {0}".format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_PERMROLE.format(str(e)))
                 self.get_session.rollback()
 
     def del_permission_role(self, role, perm_view):
@@ -383,7 +381,7 @@ class SecurityManager(BaseSecurityManager):
                 role.permissions.remove(perm_view)
                 self.get_session.merge(role)
                 self.get_session.commit()
-                log.info("Removed Permission %s to role %s" % (str(perm_view), role.name))
+                log.info(c.LOGMSG_INF_SEC_DEL_PERMROLE.format(str(perm_view), role.name))
             except Exception as e:
-                log.error("Remove Permission to Role Error: {0}".format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE.format(str(e)))
                 self.get_session.rollback()

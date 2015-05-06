@@ -7,6 +7,7 @@ from ..views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, 
     RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
 #from .registerviews import RegisterUserDBView, RegisterUserOIDView
 from ..manager import BaseSecurityManager
+from ... import const as c
 
 log = logging.getLogger(__name__)
 
@@ -141,9 +142,10 @@ class SecurityManager(BaseSecurityManager):
             try:
                 role = self.role_model(name=name)
                 role.save()
+                log.info(c.LOGMSG_INF_SEC_ADD_ROLE.format(name))
                 return role
             except Exception as e:
-                log.error("Add Role: {0}".format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_ROLE.format(str(e)))
         return role
 
     def find_role(self, name):
