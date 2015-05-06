@@ -145,8 +145,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_type == AUTH_OID:
             self.oid = OpenID(app)
         if self.auth_type == AUTH_OAUTH:
-            from flask_oauth import OAuth
-            self.oauth = OAuth
+            from flask_oauthlib.client import OAuth
+            self.oauth = OAuth()
 
         self.lm = LoginManager(app)
         self.lm.login_view = 'login'

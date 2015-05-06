@@ -427,9 +427,12 @@ class AuthOAuthView(AuthView):
     login_template = 'appbuilder/general/security/login_oauth.html'
 
     @expose('/login/')
-    def login(self):
-        provider = request.args.get('provider')
+    @expose('/login/<provider>')
+    def login(self, provider=None):
+        log.debug('LOGIN {0}'.format(self.appbuilder.sm.oauth_providers))
+        log.debug('provider {0}'.format(provider))
         if g.user is not None and g.user.is_authenticated():
+            log.debug("Already authenticated {0}".format(user))
             return redirect(self.appbuilder.get_url_for_index)
         if provider is None:
             return self.render_template(self.login_template,
@@ -437,12 +440,20 @@ class AuthOAuthView(AuthView):
                                title=self.title,
                                appbuilder=self.appbuilder)
         else:
-            self.appbuilder.sm.oauth_handler = \
-                self.appbuilder.sm.oauth.authorize(callback=url_for('oauth_authorized',
-                    next=request.referrer, provider=provider))
-
-    @expose('/oauth-authorized')
-    def oauth_authorized(self):
+            log.debug("Going to call authorize for: {0}".format(provider))
+            
+            for _provider in self.appbuilder.sm.oauth_providers:
+                if _provider['name'] == provider:
+                    break
+            log.debug("Provider defs: {0}".format(_provider))
+            obj_provider = self.appbuilder.sm.oauth.remote_app(provider, **_provider['remote_app'])
+            
+            
+            return obj_provider.authorize(callback=url_for('.oauth_authorized',provider=provider))
+            
+    @expose('/oauth-authorized/<provider>')
+    def oauth_authorized(self, provider):
+        log.debug("AUTHORIZED")
         """
         #provider = request.args['provider']
         remote_app = self.appbuilder.sm.oauth.remote_apps['twitter']

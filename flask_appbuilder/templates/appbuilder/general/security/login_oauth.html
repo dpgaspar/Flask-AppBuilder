@@ -16,7 +16,7 @@
             <div class="center-block btn-group btn-group-lg" role="group">
                 <center>
                 {% for pr in providers %}
-                    <a href="{{url_for('login', provider=pr.name)}}">
+                    <a href="{{url_for('AuthOAuthView.login', provider=pr.name)}}">
                         <i class="fa {{pr.icon}} fa-3x"></i>
                     </a>
                 {% endfor %}
