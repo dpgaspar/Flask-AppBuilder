@@ -104,12 +104,10 @@ class SecurityManager(BaseSecurityManager):
             user.roles.append(role)
             user.password = generate_password_hash(password)
             user.save()
-            log.info("Added user %s to user list." % username)
+            log.info(c.LOGMSG_INF_SEC_ADD_USER.format(username))
             return user
         except Exception as e:
-            log.error(
-                "Error adding new user to database. {0}".format(
-                    str(e)))
+            log.error(c.LOGMSG_ERR_SEC_ADD_USER.format(str(e)))
             return False
 
     def count_users(self):
@@ -119,9 +117,7 @@ class SecurityManager(BaseSecurityManager):
         try:
             user.save()
         except Exception as e:
-            log.error(
-                "Error updating user to database. {0}".format(
-                    str(e)))
+            log.error(c.LOGMSG_ERR_SEC_UPD_USER.format(str(e)))
             return False
 
     def get_user_by_id(self, pk):
@@ -178,7 +174,7 @@ class SecurityManager(BaseSecurityManager):
                 perm.save()
                 return perm
             except Exception as e:
-                log.error("Add Permission: {0}".format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_PERMISSION.format(str(e)))
         return perm
 
     def del_permission(self, name):
@@ -193,7 +189,7 @@ class SecurityManager(BaseSecurityManager):
             try:
                 perm.delete()
             except Exception as e:
-                log.error("Del Permission Error: {0}".format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
 
     # ----------------------------------------------
     #       PRIMITIVES VIEW MENU
@@ -220,7 +216,7 @@ class SecurityManager(BaseSecurityManager):
                 view_menu.save()
                 return view_menu
             except Exception as e:
-                log.error("Add View Menu Error: {0}".format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_VIEWMENU.format(str(e)))
         return view_menu
 
     def del_view_menu(self, name):
@@ -235,7 +231,7 @@ class SecurityManager(BaseSecurityManager):
             try:
                 obj.delete()
             except Exception as e:
-                log.error("Del Permission Error: {0}".format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
 
     #----------------------------------------------
     #          PERMISSION VIEW MENU
@@ -272,10 +268,10 @@ class SecurityManager(BaseSecurityManager):
         pv.view_menu, pv.permission = vm, perm
         try:
             pv.save()
-            log.info("Created Permission View: %s" % (str(pv)))
+            log.info(c.LOGMSG_INF_SEC_ADD_PERMVIEW.format(str(pv)))
             return pv
         except Exception as e:
-            log.error("Creation of Permission View Error: {0}".format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_ADD_PERMVIEW.format(str(e)))
 
     def del_permission_view_menu(self, permission_name, view_menu_name):
         try:
@@ -286,9 +282,9 @@ class SecurityManager(BaseSecurityManager):
             pv = self.permissionview_model.objects(permission=pv.permission)
             if not pv:
                 self.del_permission(pv.permission.name)
-            log.info("Removed Permission View: %s" % (str(permission_name)))
+            log.info(c.LOGMSG_INF_SEC_DEL_PERMVIEW.format(str(permission_name)))
         except Exception as e:
-            log.error("Remove Permission from View Error: {0}".format(str(e)))
+            log.error(c.LOGMSG_ERR_SEC_DEL_PERMVIEW.format(str(e)))
 
     def exist_permission_on_views(self, lst, item):
         for i in lst:
@@ -315,9 +311,9 @@ class SecurityManager(BaseSecurityManager):
             try:
                 role.permissions.append(perm_view)
                 role.save()
-                log.info("Added Permission %s to role %s" % (str(perm_view), role.name))
+                log.info(c.LOGMSG_INF_SEC_ADD_PERMROLE.format(str(perm_view), role.name))
             except Exception as e:
-                log.error("Add Permission to Role Error: {0}".format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_ADD_PERMROLE.format(str(e)))
 
     def del_permission_role(self, role, perm_view):
         """
@@ -332,6 +328,6 @@ class SecurityManager(BaseSecurityManager):
             try:
                 role.permissions.remove(perm_view)
                 role.save()
-                log.info("Removed Permission %s to role %s" % (str(perm_view), role.name))
+                log.info(c.LOGMSG_INF_SEC_DEL_PERMROLE.format(str(perm_view), role.name))
             except Exception as e:
-                log.error("Remove Permission to Role Error: {0}".format(str(e)))
+                log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE.format(str(e)))
