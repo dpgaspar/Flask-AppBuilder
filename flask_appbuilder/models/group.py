@@ -5,7 +5,7 @@ import logging
 from itertools import groupby
 from flask_babelpkg import lazy_gettext as _
 from flask_appbuilder._compat import as_unicode
-
+from .. import const as c
 
 log = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ def aggregate_avg(items, col):
     try:
         return aggregate_sum(items, col) / aggregate_count(items, col)
     except:
-        log.warning('Zero division on aggregate_avg')
+        log.warning(c.LOGMSG_WAR_DBI_AVG_ZERODIV)
         return 0.0
 
 
