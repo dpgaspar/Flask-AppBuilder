@@ -2,7 +2,7 @@ import calendar
 from flask import redirect, flash, url_for, Markup
 from .forms import TestForm
 from flask_appbuilder._compat import as_unicode
-from flask_appbuilder import ModelView, GroupByChartView, aggregate_count, action, expose
+from flask_appbuilder import ModelView, GroupByChartView, aggregate_count, action, expose, BaseView, has_access
 from flask_appbuilder.views import SimpleFormView, MultipleView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.generic.interface import GenericInterface
@@ -175,7 +175,24 @@ class ContactTimeChartView(GroupByChartView):
         }
     ]
 
+class PostTweet(BaseView):
+    
+    default_view = 'tweet'
 
+    
+
+    @expose('/tweet/')
+    @has_access
+    def tweet(self):
+        resp = self.appbuilder.sm.oauth_remotes['twitter'].post('statuses/update.json', data={
+        'status':   'The text we want to tweet'
+        })
+        if resp.status == 403:
+            flash('Your tweet was too long.')
+        else:
+            flash('Successfully tweeted your tweet (ID: #%s)' % resp.data['id'])
+        return "OK"
+        
 fill_gender()
 
 appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts",
@@ -194,6 +211,7 @@ appbuilder.add_view(ProductModelView, "List Models", icon="fa-envelope", categor
 appbuilder.add_view(ProductView, "List Products", icon="fa-envelope", category="Products")
 appbuilder.add_link("ContacModelView_lnk","ContactModelView.add", icon="fa-envelope", label="Add Contact")
 appbuilder.add_view(TestForm, "My form View", icon="fa-group", label='My Test form')
+appbuilder.add_view(PostTweet, "Tweet", icon="fa-twitter", label='Tweet')
 
 appbuilder.add_link("Index","MyIndexView.index")
 appbuilder.security_cleanup()

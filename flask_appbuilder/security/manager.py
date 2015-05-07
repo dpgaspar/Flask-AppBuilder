@@ -1,6 +1,6 @@
 import datetime
 import logging
-from flask import url_for, g
+from flask import url_for, g, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, current_user
 from flask_openid import OpenID
@@ -82,6 +82,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Flask-OpenID OpenID """
     oauth = None
     """ Flask-OAuth """
+    oauth_remotes = None
+    """ Initialized (remote_app) providers dict {'provider_name', OBJ } """
     oauth_handler = None
     """ OAuth handler, you can use this to use OAuth API's on your app """
 
@@ -147,10 +149,22 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_type == AUTH_OAUTH:
             from flask_oauthlib.client import OAuth
             self.oauth = OAuth()
+            self.oauth_remotes = dict()
+            for _provider in self.oauth_providers:
+                provider_name = _provider['name']
+                log.debug("OAuth providers init {0}".format(provider_name))
+                obj_provider = self.oauth.remote_app(provider_name, **_provider['remote_app'])
+                obj_provider._tokengetter = self.tokengetter
+                self.oauth_remotes[provider_name] = obj_provider
+        
 
         self.lm = LoginManager(app)
         self.lm.login_view = 'login'
         self.lm.user_loader(self.load_user)
+
+    def tokengetter(token=None):
+        log.debug("TOKEN GET")
+        return session.get('oauth')
 
     @property
     def get_url_for_registeruser(self):

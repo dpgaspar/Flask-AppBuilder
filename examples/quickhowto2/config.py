@@ -55,6 +55,33 @@ OAUTH_PROVIDERS = [
             'request_token_url':'https://api.twitter.com/oauth/request_token',
             'access_token_url':'https://api.twitter.com/oauth/access_token',
             'authorize_url':'https://api.twitter.com/oauth/authenticate'}
+    },
+    {'name':'github', 'icon':'fa-github',
+         'remote_app': {
+         'consumer_key':'a11a1bda412d928fb39a',
+         'consumer_secret':'92b7cf30bc42c49d589a10372c3f9ff3bb310037',
+         'request_token_params':{'scope': 'user:email'},
+         'base_url':'https://api.github.com/',
+         'request_token_url':None,
+         'access_token_method':'POST',
+         'access_token_url':'https://github.com/login/oauth/access_token',
+         'authorize_url':'https://github.com/login/oauth/authorize'
+         }
+    },
+    {'name':'linkedin', 'icon':'fa-linkedin',
+         'remote_app': {
+         'consumer_key':'k8fhkgkkqzub',
+         'consumer_secret':'ZZtLETQOQYNDjMrz',
+         'request_token_params':{
+         'scope': 'r_basicprofile',
+         'state': 'RandomString',
+         },
+         'base_url':'https://api.linkedin.com/v1/',
+         'request_token_url':None,
+         'access_token_method':'POST',
+         'access_token_url':'https://www.linkedin.com/uas/oauth2/accessToken',
+         'authorize_url':'https://www.linkedin.com/uas/oauth2/authorization'
+         }
     }
     ]
 

@@ -384,7 +384,6 @@ class AuthOIDView(AuthView):
     def __init__(self):
         super(AuthOIDView, self).__init__()
 
-
     @expose('/login/', methods=['GET', 'POST'])
     def login(self, flag=True):
         @self.appbuilder.sm.oid.loginhandler
@@ -425,14 +424,15 @@ class AuthOIDView(AuthView):
 
 class AuthOAuthView(AuthView):
     login_template = 'appbuilder/general/security/login_oauth.html'
-
+    
+    
     @expose('/login/')
     @expose('/login/<provider>')
     def login(self, provider=None):
         log.debug('LOGIN {0}'.format(self.appbuilder.sm.oauth_providers))
         log.debug('provider {0}'.format(provider))
         if g.user is not None and g.user.is_authenticated():
-            log.debug("Already authenticated {0}".format(user))
+            log.debug("Already authenticated {0}".format(g.user))
             return redirect(self.appbuilder.get_url_for_index)
         if provider is None:
             return self.render_template(self.login_template,
@@ -441,19 +441,28 @@ class AuthOAuthView(AuthView):
                                appbuilder=self.appbuilder)
         else:
             log.debug("Going to call authorize for: {0}".format(provider))
-            
-            for _provider in self.appbuilder.sm.oauth_providers:
-                if _provider['name'] == provider:
-                    break
-            log.debug("Provider defs: {0}".format(_provider))
-            obj_provider = self.appbuilder.sm.oauth.remote_app(provider, **_provider['remote_app'])
-            
-            
-            return obj_provider.authorize(callback=url_for('.oauth_authorized',provider=provider))
+            return self.appbuilder.sm.oauth_remotes[provider].authorize(callback=url_for('.oauth_authorized',provider=provider))
             
     @expose('/oauth-authorized/<provider>')
     def oauth_authorized(self, provider):
-        log.debug("AUTHORIZED")
+        log.debug("AUTHORIZED INIT")
+        resp = self.appbuilder.sm.oauth_remotes[provider].authorized_response()
+        if resp is None:
+            flash(u'You denied the request to sign in.')
+            return redirect(self.appbuilder.get_url_for_index)
+        log.debug('OAUTH AUTHORIZED!! {0}'.format(resp))
+        session['oauth'] = (
+            resp['oauth_token'],
+            resp['oauth_token_secret']
+        )
+        user = self.appbuilder.sm.auth_user_remote_user(resp['screen_name'])
+        if user is None:
+            flash(as_unicode(self.invalid_login_message), 'warning')
+        else:
+            login_user(user)
+        return redirect(self.appbuilder.get_url_for_index)
+        
+        
         """
         #provider = request.args['provider']
         remote_app = self.appbuilder.sm.oauth.remote_apps['twitter']
