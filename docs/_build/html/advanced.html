@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.3.6',
+        VERSION:     '1.3.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.3.6</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.3.7</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -260,20 +260,17 @@ remember you can add multiple filters for each field also, take a look at the <e
 </pre></div>
 </div>
 </li>
-<li><p class="first">You can define what columns will be included on Add or Edit forms,</p>
-</li>
-</ul>
-<p>for example if you have automatic fields like user or date, you can remove this from the Add Form:</p>
+<li><p class="first">You can define what columns will be included on Add or Edit forms,
+for example if you have automatic fields like user or date, you can remove this from the Add Form:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
     <span class="n">add_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;my_field1&#39;</span><span class="p">,</span><span class="s">&#39;my_field2&#39;</span><span class="p">]</span>
     <span class="n">edit_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;my_field1&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<ul class="simple">
-<li>You can contribute with any additional fields that are not on a table/model,</li>
-</ul>
-<p>for example a confirmation field:</p>
+</li>
+<li><p class="first">You can contribute with any additional fields that are not on a table/model,
+for example a confirmation field:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
     <span class="n">add_form_extra_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;extra&#39;</span><span class="p">:</span> <span class="n">TextField</span><span class="p">(</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;Extra Field&#39;</span><span class="p">),</span>
@@ -281,7 +278,7 @@ remember you can add multiple filters for each field also, take a look at the <e
                     <span class="n">widget</span><span class="o">=</span><span class="n">BS3TextFieldWidget</span><span class="p">())}</span>
 </pre></div>
 </div>
-<ul>
+</li>
 <li><p class="first">You can define/override readonly fields like this, first define a new <strong>Readonly</strong> field:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.fieldwidgets</span> <span class="kn">import</span> <span class="n">BS3TextFieldWidget</span>
 
@@ -316,10 +313,9 @@ remember you can add multiple filters for each field also, take a look at the <e
                                 <span class="n">widget</span><span class="o">=</span><span class="n">Select2Widget</span><span class="p">(</span><span class="n">extra_classes</span><span class="o">=</span><span class="s">&quot;readonly&quot;</span><span class="p">))}</span>
 </pre></div>
 </div>
-<ul class="simple">
-<li>You can contribute with your own additional form validations rules.</li>
-</ul>
-<p>Remember the framework will automatically validate any field that is defined on the database
+<ul>
+<li><p class="first">You can contribute with your own additional form validations rules.
+Remember the framework will automatically validate any field that is defined on the database
 with <em>Not Null</em> (Required) or Unique constraints:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
@@ -329,6 +325,8 @@ with <em>Not Null</em> (Required) or Unique constraints:</p>
     <span class="p">}</span>
 </pre></div>
 </div>
+</li>
+</ul>
 <p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>. Experiment with <em>add_form</em>, <em>edit_form</em>, <em>add_columns</em>, <em>edit_columns</em>, <em>validators_columns</em>, <em>add_form_extra_fields</em>, <em>edit_form_extra_fields</em></p>
 </div>
 </div>
@@ -346,7 +344,7 @@ with <em>Not Null</em> (Required) or Unique constraints:</p>
     </p>
     <p>
         &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.<br/>
     </p>
   </div>
 </footer>

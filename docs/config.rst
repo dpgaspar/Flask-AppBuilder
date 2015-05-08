@@ -37,30 +37,14 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   |                                            |           |
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
 +-----------------------------------+--------------------------------------------+-----------+
-| AUTH_LDAP_SEARCH                  | define your ldap server to do indirect     |   No      |
-|                                   | bind by searching for the bind field.      |           |
-|                                   | Comment out or leave blank to do direct    |           | 
-|                                   | bind to ldap server.                       |           |
-|                                   | example:                                   |           |
+| AUTH_LDAP_SEARCH                  | Use search user with self user             |   No      |
+|                                   | registration.                              |           |
 |                                   |                                            |           |
 |                                   | AUTH_TYPE = 2                              |           |
 |                                   |                                            |           |
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
 |                                   |                                            |           |
 |                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
-+-----------------------------------+--------------------------------------------+-----------+
-| AUTH_LDAP_BIND_FIELD              | if doing an indirect bind to ldap, this    |   No      |
-|                                   | is the field to bind to.                   |           |
-|                                   | Default is "cn".                           |           | 
-|                                   | example:                                   |           |
-|                                   |                                            |           |
-|                                   | AUTH_TYPE = 2                              |           |
-|                                   |                                            |           |
-|                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
-|                                   |                                            |           |
-|                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
-|                                   |                                            |           |
-|                                   | AUTH_LDAP_BIND_FIELD = "cn"                |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_UID_FIELD               | if doing an indirect bind to ldap, this    |   No      |
 |                                   | is the field that matches the username     |           |
@@ -120,9 +104,6 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
 |                                   |                                            |           |
 |                                   | AUTH_LDAP_EMAIL_FIELD = "mail"             |           |
-+-----------------------------------+--------------------------------------------+-----------+
-| AUTH_LDAP_BIND_FIRST              | Try to bind with the LDAP server before    |   No      |
-|                                   | searching for the user information         |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_ALLOW_SELF_SIGNED       | Allow LDAP authentication to use self      |   No      |
 |                                   | signed certificates                        |           |

@@ -37,9 +37,9 @@ LANGUAGES = {
 UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_URL = '/static/uploads/'
-AUTH_TYPE = AUTH_OAUTH
-AUTH_LDAP_SERVER = "ldap://testdc.test.local"
-AUTH_LDAP_SEARCH = "dc=test,dc=local"
+AUTH_TYPE = AUTH_LDAP
+AUTH_LDAP_SERVER = "ldap://dc01.company.local"
+AUTH_LDAP_SEARCH = "dc=company,dc=local"
 AUTH_LDAP_UID_FIELD = 'userPrincipalName'
 AUTH_USER_REGISTRATION = True
 AUTH_USER_REGISTRATION_ROLE = 'Admin'

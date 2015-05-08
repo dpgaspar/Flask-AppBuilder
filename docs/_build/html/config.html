@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.3.6',
+        VERSION:     '1.3.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.3.6</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.3.7</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -245,30 +245,15 @@ example:</p>
 <td>Cond.</td>
 </tr>
 <tr class="row-even"><td>AUTH_LDAP_SEARCH</td>
-<td><p class="first">define your ldap server to do indirect
-bind by searching for the bind field.
-Comment out or leave blank to do direct
-bind to ldap server.
-example:</p>
+<td><p class="first">Use search user with self user
+registration.</p>
 <p>AUTH_TYPE = 2</p>
 <p>AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8220;</p>
 <p class="last">AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;</p>
 </td>
 <td>No</td>
 </tr>
-<tr class="row-odd"><td>AUTH_LDAP_BIND_FIELD</td>
-<td><p class="first">if doing an indirect bind to ldap, this
-is the field to bind to.
-Default is &#8220;cn&#8221;.
-example:</p>
-<p>AUTH_TYPE = 2</p>
-<p>AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8220;</p>
-<p>AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;</p>
-<p class="last">AUTH_LDAP_BIND_FIELD = &#8220;cn&#8221;</p>
-</td>
-<td>No</td>
-</tr>
-<tr class="row-even"><td>AUTH_LDAP_UID_FIELD</td>
+<tr class="row-odd"><td>AUTH_LDAP_UID_FIELD</td>
 <td><p class="first">if doing an indirect bind to ldap, this
 is the field that matches the username
 when searching for the account to bind
@@ -281,7 +266,7 @@ example:</p>
 </td>
 <td>No</td>
 </tr>
-<tr class="row-odd"><td>AUTH_LDAP_FIRSTNAME_FIELD</td>
+<tr class="row-even"><td>AUTH_LDAP_FIRSTNAME_FIELD</td>
 <td><p class="first">sets the field in the ldap directory that
 stores the user&#8217;s first name. This field
 is used to propagate user&#8217;s first name
@@ -295,7 +280,7 @@ example:</p>
 </td>
 <td>No</td>
 </tr>
-<tr class="row-even"><td>AUTH_LDAP_LASTNAME_FIELD</td>
+<tr class="row-odd"><td>AUTH_LDAP_LASTNAME_FIELD</td>
 <td><p class="first">sets the field in the ldap directory that
 stores the user&#8217;s last name. This field
 is used to propagate user&#8217;s last name
@@ -309,7 +294,7 @@ example:</p>
 </td>
 <td>No</td>
 </tr>
-<tr class="row-odd"><td>AUTH_LDAP_EMAIL_FIELD</td>
+<tr class="row-even"><td>AUTH_LDAP_EMAIL_FIELD</td>
 <td><p class="first">sets the field in the ldap directory that
 stores the user&#8217;s email address. This
 field is used to propagate user&#8217;s email
@@ -321,6 +306,11 @@ example:</p>
 <p>AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;</p>
 <p class="last">AUTH_LDAP_EMAIL_FIELD = &#8220;mail&#8221;</p>
 </td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>AUTH_LDAP_ALLOW_SELF_SIGNED</td>
+<td>Allow LDAP authentication to use self
+signed certificates</td>
 <td>No</td>
 </tr>
 <tr class="row-even"><td>AUTH_ROLE_ADMIN</td>
@@ -405,7 +395,7 @@ is to place all your configuration keys on a config.py file</p>
     </p>
     <p>
         &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.<br/>
     </p>
   </div>
 </footer>

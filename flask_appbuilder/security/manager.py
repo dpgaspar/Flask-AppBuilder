@@ -133,8 +133,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         app.config.setdefault('AUTH_USER_REGISTRATION_ROLE', self.auth_role_public)
         # LDAP Config
         app.config.setdefault('AUTH_LDAP_SEARCH', '')
-        app.config.setdefault('AUTH_LDAP_BIND_FIELD', 'cn')
-        app.config.setdefault('AUTH_LDAP_BIND_PASSWORD', '')
         app.config.setdefault('AUTH_LDAP_ALLOW_SELF_SIGNED', False)
         app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
         app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
@@ -197,14 +195,6 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_search(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_SEARCH']
-
-    @property
-    def auth_ldap_bind_field(self):
-        return self.appbuilder.get_app.config['AUTH_LDAP_BIND_FIELD']
-
-    @property
-    def auth_ldap_bind_password(self):
-        return self.appbuilder.get_app.config['AUTH_LDAP_BIND_PASSWORD']
 
     @property
     def auth_ldap_uid_field(self):

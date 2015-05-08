@@ -188,10 +188,10 @@ class PostTweet(BaseView):
         'status':   'The text we want to tweet'
         })
         if resp.status == 403:
-            flash('Your tweet was too long.')
+            flash('Your tweet was too long. {0}'.format(resp.raw_data))
         else:
             flash('Successfully tweeted your tweet (ID: #%s)' % resp.data['id'])
-        return "OK"
+        return redirect(self.appbuilder.get_url_for_index)
         
 fill_gender()
 

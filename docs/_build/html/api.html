@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.3.6',
+        VERSION:     '1.3.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.3.6</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.3.7</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -435,6 +435,24 @@ if non provided the view will be acessible as a top menu.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">SQLAlchemy Session</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.base.AppBuilder.init_app">
+<code class="descname">init_app</code><span class="sig-paren">(</span><em>app</em>, <em>session</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/base.html#AppBuilder.init_app"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.init_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will initialize the Flask app, supporting the app factory pattern.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>app</strong> &#8211; </li>
+<li><strong>session</strong> &#8211; The SQLAlchemy session</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1512,6 +1530,12 @@ for F.A.B.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.create_db">
+<code class="descname">create_db</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.create_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.create_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setups the DB, creates admin and public roles if they don&#8217;t exist.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.del_permission">
 <code class="descname">del_permission</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.del_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.del_permission" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes a permission from the backend, model permission</p>
@@ -1649,6 +1673,12 @@ for F.A.B.</p>
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_handler">
 <code class="descname">oauth_handler</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_handler" title="Permalink to this definition">¶</a></dt>
 <dd><p>OAuth handler, you can use this to use OAuth API&#8217;s on your app</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_remotes">
+<code class="descname">oauth_remotes</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_remotes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialized (remote_app) providers dict {&#8216;provider_name&#8217;, OBJ }</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -1921,8 +1951,8 @@ accepts a list and returns the sum of the list&#8217;s items</p>
 <dt id="flask.ext.appbuilder.charts.views.BaseChartView">
 <em class="property">class </em><code class="descclassname">flask.ext.appbuilder.charts.views.</code><code class="descname">BaseChartView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/charts/views.html#BaseChartView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.charts.views.BaseChartView" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the base class for all chart views. 
-Use DirectByChartView or GroupByChartView, override their properties and these
-to customise your charts</p>
+Use DirectByChartView or GroupByChartView, override their properties and their base classes
+(BaseView, BaseModelView, BaseChartView) to customise your charts</p>
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.charts.views.BaseChartView.chart_3d">
 <code class="descname">chart_3d</code><em class="property"> = 'true'</em><a class="headerlink" href="#flask.ext.appbuilder.charts.views.BaseChartView.chart_3d" title="Permalink to this definition">¶</a></dt>
@@ -2042,6 +2072,12 @@ to apply the aggregation</td>
 <dt id="flask.ext.appbuilder.charts.views.GroupByChartView">
 <em class="property">class </em><code class="descclassname">flask.ext.appbuilder.charts.views.</code><code class="descname">GroupByChartView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/charts/views.html#GroupByChartView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.charts.views.GroupByChartView" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
+<dt id="flask.ext.appbuilder.charts.views.GroupByChartView.ProcessClass">
+<code class="descname">ProcessClass</code><a class="headerlink" href="#flask.ext.appbuilder.charts.views.GroupByChartView.ProcessClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">GroupByProcessData</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="flask.ext.appbuilder.charts.views.GroupByChartView.definitions">
 <code class="descname">definitions</code><em class="property"> = []</em><a class="headerlink" href="#flask.ext.appbuilder.charts.views.GroupByChartView.definitions" title="Permalink to this definition">¶</a></dt>
 <dd><p>These charts can display multiple series,
@@ -2089,6 +2125,12 @@ to apply the aggregation</td>
 <span class="p">]</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.charts.views.GroupByChartView.get_group_by_class">
+<code class="descname">get_group_by_class</code><span class="sig-paren">(</span><em>definition</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/charts/views.html#GroupByChartView.get_group_by_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.charts.views.GroupByChartView.get_group_by_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>intantiates the processing class (Direct or Grouped) and returns it.</p>
 </dd></dl>
 
 </dd></dl>
@@ -2276,7 +2318,7 @@ Override it for efficiency.</p>
     </p>
     <p>
         &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.<br/>
     </p>
   </div>
 </footer>
