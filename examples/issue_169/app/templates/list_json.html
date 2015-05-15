@@ -1,0 +1,94 @@
+{% extends 'appbuilder/baselayout.html' %}
+
+{% import 'appbuilder/general/lib.html' as lib %}
+
+
+{% block content %}
+
+
+{{ super() }}
+
+
+<input class=" filter_val form-control" id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
+
+<div class="table-responsive">
+<table class="table table-bordered table-hover">
+	<thead id="thead">
+	</thead>
+	<tbody id="tbody">
+    </tbody>
+</table>
+</div>
+
+<script type="text/javascript">
+
+var can_add = {{ "true" if "can_add" | is_item_visible(modelview_name) else "false" }};
+var can_show = {{ "true" if "can_show" | is_item_visible(modelview_name) else "false" }};
+var can_edit = {{ "true" if "can_edit" | is_item_visible(modelview_name) else "false" }};
+var can_delete = {{ "true" if "can_delete" | is_item_visible(modelview_name) else "false" }};
+var actions = {{ actions | get_actions_on_list(modelview_name) }};
+
+
+function updateTHead(labels, listColumns) {
+    $body = $('#thead');
+    $body.empty();
+    $row = $('<tr />');
+
+    for (var key in listColumns) {
+        var column = listColumns[key];
+        $col = $('<th />');
+        $col.append(labels[column]);
+        $row.append($col);
+    }
+    var $el = $($row).appendTo($body);
+}
+
+function updateTBody(listColumns, data) {
+    $body = $('#tbody');
+    $body.empty();
+    for (var key in data) {
+        var obj = data[key];
+        $row = $('<tr />');
+        for (var key in listColumns) {
+            var column = listColumns[key];
+            $col = $('<td />');
+            $col.append(obj[column]);
+            $row.append($col);
+        }
+        var $el = $($row).appendTo($body);
+    }
+}
+
+function updateTable(labels, listColumns, data) {
+    updateTHead(labels, listColumns);
+    updateTBody(listColumns, data);
+}
+
+function getData(filters) {
+    if (filters == "" || filters == null ) {
+        var base_url = "/contactmodelview2/api";
+    }
+    else {
+        var base_url = "/contactmodelview2/api?_flt_0_name=" + filters;
+    }
+
+    $.ajax({
+      type: "GET",
+      url: base_url
+    })
+      .done(function( result ) {
+        updateTable(result.label_columns, result.list_columns, result.result);
+      });
+}
+
+getData();
+
+$('.filter_val').keyup(function(e) {
+    getData($(this).val());
+});
+
+
+</script>
+
+
+{% endblock %}

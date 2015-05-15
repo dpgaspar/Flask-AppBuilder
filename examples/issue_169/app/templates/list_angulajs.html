@@ -1,0 +1,225 @@
+{% extends 'appbuilder/baselayout.html' %}
+
+
+{% block head_js %}
+{{ super() }}
+<script src="{{url_for('static',filename='js/angular.min.js')}}"></script>
+
+<script type="text/javascript">
+
+var active_filters = {{ active_filters | tojson | safe }};
+var label_columns = {{ label_columns | tojson | safe }};
+
+</script>
+
+<script src="{{url_for('static',filename='js/app.js')}}"></script>
+<script src="{{url_for('static',filename='js/Services/apiService.js')}}"></script>
+<script src="{{url_for('static',filename='js/Controllers/searchCtrl.js')}}"></script>
+<script src="{{url_for('static',filename='js/Controllers/alertsCtrl.js')}}"></script>
+<script src="{{url_for('static',filename='js/Controllers/tableCtrl.js')}}"></script>
+<script src="{{url_for('static',filename='js/Directives/bigDirectives.js')}}"></script>
+<script src="{{url_for('static',filename='js/Directives/btnDirectives.js')}}"></script>
+
+{% endblock %}
+
+
+{% block content %}
+
+{{ super() }}
+
+
+<div  ng-app="FAB" >
+
+<img src="/static/img/loading.gif" ng-show="loading" style="margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%)
+    background-color: inherit; border: none;">
+
+<div ng-controller="alertsCtrl">
+        <div ng-repeat="alert in alerts" class="alert alert-{[alert.severity]}">{[alert.message]}
+            <button type="button" class="close" ng-click="removeAlert(alert.message)" data-dismiss="alert">&times;</button>
+        </div>
+</div>
+
+<div ng-controller="ModelCtrl" base_url="{{api_url}}">
+
+<ab-model-search></ab-model-search>
+<ab-model-table init="init()" base="{{api_url}}" ui-texts="{add_text: '{{_('Add a new record')}}',
+                                              show_text: '{{_('Show record')}}',
+                                              edit_text: '{{_('Edit record')}}',
+                                               delete_text: '{{_('Delete record')}}',
+                                               count_text: '{{_('Record Count')}}',
+                                                page_size_text: '{{_('Page size')}}' }">
+
+
+</ab-model-table>
+</div>
+
+<div ng-controller="TableCtrl" base="{{api_url}}">
+    <a href="#" ab-modal-ok-cancel title-text="TITLE {[1+1]}" body-text="BODY...." ok-text="OK" cancel-text="Cancel">Cenas</a>
+    <a href="#" ab-modal-ok-cancel title-text="Title {[2+2]}" body-text="Body" ok-text="OK" cancel-text="Cancel" on-ok="callback">cenas2</a>
+    <form id="filter_form" class="form-search" method="get">
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            {{_("Add Filter")}}
+          <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li ng-repeat="(col, filters) in search_filters">
+                    <a href="javascript:void(0)" name={[col]} class="filter btn" ng-click="addFilter(col)">
+                    {[ label_columns[col] ]}</a>
+                </li>
+
+            </ul>
+        </div>
+
+        <table class="table table-bordered table-hover">
+            <tbody>
+            <tr ng-repeat="active_filter in active_filters">
+
+                <td class="col-lg-1 col-md-1" >
+                    <a href="#" ng-click="removeFilter($index)" class="btn"><span class="close-icon">&times;</span>&nbsp;
+                    {[active_filter.label]}</a>
+                </td>
+                <td class="col-lg-1 col-md-1 col-sm-1">
+                    <select class="my_select2 form-control ng-scope" data-placeholder="Select Value" id="{[active_filter.col]}" name="{[active_filter.col]}" style="width:250px">
+                    <option ng-repeat="(key, value) in active_filter.options" value="{[key]}">{[value]}</option>
+                    </select>
+                        <ab-select data="active_filter.options"></ab-select>
+                    <ab-date format="yyyy-MM-dd" ></ab-date>
+                </td>
+                <td dynamic="active_filter.html"></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <input class=" filter_val form-control" ng-model='filter' id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
+
+    <div class="well well-sm">
+        <ab-pagination size="4" page="{[page]}" page-size="{[page_size]}" count="{[data.count]}" on-click="pageClick"></ab-pagination>
+
+        <ab-menu-page-size on-click="pageSizeClick" min="5" max="35" step="5" title="{{_('Page size')}}" page-size="{[page_size]}">
+        </ab-menu-page-size>
+        	&nbsp;
+        <ab-btn-add ng-if="can_add" url={[add_url]} tip-text="{{_('Add a new record')}}"></ab-btn-add>
+        <div class="pull-right">
+			<strong>{{ _('Record Count') }}:</strong> {[ data.count ]}
+		</div>
+    </div>
+
+    <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <thead id="thead">
+        <tr>
+        <th class="col-md-1 col-lg-1 col-sm-1" ></th>
+        <th ng-repeat="col in data.list_columns">
+            <a href="#" ng-click="orderClick(col)">{[data.label_columns[col];]}
+                <i ng-if="getOrderType(col) == 2" class="fa fa-chevron-up pull-right"></i>
+                <i ng-if="getOrderType(col) == 1" class="fa fa-chevron-down pull-right"></i>
+                <i ng-if="getOrderType(col) == 0" class="fa fa-arrows-v pull-right"></i>
+            </a>
+        </th></tr>
+        </thead>
+        <tbody id="tbody">
+            <tr ng-repeat="row in data.result">
+                <td><center>
+                    <div class="btn-group btn-group-xs" style="display: flex;">
+                        <ab-btn-show ng-if="can_show" url="{[show_url + data.pks[$index]]}" tip-text="{{_('Show record')}}"></ab-btn-show>
+                        <ab-btn-edit ng-if="can_edit" url="{[edit_url + data.pks[$index]]}" tip-text="{{_('Edit record')}}"></ab-btn-edit>
+                        <ab-btn-delete ng-if="can_delete" on-click="remove(data.pks[$index])" tip-text="{{_('Delete record')}}"></ab-btn-delete>
+                    </div>
+                </center></td>
+                <td ng-repeat="col in data.list_columns" dynamic="row[col]">{[row[col] ]}</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<div ng-controller="TableCtrl" base="/groupmodelview/api">
+    <a href="#" ab-modal-ok-cancel title-text="TITLE {[1+1]}" body-text="BODY...." ok-text="OK" cancel-text="Cancel">Cenas</a>
+    <a href="#" ab-modal-ok-cancel title-text="Title {[2+2]}" body-text="Body" ok-text="OK" cancel-text="Cancel" on-ok="callback">cenas2</a>
+    <form id="filter_form" class="form-search" method="get">
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            {{_("Add Filter")}}
+          <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li ng-repeat="(col, filters) in search_filters">
+                    <a href="javascript:void(0)" name="{[col]}" class="filter btn" ng-click="addFilter(col)">
+                    {[ label_columns[col] ]}</a>
+                </li>
+
+            </ul>
+        </div>
+
+        <table class="table table-bordered table-hover">
+            <tbody>
+            <tr ng-repeat="active_filter in active_filters">
+
+                <td class="col-lg-1 col-md-1" >
+                    <a href="#" ng-click="removeFilter($index)" class="btn"><span class="close-icon">&times;</span>&nbsp;
+                    {[active_filter.label]}</a>
+                </td>
+                <td class="col-lg-1 col-md-1 col-sm-1">
+                    <select class="my_select2 form-control ng-scope" data-placeholder="Select Value" id="{[active_filter.col]}" name="{[active_filter.col]}" style="width:250px">
+                    <option ng-repeat="(key, value) in active_filter.options" value="{[key]}">{[value]}</option>
+                </td>
+                <td dynamic="active_filter.html"></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <input class=" filter_val form-control" ng-model='filter' id="name" name="_flt_0_name" placeholder="Name" type="text" value="">
+
+    <div class="well well-sm">
+            <ab-pagination size="4" page="{[page]}" page-size="{[page_size]}" count="{[data.count]}" on-click="pageClick"></ab-pagination>
+
+            <ab-menu-page-size on-click="pageSizeClick" min="5" max="35" step="5" title="{{_('Page size')}}" page-size="{[page_size]}">
+            </ab-menu-page-size>
+        	&nbsp;
+            <ab-btn-add ng-if="can_add" url={[add_url]} tip-text="{{_('Add a new record')}}"></ab-btn-add>
+        <div class="pull-right">
+			<strong>{{ _('Record Count') }}:</strong> {[ data.count ]}
+		</div>
+    </div>
+
+    <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <thead id="thead">
+        <tr>
+        <th class="col-md-1 col-lg-1 col-sm-1" ></th>
+        <th ng-repeat="col in data.list_columns">
+            <a href="#" ng-click="orderClick(col)">{[data.label_columns[col];]}
+                <i ng-if="getOrderType(col) == 2" class="fa fa-chevron-up pull-right"></i>
+                <i ng-if="getOrderType(col) == 1" class="fa fa-chevron-down pull-right"></i>
+                <i ng-if="getOrderType(col) == 0" class="fa fa-arrows-v pull-right"></i>
+            </a>
+        </th></tr>
+        </thead>
+        <tbody id="tbody">
+            <tr ng-repeat="row in data.result">
+                <td><center>
+                    <div class="btn-group btn-group-xs" style="display: flex;">
+                        <ab-btn-show ng-if="can_show" url="{[show_url + data.pks[$index]]}" tip-text="{{_('Show record')}}"></ab-btn-show>
+                        <ab-btn-edit ng-if="can_edit" url="{[edit_url + data.pks[$index]]}" tip-text="{{_('Edit record')}}"></ab-btn-edit>
+                        <ab-btn-delete ng-if="can_delete" on-click="remove(data.pks[$index])" tip-text="{{_('Delete record')}}"></ab-btn-delete>
+                    </div>
+                </center></td>
+                <td ng-repeat="col in data.list_columns" dynamic="row[col]">{[row[col] ]}</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+</div>
+
+
+{% endblock %}

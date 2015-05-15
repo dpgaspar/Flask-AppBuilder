@@ -1,0 +1,17 @@
+<ul class="pagination pagination-sm" style="display:inherit;">
+    <li ng-class="{disabled: min == 0}">
+        <a href="javascript:void(0)" ng-click="selPage(0)">&laquo;</a>
+    </li>
+    <li ng-class="{disabled: page == 0}">
+        <a href="javascript:void(0)" ng-click="selPage(page-1)">&lt;</a>
+    </li>
+    <li ng-repeat="p in range(min, max, 1)" ng-class="{active: page == p}">
+        <a href="javascript:void(0)" ng-click="selPage(p)">{[ p ]}</a>
+    </li>
+    <li ng-class="{disabled: page >= pages}">
+            <a href="javascript:void(0)" ng-click="selPage(page + 1)">&gt;</a>
+    </li>
+    <li ng-class="{disabled: max > pages}">
+        <a href="javascript:void(0)" ng-click="selPage(pages)">&raquo;</a>
+    </li>
+</ul>

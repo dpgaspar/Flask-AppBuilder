@@ -1,0 +1,11 @@
+<div class="btn-group">
+    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+    {[title]}<span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li ng-repeat="page_size_elem in range()" ng-class="{active: pageSize == page_size_elem}">
+
+            <a href="#" ng-click="selPageSize(page_size_elem)" >{[page_size_elem]}</a>
+        </li>
+    </ul>
+</div>
