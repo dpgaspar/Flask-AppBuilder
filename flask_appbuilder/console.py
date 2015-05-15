@@ -26,7 +26,7 @@ def import_application(app_package, appbuilder):
     try:
         _app = __import__(app_package)
     except Exception as e:
-        click.echo(click.style('Was unable to import {0} Error: {1}'.format(app_package, e.message), fg='red'))
+        click.echo(click.style('Was unable to import {0} Error: {1}'.format(app_package, e), fg='red'))
         exit(3)
     if hasattr(_app, 'appbuilder'):
         return getattr(_app, appbuilder)

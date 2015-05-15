@@ -69,6 +69,16 @@ class AbstractSecurityManager(BaseManager):
         raise NotImplementedError
 
 
+def _tokengetter(token=None):
+    """
+        Default function to return the current user oauth token
+        from session cookie.
+    """
+    token = session.get('oauth') 
+    log.debug("Token Get: {0}".format(token))
+    return token
+
+
 class BaseSecurityManager(AbstractSecurityManager):
     auth_view = None
     """ The obj instance for authentication view """
@@ -84,8 +94,9 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Flask-OAuth """
     oauth_remotes = None
     """ Initialized (remote_app) providers dict {'provider_name', OBJ } """
-    oauth_handler = None
-    """ OAuth handler, you can use this to use OAuth API's on your app """
+    oauth_tokengetter = _tokengetter
+    """ OAuth tokengetter function override to implement your own tokengetter method """
+    oauth_user_info = None
 
     userdbmodelview = None
     """ Override if you want your own user db view """
@@ -152,17 +163,14 @@ class BaseSecurityManager(AbstractSecurityManager):
                 provider_name = _provider['name']
                 log.debug("OAuth providers init {0}".format(provider_name))
                 obj_provider = self.oauth.remote_app(provider_name, **_provider['remote_app'])
-                obj_provider._tokengetter = self.tokengetter
+                obj_provider._tokengetter = self.oauth_tokengetter
+                self.oauth_user_info = self.get_oauth_user_info
                 self.oauth_remotes[provider_name] = obj_provider
         
 
         self.lm = LoginManager(app)
         self.lm.login_view = 'login'
         self.lm.user_loader(self.load_user)
-
-    def tokengetter(token=None):
-        log.debug("TOKEN GET")
-        return session.get('oauth')
 
     @property
     def get_url_for_registeruser(self):
@@ -227,6 +235,60 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def oauth_providers(self):
         return self.appbuilder.get_app.config['OAUTH_PROVIDERS']
+
+    def get_oauth_token_key(self, provider):
+        """
+            Returns the token_key name for the oauth provider
+            if none is configured defaults to oauth_token
+            this is configured using OAUTH_PROVIDERS and token_key key.
+        """
+        for _provider in self.oauth_providers:
+            if _provider['name'] == provider:
+                return _provider.get('token_key', 'oauth_token')
+
+    def get_oauth_token_secret(self, provider):
+        """
+            Returns the token_secret name for the oauth provider
+            if none is configured defaults to oauth_secret
+            this is configured using OAUTH_PROVIDERS and token_secret
+        """
+        for _provider in self.oauth_providers:
+            if _provider['name'] == provider:
+                return _provider.get('token_secret', 'oauth_token_secret')
+
+    def get_oauth_user_info(self, provider, resp=None):
+        """
+            Since there are different OAuth API's with different ways to
+            retrieve user info
+        """
+        # for GITHUB
+        if provider == 'github' or provider == 'githublocal':
+            me = self.appbuilder.sm.oauth_remotes[provider].get('user')
+            log.debug("User info from Github: {0}".format(me.data))
+            return {'username': me.data.get('login')}
+        # for twitter
+        if provider == 'twitter':
+            me = self.appbuilder.sm.oauth_remotes[provider].get('account/settings.json')
+            log.debug("User info from Twitter: {0}".format(me.data))
+            return {'username': me.data.get('screen_name','')}
+        # for linkedin
+        if provider == 'linkedin':
+            me = self.appbuilder.sm.oauth_remotes[provider].get('people/~:(id,email-address,first-name,last-name)?format=json')
+            log.debug("User info from Linkedin: {0}".format(me.data))
+            return {'username': me.data.get('id',''),
+                'email': me.data.get('email-address',''),
+                'first_name': me.data.get('firstName',''),
+                'last_name': me.data.get('lastName','')}
+        # for Google
+        if provider == 'linkedin':
+            me = self.appbuilder.sm.oauth_remotes[provider].get('userinfo?alt=json')
+            log.debug("User info from Linkedin: {0}".format(me.data))
+            return {'username': me.data.get('id',''),
+                'email': me.data.get('email-address',''),
+                'first_name': me.data.get('firstName',''),
+                'last_name': me.data.get('lastName','')}
+        else: return {}
+
 
     def register_views(self):
         self.appbuilder.add_view_no_menu(self.resetpasswordview())
@@ -463,6 +525,26 @@ class BaseSecurityManager(AbstractSecurityManager):
             self.update_user_auth_stat(user)
             return user
 
+    def auth_user_oauth(self, userinfo):
+        """
+            OAuth user Authentication
+            
+            :userinfo: dict with user information the keys have the same name
+            as User model columns.
+        """
+        if 'username' in userinfo:
+            user = self.find_user(username=userinfo['username'])
+        elif 'email' in userinfo:
+            user = self.find_user(email=userinfo['email'])
+        else:
+            log.error('User info does not have username or email {0}'.format(userinfo))
+            return None
+        if user is None or (not user.is_active()):
+            return None
+        else:
+            self.update_user_auth_stat(user)
+            return user
+            
     """
         ----------------------------------------
             PERMISSION ACCESS CHECK

@@ -110,7 +110,7 @@ class AppBuilder(object):
         self.app = app
         if app is not None:
             self.init_app(app, session)
-
+    
     def init_app(self, app, session):
         """
             Will initialize the Flask app, supporting the app factory pattern.
