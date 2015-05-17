@@ -101,7 +101,6 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ OAuth tokengetter function override to implement your own tokengetter method """
     oauth_user_info = None
 
-
     user_model = None
     """ Override to set your own User Model """
     role_model = None
