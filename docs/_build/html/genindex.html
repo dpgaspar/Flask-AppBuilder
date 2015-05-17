@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.3.7',
+        VERSION:     '1.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -64,7 +64,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.3.7</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.4.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -293,12 +293,12 @@
   <dt><a href="api.html#flask.ext.appbuilder.base.AppBuilder.add_view">add_view() (flask.ext.appbuilder.base.AppBuilder method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_view_menu">add_view_menu() (flask.ext.appbuilder.security.manager.BaseSecurityManager method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api.html#flask.ext.appbuilder.base.AppBuilder.add_view_no_menu">add_view_no_menu() (flask.ext.appbuilder.base.AppBuilder method)</a>
   </dt>
@@ -349,6 +349,10 @@
 
       
   <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_ldap">auth_user_ldap() (flask.ext.appbuilder.security.manager.BaseSecurityManager method)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_oauth">auth_user_oauth() (flask.ext.appbuilder.security.manager.BaseSecurityManager method)</a>
   </dt>
 
       
@@ -793,10 +797,22 @@
   <dt><a href="api.html#flask.ext.appbuilder.charts.views.GroupByChartView.get_group_by_class">get_group_by_class() (flask.ext.appbuilder.charts.views.GroupByChartView method)</a>
   </dt>
 
+      
+  <dt><a href="api.html#flask.ext.appbuilder.baseviews.BaseView.get_init_inner_views">get_init_inner_views() (flask.ext.appbuilder.baseviews.BaseView method)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_key">get_oauth_token_key() (flask.ext.appbuilder.security.manager.BaseSecurityManager method)</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api.html#flask.ext.appbuilder.baseviews.BaseView.get_init_inner_views">get_init_inner_views() (flask.ext.appbuilder.baseviews.BaseView method)</a>
+  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_secret">get_oauth_token_secret() (flask.ext.appbuilder.security.manager.BaseSecurityManager method)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_user_info">get_oauth_user_info() (flask.ext.appbuilder.security.manager.BaseSecurityManager method)</a>
   </dt>
 
       
@@ -956,11 +972,11 @@
   </dt>
 
       
-  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_handler">oauth_handler (flask.ext.appbuilder.security.manager.BaseSecurityManager attribute)</a>
+  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_remotes">oauth_remotes (flask.ext.appbuilder.security.manager.BaseSecurityManager attribute)</a>
   </dt>
 
       
-  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_remotes">oauth_remotes (flask.ext.appbuilder.security.manager.BaseSecurityManager attribute)</a>
+  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_tokengetter">oauth_tokengetter() (flask.ext.appbuilder.security.manager.BaseSecurityManager method)</a>
   </dt>
 
   </dl></td>
@@ -984,7 +1000,15 @@
   </dt>
 
       
+  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.permission_model">permission_model (flask.ext.appbuilder.security.manager.BaseSecurityManager attribute)</a>
+  </dt>
+
+      
   <dt><a href="api.html#flask.ext.appbuilder.security.decorators.permission_name">permission_name() (in module flask.ext.appbuilder.security.decorators)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.permissionview_model">permissionview_model (flask.ext.appbuilder.security.manager.BaseSecurityManager attribute)</a>
   </dt>
 
       
@@ -995,12 +1019,12 @@
   <dt><a href="api.html#flask.ext.appbuilder.baseviews.BaseCRUDView.post_delete">post_delete() (flask.ext.appbuilder.baseviews.BaseCRUDView method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api.html#flask.ext.appbuilder.baseviews.BaseCRUDView.post_update">post_update() (flask.ext.appbuilder.baseviews.BaseCRUDView method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api.html#flask.ext.appbuilder.baseviews.BaseCRUDView.pre_add">pre_add() (flask.ext.appbuilder.baseviews.BaseCRUDView method)</a>
   </dt>
@@ -1069,6 +1093,10 @@
 
       
   <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.resetpasswordview">resetpasswordview (flask.ext.appbuilder.security.manager.BaseSecurityManager attribute)</a>
+  </dt>
+
+      
+  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.role_model">role_model (flask.ext.appbuilder.security.manager.BaseSecurityManager attribute)</a>
   </dt>
 
       
@@ -1178,15 +1206,19 @@
   </dt>
 
       
-  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.user_view">user_view (flask.ext.appbuilder.security.manager.BaseSecurityManager attribute)</a>
+  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.user_model">user_model (flask.ext.appbuilder.security.manager.BaseSecurityManager attribute)</a>
   </dt>
 
       
-  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.userdbmodelview">userdbmodelview (flask.ext.appbuilder.security.manager.BaseSecurityManager attribute)</a>
+  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.user_view">user_view (flask.ext.appbuilder.security.manager.BaseSecurityManager attribute)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.userdbmodelview">userdbmodelview (flask.ext.appbuilder.security.manager.BaseSecurityManager attribute)</a>
+  </dt>
+
       
   <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.userldapmodelview">userldapmodelview (flask.ext.appbuilder.security.manager.BaseSecurityManager attribute)</a>
   </dt>
@@ -1219,6 +1251,10 @@
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.viewmenu_model">viewmenu_model (flask.ext.appbuilder.security.manager.BaseSecurityManager attribute)</a>
+  </dt>
+
       
   <dt><a href="api.html#flask.ext.appbuilder.views.MultipleView.views">views (flask.ext.appbuilder.views.MultipleView attribute)</a>
   </dt>

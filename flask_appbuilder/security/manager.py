@@ -5,6 +5,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, current_user
 from flask_openid import OpenID
 from flask_babelpkg import lazy_gettext as _
+from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
+    ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserRemoteUserModelView, \
+    RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
 
 from ..basemanager import BaseManager
 from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
@@ -98,25 +101,37 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ OAuth tokengetter function override to implement your own tokengetter method """
     oauth_user_info = None
 
-    userdbmodelview = None
+
+    user_model = None
+    """ Override to set your own User Model """
+    role_model = None
+    """ Override to set your own Role Model """
+    permission_model = None
+    """ Override to set your own Permission Model """
+    viewmenu_model = None
+    """ Override to set your own ViewMenu Model """
+    permissionview_model = None
+    """ Override to set your own PermissionView Model """
+    
+    userdbmodelview = UserDBModelView
     """ Override if you want your own user db view """
-    userldapmodelview = None
+    userldapmodelview = UserLDAPModelView
     """ Override if you want your own user ldap view """
-    useroidmodelview = None
+    useroidmodelview = UserOIDModelView
     """ Override if you want your own user OID view """
-    useroauthmodelview = None
+    useroauthmodelview = UserOAuthModelView
     """ Override if you want your own user OAuth view """
-    userremoteusermodelview = None
+    userremoteusermodelview = UserRemoteUserModelView
     """ Override if you want your own user REMOTE_USER view """
-    authdbview = None
+    authdbview = AuthDBView
     """ Override if you want your own Authentication DB view """
-    authldapview = None
+    authldapview = AuthLDAPView
     """ Override if you want your own Authentication LDAP view """
-    authoidview = None
+    authoidview = AuthOIDView
     """ Override if you want your own Authentication OID view """
-    authoauthview = None
+    authoauthview = AuthOAuthView
     """ Override if you want your own Authentication OAuth view """
-    authremoteuserview = None
+    authremoteuserview = AuthRemoteUserView
     """ Override if you want your own Authentication OAuth view """
     registeruserdbview = None
     """ Override if you want your own register user db view """
@@ -126,11 +141,11 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own reset my password view """
     resetpasswordview = None
     """ Override if you want your own reset password view """
-    rolemodelview = None
-    permissionmodelview = None
-    userstatschartview = None
-    viewmenumodelview = None
-    permissionviewmodelview = None
+    rolemodelview = RoleModelView
+    permissionmodelview = PermissionModelView
+    userstatschartview = UserStatsChartView
+    viewmenumodelview = ViewMenuModelView
+    permissionviewmodelview = PermissionViewModelView
 
     def __init__(self, appbuilder):
         super(BaseSecurityManager, self).__init__(appbuilder)

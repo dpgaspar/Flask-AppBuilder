@@ -6,10 +6,10 @@ Supported Authentication Types
 
 You have four types of authentication methods
 
-  :Database Authentication: username and password style that is queried from the database to match. Passwords are kept hashed on the database.
-  :Open ID: Uses the user's email field to authenticate on Gmail, Yahoo etc...
-  :LDAP: Authentication against an LDAP server, like Microsoft Active Directory.
-  :REMOTE_USER: Reads the *REMOTE_USER* web server environ var, and verifies if it's authorized with the framework users table.
+:Database: username and password style that is queried from the database to match. Passwords are kept hashed on the database.
+:Open ID: Uses the user's email field to authenticate on Gmail, Yahoo etc...
+:LDAP: Authentication against an LDAP server, like Microsoft Active Directory.
+:REMOTE_USER: Reads the *REMOTE_USER* web server environ var, and verifies if it's authorized with the framework users table.
        It's the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
        is configured to use kerberos, no need for the user to login with username and password on F.A.B.
 
@@ -24,9 +24,8 @@ Each user has multiple roles, and a role holds permissions on views and menus, s
 
 There are two special roles, you can define their names on the :doc:`config`
 
-	:Admin Role: The framework will assign all the existing permission on views and menus to this role, automatically, this role is for authenticated users only.
-
-	:Public Role: This is a special role for non authenticated users, you can assign all the permissions on views and menus to this role, and everyone will access specific parts of you application.
+:Admin Role: The framework will assign all the existing permission on views and menus to this role, automatically, this role is for authenticated users only.
+:Public Role: This is a special role for non authenticated users, you can assign all the permissions on views and menus to this role, and everyone will access specific parts of you application.
 	
 Of course you can create any additional role you want and configure them as you like.
 
@@ -39,21 +38,21 @@ The framework automatically creates for you all the possible existing permission
 
 Each time you create a new view based on a model (inherit from ModelView) it will create the following permissions:
 
-	- can list
-	- can show
-	- can add
-	- can edit
-	- can delete
-	- can download
+- can list
+- can show
+- can add
+- can edit
+- can delete
+- can download
 	
 These base permissions will be associated to your view, so if you create a view named "MyModelView" you can assign to any role these permissions:
 
-	- can list on MyModelView
-	- can show on MyModelView
-	- can add on MyModelView
-	- can edit on MyModelView
-	- can delete on MyModelView
-	- can doanload on MyModelView
+- can list on MyModelView
+- can show on MyModelView
+- can add on MyModelView
+- can edit on MyModelView
+- can delete on MyModelView
+- can doanload on MyModelView
 	
 If you extend your view with some exposed method via the @expose decorator and you want to protect it
 use the @has_access decorator::
@@ -69,7 +68,7 @@ use the @has_access decorator::
 
 The framework will create the following access based on your method's name:
 
-	- can mymethod on MyModelView
+- can mymethod on MyModelView
 	
 You can aggregate some of your method's on a single permission, this can simplify the security configuration
 if there is no need for granular permissions on a group of methods, for this use @permission_name decorator.
@@ -88,7 +87,7 @@ names on the security models, basically *garbage*. To clean them, use the *secur
 
 Using security_cleanup is not always necessary, but using it after code rework, will guarantee that the permissions, and
 associated permissions to menus and views are exactly what exists on your app. It will prevent orphaned permission names
- and associations.
+and associations.
 
 Use the cleanup after you have registered all your views.
 ::
@@ -103,7 +102,7 @@ Use the cleanup after you have registered all your views.
 
 
 You can always use it and everything will be painlessly automatic. But if you use it only when needed
-(change class name, add to *security_cleanup* to your code, the *garbage* names are removed, then remove the method)
+(change class name, add *security_cleanup* to your code, the *garbage* names are removed, then remove the method)
 no overhead is added when starting your site.
 
 Auditing
@@ -175,9 +174,9 @@ Then on the __init__.py initialize AppBuilder with you own security class::
 
 F.A.B. uses a different user view for each authentication method
 
- - UserDBModelView - for database auth method
- - UserOIDModelView - for Open ID auth method
- - UserLDAPModelView - for LDAP auth method
+- UserDBModelView - for database auth method
+- UserOIDModelView - for Open ID auth method
+- UserLDAPModelView - for LDAP auth method
 
 You can extend or create from scratch your own, and then tell F.A.B. to use them instead, by overriding their
 correspondent lower case properties on **SecurityManager** (just like on the given example).
@@ -205,6 +204,7 @@ First extend the User Model (create a sec_models.py file)::
 
 Next define a new User view, just like the default User view but with the extra column (create a sec_view.py)
 If your using:
+
 - AUTH_DB extend UserDBModelView
 - AUTH_LDAP extend UserLDAPModelView
 - AUTH_REMOTE_USER extend UserRemoteUserModelView

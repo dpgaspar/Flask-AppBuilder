@@ -27,31 +27,11 @@ class SecurityManager(BaseSecurityManager):
     user_model = User
     """ Override to set your own User Model """
     role_model = Role
-    """ Override to set your own User Model """
+    """ Override to set your own Role Model """
     permission_model = Permission
     viewmenu_model = ViewMenu
     permissionview_model = PermissionView
 
-    userdbmodelview = UserDBModelView
-    """ Override if you want your own user db view """
-    userldapmodelview = UserLDAPModelView
-    """ Override if you want your own user ldap view """
-    useroidmodelview = UserOIDModelView
-    """ Override if you want your own user OID view """
-    useroauthmodelview = UserOAuthModelView
-    """ Override if you want your own user OAuth view """
-    userremoteusermodelview = UserRemoteUserModelView
-    """ Override if you want your own user REMOTE_USER view """
-    authdbview = AuthDBView
-    """ Override if you want your own Authentication DB view """
-    authldapview = AuthLDAPView
-    """ Override if you want your own Authentication LDAP view """
-    authoidview = AuthOIDView
-    """ Override if you want your own Authentication OID view """
-    authoauthview = AuthOAuthView
-    """ Override if you want your own Authentication OAuth view """
-    authremoteuserview = AuthRemoteUserView
-    """ Override if you want your own Authentication OAuth view """
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
     registeruseroidview = RegisterUserOIDView
@@ -60,11 +40,6 @@ class SecurityManager(BaseSecurityManager):
     """ Override if you want your own reset my password view """
     resetpasswordview = ResetPasswordView
     """ Override if you want your own reset password view """
-    rolemodelview = RoleModelView
-    permissionmodelview = PermissionModelView
-    userstatschartview = UserStatsChartView
-    viewmenumodelview = ViewMenuModelView
-    permissionviewmodelview = PermissionViewModelView
 
     def __init__(self, appbuilder):
         """

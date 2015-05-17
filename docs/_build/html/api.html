@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.3.7',
+        VERSION:     '1.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.3.7</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.4.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -1464,6 +1464,21 @@ for F.A.B.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_oauth">
+<code class="descname">auth_user_oauth</code><span class="sig-paren">(</span><em>userinfo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.auth_user_oauth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_oauth" title="Permalink to this definition">¶</a></dt>
+<dd><p>OAuth user Authentication</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Userinfo:</th><td class="field-body">dict with user information the keys have the same name</td>
+</tr>
+</tbody>
+</table>
+<p>as User model columns.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_oid">
 <code class="descname">auth_user_oid</code><span class="sig-paren">(</span><em>email</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.auth_user_oid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_oid" title="Permalink to this definition">¶</a></dt>
 <dd><p>OpenID user Authentication</p>
@@ -1495,32 +1510,37 @@ for F.A.B.</p>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.authdbview">
-<code class="descname">authdbview</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.authdbview" title="Permalink to this definition">¶</a></dt>
+<code class="descname">authdbview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.authdbview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override if you want your own Authentication DB view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">AuthDBView</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.authldapview">
-<code class="descname">authldapview</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.authldapview" title="Permalink to this definition">¶</a></dt>
+<code class="descname">authldapview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.authldapview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override if you want your own Authentication LDAP view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">AuthLDAPView</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.authoauthview">
-<code class="descname">authoauthview</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.authoauthview" title="Permalink to this definition">¶</a></dt>
+<code class="descname">authoauthview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.authoauthview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override if you want your own Authentication OAuth view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">AuthOAuthView</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.authoidview">
-<code class="descname">authoidview</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.authoidview" title="Permalink to this definition">¶</a></dt>
+<code class="descname">authoidview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.authoidview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override if you want your own Authentication OID view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">AuthOIDView</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.authremoteuserview">
-<code class="descname">authremoteuserview</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.authremoteuserview" title="Permalink to this definition">¶</a></dt>
+<code class="descname">authremoteuserview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.authremoteuserview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override if you want your own Authentication OAuth view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">AuthRemoteUserView</span></code></p>
 </dd></dl>
 
 <dl class="method">
@@ -1628,6 +1648,29 @@ for F.A.B.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_key">
+<code class="descname">get_oauth_token_key</code><span class="sig-paren">(</span><em>provider</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.get_oauth_token_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the token_key name for the oauth provider
+if none is configured defaults to oauth_token
+this is configured using OAUTH_PROVIDERS and token_key key.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_secret">
+<code class="descname">get_oauth_token_secret</code><span class="sig-paren">(</span><em>provider</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.get_oauth_token_secret"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_secret" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the token_secret name for the oauth provider
+if none is configured defaults to oauth_secret
+this is configured using OAUTH_PROVIDERS and token_secret</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_user_info">
+<code class="descname">get_oauth_user_info</code><span class="sig-paren">(</span><em>provider</em>, <em>resp=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.get_oauth_user_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_user_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Since there are different OAuth API&#8217;s with different ways to
+retrieve user info</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.get_user_by_id">
 <code class="descname">get_user_by_id</code><span class="sig-paren">(</span><em>pk</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.get_user_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_user_by_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic function to return user by it&#8217;s id (pk)</p>
@@ -1670,21 +1713,33 @@ for F.A.B.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_handler">
-<code class="descname">oauth_handler</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_handler" title="Permalink to this definition">¶</a></dt>
-<dd><p>OAuth handler, you can use this to use OAuth API&#8217;s on your app</p>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_remotes">
 <code class="descname">oauth_remotes</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_remotes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialized (remote_app) providers dict {&#8216;provider_name&#8217;, OBJ }</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_tokengetter">
+<code class="descname">oauth_tokengetter</code><span class="sig-paren">(</span><em>token=None</em><span class="sig-paren">)</span><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_tokengetter" title="Permalink to this definition">¶</a></dt>
+<dd><p>OAuth tokengetter function override to implement your own tokengetter method</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.oid">
 <code class="descname">oid</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.oid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flask-OpenID OpenID</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.permission_model">
+<code class="descname">permission_model</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.permission_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override to set your own Permission Model</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.permissionview_model">
+<code class="descname">permissionview_model</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.permissionview_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override to set your own PermissionView Model</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -1736,6 +1791,12 @@ Password will be hashed and saved.</p>
 <dd><p>Override if you want your own reset password view</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.role_model">
+<code class="descname">role_model</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.role_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override to set your own Role Model</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.security_cleanup">
 <code class="descname">security_cleanup</code><span class="sig-paren">(</span><em>baseviews</em>, <em>menus</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.security_cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.security_cleanup" title="Permalink to this definition">¶</a></dt>
@@ -1783,6 +1844,12 @@ Password will be hashed and saved.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.user_model">
+<code class="descname">user_model</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.user_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override to set your own User Model</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.user_view">
 <code class="descname">user_view</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.user_view" title="Permalink to this definition">¶</a></dt>
 <dd><p>The obj instance for user view</p>
@@ -1790,32 +1857,43 @@ Password will be hashed and saved.</p>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.userdbmodelview">
-<code class="descname">userdbmodelview</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.userdbmodelview" title="Permalink to this definition">¶</a></dt>
+<code class="descname">userdbmodelview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.userdbmodelview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override if you want your own user db view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">UserDBModelView</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.userldapmodelview">
-<code class="descname">userldapmodelview</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.userldapmodelview" title="Permalink to this definition">¶</a></dt>
+<code class="descname">userldapmodelview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.userldapmodelview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override if you want your own user ldap view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">UserLDAPModelView</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.useroauthmodelview">
-<code class="descname">useroauthmodelview</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.useroauthmodelview" title="Permalink to this definition">¶</a></dt>
+<code class="descname">useroauthmodelview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.useroauthmodelview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override if you want your own user OAuth view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">UserOAuthModelView</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.useroidmodelview">
-<code class="descname">useroidmodelview</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.useroidmodelview" title="Permalink to this definition">¶</a></dt>
+<code class="descname">useroidmodelview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.useroidmodelview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override if you want your own user OID view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">UserOIDModelView</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.userremoteusermodelview">
-<code class="descname">userremoteusermodelview</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.userremoteusermodelview" title="Permalink to this definition">¶</a></dt>
+<code class="descname">userremoteusermodelview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.userremoteusermodelview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override if you want your own user REMOTE_USER view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">UserRemoteUserModelView</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.viewmenu_model">
+<code class="descname">viewmenu_model</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.viewmenu_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override to set your own ViewMenu Model</p>
 </dd></dl>
 
 </dd></dl>

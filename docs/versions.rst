@@ -5,6 +5,8 @@ Improvements and Bug fixes on 1.4.0
 -----------------------------------
 
 - Fix, #168 fixed output when fabmanager is unable to import app.
+- Moved userXXXmodelview properties to BaseSecurityManager.
+- Copied XXX_model properties to BaseSecurityManager.
 
 Improvements and Bug fixes on 1.3.7
 -----------------------------------
