@@ -203,7 +203,14 @@ First extend the User Model (create a sec_models.py file)::
         extra = Column(String(256))
 
 
-Next define a new User view, just like the default User view but with the extra column (create a sec_view.py)::
+Next define a new User view, just like the default User view but with the extra column (create a sec_view.py)
+If your using:
+- AUTH_DB extend UserDBModelView
+- AUTH_LDAP extend UserLDAPModelView
+- AUTH_REMOTE_USER extend UserRemoteUserModelView
+- AUTH_OID extend UserOIDModelView
+
+::
 
     from flask_appbuilder.security.views import UserDBModelView
     from flask_babelpkg import lazy_gettext
@@ -245,6 +252,13 @@ Next create your own SecurityManager class, overriding your model and view for U
     class MySecurityManager(SecurityManager):
         user_model = MyUser
         userdbmodelview = MyUserDBModelView
+
+Note that this is for AUTH_DB, so if your using:
+
+- AUTH_DB override userdbmodelview
+- AUTH_LDAP override userldapmodelview
+- AUTH_REMOTE_USER override userremoteusermodelview
+- AUTH_OID override useroidmodelview
 
 Finally (as shown on the previous example) tell F.A.B. to use your SecurityManager class, so when initializing
 **AppBuilder** (on __init__.py)::
