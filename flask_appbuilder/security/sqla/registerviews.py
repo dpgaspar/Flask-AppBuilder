@@ -256,3 +256,17 @@ class RegisterUserOIDView(BaseRegisterUser):
                                               first_name=form.first_name.data,
                                               last_name=form.last_name.data,
                                               email=form.email.data)
+
+class RegisterUserOAuthView(BaseRegisterUser):
+    """
+        View for Registering a new user, auth OID mode
+    """
+    default_view = 'choose_provider'
+    choose_provider_template = 'appbuilder/general/security/register_oauth.html'
+    """ Template displayed to user to choose the oauth provider to register its account """
+
+    @expose("/chooseprovider")
+    def choose_provider(self):
+        self.render_template(self.choose_provider_template)
+        
+    

@@ -453,8 +453,8 @@ class AuthOAuthView(AuthView):
         log.debug("AUTHORIZED init")
         resp = self.appbuilder.sm.oauth_remotes[provider].authorized_response()
         if resp is None:
-            flash(u'You denied the request to sign in.')
-            return redirect(self.appbuilder.get_url_for_index)
+            flash(u'You denied the request to sign in.', 'warning')
+            return redirect('login')
         log.debug('OAUTH Authorized resp: {0}'.format(resp))
         token_key = self.appbuilder.sm.get_oauth_token_key(provider)
         token_secret = self.appbuilder.sm.get_oauth_token_secret(provider)
@@ -470,9 +470,10 @@ class AuthOAuthView(AuthView):
         user = self.appbuilder.sm.auth_user_oauth(userinfo)
         if user is None:
             flash(as_unicode(self.invalid_login_message), 'warning')
+            return redirect('login')
         else:
             login_user(user)
-        return redirect(self.appbuilder.get_url_for_index)
+            return redirect(self.appbuilder.get_url_for_index)
         
         
 
