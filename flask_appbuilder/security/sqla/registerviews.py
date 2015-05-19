@@ -57,6 +57,14 @@ class BaseRegisterUser(PublicFormView):
     """ The email subject sent to the user """
     activation_template = 'appbuilder/general/security/activation.html'
     """ The activation template, shown when the user is activated """
+    message = lazy_gettext('Registration sent to your email')
+    """ The message shown on a successful registration """
+    error_message = lazy_gettext('Not possible to register you at the moment, try again later')
+    """ The message shown on an unsuccessful registration """
+    false_error_message = lazy_gettext('Registration not found')
+    """ The message shown on an unsuccessful registration """
+    form_title = lazy_gettext('Fill out the registration form')
+    """ The form title """
 
     def send_email(self, register_user):
         """
@@ -121,6 +129,10 @@ class BaseRegisterUser(PublicFormView):
         """
         reg = self.appbuilder.get_session.query(RegisterUser).filter(
             RegisterUser.registration_hash == activation_hash).scalar()
+        if not reg:
+            log.error('Attempt to activate user with false hash: {0}'.format(activation_hash))
+            flash(as_unicode(self.false_error_message), 'danger')
+            return redirect(self.appbuilder.get_url_for_index)
         try:
             if not self.appbuilder.sm.add_user(username=reg.username,
                                                email=reg.email,
@@ -150,12 +162,7 @@ class RegisterUserDBView(BaseRegisterUser):
     """
     form = RegisterUserDBForm
     """ The WTForm form presented to the user to register himself """
-    form_title = lazy_gettext('Fill out the registration form')
-    """ The form title """
     redirect_url = '/'
-    error_message = lazy_gettext('Not possible to register you at the moment, try again later')
-    message = lazy_gettext('Registration sent to your email')
-    """ The message shown on a successful registration """
 
     def form_get(self, form):
         datamodel_user = SQLAInterface(User, self.appbuilder.get_session)
@@ -183,9 +190,6 @@ class RegisterUserOIDView(BaseRegisterUser):
     route_base = '/register'
 
     form = RegisterUserOIDForm
-    form_title = lazy_gettext('Fill out the registration form')
-    error_message = lazy_gettext('Not possible to register you at the moment, try again later')
-    message = lazy_gettext('Registration sent to your email')
     default_view = 'form_oid_post'
 
     @expose("/formoidone", methods=['GET', 'POST'])
@@ -261,12 +265,20 @@ class RegisterUserOAuthView(BaseRegisterUser):
     """
         View for Registering a new user, auth OID mode
     """
-    default_view = 'choose_provider'
-    choose_provider_template = 'appbuilder/general/security/register_oauth.html'
-    """ Template displayed to user to choose the oauth provider to register its account """
-
-    @expose("/chooseprovider")
-    def choose_provider(self):
-        self.render_template(self.choose_provider_template)
-        
+    form = RegisterUserOIDForm
     
+    def form_get(self, form):
+        # fills the register form with the collected data from OAuth
+        form.username.data = request.args.get('username', '')
+        form.first_name.data = request.args.get('first_name', '')
+        form.last_name.data = request.args.get('last_name', '')
+        form.email.data = request.args.get('email', '')
+    
+    def form_post(self, form):
+        log.debug('Adding Registration')
+        self.add_registration(username=form.username.data,
+                                              first_name=form.first_name.data,
+                                              last_name=form.last_name.data,
+                                              email=form.email.data)
+    
+        

@@ -428,9 +428,9 @@ class AuthOAuthView(AuthView):
     
     @expose('/login/')
     @expose('/login/<provider>')
-    def login(self, provider=None):
-        log.debug('LOGIN {0}'.format(self.appbuilder.sm.oauth_providers))
-        log.debug('provider {0}'.format(provider))
+    @expose('/login/<provider>/<register>')
+    def login(self, provider=None, register=None):
+        log.debug('Provider: {0}'.format(provider))
         if g.user is not None and g.user.is_authenticated():
             log.debug("Already authenticated {0}".format(g.user))
             return redirect(self.appbuilder.get_url_for_index)
@@ -442,6 +442,9 @@ class AuthOAuthView(AuthView):
         else:
             log.debug("Going to call authorize for: {0}".format(provider))
             try:
+                if register:
+                    log.debug('Login to Register')
+                    session['register'] = True
                 return self.appbuilder.sm.oauth_remotes[provider].authorize(callback=url_for('.oauth_authorized',provider=provider, _external=True))
             except Exception as e:
                 log.error("Error on OAuth authorize: {0}".format(e))
@@ -450,23 +453,30 @@ class AuthOAuthView(AuthView):
             
     @expose('/oauth-authorized/<provider>')
     def oauth_authorized(self, provider):
-        log.debug("AUTHORIZED init")
+        log.debug("Authorized init")
         resp = self.appbuilder.sm.oauth_remotes[provider].authorized_response()
         if resp is None:
             flash(u'You denied the request to sign in.', 'warning')
             return redirect('login')
         log.debug('OAUTH Authorized resp: {0}'.format(resp))
+        # Get this provider key names for token_key and token_secret
         token_key = self.appbuilder.sm.get_oauth_token_key(provider)
         token_secret = self.appbuilder.sm.get_oauth_token_secret(provider)
+        # Save users token on encrypted session cookie
         session['oauth'] = (
             resp[token_key],
             resp.get(token_secret,'')
         )
+        # Retrieves specific user info from the provider
         try:
             userinfo = self.appbuilder.sm.oauth_user_info(provider)
             log.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
         except Exception as e:
             log.error("Error returning OAuth user info: {0}".format(e))
+        # Is this Authorization to register a new user ?
+        if session.pop('register', None):
+            log.debug('REGISTER !!!!')
+            return redirect(url_for('RegisterUserOAuthView.this_form_get', **userinfo))
         user = self.appbuilder.sm.auth_user_oauth(userinfo)
         if user is None:
             flash(as_unicode(self.invalid_login_message), 'warning')

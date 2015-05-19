@@ -3,7 +3,7 @@ import logging
 from sqlalchemy import func
 from sqlalchemy.engine.reflection import Inspector
 from werkzeug.security import generate_password_hash
-from .registerviews import RegisterUserDBView, RegisterUserOIDView
+from .registerviews import RegisterUserDBView, RegisterUserOIDView, RegisterUserOAuthView
 from .models import User, Permission, PermissionView, RegisterUser, ViewMenu, Role
 from ..manager import BaseSecurityManager
 from ..views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
@@ -35,7 +35,10 @@ class SecurityManager(BaseSecurityManager):
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
     registeruseroidview = RegisterUserOIDView
-    """ Override if you want your own register user db view """
+    """ Override if you want your own register user OpenID view """
+    registeruseroauthview = RegisterUserOAuthView
+    """ Override if you want your own register user OAuth view """
+    
     resetmypasswordview = ResetMyPasswordView
     """ Override if you want your own reset my password view """
     resetpasswordview = ResetPasswordView
@@ -66,8 +69,13 @@ class SecurityManager(BaseSecurityManager):
         return self.appbuilder.get_session
 
     def register_views(self):
-        if self.auth_user_registration and self.auth_type == c.AUTH_DB:
-            self.registeruser_view = self.registeruserdbview()
+        if self.auth_user_registration:
+            if self.auth_type == c.AUTH_DB:
+                self.registeruser_view = self.registeruserdbview()
+            elif self.auth_type == c.AUTH_OID:
+                self.registeruser_view = self.registeruseroidview()
+            elif self.auth_type == c.AUTH_OAUTH:
+                self.registeruser_view = self.registeruseroauthview()
             self.appbuilder.add_view_no_menu(self.registeruser_view)
         super(SecurityManager, self).register_views()
 

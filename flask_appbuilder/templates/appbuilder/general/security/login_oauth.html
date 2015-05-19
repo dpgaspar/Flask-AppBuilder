@@ -26,7 +26,7 @@ function signin() {
 
 function register() {
     if (currentSelection != "") {
-        window.location.href = baseRegisterUrl + currentSelection;
+        window.location.href = baseRegisterUrl + currentSelection + '/register';
     }
 }
 
@@ -55,7 +55,7 @@ function register() {
                          <br></br>
                         <a onclick="signin();" class="btn btn-primary btn-block" type="submit">{{_('Sign In')}}</a>
                         {% if appbuilder.sm.auth_user_registration %}
-                            <a href="javascript:registerUser();" class="btn btn-block btn-primary" data-toggle="tooltip" rel="tooltip"
+                            <a onclick="register();" class="btn btn-block btn-primary" data-toggle="tooltip" rel="tooltip"
                                 title="{{_('If your not already a user, please register')}}">
                                 {{_('Register')}}
                             </a>
