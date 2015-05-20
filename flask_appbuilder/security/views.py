@@ -475,8 +475,7 @@ class AuthOAuthView(AuthView):
             log.error("Error returning OAuth user info: {0}".format(e))
         # Is this Authorization to register a new user ?
         if session.pop('register', None):
-            log.debug('REGISTER !!!!')
-            return redirect(url_for('RegisterUserOAuthView.this_form_get', **userinfo))
+            return redirect(self.appbuilder.sm.registeruseroauthview.get_default_url(**userinfo))
         user = self.appbuilder.sm.auth_user_oauth(userinfo)
         if user is None:
             flash(as_unicode(self.invalid_login_message), 'warning')

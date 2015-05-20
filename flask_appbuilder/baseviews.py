@@ -198,6 +198,13 @@ class BaseView(object):
         url = page_history.pop() or index_url
         return url
 
+    @classmethod
+    def get_default_url(cls, **kwargs):
+        """
+            Returns the url for this class default endpoint
+        """
+        return url_for(cls.__name__ + '.' + cls.default_view, **kwargs)
+            
     def get_uninit_inner_views(self):
         """
             Will return a list with views that need to be initialized.
@@ -210,6 +217,62 @@ class BaseView(object):
             Sets initialized inner views
         """
         pass
+
+
+class BaseFormView(BaseView):
+    """
+        Base class FormView's
+    """
+    form_template = 'appbuilder/general/model/edit.html'
+
+    edit_widget = FormWidget
+    """ Form widget to override """
+    form_title = ''
+    """ The form title to be displayed """
+    form_columns = None
+    """ The form columns to include, if empty will include all"""
+    form = None
+    """ The WTF form to render """
+    form_fieldsets = None
+    """ Form field sets """
+    default_view = 'this_form_get'
+    """ The form view default entry endpoint """
+
+    def _init_vars(self):
+        self.form_columns = self.form_columns or []
+        self.form_fieldsets = self.form_fieldsets or []
+        list_cols = [field.name for field in self.form.refresh()]
+        if self.form_fieldsets:
+            self.form_columns = []
+            for fieldset_item in self.form_fieldsets:
+                self.form_columns = self.form_columns + list(fieldset_item[1].get('fields'))
+        else:
+            if not self.form_columns:
+                self.form_columns = list_cols
+
+    def form_get(self, form):
+        """
+            Override this method to implement your form processing
+        """
+        pass
+
+    def form_post(self, form):
+        """
+            Override this method to implement your form processing
+        """
+        pass
+
+    def _get_edit_widget(self, form=None, exclude_cols=None, widgets=None):
+        exclude_cols = exclude_cols or []
+        widgets = widgets or {}
+        widgets['edit'] = self.edit_widget(route_base=self.route_base,
+                                           form=form,
+                                           include_cols=self.form_columns,
+                                           exclude_cols=exclude_cols,
+                                           fieldsets=self.form_fieldsets
+        )
+        return widgets
+
 
 
 class BaseModelView(BaseView):

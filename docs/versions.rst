@@ -5,8 +5,10 @@ Improvements and Bug fixes on 1.4.0
 -----------------------------------
 
 - Fix, #168 fixed output when fabmanager is unable to import app.
-- Moved userXXXmodelview properties to BaseSecurityManager.
-- Copied XXX_model properties to BaseSecurityManager.
+- Fix, Moved userXXXmodelview properties to BaseSecurityManager.
+- Fix, Copied XXX_model properties to BaseSecurityManager.
+- New, SimpleFormView and PublicFormView now subclass BaseFormView.
+- New, class method for BaseView's get_default_url, returns the default_view url.
 
 Improvements and Bug fixes on 1.3.7
 -----------------------------------
