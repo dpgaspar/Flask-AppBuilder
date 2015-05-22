@@ -303,6 +303,10 @@ class BaseModelView(BaseView):
                 search_columns = ['name','address']
              
     """
+    search_exclude_columns = None
+    """
+        List with columns to exclude from search. Will include all possible columns by default
+    """
     label_columns = None
     """ 
         Dictionary of labels for your columns, override this if you want diferent pretify labels 
@@ -375,9 +379,15 @@ class BaseModelView(BaseView):
     def _init_properties(self):
         self.label_columns = self.label_columns or {}
         self.base_filters = self.base_filters or []
+        self.search_exclude_columns = self.search_exclude_columns or []
+        self.search_columns = self.search_columns or []
+        
         self._base_filters = self.datamodel.get_filters().add_filter_list(self.base_filters)
         list_cols = self.datamodel.get_columns_list()
-        self.search_columns = self.search_columns or self.datamodel.get_search_columns_list()
+        search_columns = self.datamodel.get_search_columns_list()
+        if not self.search_columns:
+            self.search_columns = [x for x in search_columns if x not in self.search_exclude_columns]
+                
         self._gen_labels_columns(list_cols)
         self._filters = self.datamodel.get_filters(self.search_columns)
 
@@ -460,15 +470,20 @@ class BaseCRUDView(BaseModelView):
     """
        A list of columns to exclude from the show view. By default all columns are included.
     """
-
+    add_exclude_columns = None
+    """
+       A list of columns to exclude from the add form. By default all columns are included.
+    """
+    edit_exclude_columns = None
+    """
+       A list of columns to exclude from the edit form. By default all columns are included.
+    """
     order_columns = None
     """ Allowed order columns """
-
     page_size = 10
     """ 
         Use this property to change default page size 
     """
-
     show_fieldsets = None
     """ 
         show fieldsets django style [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....]
@@ -652,6 +667,8 @@ class BaseCRUDView(BaseModelView):
         self.add_form_extra_fields = self.add_form_extra_fields or {}
         self.edit_form_extra_fields = self.edit_form_extra_fields or {}
         self.show_exclude_columns = self.show_exclude_columns or []
+        self.add_exclude_columns = self.add_exclude_columns or []
+        self.edit_exclude_columns = self.edit_exclude_columns or []
         # Generate base props
         list_cols = self.datamodel.get_user_columns_list()
         self.list_columns = self.list_columns or [list_cols[0]]
@@ -670,15 +687,14 @@ class BaseCRUDView(BaseModelView):
                 self.add_columns = self.add_columns + list(fieldset_item[1].get('fields'))
         else:
             if not self.add_columns:
-                
-                self.add_columns = list_cols
+                self.add_columns = [x for x in list_cols if x not in self.add_exclude_columns]
         if self.edit_fieldsets:
             self.edit_columns = []
             for fieldset_item in self.edit_fieldsets:
                 self.edit_columns = self.edit_columns + list(fieldset_item[1].get('fields'))
         else:
             if not self.edit_columns:
-                self.edit_columns = list_cols
+                self.edit_columns = [x for x in list_cols if x not in self.edit_exclude_columns]
 
     """
     -----------------------------------------------------

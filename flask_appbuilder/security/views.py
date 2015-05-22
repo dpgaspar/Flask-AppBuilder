@@ -56,9 +56,7 @@ class PermissionViewModelView(ModelView):
 
     label_columns = {'permission': lazy_gettext('Permission'), 'view_menu': lazy_gettext('View/Menu')}
     list_columns = ['permission', 'view_menu']
-    show_columns = ['permission', 'view_menu']
-    search_columns = ['permission', 'view_menu']
-
+    
 
 class ResetMyPasswordView(SimpleFormView):
     """
@@ -146,8 +144,7 @@ class UserModelView(ModelView):
          {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
     ]
 
-    search_columns = ['first_name', 'last_name', 'username', 'email', 'roles', 'active',
-                      'created_by', 'changed_by', 'changed_on', 'changed_by', 'login_count']
+    search_exclude_columns = ['password']
 
     add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles']
     edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles']
@@ -300,10 +297,8 @@ class RoleModelView(ModelView):
 
     label_columns = {'name': lazy_gettext('Name'), 'permissions': lazy_gettext('Permissions')}
     list_columns = ['name', 'permissions']
-    show_columns = ['name', 'permissions']
     order_columns = ['name']
-    search_columns = ['name']
-
+    
     @action("Copy Role", lazy_gettext('Copy Role'), lazy_gettext('Copy the selected roles?'), icon='fa-copy', single=False)
     def copy_role(self, items):
         self.update_redirect()
@@ -323,6 +318,7 @@ class RegisterUserModelView(ModelView):
     show_title = lazy_gettext('Show Registration')
     list_columns = ['username','registration_date','email']
     show_exclude_columns = ['password']
+    search_exclude_columns = ['password']
 
 class AuthView(BaseView):
     route_base = ''
