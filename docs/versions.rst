@@ -9,6 +9,7 @@ Improvements and Bug fixes on 1.4.0
 - Fix, Copied XXX_model properties to BaseSecurityManager.
 - New, SimpleFormView and PublicFormView now subclass BaseFormView.
 - New, class method for BaseView's get_default_url, returns the default_view url.
+- New, OAuth authentication method.
 
 Improvements and Bug fixes on 1.3.7
 -----------------------------------

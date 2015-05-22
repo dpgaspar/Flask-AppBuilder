@@ -139,4 +139,3 @@ class RegisterUser(Model):
     email = Column(String(64), nullable=False)
     registration_date = Column(DateTime, default=datetime.datetime.now, nullable=True)
     registration_hash = Column(String(256))
-

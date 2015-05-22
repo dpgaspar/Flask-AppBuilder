@@ -1,14 +1,11 @@
 import logging
+import uuid
 
 from sqlalchemy import func
 from sqlalchemy.engine.reflection import Inspector
 from werkzeug.security import generate_password_hash
-from .registerviews import RegisterUserDBView, RegisterUserOIDView, RegisterUserOAuthView
 from .models import User, Permission, PermissionView, RegisterUser, ViewMenu, Role
 from ..manager import BaseSecurityManager
-from ..views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
-    ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserRemoteUserModelView, \
-    RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
 from ...models.sqla.interface import SQLAInterface
 from ...models.sqla import Base
 from ... import const as c
@@ -31,18 +28,7 @@ class SecurityManager(BaseSecurityManager):
     permission_model = Permission
     viewmenu_model = ViewMenu
     permissionview_model = PermissionView
-
-    registeruserdbview = RegisterUserDBView
-    """ Override if you want your own register user db view """
-    registeruseroidview = RegisterUserOIDView
-    """ Override if you want your own register user OpenID view """
-    registeruseroauthview = RegisterUserOAuthView
-    """ Override if you want your own register user OAuth view """
-    
-    resetmypasswordview = ResetMyPasswordView
-    """ Override if you want your own reset my password view """
-    resetpasswordview = ResetPasswordView
-    """ Override if you want your own reset password view """
+    registeruser_model = RegisterUser
 
     def __init__(self, appbuilder):
         """
@@ -50,18 +36,29 @@ class SecurityManager(BaseSecurityManager):
             param appbuilder:
                 F.A.B AppBuilder main object
         """
-        self.userdbmodelview.datamodel = SQLAInterface(self.user_model)
-        self.userldapmodelview.datamodel = SQLAInterface(self.user_model)
-        self.useroidmodelview.datamodel = SQLAInterface(self.user_model)
-        self.useroauthmodelview.datamodel = SQLAInterface(self.user_model)
-        self.userremoteusermodelview.datamodel = SQLAInterface(self.user_model)
-        self.userstatschartview.datamodel = SQLAInterface(self.user_model)
+        super(SecurityManager, self).__init__(appbuilder)
+        user_datamodel = SQLAInterface(self.user_model)
+        if self.auth_type == c.AUTH_DB:
+            self.userdbmodelview.datamodel = user_datamodel
+        elif self.auth_type == c.AUTH_LDAP:
+            self.userldapmodelview.datamodel = user_datamodel
+        elif self.auth_type == c.AUTH_OID:
+            self.useroidmodelview.datamodel = user_datamodel
+        elif self.auth_type == c.AUTH_OAUTH:
+            self.useroauthmodelview.datamodel = user_datamodel
+        elif self.auth_type == c.AUTH_REMOTE_USER:
+            self.userremoteusermodelview.datamodel = user_datamodel
+ 
+        self.userstatschartview.datamodel = user_datamodel
+        if self.auth_user_registration:
+            self.registerusermodelview.datamodel = SQLAInterface(self.registeruser_model)
+
         self.rolemodelview.datamodel = SQLAInterface(self.role_model)
         self.permissionmodelview.datamodel = SQLAInterface(self.permission_model)
         self.viewmenumodelview.datamodel = SQLAInterface(self.viewmenu_model)
         self.permissionviewmodelview.datamodel = SQLAInterface(self.permissionview_model)
 
-        super(SecurityManager, self).__init__(appbuilder)
+        #super(SecurityManager, self).__init__(appbuilder)
         self.create_db()
 
     @property
@@ -69,16 +66,7 @@ class SecurityManager(BaseSecurityManager):
         return self.appbuilder.get_session
 
     def register_views(self):
-        if self.auth_user_registration:
-            if self.auth_type == c.AUTH_DB:
-                self.registeruser_view = self.registeruserdbview()
-            elif self.auth_type == c.AUTH_OID:
-                self.registeruser_view = self.registeruseroidview()
-            elif self.auth_type == c.AUTH_OAUTH:
-                self.registeruser_view = self.registeruseroauthview()
-            self.appbuilder.add_view_no_menu(self.registeruser_view)
         super(SecurityManager, self).register_views()
-
 
     def create_db(self):
         try:
@@ -93,7 +81,54 @@ class SecurityManager(BaseSecurityManager):
             log.error(c.LOGMSG_ERR_SEC_CREATE_DB.format(str(e)))
             exit(1)
 
+    def find_register_user(self, registration_hash):
+        return self.get_session.query(RegisterUser).filter(
+            RegisterUser.registration_hash == registration_hash).scalar()
+
+    def add_register_user(self, username, first_name, last_name, email, password='', hashed_password=''):
+        """
+            Add a registration request for the user.
+
+        :rtype : RegisterUser
+        """
+        register_user = RegisterUser()
+        register_user.username = username
+        register_user.email = email
+        register_user.first_name = first_name
+        register_user.last_name = last_name
+        if hashed_password:
+            user.password = hashed_password
+        else:
+            register_user.password = generate_password_hash(password)
+        register_user.registration_hash = str(uuid.uuid1())
+        try:
+            self.get_session.add(register_user)
+            self.get_session.commit()
+            return register_user
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_ADD_REGISTER_USER.format(str(e)))
+            self.appbuilder.get_session.rollback()
+            return None
+        
+    def del_register_user(self, register_user):
+        """
+            Deletes registration object from database
+
+            :param register_user: RegisterUser object to delete            
+        """
+        try:
+            self.get_session.delete(register_user)
+            self.get_session.commit()
+            return True
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_DEL_REGISTER_USER.format(str(e)))
+            self.get_session.rollback()
+            return False
+
     def find_user(self, username=None, email=None):
+        """
+            Finds user by username or email
+        """
         if username:
             return self.get_session.query(self.user_model).filter(func.lower(self.user_model.username) == func.lower(username)).first()
         elif email:

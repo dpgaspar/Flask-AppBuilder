@@ -1,7 +1,8 @@
 import logging
+import uuid
 from werkzeug.security import generate_password_hash
 from ...models.mongoengine.interface import MongoEngineInterface
-from .models import User, Role, PermissionView, Permission, ViewMenu
+from .models import User, Role, PermissionView, Permission, ViewMenu, RegisterUser
 from ..views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
     ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserRemoteUserModelView,\
     RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
@@ -27,59 +28,64 @@ class SecurityManager(BaseSecurityManager):
     permission_model = Permission
     viewmenu_model = ViewMenu
     permissionview_model = PermissionView
-
-    userdbmodelview = UserDBModelView
-    """ Override if you want your own user db view """
-    userldapmodelview = UserLDAPModelView
-    """ Override if you want your own user ldap view """
-    useroidmodelview = UserOIDModelView
-    """ Override if you want your own user OID view """
-    useroauthmodelview = UserOAuthModelView
-    """ Override if you want your own user OAuth view """
-    userremoteusermodelview = UserRemoteUserModelView
-    """ Override if you want your own user REMOTE_USER view """
-    authdbview = AuthDBView
-    """ Override if you want your own Authentication DB view """
-    authldapview = AuthLDAPView
-    """ Override if you want your own Authentication LDAP view """
-    authoidview = AuthOIDView
-    """ Override if you want your own Authentication OID view """
-    authoauthview = AuthOAuthView
-    """ Override if you want your own Authentication OAuth view """
-    authremoteuserview = AuthRemoteUserView
-    """ Override if you want your own Authentication OAuth view """
-    #registeruserdbview = RegisterUserDBView
-    """ Override if you want your own register user db view """
-    #registeruseroidview = RegisterUserOIDView
-    """ Override if you want your own register user db view """
-    resetmypasswordview = ResetMyPasswordView
-    """ Override if you want your own reset my password view """
-    resetpasswordview = ResetPasswordView
-    """ Override if you want your own reset password view """
-    rolemodelview = RoleModelView
-    permissionmodelview = PermissionModelView
-    userstatschartview = UserStatsChartView
-    viewmenumodelview = ViewMenuModelView
-    permissionviewmodelview = PermissionViewModelView
+    registeruser_model = RegisterUser
 
     def __init__(self, appbuilder):
         """
             SecurityManager contructor
             param appbuilder:
                 F.A.B AppBuilder main object
-            """
-        self.userdbmodelview.datamodel = MongoEngineInterface(self.user_model)
-        self.userldapmodelview.datamodel = MongoEngineInterface(self.user_model)
-        self.useroidmodelview.datamodel = MongoEngineInterface(self.user_model)
-        self.useroauthmodelview.datamodel = MongoEngineInterface(self.user_model)
-        self.userremoteusermodelview.datamodel = MongoEngineInterface(self.user_model)
+        """
+        super(SecurityManager, self).__init__(appbuilder)
+        user_datamodel = MongoEngineInterface(self.user_model)
+        if self.auth_type == c.AUTH_DB:
+            self.userdbmodelview.datamodel = user_datamodel
+        elif self.auth_type == c.AUTH_LDAP:
+            self.userldapmodelview.datamodel = user_datamodel
+        elif self.auth_type == c.AUTH_OID:
+            self.useroidmodelview.datamodel = user_datamodel
+        elif self.auth_type == c.AUTH_OAUTH:
+            self.useroauthmodelview.datamodel = user_datamodel
+        elif self.auth_type == c.AUTH_REMOTE_USER:
+            self.userremoteusermodelview.datamodel = user_datamodel
+
         self.userstatschartview.datamodel = MongoEngineInterface(self.user_model)
+        if self.auth_user_registration:
+            self.registerusermodelview.datamodel = MongoEngineInterface(self.registeruser_model)
+
         self.rolemodelview.datamodel = MongoEngineInterface(self.role_model)
         self.permissionmodelview.datamodel=MongoEngineInterface(self.permission_model)
         self.viewmenumodelview.datamodel=MongoEngineInterface(self.viewmenu_model)
         self.permissionviewmodelview.datamodel=MongoEngineInterface(self.permissionview_model)
-        super(SecurityManager, self).__init__(appbuilder)
         self.create_db()
+
+    def find_register_user(self, registration_hash):
+        return self.registeruser_model.objects(registration_hash=registration_hash).first()
+
+    def add_register_user(self, username, first_name, last_name, email, password='', hashed_password=''):
+        try:
+            register_user = self.registeruser_model()
+            register_user.first_name = first_name
+            register_user.last_name = last_name
+            register_user.username = username
+            register_user.email = email
+            if hashed_password:
+                register_user.password = hashed_password
+            else:
+                register_user.password = generate_password_hash(password)
+            register_user.registration_hash = str(uuid.uuid1())
+            register_user.save()
+            return register_user
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_ADD_REGISTER_USER.format(str(e)))
+            return False
+
+
+    def del_register_user(self, register_user):
+        try:
+            register_user.delete()
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_DEL_REGISTER_USER.format(str(e)))
 
     def find_user(self, username=None, email=None):
         if username:
@@ -90,7 +96,7 @@ class SecurityManager(BaseSecurityManager):
     def get_all_users(self):
         return User.objects
 
-    def add_user(self, username, first_name, last_name, email, role, password=''):
+    def add_user(self, username, first_name, last_name, email, role, password='', hashed_password=''):
         """
             Generic function to create user
         """
@@ -102,7 +108,10 @@ class SecurityManager(BaseSecurityManager):
             user.email = email
             user.active = True
             user.roles.append(role)
-            user.password = generate_password_hash(password)
+            if hashed_password:
+                user.password = hashed_password
+            else:
+                user.password = generate_password_hash(password)
             user.save()
             log.info(c.LOGMSG_INF_SEC_ADD_USER.format(username))
             return user

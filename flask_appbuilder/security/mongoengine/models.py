@@ -88,3 +88,14 @@ class User(Document):
 
     def __unicode__(self):
         return self.get_full_name()
+
+
+class RegisterUser(Document):
+    first_name = StringField(max_length=64, required=True)
+    last_name = StringField(max_length=64, required=True)
+    username = StringField(max_length=64, required=True, unique=True)
+    password = StringField(max_length=256)
+    email = StringField(max_length=64, required=True)
+    registration_date = DateTimeField(default=datetime.datetime.now)
+    registration_hash = StringField(max_length=256)
+

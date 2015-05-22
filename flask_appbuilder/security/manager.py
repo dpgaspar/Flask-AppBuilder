@@ -7,8 +7,8 @@ from flask_openid import OpenID
 from flask_babelpkg import lazy_gettext as _
 from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
     ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserRemoteUserModelView, \
-    RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
-
+    RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView, RegisterUserModelView    
+from .registerviews import RegisterUserDBView, RegisterUserOIDView, RegisterUserOAuthView
 from ..basemanager import BaseManager
 from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
                     AUTH_REMOTE_USER, AUTH_OAUTH, \
@@ -111,6 +111,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override to set your own ViewMenu Model """
     permissionview_model = None
     """ Override to set your own PermissionView Model """
+    registeruser_model = None
+    """ Override to set your own RegisterUser Model """
     
     userdbmodelview = UserDBModelView
     """ Override if you want your own user db view """
@@ -122,6 +124,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own user OAuth view """
     userremoteusermodelview = UserRemoteUserModelView
     """ Override if you want your own user REMOTE_USER view """
+    registerusermodelview = RegisterUserModelView
+
     authdbview = AuthDBView
     """ Override if you want your own Authentication DB view """
     authldapview = AuthLDAPView
@@ -132,14 +136,19 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own Authentication OAuth view """
     authremoteuserview = AuthRemoteUserView
     """ Override if you want your own Authentication OAuth view """
-    registeruserdbview = None
+
+    registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
-    registeruseroidview = None
-    """ Override if you want your own register user db view """
-    resetmypasswordview = None
+    registeruseroidview = RegisterUserOIDView
+    """ Override if you want your own register user OpenID view """
+    registeruseroauthview = RegisterUserOAuthView
+    """ Override if you want your own register user OAuth view """
+
+    resetmypasswordview = ResetMyPasswordView
     """ Override if you want your own reset my password view """
-    resetpasswordview = None
+    resetpasswordview = ResetPasswordView
     """ Override if you want your own reset password view """
+
     rolemodelview = RoleModelView
     permissionmodelview = PermissionModelView
     userstatschartview = UserStatsChartView
@@ -156,17 +165,18 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Self Registration
         app.config.setdefault('AUTH_USER_REGISTRATION', False)
         app.config.setdefault('AUTH_USER_REGISTRATION_ROLE', self.auth_role_public)
+              
         # LDAP Config
-        app.config.setdefault('AUTH_LDAP_SEARCH', '')
-        app.config.setdefault('AUTH_LDAP_ALLOW_SELF_SIGNED', False)
-        app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
-        app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
-        app.config.setdefault('AUTH_LDAP_LASTNAME_FIELD', 'sn')
-        app.config.setdefault('AUTH_LDAP_EMAIL_FIELD', 'mail')
-
         if self.auth_type == AUTH_LDAP:
             if 'AUTH_LDAP_SERVER' not in app.config:
                 raise Exception("No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type.")
+            app.config.setdefault('AUTH_LDAP_SEARCH', '')
+            app.config.setdefault('AUTH_LDAP_ALLOW_SELF_SIGNED', False)
+            app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
+            app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
+            app.config.setdefault('AUTH_LDAP_LASTNAME_FIELD', 'sn')
+            app.config.setdefault('AUTH_LDAP_EMAIL_FIELD', 'mail')
+
         if self.auth_type == AUTH_OID:
             self.oid = OpenID(app)
         if self.auth_type == AUTH_OAUTH:
@@ -189,6 +199,14 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def get_url_for_registeruser(self):
         return url_for('%s.%s' % (self.registeruser_view.endpoint, self.registeruser_view.default_view))
+
+    @property
+    def get_user_datamodel(self):
+        return self.user_view.datamodel
+        
+    @property
+    def get_register_user_datamodel(self):
+        return self.registerusermodelview.datamodel
 
     @property
     def auth_type(self):
@@ -305,6 +323,15 @@ class BaseSecurityManager(AbstractSecurityManager):
 
 
     def register_views(self):
+        if self.auth_user_registration:
+            if self.auth_type == AUTH_DB:
+                self.registeruser_view = self.registeruserdbview()
+            elif self.auth_type == AUTH_OID:
+                self.registeruser_view = self.registeruseroidview()
+            elif self.auth_type == AUTH_OAUTH:
+                self.registeruser_view = self.registeruseroauthview()
+            self.appbuilder.add_view_no_menu(self.registeruser_view)
+
         self.appbuilder.add_view_no_menu(self.resetpasswordview())
         self.appbuilder.add_view_no_menu(self.resetmypasswordview())
 
@@ -344,6 +371,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.appbuilder.add_view(self.userstatschartview,
                                  "User's Statistics", icon="fa-bar-chart-o",
                                  label=_("User's Statistics"),
+                                 category="Security")
+
+        if self.auth_user_registration:
+            self.appbuilder.add_view(self.registerusermodelview,
+                                 "User's Statistics", icon="fa-user-plus",
+                                 label=_("User Registrations"),
                                  category="Security")
 
         self.appbuilder.menu.add_separator("Security")
@@ -688,6 +721,24 @@ class BaseSecurityManager(AbstractSecurityManager):
     # ------------------------------------
     # PRIMITIVES FOR USERS
     #------------------------------------
+    def find_register_user(self, registration_hash):
+        """
+            Generic function to return user registration
+        """
+        raise NotImplementedError
+        
+    def add_register_user(self, username, first_name, last_name, email, password='', hashed_password=''):
+        """
+            Generic function to add user registration
+        """
+        raise NotImplementedError
+        
+    def del_register_user(self, register_user):
+        """
+            Generic function to delete user registration
+        """
+        raise NotImplementedError
+        
     def get_user_by_id(self, pk):
         """
             Generic function to return user by it's id (pk)

@@ -316,6 +316,14 @@ class RoleModelView(ModelView):
         return redirect(self.get_redirect())
 
 
+class RegisterUserModelView(ModelView):
+    route_base = '/registeruser'
+    base_permissions = ['can_list', 'can_show', 'can_delete']
+    list_title = lazy_gettext('List of Registration Requests')
+    show_title = lazy_gettext('Show Registration')
+    list_columns = ['username','registration_date','email']
+    show_columns = ['username', 'first_name', 'last_name', 'registration_date','email', 'registration_hash']
+
 class AuthView(BaseView):
     route_base = ''
     login_template = ''
