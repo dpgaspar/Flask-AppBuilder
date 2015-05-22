@@ -10,6 +10,17 @@ Improvements and Bug fixes on 1.4.0
 - New, SimpleFormView and PublicFormView now subclass BaseFormView.
 - New, class method for BaseView's get_default_url, returns the default_view url.
 - New, OAuth authentication method.
+- TODO, add_exclude_columns
+- TODO, edit_exclude_columns
+- TODO, show_exclude_columns
+- TODO, exclude_columns on tests.
+- TODO, docs for exclude_columns
+- TODO, remove id warning for MongoDB on filters.
+- TODO, docs for OAUTH.
+- TODO, better docs for LDAP.
+- TODO, finish translations.
+- TODO, example for OAUTH.
+- TODO, self register OpenID code rework.
 
 Improvements and Bug fixes on 1.3.7
 -----------------------------------

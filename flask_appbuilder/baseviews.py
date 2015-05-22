@@ -456,6 +456,11 @@ class BaseCRUDView(BaseModelView):
         A list of columns (or model's methods) to be displayed on the edit form view.
         Use it to control the order of the display
     """
+    show_exclude_columns = None
+    """
+       A list of columns to exclude from the show view. By default all columns are included.
+    """
+
     order_columns = None
     """ Allowed order columns """
 
@@ -646,6 +651,7 @@ class BaseCRUDView(BaseModelView):
         self.validators_columns = self.validators_columns or {}
         self.add_form_extra_fields = self.add_form_extra_fields or {}
         self.edit_form_extra_fields = self.edit_form_extra_fields or {}
+        self.show_exclude_columns = self.show_exclude_columns or []
         # Generate base props
         list_cols = self.datamodel.get_user_columns_list()
         self.list_columns = self.list_columns or [list_cols[0]]
@@ -657,13 +663,14 @@ class BaseCRUDView(BaseModelView):
                 self.show_columns = self.show_columns + list(fieldset_item[1].get('fields'))
         else:
             if not self.show_columns:
-                self.show_columns = list_cols
+                self.show_columns = [x for x in list_cols if x not in self.show_exclude_columns]
         if self.add_fieldsets:
             self.add_columns = []
             for fieldset_item in self.add_fieldsets:
                 self.add_columns = self.add_columns + list(fieldset_item[1].get('fields'))
         else:
             if not self.add_columns:
+                
                 self.add_columns = list_cols
         if self.edit_fieldsets:
             self.edit_columns = []
