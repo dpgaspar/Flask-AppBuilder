@@ -519,6 +519,7 @@ class BaseCRUDView(BaseModelView):
     """
     validators_columns = None
     """ Dictionary to add your own validators for forms """
+    
     add_form_extra_fields = None
     """
         A dictionary containing column names and a WTForm
@@ -530,28 +531,7 @@ class BaseCRUDView(BaseModelView):
     """
     edit_form_extra_fields = None
     """ Dictionary to add extra fields to the Edit form using this property """
-    add_form_query_cascade = None
-    """
-        FUTURE FEATURE, Don't use it yet
-        
-        Implements query cascade related fields. Will user relate fields
-        with multiple values.
-
-        Grammar: [('Parent field','Child field', SQLAModel(ChildModel, Session),
-                [['child field rel to parent',Filter,'parent'],...]),...]
-
-            class ContactModelView(ModelView):
-                datamodel = SQLAModel(Contact, db.session)
-                add_form_query_cascade = [('model', 'manufacture'
-                        SQLAModel(Product, db.session),
-                        [['manufacture_id',FilterEqual,'id']]
-                        )]
-
-    """
-    edit_form_query_cascade = None
-    """
-        FUTURE FEATURE, Don't use it yet
-    """
+    
     add_form_query_rel_fields = None
     """
         Add Customized query for related fields to add form.

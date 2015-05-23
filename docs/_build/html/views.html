@@ -131,7 +131,7 @@
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Base Views</a><ul>
 <li><a class="reference internal" href="#baseview">BaseView</a></li>
-<li><a class="reference internal" href="#simpleformview">SimpleFormView</a></li>
+<li><a class="reference internal" href="#form-views">Form Views</a></li>
 </ul>
 </li>
 </ul>
@@ -195,10 +195,8 @@ it&#8217;s constructor will register your exposed urls on flask as a Blueprint,
 as well as all security permissions that need to be defined and protected.</p>
 <p>You can use use this kind of view to implement your own custom pages,
 attached to a menu or linked from any point of your site.</p>
-<dl class="docutils">
-<dt>Decorate your url routing methods with <strong>&#64;expose</strong>.</dt>
-<dd>Additionally add <strong>&#64;has_access</strong> decorator to tell flask that this is a security protected method.</dd>
-</dl>
+<p>Decorate your url routing methods with <strong>&#64;expose</strong>.
+Additionally add <strong>&#64;has_access</strong> decorator to tell flask that this is a security protected method.</p>
 <p>Using the Flask-AppBuilder-Skeleton (take a look at the <a class="reference internal" href="installation.html"><em>Installation</em></a> chapter). Edit views.py file and add:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">AppBuilder</span><span class="p">,</span> <span class="n">expose</span><span class="p">,</span> <span class="n">BaseView</span>
 <span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">appbuilder</span>
@@ -222,26 +220,23 @@ attached to a menu or linked from any point of your site.</p>
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="n">MyView</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>You can find this example on:</p>
-<blockquote>
-<div><a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1</a></div></blockquote>
-<p>look at the file app/views.py</p>
+<p>You can find this example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1">SimpleView1</a>
+look at the file app/views.py</p>
 <p>This simple example will register your view with two routing urls on:</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li>/myview/method1/&lt;string:param1&gt;</li>
 <li>/myview/method2/&lt;string:param1&gt;</li>
 </ul>
-</div></blockquote>
-<p>No menu will be created for this, no security permissions will be created also, if you want to enable detailed security access for your methods just add &#64;has_access decorator to them.</p>
+<p>No menu will be created for this and no security permissions will be created,
+if you want to enable detailed security access for your methods just add <strong>&#64;has_access</strong> decorator to them.</p>
 <p>Now run this example</p>
-<div class="highlight-python"><div class="highlight"><pre>$ python run.py
+<div class="highlight-python"><div class="highlight"><pre>$ fabmanager run
 </pre></div>
 </div>
 <p>You can test your methods using the following url&#8217;s:</p>
 <p><a class="reference external" href="http://localhost:8080/myview/method1/john">http://localhost:8080/myview/method1/john</a></p>
 <p><a class="reference external" href="http://localhost:8080/myview/method2/john">http://localhost:8080/myview/method2/john</a></p>
-<p>As you can see this methods are public, let&#8217;s change this example, edit views.py and change it to:</p>
+<p>As you can see, this methods are public, let&#8217;s secure them, edit views.py and change it to:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">AppBuilder</span><span class="p">,</span> <span class="n">BaseView</span><span class="p">,</span> <span class="n">expose</span><span class="p">,</span> <span class="n">has_access</span>
 <span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">appbuilder</span>
 
@@ -269,7 +264,8 @@ attached to a menu or linked from any point of your site.</p>
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;Method2&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method2/john&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>You can find this example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2</a></p>
+<p>You can find this example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2">SimpleView2</a>.
+Take a look at their definition:</p>
 <span class="target" id="module-flask.ext.appbuilder.baseviews"></span><dl class="function">
 <dt id="flask.ext.appbuilder.baseviews.expose">
 <code class="descclassname">flask.ext.appbuilder.baseviews.</code><code class="descname">expose</code><span class="sig-paren">(</span><em>url='/'</em>, <em>methods=('GET'</em>, <em>)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/baseviews.html#expose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.expose" title="Permalink to this definition">¶</a></dt>
@@ -345,17 +341,19 @@ the <em>back</em> operation won&#8217;t send you to the same form, prior to the 
 is because the base_template (that can be overridden) and appbuilder are now always passed to the template.</p>
 </div>
 </div>
-<div class="section" id="simpleformview">
-<h2>SimpleFormView<a class="headerlink" href="#simpleformview" title="Permalink to this headline">¶</a></h2>
-<p>Inherit from this view to provide base processing for your customized form views.</p>
+<div class="section" id="form-views">
+<h2>Form Views<a class="headerlink" href="#form-views" title="Permalink to this headline">¶</a></h2>
+<p>Subclass SimpleFormView or PublicFormView to provide base processing for your customized form views.</p>
 <p>In principle you will only need this kind of view to present forms that are not Database Model based,
-because when they do F.A.B. can automatically generate them and you can add or remove fields,
+because when they do, F.A.B. can automatically generate them and you can add or remove fields to it,
 as well as custom validators. For this you can use ModelView instead.</p>
-<p>To create a custom form view, first define your WTF form fields, but inherit them from F.A.B. <em>DynamicForm</em>.</p>
+<p>To create a custom form view, first define your <a class="reference external" href="https://wtforms.readthedocs.org/en/latest/">WTForm</a>
+fields, but inherit them from F.A.B. <em>DynamicForm</em>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">wtforms</span> <span class="kn">import</span> <span class="n">Form</span><span class="p">,</span> <span class="n">StringField</span>
 <span class="kn">from</span> <span class="nn">wtforms.validators</span> <span class="kn">import</span> <span class="n">DataRequired</span>
-<span class="kn">from</span> <span class="nn">flask_appbuilder.fieldwidgets</span> <span class="kn">import</span> <span class="n">BS3TextFieldWidget</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.fieldwidgets</span> <span class="kn">import</span> <span class="n">BS3TextFieldWidget</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.forms</span> <span class="kn">import</span> <span class="n">DynamicForm</span>
+
 
 <span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">DynamicForm</span><span class="p">):</span>
     <span class="n">field1</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">((</span><span class="s">&#39;Field1&#39;</span><span class="p">),</span>
@@ -366,20 +364,24 @@ as well as custom validators. For this you can use ModelView instead.</p>
 </pre></div>
 </div>
 <p>Now define your form view to expose urls, create a menu entry, create security accesses, define pre and post processing.</p>
-<p>Implement <em>form_get</em> and <em>form_post</em> to implement your form pre-processing and post-processing</p>
+<p>Implement <em>form_get</em> and <em>form_post</em> to implement your form pre-processing and post-processing.
+You can use <em>form_get</em> to prefill the form you data, and/or pre process something on your application, then
+use <em>form_post</em> to post process the form after the user submits it, you can save the data to database, send an email
+or something.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder</span> <span class="kn">import</span> <span class="n">SimpleFormView</span>
 <span class="kn">from</span> <span class="nn">flask.ext.babelpkg</span> <span class="kn">import</span> <span class="n">lazy_gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 
 <span class="k">class</span> <span class="nc">MyFormView</span><span class="p">(</span><span class="n">SimpleFormView</span><span class="p">):</span>
-    <span class="n">default_view</span> <span class="o">=</span> <span class="s">&#39;this_form_get&#39;</span>
     <span class="n">form</span> <span class="o">=</span> <span class="n">MyForm</span>
     <span class="n">form_title</span> <span class="o">=</span> <span class="s">&#39;This is my first form view&#39;</span>
-
     <span class="n">message</span> <span class="o">=</span> <span class="s">&#39;My form submitted&#39;</span>
 
+    <span class="k">def</span> <span class="nf">form_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">field1</span> <span class="o">=</span> <span class="s">&#39;This was prefilled&#39;</span>
+
     <span class="k">def</span> <span class="nf">form_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
-        <span class="c"># process form</span>
+        <span class="c"># post process form</span>
         <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">),</span> <span class="s">&#39;info&#39;</span><span class="p">)</span>
 
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyFormView</span><span class="p">,</span> <span class="s">&quot;My form View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-group&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;My form View&#39;</span><span class="p">),</span>
@@ -397,7 +399,7 @@ Notice also how label uses babel&#8217;s lazy_gettext as _(&#8216;text&#8217;) f
 </tr>
 <tr class="field-even field"><th class="field-name">form_columns:</th><td class="field-body">The form column names to include</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">form:</th><td class="field-body">Your form class (WTFORM) (this is mandatory)</td>
+<tr class="field-odd field"><th class="field-name">form:</th><td class="field-body">Your form class (<a class="reference external" href="https://wtforms.readthedocs.org/en/latest/">WTForm</a>) (this is mandatory)</td>
 </tr>
 </tbody>
 </table>

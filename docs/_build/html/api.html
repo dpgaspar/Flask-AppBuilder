@@ -154,7 +154,7 @@
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.actions">flask.ext.appbuilder.actions</a></li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.security.manager">flask.ext.appbuilder.security</a><ul>
 <li><a class="reference internal" href="#basesecuritymanager">BaseSecurityManager</a></li>
-<li><a class="reference internal" href="#module-flask.ext.appbuilder.security.sqla.registerviews">BaseRegisterUser</a></li>
+<li><a class="reference internal" href="#baseregisteruser">BaseRegisterUser</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.filemanager">flask.ext.appbuilder.filemanager</a></li>
@@ -607,6 +607,12 @@ Use it like this if you want to restrict your view to readonly:</p>
 <dd><p>dictionary for injecting extra arguments into template</p>
 </dd></dl>
 
+<dl class="classmethod">
+<dt id="flask.ext.appbuilder.baseviews.BaseView.get_default_url">
+<em class="property">classmethod </em><code class="descname">get_default_url</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/baseviews.html#BaseView.get_default_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.get_default_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the url for this class default endpoint</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseView.get_init_inner_views">
 <code class="descname">get_init_inner_views</code><span class="sig-paren">(</span><em>views</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/baseviews.html#BaseView.get_init_inner_views"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView.get_init_inner_views" title="Permalink to this definition">¶</a></dt>
@@ -743,6 +749,12 @@ If you want to limit the search (<em>filter</em>) columns possibilities, define 
 </dd></dl>
 
 <dl class="attribute">
+<dt id="flask.ext.appbuilder.baseviews.BaseModelView.search_exclude_columns">
+<code class="descname">search_exclude_columns</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.search_exclude_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>List with columns to exclude from search. Will include all possible columns by default</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseModelView.search_form">
 <code class="descname">search_form</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.search_form" title="Permalink to this definition">¶</a></dt>
 <dd><p>To implement your own add WTF form for Search</p>
@@ -773,6 +785,12 @@ Use it to control the order of the display</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.add_exclude_columns">
+<code class="descname">add_exclude_columns</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.add_exclude_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of columns to exclude from the add form. By default all columns are included.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.add_fieldsets">
 <code class="descname">add_fieldsets</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.add_fieldsets" title="Permalink to this definition">¶</a></dt>
 <dd><p>add fieldsets django style (look at show_fieldsets for an example)</p>
@@ -791,30 +809,6 @@ Use it to control the order of the display</p>
 Form fields to be added to the Add form, these fields do not
 exist on the model itself ex:</p>
 <p>extra_fields={&#8216;some_col&#8217;:BooleanField(&#8216;Some Col&#8217;, default=False)}</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.add_form_query_cascade">
-<code class="descname">add_form_query_cascade</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.add_form_query_cascade" title="Permalink to this definition">¶</a></dt>
-<dd><p>FUTURE FEATURE, Don&#8217;t use it yet</p>
-<p>Implements query cascade related fields. Will user relate fields
-with multiple values.</p>
-<dl class="docutils">
-<dt>Grammar: [(&#8216;Parent field&#8217;,&#8217;Child field&#8217;, SQLAModel(ChildModel, Session),</dt>
-<dd><blockquote class="first">
-<div>[[&#8216;child field rel to parent&#8217;,Filter,&#8217;parent&#8217;],...]),...]</div></blockquote>
-<dl class="last docutils">
-<dt>class ContactModelView(ModelView):</dt>
-<dd><p class="first">datamodel = SQLAModel(Contact, db.session)
-add_form_query_cascade = [(&#8216;model&#8217;, &#8216;manufacture&#8217;</p>
-<blockquote class="last">
-<div>SQLAModel(Product, db.session),
-[[&#8216;manufacture_id&#8217;,FilterEqual,&#8217;id&#8217;]]
-)]</div></blockquote>
-</dd>
-</dl>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="attribute">
@@ -872,6 +866,12 @@ Use it to control the order of the display</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.edit_exclude_columns">
+<code class="descname">edit_exclude_columns</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.edit_exclude_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of columns to exclude from the edit form. By default all columns are included.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.edit_fieldsets">
 <code class="descname">edit_fieldsets</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.edit_fieldsets" title="Permalink to this definition">¶</a></dt>
 <dd><p>edit fieldsets django style (look at show_fieldsets for an example)</p>
@@ -887,12 +887,6 @@ Use it to control the order of the display</p>
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form_extra_fields">
 <code class="descname">edit_form_extra_fields</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form_extra_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dictionary to add extra fields to the Edit form using this property</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form_query_cascade">
-<code class="descname">edit_form_query_cascade</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.edit_form_query_cascade" title="Permalink to this definition">¶</a></dt>
-<dd><p>FUTURE FEATURE, Don&#8217;t use it yet</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -1031,6 +1025,12 @@ Use it to control the order of the display</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.show_exclude_columns">
+<code class="descname">show_exclude_columns</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.show_exclude_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of columns to exclude from the show view. By default all columns are included.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.show_fieldsets">
 <code class="descname">show_fieldsets</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.show_fieldsets" title="Permalink to this definition">¶</a></dt>
 <dd><p>show fieldsets django style [(&lt;&#8217;TITLE&#8217;<a href="#id1"><span class="problematic" id="id2">|</span></a>None&gt;, {&#8216;fields&#8217;:[&lt;F1&gt;,&lt;F2&gt;,...]}),....]</p>
@@ -1094,55 +1094,6 @@ Use it to control the order of the display</p>
 Inherit from this view to provide some base processing for your customized form views.</p>
 <p>Notice that this class inherits from BaseView so all properties from the parent class can be overridden also.</p>
 <p>Implement form_get and form_post to implement your form pre-processing and post-processing</p>
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.views.SimpleFormView.default_view">
-<code class="descname">default_view</code><em class="property"> = 'this_form_get'</em><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.default_view" title="Permalink to this definition">¶</a></dt>
-<dd><p>The form view default entry endpoint</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.views.SimpleFormView.edit_widget">
-<code class="descname">edit_widget</code><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.edit_widget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Form widget to override</p>
-<p>alias of <code class="xref py py-class docutils literal"><span class="pre">FormWidget</span></code></p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.views.SimpleFormView.form">
-<code class="descname">form</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form" title="Permalink to this definition">¶</a></dt>
-<dd><p>The WTF form to render</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.views.SimpleFormView.form_columns">
-<code class="descname">form_columns</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>The form columns to include, if empty will include all</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.views.SimpleFormView.form_fieldsets">
-<code class="descname">form_fieldsets</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_fieldsets" title="Permalink to this definition">¶</a></dt>
-<dd><p>Form field sets</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="flask.ext.appbuilder.views.SimpleFormView.form_get">
-<code class="descname">form_get</code><span class="sig-paren">(</span><em>form</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/views.html#SimpleFormView.form_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Override this method to implement your form processing</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="flask.ext.appbuilder.views.SimpleFormView.form_post">
-<code class="descname">form_post</code><span class="sig-paren">(</span><em>form</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/views.html#SimpleFormView.form_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_post" title="Permalink to this definition">¶</a></dt>
-<dd><p>Override this method to implement your form processing</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.views.SimpleFormView.form_title">
-<code class="descname">form_title</code><em class="property"> = ''</em><a class="headerlink" href="#flask.ext.appbuilder.views.SimpleFormView.form_title" title="Permalink to this definition">¶</a></dt>
-<dd><p>The form title to be displayed</p>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -1155,56 +1106,6 @@ Inherit from this view to provide some base processing for your customized form 
 Inherit from this view to provide some base processing for your customized form views.</p>
 <p>Notice that this class inherits from BaseView so all properties from the parent class can be overridden also.</p>
 <p>Implement form_get and form_post to implement your form pre-processing and post-processing</p>
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.views.PublicFormView.default_view">
-<code class="descname">default_view</code><em class="property"> = 'this_form_get'</em><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView.default_view" title="Permalink to this definition">¶</a></dt>
-<dd><p>The form view default entry endpoint</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.views.PublicFormView.edit_widget">
-<code class="descname">edit_widget</code><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView.edit_widget" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">FormWidget</span></code></p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.views.PublicFormView.form">
-<code class="descname">form</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView.form" title="Permalink to this definition">¶</a></dt>
-<dd><p>The WTF form to render</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.views.PublicFormView.form_columns">
-<code class="descname">form_columns</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView.form_columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>The form columns to include, if empty will include all</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.views.PublicFormView.form_fieldsets">
-<code class="descname">form_fieldsets</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView.form_fieldsets" title="Permalink to this definition">¶</a></dt>
-<dd><p>The field sets for the form widget</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="flask.ext.appbuilder.views.PublicFormView.form_get">
-<code class="descname">form_get</code><span class="sig-paren">(</span><em>form</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/views.html#PublicFormView.form_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView.form_get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Override this method to implement your form processing</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="flask.ext.appbuilder.views.PublicFormView.form_post">
-<code class="descname">form_post</code><span class="sig-paren">(</span><em>form</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/views.html#PublicFormView.form_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView.form_post" title="Permalink to this definition">¶</a></dt>
-<dd><p>Override this method to implement your form processing on a successful post</p>
-<p>If you return null the form will redirect back, alternatively you can return a redirect or
-render_template.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.views.PublicFormView.form_title">
-<code class="descname">form_title</code><em class="property"> = ''</em><a class="headerlink" href="#flask.ext.appbuilder.views.PublicFormView.form_title" title="Permalink to this definition">¶</a></dt>
-<dd><p>The form title to be displayed</p>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -1411,6 +1312,12 @@ unconditionally.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.add_register_user">
+<code class="descname">add_register_user</code><span class="sig-paren">(</span><em>username</em>, <em>first_name</em>, <em>last_name</em>, <em>email</em>, <em>password=''</em>, <em>hashed_password=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.add_register_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_register_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic function to add user registration</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.add_user">
 <code class="descname">add_user</code><span class="sig-paren">(</span><em>username</em>, <em>first_name</em>, <em>last_name</em>, <em>email</em>, <em>role</em>, <em>password=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.add_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic function to create user</p>
@@ -1588,6 +1495,12 @@ for F.A.B.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.del_register_user">
+<code class="descname">del_register_user</code><span class="sig-paren">(</span><em>register_user</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.del_register_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.del_register_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic function to delete user registration</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.del_view_menu">
 <code class="descname">del_view_menu</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.del_view_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.del_view_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes a ViewMenu from the backend</p>
@@ -1627,6 +1540,12 @@ for F.A.B.</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.find_register_user">
+<code class="descname">find_register_user</code><span class="sig-paren">(</span><em>registration_hash</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.find_register_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_register_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic function to return user registration</p>
 </dd></dl>
 
 <dl class="method">
@@ -1743,6 +1662,12 @@ retrieve user info</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.registeruser_model">
+<code class="descname">registeruser_model</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.registeruser_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override to set your own RegisterUser Model</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.registeruser_view">
 <code class="descname">registeruser_view</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.registeruser_view" title="Permalink to this definition">¶</a></dt>
 <dd><p>The obj instance for registering user view</p>
@@ -1750,14 +1675,23 @@ retrieve user info</p>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.registeruserdbview">
-<code class="descname">registeruserdbview</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.registeruserdbview" title="Permalink to this definition">¶</a></dt>
+<code class="descname">registeruserdbview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.registeruserdbview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override if you want your own register user db view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">RegisterUserDBView</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.registeruseroauthview">
+<code class="descname">registeruseroauthview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.registeruseroauthview" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override if you want your own register user OAuth view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">RegisterUserOAuthView</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.registeruseroidview">
-<code class="descname">registeruseroidview</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.registeruseroidview" title="Permalink to this definition">¶</a></dt>
-<dd><p>Override if you want your own register user db view</p>
+<code class="descname">registeruseroidview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.registeruseroidview" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override if you want your own register user OpenID view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">RegisterUserOIDView</span></code></p>
 </dd></dl>
 
 <dl class="method">
@@ -1781,14 +1715,16 @@ Password will be hashed and saved.</p>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.resetmypasswordview">
-<code class="descname">resetmypasswordview</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.resetmypasswordview" title="Permalink to this definition">¶</a></dt>
+<code class="descname">resetmypasswordview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.resetmypasswordview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override if you want your own reset my password view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">ResetMyPasswordView</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.resetpasswordview">
-<code class="descname">resetpasswordview</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.resetpasswordview" title="Permalink to this definition">¶</a></dt>
+<code class="descname">resetpasswordview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.resetpasswordview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override if you want your own reset password view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">ResetPasswordView</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
@@ -1899,73 +1835,8 @@ Password will be hashed and saved.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-flask.ext.appbuilder.security.sqla.registerviews">
-<span id="baseregisteruser"></span><h3>BaseRegisterUser<a class="headerlink" href="#module-flask.ext.appbuilder.security.sqla.registerviews" title="Permalink to this headline">¶</a></h3>
-<dl class="class">
-<dt id="flask.ext.appbuilder.security.sqla.registerviews.BaseRegisterUser">
-<em class="property">class </em><code class="descclassname">flask.ext.appbuilder.security.sqla.registerviews.</code><code class="descname">BaseRegisterUser</code><a class="reference internal" href="_modules/flask_appbuilder/security/sqla/registerviews.html#BaseRegisterUser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.sqla.registerviews.BaseRegisterUser" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make your own user registration view and inherit from this class if you
-want to implement a completely different registration process. If not,
-just inherit from RegisterUserDBView or RegisterUserOIDView depending on
-your authentication method.
-then override SecurityManager property that defines the class to use:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.registerviews</span> <span class="kn">import</span> <span class="n">RegisterUserDBView</span>
-
-<span class="k">class</span> <span class="nc">MyRegisterUserDBView</span><span class="p">(</span><span class="n">BaseRegisterUser</span><span class="p">):</span>
-    <span class="n">email_template</span> <span class="o">=</span> <span class="s">&#39;register_mail.html&#39;</span>
-    <span class="o">...</span>
-
-
-<span class="k">class</span> <span class="nc">MySecurityManager</span><span class="p">(</span><span class="n">SecurityManager</span><span class="p">):</span>
-   <span class="n">registeruserdbview</span> <span class="o">=</span> <span class="n">MyRegisterUserDBView</span>
-</pre></div>
-</div>
-<p>When instantiating AppBuilder set your own SecurityManager class:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">security_manager_class</span><span class="o">=</span><span class="n">MySecurityManager</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="method">
-<dt id="flask.ext.appbuilder.security.sqla.registerviews.BaseRegisterUser.activation">
-<code class="descname">activation</code><span class="sig-paren">(</span><em>activation_hash</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/sqla/registerviews.html#BaseRegisterUser.activation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.sqla.registerviews.BaseRegisterUser.activation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Endpoint to expose an activation url, this url
-is sent to the user by email, when accessed the user is inserted
-and activated</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.security.sqla.registerviews.BaseRegisterUser.activation_template">
-<code class="descname">activation_template</code><em class="property"> = 'appbuilder/general/security/activation.html'</em><a class="headerlink" href="#flask.ext.appbuilder.security.sqla.registerviews.BaseRegisterUser.activation_template" title="Permalink to this definition">¶</a></dt>
-<dd><p>The activation template, shown when the user is activated</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="flask.ext.appbuilder.security.sqla.registerviews.BaseRegisterUser.add_registration">
-<code class="descname">add_registration</code><span class="sig-paren">(</span><em>username</em>, <em>first_name</em>, <em>last_name</em>, <em>email</em>, <em>password=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/sqla/registerviews.html#BaseRegisterUser.add_registration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.sqla.registerviews.BaseRegisterUser.add_registration" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div>Add a registration request for the user.</div></blockquote>
-<p>:rtype : RegisterUser</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.security.sqla.registerviews.BaseRegisterUser.email_subject">
-<code class="descname">email_subject</code><em class="property"> = l'Account activation'</em><a class="headerlink" href="#flask.ext.appbuilder.security.sqla.registerviews.BaseRegisterUser.email_subject" title="Permalink to this definition">¶</a></dt>
-<dd><p>The email subject sent to the user</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="flask.ext.appbuilder.security.sqla.registerviews.BaseRegisterUser.email_template">
-<code class="descname">email_template</code><em class="property"> = 'appbuilder/general/security/register_mail.html'</em><a class="headerlink" href="#flask.ext.appbuilder.security.sqla.registerviews.BaseRegisterUser.email_template" title="Permalink to this definition">¶</a></dt>
-<dd><p>The template used to generate the email sent to the user</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="flask.ext.appbuilder.security.sqla.registerviews.BaseRegisterUser.send_email">
-<code class="descname">send_email</code><span class="sig-paren">(</span><em>register_user</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/sqla/registerviews.html#BaseRegisterUser.send_email"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.sqla.registerviews.BaseRegisterUser.send_email" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method for sending the registration Email to the user</p>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="baseregisteruser">
+<h3>BaseRegisterUser<a class="headerlink" href="#baseregisteruser" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
 <div class="section" id="module-flask.ext.appbuilder.filemanager">

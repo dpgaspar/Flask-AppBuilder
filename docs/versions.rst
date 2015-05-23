@@ -11,11 +11,11 @@ Improvements and Bug fixes on 1.4.0
 - New, class method for BaseView's get_default_url, returns the default_view url.
 - New, OAuth authentication method.
 - New, Search for role with a particular set of permissions on views or menus.
-- TODO, add_exclude_columns
-- TODO, edit_exclude_columns
-- TODO, show_exclude_columns
-- TODO, exclude_columns on tests.
-- TODO, docs for exclude_columns
++ TODO, add_exclude_columns
++ TODO, edit_exclude_columns
++ TODO, show_exclude_columns
++ TODO, exclude_columns on tests.
++ TODO, docs for exclude_columns
 - TODO, remove id warning for MongoDB on filters.
 - TODO, docs for OAUTH.
 - TODO, better docs for LDAP.

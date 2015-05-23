@@ -28,7 +28,7 @@ You can use use this kind of view to implement your own custom pages,
 attached to a menu or linked from any point of your site.
 
 Decorate your url routing methods with **@expose**.
- Additionally add **@has_access** decorator to tell flask that this is a security protected method.
+Additionally add **@has_access** decorator to tell flask that this is a security protected method.
 
 Using the Flask-AppBuilder-Skeleton (take a look at the :doc:`installation` chapter). Edit views.py file and add::
 
@@ -53,24 +53,22 @@ Using the Flask-AppBuilder-Skeleton (take a look at the :doc:`installation` chap
 
     appbuilder.add_view_no_menu(MyView())
     
-
-You can find this example on:
-
- https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1
-
+    
+You can find this example on `SimpleView1 <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview1>`_
 look at the file app/views.py
 
 This simple example will register your view with two routing urls on:
 
-    - /myview/method1/<string:param1>
-    - /myview/method2/<string:param1>
+- /myview/method1/<string:param1>
+- /myview/method2/<string:param1>
     
-No menu will be created for this, no security permissions will be created also, if you want to enable detailed security access for your methods just add @has_access decorator to them.
+No menu will be created for this and no security permissions will be created,
+if you want to enable detailed security access for your methods just add **@has_access** decorator to them.
 
 Now run this example
 ::
 
-    $ python run.py
+    $ fabmanager run
 
 You can test your methods using the following url's:
 
@@ -78,7 +76,7 @@ http://localhost:8080/myview/method1/john
 
 http://localhost:8080/myview/method2/john
 
-As you can see this methods are public, let's change this example, edit views.py and change it to::
+As you can see, this methods are public, let's secure them, edit views.py and change it to::
 
     from flask.ext.appbuilder import AppBuilder, BaseView, expose, has_access
     from app import appbuilder
@@ -107,7 +105,8 @@ As you can see this methods are public, let's change this example, edit views.py
     appbuilder.add_link("Method2", href='/myview/method2/john', category='My View')
 
 
-You can find this example on https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2
+You can find this example on `SimpleView2 <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2>`_.
+Take a look at their definition:
 
 .. automodule:: flask.ext.appbuilder.baseviews
 
@@ -171,23 +170,25 @@ Next use **Flask** **render_template** to render your new template.
     Since version 1.3.0, you must render all your views templates like *self.render_template* this
     is because the base_template (that can be overridden) and appbuilder are now always passed to the template.
 
-SimpleFormView
---------------
+Form Views
+----------
 
-Inherit from this view to provide base processing for your customized form views.
+Subclass SimpleFormView or PublicFormView to provide base processing for your customized form views.
 
 In principle you will only need this kind of view to present forms that are not Database Model based,
-because when they do F.A.B. can automatically generate them and you can add or remove fields,
+because when they do, F.A.B. can automatically generate them and you can add or remove fields to it,
 as well as custom validators. For this you can use ModelView instead.
 
-To create a custom form view, first define your WTF form fields, but inherit them from F.A.B. *DynamicForm*.
+To create a custom form view, first define your `WTForm <https://wtforms.readthedocs.org/en/latest/>`_
+fields, but inherit them from F.A.B. *DynamicForm*.
 
 ::
 
     from wtforms import Form, StringField
     from wtforms.validators import DataRequired
-    from flask_appbuilder.fieldwidgets import BS3TextFieldWidget
+    from flask.ext.appbuilder.fieldwidgets import BS3TextFieldWidget
     from flask.ext.appbuilder.forms import DynamicForm
+
 
     class MyForm(DynamicForm):
         field1 = StringField(('Field1'),
@@ -199,7 +200,10 @@ To create a custom form view, first define your WTF form fields, but inherit the
 
 Now define your form view to expose urls, create a menu entry, create security accesses, define pre and post processing.
 
-Implement *form_get* and *form_post* to implement your form pre-processing and post-processing
+Implement *form_get* and *form_post* to implement your form pre-processing and post-processing. 
+You can use *form_get* to prefill the form you data, and/or pre process something on your application, then
+use *form_post* to post process the form after the user submits it, you can save the data to database, send an email
+or something.
 
 ::
 
@@ -208,14 +212,15 @@ Implement *form_get* and *form_post* to implement your form pre-processing and p
 
 
     class MyFormView(SimpleFormView):
-        default_view = 'this_form_get'
         form = MyForm
         form_title = 'This is my first form view'
-
         message = 'My form submitted'
 
+        def form_get(self, form):
+            form.field1 = 'This was prefilled'
+
         def form_post(self, form):
-            # process form
+            # post process form
             flash(as_unicode(self.message), 'info')
 
     appbuilder.add_view(MyFormView, "My form View", icon="fa-group", label=_('My form View'),
@@ -229,6 +234,6 @@ Most important Base Properties:
 
 :form_title: The title to be presented (this is mandatory)
 :form_columns: The form column names to include
-:form: Your form class (WTFORM) (this is mandatory) 
+:form: Your form class (`WTForm <https://wtforms.readthedocs.org/en/latest/>`_) (this is mandatory) 
     
 

@@ -1,18 +1,13 @@
-Quick How to Example
---------------------
+Simple Employees application
+----------------------------
 
-Simple contacts application.
+Shows how to setup many to many relationships and a simple security addon 
+(creates an action to delete multiple users) 
 
 Create an Admin user::
 
     $ fabmanager create-admin
 
-Insert test data::
-
-    $ python testdata.py
-
 Run it::
 
     $ fabmanager run
-
-

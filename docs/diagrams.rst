@@ -16,8 +16,9 @@ BaseViews, IndexViews and the leafs ModelView, chart views and form views.
       BaseView;
       BaseView -> UtilView;
       BaseView -> IndexView;
-      BaseView -> SimpleFormView;
-      BaseView -> PublicFormView;
+      BaseView -> BaseFormView;
+      BaseFormView -> SimpleFormView;
+      BaseFormView -> PublicFormView;
       BaseView -> BaseModelView;
       BaseModelView -> BaseChartView;
       BaseModelView -> BaseCRUDView;

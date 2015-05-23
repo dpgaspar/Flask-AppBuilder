@@ -154,18 +154,28 @@ Some explanation:
 
 
 Additionally you can customize what columns are displayed and their order on lists and forms.
-Remember you can include columns, relations or methods from a model's definition:
+Remember you can include columns, relations or methods from a model's definition. If you have a long
+list of columns and want to exclude just a few from add/edit/show form you can use the exclude columns
+property:
 
 .. automodule:: flask.ext.appbuilder.baseviews
 
     .. autoclass:: BaseCRUDView
-        :members: list_columns,add_columns,edit_columns,show_columns
+        :members: list_columns,add_columns,edit_columns,show_columns,add_exclude_columns,edit_exclude_columns,show_exclude_columns
+
+You can also control which columns will be included on search, use the same logic for this:
+
+.. automodule:: flask.ext.appbuilder.baseviews
+
+    .. autoclass:: BaseModelView
+        :members: search_columns, search_exclude_columns
+
 
 .. note::
 
     Fields that reference relationships, will display the defined related model representation
     (on this case __repr__() methods on ContactGroup Model), so by default these fields can't be ordered.
-    To enable order by on list for relationship fields, you can (since 1.1.1) reference
+    To enable order by on a list for relationship fields, you can (since 1.1.1) reference
     them using dotted notation. On this example you can reference them using 'contact_group.name'.
 
 

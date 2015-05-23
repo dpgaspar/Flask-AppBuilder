@@ -59,6 +59,8 @@ class Model2(Model):
     field_integer = Column(Integer())
     field_float = Column(Float())
     field_date = Column(Date())
+    excluded_string = Column(String(50), default='EXCLUDED')
+    default_string = Column(String(50), default='DEFAULT')
     group_id = Column(Integer, ForeignKey('model1.id'), nullable=False)
     group = relationship("Model1")
 
@@ -94,21 +96,30 @@ class FlaskTestCase(unittest.TestCase):
             list_columns = ['UID', 'C', 'CMD', 'TIME']
             search_columns = ['UID', 'C', 'CMD']
 
+
         class Model2View(ModelView):
             datamodel = SQLAInterface(Model2)
             list_columns = ['field_integer', 'field_float', 'field_string', 'field_method', 'group.field_string']
-
             edit_form_query_rel_fields = {'group':[['field_string', FilterEqual, 'G2']]}
-
             add_form_query_rel_fields = {'group':[['field_string', FilterEqual, 'G1']]}
+            
+        class Model22View(ModelView):
+            datamodel = SQLAInterface(Model2)
+            list_columns = ['field_integer', 'field_float', 'field_string', 'field_method', 'group.field_string']
+            add_exclude_columns = ['excluded_string']
+            edit_exclude_columns = ['excluded_string']
+            show_exclude_columns = ['excluded_string']
+
 
         class Model1View(ModelView):
             datamodel = SQLAInterface(Model1)
             related_views = [Model2View]
             list_columns = ['field_string','field_file']
 
+
         class Model1CompactView(CompactCRUDMixin, ModelView):
             datamodel = SQLAInterface(Model1)
+
 
         class Model1Filtered1View(ModelView):
             datamodel = SQLAInterface(Model1)
@@ -183,6 +194,7 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view(Model1Filtered2View, "Model1Filtered2", category='Model1')
 
         self.appbuilder.add_view(Model2View, "Model2")
+        self.appbuilder.add_view(Model22View, "Model22")
         self.appbuilder.add_view(Model2View, "Model2 Add", href='/model2view/add')
         self.appbuilder.add_view(Model2ChartView, "Model2 Chart")
         self.appbuilder.add_view(Model2GroupByChartView, "Model2 Group By Chart")
@@ -251,7 +263,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 25)  # current minimal views are 11
+        eq_(len(self.appbuilder.baseviews), 26)  # current minimal views are 11
         
     def test_back(self):
         """
@@ -396,6 +408,38 @@ class FlaskTestCase(unittest.TestCase):
         model = self.db.session.query(Model1).first()
         eq_(model, None)
 
+    def test_excluded_cols(self):
+        """
+            Test add_exclude_columns, edit_exclude_columns, show_exclude_columns
+        """
+        client = self.app.test_client()
+        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = client.get('/model22view/add')
+        eq_(rv.status_code, 200)
+        data = rv.data.decode('utf-8')
+        ok_('field_string' in data)
+        ok_('field_integer' in data)
+        ok_('field_float' in data)
+        ok_('field_date' in data)
+        ok_('excluded_string' not in data)
+        self.insert_data2()
+        rv = client.get('/model22view/edit/1')
+        eq_(rv.status_code, 200)
+        data = rv.data.decode('utf-8')
+        ok_('field_string' in data)
+        ok_('field_integer' in data)
+        ok_('field_float' in data)
+        ok_('field_date' in data)
+        ok_('excluded_string' not in data)
+        rv = client.get('/model22view/show/1')
+        eq_(rv.status_code, 200)
+        data = rv.data.decode('utf-8')
+        ok_('Field String' in data)
+        ok_('Field Integer' in data)
+        ok_('Field Float' in data)
+        ok_('Field Date' in data)
+        ok_('Excluded String' not in data)
+        
 
     def test_query_rel_fields(self):
         """

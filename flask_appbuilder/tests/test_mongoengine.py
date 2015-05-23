@@ -55,6 +55,8 @@ class Model2(Document):
     field_integer = IntField()
     field_float = FloatField()
     field_date = DateTimeField()
+    excluded_string = StringField(default="EXCLUDED")
+    default_string = StringField(default="DEFAULT")
     group = ReferenceField(Model1, required=True)
 
     def __repr__(self):
@@ -85,10 +87,17 @@ class FlaskTestCase(unittest.TestCase):
         class Model2View(ModelView):
             datamodel = MongoEngineInterface(Model2)
             list_columns = ['field_integer', 'field_float', 'field_string', 'field_method', 'group.field_string']
-
             edit_form_query_rel_fields = {'group':[['field_string', FilterEqual, 'G2']]}
-
             add_form_query_rel_fields = {'group':[['field_string', FilterEqual, 'G1']]}
+            add_exclude_columns = ['excluded_string']
+
+        class Model22View(ModelView):
+            datamodel = MongoEngineInterface(Model2)
+            list_columns = ['field_integer', 'field_float', 'field_string', 'field_method', 'group.field_string']
+            add_exclude_columns = ['excluded_string']
+            edit_exclude_columns = ['excluded_string']
+            show_exclude_columns = ['excluded_string']
+
 
         class Model1View(ModelView):
             datamodel = MongoEngineInterface(Model1)
@@ -157,6 +166,7 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view(Model1Filtered2View, "Model1Filtered2", category='Model1')
 
         self.appbuilder.add_view(Model2View, "Model2")
+        self.appbuilder.add_view(Model22View, "Model22")
         self.appbuilder.add_view(Model2View, "Model2 Add", href='/model2view/add')
         self.appbuilder.add_view(Model2GroupByChartView, "Model2 Group By Chart")
         self.appbuilder.add_view(Model2DirectByChartView, "Model2 Direct By Chart")
@@ -224,7 +234,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 22)  # current minimal views are 11
+        eq_(len(self.appbuilder.baseviews), 23)  # current minimal views are 11
 
     def test_index(self):
         """
@@ -347,6 +357,41 @@ class FlaskTestCase(unittest.TestCase):
         model = Model1.objects
         eq_(len(model), 0)
         self.clean_data()
+
+    def test_excluded_cols(self):
+        """
+            Test add_exclude_columns, edit_exclude_columns, show_exclude_columns
+        """
+        client = self.app.test_client()
+        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = client.get('/model22view/add')
+        eq_(rv.status_code, 200)
+        data = rv.data.decode('utf-8')
+        ok_('field_string' in data)
+        ok_('field_integer' in data)
+        ok_('field_float' in data)
+        ok_('field_date' in data)
+        ok_('excluded_string' not in data)
+        self.insert_data2()
+        model2 = Model2.objects[0]
+        rv = client.get('/model22view/edit/{0}'.format(model2.id))
+        eq_(rv.status_code, 200)
+        data = rv.data.decode('utf-8')
+        ok_('field_string' in data)
+        ok_('field_integer' in data)
+        ok_('field_float' in data)
+        ok_('field_date' in data)
+        ok_('excluded_string' not in data)
+        rv = client.get('/model22view/show/{0}'.format(model2.id))
+        eq_(rv.status_code, 200)
+        data = rv.data.decode('utf-8')
+        ok_('Field String' in data)
+        ok_('Field Integer' in data)
+        ok_('Field Float' in data)
+        ok_('Field Date' in data)
+        ok_('Excluded String' not in data)
+        self.clean_data()
+
 
     def test_query_rel_fields(self):
         """
