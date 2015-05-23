@@ -116,7 +116,7 @@ BaseSecurityManager
 BaseRegisterUser
 ----------------
 
-.. automodule:: flask.ext.appbuilder.security.sqla.registerviews
+.. automodule:: flask.ext.appbuilder.security.registerviews
 
     .. autoclass:: BaseRegisterUser
         :members:

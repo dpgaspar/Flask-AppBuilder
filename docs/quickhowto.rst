@@ -163,6 +163,8 @@ property:
     .. autoclass:: BaseCRUDView
         :members: list_columns,add_columns,edit_columns,show_columns,add_exclude_columns,edit_exclude_columns,show_exclude_columns
 
+--------------------------------------
+
 You can also control which columns will be included on search, use the same logic for this:
 
 .. automodule:: flask.ext.appbuilder.baseviews

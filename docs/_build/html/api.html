@@ -154,7 +154,7 @@
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.actions">flask.ext.appbuilder.actions</a></li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.security.manager">flask.ext.appbuilder.security</a><ul>
 <li><a class="reference internal" href="#basesecuritymanager">BaseSecurityManager</a></li>
-<li><a class="reference internal" href="#baseregisteruser">BaseRegisterUser</a></li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.security.registerviews">BaseRegisterUser</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.filemanager">flask.ext.appbuilder.filemanager</a></li>
@@ -1835,8 +1835,97 @@ Password will be hashed and saved.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="baseregisteruser">
-<h3>BaseRegisterUser<a class="headerlink" href="#baseregisteruser" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-flask.ext.appbuilder.security.registerviews">
+<span id="baseregisteruser"></span><h3>BaseRegisterUser<a class="headerlink" href="#module-flask.ext.appbuilder.security.registerviews" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="flask.ext.appbuilder.security.registerviews.BaseRegisterUser">
+<em class="property">class </em><code class="descclassname">flask.ext.appbuilder.security.registerviews.</code><code class="descname">BaseRegisterUser</code><a class="reference internal" href="_modules/flask_appbuilder/security/registerviews.html#BaseRegisterUser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.registerviews.BaseRegisterUser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make your own user registration view and inherit from this class if you
+want to implement a completely different registration process. If not,
+just inherit from RegisterUserDBView or RegisterUserOIDView depending on
+your authentication method.
+then override SecurityManager property that defines the class to use:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.registerviews</span> <span class="kn">import</span> <span class="n">RegisterUserDBView</span>
+
+<span class="k">class</span> <span class="nc">MyRegisterUserDBView</span><span class="p">(</span><span class="n">BaseRegisterUser</span><span class="p">):</span>
+    <span class="n">email_template</span> <span class="o">=</span> <span class="s">&#39;register_mail.html&#39;</span>
+    <span class="o">...</span>
+
+
+<span class="k">class</span> <span class="nc">MySecurityManager</span><span class="p">(</span><span class="n">SecurityManager</span><span class="p">):</span>
+   <span class="n">registeruserdbview</span> <span class="o">=</span> <span class="n">MyRegisterUserDBView</span>
+</pre></div>
+</div>
+<p>When instantiating AppBuilder set your own SecurityManager class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">security_manager_class</span><span class="o">=</span><span class="n">MySecurityManager</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="flask.ext.appbuilder.security.registerviews.BaseRegisterUser.activation">
+<code class="descname">activation</code><span class="sig-paren">(</span><em>activation_hash</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/registerviews.html#BaseRegisterUser.activation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.registerviews.BaseRegisterUser.activation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Endpoint to expose an activation url, this url
+is sent to the user by email, when accessed the user is inserted
+and activated</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.security.registerviews.BaseRegisterUser.activation_template">
+<code class="descname">activation_template</code><em class="property"> = 'appbuilder/general/security/activation.html'</em><a class="headerlink" href="#flask.ext.appbuilder.security.registerviews.BaseRegisterUser.activation_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>The activation template, shown when the user is activated</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.security.registerviews.BaseRegisterUser.add_registration">
+<code class="descname">add_registration</code><span class="sig-paren">(</span><em>username</em>, <em>first_name</em>, <em>last_name</em>, <em>email</em>, <em>password=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/registerviews.html#BaseRegisterUser.add_registration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.registerviews.BaseRegisterUser.add_registration" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Add a registration request for the user.</div></blockquote>
+<p>:rtype : RegisterUser</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.security.registerviews.BaseRegisterUser.email_subject">
+<code class="descname">email_subject</code><em class="property"> = l'Account activation'</em><a class="headerlink" href="#flask.ext.appbuilder.security.registerviews.BaseRegisterUser.email_subject" title="Permalink to this definition">¶</a></dt>
+<dd><p>The email subject sent to the user</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.security.registerviews.BaseRegisterUser.email_template">
+<code class="descname">email_template</code><em class="property"> = 'appbuilder/general/security/register_mail.html'</em><a class="headerlink" href="#flask.ext.appbuilder.security.registerviews.BaseRegisterUser.email_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>The template used to generate the email sent to the user</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.security.registerviews.BaseRegisterUser.error_message">
+<code class="descname">error_message</code><em class="property"> = l'Not possible to register you at the moment, try again later'</em><a class="headerlink" href="#flask.ext.appbuilder.security.registerviews.BaseRegisterUser.error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>The message shown on an unsuccessful registration</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.security.registerviews.BaseRegisterUser.false_error_message">
+<code class="descname">false_error_message</code><em class="property"> = l'Registration not found'</em><a class="headerlink" href="#flask.ext.appbuilder.security.registerviews.BaseRegisterUser.false_error_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>The message shown on an unsuccessful registration</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.security.registerviews.BaseRegisterUser.form_title">
+<code class="descname">form_title</code><em class="property"> = l'Fill out the registration form'</em><a class="headerlink" href="#flask.ext.appbuilder.security.registerviews.BaseRegisterUser.form_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>The form title</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.security.registerviews.BaseRegisterUser.message">
+<code class="descname">message</code><em class="property"> = l'Registration sent to your email'</em><a class="headerlink" href="#flask.ext.appbuilder.security.registerviews.BaseRegisterUser.message" title="Permalink to this definition">¶</a></dt>
+<dd><p>The message shown on a successful registration</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.security.registerviews.BaseRegisterUser.send_email">
+<code class="descname">send_email</code><span class="sig-paren">(</span><em>register_user</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/registerviews.html#BaseRegisterUser.send_email"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.registerviews.BaseRegisterUser.send_email" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for sending the registration Email to the user</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 <div class="section" id="module-flask.ext.appbuilder.filemanager">

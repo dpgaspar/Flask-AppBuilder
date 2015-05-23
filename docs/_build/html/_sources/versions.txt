@@ -15,7 +15,7 @@ Improvements and Bug fixes on 1.4.0
 + TODO, edit_exclude_columns
 + TODO, show_exclude_columns
 + TODO, exclude_columns on tests.
-- TODO, docs for exclude_columns
++ TODO, docs for exclude_columns
 - TODO, remove id warning for MongoDB on filters.
 - TODO, docs for OAUTH.
 - TODO, better docs for LDAP.

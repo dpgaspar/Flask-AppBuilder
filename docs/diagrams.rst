@@ -1,9 +1,11 @@
 Diagrams
 ========
+========
 
 This page will show various diagrams about the framework structure.
 
 Class View Diagram Tree
+-----------------------
 -----------------------
 
 All class views tree reflect functionality each layer is responsible for a certain goal. You will be essentially using
@@ -17,6 +19,7 @@ BaseViews, IndexViews and the leafs ModelView, chart views and form views.
       BaseView -> UtilView;
       BaseView -> IndexView;
       BaseView -> BaseFormView;
+      BaseView -> MultipleView;
       BaseFormView -> SimpleFormView;
       BaseFormView -> PublicFormView;
       BaseView -> BaseModelView;
@@ -25,6 +28,8 @@ BaseViews, IndexViews and the leafs ModelView, chart views and form views.
       BaseChartView -> GroupByChartView;
       BaseChartView -> DirectByChartView;
       BaseCRUDView -> RestCRUDView -> ModelView;
+      BaseCRUDView -> MasterDetailView;
+      BaseCRUDView -> CompactCRUDMixin;
     }
 
 
@@ -42,8 +47,11 @@ Next is a summary explanation for each class:
 :BaseCRUDView: Implement base functionality for add, edit, delete, creates all forms.
 :RestCRUDView: Exposes the JSON REST API for CRUD methods and more.
 :ModelView: Subclass it to render your views based on models, with complete CRUD UI functionality.
+:MasterDetailView: Renders a master ModelView and multiple detail ModelViews thar are database related.
+:MultipleView: Renders multiple views on the same page (ex: ModelView and GroupByChartView)
 
 Class Data Diagram Tree
+-----------------------
 -----------------------
 
 All classes for data access aim for abstracting the backend.
@@ -63,7 +71,33 @@ All classes for data access aim for abstracting the backend.
 :MongoEngineInterface: Data access for MongoEngine (MongoDB).
 :GenericInterface: Data access for custom data structures.
 
+Class Security Diagram Tree
+---------------------------
+---------------------------
+
+Classes that are involved in implementing security. Register security views, implement various methods of authentication
+manage permissions (insert/remove all permission on the backend).
+
+.. blockdiag::
+
+    blockdiag admin {
+
+      BaseManager;
+      BaseManager -> AbstractSecurityManager;
+      AbstractSecurityManager -> BaseSecurityManager;
+      BaseSecurityManager -> sqla.SecurityManager;
+      BaseSecurityManager -> mongoengine.SecurityManager;
+    }
+
+:BaseManager: Base class for all Manager classes, holds AppBuilder class.
+:AbstractSecurityManager: Abstract class for Security managers, defines the must have methods.
+:BaseSecurityManager: Base class for security, registers security views, implements authentication,
+ inserts/removes all permission on the database, manages roles/users and views.
+:sqla.SecurityManager: Implements BaseSecurityManager for SQAlchemy.
+:mongoengine.SecurityManager: Implements BaseSecurityManager for MongoEngine.
+
 Security Models ERD
+-------------------
 -------------------
 
 This is the ERD of the frameworks security models.
