@@ -54,7 +54,7 @@ class MongoEngineInterface(BaseInterface):
                 objs = objs.order_by('+{0}'.format(order_column))
         return count, objs[start:stop]
 
-    def is_id(self, col_name):
+    def is_object_id(self, col_name):
         try:
             return isinstance(self.obj._fields[col_name], ObjectIdField)
         except:
@@ -194,7 +194,7 @@ class MongoEngineInterface(BaseInterface):
         ret_lst = list()
         for col_name in self.get_columns_list():
             for conversion in self.filter_converter_class.conversion_table:
-                if getattr(self, conversion[0])(col_name) and not self.is_id(col_name):
+                if getattr(self, conversion[0])(col_name) and not self.is_object_id(col_name):
                     ret_lst.append(col_name)
         return ret_lst
 
