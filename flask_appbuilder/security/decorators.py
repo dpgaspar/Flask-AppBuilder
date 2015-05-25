@@ -7,14 +7,6 @@ from ..const import LOGMSG_ERR_SEC_ACCESS_DENIED, FLAMSG_ERR_SEC_ACCESS_DENIED, 
 
 log = logging.getLogger(__name__)
 
-def oauth_user_info_getter(f):
-    """
-       Sets function to be OAuth user info getter
-       for all the providers, receives provider and response     
-    """
-    def wraps(self, *args, **kwargs):
-        print "DECORATOR"
-        self.oauth_user_info = f
         
 def has_access(f):
     """

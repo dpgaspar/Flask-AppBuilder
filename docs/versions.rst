@@ -22,7 +22,7 @@ Improvements and Bug fixes on 1.4.0
 - TODO, example for OAUTH.
 - TODO, docs for OAUTH.
 - TODO, better docs for LDAP.
-- TODO, finish translations.
++ TODO, finish translations.
 - TODO, self register OpenID code rework.
 
 Improvements and Bug fixes on 1.3.7

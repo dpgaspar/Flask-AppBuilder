@@ -197,6 +197,34 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.lm.login_view = 'login'
         self.lm.user_loader(self.load_user)
 
+    def oauth_user_info_getter(self, f):
+        """
+            Decorator function to be the OAuth user info getter
+            for all the providers, receives provider and response 
+            return a dict with the information returned from the provider.
+            The returned user info dict should have it's keys with the same
+            name as the User Model.
+            
+            Use it like this an example for GitHub ::
+                
+                @appbuilder.sm.oauth_user_info_getter
+                def my_oauth_user_info(provider, response=None):
+                    if provider == 'github':
+                        me = self.appbuilder.sm.oauth_remotes[provider].get('user')
+                        return {'username': me.data.get('login')}
+                    else:
+                        return {}
+        """
+        def wraps(provider, response=None):    
+            ret = f(self.oauth_remotes, provider, response=response)
+            # Checks if decorator is well behaved and returns a dict as supposed.
+            if not type(ret) == dict:
+                log.error("OAuth user info decorated function did not returned a dict, but: {0}".format(type(ret)))
+                return {}
+            return ret
+        self.oauth_user_info = wraps
+        return wraps
+        
     @property
     def get_url_for_registeruser(self):
         return url_for('%s.%s' % (self.registeruser_view.endpoint, self.registeruser_view.default_view))
