@@ -192,6 +192,7 @@ class PostTweet(BaseView):
         else:
             flash('Successfully tweeted your tweet (ID: #%s)' % resp.data['id'])
         return redirect(self.appbuilder.get_url_for_index)
+
         
 fill_gender()
 

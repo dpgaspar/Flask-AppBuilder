@@ -114,7 +114,7 @@ class MongoEngineFilterConverter(BaseFilterConverter):
                         ('is_relation_one_to_one', [FilterRelationOneToManyEqual]),
                         ('is_relation_many_to_many', [FilterRelationManyToManyEqual]),
                         ('is_relation_one_to_many', [FilterRelationManyToManyEqual]),
-
+                        ('is_id', [FilterEqual]),
                         ('is_string', [FilterEqual,
                                        FilterNotEqual,
                                        FilterStartsWith,

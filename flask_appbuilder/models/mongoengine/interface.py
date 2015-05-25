@@ -6,7 +6,7 @@ from ..._compat import as_unicode
 from ...const import LOGMSG_ERR_DBI_ADD_GENERIC, LOGMSG_ERR_DBI_EDIT_GENERIC, LOGMSG_ERR_DBI_DEL_GENERIC, \
                      LOGMSG_WAR_DBI_ADD_INTEGRITY, LOGMSG_WAR_DBI_EDIT_INTEGRITY, LOGMSG_WAR_DBI_DEL_INTEGRITY
 from mongoengine.fields import StringField, IntField, BooleanField, FloatField, \
-    DateTimeField, ReferenceField, ListField, FileField, ImageField
+    DateTimeField, ReferenceField, ListField, FileField, ImageField, ObjectIdField
 
 log = logging.getLogger(__name__)
 
@@ -53,6 +53,12 @@ class MongoEngineInterface(BaseInterface):
             else:
                 objs = objs.order_by('+{0}'.format(order_column))
         return count, objs[start:stop]
+
+    def is_id(self, col_name):
+        try:
+            return isinstance(self.obj._fields[col_name], ObjectIdField)
+        except:
+            return False
 
     def is_string(self, col_name):
         try:
@@ -188,7 +194,7 @@ class MongoEngineInterface(BaseInterface):
         ret_lst = list()
         for col_name in self.get_columns_list():
             for conversion in self.filter_converter_class.conversion_table:
-                if getattr(self, conversion[0])(col_name):
+                if getattr(self, conversion[0])(col_name) and not self.is_id(col_name):
                     ret_lst.append(col_name)
         return ret_lst
 

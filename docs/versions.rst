@@ -11,16 +11,18 @@ Improvements and Bug fixes on 1.4.0
 - New, class method for BaseView's get_default_url, returns the default_view url.
 - New, OAuth authentication method.
 - New, Search for role with a particular set of permissions on views or menus.
+- New, Possible to filter MongoEngine ObjectId's.
+- Fix, MongoEngine (MongoDB) ObjectId's not included in search forms.
 + TODO, add_exclude_columns
 + TODO, edit_exclude_columns
 + TODO, show_exclude_columns
 + TODO, exclude_columns on tests.
 + TODO, docs for exclude_columns
-- TODO, remove id warning for MongoDB on filters.
++ TODO, remove id warning for MongoDB on filters.
+- TODO, example for OAUTH.
 - TODO, docs for OAUTH.
 - TODO, better docs for LDAP.
 - TODO, finish translations.
-- TODO, example for OAUTH.
 - TODO, self register OpenID code rework.
 
 Improvements and Bug fixes on 1.3.7

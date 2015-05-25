@@ -188,7 +188,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                 log.debug("OAuth providers init {0}".format(provider_name))
                 obj_provider = self.oauth.remote_app(provider_name, **_provider['remote_app'])
                 obj_provider._tokengetter = self.oauth_tokengetter
-                self.oauth_user_info = self.get_oauth_user_info
+                if not self.oauth_user_info:
+                    self.oauth_user_info = self.get_oauth_user_info
                 self.oauth_remotes[provider_name] = obj_provider
         
 
