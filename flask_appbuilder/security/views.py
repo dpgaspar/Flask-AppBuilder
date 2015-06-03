@@ -463,16 +463,9 @@ class AuthOAuthView(AuthView):
             flash(u'You denied the request to sign in.', 'warning')
             return redirect('login')
         log.debug('OAUTH Authorized resp: {0}'.format(resp))
-        # Get this provider key names for token_key and token_secret
-        token_key = self.appbuilder.sm.get_oauth_token_key(provider)
-        token_secret = self.appbuilder.sm.get_oauth_token_secret(provider)
-        # Save users token on encrypted session cookie
-        session['oauth'] = (
-            resp[token_key],
-            resp.get(token_secret,'')
-        )
         # Retrieves specific user info from the provider
         try:
+            self.appbuilder.sm.set_oauth_session(provider, resp)
             userinfo = self.appbuilder.sm.oauth_user_info(provider)
             log.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
         except Exception as e:
@@ -489,8 +482,6 @@ class AuthOAuthView(AuthView):
             return redirect(self.appbuilder.get_url_for_index)
         
         
-
-
 class AuthRemoteUserView(AuthView):
     login_template = ''
 

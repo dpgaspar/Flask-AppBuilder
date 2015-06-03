@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-05-25 17:50+0100\n"
+"POT-Creation-Date: 2015-06-03 14:38+0100\n"
 "PO-Revision-Date: 2013-12-07 19:49+0000\n"
 "Last-Translator: Oscar Ramirez <tuxskar@gmail.com>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -240,37 +240,37 @@ msgstr "Apellido"
 msgid "Email"
 msgstr "Email"
 
-#: flask_appbuilder/security/manager.py:363
+#: flask_appbuilder/security/manager.py:406
 #: flask_appbuilder/security/views.py:95
 msgid "List Users"
 msgstr "Lista de Usuarios"
 
-#: flask_appbuilder/security/manager.py:365
+#: flask_appbuilder/security/manager.py:408
 msgid "Security"
 msgstr "Seguridad"
 
-#: flask_appbuilder/security/manager.py:368
+#: flask_appbuilder/security/manager.py:411
 #: flask_appbuilder/security/views.py:293
 msgid "List Roles"
 msgstr "Lista Papel"
 
-#: flask_appbuilder/security/manager.py:374
+#: flask_appbuilder/security/manager.py:417
 msgid "User's Statistics"
 msgstr "Estadísticas de usuarios"
 
-#: flask_appbuilder/security/manager.py:380
+#: flask_appbuilder/security/manager.py:423
 msgid "User Registrations"
 msgstr "Registros de Usuarios"
 
-#: flask_appbuilder/security/manager.py:386
+#: flask_appbuilder/security/manager.py:429
 msgid "Base Permissions"
 msgstr "Permisos de Base"
 
-#: flask_appbuilder/security/manager.py:389
+#: flask_appbuilder/security/manager.py:432
 msgid "Views/Menus"
 msgstr "Vistas / Menús"
 
-#: flask_appbuilder/security/manager.py:392
+#: flask_appbuilder/security/manager.py:435
 msgid "Permission on Views/Menus"
 msgstr "Permisos en vistas / Menús"
 
@@ -532,11 +532,15 @@ msgstr "Inicio de sesión no válido. Por favor, inténtelo de nuevo."
 msgid "Sign In"
 msgstr "Registrarse"
 
-#: flask_appbuilder/templates/appbuilder/baselib.html:110
+#: flask_appbuilder/templates/appbuilder/baselib.html:115
+msgid "Profile"
+msgstr "Perfil"
+
+#: flask_appbuilder/templates/appbuilder/baselib.html:116
 msgid "Logout"
 msgstr "Salir"
 
-#: flask_appbuilder/templates/appbuilder/baselib.html:115
+#: flask_appbuilder/templates/appbuilder/baselib.html:122
 msgid "Login"
 msgstr "Inicar sesión"
 

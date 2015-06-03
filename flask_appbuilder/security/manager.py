@@ -72,7 +72,7 @@ class AbstractSecurityManager(BaseManager):
         raise NotImplementedError
 
 
-def _tokengetter(token=None):
+def _oauth_tokengetter(token=None):
     """
         Default function to return the current user oauth token
         from session cookie.
@@ -97,7 +97,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Flask-OAuth """
     oauth_remotes = None
     """ Initialized (remote_app) providers dict {'provider_name', OBJ } """
-    oauth_tokengetter = _tokengetter
+    oauth_tokengetter = _oauth_tokengetter
     """ OAuth tokengetter function override to implement your own tokengetter method """
     oauth_user_info = None
 
@@ -196,35 +196,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.lm = LoginManager(app)
         self.lm.login_view = 'login'
         self.lm.user_loader(self.load_user)
-
-    def oauth_user_info_getter(self, f):
-        """
-            Decorator function to be the OAuth user info getter
-            for all the providers, receives provider and response 
-            return a dict with the information returned from the provider.
-            The returned user info dict should have it's keys with the same
-            name as the User Model.
-            
-            Use it like this an example for GitHub ::
-                
-                @appbuilder.sm.oauth_user_info_getter
-                def my_oauth_user_info(provider, response=None):
-                    if provider == 'github':
-                        me = self.appbuilder.sm.oauth_remotes[provider].get('user')
-                        return {'username': me.data.get('login')}
-                    else:
-                        return {}
-        """
-        def wraps(provider, response=None):    
-            ret = f(self.oauth_remotes, provider, response=response)
-            # Checks if decorator is well behaved and returns a dict as supposed.
-            if not type(ret) == dict:
-                log.error("OAuth user info decorated function did not returned a dict, but: {0}".format(type(ret)))
-                return {}
-            return ret
-        self.oauth_user_info = wraps
-        return wraps
-        
+    
     @property
     def get_url_for_registeruser(self):
         return url_for('%s.%s' % (self.registeruser_view.endpoint, self.registeruser_view.default_view))
@@ -297,7 +269,36 @@ class BaseSecurityManager(AbstractSecurityManager):
     def oauth_providers(self):
         return self.appbuilder.get_app.config['OAUTH_PROVIDERS']
 
-    def get_oauth_token_key(self, provider):
+    def oauth_user_info_getter(self, f):
+        """
+            Decorator function to be the OAuth user info getter
+            for all the providers, receives provider and response 
+            return a dict with the information returned from the provider.
+            The returned user info dict should have it's keys with the same
+            name as the User Model.
+            
+            Use it like this an example for GitHub ::
+                
+                @appbuilder.sm.oauth_user_info_getter
+                def my_oauth_user_info(sm, provider, response=None):
+                    if provider == 'github':
+                        me = sm.oauth_remotes[provider].get('user')
+                        return {'username': me.data.get('login')}
+                    else:
+                        return {}
+        """
+        def wraps(provider, response=None):    
+            ret = f(self.oauth_remotes, provider, response=response)
+            # Checks if decorator is well behaved and returns a dict as supposed.
+            if not type(ret) == dict:
+                log.error("OAuth user info decorated function did not returned a dict, but: {0}".format(type(ret)))
+                return {}
+            return ret
+        self.oauth_user_info = wraps
+        return wraps
+    
+
+    def get_oauth_token_key_name(self, provider):
         """
             Returns the token_key name for the oauth provider
             if none is configured defaults to oauth_token
@@ -307,7 +308,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             if _provider['name'] == provider:
                 return _provider.get('token_key', 'oauth_token')
 
-    def get_oauth_token_secret(self, provider):
+    def get_oauth_token_secret_name(self, provider):
         """
             Returns the token_secret name for the oauth provider
             if none is configured defaults to oauth_secret
@@ -316,6 +317,20 @@ class BaseSecurityManager(AbstractSecurityManager):
         for _provider in self.oauth_providers:
             if _provider['name'] == provider:
                 return _provider.get('token_secret', 'oauth_token_secret')
+
+    def set_oauth_session(self, provider, oauth_response):
+        """
+            Set the current session with OAuth user secrets
+        """
+        # Get this provider key names for token_key and token_secret
+        token_key = self.appbuilder.sm.get_oauth_token_key_name(provider)
+        token_secret = self.appbuilder.sm.get_oauth_token_secret_name(provider)
+        # Save users token on encrypted session cookie
+        session['oauth'] = (
+            oauth_response[token_key],
+            oauth_response.get(token_secret,'')
+        )
+        session['oauth_provider'] = provider
 
     def get_oauth_user_info(self, provider, resp=None):
         """

@@ -1567,16 +1567,16 @@ for F.A.B.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_key">
-<code class="descname">get_oauth_token_key</code><span class="sig-paren">(</span><em>provider</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.get_oauth_token_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_key" title="Permalink to this definition">¶</a></dt>
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_key_name">
+<code class="descname">get_oauth_token_key_name</code><span class="sig-paren">(</span><em>provider</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.get_oauth_token_key_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_key_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the token_key name for the oauth provider
 if none is configured defaults to oauth_token
 this is configured using OAUTH_PROVIDERS and token_key key.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_secret">
-<code class="descname">get_oauth_token_secret</code><span class="sig-paren">(</span><em>provider</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.get_oauth_token_secret"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_secret" title="Permalink to this definition">¶</a></dt>
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_secret_name">
+<code class="descname">get_oauth_token_secret_name</code><span class="sig-paren">(</span><em>provider</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.get_oauth_token_secret_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_secret_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the token_secret name for the oauth provider
 if none is configured defaults to oauth_secret
 this is configured using OAUTH_PROVIDERS and token_secret</p>
@@ -1641,6 +1641,26 @@ retrieve user info</p>
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_tokengetter">
 <code class="descname">oauth_tokengetter</code><span class="sig-paren">(</span><em>token=None</em><span class="sig-paren">)</span><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_tokengetter" title="Permalink to this definition">¶</a></dt>
 <dd><p>OAuth tokengetter function override to implement your own tokengetter method</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_user_info_getter">
+<code class="descname">oauth_user_info_getter</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.oauth_user_info_getter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_user_info_getter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator function to be the OAuth user info getter
+for all the providers, receives provider and response 
+return a dict with the information returned from the provider.
+The returned user info dict should have it&#8217;s keys with the same
+name as the User Model.</p>
+<p>Use it like this an example for GitHub</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@appbuilder.sm.oauth_user_info_getter</span>
+<span class="k">def</span> <span class="nf">my_oauth_user_info</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span> <span class="n">provider</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s">&#39;github&#39;</span><span class="p">:</span>
+        <span class="n">me</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">oauth_remotes</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;username&#39;</span><span class="p">:</span> <span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;login&#39;</span><span class="p">)}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="attribute">
@@ -1749,6 +1769,12 @@ Password will be hashed and saved.</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.set_oauth_session">
+<code class="descname">set_oauth_session</code><span class="sig-paren">(</span><em>provider</em>, <em>oauth_response</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.set_oauth_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.set_oauth_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the current session with OAuth user secrets</p>
 </dd></dl>
 
 <dl class="method">

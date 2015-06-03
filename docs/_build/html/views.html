@@ -382,7 +382,7 @@ or something.</p>
 
     <span class="k">def</span> <span class="nf">form_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
         <span class="c"># post process form</span>
-        <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">),</span> <span class="s">&#39;info&#39;</span><span class="p">)</span>
+        <span class="n">flash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s">&#39;info&#39;</span><span class="p">)</span>
 
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyFormView</span><span class="p">,</span> <span class="s">&quot;My form View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-group&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;My form View&#39;</span><span class="p">),</span>
                      <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Forms&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s">&quot;fa-cogs&quot;</span><span class="p">)</span>

@@ -135,6 +135,11 @@
 <li><a class="reference internal" href="#permissions">Permissions</a></li>
 <li><a class="reference internal" href="#automatic-cleanup">Automatic Cleanup</a></li>
 <li><a class="reference internal" href="#auditing">Auditing</a></li>
+<li><a class="reference internal" href="#authentication-methods">Authentication Methods</a></li>
+<li><a class="reference internal" href="#authentication-database">Authentication: Database</a></li>
+<li><a class="reference internal" href="#authentication-openid">Authentication: OpenID</a></li>
+<li><a class="reference internal" href="#authentication-ldap">Authentication: LDAP</a></li>
+<li><a class="reference internal" href="#authentication-oauth">Authentication: OAuth</a></li>
 <li><a class="reference internal" href="#your-custom-security">Your Custom Security</a></li>
 <li><a class="reference internal" href="#extending-the-user-model">Extending the User Model</a></li>
 </ul>
@@ -198,6 +203,8 @@
 <tr class="field-even field"><th class="field-name">REMOTE_USER:</th><td class="field-body">Reads the <em>REMOTE_USER</em> web server environ var, and verifies if it&#8217;s authorized with the framework users table.
 It&#8217;s the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
 is configured to use kerberos, no need for the user to login with username and password on F.A.B.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">OAUTH:</th><td class="field-body">Authentication using OAUTH (v1 or v2). You need to install flask-oauthlib.</td>
 </tr>
 </tbody>
 </table>
@@ -322,6 +329,146 @@ exclude them from add and edit form. Using our example you will define our view 
 </pre></div>
 </div>
 </div>
+<div class="section" id="authentication-methods">
+<h2>Authentication Methods<a class="headerlink" href="#authentication-methods" title="Permalink to this headline">¶</a></h2>
+<p>We are now looking at the authentication methods, and how you can configure them and customize them.
+The framework as 5 authentication methods and you choose one of them, you configure the method to be used
+on the <strong>config.py</strong> (when using the create-app, or following the propused app structure). First the
+configuration imports the constants for the authentication methods:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.security.manager</span> <span class="kn">import</span> <span class="n">AUTH_OID</span><span class="p">,</span> \
+                                          <span class="n">AUTH_REMOTE_USER</span><span class="p">,</span> \
+                                          <span class="n">AUTH_DB</span><span class="p">,</span> <span class="n">AUTH_LDAP</span><span class="p">,</span> \
+                                          <span class="n">AUTH_OAUTH</span><span class="p">,</span> \
+                                          <span class="n">AUTH_OAUTH</span>
+</pre></div>
+</div>
+<p>Next you will use the <strong>AUTH_TYPE</strong> key to choose the type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_DB</span>
+</pre></div>
+</div>
+<p>Additionally you can customize the name of the builtin roles for Admin and Public accesses:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_ROLE_ADMIN</span> <span class="o">=</span> <span class="s">&#39;My Admin Role Name&#39;</span>
+<span class="n">AUTH_ROLE_PUBLIC</span> <span class="o">=</span> <span class="s">&#39;My Public Role Name&#39;</span>
+</pre></div>
+</div>
+<p>Finally you can allow users to self register (take a look at the following chapters for further detail):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_USER_REGISTRATION</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">AUTH_USER_REGISTRATION_ROLE</span> <span class="o">=</span> <span class="s">&quot;My Public Role Name&quot;</span>
+</pre></div>
+</div>
+<p>These settings can apply to all the authentication methods. When you create your first admin user
+using <strong>fabmanager</strong> command line, this user will be authenticated using the authentication method
+defined on your <strong>config.py</strong>.</p>
+</div>
+<div class="section" id="authentication-database">
+<h2>Authentication: Database<a class="headerlink" href="#authentication-database" title="Permalink to this headline">¶</a></h2>
+<p>The database authentication type is the most <em>simple</em> one, it authenticates users against an
+username and hashed password field kept on your database.</p>
+<p>Administrators can create users with passwords, and users can change their passwords. This is all done using the UI.
+(You can override and extend the default UI as we&#8217;ll see on <em>Your Custom Security</em>)</p>
+</div>
+<div class="section" id="authentication-openid">
+<h2>Authentication: OpenID<a class="headerlink" href="#authentication-openid" title="Permalink to this headline">¶</a></h2>
+<p>This authentication method uses <a class="reference external" href="https://github.com/mitsuhiko/flask-openid">Flask-OpenID</a>. All configuration is done
+on <strong>config.py</strong> using OPENID_PROVIDERS key, just add or remove from the list the providers you want to enable:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_OID</span>
+<span class="n">OPENID_PROVIDERS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Yahoo&#39;</span><span class="p">,</span> <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="s">&#39;https://me.yahoo.com&#39;</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;AOL&#39;</span><span class="p">,</span> <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="s">&#39;http://openid.aol.com/&lt;username&gt;&#39;</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Flickr&#39;</span><span class="p">,</span> <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="s">&#39;http://www.flickr.com/&lt;username&gt;&#39;</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;MyOpenID&#39;</span><span class="p">,</span> <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="s">&#39;https://www.myopenid.com&#39;</span> <span class="p">}]</span>
+</pre></div>
+</div>
+<p>Each list entry is a dict with a readable OpenID name and it&#8217;s url, if the url needs an username just add it using &lt;username&gt;.
+The login template for this method will provide a text box for the user to fillout his/her username.</p>
+<p>F.A.B. will ask for the &#8216;email&#8217; from OpenID, and if this email belongs to some user on your application he/she will login successfully.</p>
+</div>
+<div class="section" id="authentication-ldap">
+<h2>Authentication: LDAP<a class="headerlink" href="#authentication-ldap" title="Permalink to this headline">¶</a></h2>
+<p>This method will authenticate the user&#8217;s credentials against an LDAP server. Using this method without self user registration
+is very simple, just define the LDAP server:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_LDAP</span>
+<span class="n">AUTH_LDAP_SERVER</span> <span class="o">=</span> <span class="s">&quot;ldap://ldapserver.local&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="authentication-oauth">
+<h2>Authentication: OAuth<a class="headerlink" href="#authentication-oauth" title="Permalink to this headline">¶</a></h2>
+<p>By using this method it will be possible to use the provider API, this is because your requesting the user to give
+permission to your app to access or manage the user&#8217;s account on the provider.</p>
+<p>So you can send tweets, post on the users facebook, retrieve the user&#8217;s linkedin profile etc.</p>
+<p>To use OAuth you need to install <a class="reference external" href="https://flask-oauthlib.readthedocs.org/en/latest/">Flask-OAuthLib</a>. It&#8217;s usefull
+to get to know this library since F.A.B. will expose the remote application object for you to play with.</p>
+<p>Take a look at the <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth">example</a>
+to get an idea of a simple use for this.</p>
+<p>Use <strong>config.py</strong> configure OAUTH_PROVIDERS with a list of oauth providers, notice that the remote_app
+key is just the configuration for flask-oauthlib:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_OAUTH</span>
+
+<span class="n">OAUTH_PROVIDERS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;twitter&#39;</span><span class="p">,</span> <span class="s">&#39;icon&#39;</span><span class="p">:</span><span class="s">&#39;fa-twitter&#39;</span><span class="p">,</span>
+        <span class="s">&#39;remote_app&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;consumer_key&#39;</span><span class="p">:</span><span class="s">&#39;TWITTER KEY&#39;</span><span class="p">,</span>
+            <span class="s">&#39;consumer_secret&#39;</span><span class="p">:</span><span class="s">&#39;TWITTER SECRET&#39;</span><span class="p">,</span>
+            <span class="s">&#39;base_url&#39;</span><span class="p">:</span><span class="s">&#39;https://api.twitter.com/1.1/&#39;</span><span class="p">,</span>
+            <span class="s">&#39;request_token_url&#39;</span><span class="p">:</span><span class="s">&#39;https://api.twitter.com/oauth/request_token&#39;</span><span class="p">,</span>
+            <span class="s">&#39;access_token_url&#39;</span><span class="p">:</span><span class="s">&#39;https://api.twitter.com/oauth/access_token&#39;</span><span class="p">,</span>
+            <span class="s">&#39;authorize_url&#39;</span><span class="p">:</span><span class="s">&#39;https://api.twitter.com/oauth/authenticate&#39;</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;google&#39;</span><span class="p">,</span> <span class="s">&#39;icon&#39;</span><span class="p">:</span><span class="s">&#39;fa-google&#39;</span><span class="p">,</span> <span class="s">&#39;token_key&#39;</span><span class="p">:</span><span class="s">&#39;access_token&#39;</span><span class="p">,</span>
+        <span class="s">&#39;remote_app&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;consumer_key&#39;</span><span class="p">:</span><span class="s">&#39;GOOGLE KEY&#39;</span><span class="p">,</span>
+            <span class="s">&#39;consumer_secret&#39;</span><span class="p">:</span><span class="s">&#39;GOOGLE SECRET&#39;</span><span class="p">,</span>
+            <span class="s">&#39;base_url&#39;</span><span class="p">:</span><span class="s">&#39;https://www.googleapis.com/plus/v1/&#39;</span><span class="p">,</span>
+            <span class="s">&#39;request_token_params&#39;</span><span class="p">:{</span>
+              <span class="s">&#39;scope&#39;</span><span class="p">:</span> <span class="s">&#39;https://www.googleapis.com/auth/userinfo.email&#39;</span>
+            <span class="p">},</span>
+            <span class="s">&#39;request_token_url&#39;</span><span class="p">:</span><span class="bp">None</span><span class="p">,</span>
+            <span class="s">&#39;access_token_url&#39;</span><span class="p">:</span><span class="s">&#39;https://accounts.google.com/o/oauth2/token&#39;</span><span class="p">,</span>
+            <span class="s">&#39;authorize_url&#39;</span><span class="p">:</span><span class="s">&#39;https://accounts.google.com/o/oauth2/auth&#39;</span><span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>This needs a small explanation, you basically have five special keys:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">name:</th><td class="field-body">The name of the provider, you can choose whatever you want. But the framework as some
+builtin logic to retrieve information about a user that you can make use of if you choose:
+&#8216;twitter&#8217;, &#8216;google&#8217;, &#8216;github&#8217;,&#8217;linkedin&#8217;.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">icon:</th><td class="field-body">The font-awesome icon for this provider.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">token_key:</th><td class="field-body">The token key name that this provider uses, google and github uses <em>&#8216;access_token&#8217;</em>,
+twitter uses <em>&#8216;oauth_token&#8217;</em> and thats the default.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">token_secret:</th><td class="field-body">The token secret key name, default is <em>&#8216;oauth_token_secret&#8217;</em></td>
+</tr>
+</tbody>
+</table>
+<p>After the user authenticates and grants access permissions to your application
+the framework retrieves information about the user, username and email. This info
+will be checked with the internal user (user record on User Model), first by username next by email.</p>
+<p>To override/customize the user information retrieval from oauth, you can create your own method like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@appbuilder.sm.oauth_user_info_getter</span>
+<span class="k">def</span> <span class="nf">my_user_info_getter</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span> <span class="n">provider</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s">&#39;github&#39;</span><span class="p">:</span>
+        <span class="n">me</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">oauth_remotes</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;username&#39;</span><span class="p">:</span> <span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;login&#39;</span><span class="p">)}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+</pre></div>
+</div>
+<p>Decorate your method with the SecurityManager <strong>oauth_user_info_getter</strong> decorator.
+Make your method accept the exact parameters as on this example, and then return a dictionary
+with the retrieved user information. The dictionary keys must have the same column names as the User Model.
+Your method will be called after the user authorizes your application on the OAuth provider, and it will
+receive the following: <strong>sm</strong> is F.A.B&#8217;s SecurityManager class, <strong>provider</strong> is a string with the name you configured
+this provider with, <strong>response</strong> is the response.</p>
+<p>Take a look at the <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth">example</a></p>
+</div>
 <div class="section" id="your-custom-security">
 <h2>Your Custom Security<a class="headerlink" href="#your-custom-security" title="Permalink to this headline">¶</a></h2>
 <p>If you want to alter the security views, or authentication methods since (1.0.1) you can do it in a simple way.
@@ -382,6 +529,7 @@ If your using:</p>
 <li>AUTH_LDAP extend UserLDAPModelView</li>
 <li>AUTH_REMOTE_USER extend UserRemoteUserModelView</li>
 <li>AUTH_OID extend UserOIDModelView</li>
+<li>AUTH_OAUTH extend UserOAuthModelView</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.security.views</span> <span class="kn">import</span> <span class="n">UserDBModelView</span>
 <span class="kn">from</span> <span class="nn">flask_babelpkg</span> <span class="kn">import</span> <span class="n">lazy_gettext</span>

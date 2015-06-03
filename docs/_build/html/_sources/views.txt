@@ -221,7 +221,7 @@ or something.
 
         def form_post(self, form):
             # post process form
-            flash(as_unicode(self.message), 'info')
+            flash(self.message, 'info')
 
     appbuilder.add_view(MyFormView, "My form View", icon="fa-group", label=_('My form View'),
                          category="My Forms", category_icon="fa-cogs")

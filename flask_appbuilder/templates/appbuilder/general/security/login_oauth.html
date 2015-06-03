@@ -12,8 +12,8 @@ var currentSelection = "";
 
 function set_openid(url, pr)
 {
-    $('.provider-select').removeClass('fa-border');
-    $('#' + pr).addClass('fa-border');
+    $('.provider-select').removeClass('fa-black');
+    $('#' + pr).addClass('fa-black');
     currentSelection = pr;
 }
 
@@ -45,7 +45,7 @@ function register() {
                     <div class="center-block btn-group btn-group-lg" role="group">
                         <center>
                         {% for pr in providers %}
-                            <a href="javascript:set_openid('{{url_for('AuthOAuthView.login', provider=pr.name)}}', '{{pr.name}}');">
+                            <a class="btn btn-primary" href="javascript:set_openid('{{url_for('AuthOAuthView.login', provider=pr.name)}}', '{{pr.name}}');">
                                 <i id="{{pr.name}}" class="provider-select fa {{pr.icon}} fa-3x"></i>
                             </a>
                         {% endfor %}

@@ -12,6 +12,7 @@ You have four types of authentication methods
 :REMOTE_USER: Reads the *REMOTE_USER* web server environ var, and verifies if it's authorized with the framework users table.
        It's the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
        is configured to use kerberos, no need for the user to login with username and password on F.A.B.
+:OAUTH: Authentication using OAUTH (v1 or v2). You need to install flask-oauthlib.
 
 Configure the authentication type on config.py, take a look at :doc:`config`
 
@@ -140,6 +141,150 @@ exclude them from add and edit form. Using our example you will define our view 
         add_columns = ['name']
         edit_columns = ['name']
 
+Authentication Methods
+----------------------
+
+We are now looking at the authentication methods, and how you can configure them and customize them.
+The framework as 5 authentication methods and you choose one of them, you configure the method to be used
+on the **config.py** (when using the create-app, or following the propused app structure). First the
+configuration imports the constants for the authentication methods::
+
+    from flask_appbuilder.security.manager import AUTH_OID, \ 
+                                              AUTH_REMOTE_USER, \ 
+                                              AUTH_DB, AUTH_LDAP, \ 
+                                              AUTH_OAUTH, \
+                                              AUTH_OAUTH
+
+Next you will use the **AUTH_TYPE** key to choose the type::
+
+    AUTH_TYPE = AUTH_DB
+    
+Additionally you can customize the name of the builtin roles for Admin and Public accesses::
+
+    AUTH_ROLE_ADMIN = 'My Admin Role Name'
+    AUTH_ROLE_PUBLIC = 'My Public Role Name'
+
+Finally you can allow users to self register (take a look at the following chapters for further detail)::
+
+    AUTH_USER_REGISTRATION = True
+    AUTH_USER_REGISTRATION_ROLE = "My Public Role Name"
+
+These settings can apply to all the authentication methods. When you create your first admin user
+using **fabmanager** command line, this user will be authenticated using the authentication method
+defined on your **config.py**.
+
+Authentication: Database
+------------------------
+
+The database authentication type is the most *simple* one, it authenticates users against an
+username and hashed password field kept on your database.
+
+Administrators can create users with passwords, and users can change their passwords. This is all done using the UI.
+(You can override and extend the default UI as we'll see on *Your Custom Security*)
+
+Authentication: OpenID
+----------------------
+
+This authentication method uses `Flask-OpenID <https://github.com/mitsuhiko/flask-openid>`_. All configuration is done
+on **config.py** using OPENID_PROVIDERS key, just add or remove from the list the providers you want to enable::
+
+    AUTH_TYPE = AUTH_OID
+    OPENID_PROVIDERS = [
+        { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
+        { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
+        { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
+        { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }]
+
+Each list entry is a dict with a readable OpenID name and it's url, if the url needs an username just add it using <username>.
+The login template for this method will provide a text box for the user to fillout his/her username.
+
+F.A.B. will ask for the 'email' from OpenID, and if this email belongs to some user on your application he/she will login successfully.
+
+Authentication: LDAP
+--------------------
+
+This method will authenticate the user's credentials against an LDAP server. Using this method without self user registration
+is very simple, just define the LDAP server::
+
+    AUTH_TYPE = AUTH_LDAP
+    AUTH_LDAP_SERVER = "ldap://ldapserver.local"
+
+Authentication: OAuth
+---------------------
+
+By using this method it will be possible to use the provider API, this is because your requesting the user to give
+permission to your app to access or manage the user's account on the provider.
+
+So you can send tweets, post on the users facebook, retrieve the user's linkedin profile etc.
+
+To use OAuth you need to install `Flask-OAuthLib <https://flask-oauthlib.readthedocs.org/en/latest/>`_. It's usefull
+to get to know this library since F.A.B. will expose the remote application object for you to play with.
+
+Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_ 
+to get an idea of a simple use for this.
+
+Use **config.py** configure OAUTH_PROVIDERS with a list of oauth providers, notice that the remote_app
+key is just the configuration for flask-oauthlib::
+
+    AUTH_TYPE = AUTH_OAUTH
+    
+    OAUTH_PROVIDERS = [
+        {'name':'twitter', 'icon':'fa-twitter',
+            'remote_app': {
+                'consumer_key':'TWITTER KEY',
+                'consumer_secret':'TWITTER SECRET',
+                'base_url':'https://api.twitter.com/1.1/',
+                'request_token_url':'https://api.twitter.com/oauth/request_token',
+                'access_token_url':'https://api.twitter.com/oauth/access_token',
+                'authorize_url':'https://api.twitter.com/oauth/authenticate'}
+        },
+        {'name':'google', 'icon':'fa-google', 'token_key':'access_token',
+            'remote_app': {
+                'consumer_key':'GOOGLE KEY',
+                'consumer_secret':'GOOGLE SECRET',
+                'base_url':'https://www.googleapis.com/plus/v1/',
+                'request_token_params':{
+                  'scope': 'https://www.googleapis.com/auth/userinfo.email'
+                },
+                'request_token_url':None,
+                'access_token_url':'https://accounts.google.com/o/oauth2/token',
+                'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
+        }
+    ]
+
+This needs a small explanation, you basically have five special keys:
+
+:name: The name of the provider, you can choose whatever you want. But the framework as some 
+    builtin logic to retrieve information about a user that you can make use of if you choose:
+    'twitter', 'google', 'github','linkedin'.
+ 
+:icon: The font-awesome icon for this provider.
+:token_key: The token key name that this provider uses, google and github uses *'access_token'*,
+    twitter uses *'oauth_token'* and thats the default.
+:token_secret: The token secret key name, default is *'oauth_token_secret'*
+
+After the user authenticates and grants access permissions to your application
+the framework retrieves information about the user, username and email. This info
+will be checked with the internal user (user record on User Model), first by username next by email.
+
+To override/customize the user information retrieval from oauth, you can create your own method like this::
+
+    @appbuilder.sm.oauth_user_info_getter
+    def my_user_info_getter(sm, provider, response=None):
+        if provider == 'github':
+            me = sm.oauth_remotes[provider].get('user')
+            return {'username': me.data.get('login')}
+        else:
+            return {}
+        
+Decorate your method with the SecurityManager **oauth_user_info_getter** decorator.
+Make your method accept the exact parameters as on this example, and then return a dictionary 
+with the retrieved user information. The dictionary keys must have the same column names as the User Model.
+Your method will be called after the user authorizes your application on the OAuth provider, and it will
+receive the following: **sm** is F.A.B's SecurityManager class, **provider** is a string with the name you configured 
+this provider with, **response** is the response.
+
+Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
 
 Your Custom Security
 --------------------
@@ -209,6 +354,7 @@ If your using:
 - AUTH_LDAP extend UserLDAPModelView
 - AUTH_REMOTE_USER extend UserRemoteUserModelView
 - AUTH_OID extend UserOIDModelView
+- AUTH_OAUTH extend UserOAuthModelView
 
 ::
 
