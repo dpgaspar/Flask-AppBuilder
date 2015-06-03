@@ -10,7 +10,7 @@ import click
 import os
 import sys
 from zipfile import ZipFile
-import .const as c
+from . import const as c
 
 try:
     # For Python 3.0 and later
