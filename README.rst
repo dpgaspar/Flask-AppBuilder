@@ -3,12 +3,6 @@ Flask App Builder
 
 .. image:: https://travis-ci.org/dpgaspar/Flask-AppBuilder.png?branch=master
 	:target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
-.. image:: https://pypip.in/version/Flask-AppBuilder/badge.png
-	:target: https://pypi.python.org/pypi/Flask-AppBuilder
-	:alt: Verion
-.. image:: https://pypip.in/download/Flask-AppBuilder/badge.png
-	:target: https://pypi.python.org/pypi/Flask-AppBuilder
-	:alt: Downloads
 .. image:: https://coveralls.io/repos/dpgaspar/Flask-AppBuilder/badge.png?branch=master
     :target: https://coveralls.io/r/dpgaspar/Flask-AppBuilder
 .. image:: https://landscape.io/github/dpgaspar/Flask-AppBuilder/1.3.3/landscape.svg?style=flat
