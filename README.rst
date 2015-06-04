@@ -59,7 +59,7 @@ Includes:
       - Inserts on the Database all the detailed permissions possible on your application.
       - Public (no authentication needed) and Private permissions.
       - Role based permissions.
-      - Authentication support for OpenID, Database, LDAP and REMOTE_USER environ var.
+      - Authentication support for OAuth, OpenID, Database, LDAP and REMOTE_USER environ var.
       - Support for self user registration.
   - Views and Widgets
       - Automatic menu generation.
