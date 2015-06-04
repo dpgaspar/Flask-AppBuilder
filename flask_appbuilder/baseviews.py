@@ -305,7 +305,7 @@ class BaseModelView(BaseView):
     """
     search_exclude_columns = None
     """
-        List with columns to exclude from search. Will include all possible columns by default
+        List with columns to exclude from search. Search includes all possible columns by default
     """
     label_columns = None
     """ 

@@ -35,8 +35,8 @@ AUTH_TYPE = AUTH_OAUTH
 OAUTH_PROVIDERS = [
     {'name':'twitter', 'icon':'fa-twitter',
         'remote_app': {
-            'consumer_key':'TWITTER_KEY',
-            'consumer_secret':'TWITTER_SECRET',
+            'consumer_key':os.environ.get('TWITTER_KEY'),
+            'consumer_secret':os.environ.get('TWITTER_SECRET'),
             'base_url':'https://api.twitter.com/1.1/',
             'request_token_url':'https://api.twitter.com/oauth/request_token',
             'access_token_url':'https://api.twitter.com/oauth/access_token',
