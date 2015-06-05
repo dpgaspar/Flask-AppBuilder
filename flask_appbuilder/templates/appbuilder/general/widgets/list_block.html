@@ -1,20 +1,12 @@
 {% import 'appbuilder/general/lib.html' as lib %}
+{% extends 'appbuilder/general/widgets/base_list.html' %}
 
-
-	{% set can_add = "can_add" | is_item_visible(modelview_name) %}
-	{% set can_show = "can_show" | is_item_visible(modelview_name) %}
-    {% set can_edit = "can_edit" | is_item_visible(modelview_name) %}
-	{% set can_delete = "can_delete" | is_item_visible(modelview_name) %}
-    {% set actions = actions | get_actions_on_list(modelview_name) %}
-
-	{{ lib.render_list_header(can_add, page, page_size, count, filters, actions, modelview_name) }}
-
-	{% if count > 0 %}
-	
-	<div class="container">
-      <div class="row">
+	{% block begin_content scoped %}    
+	<div class="container-fluid">
+    <div class="row">
+	{% endblock %}
 		
-		
+  {% block begin_loop_values %}
   {% for item in value_columns %}
   	<div class="col-md-4">
   	<div class="thumbnail">
@@ -38,15 +30,11 @@
 	  </div>
 	  </div>
   {% endfor %}
+  {% endblock %}
+  
+  	{% block end_content scoped %}    
+	</div>
+	</div>
+	{% endblock %}
 
-	  </div>
-		</div>
-		{{ lib.action_form(actions,modelview_name) }}
-
-	{% else %}
-	<b> {{_("No records found")}}</b>
-	{% endif %}
-
-<script language="javascript">
-        var modelActions = new AdminActions();
-</script>
+  

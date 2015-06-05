@@ -7,7 +7,7 @@ from flask_appbuilder.views import SimpleFormView, MultipleView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.widgets import FormVerticalWidget, FormInlineWidget, FormHorizontalWidget, ShowBlockWidget
-from flask_appbuilder.widgets import ListThumbnail, ListWidget
+from flask_appbuilder.widgets import ListThumbnail, ListWidget, ListItem, ListBlock
 from flask_appbuilder.models.generic import PSModel
 from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction as FA
 
@@ -85,7 +85,7 @@ class ContactModelView(ModelView):
     list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
 
     list_template = 'list_contacts.html'
-    list_widget = ListThumbnail
+    list_widget = ListBlock
     show_template = 'show_contacts.html'
 
     extra_args = {'extra_arg_obj1': 'Extra argument 1 injected'}
