@@ -1,44 +1,36 @@
 {% import 'appbuilder/general/lib.html' as lib %}
+{% extends 'appbuilder/general/widgets/base_list.html' %}
 
-
-        {% set can_add = "can_add" | is_item_visible(modelview_name) %}
-        {% set can_show = "can_show" | is_item_visible(modelview_name) %}
-        {% set can_edit = "can_edit" | is_item_visible(modelview_name) %}
-        {% set can_delete = "can_delete" | is_item_visible(modelview_name) %}
-        {% set actions = actions | get_actions_on_list(modelview_name) %}
-
-        {{ lib.render_list_header(can_add, page, page_size, count, filters, actions, modelview_name) }}
-
-        {% if count > 0 %}
-        <div class="container">
-        <div class="row">        
-                
-        {% for item in value_columns %}
-        	<div class="col-sm-12 col-md-6 col-lg-6">
-                <div class="thumbnail">
+        {% block begin_loop_header %}
+	    {% endblock %}
+       
+        {% block begin_loop_values %}
+            <div class="container-fluid">
+            <div class="row">        
+            {{ super() }}    
+            {% for item in value_columns %}
                 {% set pk = pks[loop.index-1] %}
-                {% if actions %}
-                    <input id="{{pk}}" class="action_check" name="rowid" value="{{pk}}" type="checkbox">
-                {% endif %}
-                {{ lib.btn_crud(can_show, can_edit, can_delete, pk, modelview_name, filters) }}
-                {% for value in include_columns %}
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="thumbnail">
+                        {% if actions %}
+                            <input id="{{pk}}" class="action_check" name="rowid" value="{{pk}}" type="checkbox">
+                        {% endif %}
+                        {{ lib.btn_crud(can_show, can_edit, can_delete, pk, modelview_name, filters) }}
                         <dl class="dl-horizontal">
-                        	<dt>{{label_columns.get(include_columns[loop.index -1])}}</dt>
-                            <dd>{{ item[value]|safe }}</dd>
-                        </dl>                        
-                {% endfor %}
-                
+                        	
+                        {% for col_name in include_columns %}
+                            {% set col_label = label_columns.get(include_columns[loop.index -1]) %}
+                            {% set value = item[col_name] %}                        
+                            <dt>{{col_label}}</dt>
+                            <dd>{{ item[col_name]|safe }}</dd>
+                                                    
+                        {% endfor %}
+                        </dl>
+                    </div>
                 </div>
-        	</div>
-        {% endfor %}                        
-    </div>
-   </div>
-        {{ lib.action_form(actions,modelview_name) }}
+            {% endfor %}
+            </div>
+            </div>
+        {% endblock %}
 
-{% else %}
-    <b> {{_("No records found")}}</b>
-{% endif %}
-
-<script language="javascript">
-    var modelActions = new AdminActions();
-</script>
+   

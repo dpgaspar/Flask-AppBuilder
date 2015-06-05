@@ -55,12 +55,16 @@ class ProductManufacturerView(ModelView):
 class MyListWidget(ListWidget):
      template = 'widgets/list.html'
 
+class MyListWidgetOverride(ListWidget):
+     template = 'widgets/list_override.html'
+
+
 class ContactModelView2(ModelView):
     datamodel = SQLAInterface(Contact)
     list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
     add_form_query_rel_fields = {'gender':[['name',FilterStartsWith,'F']]}
     list_template = 'mylist.html'
-    list_widget = MyListWidget
+    list_widget = MyListWidgetOverride
     extra_args = {'widget_arg':'WIDGET'}
 
     @expose('/jsonexp')
