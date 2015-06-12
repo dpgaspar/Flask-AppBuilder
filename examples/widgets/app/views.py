@@ -1,6 +1,6 @@
 import calendar
 from flask.ext.appbuilder import ModelView, GroupByChartView
-from flask.ext.appbuilder.widgets import ListThumbnail, ListWidget, ListItem, ListBlock
+from flask.ext.appbuilder.widgets import ListThumbnail, ListWidget, ListItem, ListBlock, ShowBlockWidget
 from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
 from flask.ext.appbuilder.models.group import aggregate_count
 from flask.ext.babelpkg import lazy_gettext as _
@@ -48,17 +48,21 @@ class ContactModelView(ModelView):
     ]
 
 class ContactItemModelView(ContactModelView):
+    list_title = 'List Contact (Items)'
     list_widget = ListItem
 
 class ContactThumbnailModelView(ContactModelView):
+    list_title = 'List Contact (Thumbnails)'
     list_widget = ListThumbnail
 
 class ContactBlockModelView(ContactModelView):
+    list_title = 'List Contact (Blocks)'
     list_widget = ListBlock
+    show_widget = ShowBlockWidget
 
 class GroupModelView(ModelView):
     datamodel = SQLAInterface(ContactGroup)
-    related_views = [ContactModelView]
+    related_views = [ContactModelView, ContactItemModelView, ContactThumbnailModelView, ContactBlockModelView, ]
 
 
 class ContactChartView(GroupByChartView):

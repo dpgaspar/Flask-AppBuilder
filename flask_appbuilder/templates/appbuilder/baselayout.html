@@ -7,7 +7,7 @@
 
     {% block navbar %}
         <header class="top" role="header">
-        {{ baselib.navbar_block(appbuilder.menu, appbuilder.languages) }}
+        {% include 'appbuilder/navbar.html' %}
         </header>
     {% endblock %}
 

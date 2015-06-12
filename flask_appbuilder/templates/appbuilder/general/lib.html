@@ -77,6 +77,34 @@
 {% endif %}
 {% endmacro %}
 
+{% macro render_dropdown_orderby(order_columns, label_columns, modelview_name) %}
+<div class="btn-group">
+    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+    {{_('Order by')}}<span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+    {% for item in order_columns %}
+    {% set res = item | get_link_order(modelview_name) %}
+        {% if res == 2 %}
+            <li class="active">
+    	    <a href={{ item | link_order(modelview_name) }}>{{label_columns.get(item)}}
+    	    <i class="fa fa-fw fa-chevron-up"></i></a>
+            </li>
+    	{% elif res == 1 %}
+            <li class="active">
+            <a href={{ item | link_order(modelview_name) }}>{{label_columns.get(item)}}
+    	    <i class="fa fa-fw fa-chevron-down"></i></a>
+            </li>
+    	{% else %}
+            <li>
+            <a href={{ item | link_order(modelview_name) }}>{{label_columns.get(item)}}</a>
+            </li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+</div>
+{% endmacro %}
+
 
 {% macro render_pagination(page, page_size, count, modelview_name) %}
 

@@ -1,6 +1,11 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 {% extends 'appbuilder/general/widgets/base_list.html' %}
 
+    {% block list_header %}
+        {{ super() }}
+        {{ lib.render_dropdown_orderby(order_columns, label_columns, modelview_name) }}
+    {% endblock %}
+
     {% block begin_content scoped %}    
 	<div class="list-group">
     {% endblock %}
