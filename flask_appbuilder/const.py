@@ -1,19 +1,19 @@
 from flask_babelpkg import lazy_gettext
 
 """
-	All constants and messages definitions go here
+    All constants and messages definitions go here
 
-	Log messages obey the following rule:
-		
-		LOGMSG_<SEV>_<MODULE>_<NAME>
-			<SEV> :- INF | DEB | WAR | ERR
-			<MODULE> :- SEC
+    Log messages obey the following rule:
 
-	Flash messages obey the following rule:
-		
-		FLAMSG_<SEV>_<MODULE>_<NAME>
-			<SEV> :- INF | DEB | WAR | ERR
-			<MODULE> :- SEC
+        LOGMSG_<SEV>_<MODULE>_<NAME>
+            <SEV> :- INF | DEB | WAR | ERR
+            <MODULE> :- SEC
+
+    Flash messages obey the following rule:
+
+        FLAMSG_<SEV>_<MODULE>_<NAME>
+            <SEV> :- INF | DEB | WAR | ERR
+            <MODULE> :- SEC
 
 """
 

@@ -13,15 +13,15 @@
                     <span class="icon-bar"></span>
                 </button>
                 {% if appbuilder.app_icon %}
-                	<a class="navbar-brand" href="{{appbuilder.get_url_for_index}}">
-                	<img src="{{appbuilder.app_icon}}" >
-                	</a>
+                    <a class="navbar-brand" href="{{appbuilder.get_url_for_index}}">
+                    <img src="{{appbuilder.app_icon}}" >
+                    </a>
                 {% else %}
-                	<span class="navbar-brand">
-                	<a href="{{appbuilder.get_url_for_index}}">
-                	{{ appbuilder.app_name }}
-                	</a>
-                	</span>
+                    <span class="navbar-brand">
+                    <a href="{{appbuilder.get_url_for_index}}">
+                    {{ appbuilder.app_name }}
+                    </a>
+                    </span>
                 {% endif %}
         </div>
         <div class="navbar-collapse collapse">

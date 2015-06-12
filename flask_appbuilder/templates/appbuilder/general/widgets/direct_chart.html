@@ -13,11 +13,11 @@
             var jsonData = {{ value_columns | tojson | safe }}
 
 
-    	    //-----------------------------------
+            //-----------------------------------
             // Attach listener for tab open event
             //-----------------------------------
             function attachRedrawForTab(chart, dataTable, options) {
-            	var $tab_el = $('a[data-toggle="tab"]');
+                var $tab_el = $('a[data-toggle="tab"]');
                 $tab_el.on('shown.bs.tab', function () {
                     // Redraws the chart when the tab is activated, so that chart size on tab
                     // won't be too small.
@@ -25,7 +25,7 @@
                     $curr_tab = $($curr_tab_id);
                     if ($curr_tab.children('div').attr('id')=='chart')
                     {
-                    	chart.draw(dataTable, options);
+                        chart.draw(dataTable, options);
                     }
                 });
             }
@@ -34,8 +34,8 @@
             // Attach listener for Accordion open event
             //------------------------------------------
             function attachRedrawForAccord(chart, dataTable, options) {
-            	var $accordion_el = $('.panel-collapse');
-        		$accordion_el.on('shown.bs.collapse', function(){
+                var $accordion_el = $('.panel-collapse');
+                $accordion_el.on('shown.bs.collapse', function(){
                     // Redraws the chart when the tab is activated, so that chart size on tab
                     // won't be too small.
                     $curr_tab_id = ($(this).attr('href'));
@@ -56,8 +56,8 @@
                 //define options for visualization
                 var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
 
-		attachRedrawForTab(chart, dataTable, options);
-		attachRedrawForAccord(chart, dataTable, options);
+        attachRedrawForTab(chart, dataTable, options);
+        attachRedrawForAccord(chart, dataTable, options);
                 //draw our chart
                 chart.draw(dataTable, options);
 

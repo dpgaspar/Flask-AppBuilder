@@ -10,7 +10,7 @@ from .const import LOGMSG_WAR_FAB_VIEW_EXISTS, \
                    LOGMSG_ERR_FAB_ADD_PERMISSION_MENU, \
                    LOGMSG_INF_FAB_ADD_VIEW, \
                    LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW
-                   
+
 log = logging.getLogger(__name__)
 
 
@@ -33,7 +33,7 @@ class AppBuilder(object):
         This is the base class for all the framework.
         This is were you will register all your views and create the menu structure.
         Will hold your flask app object, all your views, and security classes.
-        
+
         initialize your application like this for SQLAlchemy::
 
             from flask import Flask
@@ -83,7 +83,7 @@ class AppBuilder(object):
                  security_manager_class=None):
         """
             AppBuilder constructor
-            
+
             :param app:
                 The flask app object
             :param session:
@@ -110,7 +110,7 @@ class AppBuilder(object):
         self.app = app
         if app is not None:
             self.init_app(app, session)
-    
+
     def init_app(self, app, session):
         """
             Will initialize the Flask app, supporting the app factory pattern.
@@ -256,7 +256,7 @@ class AppBuilder(object):
                  category_icon="", category_label=""):
         """
             Add your views associated with menus using this method.
-            
+
             :param baseview:
                 A BaseView type class instantiated or not.
                 This method will instantiate the class for you if needed.
@@ -278,7 +278,7 @@ class AppBuilder(object):
                 The label that will be displayed on the menu, if absent param name will be used
 
             Examples::
-            
+
                 appbuilder = AppBuilder(app, db)
                 # Register a view, rendering a top menu without icon.
                 appbuilder.add_view(MyModelView(), "My View")
@@ -311,7 +311,7 @@ class AppBuilder(object):
     def add_link(self, name, href, icon="", label="", category="", category_icon="", category_label="", baseview=None):
         """
             Add your own links to menu using this method
-            
+
             :param name:
                 The string name that identifies the menu.
             :param href:
@@ -340,19 +340,19 @@ class AppBuilder(object):
     def add_separator(self, category):
         """
             Add a separator to the menu, you will sequentially create the menu
-            
+
             :param category:
-                The menu category where the separator will be included.                    
+                The menu category where the separator will be included.
         """
         self.menu.add_separator(category)
 
     def add_view_no_menu(self, baseview, endpoint=None, static_folder=None):
         """
             Add your views without creating a menu.
-            
+
             :param baseview:
                 A BaseView type class instantiated.
-                    
+
         """
         baseview = self._check_and_init(baseview)
         log.info(LOGMSG_INF_FAB_ADD_VIEW.format(baseview.__class__.__name__, ""))

@@ -23,11 +23,11 @@ class RenderTemplateWidget(object):
 
     def __init__(self, **kwargs):
         self.template_args = kwargs
-    
+
     def __call__(self, **kwargs):
         ctx = _request_ctx_stack.top
         jinja_env = ctx.app.jinja_env
-        
+
         template = jinja_env.get_template(self.template)
         args = self.template_args.copy()
         args.update(kwargs)
@@ -83,13 +83,13 @@ class FormInlineWidget(RenderTemplateWidget):
 
 
 class GroupFormListWidget(RenderTemplateWidget):
-    template = 'appbuilder/general/widgets/group_form_list.html'    
+    template = 'appbuilder/general/widgets/group_form_list.html'
 
 
 class SearchWidget(FormWidget):
     template = 'appbuilder/general/widgets/search.html'
     filters = None
-    
+
     def __init__(self, **kwargs):
         self.filters = kwargs.get('filters')
         return super(SearchWidget, self).__init__(**kwargs)
@@ -157,7 +157,7 @@ class ListWidget(RenderTemplateWidget):
         modelview_name = ''
     """
     template = 'appbuilder/general/widgets/list.html'
-    
+
 
 class ListMasterWidget(ListWidget):
     template = 'appbuilder/general/widgets/list_master.html'
@@ -172,7 +172,7 @@ class ListAddWidget(ListWidget):
     def __call__(self, **kwargs):
         return super(ListAddWidget, self).__call__(**kwargs)
 
-        
+
 class ListThumbnail(ListWidget):
     template = 'appbuilder/general/widgets/list_thumbnail.html'
 

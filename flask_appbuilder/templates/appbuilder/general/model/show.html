@@ -5,15 +5,15 @@
 {{ lib.panel_begin(title) }}
 
 {% if related_views %}
-	<ul class="nav nav-tabs">  
-	<li class="active"><a href="#Home" data-toggle="tab">Detail</a> </li>
+    <ul class="nav nav-tabs">
+    <li class="active"><a href="#Home" data-toggle="tab">Detail</a> </li>
         {% for view in related_views %}
-		    <li>
+            <li>
                 <a href="#{{view.__class__.__name__}}" data-toggle="tab">{{view.title}}</a>
             </li>
         {% endfor %}
     </ul>
-        
+
     <div class="tab-content">
     {% for view in related_views %}
         <div id="{{view.__class__.__name__}}" class="tab-pane">
@@ -24,7 +24,7 @@
 
 {% block show_form %}
     <div id="Home" class="tab-pane active">
-	    {{ widgets.get('show')()|safe }}
+        {{ widgets.get('show')()|safe }}
     </div>
 {% endblock show_form %}
 

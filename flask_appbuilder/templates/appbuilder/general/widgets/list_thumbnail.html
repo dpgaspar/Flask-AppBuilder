@@ -3,13 +3,13 @@
 
 {% block list_header %}
     {{ super() }}
-	{{ lib.render_dropdown_orderby(order_columns, label_columns, modelview_name) }}
+    {{ lib.render_dropdown_orderby(order_columns, label_columns, modelview_name) }}
 {% endblock %}
-       
+
 {% block begin_loop_values %}
     <div class="container-fluid">
-    <div class="row">        
-    {{ super() }}    
+    <div class="row">
+    {{ super() }}
     {% for item in value_columns %}
         {% set pk = pks[loop.index-1] %}
         <div class="col-sm-12 col-md-6 col-lg-6">
@@ -21,9 +21,9 @@
         <dl class="dl-horizontal">                	
         {% for col_name in include_columns %}
             {% set col_label = label_columns.get(include_columns[loop.index -1]) %}
-            {% set value = item[col_name] %}                        
+            {% set value = item[col_name] %}
             <dt>{{col_label}}</dt>
-            <dd>{{ item[col_name]|safe }}</dd>                                        
+            <dd>{{ item[col_name]|safe }}</dd>
         {% endfor %}
         </dl>
         </div>

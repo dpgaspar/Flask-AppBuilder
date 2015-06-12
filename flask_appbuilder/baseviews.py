@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 def expose(url='/', methods=('GET',)):
     """
         Use this decorator to expose views on your view classes.
-       
+
         :param url:
             Relative URL for the view
         :param methods:
@@ -44,8 +44,8 @@ class BaseView(object):
         All views inherit from this class. it's constructor will register your exposed urls on flask as a Blueprint.
 
         This class does not expose any urls, but provides a common base for all views.
-        
-        Extend this class if you want to expose methods for your own templates        
+
+        Extend this class if you want to expose methods for your own templates
     """
 
     appbuilder = None
@@ -101,7 +101,7 @@ class BaseView(object):
                          static_folder=None):
         """
             Create Flask blueprint. You will generally not use it
-            
+
             :param appbuilder:
                the AppBuilder object
             :param endpoint:
@@ -204,7 +204,7 @@ class BaseView(object):
             Returns the url for this class default endpoint
         """
         return url_for(cls.__name__ + '.' + cls.default_view, **kwargs)
-            
+
     def get_uninit_inner_views(self):
         """
             Will return a list with views that need to be initialized.
@@ -284,9 +284,9 @@ class BaseModelView(BaseView):
     """
 
     datamodel = None
-    """ 
+    """
         Your sqla model you must initialize it like::
-        
+
             class MyView(ModelView):
                 datamodel = SQLAModel(MyTable)
     """
@@ -294,46 +294,46 @@ class BaseModelView(BaseView):
     title = 'Title'
 
     search_columns = None
-    """ 
-        List with allowed search columns, if not provided all possible search columns will be used 
+    """
+        List with allowed search columns, if not provided all possible search columns will be used
         If you want to limit the search (*filter*) columns possibilities, define it with a list of column names from your model::
-        
+
             class MyView(ModelView):
                 datamodel = SQLAModel(MyTable, db.session)
                 search_columns = ['name','address']
-             
+
     """
     search_exclude_columns = None
     """
         List with columns to exclude from search. Search includes all possible columns by default
     """
     label_columns = None
-    """ 
-        Dictionary of labels for your columns, override this if you want diferent pretify labels 
-        
+    """
+        Dictionary of labels for your columns, override this if you want diferent pretify labels
+
         example (will just override the label for name column)::
-        
+
             class MyView(ModelView):
                 datamodel = SQLAModel(MyTable, db.session)
                 label_columns = {'name':'My Name Label Override'}
-        
+
     """
     search_form = None
     """ To implement your own add WTF form for Search """
     base_filters = None
-    """ 
+    """
         Filter the view use: [['column_name',BaseFilter,'value'],]
-    
+
         example::
-        
+
             def get_user():
                 return g.user
-        
+
             class MyView(ModelView):
                 datamodel = SQLAModel(MyTable, db.session)
                 base_filters = [['created_by', FilterEqualFunction, get_user],
                                 ['name', FilterStartsWith, 'a']]
-    
+
     """
 
     base_order = None
@@ -381,13 +381,13 @@ class BaseModelView(BaseView):
         self.base_filters = self.base_filters or []
         self.search_exclude_columns = self.search_exclude_columns or []
         self.search_columns = self.search_columns or []
-        
+
         self._base_filters = self.datamodel.get_filters().add_filter_list(self.base_filters)
         list_cols = self.datamodel.get_columns_list()
         search_columns = self.datamodel.get_search_columns_list()
         if not self.search_columns:
             self.search_columns = [x for x in search_columns if x not in self.search_exclude_columns]
-                
+
         self._gen_labels_columns(list_cols)
         self._filters = self.datamodel.get_filters(self.search_columns)
 
@@ -395,7 +395,6 @@ class BaseModelView(BaseView):
         conv = GeneralModelConverter(self.datamodel)
         if not self.search_form:
             self.search_form = conv.create_form(self.label_columns, self.search_columns)
-
 
     def _get_search_widget(self, form=None, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []
@@ -426,14 +425,14 @@ class BaseCRUDView(BaseModelView):
     """
 
     related_views = None
-    """ 
+    """
         List with ModelView classes
         Will be displayed related with this one using relationship sqlalchemy property::
 
             class MyView(ModelView):
                 datamodel = SQLAModel(Group, db.session)
                 related_views = [MyOtherRelatedView]
-                
+
     """
     _related_views = None
     """ internal list with ref to instantiated view classes """
@@ -481,15 +480,15 @@ class BaseCRUDView(BaseModelView):
     order_columns = None
     """ Allowed order columns """
     page_size = 10
-    """ 
-        Use this property to change default page size 
+    """
+        Use this property to change default page size
     """
     show_fieldsets = None
-    """ 
+    """
         show fieldsets django style [(<'TITLE'|None>, {'fields':[<F1>,<F2>,...]}),....]
-        
+
         ::
-        
+
             class MyView(ModelView):
                 datamodel = SQLAModel(MyTable, db.session)
 
@@ -500,18 +499,18 @@ class BaseCRUDView(BaseModelView):
 
     """
     add_fieldsets = None
-    """ 
+    """
         add fieldsets django style (look at show_fieldsets for an example)
     """
     edit_fieldsets = None
-    """ 
+    """
         edit fieldsets django style (look at show_fieldsets for an example)
     """
 
     description_columns = None
-    """ 
+    """
         Dictionary with column descriptions that will be shown on the forms::
-        
+
             class MyView(ModelView):
                 datamodel = SQLAModel(MyTable, db.session)
 
@@ -519,7 +518,7 @@ class BaseCRUDView(BaseModelView):
     """
     validators_columns = None
     """ Dictionary to add your own validators for forms """
-    
+
     add_form_extra_fields = None
     """
         A dictionary containing column names and a WTForm
@@ -531,7 +530,7 @@ class BaseCRUDView(BaseModelView):
     """
     edit_form_extra_fields = None
     """ Dictionary to add extra fields to the Edit form using this property """
-    
+
     add_form_query_rel_fields = None
     """
         Add Customized query for related fields to add form.
@@ -679,7 +678,7 @@ class BaseCRUDView(BaseModelView):
     """
     -----------------------------------------------------
             GET WIDGETS SECTION
-    -----------------------------------------------------        
+    -----------------------------------------------------
     """
 
     def _get_related_view_widget(self, item, related_view,
@@ -814,7 +813,7 @@ class BaseCRUDView(BaseModelView):
     """
     -----------------------------------------------------
             CRUD functions behaviour
-    -----------------------------------------------------        
+    -----------------------------------------------------
     """
     def _list(self):
         """

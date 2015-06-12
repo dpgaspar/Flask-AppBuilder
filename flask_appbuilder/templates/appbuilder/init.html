@@ -2,7 +2,7 @@
 
 
 {% if appbuilder %}
-	{% set app_name = appbuilder.app_name %}
+    {% set app_name = appbuilder.app_name %}
 {% endif %}
 
 <!DOCTYPE html>
@@ -49,9 +49,9 @@
 
 {% block tail_js %}
     <script src="{{url_for('appbuilder.static',filename='js/bootstrap.min.js')}}"></script>
-	<script src="{{url_for('appbuilder.static',filename='datepicker/bootstrap-datepicker.js')}}"></script>
-	<script src="{{url_for('appbuilder.static',filename='select2/select2.js')}}"></script>
-	<script src="{{url_for('appbuilder.static',filename='js/ab.js')}}"></script>
+    <script src="{{url_for('appbuilder.static',filename='datepicker/bootstrap-datepicker.js')}}"></script>
+    <script src="{{url_for('appbuilder.static',filename='select2/select2.js')}}"></script>
+    <script src="{{url_for('appbuilder.static',filename='js/ab.js')}}"></script>
 {% endblock %}
 
 {% block add_tail_js %}
