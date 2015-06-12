@@ -1,6 +1,4 @@
-from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask import g, request, url_for
-from flask.ext.login import current_user
+from flask import request, url_for
 
 
 def app_template_filter(filter_name=''):
@@ -12,16 +10,16 @@ def app_template_filter(filter_name=''):
 
 
 class TemplateFilters(object):
-    
+
     security_manager = None
-    
+
     def __init__(self, app, security_manager):
+
         self.security_manager = security_manager
         for attr_name in dir(self):
             if hasattr(getattr(self, attr_name), '_filter'):
                 attr = getattr(self, attr_name)
                 app.jinja_env.filters[attr._filter] = attr
-
 
     @app_template_filter('get_actions_on_list')
     def get_actions_on_list(self, actions, modelview_name):
@@ -40,7 +38,6 @@ class TemplateFilters(object):
             if self.is_item_visible(action.name, modelview_name) and action.single:
                 res_actions[action_key] = action
         return res_actions
-
 
     @app_template_filter('link_order')
     def link_order_filter(self, column, modelview_name):
@@ -81,15 +78,14 @@ class TemplateFilters(object):
         args['psize_' + modelview_name] = page_size
         return url_for(request.endpoint, **dict(list(new_args.items()) + list(args.to_dict().items())))
 
-
     @app_template_filter('get_link_next')
     def get_link_next_filter(self, s):
         return request.args.get('next')
-        
+
     @app_template_filter('get_link_back')
     def get_link_back_filter(self, request):
         return request.args.get('next') or request.referrer
-    
+
 
     # TODO improve this
     @app_template_filter('set_link_filters')
@@ -116,7 +112,6 @@ class TemplateFilters(object):
     @app_template_filter('get_attr')
     def get_attr_filter(self, obj, item):
         return getattr(obj, item)
-
 
     @app_template_filter('is_menu_visible')
     def is_menu_visible(self, item):
