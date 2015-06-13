@@ -10,21 +10,21 @@ try:
     from wtforms.fields.core import _unset_value as unset_value
 except ImportError:
     from wtforms.utils import unset_value
-    
+
 
 """
     Based and thanks to https://github.com/mrjoes/flask-admin/blob/master/flask_admin/form/upload.py
 """
 
 class BS3FileUploadFieldWidget(object):
-    
+
     empty_template = ('<div class="input-group">'
                     '<span class="input-group-addon"><i class="fa fa-upload"></i>'
                     '</span>'
                     '<input class="form-control" %(file)s/>'
         '</div>'
         )
-    
+
     data_template = ('<div>'
                      ' <input %(text)s>'
                      ' <input type="checkbox" name="%(marker)s">Delete</input>'
@@ -39,13 +39,13 @@ class BS3FileUploadFieldWidget(object):
     def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
         kwargs.setdefault('name', field.name)
-        
+
         args = {
             'file': html_params(type='file',
                                 **kwargs),
             'marker': '_%s-delete' % field.name
         }
-        
+
         template = self.data_template if field.data else self.empty_template
 
         return HTMLString(template % {
@@ -55,17 +55,17 @@ class BS3FileUploadFieldWidget(object):
                                 **kwargs),
             'marker': '_%s-delete' % field.name
         })
-        
+
 
 class BS3ImageUploadFieldWidget(object):
-    
+
     empty_template = ('<div class="input-group">'
                     '<span class="input-group-addon"><span class="glyphicon glyphicon-upload"></span>'
                     '</span>'
                     '<input class="form-control" %(file)s/>'
         '</div>'
         )
-    
+
     data_template = ('<div class="thumbnail">'
                      ' <img %(image)s>'
                      ' <input type="checkbox" name="%(marker)s">Delete</input>'
@@ -80,19 +80,19 @@ class BS3ImageUploadFieldWidget(object):
     def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
         kwargs.setdefault('name', field.name)
-        
+
         args = {
             'file': html_params(type='file',
                                 **kwargs),
             'marker': '_%s-delete' % field.name
         }
-        
+
         if field.data:
             url = self.get_url(field)
             args['image'] = html_params(src=url)
             template = self.data_template
-            
-        else: 
+
+        else:
             template = self.empty_template
 
         return HTMLString(template % args)
@@ -123,7 +123,7 @@ class FileUploadField(fields.TextField):
             :param validators:
                 Validators
         """
-        
+
         self.filemanager = filemanager or FileManager()
         self._should_delete = False
 
@@ -170,7 +170,7 @@ class ImageUploadField(fields.StringField):
     def __init__(self, label=None, validators=None,
                  imagemanager = None,
                  **kwargs):
-        
+
         self.imagemanager = imagemanager or ImageManager()
         self._should_delete = False
         super(ImageUploadField, self).__init__(label, validators, **kwargs)

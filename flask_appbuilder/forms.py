@@ -1,9 +1,8 @@
 import logging
-from flask import g
 from flask_wtf import Form
-from functools import partial
 from wtforms import (BooleanField, StringField,
-                     TextAreaField, IntegerField, FloatField, DateField, DateTimeField)
+                     TextAreaField, IntegerField, FloatField,
+                      DateField, DateTimeField)
 from .fields import QuerySelectMultipleField, QuerySelectField
 
 from wtforms import validators
