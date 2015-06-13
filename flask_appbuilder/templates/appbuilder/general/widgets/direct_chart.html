@@ -1,4 +1,4 @@
-<div id="chart" style="height: {{height}};">
+<div id="{{ chart_title|replace(' ','_') }}" style="height: {{height}};">
 </div>
 
 <script type="text/javascript" src="{{url_for('appbuilder.static',filename='js/google_charts.js')}}"></script>
@@ -10,7 +10,7 @@
             google.setOnLoadCallback (createChart);
             // playground http://code.google.com/apis/ajax/playground/?type=visualization#line_chart
 
-            var jsonData = {{ value_columns | tojson | safe }}
+            var jsonData{{ chart_title|replace(' ','_') }} = {{ value_columns | tojson | safe }}
 
 
     	    //-----------------------------------
@@ -23,7 +23,7 @@
                     // won't be too small.
                     $curr_tab_id = ($(this).attr('href'));
                     $curr_tab = $($curr_tab_id);
-                    if ($curr_tab.children('div').attr('id')=='chart')
+                    if ($curr_tab.children('div').attr('id')=='{{ chart_title|replace(' ','_') }}')
                     {
                     	chart.draw(dataTable, options);
                     }
@@ -40,7 +40,7 @@
                     // won't be too small.
                     $curr_tab_id = ($(this).attr('href'));
                     $curr_tab = $($curr_tab_id);
-                    if ($curr_tab.children('div').attr('id')=='chart')
+                    if ($curr_tab.children('div').attr('id')=='{{ chart_title|replace(' ','_') }}')
                     {
                         chart.draw(dataTable, options);
                     }
@@ -50,11 +50,11 @@
             //callback function
             function createChart() {
 
-                var dataTable = new google.visualization.DataTable(jsonData);
+                var dataTable = new google.visualization.DataTable(jsonData{{ chart_title|replace(' ','_') }});
                 //instantiate our chart object
-                var chart = new google.visualization.{{chart_type}}(document.getElementById('chart'));
+                var chart = new google.visualization.{{chart_type}}(document.getElementById('{{ chart_title|replace(' ','_') }}'));
                 //define options for visualization
-                var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
+                var options = {is3D: {{ chart_3d }}, title: '{{ chart_title|replace(' ','_') }}' };
 
 		attachRedrawForTab(chart, dataTable, options);
 		attachRedrawForAccord(chart, dataTable, options);
