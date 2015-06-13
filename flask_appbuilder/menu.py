@@ -38,7 +38,7 @@ class MenuItem(object):
 
 class Menu(object):
     menu = None
-    
+
     def __init__(self, reverse=True, extra_classes=""):
         self.menu = []
         if reverse:
@@ -76,23 +76,27 @@ class Menu(object):
         else:
             self.find(category).childs.append(MenuItem(name=category, icon=icon, label=label))
 
-
     def add_link(self, name, href="", icon="", label="", category="", category_icon="", category_label="",
                  baseview=None):
         label = label or name
         category_label = category_label or category
         if category == "":
-            self.menu.append(MenuItem(name=name, href=href, icon=icon, label=label, baseview=baseview))
+            self.menu.append(MenuItem(name=name,
+                href=href, icon=icon,
+                label=label, baseview=baseview))
         else:
             menu_item = self.find(category)
             if menu_item:
-                menu_item.childs.append(MenuItem(name=name, href=href, icon=icon, label=label, baseview=baseview))
+                new_menu_item = MenuItem(name=name,
+                                    href=href, icon=icon,
+                                    label=label, baseview=baseview)
+                menu_item.childs.append(new_menu_item)
             else:
                 self.add_category(category=category, icon=category_icon, label=category_label)
-                self.find(category).childs.append(MenuItem(name=name,
-                                                           href=href, icon=icon, label=label,
-                                                           baseview=baseview))
-
+                new_menu_item = MenuItem(name=name,
+                                    href=href, icon=icon, label=label,
+                                    baseview=baseview)
+                self.find(category).childs.append(new_menu_item)
 
     def add_separator(self, category=""):
         menu_item = self.find(category)

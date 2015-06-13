@@ -1,6 +1,6 @@
 import logging
 from flask.ext.babelpkg import lazy_gettext
-from .widgets import ChartWidget, DirectChartWidget, MultipleChartWidget
+from .widgets import ChartWidget, DirectChartWidget
 from .jsontools import dict_to_json
 from ..widgets import SearchWidget
 from ..security.decorators import has_access
@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 class BaseChartView(BaseModelView):
     """
-        This is the base class for all chart views. 
+        This is the base class for all chart views.
         Use DirectByChartView or GroupByChartView, override their properties and their base classes
         (BaseView, BaseModelView, BaseChartView) to customise your charts
     """
@@ -178,7 +178,9 @@ class GroupByChartView(BaseChartView):
                                              chart_type=self.chart_type,
                                              chart_3d=self.chart_3d,
                                              height=height,
-                                             value_columns=value_columns, **args)
+                                             value_columns=value_columns,
+                                             modelview_name=self.__class__.__name__,
+                                              **args)
         return widgets
 
     @expose('/chart/<group_by>')
@@ -283,7 +285,9 @@ class BaseSimpleGroupByChartView(BaseChartView):
                                              chart_type=self.chart_type,
                                              chart_3d=self.chart_3d,
                                              height=height,
-                                             value_columns=value_columns, **args)
+                                             value_columns=value_columns,
+                                             modelview_name = self.__class__.__name__,
+                                             **args)
         return widgets
 
 
@@ -331,7 +335,9 @@ class BaseSimpleDirectChartView(BaseChartView):
                                              chart_type=self.chart_type,
                                              chart_3d=self.chart_3d,
                                              height=height,
-                                             value_columns=value_columns, **args)
+                                             value_columns=value_columns,
+                                             modelview_name = self.__class__.__name__,
+                                             **args)
         return widgets
 
 
@@ -341,7 +347,7 @@ class ChartView(BaseSimpleGroupByChartView):
 
         Provides a simple (and hopefully nice) way to draw charts on your application.
 
-        This will show Google Charts based on group by of your tables.                
+        This will show Google Charts based on group by of your tables.
     """
 
     @expose('/chart/<group_by>')
@@ -402,7 +408,9 @@ class TimeChartView(BaseSimpleGroupByChartView):
                                              chart_type=self.chart_type,
                                              chart_3d=self.chart_3d,
                                              height=height,
-                                             value_columns=value_columns, **args)
+                                             value_columns=value_columns,
+                                             modelview_name=self.__class__.__name__,
+                                             **args)
         return widgets
 
 

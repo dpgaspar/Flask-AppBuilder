@@ -1,9 +1,8 @@
 import logging
 from flask import flash, redirect, send_file, jsonify, make_response
 from ._compat import as_unicode
-from flask_babelpkg import lazy_gettext
 from .filemanager import uuid_originalname
-from .widgets import FormWidget, GroupFormListWidget, ListMasterWidget
+from .widgets import GroupFormListWidget, ListMasterWidget
 from .baseviews import BaseView, BaseCRUDView, BaseFormView, expose, expose_api
 from .security.decorators import has_access, permission_name, has_access_api
 from .urltools import *
@@ -63,7 +62,7 @@ class SimpleFormView(BaseFormView):
                                     appbuilder=self.appbuilder
         )
 
-    
+
     @expose("/form", methods=['POST'])
     @has_access
     def this_form_post(self):
@@ -82,7 +81,7 @@ class SimpleFormView(BaseFormView):
                 appbuilder=self.appbuilder
             )
 
-    
+
 class PublicFormView(BaseFormView):
     """
         View for presenting your own forms

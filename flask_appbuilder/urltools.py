@@ -1,5 +1,5 @@
 import re
-from flask import url_for, request
+from flask import request
 
 
 class Stack(object):
@@ -40,9 +40,9 @@ def get_page_args():
     """
         Get page arguments, returns a dictionary
         { <VIEW_NAME>: PAGE_NUMBER }
-    
+
         Arguments are passed: page_<VIEW_NAME>=<PAGE_NUMBER>
-    
+
     """
     pages = {}
     for arg in request.args:
@@ -55,9 +55,9 @@ def get_page_size_args():
     """
         Get page size arguments, returns an int
         { <VIEW_NAME>: PAGE_NUMBER }
-    
+
         Arguments are passed: psize_<VIEW_NAME>=<PAGE_SIZE>
-    
+
     """
     page_sizes = {}
     for arg in request.args:
@@ -65,14 +65,14 @@ def get_page_size_args():
         if re_match:
             page_sizes[re_match[0]] = int(request.args.get(arg))
     return page_sizes
-        
+
 def get_order_args():
     """
         Get order arguments, return a dictionary
         { <VIEW_NAME>: (ORDER_COL, ORDER_DIRECTION) }
-    
+
         Arguments are passed like: _oc_<VIEW_NAME>=<COL_NAME>&_od_<VIEW_NAME>='asc'|'desc'
-    
+
     """
     orders = {}
     for arg in request.args:
