@@ -54,7 +54,7 @@
                 //instantiate our chart object
                 var chart = new google.visualization.{{chart_type}}(document.getElementById('{{ chart_title|replace(' ','_') }}'));
                 //define options for visualization
-                var options = {is3D: {{ chart_3d }}, title: '{{ chart_title|replace(' ','_') }}' };
+                var options = {is3D: {{ chart_3d }}, title: '{{ chart_title }}' };
 
 		attachRedrawForTab(chart, dataTable, options);
 		attachRedrawForAccord(chart, dataTable, options);
