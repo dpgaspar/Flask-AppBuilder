@@ -22,7 +22,8 @@ class IndexView(BaseView):
     @expose('/')
     def index(self):
         self.update_redirect()
-        return self.render_template(self.index_template, appbuilder=self.appbuilder)
+        return self.render_template(self.index_template,
+                                    appbuilder=self.appbuilder)
 
 
 class UtilView(BaseView):
