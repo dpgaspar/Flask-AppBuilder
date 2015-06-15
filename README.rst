@@ -5,8 +5,8 @@ Flask App Builder
 	:target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
 .. image:: https://coveralls.io/repos/dpgaspar/Flask-AppBuilder/badge.png?branch=master
     :target: https://coveralls.io/r/dpgaspar/Flask-AppBuilder
-.. image:: https://landscape.io/github/dpgaspar/Flask-AppBuilder/1.3.3/landscape.svg?style=flat
-   :target: https://landscape.io/github/dpgaspar/Flask-AppBuilder/1.3.3
+.. image:: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master
    :alt: Code Health
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
@@ -23,7 +23,7 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 1.4.0*.
+*New 1.4.1*.
 
 If you're already using F.A.B.
 read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.
