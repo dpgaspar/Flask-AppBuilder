@@ -303,7 +303,7 @@ class BaseSimpleDirectChartView(BaseChartView):
         if not self.direct_columns:
             raise Exception('Base Chart View property <direct_columns> must not be empty')
         else:
-            super(BaseChartView, self).__init__(**kwargs)
+            super(BaseSimpleDirectChartView, self).__init__(**kwargs)
 
 
     def get_group_by_columns(self):

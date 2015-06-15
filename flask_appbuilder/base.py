@@ -31,7 +31,8 @@ class AppBuilder(object):
 
 
         This is the base class for all the framework.
-        This is were you will register all your views and create the menu structure.
+        This is were you will register all your views
+        and create the menu structure.
         Will hold your flask app object, all your views, and security classes.
 
         initialize your application like this for SQLAlchemy::
@@ -216,7 +217,8 @@ class AppBuilder(object):
 
     def _add_global_static(self):
         bp = Blueprint('appbuilder', __name__, url_prefix='/static',
-                       template_folder='templates', static_folder=self.static_folder,
+                       template_folder='templates',
+                       static_folder=self.static_folder,
                        static_url_path=self.static_url_path)
         self.get_app.register_blueprint(bp)
 
@@ -255,43 +257,46 @@ class AppBuilder(object):
                  label="", category="",
                  category_icon="", category_label=""):
         """
-            Add your views associated with menus using this method.
+        Add your views associated with menus using this method.
 
-            :param baseview:
-                A BaseView type class instantiated or not.
-                This method will instantiate the class for you if needed.
-            :param name:
-                The string name that identifies the menu.
-            :param href:
-                Override the generated href for the menu. You can use an url string or an endpoint name
-                if non provided default_view from view will be set as href.
-            :param icon:
-                Font-Awesome icon name, optional.
-            :param label:
-                The label that will be displayed on the menu, if absent param name will be used
-            :param category:
-                The menu category where the menu will be included,
-                if non provided the view will be acessible as a top menu.
-            :param category_icon:
-                Font-Awesome icon name for the category, optional.
-            :param category_label:
-                The label that will be displayed on the menu, if absent param name will be used
+        :param baseview:
+            A BaseView type class instantiated or not.
+            This method will instantiate the class for you if needed.
+        :param name:
+            The string name that identifies the menu.
+        :param href:
+            Override the generated href for the menu.
+            You can use an url string or an endpoint name
+            if non provided default_view from view will be set as href.
+        :param icon:
+            Font-Awesome icon name, optional.
+        :param label:
+            The label that will be displayed on the menu,
+            if absent param name will be used
+        :param category:
+            The menu category where the menu will be included,
+            if non provided the view will be acessible as a top menu.
+        :param category_icon:
+            Font-Awesome icon name for the category, optional.
+        :param category_label:
+            The label that will be displayed on the menu,
+            if absent param name will be used
 
-            Examples::
+        Examples::
 
-                appbuilder = AppBuilder(app, db)
-                # Register a view, rendering a top menu without icon.
-                appbuilder.add_view(MyModelView(), "My View")
-                # or not instantiated
-                appbuilder.add_view(MyModelView, "My View")
-                # Register a view, a submenu "Other View" from "Other" with a phone icon.
-                appbuilder.add_view(MyOtherModelView, "Other View", icon='fa-phone', category="Others")
-                # Register a view, with category icon and translation.
-                appbuilder.add_view(YetOtherModelView(), "Other View", icon='fa-phone',
-                                label=_('Other View'), category="Others", category_icon='fa-envelop',
-                                category_label=_('Other View'))
-                # Add a link
-                appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
+            appbuilder = AppBuilder(app, db)
+            # Register a view, rendering a top menu without icon.
+            appbuilder.add_view(MyModelView(), "My View")
+            # or not instantiated
+            appbuilder.add_view(MyModelView, "My View")
+            # Register a view, a submenu "Other View" from "Other" with a phone icon.
+            appbuilder.add_view(MyOtherModelView, "Other View", icon='fa-phone', category="Others")
+            # Register a view, with category icon and translation.
+            appbuilder.add_view(YetOtherModelView(), "Other View", icon='fa-phone',
+                            label=_('Other View'), category="Others", category_icon='fa-envelop',
+                            category_label=_('Other View'))
+            # Add a link
+            appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
         baseview = self._check_and_init(baseview)
         log.info(LOGMSG_INF_FAB_ADD_VIEW.format(baseview.__class__.__name__, name))
@@ -308,25 +313,30 @@ class AppBuilder(object):
                       category_label=category_label, baseview=baseview)
         return baseview
 
-    def add_link(self, name, href, icon="", label="", category="", category_icon="", category_label="", baseview=None):
+    def add_link(self, name, href, icon="", label="",
+                 category="", category_icon="",
+                 category_label="", baseview=None):
         """
             Add your own links to menu using this method
 
             :param name:
                 The string name that identifies the menu.
             :param href:
-                Override the generated href for the menu. You can use an url string or an endpoint name
+                Override the generated href for the menu.
+                You can use an url string or an endpoint name
             :param icon:
                 Font-Awesome icon name, optional.
             :param label:
-                The label that will be displayed on the menu, if absent param name will be used
+                The label that will be displayed on the menu,
+                if absent param name will be used
             :param category:
                 The menu category where the menu will be included,
                 if non provided the view will be accessible as a top menu.
             :param category_icon:
                 Font-Awesome icon name for the category, optional.
             :param category_label:
-                The label that will be displayed on the menu, if absent param name will be used
+                The label that will be displayed on the menu,
+                if absent param name will be used
 
         """
         self.menu.add_link(name=name, href=href, icon=icon, label=label,
@@ -362,7 +372,8 @@ class AppBuilder(object):
             self.baseviews.append(baseview)
             self._process_inner_views()
             if self.app:
-                self.register_blueprint(baseview, endpoint=endpoint, static_folder=static_folder)
+                self.register_blueprint(baseview,
+                     endpoint=endpoint, static_folder=static_folder)
                 self._add_permission(baseview)
         else:
             log.warning(LOGMSG_WAR_FAB_VIEW_EXISTS.format(baseview.__class__.__name__))
@@ -370,8 +381,10 @@ class AppBuilder(object):
 
     def security_cleanup(self):
         """
-            This method is useful if you have changed the name of your menus or classes,
-            changing them will leave behind permissions that are not associated with anything.
+            This method is useful if you have changed
+            the name of your menus or classes,
+            changing them will leave behind permissions
+            that are not associated with anything.
 
             You can use it always or just sometimes to
             perform a security cleanup. Warning this will delete any permission
