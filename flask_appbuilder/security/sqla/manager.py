@@ -48,7 +48,7 @@ class SecurityManager(BaseSecurityManager):
             self.useroauthmodelview.datamodel = user_datamodel
         elif self.auth_type == c.AUTH_REMOTE_USER:
             self.userremoteusermodelview.datamodel = user_datamodel
- 
+
         self.userstatschartview.datamodel = user_datamodel
         if self.auth_user_registration:
             self.registerusermodelview.datamodel = SQLAInterface(self.registeruser_model)
@@ -85,11 +85,12 @@ class SecurityManager(BaseSecurityManager):
         return self.get_session.query(RegisterUser).filter(
             RegisterUser.registration_hash == registration_hash).scalar()
 
-    def add_register_user(self, username, first_name, last_name, email, password='', hashed_password=''):
+    def add_register_user(self, username, first_name, last_name, email,
+                         password='', hashed_password=''):
         """
             Add a registration request for the user.
 
-        :rtype : RegisterUser
+            :rtype : RegisterUser
         """
         register_user = RegisterUser()
         register_user.username = username
@@ -97,7 +98,7 @@ class SecurityManager(BaseSecurityManager):
         register_user.first_name = first_name
         register_user.last_name = last_name
         if hashed_password:
-            user.password = hashed_password
+            register_user.password = hashed_password
         else:
             register_user.password = generate_password_hash(password)
         register_user.registration_hash = str(uuid.uuid1())
@@ -109,12 +110,12 @@ class SecurityManager(BaseSecurityManager):
             log.error(c.LOGMSG_ERR_SEC_ADD_REGISTER_USER.format(str(e)))
             self.appbuilder.get_session.rollback()
             return None
-        
+
     def del_register_user(self, register_user):
         """
             Deletes registration object from database
 
-            :param register_user: RegisterUser object to delete            
+            :param register_user: RegisterUser object to delete
         """
         try:
             self.get_session.delete(register_user)
@@ -217,7 +218,7 @@ class SecurityManager(BaseSecurityManager):
     def add_permission(self, name):
         """
             Adds a permission to the backend, model permission
-            
+
             :param name:
                 name of the permission: 'can_add','can_edit' etc...
         """
@@ -320,7 +321,7 @@ class SecurityManager(BaseSecurityManager):
     def add_permission_view_menu(self, permission_name, view_menu_name):
         """
             Adds a permission on a view or menu to the backend
-            
+
             :param permission_name:
                 name of the permission to add: 'can_add','can_edit' etc...
             :param view_menu_name:
@@ -369,7 +370,7 @@ class SecurityManager(BaseSecurityManager):
     def add_permission_role(self, role, perm_view):
         """
             Add permission-ViewMenu object to Role
-            
+
             :param role:
                 The role object
             :param perm_view:
@@ -388,7 +389,7 @@ class SecurityManager(BaseSecurityManager):
     def del_permission_role(self, role, perm_view):
         """
             Remove permission-ViewMenu object to Role
-            
+
             :param role:
                 The role object
             :param perm_view:
