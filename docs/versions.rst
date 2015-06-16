@@ -6,6 +6,8 @@ Improvements and Bug fixes on 1.4.1
 
 - New, ListWidget, ListItem, ListThumbnail, ListBlock templates inherite from base_list.html.
 - Fix, MultipleView javascript bug with 2 (or more?) charts #177.
+- New, baselib.html was replaced by navbar.html, navbar_menu.html, nabar_right.html.
+
 
 Improvements and Bug fixes on 1.4.0
 -----------------------------------

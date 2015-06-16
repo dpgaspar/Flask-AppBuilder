@@ -148,10 +148,6 @@ class ContactChartView(GroupByChartView):
     ]
 
 
-class MultipleViewsExp(MultipleView):
-    views = [ContactChartView, GroupModelView]
-
-
 def pretty_month_year(value):
     return calendar.month_name[value.month] + ' ' + str(value.year)
 
@@ -179,11 +175,14 @@ class ContactTimeChartView(GroupByChartView):
         }
     ]
 
-class PostTweet(BaseView):
-    
-    default_view = 'tweet'
 
-    
+class MultipleViewsExp(MultipleView):
+    views = [ContactChartView, ContactTimeChartView]
+
+
+
+class PostTweet(BaseView):    
+    default_view = 'tweet'
 
     @expose('/tweet/')
     @has_access
