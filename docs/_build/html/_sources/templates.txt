@@ -85,6 +85,40 @@ This main structure of jinja2 on the baselayout template is::
         {% block tail_js %}
         {% endblock %}
 
+Navigation Bar
+--------------
+
+Theres also the possibility to customize the navigation bar. 
+You can completely override it, or just partially.
+
+To completely override the navigation bar, implement your own base layout as described earlier
+and then extend the existing one and override the **navbar** block
+
+As an example, lets say you created your own base layout named **my_layout.html** 
+on your **templates** folder::
+
+    {% extends 'appbuilder/baselayout.html' %}
+
+    {% block navbar %}
+        <div class="navbar" role="navigation">
+           <div class="container">
+                <div class="navbar-header">
+                        ....
+                </div>
+                <div class="navbar-collapse collapse">
+                        ....
+                </div>
+           </div>
+        </div>
+    {% endblock %}
+
+Remember to tell Flask-Appbuilder to use your layout instead (previous chapter)
+
+The best way to just override the navbar partially is to override the existing templates
+from the framework. You can always do this with any template. There are two good candidates for this:
+
+:/templates/appbuilder/navbar_menu.html: This will render the navbar menus.
+:/templates/appbuilder/navbar_right.html: This will render the right part of the navigation bar (locale and user).
 
 List Templates
 --------------

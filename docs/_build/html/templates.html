@@ -9,13 +9,13 @@
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.2.0/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.0',
+        VERSION:     '1.4.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.2.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Generic Data Sources" href="generic_datasource.html" />
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.4.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.4.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -131,6 +131,7 @@
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Templates</a><ul>
 <li><a class="reference internal" href="#css-and-javascript">CSS and Javascript</a></li>
+<li><a class="reference internal" href="#navigation-bar">Navigation Bar</a></li>
 <li><a class="reference internal" href="#list-templates">List Templates</a></li>
 <li><a class="reference internal" href="#add-templates">Add Templates</a></li>
 <li><a class="reference internal" href="#edit-templates">Edit Templates</a></li>
@@ -260,6 +261,46 @@ when initializing on __init__.py use the <em>base_template</em> parameter:</p>
 {% endblock %}
 </pre></div>
 </div>
+</div>
+<div class="section" id="navigation-bar">
+<h2>Navigation Bar<a class="headerlink" href="#navigation-bar" title="Permalink to this headline">¶</a></h2>
+<p>Theres also the possibility to customize the navigation bar.
+You can completely override it, or just partially.</p>
+<p>To completely override the navigation bar, implement your own base layout as described earlier
+and then extend the existing one and override the <strong>navbar</strong> block</p>
+<p>As an example, lets say you created your own base layout named <strong>my_layout.html</strong>
+on your <strong>templates</strong> folder:</p>
+<div class="highlight-python"><div class="highlight"><pre>{% extends &#39;appbuilder/baselayout.html&#39; %}
+
+{% block navbar %}
+    &lt;div class=&quot;navbar&quot; role=&quot;navigation&quot;&gt;
+       &lt;div class=&quot;container&quot;&gt;
+            &lt;div class=&quot;navbar-header&quot;&gt;
+                    ....
+            &lt;/div&gt;
+            &lt;div class=&quot;navbar-collapse collapse&quot;&gt;
+                    ....
+            &lt;/div&gt;
+       &lt;/div&gt;
+    &lt;/div&gt;
+{% endblock %}
+</pre></div>
+</div>
+<p>Remember to tell Flask-Appbuilder to use your layout instead (previous chapter)</p>
+<p>The best way to just override the navbar partially is to override the existing templates
+from the framework. You can always do this with any template. There are two good candidates for this:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">/templates/appbuilder/navbar_menu.html:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">This will render the navbar menus.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">/templates/appbuilder/navbar_right.html:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">This will render the right part of the navigation bar (locale and user).</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="list-templates">
 <h2>List Templates<a class="headerlink" href="#list-templates" title="Permalink to this headline">¶</a></h2>
@@ -588,7 +629,7 @@ new html that shares the same look and feel has the framework.</p>
     </p>
     <p>
         &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
     </p>
   </div>
 </footer>

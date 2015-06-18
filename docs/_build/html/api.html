@@ -9,13 +9,13 @@
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.2.0/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.0',
+        VERSION:     '1.4.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.2.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Version Migration" href="versionmigration.html" />
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.4.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.4.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -227,7 +227,8 @@
 <dt id="flask.ext.appbuilder.base.AppBuilder">
 <em class="property">class </em><code class="descclassname">flask.ext.appbuilder.base.</code><code class="descname">AppBuilder</code><span class="sig-paren">(</span><em>app=None</em>, <em>session=None</em>, <em>menu=None</em>, <em>indexview=None</em>, <em>base_template='appbuilder/baselayout.html'</em>, <em>static_folder='static/appbuilder'</em>, <em>static_url_path='/appbuilder'</em>, <em>security_manager_class=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/base.html#AppBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the base class for all the framework.
-This is were you will register all your views and create the menu structure.
+This is were you will register all your views
+and create the menu structure.
 Will hold your flask app object, all your views, and security classes.</p>
 <p>initialize your application like this for SQLAlchemy:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
@@ -285,13 +286,16 @@ Will hold your flask app object, all your views, and security classes.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>name</strong> &#8211; The string name that identifies the menu.</li>
-<li><strong>href</strong> &#8211; Override the generated href for the menu. You can use an url string or an endpoint name</li>
+<li><strong>href</strong> &#8211; Override the generated href for the menu.
+You can use an url string or an endpoint name</li>
 <li><strong>icon</strong> &#8211; Font-Awesome icon name, optional.</li>
-<li><strong>label</strong> &#8211; The label that will be displayed on the menu, if absent param name will be used</li>
+<li><strong>label</strong> &#8211; The label that will be displayed on the menu,
+if absent param name will be used</li>
 <li><strong>category</strong> &#8211; The menu category where the menu will be included,
 if non provided the view will be accessible as a top menu.</li>
 <li><strong>category_icon</strong> &#8211; Font-Awesome icon name for the category, optional.</li>
-<li><strong>category_label</strong> &#8211; The label that will be displayed on the menu, if absent param name will be used</li>
+<li><strong>category_label</strong> &#8211; The label that will be displayed on the menu,
+if absent param name will be used</li>
 </ul>
 </td>
 </tr>
@@ -325,14 +329,17 @@ if non provided the view will be accessible as a top menu.</li>
 <li><strong>baseview</strong> &#8211; A BaseView type class instantiated or not.
 This method will instantiate the class for you if needed.</li>
 <li><strong>name</strong> &#8211; The string name that identifies the menu.</li>
-<li><strong>href</strong> &#8211; Override the generated href for the menu. You can use an url string or an endpoint name
+<li><strong>href</strong> &#8211; Override the generated href for the menu.
+You can use an url string or an endpoint name
 if non provided default_view from view will be set as href.</li>
 <li><strong>icon</strong> &#8211; Font-Awesome icon name, optional.</li>
-<li><strong>label</strong> &#8211; The label that will be displayed on the menu, if absent param name will be used</li>
+<li><strong>label</strong> &#8211; The label that will be displayed on the menu,
+if absent param name will be used</li>
 <li><strong>category</strong> &#8211; The menu category where the menu will be included,
 if non provided the view will be acessible as a top menu.</li>
 <li><strong>category_icon</strong> &#8211; Font-Awesome icon name for the category, optional.</li>
-<li><strong>category_label</strong> &#8211; The label that will be displayed on the menu, if absent param name will be used</li>
+<li><strong>category_label</strong> &#8211; The label that will be displayed on the menu,
+if absent param name will be used</li>
 </ul>
 </td>
 </tr>
@@ -461,8 +468,10 @@ if non provided the view will be acessible as a top menu.</li>
 <dl class="method">
 <dt id="flask.ext.appbuilder.base.AppBuilder.security_cleanup">
 <code class="descname">security_cleanup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/base.html#AppBuilder.security_cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.base.AppBuilder.security_cleanup" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method is useful if you have changed the name of your menus or classes,
-changing them will leave behind permissions that are not associated with anything.</p>
+<dd><p>This method is useful if you have changed
+the name of your menus or classes,
+changing them will leave behind permissions
+that are not associated with anything.</p>
 <p>You can use it always or just sometimes to
 perform a security cleanup. Warning this will delete any permission
 that is no longer part of any registered view or menu.</p>
@@ -562,7 +571,8 @@ like on the following example.</p>
 <dl class="class">
 <dt id="flask.ext.appbuilder.baseviews.BaseView">
 <em class="property">class </em><code class="descclassname">flask.ext.appbuilder.baseviews.</code><code class="descname">BaseView</code><a class="reference internal" href="_modules/flask_appbuilder/baseviews.html#BaseView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseView" title="Permalink to this definition">¶</a></dt>
-<dd><p>All views inherit from this class. it&#8217;s constructor will register your exposed urls on flask as a Blueprint.</p>
+<dd><p>All views inherit from this class.
+it&#8217;s constructor will register your exposed urls on flask as a Blueprint.</p>
 <p>This class does not expose any urls, but provides a common base for all views.</p>
 <p>Extend this class if you want to expose methods for your own templates</p>
 <dl class="attribute">
@@ -751,7 +761,7 @@ If you want to limit the search (<em>filter</em>) columns possibilities, define 
 <dl class="attribute">
 <dt id="flask.ext.appbuilder.baseviews.BaseModelView.search_exclude_columns">
 <code class="descname">search_exclude_columns</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.search_exclude_columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>List with columns to exclude from search. Will include all possible columns by default</p>
+<dd><p>List with columns to exclude from search. Search includes all possible columns by default</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -2014,7 +2024,7 @@ accepts a list and returns the sum of the list&#8217;s items</p>
 <dl class="class">
 <dt id="flask.ext.appbuilder.charts.views.BaseChartView">
 <em class="property">class </em><code class="descclassname">flask.ext.appbuilder.charts.views.</code><code class="descname">BaseChartView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/charts/views.html#BaseChartView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.charts.views.BaseChartView" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the base class for all chart views. 
+<dd><p>This is the base class for all chart views.
 Use DirectByChartView or GroupByChartView, override their properties and their base classes
 (BaseView, BaseModelView, BaseChartView) to customise your charts</p>
 <dl class="attribute">
@@ -2382,7 +2392,7 @@ Override it for efficiency.</p>
     </p>
     <p>
         &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
     </p>
   </div>
 </footer>

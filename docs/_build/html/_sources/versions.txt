@@ -1,6 +1,14 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.4.1
+-----------------------------------
+
+- New, ListWidget, ListItem, ListThumbnail, ListBlock templates inherite from base_list.html.
+- Fix, MultipleView javascript bug with 2 (or more?) charts #177.
+- New, baselib.html was replaced by navbar.html, navbar_menu.html, nabar_right.html.
+
+
 Improvements and Bug fixes on 1.4.0
 -----------------------------------
 
@@ -14,11 +22,11 @@ Improvements and Bug fixes on 1.4.0
 - New, Possible to filter MongoEngine ObjectId's.
 - Fix, MongoEngine (MongoDB) ObjectId's not included in search forms.
 - Fix, Menu html and icons rework.
-- New, add_exclude_columns
-- New, edit_exclude_columns
-- New, show_exclude_columns
+- New, add_exclude_columns.
+- New, edit_exclude_columns.
+- New, show_exclude_columns.
 - New, exclude_columns on tests.
-- New, docs for exclude_columns
+- New, docs for exclude_columns.
 - New, remove id warning for MongoDB on filters.
 - Fix, missing translations.
 

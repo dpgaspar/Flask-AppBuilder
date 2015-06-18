@@ -15,12 +15,13 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +-----------------------------------+--------------------------------------------+-----------+
 | MONGODB_SETTINGS                  | DB connection string (flask-mongoengine)   |   Cond.   |
 +-----------------------------------+--------------------------------------------+-----------+
-| AUTH_TYPE = 0 | 1 | 2 | 3         | This is the authentication type            |   Yes     |
-|                                   |  - 0 = Open ID                             |           |
-|                                   |  - 1 = Database style (user/password)      |           |
-|                                   |  - 2 = LDAP, use AUTH_LDAP_SERVER also     |           |
-|                                   |  - 3 = uses web server environ var         |           |
+| AUTH_TYPE = 0 | 1 | 2 | 3 | 4     | This is the authentication type            |   Yes     |
+|           or                      |  - 0 = Open ID                             |           |
+| AUTH_TYPE = AUTH_OID, AUTH_DB,    |  - 1 = Database style (user/password)      |           |
+|            AUTH_LDAP, AUTH_REMOTE |  - 2 = LDAP, use AUTH_LDAP_SERVER also     |           |
+|            AUTH_OAUTH             |  - 3 = uses web server environ var         |           |
 |                                   |        REMOTE_USER                         |           |
+|                                   |  - 4 = USE ONE OR MANY OAUTH PROVIDERS     |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_USER_REGISTRATION =          | Set to True to enable user self            |   No      |
 | True|False                        | registration                               |           |
