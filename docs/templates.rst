@@ -50,6 +50,7 @@ If you want to import your javascript files at the end of the templates use **ta
         <script src="{{url_for('static',filename='js/your_js_file.js')}}"></script>
     {% endblock %}
 
+
 Finally tell the framework to use it, instead of the default base template,
 when initializing on __init__.py use the *base_template* parameter::
 
