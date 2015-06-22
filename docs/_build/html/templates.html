@@ -631,15 +631,12 @@ your own widget for lists:</p>
 {% block list_header %}
    {{ super() }}
    &lt;a href=&quot;url_for(&#39;Class.method for my control&#39;)&quot; class=&quot;btn btn-sm btn-primary&quot;
-        &lt;i class=&quot;fa fa-search&quot;&gt;&lt;/i&gt;
+        &lt;i class=&quot;fa fa-rocket&quot;&gt;&lt;/i&gt;
    &lt;/a&gt;
 {% endblock %}
 
 {% block begin_loop_values %}
     {% for item in value_columns %}
-      &lt;div class=&quot;col-md-4&quot;&gt;
-      &lt;div class=&quot;thumbnail&quot;&gt;
-        &lt;div class=&quot;list-group&quot;&gt;
         {% set pk = pks[loop.index-1] %}
         {% if actions %}
             &lt;input id=&quot;{{pk}}&quot; class=&quot;action_check&quot; name=&quot;rowid&quot; value=&quot;{{pk}}&quot; type=&quot;checkbox&quot;&gt;
@@ -650,14 +647,8 @@ your own widget for lists:</p>
         &lt;/div&gt;
 
         {% for value in include_columns %}
-            {% if loop.index == 1 %}
-                &lt;h4 class=&quot;list-group-item-heading&quot;&gt;{{ item[value]|safe }}&lt;/h4&gt;
-            {% else %}
-                &lt;p class=&quot;list-group-item-text&quot;&gt;{{ item[value]|safe }}&lt;/p&gt;
-            {% endif %}
+            &lt;p {{ item[value]|safe }}&lt;/p&gt;
         {% endfor %}
-      &lt;/div&gt;
-      &lt;/div&gt;
     {% endfor %}
 {% endblock %}
 </pre></div>
@@ -666,6 +657,12 @@ your own widget for lists:</p>
 On <strong>list_header</strong> we are rendering an extra button/link to a class method.
 Notice that first we call <strong>super()</strong> so that our control will be placed next to
 pagination, add button and back button</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you just want to add a new control next to the list controls and keep everything else
+from the predefined widgets. extend your widget from {% extends &#8216;appbuilder/general/widgets/list.html&#8217; %}
+and just implement <strong>list_header</strong> the way it&#8217;s done on this example.</p>
+</div>
 <p>Next we will render the values of the list, so we will override the <strong>begin_loop_values</strong>
 block. Widgets have the following jinja2 vars that you should use:</p>
 <ul class="simple">
@@ -676,10 +673,13 @@ block. Widgets have the following jinja2 vars that you should use:</p>
 <li>value_columns: A list of Dicts with column names as keys and record values as values.</li>
 <li>include_columns: A list with columns to include on the list, and their order.</li>
 <li>order_columns: A list with the columns that can be ordered.</li>
+<li>pks: A list of primary key values.</li>
+<li>actions: A list of declared actions.</li>
+<li>modelview_name: The name of the ModelView class responsible for controling this template.</li>
 </ul>
 <p>Save your widget template on your templates folder. I advise you to create a
 subfolder named <em>widgets</em>. So on our example we will keep our template on
-<a href="#id1"><span class="problematic" id="id2">*</span></a>/templates/widgets/my_list.html</p>
+<em>/templates/widgets/my_list.html</em>.</p>
 <ul>
 <li><p class="first">Next we must create our python class to contain our widget. on your <strong>app</strong> folder
 create a file named widgets.py:</p>

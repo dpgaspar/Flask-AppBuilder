@@ -363,15 +363,12 @@ Let's make a simple example::
     {% block list_header %}
        {{ super() }}
        <a href="url_for('Class.method for my control')" class="btn btn-sm btn-primary"
-            <i class="fa fa-search"></i>
+            <i class="fa fa-rocket"></i>
        </a>
     {% endblock %}
 
     {% block begin_loop_values %}
         {% for item in value_columns %}
-          <div class="col-md-4">
-          <div class="thumbnail">
-            <div class="list-group">
             {% set pk = pks[loop.index-1] %}
             {% if actions %}
                 <input id="{{pk}}" class="action_check" name="rowid" value="{{pk}}" type="checkbox">
@@ -382,14 +379,8 @@ Let's make a simple example::
             </div>
         
             {% for value in include_columns %}
-                {% if loop.index == 1 %}
-                    <h4 class="list-group-item-heading">{{ item[value]|safe }}</h4>
-                {% else %}
-                    <p class="list-group-item-text">{{ item[value]|safe }}</p>
-                {% endif %}
+                <p {{ item[value]|safe }}</p>
             {% endfor %}
-          </div>
-          </div>
         {% endfor %}
     {% endblock %}
 
@@ -398,6 +389,10 @@ This example will just use two blocks **list_header** and **begin_loop_values**.
 On **list_header** we are rendering an extra button/link to a class method.
 Notice that first we call **super()** so that our control will be placed next to
 pagination, add button and back button 
+
+.. note:: If you just want to add a new control next to the list controls and keep everything else
+   from the predefined widget. extend your widget from {% extends 'appbuilder/general/widgets/list.html' %}
+   and just implement **list_header** the way it's done on this example.
 
 Next we will render the values of the list, so we will override the **begin_loop_values**
 block. Widgets have the following jinja2 vars that you should use:
@@ -409,10 +404,13 @@ block. Widgets have the following jinja2 vars that you should use:
 - value_columns: A list of Dicts with column names as keys and record values as values.
 - include_columns: A list with columns to include on the list, and their order.
 - order_columns: A list with the columns that can be ordered.
+- pks: A list of primary key values.
+- actions: A list of declared actions.
+- modelview_name: The name of the ModelView class responsible for controling this template.
 
 Save your widget template on your templates folder. I advise you to create a 
 subfolder named *widgets*. So on our example we will keep our template on
-*/templates/widgets/my_list.html
+*/templates/widgets/my_list.html*.
 
 - Next we must create our python class to contain our widget. on your **app** folder
   create a file named widgets.py::
