@@ -1,0 +1,12 @@
+{% extends "appbuilder/general/widgets/list.html" %}
+
+
+    {% block list_header scoped %}
+	
+	
+	{{ super() }}
+	<a href="#" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
+       title="{{_('Back')}}">
+        <i class="fa fa-rocket"></i>
+    </a>
+	{% endblock %}
