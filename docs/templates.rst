@@ -324,6 +324,128 @@ For show cascade templates you have the following structure:
         - End Block "related_views"
     - End Block "content"
 
+Widgets
+-------
+
+Widgets are reusable, you can and should implement your own. Widgets are a special kind of jinja2
+templates. They will be contained inside a python class, and rendered on a jinja2 template. So
+**list_template**, **add_template**, **edit_template**, **show_template** will work like layouts
+with widgets.
+
+To create your own widgets follow the next recipe.
+
+- Make your own widget template, we are going to create a very simple list widget.
+  since version 1.4.1 list widgets extend **base_list.html** this will make your life
+  simpler, this base template declares the following blocks you should use, when implementing
+  your own widget for lists::
+    
+    {% block list_header scoped %}
+        This is where the list controls are rendered, extend it to *inject* your own controls.
+    {% endblock %}
+
+    {% block begin_content scoped %}
+        Area next to the controls
+    {% endblock %}
+
+    {% block begin_loop_header scoped %}
+        Nice place to render your list headers.
+    {% endblock %}
+
+    {% block begin_loop_values %}
+        Make your loop and render the list itself.
+    {% endblock %}
+
+Let's make a simple example::
+
+    {% import 'appbuilder/general/lib.html' as lib %}
+    {% extends 'appbuilder/general/widgets/base_list.html' %}
+
+    {% block list_header %}
+       {{ super() }}
+       <a href="url_for('Class.method for my control')" class="btn btn-sm btn-primary"
+            <i class="fa fa-search"></i>
+       </a>
+    {% endblock %}
+
+    {% block begin_loop_values %}
+        {% for item in value_columns %}
+          <div class="col-md-4">
+          <div class="thumbnail">
+            <div class="list-group">
+            {% set pk = pks[loop.index-1] %}
+            {% if actions %}
+                <input id="{{pk}}" class="action_check" name="rowid" value="{{pk}}" type="checkbox">
+            {% endif %}
+            {% if can_show or can_edit or can_delete %}
+                {{ lib.btn_crud(can_show, can_edit, can_delete, pk, modelview_name, filters) }}
+            {% endif %}
+            </div>
+        
+            {% for value in include_columns %}
+                {% if loop.index == 1 %}
+                    <h4 class="list-group-item-heading">{{ item[value]|safe }}</h4>
+                {% else %}
+                    <p class="list-group-item-text">{{ item[value]|safe }}</p>
+                {% endif %}
+            {% endfor %}
+          </div>
+          </div>
+        {% endfor %}
+    {% endblock %}
+
+
+This example will just use two blocks **list_header** and **begin_loop_values**.
+On **list_header** we are rendering an extra button/link to a class method.
+Notice that first we call **super()** so that our control will be placed next to
+pagination, add button and back button 
+
+Next we will render the values of the list, so we will override the **begin_loop_values**
+block. Widgets have the following jinja2 vars that you should use:
+
+- can_show: Boolean, if the user as access to the show view.
+- can_edit: Boolean, if the user as access to the edit view.
+- can_add: Boolean, if the user as access to the add view.
+- can_delete: Boolean, if the user as access to delete records.
+- value_columns: A list of Dicts with column names as keys and record values as values.
+- include_columns: A list with columns to include on the list, and their order.
+- order_columns: A list with the columns that can be ordered.
+
+Save your widget template on your templates folder. I advise you to create a 
+subfolder named *widgets*. So on our example we will keep our template on
+*/templates/widgets/my_list.html
+
+- Next we must create our python class to contain our widget. on your **app** folder
+  create a file named widgets.py::
+
+    from flask_appbuilder.widgets import ListWidget
+    
+    
+    class MyListWidget(ListWidget):
+         template = 'widgets/my_list.html'
+
+
+- Finnaly use your new widget on your views::
+
+
+    class MyModelView(ModelView):
+        datamodel = SQLAInterface(MyModel)
+        list_widget = MyListWidget
+        
+
+Flask-AppBuilder aready has some widgets you can choose from, try them out:
+
+- ListWidget - The default for lists.
+- ListThumbnail - For lists, nice to use with photos.
+- ListItem - Very simple list of items.
+- ListBlock - For lists, Similar to thumbnail.
+- FormWidget - For add and edit.
+- FormHorizontalWidget - For add and edit.
+- FormInlineWidget - For add and edit
+- ShowWidget - For show view.
+- ShowBlockWidget - For show view.
+- ShowVerticalWidget - For show view.
+
+
 Library Functions
 -----------------
 

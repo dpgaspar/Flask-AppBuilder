@@ -137,6 +137,7 @@
 <li><a class="reference internal" href="#edit-templates">Edit Templates</a></li>
 <li><a class="reference internal" href="#show-templates">Show Templates</a></li>
 <li><a class="reference internal" href="#edit-show-cascade-templates">Edit/Show Cascade Templates</a></li>
+<li><a class="reference internal" href="#widgets">Widgets</a></li>
 <li><a class="reference internal" href="#library-functions">Library Functions</a></li>
 </ul>
 </li>
@@ -590,6 +591,126 @@ For show cascade templates you have the following structure:</p>
 </dd>
 </dl>
 </li>
+</ul>
+</div>
+<div class="section" id="widgets">
+<h2>Widgets<a class="headerlink" href="#widgets" title="Permalink to this headline">¶</a></h2>
+<p>Widgets are reusable, you can and should implement your own. Widgets are a special kind of jinja2
+templates. They will be contained inside a python class, and rendered on a jinja2 template. So
+<strong>list_template</strong>, <strong>add_template</strong>, <strong>edit_template</strong>, <strong>show_template</strong> will work like layouts
+with widgets.</p>
+<p>To create your own widgets follow the next recipe.</p>
+<ul>
+<li><p class="first">Make your own widget template, we are going to create a very simple list widget.
+since version 1.4.1 list widgets extend <strong>base_list.html</strong> this will make your life
+simpler, this base template declares the following blocks you should use, when implementing
+your own widget for lists:</p>
+<div class="highlight-python"><div class="highlight"><pre>{% block list_header scoped %}
+    This is where the list controls are rendered, extend it to *inject* your own controls.
+{% endblock %}
+
+{% block begin_content scoped %}
+    Area next to the controls
+{% endblock %}
+
+{% block begin_loop_header scoped %}
+    Nice place to render your list headers.
+{% endblock %}
+
+{% block begin_loop_values %}
+    Make your loop and render the list itself.
+{% endblock %}
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Let&#8217;s make a simple example:</p>
+<div class="highlight-python"><div class="highlight"><pre>{% import &#39;appbuilder/general/lib.html&#39; as lib %}
+{% extends &#39;appbuilder/general/widgets/base_list.html&#39; %}
+
+{% block list_header %}
+   {{ super() }}
+   &lt;a href=&quot;url_for(&#39;Class.method for my control&#39;)&quot; class=&quot;btn btn-sm btn-primary&quot;
+        &lt;i class=&quot;fa fa-search&quot;&gt;&lt;/i&gt;
+   &lt;/a&gt;
+{% endblock %}
+
+{% block begin_loop_values %}
+    {% for item in value_columns %}
+      &lt;div class=&quot;col-md-4&quot;&gt;
+      &lt;div class=&quot;thumbnail&quot;&gt;
+        &lt;div class=&quot;list-group&quot;&gt;
+        {% set pk = pks[loop.index-1] %}
+        {% if actions %}
+            &lt;input id=&quot;{{pk}}&quot; class=&quot;action_check&quot; name=&quot;rowid&quot; value=&quot;{{pk}}&quot; type=&quot;checkbox&quot;&gt;
+        {% endif %}
+        {% if can_show or can_edit or can_delete %}
+            {{ lib.btn_crud(can_show, can_edit, can_delete, pk, modelview_name, filters) }}
+        {% endif %}
+        &lt;/div&gt;
+
+        {% for value in include_columns %}
+            {% if loop.index == 1 %}
+                &lt;h4 class=&quot;list-group-item-heading&quot;&gt;{{ item[value]|safe }}&lt;/h4&gt;
+            {% else %}
+                &lt;p class=&quot;list-group-item-text&quot;&gt;{{ item[value]|safe }}&lt;/p&gt;
+            {% endif %}
+        {% endfor %}
+      &lt;/div&gt;
+      &lt;/div&gt;
+    {% endfor %}
+{% endblock %}
+</pre></div>
+</div>
+<p>This example will just use two blocks <strong>list_header</strong> and <strong>begin_loop_values</strong>.
+On <strong>list_header</strong> we are rendering an extra button/link to a class method.
+Notice that first we call <strong>super()</strong> so that our control will be placed next to
+pagination, add button and back button</p>
+<p>Next we will render the values of the list, so we will override the <strong>begin_loop_values</strong>
+block. Widgets have the following jinja2 vars that you should use:</p>
+<ul class="simple">
+<li>can_show: Boolean, if the user as access to the show view.</li>
+<li>can_edit: Boolean, if the user as access to the edit view.</li>
+<li>can_add: Boolean, if the user as access to the add view.</li>
+<li>can_delete: Boolean, if the user as access to delete records.</li>
+<li>value_columns: A list of Dicts with column names as keys and record values as values.</li>
+<li>include_columns: A list with columns to include on the list, and their order.</li>
+<li>order_columns: A list with the columns that can be ordered.</li>
+</ul>
+<p>Save your widget template on your templates folder. I advise you to create a
+subfolder named <em>widgets</em>. So on our example we will keep our template on
+<a href="#id1"><span class="problematic" id="id2">*</span></a>/templates/widgets/my_list.html</p>
+<ul>
+<li><p class="first">Next we must create our python class to contain our widget. on your <strong>app</strong> folder
+create a file named widgets.py:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.widgets</span> <span class="kn">import</span> <span class="n">ListWidget</span>
+
+
+<span class="k">class</span> <span class="nc">MyListWidget</span><span class="p">(</span><span class="n">ListWidget</span><span class="p">):</span>
+     <span class="n">template</span> <span class="o">=</span> <span class="s">&#39;widgets/my_list.html&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Finnaly use your new widget on your views:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
+    <span class="n">list_widget</span> <span class="o">=</span> <span class="n">MyListWidget</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Flask-AppBuilder aready has some widgets you can choose from, try them out:</p>
+<ul class="simple">
+<li>ListWidget - The default for lists.</li>
+<li>ListThumbnail - For lists, nice to use with photos.</li>
+<li>ListItem - Very simple list of items.</li>
+<li>ListBlock - For lists, Similar to thumbnail.</li>
+<li>FormWidget - For add and edit.</li>
+<li>FormHorizontalWidget - For add and edit.</li>
+<li>FormInlineWidget - For add and edit</li>
+<li>ShowWidget - For show view.</li>
+<li>ShowBlockWidget - For show view.</li>
+<li>ShowVerticalWidget - For show view.</li>
 </ul>
 </div>
 <div class="section" id="library-functions">
