@@ -23,11 +23,16 @@ class Site(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
     
+    def __repr__(self):
+        return self.name
+    
 
 class DeviceType(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
 
+    def __repr__(self):
+        return self.name
         
 class Device(Model):
     __table_args__ = (UniqueConstraint('name', 'site_id'),)

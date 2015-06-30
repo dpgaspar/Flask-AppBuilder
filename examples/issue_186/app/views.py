@@ -4,7 +4,15 @@ from flask.ext.appbuilder.fieldwidgets import BS3TextFieldWidget
 from flask.ext.babelpkg import gettext
 from app import appbuilder, db
 from wtforms.fields import TextField
-from .models import Device
+from .models import Device, Site, DeviceType
+
+
+class SiteModelView(ModelView):
+    datamodel = SQLAInterface(Site)
+
+
+class DeviceTypeModelView(ModelView):
+    datamodel = SQLAInterface(DeviceType)
 
 
 class DeviceModelView(ModelView):
@@ -24,5 +32,7 @@ class DeviceModelView(ModelView):
 
 db.create_all()
 
+appbuilder.add_view(SiteModelView, "Site", icon="fa-folder-open-o", category="Management", category_icon='fa-envelope')
+appbuilder.add_view(DeviceTypeModelView, "DeviceType", icon="fa-folder-open-o", category="Management", category_icon='fa-envelope')
 appbuilder.add_view(DeviceModelView, "Devices", icon="fa-folder-open-o", category="Management", category_icon='fa-envelope')
 
