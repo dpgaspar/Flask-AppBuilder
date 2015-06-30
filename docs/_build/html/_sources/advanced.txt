@@ -32,7 +32,7 @@ It's very flexible, you can apply multiple filters with static values, or values
         return g.user
 
     class MyView(ModelView):
-        datamodel = SQLAModel(MyTable)
+        datamodel = SQLAInterface(MyTable)
         base_filters = [['created_by', FilterEqualFunction, get_user],
                         ['name', FilterStartsWith, 'a']]
 
@@ -46,7 +46,7 @@ Data structure ('col_name':'asc|desc')
 ::
 
     class MyView(ModelView):
-        datamodel = SQLAModel(MyTable)
+        datamodel = SQLAInterface(MyTable)
         base_order = ('my_col_to_be_ordered','asc')
 
 
@@ -56,7 +56,7 @@ Template Extra Arguments
 You can pass extra Jinja2 arguments to your custom template, using extra_args property::
 
     class MyView(ModelView):
-        datamodel = SQLAModel(MyTable)
+        datamodel = SQLAInterface(MyTable)
         extra_args = {'my_extra_arg':'SOMEVALUE'}
         show_template = 'my_show_template.html'
 
@@ -80,7 +80,7 @@ If you want to filter multiple related fields just add new keys to the dictionar
 remember you can add multiple filters for each field also, take a look at the *base_filter* property::
 
     class ContactModelView(ModelView):
-        datamodel = SQLAModel(Contact)
+        datamodel = SQLAInterface(Contact)
         add_form_query_rel_fields = {'group': [['name',FilterStartsWith,'W']],
                                     'gender': [['name',FilterStartsWith,'M']]}
 
@@ -88,7 +88,7 @@ remember you can add multiple filters for each field also, take a look at the *b
 - You can define your own Add, Edit forms to override the automatic form creation::
 
     class MyView(ModelView):
-        datamodel = SQLAModel(MyModel)
+        datamodel = SQLAInterface(MyModel)
         add_form = AddFormWTF
 
 
@@ -96,7 +96,7 @@ remember you can add multiple filters for each field also, take a look at the *b
   for example if you have automatic fields like user or date, you can remove this from the Add Form::
 
     class MyView(ModelView):
-        datamodel = SQLAModel(MyModel)
+        datamodel = SQLAInterface(MyModel)
         add_columns = ['my_field1','my_field2']
         edit_columns = ['my_field1']
 
@@ -104,7 +104,7 @@ remember you can add multiple filters for each field also, take a look at the *b
   for example a confirmation field::
 
     class ContactModelView(ModelView):
-        datamodel = SQLAModel(Contact)
+        datamodel = SQLAInterface(Contact)
         add_form_extra_fields = {'extra': TextField(gettext('Extra Field'),
                         description=gettext('Extra Field description'),
                         widget=BS3TextFieldWidget())}
@@ -123,7 +123,7 @@ remember you can add multiple filters for each field also, take a look at the *b
 Next override your field using your new widget::
 
     class ExampleView(ModelView):
-        datamodel = SQLAModel(ExampleModel)
+        datamodel = SQLAInterface(ExampleModel)
         edit_form_extra_fields = {'field2': TextField('field2',
                                     widget=BS3TextFieldROWidget())}
 
@@ -149,7 +149,7 @@ For select fields to be readonly is a special case, but it's solved in a simpler
   with *Not Null* (Required) or Unique constraints::
 
     class MyView(ModelView):
-        datamodel = SQLAModel(MyModel)
+        datamodel = SQLAInterface(MyModel)
         validators_columns = {'my_field1':[EqualTo('my_field2',
                                             message=gettext('fields must match'))
                                           ]

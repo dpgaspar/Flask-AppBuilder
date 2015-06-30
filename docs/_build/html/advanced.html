@@ -202,7 +202,7 @@ Base available permission are: can_add, can_edit, can_delete, can_list, can_show
     <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span>
 
 <span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
     <span class="n">base_filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s">&#39;created_by&#39;</span><span class="p">,</span> <span class="n">FilterEqualFunction</span><span class="p">,</span> <span class="n">get_user</span><span class="p">],</span>
                     <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="n">FilterStartsWith</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">]]</span>
 </pre></div>
@@ -213,7 +213,7 @@ Base available permission are: can_add, can_edit, can_delete, can_list, can_show
 <p>Use a default order on your lists, this can be overridden by the user on the UI.
 Data structure (&#8216;col_name&#8217;:&#8217;asc|desc&#8217;)</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
     <span class="n">base_order</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;my_col_to_be_ordered&#39;</span><span class="p">,</span><span class="s">&#39;asc&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -222,7 +222,7 @@ Data structure (&#8216;col_name&#8217;:&#8217;asc|desc&#8217;)</p>
 <h2>Template Extra Arguments<a class="headerlink" href="#template-extra-arguments" title="Permalink to this headline">¶</a></h2>
 <p>You can pass extra Jinja2 arguments to your custom template, using extra_args property:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
     <span class="n">extra_args</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;my_extra_arg&#39;</span><span class="p">:</span><span class="s">&#39;SOMEVALUE&#39;</span><span class="p">}</span>
     <span class="n">show_template</span> <span class="o">=</span> <span class="s">&#39;my_show_template.html&#39;</span>
 </pre></div>
@@ -247,7 +247,7 @@ You can define individual filters for add and edit. Take a look at the <a class=
 If you want to filter multiple related fields just add new keys to the dictionary,
 remember you can add multiple filters for each field also, take a look at the <em>base_filter</em> property:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
     <span class="n">add_form_query_rel_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;group&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;W&#39;</span><span class="p">]],</span>
                                 <span class="s">&#39;gender&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="n">FilterStartsWith</span><span class="p">,</span><span class="s">&#39;M&#39;</span><span class="p">]]}</span>
 </pre></div>
@@ -255,7 +255,7 @@ remember you can add multiple filters for each field also, take a look at the <e
 <ul>
 <li><p class="first">You can define your own Add, Edit forms to override the automatic form creation:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
     <span class="n">add_form</span> <span class="o">=</span> <span class="n">AddFormWTF</span>
 </pre></div>
 </div>
@@ -263,7 +263,7 @@ remember you can add multiple filters for each field also, take a look at the <e
 <li><p class="first">You can define what columns will be included on Add or Edit forms,
 for example if you have automatic fields like user or date, you can remove this from the Add Form:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
     <span class="n">add_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;my_field1&#39;</span><span class="p">,</span><span class="s">&#39;my_field2&#39;</span><span class="p">]</span>
     <span class="n">edit_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;my_field1&#39;</span><span class="p">]</span>
 </pre></div>
@@ -272,7 +272,7 @@ for example if you have automatic fields like user or date, you can remove this 
 <li><p class="first">You can contribute with any additional fields that are not on a table/model,
 for example a confirmation field:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
     <span class="n">add_form_extra_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;extra&#39;</span><span class="p">:</span> <span class="n">TextField</span><span class="p">(</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;Extra Field&#39;</span><span class="p">),</span>
                     <span class="n">description</span><span class="o">=</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;Extra Field description&#39;</span><span class="p">),</span>
                     <span class="n">widget</span><span class="o">=</span><span class="n">BS3TextFieldWidget</span><span class="p">())}</span>
@@ -292,7 +292,7 @@ for example a confirmation field:</p>
 </ul>
 <p>Next override your field using your new widget:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ExampleView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">ExampleModel</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">ExampleModel</span><span class="p">)</span>
     <span class="n">edit_form_extra_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;field2&#39;</span><span class="p">:</span> <span class="n">TextField</span><span class="p">(</span><span class="s">&#39;field2&#39;</span><span class="p">,</span>
                                 <span class="n">widget</span><span class="o">=</span><span class="n">BS3TextFieldROWidget</span><span class="p">())}</span>
 </pre></div>
@@ -318,7 +318,7 @@ for example a confirmation field:</p>
 Remember the framework will automatically validate any field that is defined on the database
 with <em>Not Null</em> (Required) or Unique constraints:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
     <span class="n">validators_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;my_field1&#39;</span><span class="p">:[</span><span class="n">EqualTo</span><span class="p">(</span><span class="s">&#39;my_field2&#39;</span><span class="p">,</span>
                                         <span class="n">message</span><span class="o">=</span><span class="n">gettext</span><span class="p">(</span><span class="s">&#39;fields must match&#39;</span><span class="p">))</span>
                                       <span class="p">]</span>

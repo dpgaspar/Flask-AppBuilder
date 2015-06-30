@@ -293,12 +293,12 @@ or (even better) create them and contribute to the project on git.</p>
 For example, on the edit or show view, you can display the related list (from <em>related_views</em>) on the same page,
 or as tab (default).</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ServerDiskTypeModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">ServerDiskType</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">ServerDiskType</span><span class="p">)</span>
     <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;quantity&#39;</span><span class="p">,</span> <span class="s">&#39;disktype&#39;</span><span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">ServerModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Server</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Server</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ServerDiskTypeModelView</span><span class="p">]</span>
 
     <span class="n">show_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/show_cascade.html&#39;</span>
@@ -313,12 +313,12 @@ or as tab (default).</p>
 <a class="reference internal image-reference" href="_images/list_cascade.png"><img alt="_images/list_cascade.png" src="_images/list_cascade.png" style="width: 100%;" /></a>
 <p>If you want to change the above example, and change the way the server disks are displayed has a list just use the available widgets:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ServerDiskTypeModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">ServerDiskType</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">ServerDiskType</span><span class="p">)</span>
     <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;quantity&#39;</span><span class="p">,</span> <span class="s">&#39;disktype&#39;</span><span class="p">]</span>
     <span class="n">list_widget</span> <span class="o">=</span> <span class="n">ListBlock</span>
 
 <span class="k">class</span> <span class="nc">ServerModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Server</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Server</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ServerDiskTypeModelView</span><span class="p">]</span>
 
     <span class="n">show_template</span> <span class="o">=</span> <span class="s">&#39;appbuilder/general/model/show_cascade.html&#39;</span>
@@ -338,8 +338,9 @@ or as tab (default).</p>
 <li>ListThumbnail</li>
 <li>ListBlock</li>
 </ul>
-<p>If you want to develop your own widgets just look at the code on:</p>
-<p><a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/flask_appbuilder/templates/appbuilder/general/widgets">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/flask_appbuilder/templates/appbuilder/general/widgets</a></p>
+<p>If you want to develop your own widgets just look at the
+<a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/flask_appbuilder/templates/appbuilder/general/widgets">code</a></p>
+<p>Read the docs for developing your own template widgets <a class="reference internal" href="templates.html"><em>Templates</em></a></p>
 <p>Implement your own and then create a very simple class like this one:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyWidgetList</span><span class="p">(</span><span class="n">ListWidget</span><span class="p">):</span>
     <span class="n">template</span> <span class="o">=</span> <span class="s">&#39;/widgets/my_widget_list.html&#39;</span>

@@ -391,7 +391,7 @@ Notice that first we call **super()** so that our control will be placed next to
 pagination, add button and back button 
 
 .. note:: If you just want to add a new control next to the list controls and keep everything else
-   from the predefined widgets. extend your widget from {% extends 'appbuilder/general/widgets/list.html' %}
+   from the predefined widget. extend your widget from {% extends 'appbuilder/general/widgets/list.html' %}
    and just implement **list_header** the way it's done on this example.
 
 Next we will render the values of the list, so we will override the **begin_loop_values**

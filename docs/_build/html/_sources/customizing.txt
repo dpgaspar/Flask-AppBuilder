@@ -131,12 +131,12 @@ or as tab (default).
 ::
 
     class ServerDiskTypeModelView(ModelView):
-        datamodel = SQLAModel(ServerDiskType)
+        datamodel = SQLAInterface(ServerDiskType)
         list_columns = ['quantity', 'disktype']
 
 
     class ServerModelView(ModelView):
-        datamodel = SQLAModel(Server)
+        datamodel = SQLAInterface(Server)
         related_views = [ServerDiskTypeModelView]
 
         show_template = 'appbuilder/general/model/show_cascade.html'
@@ -156,12 +156,12 @@ The above example will override the show and edit templates that will change the
 If you want to change the above example, and change the way the server disks are displayed has a list just use the available widgets::
 
     class ServerDiskTypeModelView(ModelView):
-        datamodel = SQLAModel(ServerDiskType)
+        datamodel = SQLAInterface(ServerDiskType)
         list_columns = ['quantity', 'disktype']
         list_widget = ListBlock
 
     class ServerModelView(ModelView):
-        datamodel = SQLAModel(Server)
+        datamodel = SQLAInterface(Server)
         related_views = [ServerDiskTypeModelView]
 
         show_template = 'appbuilder/general/model/show_cascade.html'
@@ -185,9 +185,10 @@ You have the following widgets already available
 - ListThumbnail
 - ListBlock
 
-If you want to develop your own widgets just look at the code on:
+If you want to develop your own widgets just look at the 
+`code <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/flask_appbuilder/templates/appbuilder/general/widgets>`_
 
-https://github.com/dpgaspar/Flask-AppBuilder/tree/master/flask_appbuilder/templates/appbuilder/general/widgets
+Read the docs for developing your own template widgets :doc:`templates`
 
 Implement your own and then create a very simple class like this one::
 
