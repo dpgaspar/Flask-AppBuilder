@@ -305,7 +305,7 @@ class BaseModelView(BaseView):
         If you want to limit the search (*filter*) columns possibilities, define it with a list of column names from your model::
 
             class MyView(ModelView):
-                datamodel = SQLAModel(MyTable, db.session)
+                datamodel = SQLAModel(MyTable)
                 search_columns = ['name','address']
 
     """

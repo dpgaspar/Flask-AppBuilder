@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.1',
+        VERSION:     '1.4.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.4.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.4.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -351,17 +351,17 @@ or as tab (default).</p>
 <h2>Change Default View Behaviour<a class="headerlink" href="#change-default-view-behaviour" title="Permalink to this headline">¶</a></h2>
 <p>If you want to have Add, edit and list on the same page, this can be done. This could be very helpful on master/detail lists (inline) on views based on tables with very few columns.</p>
 <p>All you have to do is to mix <em>CompactCRUDMixin</em> class with the <em>ModelView</em> class.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.datamodel</span> <span class="kn">import</span> <span class="n">SQLAModel</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
 <span class="kn">from</span> <span class="nn">flask.ext.appbuilder.views</span> <span class="kn">import</span> <span class="n">ModelView</span><span class="p">,</span> <span class="n">CompactCRUDMixin</span>
 <span class="kn">from</span> <span class="nn">app.models</span> <span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ProjectFiles</span>
 <span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">appbuilder</span>
 
 
 <span class="k">class</span> <span class="nc">MyInlineView</span><span class="p">(</span><span class="n">CompactCRUDMixin</span><span class="p">,</span> <span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyInlineTable</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyInlineTable</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyViewTable</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyViewTable</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyInlineView</span><span class="p">]</span>
 
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">,</span> <span class="s">&quot;List My View&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-table&quot;</span><span class="p">,</span> <span class="n">category</span> <span class="o">=</span> <span class="s">&quot;My Views&quot;</span><span class="p">)</span>
@@ -376,25 +376,25 @@ or as tab (default).</p>
 <p>Let&#8217;s assume our quick how to example, a simple contacts applications. We have <em>Contact</em> table related with <em>Group</em> table.</p>
 <p>So we are using master detail view, first we will define the detail view (this view can be customized like the examples above):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Then we define the master detail view, where master is the one side of the 1-N relation:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupMasterView</span><span class="p">(</span><span class="n">MasterDetailView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactModelView</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Remember you can use charts has related views, you can use it like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactTimeChartView</span><span class="p">(</span><span class="n">TimeChartView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped Birth contacts&#39;</span>
     <span class="n">chart_type</span> <span class="o">=</span> <span class="s">&#39;AreaChart&#39;</span>
     <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactModelView</span><span class="o">.</span><span class="n">label_columns</span>
     <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;birthday&#39;</span><span class="p">]</span>
 
 <span class="k">class</span> <span class="nc">GroupMasterView</span><span class="p">(</span><span class="n">MasterDetailView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactModelView</span><span class="p">,</span> <span class="n">ContactTimeChartView</span><span class="p">]</span>
 </pre></div>
 </div>

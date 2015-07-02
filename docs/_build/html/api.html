@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.1',
+        VERSION:     '1.4.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.4.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.4.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -520,7 +520,7 @@ permissions.</p>
 like on the following example.</p>
 <p>Use it like this to aggregate permissions for your methods:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
 
     <span class="nd">@has_access</span>
     <span class="nd">@permission_name</span><span class="p">(</span><span class="s">&#39;GeneralXPTO_Permission&#39;</span><span class="p">)</span>
@@ -752,7 +752,7 @@ Customize ModelView and ChartView overriding this properties</p>
 <dd><p>List with allowed search columns, if not provided all possible search columns will be used
 If you want to limit the search (<em>filter</em>) columns possibilities, define it with a list of column names from your model:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
     <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -768,6 +768,15 @@ If you want to limit the search (<em>filter</em>) columns possibilities, define 
 <dt id="flask.ext.appbuilder.baseviews.BaseModelView.search_form">
 <code class="descname">search_form</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.search_form" title="Permalink to this definition">¶</a></dt>
 <dd><p>To implement your own add WTF form for Search</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.baseviews.BaseModelView.search_form_extra_fields">
+<code class="descname">search_form_extra_fields</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.search_form_extra_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dictionary containing column names and a WTForm
+Form fields to be added to the Add form, these fields do not
+exist on the model itself ex:</p>
+<p>search_form_extra_fields = {&#8216;some_col&#8217;:BooleanField(&#8216;Some Col&#8217;, default=False)}</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -818,7 +827,7 @@ Use it to control the order of the display</p>
 <dd><p>A dictionary containing column names and a WTForm
 Form fields to be added to the Add form, these fields do not
 exist on the model itself ex:</p>
-<p>extra_fields={&#8216;some_col&#8217;:BooleanField(&#8216;Some Col&#8217;, default=False)}</p>
+<p>add_form_extra_fields = {&#8216;some_col&#8217;:BooleanField(&#8216;Some Col&#8217;, default=False)}</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -1180,10 +1189,10 @@ linked by PK and FK, in a master/detail type with
 two lists.</p>
 <p>Master view will behave like a left menu:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">DetailView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">DetailTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">DetailTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">MasterView</span><span class="p">(</span><span class="n">MasterDetailView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MasterTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MasterTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">DetailView</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -2124,7 +2133,7 @@ to apply the aggregation</td>
 </div>
 <p>example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CountryDirectChartView</span><span class="p">(</span><span class="n">DirectByChartView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Direct Data Example&#39;</span>
 
     <span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
@@ -2184,7 +2193,7 @@ to apply the aggregation</td>
 </div>
 <p>example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CountryGroupByChartView</span><span class="p">(</span><span class="n">GroupByChartView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Statistics&#39;</span>
 
 <span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
@@ -2242,7 +2251,7 @@ to apply the aggregation</td>
 direct model values. Chart widget uses json.
 No group by is processed, example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">StatsChartView</span><span class="p">(</span><span class="n">DirectChartView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Stats</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Stats</span><span class="p">)</span>
     <span class="n">chart_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Statistics&#39;</span><span class="p">)</span>
     <span class="n">direct_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;Some Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;X_col_1&#39;</span><span class="p">,</span> <span class="s">&#39;stat_col_1&#39;</span><span class="p">,</span> <span class="s">&#39;stat_col_2&#39;</span><span class="p">),</span>
                       <span class="s">&#39;Other Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;X_col2&#39;</span><span class="p">,</span> <span class="s">&#39;stat_col_3&#39;</span><span class="p">)}</span>

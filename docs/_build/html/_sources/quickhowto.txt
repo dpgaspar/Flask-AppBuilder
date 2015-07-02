@@ -172,6 +172,9 @@ You can also control which columns will be included on search, use the same logi
     .. autoclass:: BaseModelView
         :members: search_columns, search_exclude_columns
 
+You can easily use builtin alternative look, using widgets 
+take a look at the `widgets <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/widgets>`_ example.
+
 
 .. note::
 

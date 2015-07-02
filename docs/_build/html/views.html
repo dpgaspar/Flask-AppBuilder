@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.1',
+        VERSION:     '1.4.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.4.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.4.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -365,9 +365,10 @@ fields, but inherit them from F.A.B. <em>DynamicForm</em>.</p>
 </div>
 <p>Now define your form view to expose urls, create a menu entry, create security accesses, define pre and post processing.</p>
 <p>Implement <em>form_get</em> and <em>form_post</em> to implement your form pre-processing and post-processing.
-You can use <em>form_get</em> to prefill the form you data, and/or pre process something on your application, then
+You can use <em>form_get</em> to prefill the form with your data, and/or pre process something on your application, then
 use <em>form_post</em> to post process the form after the user submits it, you can save the data to database, send an email
 or something.</p>
+<p>On your form_post method you can also return None, or a Flask response to render a custom template or redirect the user.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder</span> <span class="kn">import</span> <span class="n">SimpleFormView</span>
 <span class="kn">from</span> <span class="nn">flask.ext.babelpkg</span> <span class="kn">import</span> <span class="n">lazy_gettext</span> <span class="k">as</span> <span class="n">_</span>
 

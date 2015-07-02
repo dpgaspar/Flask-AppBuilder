@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.1',
+        VERSION:     '1.4.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.4.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.4.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -370,7 +370,7 @@ each block:</p>
 To use your templates override <strong>list_template</strong> to your templates relative path, on your ModelView&#8217;s declaration.</p>
 <p>If you have your template on ./your_project/app/templates/list_contacts.html</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
     <span class="n">list_template</span> <span class="o">=</span> <span class="s">&#39;list_contacts.html&#39;</span>
 </pre></div>
 </div>
@@ -439,7 +439,7 @@ each block:</p>
 <p>To use your template define you ModelView with <strong>add_template</strong> declaration to your templates relative path</p>
 <p>If you have your template on ./your_project/app/templates/add_contacts.html</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 
     <span class="n">add_template</span> <span class="o">=</span> <span class="s">&#39;add_contacts.html&#39;</span>
 </pre></div>
@@ -491,7 +491,7 @@ each block:</p>
 <p>To use your template define you ModelView with <strong>edit_template</strong> declaration to your templates relative path</p>
 <p>If you have your template on ./your_project/app/templates/edit_contacts.html</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 
     <span class="n">edit_template</span> <span class="o">=</span> <span class="s">&#39;edit_contacts.html&#39;</span>
 </pre></div>
@@ -543,7 +543,7 @@ each block:</p>
 <p>To use your template define you ModelView with <strong>edit_template</strong> declaration to your templates relative path</p>
 <p>If you have your template on ./your_project/app/templates/edit_contacts.html</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 
     <span class="n">edit_template</span> <span class="o">=</span> <span class="s">&#39;edit_contacts.html&#39;</span>
 </pre></div>
@@ -702,6 +702,7 @@ create a file named widgets.py:</p>
 <p>Flask-AppBuilder aready has some widgets you can choose from, try them out:</p>
 <ul class="simple">
 <li>ListWidget - The default for lists.</li>
+<li>ListLinkWidget - The default for lists.</li>
 <li>ListThumbnail - For lists, nice to use with photos.</li>
 <li>ListItem - Very simple list of items.</li>
 <li>ListBlock - For lists, Similar to thumbnail.</li>
@@ -712,6 +713,7 @@ create a file named widgets.py:</p>
 <li>ShowBlockWidget - For show view.</li>
 <li>ShowVerticalWidget - For show view.</li>
 </ul>
+<p>Take a look at the <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/widgets">widgets</a> example.</p>
 </div>
 <div class="section" id="library-functions">
 <h2>Library Functions<a class="headerlink" href="#library-functions" title="Permalink to this headline">¶</a></h2>
