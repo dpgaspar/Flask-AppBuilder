@@ -178,15 +178,29 @@ We have overridden the list_widget property with the ListBlock Class. This will 
     :width: 100%
 
 
-You have the following widgets already available
+You have the following widgets already available for lists
 
 - ListWidget (default)
+- ListLink
 - ListItem
 - ListThumbnail
 - ListBlock
 
+For form and show page you can choose from the following:
+
+- FormWidget - For add and edit.
+- FormHorizontalWidget - For add and edit.
+- FormInlineWidget - For add and edit
+- ShowWidget - For show view.
+- ShowBlockWidget - For show view.
+- ShowVerticalWidget - For show view.
+
+Take a look at the `widgets <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/widgets>`_ example.
+
 If you want to develop your own widgets just look at the 
 `code <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/flask_appbuilder/templates/appbuilder/general/widgets>`_
+
+
 
 Read the docs for developing your own template widgets :doc:`templates`
 
