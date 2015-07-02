@@ -137,7 +137,7 @@ These columns will be automatically updated by the framework upon creation or up
 exclude them from add and edit form. Using our example you will define our view like this::
 
     class ProjectModelView(ModelView):
-        datamodel = SQLAModel(Project)
+        datamodel = SQLAInterface(Project)
         add_columns = ['name']
         edit_columns = ['name']
 

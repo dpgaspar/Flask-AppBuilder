@@ -243,7 +243,7 @@ by the framework of the columns them selfs.
 
     class ContactChartView(ChartView):
         search_columns = ['name','contact_group']
-        datamodel = SQLAModel(Contact)
+        datamodel = SQLAInterface(Contact)
         chart_title = 'Grouped contacts'
         label_columns = ContactModelView.label_columns
         group_by_columns = ['contact_group']
@@ -269,7 +269,7 @@ Let's define a chart grouped by a time frame?
         chart_title = 'Grouped Birth contacts'
         label_columns = ContactModelView.label_columns
         group_by_columns = ['birthday']
-        datamodel = SQLAModel(Contact)
+        datamodel = SQLAInterface(Contact)
 
 this will produce a column chart, with the number of contacts that were born on a particular month or year.
 Notice that the label_columns are from and already defined *ContactModelView* take a look at the :doc:`quickhowto`
@@ -279,7 +279,7 @@ Finally we will define a direct data chart
 ::
 
     class StatsChartView(DirectChartView):
-        datamodel = SQLAModel(Stats)
+        datamodel = SQLAInterface(Stats)
         chart_title = lazy_gettext('Statistics')
         direct_columns = {'Some Stats': ('stat1', 'col1', 'col2'),
                         'Other Stats': ('stat2', 'col3')}

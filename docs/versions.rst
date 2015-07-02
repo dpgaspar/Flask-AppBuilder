@@ -1,6 +1,13 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.4.2
+-----------------------------------
+
+- New, search_form_extra_fields property.
+- New, SimpleFormView and PublicFormView form_post can return a flask response.
+
+
 Improvements and Bug fixes on 1.4.1
 -----------------------------------
 

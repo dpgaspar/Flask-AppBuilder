@@ -170,7 +170,7 @@ If you have your template on ./your_project/app/templates/list_contacts.html
 ::
 
     class ContactModelView(ModelView):
-        datamodel = SQLAModel(Contact)
+        datamodel = SQLAInterface(Contact)
         list_template = 'list_contacts.html'
 
 
@@ -227,7 +227,7 @@ If you have your template on ./your_project/app/templates/add_contacts.html
 ::
 
     class ContactModelView(ModelView):
-        datamodel = SQLAModel(Contact)
+        datamodel = SQLAInterface(Contact)
 
         add_template = 'add_contacts.html'
 
@@ -264,7 +264,7 @@ If you have your template on ./your_project/app/templates/edit_contacts.html
 ::
 
     class ContactModelView(ModelView):
-        datamodel = SQLAModel(Contact)
+        datamodel = SQLAInterface(Contact)
 
         edit_template = 'edit_contacts.html'
 
@@ -302,7 +302,7 @@ If you have your template on ./your_project/app/templates/edit_contacts.html
 ::
 
     class ContactModelView(ModelView):
-        datamodel = SQLAModel(Contact)
+        datamodel = SQLAInterface(Contact)
 
         edit_template = 'edit_contacts.html'
 

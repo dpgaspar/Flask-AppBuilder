@@ -205,17 +205,17 @@ All you have to do is to mix *CompactCRUDMixin* class with the *ModelView* class
 
 ::
 
-    from flask.ext.appbuilder.models.datamodel import SQLAModel
+    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
     from flask.ext.appbuilder.views import ModelView, CompactCRUDMixin
     from app.models import Project, ProjectFiles
     from app import appbuilder
 
 
     class MyInlineView(CompactCRUDMixin, ModelView):
-        datamodel = SQLAModel(MyInlineTable)
+        datamodel = SQLAInterface(MyInlineTable)
 
     class MyView(ModelView):
-        datamodel = SQLAModel(MyViewTable)
+        datamodel = SQLAInterface(MyViewTable)
         related_views = [MyInlineView]
 
     appbuilder.add_view(MyView, "List My View",icon = "fa-table", category = "My Views")
@@ -239,27 +239,27 @@ Let's assume our quick how to example, a simple contacts applications. We have *
 So we are using master detail view, first we will define the detail view (this view can be customized like the examples above)::
 
     class ContactModelView(ModelView):
-        datamodel = SQLAModel(Contact)
+        datamodel = SQLAInterface(Contact)
 
 
 Then we define the master detail view, where master is the one side of the 1-N relation::
 
     class GroupMasterView(MasterDetailView):
-        datamodel = SQLAModel(Group)
+        datamodel = SQLAInterface(Group)
         related_views = [ContactModelView]
 
 
 Remember you can use charts has related views, you can use it like this::
 
     class ContactTimeChartView(TimeChartView):
-        datamodel = SQLAModel(Contact)
+        datamodel = SQLAInterface(Contact)
         chart_title = 'Grouped Birth contacts'
         chart_type = 'AreaChart'
         label_columns = ContactModelView.label_columns
         group_by_columns = ['birthday']
 
     class GroupMasterView(MasterDetailView):
-        datamodel = SQLAModel(Group)
+        datamodel = SQLAInterface(Group)
         related_views = [ContactModelView, ContactTimeChartView]
 
 This will show a left side menu with the *groups* and a right side list with contacts, and a time chart with the number of birthdays during time by the selected group.

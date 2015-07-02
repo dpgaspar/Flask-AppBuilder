@@ -94,7 +94,7 @@ class GroupByChartView(BaseChartView):
         example::
 
             class CountryGroupByChartView(GroupByChartView):
-                datamodel = SQLAModel(CountryStats)
+                datamodel = SQLAInterface(CountryStats)
                 chart_title = 'Statistics'
 
             definitions = [
@@ -236,7 +236,7 @@ class DirectByChartView(GroupByChartView):
         example::
 
             class CountryDirectChartView(DirectByChartView):
-                datamodel = SQLAModel(CountryStats)
+                datamodel = SQLAInterface(CountryStats)
                 chart_title = 'Direct Data Example'
 
                 definitions = [
@@ -447,7 +447,7 @@ class DirectChartView(BaseSimpleDirectChartView):
         No group by is processed, example::
 
             class StatsChartView(DirectChartView):
-                datamodel = SQLAModel(Stats)
+                datamodel = SQLAInterface(Stats)
                 chart_title = lazy_gettext('Statistics')
                 direct_columns = {'Some Stats': ('X_col_1', 'stat_col_1', 'stat_col_2'),
                                   'Other Stats': ('X_col2', 'stat_col_3')}

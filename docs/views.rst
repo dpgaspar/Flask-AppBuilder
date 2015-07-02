@@ -201,9 +201,11 @@ fields, but inherit them from F.A.B. *DynamicForm*.
 Now define your form view to expose urls, create a menu entry, create security accesses, define pre and post processing.
 
 Implement *form_get* and *form_post* to implement your form pre-processing and post-processing. 
-You can use *form_get* to prefill the form you data, and/or pre process something on your application, then
+You can use *form_get* to prefill the form with your data, and/or pre process something on your application, then
 use *form_post* to post process the form after the user submits it, you can save the data to database, send an email
 or something.
+
+On your form_post method you can also return None, or a Flask response to render a custom template or redirect the user.
 
 ::
 

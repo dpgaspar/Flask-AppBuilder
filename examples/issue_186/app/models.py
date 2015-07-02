@@ -12,7 +12,7 @@ AuditMixin will add automatic timestamp of created and modified by who
 
 
 """
-        
+
 class LowerCaseString(types.TypeDecorator):
     impl = types.String
 

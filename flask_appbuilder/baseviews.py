@@ -260,6 +260,11 @@ class BaseFormView(BaseView):
     def form_post(self, form):
         """
             Override this method to implement your form processing
+            
+            :param form: WTForm form
+            
+            Return None or a flask response to render 
+            a custom template or redirect the user
         """
         pass
 
@@ -308,6 +313,16 @@ class BaseModelView(BaseView):
     """
         List with columns to exclude from search. Search includes all possible columns by default
     """
+    search_form_extra_fields = None
+    """
+        A dictionary containing column names and a WTForm
+        Form fields to be added to the Add form, these fields do not
+        exist on the model itself ex::
+
+        search_form_extra_fields = {'some_col':BooleanField('Some Col', default=False)}
+
+    """
+
     label_columns = None
     """
         Dictionary of labels for your columns, override this if you want diferent pretify labels
@@ -395,8 +410,10 @@ class BaseModelView(BaseView):
     def _init_forms(self):
         conv = GeneralModelConverter(self.datamodel)
         if not self.search_form:
-            self.search_form = conv.create_form(self.label_columns, self.search_columns)
-
+            self.search_form = conv.create_form(self.label_columns, 
+                                                self.search_columns,
+                                                extra_fields=self.search_form_extra_fields)
+        
     def _get_search_widget(self, form=None, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []
         widgets = widgets or {}
@@ -526,7 +543,7 @@ class BaseCRUDView(BaseModelView):
         Form fields to be added to the Add form, these fields do not
         exist on the model itself ex::
 
-        extra_fields={'some_col':BooleanField('Some Col', default=False)}
+        add_form_extra_fields = {'some_col':BooleanField('Some Col', default=False)}
 
     """
     edit_form_extra_fields = None

@@ -2,7 +2,7 @@ import random
 import logging
 import datetime
 import calendar
-from flask.ext.appbuilder.models.datamodel import SQLAModel
+from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
 from flask.ext.appbuilder.views import ModelView
 from flask_appbuilder.charts.views import DirectChartView, DirectByChartView, GroupByChartView
 from models import CountryStats, Country, PoliticalType
@@ -14,20 +14,20 @@ log = logging.getLogger(__name__)
 
 
 class CountryStatsModelView(ModelView):
-    datamodel = SQLAModel(CountryStats)
+    datamodel = SQLAInterface(CountryStats)
     list_columns = ['country', 'stat_date', 'population', 'unemployed', 'college']
 
 
 class CountryModelView(ModelView):
-    datamodel = SQLAModel(Country)
+    datamodel = SQLAInterface(Country)
 
 
 class PoliticalTypeModelView(ModelView):
-    datamodel = SQLAModel(PoliticalType)
+    datamodel = SQLAInterface(PoliticalType)
 
 
 class CountryStatsDirectChart(DirectChartView):
-    datamodel = SQLAModel(CountryStats)
+    datamodel = SQLAInterface(CountryStats)
     chart_title = 'Statistics'
     chart_type = 'LineChart'
     direct_columns = {'General Stats': ('stat_date', 'population', 'unemployed', 'college')}
@@ -39,7 +39,7 @@ def pretty_month_year(value):
 
 
 class CountryDirectChartView(DirectByChartView):
-    datamodel = SQLAModel(CountryStats)
+    datamodel = SQLAInterface(CountryStats)
     chart_title = 'Direct Data'
 
     definitions = [
@@ -53,7 +53,7 @@ class CountryDirectChartView(DirectByChartView):
 
 
 class CountryGroupByChartView(GroupByChartView):
-    datamodel = SQLAModel(CountryStats)
+    datamodel = SQLAInterface(CountryStats)
     chart_title = 'Statistics'
 
     definitions = [

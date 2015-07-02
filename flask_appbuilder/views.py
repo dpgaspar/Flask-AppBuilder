@@ -71,8 +71,10 @@ class SimpleFormView(BaseFormView):
         form = self.form.refresh()
 
         if form.validate_on_submit():
-            self.form_post(form)
-            return redirect(self.get_redirect())
+            response = self.form_post(form)
+            if not response:
+                return redirect(self.get_redirect())
+            return response
         else:
             widgets = self._get_edit_widget(form=form)
             return self.render_template(
@@ -471,10 +473,10 @@ class MasterDetailView(BaseCRUDView):
         Master view will behave like a left menu::
 
             class DetailView(ModelView):
-                datamodel = SQLAModel(DetailTable, db.session)
+                datamodel = SQLAInterface(DetailTable, db.session)
 
             class MasterView(MasterDetailView):
-                datamodel = SQLAModel(MasterTable, db.session)
+                datamodel = SQLAInterface(MasterTable, db.session)
                 related_views = [DetailView]
 
     """

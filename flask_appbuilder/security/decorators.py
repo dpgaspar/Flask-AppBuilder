@@ -79,7 +79,7 @@ def permission_name(name):
         Use it like this to aggregate permissions for your methods::
 
             class MyModelView(ModelView):
-                datamodel = SQLAModel(MyModel)
+                datamodel = SQLAInterface(MyModel)
 
                 @has_access
                 @permission_name('GeneralXPTO_Permission')

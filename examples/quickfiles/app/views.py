@@ -1,11 +1,11 @@
-from flask.ext.appbuilder.models.datamodel import SQLAModel
+from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
 from flask.ext.appbuilder.views import ModelView, CompactCRUDMixin
 from app.models import Project, ProjectFiles
 from app import appbuilder, db
 
 
 class ProjectFilesModelView(ModelView):
-    datamodel = SQLAModel(ProjectFiles)
+    datamodel = SQLAInterface(ProjectFiles)
 
     label_columns = {'file_name': 'File Name', 'download': 'Download'}
     add_columns = ['file', 'description','project']
@@ -15,7 +15,7 @@ class ProjectFilesModelView(ModelView):
 
 
 class ProjectModelView(CompactCRUDMixin, ModelView):
-    datamodel = SQLAModel(Project)
+    datamodel = SQLAInterface(Project)
     related_views = [ProjectFilesModelView]
 
     show_template = 'appbuilder/general/model/show_cascade.html'

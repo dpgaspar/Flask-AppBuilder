@@ -2,14 +2,14 @@ from models import Person, PersonGroup
 from flask.ext.appbuilder.views import ModelView, BaseView
 from flask.ext.appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
-from flask.ext.appbuilder.models.datamodel import SQLAModel
+from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
 from flask.ext.appbuilder.widgets import ListThumbnail
 
 from app import app, db, appbuilder
 
 
 class PersonModelView(ModelView):
-    datamodel = SQLAModel(Person, db.session)
+    datamodel = SQLAInterface(Person, db.session)
 
     list_title = 'List Contacts'
     show_title = 'Show Contact'
@@ -50,7 +50,7 @@ class PersonModelView(ModelView):
 
 
 class GroupModelView(ModelView):
-    datamodel = SQLAModel(PersonGroup, db.session)
+    datamodel = SQLAInterface(PersonGroup, db.session)
     related_views = [PersonModelView]
 
     label_columns = {'phone1': 'Phone (1)', 'phone2': 'Phone (2)', 'taxid': 'Tax ID'}
@@ -58,7 +58,7 @@ class GroupModelView(ModelView):
 
 
 class PersonChartView(GroupByChartView):
-    datamodel = SQLAModel(Person)
+    datamodel = SQLAInterface(Person)
     chart_title = 'Grouped Persons'
     label_columns = PersonModelView.label_columns
     chart_type = 'PieChart'
