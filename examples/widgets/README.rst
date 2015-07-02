@@ -1,7 +1,7 @@
 Quick How to Example
 --------------------
 
-Simple contacts application.
+A show case for the various builtin widgets.
 
 Create an Admin user::
 
