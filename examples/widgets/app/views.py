@@ -1,6 +1,6 @@
 import calendar
 from flask.ext.appbuilder import ModelView, GroupByChartView
-from flask.ext.appbuilder.widgets import ListThumbnail, ListWidget, ListItem, ListBlock, ShowBlockWidget
+from flask.ext.appbuilder.widgets import ListThumbnail, ListWidget, ListItem, ListBlock, ShowBlockWidget, ListLinkWidget
 from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
 from flask.ext.appbuilder.models.group import aggregate_count
 from flask.ext.babelpkg import lazy_gettext as _
@@ -47,18 +47,27 @@ class ContactModelView(ModelView):
             {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
+
 class ContactItemModelView(ContactModelView):
     list_title = 'List Contact (Items)'
     list_widget = ListItem
+
 
 class ContactThumbnailModelView(ContactModelView):
     list_title = 'List Contact (Thumbnails)'
     list_widget = ListThumbnail
 
+
 class ContactBlockModelView(ContactModelView):
     list_title = 'List Contact (Blocks)'
     list_widget = ListBlock
     show_widget = ShowBlockWidget
+
+
+class ContactLinkModelView(ContactModelView):
+    list_title = 'List Contact (Links)'
+    list_widget = ListLinkWidget
+
 
 class GroupModelView(ModelView):
     datamodel = SQLAInterface(ContactGroup)
@@ -114,6 +123,7 @@ db.create_all()
 fill_gender()
 appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
 appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
+appbuilder.add_view(ContactLinkModelView, "List Links Contacts", icon="fa-envelope", category="Contacts")
 appbuilder.add_view(ContactItemModelView, "List Item Contacts", icon="fa-envelope", category="Contacts")
 appbuilder.add_view(ContactBlockModelView, "List Block Contacts", icon="fa-envelope", category="Contacts")
 appbuilder.add_view(ContactThumbnailModelView, "List Thumb Contacts", icon="fa-envelope", category="Contacts")

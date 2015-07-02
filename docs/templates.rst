@@ -433,6 +433,7 @@ subfolder named *widgets*. So on our example we will keep our template on
 Flask-AppBuilder aready has some widgets you can choose from, try them out:
 
 - ListWidget - The default for lists.
+- ListLinkWidget - The default for lists.
 - ListThumbnail - For lists, nice to use with photos.
 - ListItem - Very simple list of items.
 - ListBlock - For lists, Similar to thumbnail.
@@ -443,6 +444,7 @@ Flask-AppBuilder aready has some widgets you can choose from, try them out:
 - ShowBlockWidget - For show view.
 - ShowVerticalWidget - For show view.
 
+Take a look at the `widgets <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/widgets>`_ example.
 
 Library Functions
 -----------------

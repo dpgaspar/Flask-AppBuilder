@@ -177,6 +177,10 @@ class ListThumbnail(ListWidget):
     template = 'appbuilder/general/widgets/list_thumbnail.html'
 
 
+class ListLinkWidget(ListWidget):
+    template = 'appbuilder/general/widgets/list_link.html'
+
+
 class ListCarousel(ListWidget):
     template = 'appbuilder/general/widgets/list_carousel.html'
 
