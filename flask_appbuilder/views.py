@@ -453,8 +453,10 @@ class ModelView(RestCRUDView):
         """
             Action method to handle multiple records selected from a list view
         """
+        print "ACTION POST"
         name = request.form['action']
         pks = request.form.getlist('rowid')
+        print request, request.form, name, self.__class__.__name__
         if self.appbuilder.sm.has_access(name, self.__class__.__name__):
             action = self.actions.get(name)
             items = [self.datamodel.get(pk) for pk in pks]

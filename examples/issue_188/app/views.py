@@ -1,3 +1,4 @@
+from flask import redirect, flash
 from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
 from flask.ext.appbuilder import ModelView
 from flask.ext.appbuilder.actions import action
@@ -31,17 +32,21 @@ class JobModelView(ModelView):
         ('Job Info',{'fields':['module_type', 'start_time','SRVHOST','SRVPORT','LHOST','LPORT'],'expanded':False}),
         ]
 
-    @action("job_kill", "Kill", "Kill all selected?", "fa-rocket", single=False)
+    @action("job_kill", "Kill", "Kill all selected?", "fa-rocket")
     def kill(self, items):
-        print items
-        for item in items:
-            result = "test result"
-            flash(str(item.id), "info")
-            flash(str(result), "info")
+        if isinstance(items, list):
+            for item in items:
+                result = "test result"
+                flash(str(item.id), "info")
+                flash(str(result), "info")
+        else:
+                result = "test result"
+                flash(str(items.id), "info")
+                flash(str(result), "info")
         self.update_redirect()
         return redirect(self.get_redirect())
 
-    @action("job_stop", "Stop", "Stop all selected?", "fa-rocket", single=False)
+    @action("job_stop", "Stop", "Stop all selected?", "fa-rocket")
     def stop(self, items):
         print "stopping"
         return redirect(self.get_redirect())

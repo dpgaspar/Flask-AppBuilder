@@ -52,11 +52,13 @@ var AdminActions = function() {
         // Update hidden form and submit it
             var form = $('#action_form');
             $('#action', form).val(action_name);
-
+            
             $('input.action_check', form).remove();
-            $('input.action_check:checked').each(function() {
+            $('input.action_check:checked').each(function() {   
                 form.append($(this).clone());
             });
+            
+            console.log(form.serialize());
             form.submit();
 
             return false;
