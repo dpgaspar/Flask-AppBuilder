@@ -968,7 +968,6 @@ class BaseCRUDView(BaseModelView):
             field = getattr(form, filter_key)
             field.data = rel_obj
 
-
     def pre_update(self, item):
         """
             Override this, will be called before update
