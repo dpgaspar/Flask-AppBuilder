@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.4.3
+-----------------------------------
+
+- Fix, #188 fix bug, actions return access denied on actions for lists."
+
 Improvements and Bug fixes on 1.4.2
 -----------------------------------
 
