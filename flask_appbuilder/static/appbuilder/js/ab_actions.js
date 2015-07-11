@@ -58,7 +58,6 @@ var AdminActions = function() {
                 form.append($(this).clone());
             });
             
-            console.log(form.serialize());
             form.submit();
 
             return false;
