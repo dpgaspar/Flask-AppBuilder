@@ -24,9 +24,6 @@
     {% endblock %}
     
     
-{% else %}
-    <b>{{_("No records found")}}</b>
-{% endif %}
 
     {% block end_content scoped %}
     {% endblock %}
@@ -36,3 +33,7 @@
 <script language="javascript">
         var modelActions = new AdminActions();
 </script>
+
+{% else %}
+    <b>{{_("No records found")}}</b>
+{% endif %}
