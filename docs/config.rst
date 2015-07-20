@@ -38,10 +38,20 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   |                                            |           |
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
 +-----------------------------------+--------------------------------------------+-----------+
-| AUTH_LDAP_SEARCH                  | Use search user with self user             |   No      |
-|                                   | registration.                              |           |
+| AUTH_LDAP_BIND_USER               | Define the DN for the user that will be    |   No      |
+|                                   | used for the initial LDAP BIND.            |           |
+|                                   | This is necessary for OpenLDAP and can be  |           |
+|                                   | used on MSFT AD.                           |           |
 |                                   |                                            |           |
-|                                   | AUTH_TYPE = 2                              |           |
+|                                   | AUTH_LDAP_BIND_USER =                      |           |
+|                                   | "cn=queryuser,dc=example,dc=com"           |           |
+|                                   |                                            |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_BIND_PASSWORD           | Define password for the bind user.         |   No      |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_SEARCH                  | Use search with self user                  |   No      |
+|                                   | registration or when using                 |           |
+|                                   | AUTH_LDAP_BIND_USER.                       |           |
 |                                   |                                            |           |
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
 |                                   |                                            |           |

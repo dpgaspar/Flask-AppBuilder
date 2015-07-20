@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.3',
+        VERSION:     '1.4.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.4.3</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.4.4</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -253,10 +253,24 @@ example:</p>
 </td>
 <td>Cond.</td>
 </tr>
+<tr class="row-even"><td>AUTH_LDAP_BIND_USER</td>
+<td><p class="first">Define the DN for the user that will be
+used for the initial LDAP BIND.
+This is necessary for OpenLDAP and can be
+used on MSFT AD.</p>
+<p class="last">AUTH_LDAP_BIND_USER =
+&#8220;cn=queryuser,dc=example,dc=com&#8221;</p>
+</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>AUTH_LDAP_BIND_PASSWORD</td>
+<td>Define password for the bind user.</td>
+<td>No</td>
+</tr>
 <tr class="row-even"><td>AUTH_LDAP_SEARCH</td>
-<td><p class="first">Use search user with self user
-registration.</p>
-<p>AUTH_TYPE = 2</p>
+<td><p class="first">Use search with self user
+registration or when using
+AUTH_LDAP_BIND_USER.</p>
 <p>AUTH_LDAP_SERVER = &#8220;<a class="reference external" href="ldap://ldapserver.new">ldap://ldapserver.new</a>&#8220;</p>
 <p class="last">AUTH_LDAP_SEARCH = &#8220;ou=people,dc=example&#8221;</p>
 </td>

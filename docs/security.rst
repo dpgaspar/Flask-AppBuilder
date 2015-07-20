@@ -204,10 +204,20 @@ Authentication: LDAP
 --------------------
 
 This method will authenticate the user's credentials against an LDAP server. Using this method without self user registration
-is very simple, just define the LDAP server::
+is very simple, for MSFT AD just define the LDAP server::
 
     AUTH_TYPE = AUTH_LDAP
     AUTH_LDAP_SERVER = "ldap://ldapserver.local"
+
+For OpenLDAP or if you need/want to bind first with a query LDAP user, 
+then using username to search the LDAP server and binding to it (using the user provided password)::
+
+    AUTH_TYPE = AUTH_LDAP
+    AUTH_LDAP_SERVER = "ldap://ldapserver.local"
+    AUTH_LDAP_SEARCH = "dc=domain,dc=local"
+    AUTH_LDAP_BIND_USER = "CN=Query User,OU=People,dc=domain,dc=local"
+    AUTH_LDAP_BIND_PASSWORD = "password"
+
 
 Authentication: OAuth
 ---------------------

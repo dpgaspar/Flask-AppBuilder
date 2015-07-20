@@ -1,6 +1,12 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.4.4
+-----------------------------------
+
+- Fix, #188 but fix created a display bug on empty queries with related views.
+- Fix, #186 LDAP configuration - Invalid DN syntax on OpenLDAP. Introduced AUTH_LDAP_BIND_USER and AUTH_LDAP_BIND_PASSWORD 
+
 Improvements and Bug fixes on 1.4.3
 -----------------------------------
 

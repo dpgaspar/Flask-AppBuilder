@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.3',
+        VERSION:     '1.4.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.4.3</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.4.4</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -386,9 +386,18 @@ The login template for this method will provide a text box for the user to fillo
 <div class="section" id="authentication-ldap">
 <h2>Authentication: LDAP<a class="headerlink" href="#authentication-ldap" title="Permalink to this headline">¶</a></h2>
 <p>This method will authenticate the user&#8217;s credentials against an LDAP server. Using this method without self user registration
-is very simple, just define the LDAP server:</p>
+is very simple, for MSFT AD just define the LDAP server:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_LDAP</span>
 <span class="n">AUTH_LDAP_SERVER</span> <span class="o">=</span> <span class="s">&quot;ldap://ldapserver.local&quot;</span>
+</pre></div>
+</div>
+<p>For OpenLDAP or if you need/want to bind first with a query LDAP user,
+then using username to search the LDAP server and binding to it (using the user provided password):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_LDAP</span>
+<span class="n">AUTH_LDAP_SERVER</span> <span class="o">=</span> <span class="s">&quot;ldap://ldapserver.local&quot;</span>
+<span class="n">AUTH_LDAP_SEARCH</span> <span class="o">=</span> <span class="s">&quot;dc=domain,dc=local&quot;</span>
+<span class="n">AUTH_LDAP_BIND_USER</span> <span class="o">=</span> <span class="s">&quot;CN=Query User,OU=People,dc=domain,dc=local&quot;</span>
+<span class="n">AUTH_LDAP_BIND_PASSWORD</span> <span class="o">=</span> <span class="s">&quot;password&quot;</span>
 </pre></div>
 </div>
 </div>

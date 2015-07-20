@@ -171,6 +171,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             if 'AUTH_LDAP_SERVER' not in app.config:
                 raise Exception("No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type.")
             app.config.setdefault('AUTH_LDAP_SEARCH', '')
+            app.config.setdefault('AUTH_LDAP_BIND_USER', '')
+            app.config.setdefault('AUTH_LDAP_BIND_PASSWORD', '')
             app.config.setdefault('AUTH_LDAP_ALLOW_SELF_SIGNED', False)
             app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
             app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
@@ -236,6 +238,15 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_search(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_SEARCH']
+
+    @property
+    def auth_ldap_bind_user(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_BIND_USER']
+
+    @property
+    def auth_ldap_bind_password(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_BIND_PASSWORD']
+
 
     @property
     def auth_ldap_uid_field(self):
@@ -521,17 +532,27 @@ class BaseSecurityManager(AbstractSecurityManager):
         return user
 
     def _bind_ldap(self, ldap, con, username, password):
+        """
+            Privete to bind/Authenticate a user.
+            If AUTH_LDAP_BIND_USER exists then it will bind first with it,
+            next will search the LDAP server using the username with UID
+            and try to bind to it (OpenLDAP).
+            If AUTH_LDAP_BIND_USER does not exit, will bind with username/password
+        """
         try:
-            indirect_user = self.appbuilder.get_app.config.get('AUTH_LDAP_BIND_USER','')
+            indirect_user = self.auth_ldap_bind_user
             if indirect_user:
-                indirect_password = self.appbuilder.get_app.config.get('AUTH_LDAP_BIND_PASSWORD','')
+                indirect_password = self.auth_ldap_bind_password
                 log.debug("LDAP indirect bind with: {0}".format(indirect_user))
                 con.bind_s(indirect_user, indirect_password)
                 log.debug("LDAP BIND indirect OK")
                 user = self._search_ldap(ldap, con, username)
-                log.debug("LDAP got User {0}".format(user))
-                # username = DN from search
-                username = user[0][0]
+                if user:
+                    log.debug("LDAP got User {0}".format(user))
+                    # username = DN from search
+                    username = user[0][0]
+                else:
+                    return False
             log.debug("LDAP bind with: {0}".format(username))
             con.bind_s(username, password)
             return True
