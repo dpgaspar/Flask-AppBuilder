@@ -522,6 +522,16 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def _bind_ldap(self, ldap, con, username, password):
         try:
+            indirect_user = self.appbuilder.get_app.config.get('AUTH_LDAP_BIND_USER','')
+            if indirect_user:
+                indirect_password = self.appbuilder.get_app.config.get('AUTH_LDAP_BIND_PASSWORD','')
+                log.debug("LDAP indirect bind with: {0}".format(indirect_user))
+                con.bind_s(indirect_user, indirect_password)
+                log.debug("LDAP BIND indirect OK")
+                user = self._search_ldap(ldap, con, username)
+                log.debug("LDAP got User {0}".format(user))
+                # username = DN from search
+                username = user[0][0]
             log.debug("LDAP bind with: {0}".format(username))
             con.bind_s(username, password)
             return True
