@@ -64,16 +64,18 @@ class GenericFilterConverter(BaseFilterConverter):
 
     """
     conversion_table = (('is_text', [FilterContains,
+                                     FilterIContains,
                                      FilterNotContains,
                                      FilterEqual,
                                      FilterNotEqual,
                                      FilterStartsWith]
                                      ),
                         ('is_string', [FilterContains,
+                                       FilterIContains,
                                        FilterNotContains,
                                        FilterEqual,
                                        FilterNotEqual,
-                                       FilterStartWith]),
+                                       FilterStartsWith]),
                         ('is_integer', [FilterEqual,
                                         FilterNotEqual,
                                         FilterGreater,
