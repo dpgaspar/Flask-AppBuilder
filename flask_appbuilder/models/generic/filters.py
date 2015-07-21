@@ -2,7 +2,8 @@ from flask.ext.babelpkg import lazy_gettext
 from ..filters import BaseFilter, FilterRelation, BaseFilterConverter
 
 
-__all__ = ['GenericFilterConverter', 'FilterNotContains', 'FilterEqual', 'FilterContains', 'FilterNotEqual']
+__all__ = ['GenericFilterConverter', 'FilterNotContains', 'FilterEqual', 'FilterContains', 'FilterIContains',
+           'FilterNotEqual', 'FilterGreater', 'FilterSmaller', 'FilterStartsWith']
 
 
 class FilterContains(BaseFilter):
@@ -11,6 +12,14 @@ class FilterContains(BaseFilter):
     def apply(self, query, value):
         return query.like(self.column_name, value)
 
+class FilterIContains(BaseFilter):
+    '''
+    case insensitive like
+    '''
+    name = lazy_gettext('Contains')
+
+    def apply(self, query, value):
+        return query.ilike(self.column_name, value)
 
 class FilterNotContains(BaseFilter):
     name = lazy_gettext('Not Contains')
@@ -18,13 +27,11 @@ class FilterNotContains(BaseFilter):
     def apply(self, query, value):
         return query.not_like(self.column_name, value)
 
-
 class FilterEqual(BaseFilter):
     name = lazy_gettext('Equal to')
 
     def apply(self, query, value):
         return query.equal(self.column_name, value)
-
 
 class FilterNotEqual(BaseFilter):
     name = lazy_gettext('Not Equal to')
@@ -32,6 +39,23 @@ class FilterNotEqual(BaseFilter):
     def apply(self, query, value):
         return query.not_equal(self.column_name, value)
 
+class FilterGreater(BaseFilter):
+    name = lazy_gettext('Greater than')
+
+    def apply(self, query, value):
+        return query.greater(self.column_name, value)
+
+class FilterSmaller(BaseFilter):
+    name = lazy_gettext('Smaller than')
+
+    def apply(self, query, value):
+        return query.smaller(self.column_name, value)
+
+class FilterStartsWith(BaseFilter):
+    name = lazy_gettext('Start with')
+
+    def apply(self, query, value):
+        return query.starts_with(self.column_name, value)
 
 class GenericFilterConverter(BaseFilterConverter):
     """
@@ -42,13 +66,16 @@ class GenericFilterConverter(BaseFilterConverter):
     conversion_table = (('is_text', [FilterContains,
                                      FilterNotContains,
                                      FilterEqual,
-                                     FilterNotEqual]
+                                     FilterNotEqual,
+                                     FilterStartsWith]
                                      ),
                         ('is_string', [FilterContains,
                                        FilterNotContains,
                                        FilterEqual,
-                                       FilterNotEqual]),
+                                       FilterNotEqual,
+                                       FilterStartWith]),
                         ('is_integer', [FilterEqual,
-                                        FilterNotEqual]),
+                                        FilterNotEqual,
+                                        FilterGreater,
+                                        FilterSmaller]),
                         )
-
