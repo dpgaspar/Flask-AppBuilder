@@ -218,6 +218,22 @@ then using username to search the LDAP server and binding to it (using the user 
     AUTH_LDAP_BIND_USER = "CN=Query User,OU=People,dc=domain,dc=local"
     AUTH_LDAP_BIND_PASSWORD = "password"
 
+for MSFT AD you can set the UID from which the search user will be based::
+
+    AUTH_LDAP_UID = 'userPrincipalName'
+
+This will use users as: username@domain.local
+
+or::
+
+    AUTH_LDAP_UID = 'cn'
+
+This will use users as: username
+
+For OpenLDAP or similar use uid field name::
+
+    AUTH_LDAP_UID = 'uid'
+
 
 Authentication: OAuth
 ---------------------

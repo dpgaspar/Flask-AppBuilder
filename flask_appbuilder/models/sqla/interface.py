@@ -55,11 +55,14 @@ class SQLAInterface(BaseInterface):
         """
         return self.obj.__name__
 
-    @staticmethod
-    def _get_base_query(query=None, filters=None, order_column='', order_direction=''):
+    def _get_base_query(self, query=None, filters=None, order_column='', order_direction=''):
         if filters:
             query = filters.apply_all(query)
         if order_column != '':
+            # if Model has custom decorator **renders('<COL_NAME>')**
+            # this decorator will add a property to the method named *_col_name*
+            if hasattr(getattr(self.obj, order_column), '_col_name'):
+                order_column = getattr(getattr(self.obj, order_column),'_col_name')
             query = query.order_by(order_column + ' ' + order_direction)
         return query
 
@@ -93,7 +96,6 @@ class SQLAInterface(BaseInterface):
 
         query_count = self._get_base_query(query=query_count,
                                            filters=filters)
-
         query = self._get_base_query(query=query,
                                      filters=filters,
                                      order_column=order_column,
@@ -455,7 +457,8 @@ class SQLAInterface(BaseInterface):
         for col_name in list_columns:
             if not self.is_relation(col_name):
                 if hasattr(self.obj, col_name):
-                    if not hasattr(getattr(self.obj, col_name), '__call__'):
+                    if (not hasattr(getattr(self.obj, col_name), '__call__') or 
+                        hasattr(getattr(self.obj, col_name), '_col_name')):
                         ret_lst.append(col_name)
                 else:
                      ret_lst.append(col_name)

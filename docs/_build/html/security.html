@@ -400,6 +400,20 @@ then using username to search the LDAP server and binding to it (using the user 
 <span class="n">AUTH_LDAP_BIND_PASSWORD</span> <span class="o">=</span> <span class="s">&quot;password&quot;</span>
 </pre></div>
 </div>
+<p>for MSFT AD you can set the UID from which the search user will be based:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_LDAP_UID</span> <span class="o">=</span> <span class="s">&#39;userPrincipalName&#39;</span>
+</pre></div>
+</div>
+<p>This will use users as: <a class="reference external" href="mailto:username&#37;&#52;&#48;domain&#46;local">username<span>&#64;</span>domain<span>&#46;</span>local</a></p>
+<p>or:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_LDAP_UID</span> <span class="o">=</span> <span class="s">&#39;cn&#39;</span>
+</pre></div>
+</div>
+<p>This will use users as: username</p>
+<p>For OpenLDAP or similar use uid field name:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_LDAP_UID</span> <span class="o">=</span> <span class="s">&#39;uid&#39;</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="authentication-oauth">
 <h2>Authentication: OAuth<a class="headerlink" href="#authentication-oauth" title="Permalink to this headline">¶</a></h2>

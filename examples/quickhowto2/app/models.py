@@ -5,6 +5,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.orm import relationship
 from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
 from flask.ext.appbuilder import Model
+from flask.ext.appbuilder.models.decorators import renders
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
@@ -15,6 +16,7 @@ class ContactGroup(Model):
     def extra_col(self):
         return "EXTRA {0}".format(self.id)
 
+    @renders('name')
     def extra_col2(self):
         return Markup("<h2>" + self.name + "</h2>")
 

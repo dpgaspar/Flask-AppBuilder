@@ -294,7 +294,7 @@ class BaseModelView(BaseView):
         Your sqla model you must initialize it like::
 
             class MyView(ModelView):
-                datamodel = SQLAModel(MyTable)
+                datamodel = SQLAInterface(MyTable)
     """
 
     title = 'Title'
@@ -305,7 +305,7 @@ class BaseModelView(BaseView):
         If you want to limit the search (*filter*) columns possibilities, define it with a list of column names from your model::
 
             class MyView(ModelView):
-                datamodel = SQLAModel(MyTable)
+                datamodel = SQLAInterface(MyTable)
                 search_columns = ['name','address']
 
     """
@@ -330,7 +330,7 @@ class BaseModelView(BaseView):
         example (will just override the label for name column)::
 
             class MyView(ModelView):
-                datamodel = SQLAModel(MyTable, db.session)
+                datamodel = SQLAInterface(MyTable)
                 label_columns = {'name':'My Name Label Override'}
 
     """
@@ -346,7 +346,7 @@ class BaseModelView(BaseView):
                 return g.user
 
             class MyView(ModelView):
-                datamodel = SQLAModel(MyTable, db.session)
+                datamodel = SQLAInterface(MyTable)
                 base_filters = [['created_by', FilterEqualFunction, get_user],
                                 ['name', FilterStartsWith, 'a']]
 
@@ -357,10 +357,11 @@ class BaseModelView(BaseView):
         Use this property to set default ordering for lists ('col_name','asc|desc')::
 
             class MyView(ModelView):
-                datamodel = SQLAModel(MyTable, db.session)
+                datamodel = SQLAInterface(MyTable)
                 base_order = ('my_column_name','asc')
 
     """
+    
     search_widget = SearchWidget
     """ Search widget you can override with your own """
 

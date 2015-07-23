@@ -1,14 +1,14 @@
 import datetime
 import logging
 
-from flask import flash, redirect, session, url_for, request, g
+from flask import flash, redirect, session, url_for, request, g, make_response, jsonify
 from werkzeug.security import generate_password_hash
 from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
 from flask_babelpkg import lazy_gettext
 from flask_login import login_user, logout_user
 
-from ..views import ModelView, SimpleFormView, expose
+from ..views import ModelView, SimpleFormView, expose, expose_api
 from ..baseviews import BaseView
 from ..charts.views import DirectByChartView
 from ..fieldwidgets import BS3PasswordFieldWidget
@@ -379,6 +379,27 @@ class AuthLDAPView(AuthView):
                                form=form,
                                appbuilder=self.appbuilder)
 
+    @expose_api(name='auth',url='/api/auth')
+    def auth(self):
+        print "AUTH" + str(request.args)
+        if g.user is not None and g.user.is_authenticated():
+            http_return_code = 401
+            response = make_response(jsonify({'message': 'Login Failed already authenticated',
+                                              'severity': 'critical'}), http_return_code)
+        username = str(request.args.get('username'))
+        password = str(request.args.get('password'))
+        user = self.appbuilder.sm.auth_user_ldap(username, password)
+        if not user:
+            http_return_code = 401
+            response = make_response(jsonify({'message': 'Login Failed',
+                                              'severity': 'critical'}), http_return_code)            
+        else:
+            login_user(user, remember=False)
+            http_return_code = 201
+            response = make_response(jsonify({'message': 'Login Success',
+                                              'severity': 'info'}), http_return_code)            
+        
+        return response     
 
 class AuthOIDView(AuthView):
     login_template = 'appbuilder/general/security/login_oid.html'

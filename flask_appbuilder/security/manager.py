@@ -553,8 +553,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                     username = user[0][0]
                 else:
                     return False
-            log.debug("LDAP bind with: {0}".format(username))
+            log.debug("LDAP bind with: {0} {1}".format(username, password))
             con.bind_s(username, password)
+            log.debug("LDAP bind OK: {0}".format(username))
             return True
         except ldap.INVALID_CREDENTIALS:
             return False
