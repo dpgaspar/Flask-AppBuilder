@@ -379,9 +379,13 @@ class AuthLDAPView(AuthView):
                                form=form,
                                appbuilder=self.appbuilder)
 
+    """
+        For Future Use, API Auth, must check howto keep REST stateless
+    """
+    
+    """
     @expose_api(name='auth',url='/api/auth')
     def auth(self):
-        print "AUTH" + str(request.args)
         if g.user is not None and g.user.is_authenticated():
             http_return_code = 401
             response = make_response(jsonify({'message': 'Login Failed already authenticated',
@@ -400,6 +404,7 @@ class AuthLDAPView(AuthView):
                                               'severity': 'info'}), http_return_code)            
         
         return response     
+    """
 
 class AuthOIDView(AuthView):
     login_template = 'appbuilder/general/security/login_oid.html'
