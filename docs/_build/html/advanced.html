@@ -131,6 +131,7 @@
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Advanced Configuration</a><ul>
 <li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#custom-fields">Custom Fields</a></li>
 <li><a class="reference internal" href="#base-filtering">Base Filtering</a></li>
 <li><a class="reference internal" href="#default-order">Default Order</a></li>
 <li><a class="reference internal" href="#template-extra-arguments">Template Extra Arguments</a></li>
@@ -192,6 +193,32 @@
 permissions on GroupModelView as the only allowed. So users and even the administrator
 of the application will not have the possibility to add list or show permissions on Group table view.
 Base available permission are: can_add, can_edit, can_delete, can_list, can_show. More detailed info on <a class="reference internal" href="security.html"><em>Security</em></a></p>
+</div>
+<div class="section" id="custom-fields">
+<h2>Custom Fields<a class="headerlink" href="#custom-fields" title="Permalink to this headline">¶</a></h2>
+<p>Custom Model properties can be used on lists. This is usefull for formating values like currencies, time or dates.
+or for custom HTML. This is very simple to do, first define your custom property on your Model
+and use the <strong>&#64;renders</strong> decorator to tell the framework to map you class method
+with a certain Model property:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.decorators</span> <span class="kn">import</span> <span class="n">renders</span>
+
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">custom</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+
+    <span class="nd">@renders</span><span class="p">(</span><span class="s">&#39;custom&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">my_custom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="c"># will render this columns as bold on ListWidget</span>
+        <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;b&gt;&#39;</span> <span class="o">+</span> <span class="n">custom</span> <span class="o">+</span> <span class="s">&#39;&lt;/b&gt;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>On your view reference your method as a column on list:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;my_custom&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="base-filtering">
 <h2>Base Filtering<a class="headerlink" href="#base-filtering" title="Permalink to this headline">¶</a></h2>

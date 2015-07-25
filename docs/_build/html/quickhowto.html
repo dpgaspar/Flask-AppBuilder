@@ -399,7 +399,7 @@ Customize ModelView and ChartView overriding this properties</p>
 <dd><p>List with allowed search columns, if not provided all possible search columns will be used
 If you want to limit the search (<em>filter</em>) columns possibilities, define it with a list of column names from your model:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
     <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">]</span>
 </pre></div>
 </div>

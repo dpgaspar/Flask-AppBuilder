@@ -135,6 +135,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.security.decorators">flask.ext.appbuilder.security.decorators</a></li>
+<li><a class="reference internal" href="#module-flask.ext.appbuilder.models.decorators">flask.ext.appbuilder.models.decorators</a></li>
 <li><a class="reference internal" href="#module-flask.ext.appbuilder.baseviews">flask.ext.appbuilder.baseviews</a><ul>
 <li><a class="reference internal" href="#baseview">BaseView</a></li>
 <li><a class="reference internal" href="#basemodelview">BaseModelView</a></li>
@@ -546,6 +547,31 @@ like on the following example.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-flask.ext.appbuilder.models.decorators">
+<span id="flask-ext-appbuilder-models-decorators"></span><h2>flask.ext.appbuilder.models.decorators<a class="headerlink" href="#module-flask.ext.appbuilder.models.decorators" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="flask.ext.appbuilder.models.decorators.renders">
+<code class="descclassname">flask.ext.appbuilder.models.decorators.</code><code class="descname">renders</code><span class="sig-paren">(</span><em>col_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/models/decorators.html#renders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.models.decorators.renders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this decorator to map your custom Model properties to actual 
+Model db properties. As an example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">custom</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+    
+    <span class="nd">@renders</span><span class="p">(</span><span class="s">&#39;custom&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">my_custom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># will render this columns as bold on ListWidget</span>
+        <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;b&gt;&#39;</span> <span class="o">+</span> <span class="n">custom</span> <span class="o">+</span> <span class="s">&#39;&lt;/b&gt;&#39;</span><span class="p">)</span>
+        
+<span class="k">class</span> <span class="nc">MyModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;my_custom&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
 <div class="section" id="module-flask.ext.appbuilder.baseviews">
 <span id="flask-ext-appbuilder-baseviews"></span><h2>flask.ext.appbuilder.baseviews<a class="headerlink" href="#module-flask.ext.appbuilder.baseviews" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -706,7 +732,7 @@ Customize ModelView and ChartView overriding this properties</p>
     <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span>
 
 <span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
     <span class="n">base_filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s">&#39;created_by&#39;</span><span class="p">,</span> <span class="n">FilterEqualFunction</span><span class="p">,</span> <span class="n">get_user</span><span class="p">],</span>
                     <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="n">FilterStartsWith</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">]]</span>
 </pre></div>
@@ -718,7 +744,7 @@ Customize ModelView and ChartView overriding this properties</p>
 <code class="descname">base_order</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.base_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this property to set default ordering for lists (&#8216;col_name&#8217;,&#8217;asc|desc&#8217;):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
     <span class="n">base_order</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;my_column_name&#39;</span><span class="p">,</span><span class="s">&#39;asc&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -729,7 +755,7 @@ Customize ModelView and ChartView overriding this properties</p>
 <code class="descname">datamodel</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.datamodel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Your sqla model you must initialize it like:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -740,7 +766,7 @@ Customize ModelView and ChartView overriding this properties</p>
 <dd><p>Dictionary of labels for your columns, override this if you want diferent pretify labels</p>
 <p>example (will just override the label for name column):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
     <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;My Name Label Override&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
@@ -752,7 +778,7 @@ Customize ModelView and ChartView overriding this properties</p>
 <dd><p>List with allowed search columns, if not provided all possible search columns will be used
 If you want to limit the search (<em>filter</em>) columns possibilities, define it with a list of column names from your model:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
-    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
     <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">]</span>
 </pre></div>
 </div>

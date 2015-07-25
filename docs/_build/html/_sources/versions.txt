@@ -6,6 +6,7 @@ Improvements and Bug fixes on 1.4.4
 
 - Fix, #188 but fix created a display bug on empty queries with related views.
 - Fix, #186 LDAP configuration - Invalid DN syntax on OpenLDAP. Introduced AUTH_LDAP_BIND_USER and AUTH_LDAP_BIND_PASSWORD 
+- New, decorator for mapping custom Model property to real db property, supports sorting on custom properties. @renders.
 
 Improvements and Bug fixes on 1.4.3
 -----------------------------------

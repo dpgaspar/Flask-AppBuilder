@@ -17,6 +17,36 @@ permissions on GroupModelView as the only allowed. So users and even the adminis
 of the application will not have the possibility to add list or show permissions on Group table view.
 Base available permission are: can_add, can_edit, can_delete, can_list, can_show. More detailed info on :doc:`security`
 
+Custom Fields
+-------------
+
+Custom Model properties can be used on lists. This is usefull for formating values like currencies, time or dates.
+or for custom HTML. This is very simple to do, first define your custom property on your Model
+and use the **@renders** decorator to tell the framework to map you class method
+with a certain Model property::
+
+    
+    from flask.ext.appbuilder.models.decorators import renders
+
+    class MyModel(Model):
+        id = Column(Integer, primary_key=True)
+        name = Column(String(50), unique = True, nullable=False)
+        custom = Column(Integer(20))
+                
+        @renders('custom')
+        def my_custom(self):
+		# will render this columns as bold on ListWidget
+            return Markup('<b>' + custom + '</b>')
+
+
+On your view reference your method as a column on list::
+
+                    
+    class MyModelView(ModelView):
+        datamodel = SQLAInterface(MyTable)
+        list_columns = ['name', 'my_custom']
+
+
 Base Filtering
 --------------
 

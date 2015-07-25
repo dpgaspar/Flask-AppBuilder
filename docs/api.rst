@@ -23,6 +23,13 @@ flask.ext.appbuilder.security.decorators
     .. autofunction:: has_access
     .. autofunction:: permission_name
 
+flask.ext.appbuilder.models.decorators
+========================================
+
+.. automodule:: flask.ext.appbuilder.models.decorators
+
+    .. autofunction:: renders
+
 flask.ext.appbuilder.baseviews
 ==============================
 

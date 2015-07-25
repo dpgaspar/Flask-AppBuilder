@@ -23,7 +23,7 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 1.4.3*. Fixes bug on 1.4.1 and 1.4.2.
+*New 1.4.4*.
 
 If you're already using F.A.B.
 read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.

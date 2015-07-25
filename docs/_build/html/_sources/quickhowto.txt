@@ -72,6 +72,7 @@ The *ContactGroup* model.
         def __repr__(self):
             return self.name
 
+
 The *Contacts* table.
 
 ::
