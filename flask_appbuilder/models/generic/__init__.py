@@ -176,12 +176,85 @@ class GenericSession(object):
     #           FUNCTIONS for FILTERS
     #-----------------------------------------
 
+    def starts_with(self, col_name, value):
+        self._filters_cmd.append((self._starts_with, col_name, value))
+        return self
+
+    def _starts_with(self, item, col_name, value):
+        lw_col = getattr(item, col_name)
+        try:
+            lw_col = lw_col.lower()
+        except:
+            return None
+        lw_value = value.lower()
+        lw_value_list = lw_value.split(' ')
+
+        for lw_item in lw_value_list:
+            if not lw_col.startswith(lw_item):
+                return None
+
+        return col_name
+
+    def greater(self, col_name, value):
+        self._filters_cmd.append((self._greater, col_name, value))
+        return self
+
+    def _greater(self, item, col_name, value):
+        if getattr(item, col_name) == None:
+            return False
+        else:
+            try:
+                right_val = float(value)
+                return getattr(item, col_name) > right_val
+            except:
+                return False
+
+    def smaller(self, col_name, value):
+        self._filters_cmd.append((self._smaller, col_name, value))
+        return self
+
+    def _smaller(self, item, col_name, value):
+        if getattr(item, col_name) == None:
+            return False
+        else:
+            try:
+                right_val = float(value)
+                return getattr(item, col_name) < right_val
+            except:
+                return False
+
+    def ilike(self, col_name, value):
+        self._filters_cmd.append((self._ilike, col_name, value))
+        return self
+
+    def _ilike(self, item, col_name, value):
+        lw_col = getattr(item, col_name)
+        try:
+            lw_col = lw_col.lower()
+        except:
+            return None
+        lw_value = value.lower()
+        lw_value_list = lw_value.split(' ')
+
+        for lw_item in lw_value_list:
+            if not lw_item in lw_col:
+                return None
+
+        return col_name
+
     def like(self, col_name, value):
         self._filters_cmd.append((self._like, col_name, value))
         return self
 
     def _like(self, item, col_name, value):
-        return value in getattr(item, col_name)
+        lw_col = getattr(item, col_name)
+        lw_value_list = value.split(' ')
+
+        for lw_item in lw_value_list:
+            if not lw_item in lw_col:
+                return None
+
+        return col_name
 
     def not_like(self, col_name, value):
         self._filters_cmd.append((self._not_like, col_name, value))
@@ -196,7 +269,10 @@ class GenericSession(object):
 
     def _equal(self, item, col_name, value):
         source_value = getattr(item, col_name)
-        return source_value == type(source_value)(value)
+        try:
+            return source_value == type(source_value)(value)
+        except:
+            return 0.0
 
     def not_equal(self, col_name, value):
         self._filters_cmd.append((self._not_equal, col_name, value))
