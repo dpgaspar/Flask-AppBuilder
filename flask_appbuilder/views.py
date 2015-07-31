@@ -601,7 +601,7 @@ class CompactCRUDMixin(BaseCRUDView):
             self._session_form_widget = widgets.get('add')
             self._session_form_action = request.full_path
             self._session_form_title = self.add_title
-            return redirect(self.get_redirect())
+            return redirect(request.referrer)
 
 
     @expose('/edit/<pk>', methods=['GET', 'POST'])
@@ -611,13 +611,13 @@ class CompactCRUDMixin(BaseCRUDView):
         if not widgets:
             self._session_form_action = ''
             self._session_form_widget = None
-
-            return redirect(self.get_redirect())
+            return redirect(request.referrer)
         else:
             self._session_form_widget = widgets.get('edit')
             self._session_form_action = request.full_path
             self._session_form_title = self.edit_title
-            return redirect(self.get_redirect())
+            form = self.edit_form.refresh(request.form)
+            return redirect(request.referrer)
 
 
 """
