@@ -599,7 +599,7 @@ class CompactCRUDMixin(BaseCRUDView):
             return redirect(request.referrer)
         else:
             self._session_form_widget = widgets.get('add')
-            self._session_form_action = request.url
+            self._session_form_action = request.full_path
             self._session_form_title = self.add_title
             return redirect(self.get_redirect())
 
@@ -615,7 +615,7 @@ class CompactCRUDMixin(BaseCRUDView):
             return redirect(self.get_redirect())
         else:
             self._session_form_widget = widgets.get('edit')
-            self._session_form_action = request.url
+            self._session_form_action = request.full_path
             self._session_form_title = self.edit_title
             return redirect(self.get_redirect())
 
