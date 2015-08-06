@@ -82,8 +82,8 @@ class SecurityManager(BaseSecurityManager):
             exit(1)
 
     def find_register_user(self, registration_hash):
-        return self.get_session.query(RegisterUser).filter(
-            RegisterUser.registration_hash == registration_hash).scalar()
+        return self.get_session.query(self.registeruser_model).filter(
+            self.registeruser_model.registration_hash == registration_hash).scalar()
 
     def add_register_user(self, username, first_name, last_name, email,
                          password='', hashed_password=''):
@@ -92,7 +92,7 @@ class SecurityManager(BaseSecurityManager):
 
             :rtype : RegisterUser
         """
-        register_user = RegisterUser()
+        register_user = self.registeruser_model()
         register_user.username = username
         register_user.email = email
         register_user.first_name = first_name
