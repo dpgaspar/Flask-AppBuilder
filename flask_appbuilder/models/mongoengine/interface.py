@@ -65,7 +65,7 @@ class MongoEngineInterface(BaseInterface):
             offset = (page or 0) * page_size
             objs = objs[offset : offset + page_size]
 
-        return count, objs[:page_size]
+        return count, objs
 
     def is_object_id(self, col_name):
         try:
