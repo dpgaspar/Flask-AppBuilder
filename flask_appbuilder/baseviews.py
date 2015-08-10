@@ -432,7 +432,7 @@ class BaseModelView(BaseView):
         """
         ret = {}
         for key, value in list(self.label_columns.items()):
-            ret[key] = str(value)
+            ret[key] = str(value.encode('UTF-8'))
         return ret
 
 
