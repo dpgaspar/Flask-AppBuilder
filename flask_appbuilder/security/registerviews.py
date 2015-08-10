@@ -159,6 +159,7 @@ class RegisterUserDBView(BaseRegisterUser):
         self.add_form_unique_validations(form)
 
     def form_post(self, form):
+        self.add_form_unique_validations(form)
         self.add_registration(username=form.username.data,
                                               first_name=form.first_name.data,
                                               last_name=form.last_name.data,
