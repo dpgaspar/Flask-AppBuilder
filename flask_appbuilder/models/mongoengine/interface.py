@@ -37,16 +37,17 @@ class MongoEngineInterface(BaseInterface):
     def query(self, filters=None, order_column='', order_direction='',
               page=None, page_size=None):
 
+        # base query : all objects
+        objs = self.obj.objects
+
+        # apply filters first if given
         if filters:
-            objs = filters.apply_all(self.obj.objects)
-        else:
-            objs = self.obj.objects
-        count = len(objs)
-        start, stop = 0, count
-        if page:
-            start = page * page_size
-        if page_size:
-            stop = start + page_size
+            objs = filters.apply_all(objs)
+
+        # get the count of all items, either filtered or unfiltered
+        count = objs.count()
+
+        # order the data
         if order_column != '':
             if hasattr(getattr(self.obj, order_column), '_col_name'):
                 order_column = getattr(getattr(self.obj, order_column),'_col_name')
@@ -54,7 +55,17 @@ class MongoEngineInterface(BaseInterface):
                 objs = objs.order_by('-{0}'.format(order_column))
             else:
                 objs = objs.order_by('+{0}'.format(order_column))
-        return count, objs[start:stop]
+
+        if page_size is None: # error checking and warnings
+            if page is not None:
+                log.error('Attempting to get page %s but page_size is undefined' % page)
+            if count > 100:
+                log.warn('Retrieving %s %s items from DB' % (count, str(self.obj)))
+        else: # get data segment for paginated page
+            offset = (page or 0) * page_size
+            objs = objs[offset : offset + page_size]
+
+        return count, objs
 
     def is_object_id(self, col_name):
         try:
