@@ -1,6 +1,16 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.4.5
+-----------------------------------
+
+- Fix, #211, UTF-8 encoding for the json label strings. REST API bug.
+- Fix, #209, Several improvements to queries on MongoDB.
+- Fix, #206, registration form fields aren't being validated.
+- Fix, #205, self.registeruser_model rather than RegisterUser.
+- Fix, #195, Silent failure of validators_columns on CompactCRUDMixin.
+- Fix, #197, 'Mixed Content' message when behind an https reverse proxy
+
 Improvements and Bug fixes on 1.4.4
 -----------------------------------
 

@@ -2,7 +2,7 @@ import logging
 from flask_wtf import Form
 from wtforms import (BooleanField, StringField,
                      TextAreaField, IntegerField, FloatField,
-                      DateField, DateTimeField)
+                      DateField, DateTimeField, DecimalField)
 from .fields import QuerySelectMultipleField, QuerySelectField
 
 from wtforms import validators
@@ -41,6 +41,7 @@ class FieldConverter(object):
                         ('is_text', TextAreaField, BS3TextAreaFieldWidget),
                         ('is_string', StringField, BS3TextFieldWidget),
                         ('is_integer', IntegerField, BS3TextFieldWidget),
+                        ('is_numeric', DecimalField, BS3TextFieldWidget),
                         ('is_float', FloatField, BS3TextFieldWidget),
                         ('is_boolean', BooleanField, None),
                         ('is_date', DateField, DatePickerWidget),

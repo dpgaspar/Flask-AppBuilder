@@ -1,7 +1,7 @@
 from flask import Markup
 import datetime
 import math
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, Numeric
 from sqlalchemy.orm import relationship
 from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
 from flask.ext.appbuilder import Model
@@ -70,6 +70,7 @@ def test():
 class FloatModel(Model):
     id = Column(Integer, primary_key=True)
     value = Column(Float, nullable = False, default=test)
+    value_numeric = Column(Numeric, nullable = False, default=test)
 
 
     def __repr__(self):

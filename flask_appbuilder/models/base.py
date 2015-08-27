@@ -135,6 +135,9 @@ class BaseInterface(object):
     def is_integer(self, col_name):
         return False
 
+    def is_numeric(self, col_name):
+        return False
+
     def is_float(self, col_name):
         return False
 

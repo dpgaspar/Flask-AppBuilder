@@ -167,6 +167,12 @@ class SQLAInterface(BaseInterface):
         except:
             return False
 
+    def is_numeric(self, col_name):
+        try:
+            return isinstance(self.list_columns[col_name].type, sa.types.Numeric)
+        except:
+            return False
+
     def is_float(self, col_name):
         try:
             return isinstance(self.list_columns[col_name].type, sa.types.Float)
