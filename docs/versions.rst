@@ -10,6 +10,8 @@ Improvements and Bug fixes on 1.4.5
 - Fix, #205, self.registeruser_model rather than RegisterUser.
 - Fix, #195, Silent failure of validators_columns on CompactCRUDMixin.
 - Fix, #197, 'Mixed Content' message when behind an https reverse proxy
+- Fix, Bug fixed for problem with columns that drilldown model.model.name.
+- New, Support for Numeric SQLAlchemy type.
 
 Improvements and Bug fixes on 1.4.4
 -----------------------------------
