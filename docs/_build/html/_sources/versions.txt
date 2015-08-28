@@ -1,12 +1,25 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.4.5
+-----------------------------------
+
+- Fix, #211, UTF-8 encoding for the json label strings. REST API bug.
+- Fix, #209, Several improvements to queries on MongoDB.
+- Fix, #206, registration form fields aren't being validated.
+- Fix, #205, self.registeruser_model rather than RegisterUser.
+- Fix, #195, Silent failure of validators_columns on CompactCRUDMixin.
+- Fix, #197, 'Mixed Content' message when behind an https reverse proxy
+- Fix, Bug fixed for problem with columns that drilldown model.model.name.
+- New, Support for Numeric SQLAlchemy type.
+
 Improvements and Bug fixes on 1.4.4
 -----------------------------------
 
 - Fix, #188 but fix created a display bug on empty queries with related views.
 - Fix, #186 LDAP configuration - Invalid DN syntax on OpenLDAP. Introduced AUTH_LDAP_BIND_USER and AUTH_LDAP_BIND_PASSWORD 
 - New, decorator for mapping custom Model property to real db property, supports sorting on custom properties. @renders.
+- New, various new filters for generic models. #193.
 
 Improvements and Bug fixes on 1.4.3
 -----------------------------------

@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.4',
+        VERSION:     '1.4.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -64,7 +64,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.4.4</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.4.5</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -112,7 +112,6 @@
 <li class="toctree-l1"><a class="reference internal" href="user_registration.html">User Registration</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="versionmigration.html">Version Migration</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Versions</a></li>
 </ul>
@@ -129,6 +128,7 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Versions</a><ul>
+<li><a class="reference internal" href="#improvements-and-bug-fixes-on-1-4-5">Improvements and Bug fixes on 1.4.5</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-1-4-4">Improvements and Bug fixes on 1.4.4</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-1-4-3">Improvements and Bug fixes on 1.4.3</a></li>
 <li><a class="reference internal" href="#improvements-and-bug-fixes-on-1-4-2">Improvements and Bug fixes on 1.4.2</a></li>
@@ -220,7 +220,7 @@
               
                 
   <li>
-    <a href="versionmigration.html" title="Previous Chapter: Version Migration"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Version Migratio...</span>
+    <a href="versionmigration.html" title="Previous Chapter: Version Migration"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Version Migra...</span>
     </a>
   </li>
               
@@ -250,12 +250,26 @@
       
   <div class="section" id="versions">
 <h1>Versions<a class="headerlink" href="#versions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="improvements-and-bug-fixes-on-1-4-5">
+<h2>Improvements and Bug fixes on 1.4.5<a class="headerlink" href="#improvements-and-bug-fixes-on-1-4-5" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Fix, #211, UTF-8 encoding for the json label strings. REST API bug.</li>
+<li>Fix, #209, Several improvements to queries on MongoDB.</li>
+<li>Fix, #206, registration form fields aren&#8217;t being validated.</li>
+<li>Fix, #205, self.registeruser_model rather than RegisterUser.</li>
+<li>Fix, #195, Silent failure of validators_columns on CompactCRUDMixin.</li>
+<li>Fix, #197, &#8216;Mixed Content&#8217; message when behind an https reverse proxy</li>
+<li>Fix, Bug fixed for problem with columns that drilldown model.model.name.</li>
+<li>New, Support for Numeric SQLAlchemy type.</li>
+</ul>
+</div>
 <div class="section" id="improvements-and-bug-fixes-on-1-4-4">
 <h2>Improvements and Bug fixes on 1.4.4<a class="headerlink" href="#improvements-and-bug-fixes-on-1-4-4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Fix, #188 but fix created a display bug on empty queries with related views.</li>
 <li>Fix, #186 LDAP configuration - Invalid DN syntax on OpenLDAP. Introduced AUTH_LDAP_BIND_USER and AUTH_LDAP_BIND_PASSWORD</li>
 <li>New, decorator for mapping custom Model property to real db property, supports sorting on custom properties. &#64;renders.</li>
+<li>New, various new filters for generic models. #193.</li>
 </ul>
 </div>
 <div class="section" id="improvements-and-bug-fixes-on-1-4-3">
