@@ -119,11 +119,11 @@ class UserModelView(ModelView):
                                'Username valid for authentication on DB or LDAP, unused for OID auth'),
                            'password': lazy_gettext(
                                'Please use a good password policy, this application does not check this for you'),
-                           'active': lazy_gettext('Its not a good policy to remove a user, just make it inactive'),
-                           'email': lazy_gettext('The users email, this will also be used for OID auth'),
+                           'active': lazy_gettext('It\'s not a good policy to remove a user, just make it inactive'),
+                           'email': lazy_gettext('The user\'s email, this will also be used for OID auth'),
                            'roles': lazy_gettext(
                                'The user role on the application, this will associate with a list of permissions'),
-                           'conf_password': lazy_gettext('Please rewrite the users password to confirm')}
+                           'conf_password': lazy_gettext('Please rewrite the user\'s password to confirm')}
 
     list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles']
 
@@ -211,7 +211,7 @@ class UserDBModelView(UserModelView):
                                                        widget=BS3PasswordFieldWidget()),
                              'conf_password': PasswordField(lazy_gettext('Confirm Password'),
                                                             description=lazy_gettext(
-                                                                'Please rewrite the users password to confirm'),
+                                                                'Please rewrite the user\'s password to confirm'),
                                                             validators=[EqualTo('password', message=lazy_gettext(
                                                                 'Passwords must match'))],
                                                             widget=BS3PasswordFieldWidget())}

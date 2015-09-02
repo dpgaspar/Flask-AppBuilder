@@ -180,7 +180,7 @@ msgid "No Relation"
 msgstr "Sem Relação"
 
 #: flask_appbuilder/security/forms.py:10
-msgid "openid"
+msgid "OpenID"
 msgstr "Id Aberto (OpenID)"
 
 #: flask_appbuilder/security/forms.py:11 flask_appbuilder/security/forms.py:16
@@ -191,8 +191,8 @@ msgid "User Name"
 msgstr "Utilizador"
 
 #: flask_appbuilder/security/forms.py:12
-msgid "remember_me"
-msgstr ""
+msgid "Remember me"
+msgstr "Lembrar-me"
 
 #: flask_appbuilder/security/forms.py:17 flask_appbuilder/security/forms.py:21
 #: flask_appbuilder/security/forms.py:37 flask_appbuilder/security/views.py:104
@@ -435,11 +435,11 @@ msgid "Username valid for authentication on DB or LDAP, unused for OID auth"
 msgstr "Nome de Utilizador válido. Não utilizador para OID."
 
 #: flask_appbuilder/security/views.py:122
-msgid "Its not a good policy to remove a user, just make it inactive"
+msgid "It's not a good policy to remove a user, just make it inactive"
 msgstr "Não é uma boa politica remover um utilizador, desactive-o"
 
 #: flask_appbuilder/security/views.py:123
-msgid "The users email, this will also be used for OID auth"
+msgid "The user's email, this will also be used for OID auth"
 msgstr "O Email do Utilizador, irá ser usado para autenticação tipo OID"
 
 #: flask_appbuilder/security/views.py:124
@@ -450,7 +450,7 @@ msgstr "A Função de segurança, está associada a uma lista de permissões"
 
 #: flask_appbuilder/security/views.py:126
 #: flask_appbuilder/security/views.py:213
-msgid "Please rewrite the users password to confirm"
+msgid "Please rewrite the user's password to confirm"
 msgstr "Por favor reescreva a password para confirmar"
 
 #: flask_appbuilder/security/views.py:131
@@ -632,7 +632,7 @@ msgid "Enter your OpenID Username"
 msgstr "Ou intruduza o seu OpenID"
 
 #: flask_appbuilder/templates/appbuilder/general/security/register_oauth.html:15
-msgid "Signin using:"
+msgid "Sign in using:"
 msgstr ""
 
 #: flask_appbuilder/templates/appbuilder/general/widgets/search.html:7

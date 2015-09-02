@@ -180,7 +180,7 @@ msgid "No Relation"
 msgstr "Sin Relación"
 
 #: flask_appbuilder/security/forms.py:10
-msgid "openid"
+msgid "OpenID"
 msgstr "openId"
 
 #: flask_appbuilder/security/forms.py:11 flask_appbuilder/security/forms.py:16
@@ -191,7 +191,7 @@ msgid "User Name"
 msgstr "Nombre de usuario"
 
 #: flask_appbuilder/security/forms.py:12
-msgid "remember_me"
+msgid "Remember me"
 msgstr "Recordarme"
 
 #: flask_appbuilder/security/forms.py:17 flask_appbuilder/security/forms.py:21
@@ -436,11 +436,11 @@ msgstr ""
 " para autenticación OID"
 
 #: flask_appbuilder/security/views.py:122
-msgid "Its not a good policy to remove a user, just make it inactive"
+msgid "It's not a good policy to remove a user, just make it inactive"
 msgstr "No es una buena practica eliminar un usuario, simplemente lo hace inactivo"
 
 #: flask_appbuilder/security/views.py:123
-msgid "The users email, this will also be used for OID auth"
+msgid "The user's email, this will also be used for OID auth"
 msgstr ""
 "La dirección de correo electrónico de los usuarios, esto también se "
 "utilizará para autenticación OID"
@@ -455,7 +455,7 @@ msgstr ""
 
 #: flask_appbuilder/security/views.py:126
 #: flask_appbuilder/security/views.py:213
-msgid "Please rewrite the users password to confirm"
+msgid "Please rewrite the user's password to confirm"
 msgstr "Por favor, vuelva a escribir la contraseña de los usuarios para confirmar"
 
 #: flask_appbuilder/security/views.py:131
@@ -638,7 +638,7 @@ msgid "Enter your OpenID Username"
 msgstr "O introduzca su OpenID aquí"
 
 #: flask_appbuilder/templates/appbuilder/general/security/register_oauth.html:15
-msgid "Signin using:"
+msgid "Sign in using:"
 msgstr ""
 
 #: flask_appbuilder/templates/appbuilder/general/widgets/search.html:7

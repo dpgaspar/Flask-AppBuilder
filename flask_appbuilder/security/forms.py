@@ -7,9 +7,9 @@ from ..forms import DynamicForm
 
 
 class LoginForm_oid(DynamicForm):
-    openid = StringField(lazy_gettext('openid'), validators=[DataRequired()])
+    openid = StringField(lazy_gettext('OpenID'), validators=[DataRequired()])
     username = StringField(lazy_gettext('User Name'))
-    remember_me = BooleanField(lazy_gettext('remember_me'), default=False)
+    remember_me = BooleanField(lazy_gettext('Remember me'), default=False)
 
 
 class LoginForm_db(DynamicForm):
