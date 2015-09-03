@@ -579,9 +579,14 @@ class CompactCRUDMixin(BaseCRUDView):
         """ get joined base filter and current active filter for query """
         widgets = super(CompactCRUDMixin, self)._get_list_widget(**args)
         session_form_widget = get_session_var('session_form_widget', None)
+
         form_widget = None
-        if session_form_widget:
-            form_widget = widgets.get(session_form_widget)
+        if session_form_widget == 'add':
+            form_widget = self._add().get('add')
+        elif session_form_widget == 'edit':
+            pk = get_session_var('session_form_edit_pk')
+            if pk:
+                form_widget = self._edit(int(pk)).get('edit')
         return {
             'list': GroupFormListWidget(
                 list_widget=widgets.get('list'),
@@ -623,6 +628,7 @@ class CompactCRUDMixin(BaseCRUDView):
             return redirect(self.get_redirect())
         else:
             session['session_form_widget'] = 'edit'
+            session['session_form_edit_pk'] = pk
             session['session_form_action'] = request.url
             session['session_form_title'] = self.add_title
             return redirect(self.get_redirect())
