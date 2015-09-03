@@ -575,19 +575,21 @@ class CompactCRUDMixin(BaseCRUDView):
     """
         Mix with ModelView to implement a list with add and edit on the same page.
     """
-
     def _get_list_widget(self, **args):
         """ get joined base filter and current active filter for query """
         widgets = super(CompactCRUDMixin, self)._get_list_widget(**args)
+        session_form_widget = get_session_var('session_form_widget', None)
+        form_widget = None
+        if session_form_widget:
+            form_widget = widgets.get(session_form_widget)
         return {
             'list': GroupFormListWidget(
                 list_widget=widgets.get('list'),
-                form_widget=get_session_var('session_form_widget', None),
+                form_widget=form_widget,
                 form_action=get_session_var('session_form_action', ''),
                 form_title=get_session_var('session_form_title', ''),
             )
         }
-
 
     @expose('/list/', methods=['GET', 'POST'])
     @has_access
@@ -606,11 +608,10 @@ class CompactCRUDMixin(BaseCRUDView):
             session['session_form_widget'] = None
             return redirect(request.referrer)
         else:
-            session['session_form_widget'] = widgets.get('add')
+            session['session_form_widget'] = 'add'
             session['session_form_action'] = request.url
             session['session_form_title'] = self.add_title
             return redirect(self.get_redirect())
-
 
     @expose('/edit/<pk>', methods=['GET', 'POST'])
     @has_access
@@ -621,7 +622,7 @@ class CompactCRUDMixin(BaseCRUDView):
             session['session_form_widget'] = None
             return redirect(self.get_redirect())
         else:
-            session['session_form_widget'] = widgets.get('edit')
+            session['session_form_widget'] = 'edit'
             session['session_form_action'] = request.url
             session['session_form_title'] = self.add_title
             return redirect(self.get_redirect())
