@@ -564,35 +564,43 @@ class MultipleView(BaseView):
                                     views=self._views,
                                     views_widgets=views_widgets)
 
-def get_session_var(k, default=None):
-    if k in session:
-        return session[k]
-    else:
-        return default
 
 
 class CompactCRUDMixin(BaseCRUDView):
     """
         Mix with ModelView to implement a list with add and edit on the same page.
     """
+    @classmethod
+    def set_key(cls, k, v):
+        k = cls.__name__ + '__' + k
+        session[k] = v
+
+    @classmethod
+    def get_key(cls, k, default=None):
+        k = cls.__name__ + '__' + k
+        if k in session:
+            return session[k]
+        else:
+            return default
+
     def _get_list_widget(self, **args):
         """ get joined base filter and current active filter for query """
         widgets = super(CompactCRUDMixin, self)._get_list_widget(**args)
-        session_form_widget = get_session_var('session_form_widget', None)
+        session_form_widget = self.get_key('session_form_widget', None)
 
         form_widget = None
         if session_form_widget == 'add':
             form_widget = self._add().get('add')
         elif session_form_widget == 'edit':
-            pk = get_session_var('session_form_edit_pk')
+            pk = self.get_key('session_form_edit_pk')
             if pk:
                 form_widget = self._edit(int(pk)).get('edit')
         return {
             'list': GroupFormListWidget(
                 list_widget=widgets.get('list'),
                 form_widget=form_widget,
-                form_action=get_session_var('session_form_action', ''),
-                form_title=get_session_var('session_form_title', ''),
+                form_action=self.get_key('session_form_action', ''),
+                form_title=self.get_key('session_form_title', ''),
             )
         }
 
@@ -609,13 +617,13 @@ class CompactCRUDMixin(BaseCRUDView):
     def add(self):
         widgets = self._add()
         if not widgets:
-            session['session_form_action'] = ''
-            session['session_form_widget'] = None
+            self.set_key('session_form_action', '')
+            self.set_key('session_form_widget', None)
             return redirect(request.referrer)
         else:
-            session['session_form_widget'] = 'add'
-            session['session_form_action'] = request.url
-            session['session_form_title'] = self.add_title
+            self.set_key('session_form_widget', 'add')
+            self.set_key('session_form_action', request.url)
+            self.set_key('session_form_title', self.add_title)
             return redirect(self.get_redirect())
 
     @expose('/edit/<pk>', methods=['GET', 'POST'])
@@ -623,14 +631,14 @@ class CompactCRUDMixin(BaseCRUDView):
     def edit(self, pk):
         widgets = self._edit(pk)
         if not widgets:
-            session['session_form_action'] = ''
-            session['session_form_widget'] = None
+            self.set_key('session_form_action', '')
+            self.set_key('session_form_widget', None)
             return redirect(self.get_redirect())
         else:
-            session['session_form_widget'] = 'edit'
-            session['session_form_edit_pk'] = pk
-            session['session_form_action'] = request.url
-            session['session_form_title'] = self.add_title
+            self.set_key('session_form_widget', 'edit')
+            self.set_key('session_form_action', request.url)
+            self.set_key('session_form_title', self.add_title)
+            self.set_key('session_form_edit_pk', pk)
             return redirect(self.get_redirect())
 
 
