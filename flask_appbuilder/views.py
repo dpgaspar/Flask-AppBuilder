@@ -565,18 +565,22 @@ class MultipleView(BaseView):
                                     views_widgets=views_widgets)
 
 
-
 class CompactCRUDMixin(BaseCRUDView):
     """
         Mix with ModelView to implement a list with add and edit on the same page.
     """
     @classmethod
     def set_key(cls, k, v):
+        """Allows attaching stateless information to the class using the
+        flask session dict
+        """
         k = cls.__name__ + '__' + k
         session[k] = v
 
     @classmethod
     def get_key(cls, k, default=None):
+        """Matching get method for ``set_key``
+        """
         k = cls.__name__ + '__' + k
         if k in session:
             return session[k]
