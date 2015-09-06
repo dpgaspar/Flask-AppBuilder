@@ -1,5 +1,6 @@
 import logging
-from flask import flash, redirect, send_file, jsonify, make_response, url_for
+from flask import (
+    flash, redirect, send_file, jsonify, make_response, url_for, session)
 from ._compat import as_unicode
 from .filemanager import uuid_originalname
 from .widgets import GroupFormListWidget, ListMasterWidget
@@ -568,18 +569,44 @@ class CompactCRUDMixin(BaseCRUDView):
     """
         Mix with ModelView to implement a list with add and edit on the same page.
     """
-    _session_form_title = ''
-    _session_form_widget = None
-    _session_form_action = ''
+    @classmethod
+    def set_key(cls, k, v):
+        """Allows attaching stateless information to the class using the
+        flask session dict
+        """
+        k = cls.__name__ + '__' + k
+        session[k] = v
+
+    @classmethod
+    def get_key(cls, k, default=None):
+        """Matching get method for ``set_key``
+        """
+        k = cls.__name__ + '__' + k
+        if k in session:
+            return session[k]
+        else:
+            return default
 
     def _get_list_widget(self, **args):
         """ get joined base filter and current active filter for query """
         widgets = super(CompactCRUDMixin, self)._get_list_widget(**args)
-        return {'list': GroupFormListWidget(list_widget=widgets.get('list'),
-                                            form_widget=self._session_form_widget,
-                                            form_action=self._session_form_action,
-                                            form_title=self._session_form_title)}
+        session_form_widget = self.get_key('session_form_widget', None)
 
+        form_widget = None
+        if session_form_widget == 'add':
+            form_widget = self._add().get('add')
+        elif session_form_widget == 'edit':
+            pk = self.get_key('session_form_edit_pk')
+            if pk:
+                form_widget = self._edit(int(pk)).get('edit')
+        return {
+            'list': GroupFormListWidget(
+                list_widget=widgets.get('list'),
+                form_widget=form_widget,
+                form_action=self.get_key('session_form_action', ''),
+                form_title=self.get_key('session_form_title', ''),
+            )
+        }
 
     @expose('/list/', methods=['GET', 'POST'])
     @has_access
@@ -594,30 +621,29 @@ class CompactCRUDMixin(BaseCRUDView):
     def add(self):
         widgets = self._add()
         if not widgets:
-            self._session_form_action = ''
-            self._session_form_widget = None
+            self.set_key('session_form_action', '')
+            self.set_key('session_form_widget', None)
             return redirect(request.referrer)
         else:
-            self._session_form_widget = widgets.get('add')
-            self._session_form_action = request.full_path
-            self._session_form_title = self.add_title
-            return redirect(request.referrer)
-
+            self.set_key('session_form_widget', 'add')
+            self.set_key('session_form_action', request.url)
+            self.set_key('session_form_title', self.add_title)
+            return redirect(self.get_redirect())
 
     @expose('/edit/<pk>', methods=['GET', 'POST'])
     @has_access
     def edit(self, pk):
         widgets = self._edit(pk)
         if not widgets:
-            self._session_form_action = ''
-            self._session_form_widget = None
-            return redirect(request.referrer)
+            self.set_key('session_form_action', '')
+            self.set_key('session_form_widget', None)
+            return redirect(self.get_redirect())
         else:
-            self._session_form_widget = widgets.get('edit')
-            self._session_form_action = request.full_path
-            self._session_form_title = self.edit_title
-            form = self.edit_form.refresh(request.form)
-            return redirect(request.referrer)
+            self.set_key('session_form_widget', 'edit')
+            self.set_key('session_form_action', request.url)
+            self.set_key('session_form_title', self.add_title)
+            self.set_key('session_form_edit_pk', pk)
+            return redirect(self.get_redirect())
 
 
 """
