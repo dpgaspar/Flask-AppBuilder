@@ -626,7 +626,7 @@ class CompactCRUDMixin(BaseCRUDView):
             return redirect(request.referrer)
         else:
             self.set_key('session_form_widget', 'add')
-            self.set_key('session_form_action', request.url)
+            self.set_key('session_form_action', request.full_path)
             self.set_key('session_form_title', self.add_title)
             return redirect(self.get_redirect())
 
@@ -640,7 +640,7 @@ class CompactCRUDMixin(BaseCRUDView):
             return redirect(self.get_redirect())
         else:
             self.set_key('session_form_widget', 'edit')
-            self.set_key('session_form_action', request.url)
+            self.set_key('session_form_action', request.full_path)
             self.set_key('session_form_title', self.add_title)
             self.set_key('session_form_edit_pk', pk)
             return redirect(self.get_redirect())
