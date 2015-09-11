@@ -135,6 +135,9 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | UPLOAD_FOLDER                     | Files upload folder.                       |   No      |
 |                                   | Mandatory for file uploads.                |           |
 +-----------------------------------+--------------------------------------------+-----------+
+| FILE_ALLOWED_EXTENSIONS           | Tuple with allower extensions.             |   No      |
+|                                   | FILE_ALLOWED_EXTENSIONS = ('txt','doc')    |           |
++-----------------------------------+--------------------------------------------+-----------+
 | IMG_UPLOAD_FOLDER                 | Image upload folder.                       |   No      |
 |                                   | Mandatory for image uploads.               |           |
 +-----------------------------------+--------------------------------------------+-----------+

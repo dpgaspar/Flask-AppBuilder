@@ -29,6 +29,8 @@
     <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
+    <link rel="next" title="Version Migration" href="versionmigration.html" />
+    <link rel="prev" title="User Registration" href="user_registration.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -110,7 +112,8 @@
 <li class="toctree-l1"><a class="reference internal" href="security.html">Security</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_registration.html">User Registration</a></li>
 </ul>
-<ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="versionmigration.html">Version Migration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
 </ul>
@@ -182,6 +185,14 @@
             
               
                 
+  <li>
+    <a href="user_registration.html" title="Previous Chapter: User Registration"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; User Registra...</span>
+    </a>
+  </li>
+  <li>
+    <a href="versionmigration.html" title="Next Chapter: Version Migration"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Version Migra... &raquo;</span>
+    </a>
+  </li>
               
             
             
@@ -1226,6 +1237,19 @@ two lists.</p>
 <dt id="flask.ext.appbuilder.views.CompactCRUDMixin">
 <em class="property">class </em><code class="descclassname">flask.ext.appbuilder.views.</code><code class="descname">CompactCRUDMixin</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/views.html#CompactCRUDMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.CompactCRUDMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mix with ModelView to implement a list with add and edit on the same page.</p>
+<dl class="classmethod">
+<dt id="flask.ext.appbuilder.views.CompactCRUDMixin.get_key">
+<em class="property">classmethod </em><code class="descname">get_key</code><span class="sig-paren">(</span><em>k</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/views.html#CompactCRUDMixin.get_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.CompactCRUDMixin.get_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matching get method for <code class="docutils literal"><span class="pre">set_key</span></code></p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="flask.ext.appbuilder.views.CompactCRUDMixin.set_key">
+<em class="property">classmethod </em><code class="descname">set_key</code><span class="sig-paren">(</span><em>k</em>, <em>v</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/views.html#CompactCRUDMixin.set_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.views.CompactCRUDMixin.set_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows attaching stateless information to the class using the
+flask session dict</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>

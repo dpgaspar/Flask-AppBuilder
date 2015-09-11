@@ -113,6 +113,7 @@
 <li class="toctree-l1"><a class="reference internal" href="user_registration.html">User Registration</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="versionmigration.html">Version Migration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
 </ul>
@@ -363,26 +364,31 @@ will be shown on the left side of the menu</td>
 Mandatory for file uploads.</td>
 <td>No</td>
 </tr>
-<tr class="row-even"><td>IMG_UPLOAD_FOLDER</td>
+<tr class="row-even"><td>FILE_ALLOWED_EXTENSIONS</td>
+<td>Tuple with allower extensions.
+FILE_ALLOWED_EXTENSIONS = (&#8216;txt&#8217;,&#8217;doc&#8217;)</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>IMG_UPLOAD_FOLDER</td>
 <td>Image upload folder.
 Mandatory for image uploads.</td>
 <td>No</td>
 </tr>
-<tr class="row-odd"><td>IMG_UPLOAD_URL</td>
+<tr class="row-even"><td>IMG_UPLOAD_URL</td>
 <td>Image relative URL.
 Mandatory for image uploads.</td>
 <td>No</td>
 </tr>
-<tr class="row-even"><td>IMG_SIZE</td>
+<tr class="row-odd"><td>IMG_SIZE</td>
 <td>tuple to define default image resize.
 (width, height, True|False).</td>
 <td>No</td>
 </tr>
-<tr class="row-odd"><td>BABEL_DEFAULT_LOCALE</td>
+<tr class="row-even"><td>BABEL_DEFAULT_LOCALE</td>
 <td>Babel&#8217;s default language.</td>
 <td>No</td>
 </tr>
-<tr class="row-even"><td>LANGUAGES</td>
+<tr class="row-odd"><td>LANGUAGES</td>
 <td>A dictionary mapping
 the existing languages with the countries
 name and flag</td>

@@ -43,7 +43,10 @@ class FileManager(object):
         self.base_path = base_path
         self.relative_path = relative_path
         self.namegen = namegen or uuid_namegen
-        self.allowed_extensions = allowed_extensions
+        if not allowed_extensions and 'FILE_ALLOWED_EXTENSIONS' in ctx.app.config:
+            self.allowed_extensions = ctx.app.config['FILE_ALLOWED_EXTENSIONS']
+        else:
+            self.allowed_extensions = allowed_extensions
         self.permission = permission
         self._should_delete = False
 
