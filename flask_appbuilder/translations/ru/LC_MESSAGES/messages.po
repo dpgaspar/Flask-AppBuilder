@@ -180,7 +180,7 @@ msgid "No Relation"
 msgstr "Нет связи"
 
 #: flask_appbuilder/security/forms.py:10
-msgid "openid"
+msgid "OpenID"
 msgstr "OpenID"
 
 #: flask_appbuilder/security/forms.py:11 flask_appbuilder/security/forms.py:16
@@ -191,8 +191,8 @@ msgid "User Name"
 msgstr "Логин"
 
 #: flask_appbuilder/security/forms.py:12
-msgid "remember_me"
-msgstr "remember_me"
+msgid "Remember me"
+msgstr "Запомнить меня"
 
 #: flask_appbuilder/security/forms.py:17 flask_appbuilder/security/forms.py:21
 #: flask_appbuilder/security/forms.py:37 flask_appbuilder/security/views.py:104
@@ -436,11 +436,11 @@ msgstr ""
 "аутентификации"
 
 #: flask_appbuilder/security/views.py:122
-msgid "Its not a good policy to remove a user, just make it inactive"
+msgid "It's not a good policy to remove a user, just make it inactive"
 msgstr "Удалять пользователя плохая практика, просто сделайте его неактивным"
 
 #: flask_appbuilder/security/views.py:123
-msgid "The users email, this will also be used for OID auth"
+msgid "The user's email, this will also be used for OID auth"
 msgstr "E-mail ользователя. Будет также использоваться для OID аутентификации"
 
 #: flask_appbuilder/security/views.py:124
@@ -451,7 +451,7 @@ msgstr "Роль пользователя, опредляющая список �
 
 #: flask_appbuilder/security/views.py:126
 #: flask_appbuilder/security/views.py:213
-msgid "Please rewrite the users password to confirm"
+msgid "Please rewrite the user's password to confirm"
 msgstr "Повторите пароль"
 
 #: flask_appbuilder/security/views.py:131
@@ -632,7 +632,7 @@ msgid "Enter your OpenID Username"
 msgstr "Или введите OpenID здесь"
 
 #: flask_appbuilder/templates/appbuilder/general/security/register_oauth.html:15
-msgid "Signin using:"
+msgid "Sign in using:"
 msgstr ""
 
 #: flask_appbuilder/templates/appbuilder/general/widgets/search.html:7
