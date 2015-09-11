@@ -1,6 +1,14 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.4.6
+-----------------------------------
+
+- Fix, #223 Proxy support.
+- Fix, #219 Making the inline crud stateless, CompatCRUDMixin.
+- Fix, #216 English issues found during translation.
+- New, config key, FILE_ALLOWED_EXTENSIONS, issue #221.
+
 Improvements and Bug fixes on 1.4.5
 -----------------------------------
 
