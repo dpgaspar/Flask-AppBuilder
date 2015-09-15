@@ -38,7 +38,7 @@ setup(
         'click>=3.0',
         'Flask>=0.10',
         'Flask-BabelPkg>=0.9.4',
-        'Flask-Login>=0.2.0',
+        'Flask-Login==0.2.11',
         'Flask-OpenID>=1.1.0',
         'Flask-SQLAlchemy>=0.16',
         'Flask-WTF>=0.9.1',
