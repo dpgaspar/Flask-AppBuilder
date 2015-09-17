@@ -53,13 +53,22 @@ So that we can use Babel to translate our index text
 
 2 - Define an IndexView
 
-Define a special and simple view inherit from IndexView::
+Define a special and simple view inherit from IndexView, don't define this view on views.py, put it on a separate file like index.py::
+
+    from flask.ext.appbuilder import IndexView
+
 
     class MyIndexView(IndexView):
         index_template = 'index.html'
 
 3 - Tell F.A.B to use your index view, when initializing AppBuilder::
 
+
+    from app.index import MyIndexView
+
+    app = Flask(__name__)
+    app.config.from_object('config')
+    db = SQLA(app)
     appbuilder = AppBuilder(app, db.session, indexview=MyIndexView)
 
 

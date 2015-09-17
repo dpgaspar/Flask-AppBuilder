@@ -225,13 +225,21 @@ You must develop your template, then define it in a IndexView and pass it to App
 </div>
 <p>So that we can use Babel to translate our index text</p>
 <p>2 - Define an IndexView</p>
-<p>Define a special and simple view inherit from IndexView:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyIndexView</span><span class="p">(</span><span class="n">IndexView</span><span class="p">):</span>
+<p>Define a special and simple view inherit from IndexView, don&#8217;t define this view on views.py, put it on a separate file like index.py:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">IndexView</span>
+
+
+<span class="k">class</span> <span class="nc">MyIndexView</span><span class="p">(</span><span class="n">IndexView</span><span class="p">):</span>
     <span class="n">index_template</span> <span class="o">=</span> <span class="s">&#39;index.html&#39;</span>
 </pre></div>
 </div>
 <p>3 - Tell F.A.B to use your index view, when initializing AppBuilder:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">indexview</span><span class="o">=</span><span class="n">MyIndexView</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">app.index</span> <span class="kn">import</span> <span class="n">MyIndexView</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">SQLA</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">indexview</span><span class="o">=</span><span class="n">MyIndexView</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Of course you can use a more complex index view, you can use any kind of view (BaseView childs), you can even

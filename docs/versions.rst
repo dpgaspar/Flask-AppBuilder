@@ -8,6 +8,8 @@ Improvements and Bug fixes on 1.4.6
 - Fix, #219 Making the inline crud stateless, CompatCRUDMixin.
 - Fix, #216 English issues found during translation.
 - New, config key, FILE_ALLOWED_EXTENSIONS, issue #221.
+- New, #217, Polish translations.
+- Fix, flask-login version pin on 0.2.11.
 
 Improvements and Bug fixes on 1.4.5
 -----------------------------------
