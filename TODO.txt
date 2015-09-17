@@ -22,3 +22,4 @@
 - (TODO) Fix, changed menu item "Permission on Views/Menus" to "Permissions on Views/Menus".
 - (TODO) Fix, Relation/No Relation filter labels changed to Only/All But.
 - (TODO) Fix, OpenID Code rework.
+- (TODO) New, builtin different type of storing sessions (File, Redis, memory, cookies).
