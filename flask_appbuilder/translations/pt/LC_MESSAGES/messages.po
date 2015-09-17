@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-06-03 14:38+0100\n"
+"POT-Creation-Date: 2015-09-17 13:23+0100\n"
 "PO-Revision-Date: 2013-10-08 17:56+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: pt <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 1.3\n"
+"Generated-By: Babel 2.0\n"
 
 #: flask_appbuilder/const.py:100
 msgid "Access is Denied"
@@ -28,7 +28,7 @@ msgid "Not a valid choice"
 msgstr "Data inserida não é válida"
 
 #: flask_appbuilder/messages.py:9
-#: flask_appbuilder/templates/appbuilder/general/lib.html:279
+#: flask_appbuilder/templates/appbuilder/general/lib.html:305
 #: flask_appbuilder/templates/appbuilder/general/charts/chart.html:8
 #: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:10
 #: flask_appbuilder/templates/appbuilder/general/charts/jsonchart.html:8
@@ -37,12 +37,12 @@ msgid "Search"
 msgstr "Pesquisar"
 
 #: flask_appbuilder/messages.py:10
-#: flask_appbuilder/templates/appbuilder/general/lib.html:286
+#: flask_appbuilder/templates/appbuilder/general/lib.html:312
 msgid "Back"
 msgstr "Voltar"
 
 #: flask_appbuilder/messages.py:11
-#: flask_appbuilder/templates/appbuilder/general/lib.html:237
+#: flask_appbuilder/templates/appbuilder/general/lib.html:265
 msgid "Save"
 msgstr "Gravar"
 
@@ -55,13 +55,9 @@ msgid "Not a valid date value"
 msgstr "Data inserida não é válida"
 
 #: flask_appbuilder/messages.py:14
-#: flask_appbuilder/templates/appbuilder/general/widgets/list.html:67
-#: flask_appbuilder/templates/appbuilder/general/widgets/list_bck.html:56
-#: flask_appbuilder/templates/appbuilder/general/widgets/list_block.html:47
+#: flask_appbuilder/templates/appbuilder/general/widgets/base_list.html:36
 #: flask_appbuilder/templates/appbuilder/general/widgets/list_carousel.html:50
-#: flask_appbuilder/templates/appbuilder/general/widgets/list_item.html:40
 #: flask_appbuilder/templates/appbuilder/general/widgets/list_master.html:17
-#: flask_appbuilder/templates/appbuilder/general/widgets/list_thumbnail.html:39
 msgid "No records found"
 msgstr "Não existem registos"
 
@@ -113,39 +109,47 @@ msgstr "Soma de"
 msgid "Avg. of"
 msgstr "Média de"
 
-#: flask_appbuilder/models/generic/filters.py:9
+#: flask_appbuilder/models/generic/filters.py:10
+#: flask_appbuilder/models/generic/filters.py:19
 #: flask_appbuilder/models/mongoengine/filters.py:66
 #: flask_appbuilder/models/sqla/filters.py:43
 msgid "Contains"
 msgstr "Contém"
 
-#: flask_appbuilder/models/generic/filters.py:16
+#: flask_appbuilder/models/generic/filters.py:25
 #: flask_appbuilder/models/mongoengine/filters.py:74
 #: flask_appbuilder/models/sqla/filters.py:50
 msgid "Not Contains"
 msgstr "Não contém"
 
-#: flask_appbuilder/models/generic/filters.py:23
+#: flask_appbuilder/models/generic/filters.py:31
 #: flask_appbuilder/models/mongoengine/filters.py:12
 #: flask_appbuilder/models/sqla/filters.py:57
 msgid "Equal to"
 msgstr "Igual a"
 
-#: flask_appbuilder/models/generic/filters.py:30
+#: flask_appbuilder/models/generic/filters.py:37
 #: flask_appbuilder/models/mongoengine/filters.py:23
 #: flask_appbuilder/models/sqla/filters.py:67
 msgid "Not Equal to"
 msgstr "Não é igual a"
 
+#: flask_appbuilder/models/generic/filters.py:43
 #: flask_appbuilder/models/mongoengine/filters.py:34
 #: flask_appbuilder/models/sqla/filters.py:77
 msgid "Greater than"
 msgstr "Maior que"
 
+#: flask_appbuilder/models/generic/filters.py:49
 #: flask_appbuilder/models/mongoengine/filters.py:42
 #: flask_appbuilder/models/sqla/filters.py:84
 msgid "Smaller than"
 msgstr "Menor que"
+
+#: flask_appbuilder/models/generic/filters.py:55
+#, fuzzy
+msgid "Start with"
+msgstr "Começa com"
 
 #: flask_appbuilder/models/mongoengine/filters.py:50
 #: flask_appbuilder/models/sqla/filters.py:15
@@ -240,38 +244,38 @@ msgstr "Último Nome"
 msgid "Email"
 msgstr "EMail"
 
-#: flask_appbuilder/security/manager.py:406
+#: flask_appbuilder/security/manager.py:417
 #: flask_appbuilder/security/views.py:95
 msgid "List Users"
 msgstr "Lista de Utilizadores"
 
-#: flask_appbuilder/security/manager.py:408
+#: flask_appbuilder/security/manager.py:419
 msgid "Security"
 msgstr "Segurança"
 
-#: flask_appbuilder/security/manager.py:411
+#: flask_appbuilder/security/manager.py:422
 #: flask_appbuilder/security/views.py:293
 msgid "List Roles"
 msgstr "Lista de Funções de Segurança"
 
-#: flask_appbuilder/security/manager.py:417
+#: flask_appbuilder/security/manager.py:428
 msgid "User's Statistics"
 msgstr "Estatísticas de Utilizadores"
 
-#: flask_appbuilder/security/manager.py:423
+#: flask_appbuilder/security/manager.py:434
 #, fuzzy
 msgid "User Registrations"
 msgstr "A sua informação de utilizador"
 
-#: flask_appbuilder/security/manager.py:429
+#: flask_appbuilder/security/manager.py:440
 msgid "Base Permissions"
 msgstr "Lista de Permissões Base"
 
-#: flask_appbuilder/security/manager.py:432
+#: flask_appbuilder/security/manager.py:443
 msgid "Views/Menus"
 msgstr "Vistas/Menus"
 
-#: flask_appbuilder/security/manager.py:435
+#: flask_appbuilder/security/manager.py:446
 msgid "Permission on Views/Menus"
 msgstr "Permissão em Vistas/Menus"
 
@@ -528,14 +532,17 @@ msgid "Sign In"
 msgstr "Entrar (Autenticar)"
 
 #: flask_appbuilder/templates/appbuilder/baselib.html:115
+#: flask_appbuilder/templates/appbuilder/navbar_right.html:37
 msgid "Profile"
 msgstr "Perfil"
 
 #: flask_appbuilder/templates/appbuilder/baselib.html:116
+#: flask_appbuilder/templates/appbuilder/navbar_right.html:38
 msgid "Logout"
 msgstr "Sair"
 
 #: flask_appbuilder/templates/appbuilder/baselib.html:122
+#: flask_appbuilder/templates/appbuilder/navbar_right.html:43
 msgid "Login"
 msgstr "Entrar"
 
@@ -556,27 +563,31 @@ msgstr "Acções"
 msgid "Page size"
 msgstr "Dimensão da página"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:255
+#: flask_appbuilder/templates/appbuilder/general/lib.html:83
+msgid "Order by"
+msgstr ""
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:282
 msgid "Record Count"
 msgstr "Número de registos"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:294
+#: flask_appbuilder/templates/appbuilder/general/lib.html:320
 msgid "Add a new record"
 msgstr "Adicionar um novo registo"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:301
+#: flask_appbuilder/templates/appbuilder/general/lib.html:327
 msgid "Edit record"
 msgstr "Editar registo"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:308
+#: flask_appbuilder/templates/appbuilder/general/lib.html:334
 msgid "Show record"
 msgstr "Detalhe do registo"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:314
+#: flask_appbuilder/templates/appbuilder/general/lib.html:340
 msgid "You sure you want to delete this item?"
 msgstr "Tem a certeza que quer apagar este registo?"
 
-#: flask_appbuilder/templates/appbuilder/general/lib.html:315
+#: flask_appbuilder/templates/appbuilder/general/lib.html:341
 msgid "Delete record"
 msgstr "Apagar registo"
 
