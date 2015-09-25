@@ -337,8 +337,6 @@ class BaseModelView(BaseView):
 
     """
 
-
-
     label_columns = None
     """
         Dictionary of labels for your columns, override this if you want diferent pretify labels
@@ -430,7 +428,7 @@ class BaseModelView(BaseView):
             self.search_form = conv.create_form(self.label_columns, 
                                                 self.search_columns,
                                                 extra_fields=self.search_form_extra_fields,
-                                                self.search_form_query_rel_fields)
+                                                filter_rel_fields=self.search_form_query_rel_fields)
         
     def _get_search_widget(self, form=None, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []

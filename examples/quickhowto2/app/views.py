@@ -63,6 +63,7 @@ class ContactModelView2(ModelView):
     datamodel = SQLAInterface(Contact)
     list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
     add_form_query_rel_fields = {'gender':[['name',FilterStartsWith,'F']]}
+    search_form_query_rel_fields = {'gender':[['name',FilterStartsWith,'F']]}
     list_template = 'mylist.html'
     list_widget = MyListWidgetOverride
     extra_args = {'widget_arg':'WIDGET'}
