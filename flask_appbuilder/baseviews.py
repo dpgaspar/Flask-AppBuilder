@@ -322,6 +322,22 @@ class BaseModelView(BaseView):
         search_form_extra_fields = {'some_col':BooleanField('Some Col', default=False)}
 
     """
+    search_form_query_rel_fields = None
+    """
+        Add Customized query for related fields on search form.
+        Assign a dictionary where the keys are the column names of
+        the related models to filter, the value for each key, is a list of lists with the
+        same format as base_filter
+        {'relation col name':[['Related model col',FilterClass,'Filter Value'],...],...}
+        Add a custom filter to form related fields::
+
+            class ContactModelView(ModelView):
+                datamodel = SQLAModel(Contact, db.session)
+                search_form_query_rel_fields = [('group':[['name',FilterStartsWith,'W']]}
+
+    """
+
+
 
     label_columns = None
     """
@@ -413,7 +429,8 @@ class BaseModelView(BaseView):
         if not self.search_form:
             self.search_form = conv.create_form(self.label_columns, 
                                                 self.search_columns,
-                                                extra_fields=self.search_form_extra_fields)
+                                                extra_fields=self.search_form_extra_fields,
+                                                self.search_form_query_rel_fields)
         
     def _get_search_widget(self, form=None, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []
