@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.6',
+        VERSION:     '1.4.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.4.6</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.4.7</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -803,6 +803,22 @@ If you want to limit the search (<em>filter</em>) columns possibilities, define 
 Form fields to be added to the Add form, these fields do not
 exist on the model itself ex:</p>
 <p>search_form_extra_fields = {&#8216;some_col&#8217;:BooleanField(&#8216;Some Col&#8217;, default=False)}</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.baseviews.BaseModelView.search_form_query_rel_fields">
+<code class="descname">search_form_query_rel_fields</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.search_form_query_rel_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add Customized query for related fields on search form.
+Assign a dictionary where the keys are the column names of
+the related models to filter, the value for each key, is a list of lists with the
+same format as base_filter
+{&#8216;relation col name&#8217;:[[&#8216;Related model col&#8217;,FilterClass,&#8217;Filter Value&#8217;],...],...}
+Add a custom filter to form related fields:</p>
+<div class="highlight-python"><div class="highlight"><pre>class ContactModelView(ModelView):
+    datamodel = SQLAModel(Contact, db.session)
+    search_form_query_rel_fields = [(&#39;group&#39;:[[&#39;name&#39;,FilterStartsWith,&#39;W&#39;]]}
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="attribute">

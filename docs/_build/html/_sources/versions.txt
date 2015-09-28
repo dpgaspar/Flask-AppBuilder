@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.4.7
+-----------------------------------
+
+- New, #228 new property, search_form_query_rel_fields to filter combo lists on search related fields.
+
 Improvements and Bug fixes on 1.4.6
 -----------------------------------
 

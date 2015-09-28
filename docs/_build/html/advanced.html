@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.6',
+        VERSION:     '1.4.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.4.6</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.4.7</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -270,7 +270,8 @@ You can still use F.A.B. show template using Jinja2 blocks, take a look at the <
 </ul>
 <p>This will filter list combo on Contact&#8217;s model related with ContactGroup model.
 The combo will be filtered with entries that start with W.
-You can define individual filters for add and edit. Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>
+You can define individual filters for add,edit and search using <strong>add_form_quey_rel_fields</strong>,
+<strong>edit_form_query_rel_fields</strong>, <strong>search_form_query_rel_fields</strong> respectively. Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>
 If you want to filter multiple related fields just add new keys to the dictionary,
 remember you can add multiple filters for each field also, take a look at the <em>base_filter</em> property:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>

@@ -105,7 +105,8 @@ Forms
 
 This will filter list combo on Contact's model related with ContactGroup model.
 The combo will be filtered with entries that start with W.
-You can define individual filters for add and edit. Take a look at the :doc:`api`
+You can define individual filters for add,edit and search using **add_form_quey_rel_fields**,
+**edit_form_query_rel_fields**, **search_form_query_rel_fields** respectively. Take a look at the :doc:`api`
 If you want to filter multiple related fields just add new keys to the dictionary,
 remember you can add multiple filters for each field also, take a look at the *base_filter* property::
 
