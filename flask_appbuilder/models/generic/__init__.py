@@ -169,8 +169,23 @@ class GenericSession(object):
         reverse_flag = direction == 'desc'
         #patched as suggested by:
         #http://stackoverflow.com/questions/18411560/python-sort-list-with-none-at-the-end
-        x = operator.attrgetter(col_name)
-        return sorted(data, key=lambda x: (x is None, x), reverse=reverse_flag)
+        #and
+        #http://stackoverflow.com/questions/5055942/sort-python-list-of-objects-by-date-when-some-are-none
+        def col_name_if_not_none(data):
+            '''
+            - sqlite sets to null unfilled fields.
+            - sqlalchemy cast this to None
+            - this is a killer if the datum is of type datetime.date:
+            - it breaks a simple key=operator.attrgetter(col_name)
+            approach.
+
+            this function tries to patch the issue
+            '''
+            op = operator.attrgetter(col_name)
+            missing = (getattr(data,col_name) is not None)
+            return (missing, getattr(data,col_name))
+
+        return sorted(data, key=col_name_if_not_none, reverse=reverse_flag)
 
     def scalar(self):
         return 0
