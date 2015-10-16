@@ -167,7 +167,10 @@ class GenericSession(object):
     def _order_by(self, data, order_cmd):
         col_name, direction = order_cmd.split()
         reverse_flag = direction == 'desc'
-        return sorted(data, key=operator.attrgetter(col_name), reverse=reverse_flag)
+        #patched as suggested by:
+        #http://stackoverflow.com/questions/18411560/python-sort-list-with-none-at-the-end
+        x = operator.attrgetter(col_name)
+        return sorted(data, key=lambda x: (x is None, x), reverse=reverse_flag)
 
     def scalar(self):
         return 0
