@@ -264,5 +264,6 @@ class MongoEngineInterface(BaseInterface):
     def get_pk_name(self):
         return 'id'
 
-    def get(self, id):
+    def get(self, id, filters=None):
+        # TODO: need to implement filters!
         return self.obj.objects(pk=id).first()

@@ -229,9 +229,10 @@ class BaseInterface(object):
     def get_pk_value(self, item):
         return getattr(item, self.get_pk_name())
 
-    def get(self, pk):
+    def get(self, pk, filter=None):
         """
-            return the record from key
+            return the record from key, you can optionally pass filters
+            if pk exits on the db but filters exclude it it will return none.
         """
         pass
 

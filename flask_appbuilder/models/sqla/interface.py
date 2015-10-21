@@ -492,7 +492,7 @@ class SQLAInterface(BaseInterface):
             _filters = filters.copy()
             _filters.add_filter(self.get_pk_name(), FilterEqual, id)
             query = self._get_base_query(query=query, filters=_filters)
-            return query.scalar()
+            return query.first()
         return self.session.query(self.obj).get(id)
 
     def get_pk_name(self):

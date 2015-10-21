@@ -154,7 +154,8 @@ class UserModelView(ModelView):
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
-        widgets = self._get_show_widget(g.user.id, show_fieldsets=self.user_show_fieldsets)
+        item = self.datamodel.get(g.user.id, self._base_filters)
+        widgets = self._get_show_widget(g.user.id, item, show_fieldsets=self.user_show_fieldsets)
         self.update_redirect()
         return self.render_template(self.show_template,
                                title=self.user_info_title,
@@ -224,7 +225,9 @@ class UserDBModelView(UserModelView):
     def show(self, pk):
         actions = {}
         actions['resetpasswords'] = self.actions.get('resetpasswords')
-        widgets = self._get_show_widget(pk, actions=actions)
+        item = self.datamodel.get(pk, self._base_filters)
+
+        widgets = self._get_show_widget(pk, item, actions=actions)
         self.update_redirect()
         return self.render_template(self.show_template,
                                pk=pk,
@@ -239,7 +242,8 @@ class UserDBModelView(UserModelView):
     def userinfo(self):
         actions = {}
         actions['resetmypassword'] = self.actions.get('resetmypassword')
-        widgets = self._get_show_widget(g.user.id, actions=actions, show_fieldsets=self.user_show_fieldsets)
+        item = self.datamodel.get(g.user.id, self._base_filters)
+        widgets = self._get_show_widget(g.user.id, item, actions=actions, show_fieldsets=self.user_show_fieldsets)
         self.update_redirect()
         return self.render_template(self.show_template,
                                title=self.user_info_title,
