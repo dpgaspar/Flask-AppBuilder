@@ -1,4 +1,5 @@
 import logging
+import copy
 from .._compat import as_unicode
 
 log = logging.getLogger(__name__)
@@ -159,6 +160,17 @@ class Filters(object):
         retfilters.values = self.values + filters.values
         return retfilters
 
+    def copy(self):
+        """
+            Returns a copy of this object
+
+            :return: A copy of self
+        """
+        retfilters = Filters(self.filter_converter, self.datamodel)
+        retfilters.filters = copy.copy(self.filters)
+        retfilters.values = copy.copy(self.values)
+        return retfilters
+
     def get_relation_cols(self):
         """
             Returns the filter active FilterRelation cols
@@ -176,6 +188,12 @@ class Filters(object):
         return [(flt, value) for flt, value in zip(self.filters, self.values)]
 
     def get_filter_value(self, column_name):
+        """
+            Returns the filtered value for a certain column
+
+            :param column_name: The name of the column that we want the value from
+            :return: the filter value of the column
+        """
         for flt, value in zip(self.filters, self.values):
             if flt.column_name == column_name:
                 return value

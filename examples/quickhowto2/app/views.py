@@ -45,7 +45,7 @@ class ProductView(ModelView):
     add_columns = ['name','product_manufacturer', 'product_model']
     edit_columns = ['name','product_manufacturer', 'product_model']
     add_widget = FormVerticalWidget
-
+    base_filters = [['name', FilterStartsWith, 'P']]
 
 class ProductManufacturerView(ModelView):
     datamodel = SQLAInterface(ProductManufacturer)

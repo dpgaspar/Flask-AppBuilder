@@ -485,7 +485,14 @@ class SQLAInterface(BaseInterface):
         # support for only one col for pk and fk
         return list(self.list_properties[col_name].local_columns)[0]
 
-    def get(self, id):
+    def get(self, id, filters=None):
+        from filters import FilterEqual
+        if filters:
+            query = query = self.session.query(self.obj)
+            _filters = filters.copy()
+            _filters.add_filter(self.get_pk_name(), FilterEqual, id)
+            query = self._get_base_query(query=query, filters=_filters)
+            return query.scalar()
         return self.session.query(self.obj).get(id)
 
     def get_pk_name(self):

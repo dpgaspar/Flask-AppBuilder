@@ -797,11 +797,10 @@ class BaseCRUDView(BaseModelView):
                                            modelview_name=self.__class__.__name__)
         return widgets
 
-    def _get_show_widget(self, id, widgets=None, actions=None, show_fieldsets=None):
+    def _get_show_widget(self, item, widgets=None, actions=None, show_fieldsets=None):
         widgets = widgets or {}
         actions = actions or self.actions
         show_fieldsets = show_fieldsets or self.show_fieldsets
-        item = self.datamodel.get(id)
         widgets['show'] = self.show_widget(pk=id,
                                            label_columns=self.label_columns,
                                            include_columns=self.show_columns,
@@ -880,8 +879,12 @@ class BaseCRUDView(BaseModelView):
         page_sizes = get_page_size_args()
         orders = get_order_args()
 
-        widgets = self._get_show_widget(pk)
+        #if self.base_filters:
+        #item = self.datamodel.get(pk, self._base_filters)
+        #else:
         item = self.datamodel.get(pk)
+
+        widgets = self._get_show_widget(item)
         self.update_redirect()
         return self._get_related_views_widgets(item, orders=orders,
                                                pages=pages, page_sizes=page_sizes, widgets=widgets)
