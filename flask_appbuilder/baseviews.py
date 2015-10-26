@@ -1,5 +1,5 @@
 import logging
-from flask import Blueprint, session, flash, render_template, url_for
+from flask import Blueprint, session, flash, render_template, url_for, abort
 from .forms import GeneralModelConverter
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
 from .actions import ActionItem
@@ -880,7 +880,8 @@ class BaseCRUDView(BaseModelView):
         orders = get_order_args()
 
         item = self.datamodel.get(pk, self._base_filters)
-
+        if not item:
+            abort(404)
         widgets = self._get_show_widget(pk, item)
         self.update_redirect()
         return self._get_related_views_widgets(item, orders=orders,
@@ -925,6 +926,8 @@ class BaseCRUDView(BaseModelView):
         exclude_cols = self._filters.get_relation_cols()
 
         item = self.datamodel.get(pk, self._base_filters)
+        if not item:
+            abort(404)
         # convert pk to correct type, if pk is non string type.
         pk = self.datamodel.get_pk_value(item)
 
@@ -962,6 +965,8 @@ class BaseCRUDView(BaseModelView):
                 record primary key to delete
         """
         item = self.datamodel.get(pk, self._base_filters)
+        if not item:
+            abort(404)
         self.pre_delete(item)
         if self.datamodel.delete(item):
             self.post_delete(item)
