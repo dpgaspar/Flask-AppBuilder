@@ -210,18 +210,18 @@ base skeleton application):</p>
 encoding = utf-8
 </pre></div>
 </div>
+<p>First, create your translations, for example to portuguese, spanish and german, execute on you projects root:</p>
+<div class="highlight-python"><div class="highlight"><pre>pybabel init -i ./babel/messages.pot -d app/translations -l pt
+pybabel init -i ./babel/messages.pot -d app/translations -l es
+pybabel init -i ./babel/messages.pot -d app/translations -l de
+</pre></div>
+</div>
 <p>Next extract your strings to be translated, execute on you projects root:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ fabmanager extract
+<div class="highlight-python"><div class="highlight"><pre>$ fabmanager babel-extract
 </pre></div>
 </div>
 <p>If you want to, or if your using a version prior to 1.3.0 you can use:</p>
 <div class="highlight-python"><div class="highlight"><pre>pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
-</pre></div>
-</div>
-<p>Finally create your translations, for example to portuguese, spanish and german, execute on you projects root:</p>
-<div class="highlight-python"><div class="highlight"><pre>pybabel init -i ./babel/messages.pot -d app/translations -l pt
-pybabel init -i ./babel/messages.pot -d app/translations -l es
-pybabel init -i ./babel/messages.pot -d app/translations -l de
 </pre></div>
 </div>
 </div>
@@ -243,7 +243,7 @@ so you want to add translations for the menus &#8220;List Groups&#8221; and &#82
 </pre></div>
 </div>
 <p>1 - Run the extraction, from the root directory of your project:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ fabmanager extract
+<div class="highlight-python"><div class="highlight"><pre>$ fabmanager babel-extract
 </pre></div>
 </div>
 <p>If you want to, or if your using a version prior to 1.3.0 you can use:</p>
@@ -286,7 +286,7 @@ msgstr &quot;Lista de Contactos&quot;
 </ul>
 </div></blockquote>
 <p>3 - Compile your translations, from the root directory of your project:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ fabmanager compile
+<div class="highlight-python"><div class="highlight"><pre>$ fabmanager babel-compile
 </pre></div>
 </div>
 <p>4 - Add your language support to the framework</p>
