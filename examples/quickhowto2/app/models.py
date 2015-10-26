@@ -3,9 +3,9 @@ import datetime
 import math
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, Numeric
 from sqlalchemy.orm import relationship
-from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
-from flask.ext.appbuilder import Model
-from flask.ext.appbuilder.models.decorators import renders
+from flask_appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
+from flask_appbuilder import Model
+from flask_appbuilder.models.decorators import renders
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 

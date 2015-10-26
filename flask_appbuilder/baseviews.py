@@ -961,7 +961,7 @@ class BaseCRUDView(BaseModelView):
             :param pk:
                 record primary key to delete
         """
-        item = self.datamodel.get(pk)
+        item = self.datamodel.get(pk, self._base_filters)
         self.pre_delete(item)
         if self.datamodel.delete(item):
             self.post_delete(item)
