@@ -167,7 +167,25 @@ class GenericSession(object):
     def _order_by(self, data, order_cmd):
         col_name, direction = order_cmd.split()
         reverse_flag = direction == 'desc'
-        return sorted(data, key=operator.attrgetter(col_name), reverse=reverse_flag)
+        #patched as suggested by:
+        #http://stackoverflow.com/questions/18411560/python-sort-list-with-none-at-the-end
+        #and
+        #http://stackoverflow.com/questions/5055942/sort-python-list-of-objects-by-date-when-some-are-none
+        def col_name_if_not_none(data):
+            '''
+            - sqlite sets to null unfilled fields.
+            - sqlalchemy cast this to None
+            - this is a killer if the datum is of type datetime.date:
+            - it breaks a simple key=operator.attrgetter(col_name)
+            approach.
+
+            this function tries to patch the issue
+            '''
+            op = operator.attrgetter(col_name)
+            missing = (getattr(data,col_name) is not None)
+            return (missing, getattr(data,col_name))
+
+        return sorted(data, key=col_name_if_not_none, reverse=reverse_flag)
 
     def scalar(self):
         return 0

@@ -16,7 +16,7 @@ class FilterIContains(BaseFilter):
     '''
     case insensitive like
     '''
-    name = lazy_gettext('Contains')
+    name = lazy_gettext('Contains (insensitive)')
 
     def apply(self, query, value):
         return query.ilike(self.column_name, value)
