@@ -33,19 +33,19 @@ base skeleton application)::
 	[jinja2: **/templates/**.html]
 	encoding = utf-8
 	
+First, create your translations, for example to portuguese, spanish and german, execute on you projects root::
+
+        pybabel init -i ./babel/messages.pot -d app/translations -l pt
+        pybabel init -i ./babel/messages.pot -d app/translations -l es
+        pybabel init -i ./babel/messages.pot -d app/translations -l de
+
 Next extract your strings to be translated, execute on you projects root::
 
-    $ fabmanager extract
+    $ fabmanager babel-extract
 
 If you want to, or if your using a version prior to 1.3.0 you can use::
 
 	pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
-
-Finally create your translations, for example to portuguese, spanish and german, execute on you projects root::
-
-	pybabel init -i ./babel/messages.pot -d app/translations -l pt
-	pybabel init -i ./babel/messages.pot -d app/translations -l es
-	pybabel init -i ./babel/messages.pot -d app/translations -l de
 
 
 Quick How to
@@ -70,7 +70,7 @@ so you want to add translations for the menus "List Groups" and "List Contacts".
 
 1 - Run the extraction, from the root directory of your project::
 
-    $ fabmanager extract
+    $ fabmanager babel-extract
 
 If you want to, or if your using a version prior to 1.3.0 you can use::
 
@@ -108,7 +108,7 @@ If you want to, or if your using a version prior to 1.3.0 you can use::
 
 3 - Compile your translations, from the root directory of your project::
 
-    $ fabmanager compile
+    $ fabmanager babel-compile
 
 4 - Add your language support to the framework
 

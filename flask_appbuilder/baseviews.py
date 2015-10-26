@@ -72,6 +72,7 @@ class BaseView(object):
     default_view = 'list'
     """ the default view for this BaseView, to be used with url_for (method name) """
     extra_args = None
+    
     """ dictionary for injecting extra arguments into template """
     _apis = None
 
