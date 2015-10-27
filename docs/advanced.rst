@@ -57,6 +57,11 @@ It's very flexible, you can apply multiple filters with static values, or values
 *base_filters* is a list of lists with 3 values [['column name',FilterClass,'filter value],...]
 
 ::
+    from flask import g
+    from flask.ext.appbuilder import ModelView
+    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
+    from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction
+    from .models import MyTable
 
     def get_user():
         return g.user
