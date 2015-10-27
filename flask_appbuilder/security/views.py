@@ -226,7 +226,8 @@ class UserDBModelView(UserModelView):
         actions = {}
         actions['resetpasswords'] = self.actions.get('resetpasswords')
         item = self.datamodel.get(pk, self._base_filters)
-
+        if not item:
+            abort(404)
         widgets = self._get_show_widget(pk, item, actions=actions)
         self.update_redirect()
         return self.render_template(self.show_template,
