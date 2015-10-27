@@ -1,5 +1,5 @@
-Quick How to Example
---------------------
+Filtered data Example
+---------------------
 
 
 Simple contacts application where contacts are filtered by the user who has created them.
