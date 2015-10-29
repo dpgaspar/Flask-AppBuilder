@@ -14,7 +14,7 @@ from ..charts.views import DirectByChartView
 from ..fieldwidgets import BS3PasswordFieldWidget
 from ..actions import action
 from .._compat import as_unicode
-from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm
+from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm, UserInfoEdit
 from .decorators import has_access
 
 
@@ -87,6 +87,25 @@ class ResetPasswordView(SimpleFormView):
         pk = request.args.get('pk')
         self.appbuilder.sm.reset_password(pk, form.password.data)
         flash(as_unicode(self.message), 'info')
+
+
+class UserInfoEditView(SimpleFormView):
+    form = UserInfoEdit
+    form_title = lazy_gettext('Edit User Information')
+    redirect_url = '/'
+    message = lazy_gettext('User information changed')
+
+    def form_get(self, form):
+        item = self.appbuilder.sm.get_user_by_id(g.user.id)
+        form.username = item.username
+        form.first_name = 'OLA'
+        return form
+
+    def form_post(self, form):
+        pk = request.args.get('pk')
+        #self.appbuilder.sm.reset_password(pk, form.password.data)
+        flash(as_unicode(self.message), 'info')
+
 
 
 class UserModelView(ModelView):
@@ -219,7 +238,6 @@ class UserDBModelView(UserModelView):
 
     add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'password', 'conf_password']
 
-
     @expose('/show/<pk>', methods=['GET'])
     @has_access
     def show(self, pk):
@@ -243,6 +261,8 @@ class UserDBModelView(UserModelView):
     def userinfo(self):
         actions = {}
         actions['resetmypassword'] = self.actions.get('resetmypassword')
+        actions['userinfoedit'] = self.actions.get('userinfoedit')
+
         item = self.datamodel.get(g.user.id, self._base_filters)
         widgets = self._get_show_widget(g.user.id, item, actions=actions, show_fieldsets=self.user_show_fieldsets)
         self.update_redirect()
@@ -259,6 +279,10 @@ class UserDBModelView(UserModelView):
     @action('resetpasswords', lazy_gettext("Reset Password"), "", "fa-lock", multiple=False)
     def resetpasswords(self, item):
         return redirect(url_for('ResetPasswordView.this_form_get', pk=item.id))
+
+    @action('userinfoedit', lazy_gettext("Edit User"), "", "fa-lock", multiple=False)
+    def userinfoedit(self, item):
+        return redirect(url_for('UserInfoEditView.this_form_get'))
 
     def pre_update(self, item):
         item.changed_on = datetime.datetime.now()

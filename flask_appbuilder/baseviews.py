@@ -281,7 +281,6 @@ class BaseFormView(BaseView):
         return widgets
 
 
-
 class BaseModelView(BaseView):
     """
         The base class of ModelView and ChartView, all properties are inherited

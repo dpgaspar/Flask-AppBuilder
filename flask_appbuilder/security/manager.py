@@ -7,7 +7,8 @@ from flask_openid import OpenID
 from flask_babelpkg import lazy_gettext as _
 from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
     ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserRemoteUserModelView, \
-    RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView, RegisterUserModelView    
+    RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView, RegisterUserModelView, \
+    UserInfoEditView
 from .registerviews import RegisterUserDBView, RegisterUserOIDView, RegisterUserOAuthView
 from ..basemanager import BaseManager
 from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
@@ -148,6 +149,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own reset my password view """
     resetpasswordview = ResetPasswordView
     """ Override if you want your own reset password view """
+    userinfoeditview = UserInfoEditView
+    """ Override if you want your own User information edit view """
 
     rolemodelview = RoleModelView
     permissionmodelview = PermissionModelView
@@ -389,6 +392,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         self.appbuilder.add_view_no_menu(self.resetpasswordview())
         self.appbuilder.add_view_no_menu(self.resetmypasswordview())
+        self.appbuilder.add_view_no_menu(self.userinfoeditview())
 
         if self.auth_type == AUTH_DB:
             self.user_view = self.userdbmodelview
