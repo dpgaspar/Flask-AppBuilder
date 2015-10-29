@@ -103,8 +103,13 @@ class UserInfoEditView(SimpleFormView):
         form.email.data = item.email
 
     def form_post(self, form):
-        pk = request.args.get('pk')
-        #self.appbuilder.sm.reset_password(pk, form.password.data)
+        form = self.form.refresh(request.form)
+        item = self.appbuilder.sm.get_user_by_id(g.user.id)
+        item.username = form.username.data
+        item.first_name = form.first_name.data
+        item.last_name = form.last_name.data
+        item.email = form.email.data
+        self.appbuilder.sm.update_user(item)
         flash(as_unicode(self.message), 'info')
 
 

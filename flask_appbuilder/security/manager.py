@@ -845,7 +845,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def update_user(self, user):
         """
-            Generic function to create user
+            Generic function to update user
 
             :param user: User model to update to database
         """
