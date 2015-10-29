@@ -18,10 +18,14 @@ class LoginForm_db(DynamicForm):
 
 
 class UserInfoEdit(DynamicForm):
-    username = StringField(lazy_gettext('User Name'), validators=[DataRequired()], widget=BS3TextFieldWidget())
-    first_name = StringField(lazy_gettext('First Name'), validators=[DataRequired()], widget=BS3TextFieldWidget())
-    last_name = StringField(lazy_gettext('Last Name'), validators=[DataRequired()], widget=BS3TextFieldWidget())
-    email = StringField(lazy_gettext('Email'), validators=[DataRequired()], widget=BS3TextFieldWidget())
+    username = StringField(lazy_gettext('User Name'), validators=[DataRequired()], widget=BS3TextFieldWidget(),
+                           description=lazy_gettext('Username valid for authentication on DB or LDAP, unused for OID auth'))
+    first_name = StringField(lazy_gettext('First Name'), validators=[DataRequired()], widget=BS3TextFieldWidget(),
+                             description=lazy_gettext('Write the user first name or names'))
+    last_name = StringField(lazy_gettext('Last Name'), validators=[DataRequired()], widget=BS3TextFieldWidget(),
+                            description=lazy_gettext('Write the user last name'))
+    email = StringField(lazy_gettext('Email'), validators=[DataRequired()], widget=BS3TextFieldWidget(),
+                        description=lazy_gettext('The user\'s email, this will also be used for OID auth'))
 
 
 class ResetPasswordForm(DynamicForm):
