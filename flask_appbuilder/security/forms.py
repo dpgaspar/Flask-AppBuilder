@@ -20,7 +20,7 @@ class LoginForm_db(DynamicForm):
 class UserInfoEdit(DynamicForm):
     username = StringField(lazy_gettext('User Name'), validators=[DataRequired()], widget=BS3TextFieldWidget())
     first_name = StringField(lazy_gettext('First Name'), validators=[DataRequired()], widget=BS3TextFieldWidget())
-    last_name = StringField(lazy_gettext('First Name'), validators=[DataRequired()], widget=BS3TextFieldWidget())
+    last_name = StringField(lazy_gettext('Last Name'), validators=[DataRequired()], widget=BS3TextFieldWidget())
     email = StringField(lazy_gettext('Email'), validators=[DataRequired()], widget=BS3TextFieldWidget())
 
 

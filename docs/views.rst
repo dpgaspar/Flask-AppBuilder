@@ -219,7 +219,7 @@ On your form_post method you can also return None, or a Flask response to render
         message = 'My form submitted'
 
         def form_get(self, form):
-            form.field1 = 'This was prefilled'
+            form.field1.data = 'This was prefilled'
 
         def form_post(self, form):
             # post process form

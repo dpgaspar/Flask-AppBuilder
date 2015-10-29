@@ -11,7 +11,7 @@ class MyFormView(SimpleFormView):
     message = 'My form was submitted'
 
     def form_get(self, form):
-        form.field1 = 'This was prefilled'
+        form.field1.data = 'This was prefilled'
 
     def form_post(self, form):
         # post process form

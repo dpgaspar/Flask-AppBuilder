@@ -97,9 +97,10 @@ class UserInfoEditView(SimpleFormView):
 
     def form_get(self, form):
         item = self.appbuilder.sm.get_user_by_id(g.user.id)
-        form.username = item.username
-        form.first_name = 'OLA'
-        return form
+        form.username.data = item.username
+        form.first_name.data = item.first_name
+        form.last_name.data = item.last_name
+        form.email.data = item.email
 
     def form_post(self, form):
         pk = request.args.get('pk')
