@@ -24,7 +24,7 @@ All views inherit from this class.
 it's constructor will register your exposed urls on flask as a Blueprint,
 as well as all security permissions that need to be defined and protected.
 
-You can use use this kind of view to implement your own custom pages,
+You can use this kind of view to implement your own custom pages,
 attached to a menu or linked from any point of your site.
 
 Decorate your url routing methods with **@expose**.
