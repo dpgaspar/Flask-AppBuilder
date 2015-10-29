@@ -281,7 +281,7 @@ class UserDBModelView(UserModelView):
     def resetpasswords(self, item):
         return redirect(url_for('ResetPasswordView.this_form_get', pk=item.id))
 
-    @action('userinfoedit', lazy_gettext("Edit User"), "", "fa-lock", multiple=False)
+    @action('userinfoedit', lazy_gettext("Edit User"), "", "fa-edit", multiple=False)
     def userinfoedit(self, item):
         return redirect(url_for('UserInfoEditView.this_form_get'))
 
