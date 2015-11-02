@@ -1,6 +1,14 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.5.0
+-----------------------------------
+
+- New, #261, possible for the user to edit their first name and last name.
+- Fix, #251, record url from some user can be accessed by any user, show, edit and delete are now constrained by base_filter.
+- Fix, #265, Fixed double word in views.rst
+- Fix, #247, bug when ordering view columns where None values are in.
+
 Improvements and Bug fixes on 1.4.7
 -----------------------------------
 

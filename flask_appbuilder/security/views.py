@@ -97,21 +97,15 @@ class UserInfoEditView(SimpleFormView):
 
     def form_get(self, form):
         item = self.appbuilder.sm.get_user_by_id(g.user.id)
-        form.username.data = item.username
         form.first_name.data = item.first_name
         form.last_name.data = item.last_name
-        form.email.data = item.email
 
     def form_post(self, form):
         form = self.form.refresh(request.form)
         item = self.appbuilder.sm.get_user_by_id(g.user.id)
-        item.username = form.username.data
-        item.first_name = form.first_name.data
-        item.last_name = form.last_name.data
-        item.email = form.email.data
+        form.populate_obj(item)
         self.appbuilder.sm.update_user(item)
         flash(as_unicode(self.message), 'info')
-
 
 
 class UserModelView(ModelView):
@@ -187,6 +181,9 @@ class UserModelView(ModelView):
                                widgets=widgets,
                                appbuilder=self.appbuilder)
 
+    @action('userinfoedit', lazy_gettext("Edit User"), "", "fa-edit", multiple=False)
+    def userinfoedit(self, item):
+        return redirect(url_for('UserInfoEditView.this_form_get'))
 
 class UserOIDModelView(UserModelView):
     """
@@ -285,10 +282,6 @@ class UserDBModelView(UserModelView):
     @action('resetpasswords', lazy_gettext("Reset Password"), "", "fa-lock", multiple=False)
     def resetpasswords(self, item):
         return redirect(url_for('ResetPasswordView.this_form_get', pk=item.id))
-
-    @action('userinfoedit', lazy_gettext("Edit User"), "", "fa-edit", multiple=False)
-    def userinfoedit(self, item):
-        return redirect(url_for('UserInfoEditView.this_form_get'))
 
     def pre_update(self, item):
         item.changed_on = datetime.datetime.now()
