@@ -1,6 +1,6 @@
 import datetime
 import logging
-
+import copy
 from flask import flash, redirect, session, url_for, request, g, make_response, jsonify, abort
 from werkzeug.security import generate_password_hash
 from wtforms import validators, PasswordField
@@ -97,8 +97,10 @@ class UserInfoEditView(SimpleFormView):
 
     def form_get(self, form):
         item = self.appbuilder.sm.get_user_by_id(g.user.id)
-        form.first_name.data = item.first_name
-        form.last_name.data = item.last_name
+        # fills the form generic solution
+        for key, value in  form.data.items():
+            form_field = getattr(form, key)
+            form_field.data = getattr(item, key)
 
     def form_post(self, form):
         form = self.form.refresh(request.form)
