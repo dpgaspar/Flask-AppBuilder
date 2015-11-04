@@ -2,8 +2,9 @@ Filtered data Example
 ---------------------
 
 
-Simple contacts application where contacts are filtered by the user who has created them.
-The user only "sees" his/her contacts
+Simple contacts application where contacts are filtered by the user's company who has created them.
+The user only "sees" his/her companies contacts. It also extends the User Model adding a company relationship and
+employee number.
 
 Insert test data::
 
