@@ -55,7 +55,7 @@ class AuditMixin(object):
 
     @declared_attr
     def created_by(cls):
-        return relationship("User", primaryjoin='%s.created_by_fk == User.id' % cls.__name__)
+        return relationship("User", primaryjoin='%s.created_by_fk == User.id' % cls.__name__, enable_typechecks=False)
 
     @declared_attr
     def changed_by_fk(cls):
@@ -64,7 +64,7 @@ class AuditMixin(object):
 
     @declared_attr
     def changed_by(cls):
-        return relationship("User", primaryjoin='%s.changed_by_fk == User.id' % cls.__name__)
+        return relationship("User", primaryjoin='%s.changed_by_fk == User.id' % cls.__name__, enable_typechecks=False)
 
     @classmethod
     def get_user_id(cls):

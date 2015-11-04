@@ -10,112 +10,134 @@ __all__ = ['SQLAFilterConverter', 'FilterEqual', 'FilterNotStartsWith', 'FilterS
            'FilterRelationManyToManyEqual', 'FilterRelationOneToManyEqual', 'FilterRelationOneToManyNotEqual',
            'FilterSmaller']
 
+def get_field_setup_query(query, model, column_name):
+    if not hasattr(model, column_name):
+       # it's an inner obj attr
+        rel_model = getattr(model, column_name.split('.')[0]).mapper.class_
+        query = query.join(rel_model)
+        return query, getattr(rel_model, column_name.split('.')[1])
+    else:
+        return query, getattr(model, column_name)
 
 class FilterStartsWith(BaseFilter):
     name = lazy_gettext('Starts with')
 
     def apply(self, query, value):
-        return query.filter(getattr(self.model, self.column_name).like(value + '%'))
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        return query.filter(field.like(value + '%'))
 
 
 class FilterNotStartsWith(BaseFilter):
     name = lazy_gettext('Not Starts with')
 
     def apply(self, query, value):
-        return query.filter(~getattr(self.model, self.column_name).like(value + '%'))
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        return query.filter(~field.like(value + '%'))
 
 
 class FilterEndsWith(BaseFilter):
     name = lazy_gettext('Ends with')
 
     def apply(self, query, value):
-        return query.filter(getattr(self.model, self.column_name).like('%' + value))
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        return query.filter(field.like('%' + value))
 
 
 class FilterNotEndsWith(BaseFilter):
     name = lazy_gettext('Not Ends with')
 
     def apply(self, query, value):
-        return query.filter(~getattr(self.model, self.column_name).like('%' + value))
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        return query.filter(~field.like('%' + value))
 
 
 class FilterContains(BaseFilter):
     name = lazy_gettext('Contains')
 
     def apply(self, query, value):
-        return query.filter(getattr(self.model, self.column_name).like('%' + value + '%'))
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        return query.filter(field.like('%' + value + '%'))
 
 
 class FilterNotContains(BaseFilter):
     name = lazy_gettext('Not Contains')
 
     def apply(self, query, value):
-        return query.filter(~getattr(self.model, self.column_name).like('%' + value + '%'))
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        return query.filter(~field.like('%' + value + '%'))
 
 
 class FilterEqual(BaseFilter):
     name = lazy_gettext('Equal to')
 
     def apply(self, query, value):
+        query, field = get_field_setup_query(query, self.model, self.column_name)
         if self.datamodel.is_boolean(self.column_name):
             if value == 'y':
                 value = True
-        return query.filter(getattr(self.model, self.column_name) == value)
+        return query.filter(field == value)
 
 
 class FilterNotEqual(BaseFilter):
     name = lazy_gettext('Not Equal to')
 
     def apply(self, query, value):
+        query, field = get_field_setup_query(query, self.model, self.column_name)
         if self.datamodel.is_boolean(self.column_name):
             if value == 'y':
                 value = True
-        return query.filter(getattr(self.model, self.column_name) != value)
+        return query.filter(field != value)
 
 
 class FilterGreater(BaseFilter):
     name = lazy_gettext('Greater than')
 
     def apply(self, query, value):
-        return query.filter(getattr(self.model, self.column_name) > value)
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        return query.filter(field > value)
 
 
 class FilterSmaller(BaseFilter):
     name = lazy_gettext('Smaller than')
 
     def apply(self, query, value):
-        return query.filter(getattr(self.model, self.column_name) < value)
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        return query.filter(field < value)
 
 
 class FilterRelationOneToManyEqual(FilterRelation):
     name = lazy_gettext('Relation')
 
     def apply(self, query, value):
+        query, field = get_field_setup_query(query, self.model, self.column_name)
         rel_obj = self.datamodel.get_related_obj(self.column_name, value)
-        return query.filter(getattr(self.model, self.column_name) == rel_obj)
+        return query.filter(field == rel_obj)
 
 
 class FilterRelationOneToManyNotEqual(FilterRelation):
     name = lazy_gettext('No Relation')
 
     def apply(self, query, value):
+        query, field = get_field_setup_query(query, self.model, self.column_name)
         rel_obj = self.datamodel.get_related_obj(self.column_name, value)
-        return query.filter(getattr(self.model, self.column_name) != rel_obj)
+        return query.filter(field != rel_obj)
 
 
 class FilterRelationManyToManyEqual(FilterRelation):
     name = lazy_gettext('Relation as Many')
 
     def apply(self, query, value):
+        query, field = get_field_setup_query(query, self.model, self.column_name)
         rel_obj = self.datamodel.get_related_obj(self.column_name, value)
-        return query.filter(getattr(self.model, self.column_name).contains(rel_obj))
+        return query.filter(field.contains(rel_obj))
 
 
 class FilterEqualFunction(BaseFilter):
     name = "Filter view with a function"
 
     def apply(self, query, func):
-        return query.filter(getattr(self.model, self.column_name) == func())
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        return query.filter(field == func())
 
 
 class SQLAFilterConverter(BaseFilterConverter):

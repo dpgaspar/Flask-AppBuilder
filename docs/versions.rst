@@ -9,6 +9,8 @@ Improvements and Bug fixes on 1.5.0
 - Fix, #265, Fixed double word in views.rst
 - Fix, #247, bug when ordering view columns where None values are in.
 - Fix, pinned flask-sqlalchemy to version 2.0.
+- New, type checks disables on AuditMixin, it allows the use of this mixin when extending the User model.
+- New, possible to filter fields using dot notation, automatic joins of other models.
 
 Improvements and Bug fixes on 1.4.7
 -----------------------------------
