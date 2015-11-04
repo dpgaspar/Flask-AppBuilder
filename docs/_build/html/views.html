@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.7',
+        VERSION:     '1.5.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.4.7</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.5.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -193,7 +193,7 @@ with ModelView, ChartView and others.</p>
 <p>All views inherit from this class.
 it&#8217;s constructor will register your exposed urls on flask as a Blueprint,
 as well as all security permissions that need to be defined and protected.</p>
-<p>You can use use this kind of view to implement your own custom pages,
+<p>You can use this kind of view to implement your own custom pages,
 attached to a menu or linked from any point of your site.</p>
 <p>Decorate your url routing methods with <strong>&#64;expose</strong>.
 Additionally add <strong>&#64;has_access</strong> decorator to tell flask that this is a security protected method.</p>
@@ -379,7 +379,7 @@ or something.</p>
     <span class="n">message</span> <span class="o">=</span> <span class="s">&#39;My form submitted&#39;</span>
 
     <span class="k">def</span> <span class="nf">form_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
-        <span class="n">form</span><span class="o">.</span><span class="n">field1</span> <span class="o">=</span> <span class="s">&#39;This was prefilled&#39;</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">field1</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s">&#39;This was prefilled&#39;</span>
 
     <span class="k">def</span> <span class="nf">form_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
         <span class="c"># post process form</span>
@@ -404,6 +404,7 @@ Notice also how label uses babel&#8217;s lazy_gettext as _(&#8216;text&#8217;) f
 </tr>
 </tbody>
 </table>
+<p>You can find this example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleform">SimpleView2</a>.</p>
 </div>
 </div>
 

@@ -24,7 +24,7 @@ All views inherit from this class.
 it's constructor will register your exposed urls on flask as a Blueprint,
 as well as all security permissions that need to be defined and protected.
 
-You can use use this kind of view to implement your own custom pages,
+You can use this kind of view to implement your own custom pages,
 attached to a menu or linked from any point of your site.
 
 Decorate your url routing methods with **@expose**.
@@ -219,7 +219,7 @@ On your form_post method you can also return None, or a Flask response to render
         message = 'My form submitted'
 
         def form_get(self, form):
-            form.field1 = 'This was prefilled'
+            form.field1.data = 'This was prefilled'
 
         def form_post(self, form):
             # post process form
@@ -238,4 +238,5 @@ Most important Base Properties:
 :form_columns: The form column names to include
 :form: Your form class (`WTForm <https://wtforms.readthedocs.org/en/latest/>`_) (this is mandatory) 
     
+You can find this example on `SimpleView2 <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleform>`_.
 

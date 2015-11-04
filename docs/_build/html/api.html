@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4.7',
+        VERSION:     '1.5.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.4.7</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.5.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -986,6 +986,12 @@ Add a custom filter to form related fields:</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.get_init_inner_views">
+<code class="descname">get_init_inner_views</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/baseviews.html#BaseCRUDView.get_init_inner_views"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.get_init_inner_views" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of related ModelViews after they have been initialized</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="flask.ext.appbuilder.baseviews.BaseCRUDView.get_uninit_inner_views">
 <code class="descname">get_uninit_inner_views</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/baseviews.html#BaseCRUDView.get_uninit_inner_views"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseCRUDView.get_uninit_inner_views" title="Permalink to this definition">¶</a></dt>
 <dd><p>Will return a list with views that need to be initialized.
@@ -1854,7 +1860,7 @@ Password will be hashed and saved.</p>
 <dl class="method">
 <dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.update_user">
 <code class="descname">update_user</code><span class="sig-paren">(</span><em>user</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_appbuilder/security/manager.html#BaseSecurityManager.update_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.update_user" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generic function to create user</p>
+<dd><p>Generic function to update user</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1896,6 +1902,13 @@ Password will be hashed and saved.</p>
 <code class="descname">userdbmodelview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.userdbmodelview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override if you want your own user db view</p>
 <p>alias of <code class="xref py py-class docutils literal"><span class="pre">UserDBModelView</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flask.ext.appbuilder.security.manager.BaseSecurityManager.userinfoeditview">
+<code class="descname">userinfoeditview</code><a class="headerlink" href="#flask.ext.appbuilder.security.manager.BaseSecurityManager.userinfoeditview" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override if you want your own User information edit view</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">UserInfoEditView</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
