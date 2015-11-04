@@ -12,9 +12,9 @@ Insert test data::
 
 testdata will create 3 users for you to play with, these are:
 
-user1
-user2
-user3
+user1_company1
+user2_company2
+user3_company2
 
 Their passwords are 'password'
 
