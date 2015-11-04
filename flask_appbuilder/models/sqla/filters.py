@@ -11,6 +11,13 @@ __all__ = ['SQLAFilterConverter', 'FilterEqual', 'FilterNotStartsWith', 'FilterS
            'FilterSmaller']
 
 def get_field_setup_query(query, model, column_name):
+    """
+        Help function for SQLA filters, checks for dot notation on column names.
+        If it exists, will join the query with the model from the first part of the field name.
+
+        example:
+            Contact.created_by: if created_by is a User model, it will be joined to the query.
+    """
     if not hasattr(model, column_name):
        # it's an inner obj attr
         rel_model = getattr(model, column_name.split('.')[0]).mapper.class_
