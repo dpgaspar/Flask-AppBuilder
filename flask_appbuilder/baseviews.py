@@ -840,6 +840,9 @@ class BaseCRUDView(BaseModelView):
         return self.related_views
 
     def get_init_inner_views(self):
+        """
+            Get the list of related ModelViews after they have been initialized
+        """
         return self._related_views
 
 

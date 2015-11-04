@@ -1,6 +1,6 @@
 import logging
 from flask import (
-    flash, redirect, send_file, jsonify, make_response, url_for, session)
+    flash, redirect, send_file, jsonify, make_response, url_for, session, abort)
 from ._compat import as_unicode
 from .filemanager import uuid_originalname
 from .widgets import GroupFormListWidget, ListMasterWidget
@@ -269,7 +269,9 @@ class RestCRUDView(BaseCRUDView):
         get_filter_args(self._filters)
         exclude_cols = self._filters.get_relation_cols()
 
-        item = self.datamodel.get(pk)
+        item = self.datamodel.get(pk, self._base_filters)
+        if not item:
+            abort(404)
         # convert pk to correct type, if pk is non string type.
         pk = self.datamodel.get_pk_value(item)
 
@@ -302,7 +304,9 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name('delete')
     def api_delete(self, pk):
-        item = self.datamodel.get(pk)
+        item = self.datamodel.get(pk, self._base_filters)
+        if not item:
+            abort(404)
         self.pre_delete(item)
         if self.datamodel.delete(item):
             self.post_delete(item)
