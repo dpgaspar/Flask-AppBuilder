@@ -185,7 +185,7 @@ class UserModelView(ModelView):
 
     @action('userinfoedit', lazy_gettext("Edit User"), "", "fa-edit", multiple=False)
     def userinfoedit(self, item):
-        return redirect(url_for('UserInfoEditView.this_form_get'))
+        return redirect(url_for(self.appbuilder.sm.userinfoeditview.__name__ + '.this_form_get'))
 
 class UserOIDModelView(UserModelView):
     """
@@ -279,11 +279,11 @@ class UserDBModelView(UserModelView):
 
     @action('resetmypassword', lazy_gettext("Reset my password"), "", "fa-lock", multiple=False)
     def resetmypassword(self, item):
-        return redirect(url_for('ResetMyPasswordView.this_form_get'))
+        return redirect(url_for(self.appbuilder.sm.resetmypasswordview.__name__ + '.this_form_get'))
 
     @action('resetpasswords', lazy_gettext("Reset Password"), "", "fa-lock", multiple=False)
     def resetpasswords(self, item):
-        return redirect(url_for('ResetPasswordView.this_form_get', pk=item.id))
+        return redirect(url_for(self.appbuilder.sm.resetpasswordview.__name__ + '.this_form_get', pk=item.id))
 
     def pre_update(self, item):
         item.changed_on = datetime.datetime.now()

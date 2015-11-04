@@ -11,6 +11,8 @@ Improvements and Bug fixes on 1.5.0
 - Fix, pinned flask-sqlalchemy to version 2.0.
 - New, type checks disables on AuditMixin, it allows the use of this mixin when extending the User model.
 - New, possible to filter fields using dot notation, automatic joins of other models.
+- Fix, actions on user profile to resetmypasswordview made generic, the view can be safely override.
+- Fix, actions on user profile to resetpasswordview made generic, the view can be safely override.
 
 Improvements and Bug fixes on 1.4.7
 -----------------------------------
