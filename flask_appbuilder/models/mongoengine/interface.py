@@ -266,4 +266,9 @@ class MongoEngineInterface(BaseInterface):
 
     def get(self, id, filters=None):
         # TODO: need to implement filters!
+        if filters:
+            objs = self.obj.objects
+            objs = filters.apply_all(objs)
+            return objs(pk=id).first()
+
         return self.obj.objects(pk=id).first()
