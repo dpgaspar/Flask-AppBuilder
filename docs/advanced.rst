@@ -78,6 +78,10 @@ On this next example we are filtering a view by the logged in user and with colu
         base_filters = [['created_by', FilterEqualFunction, get_user],
                         ['name', FilterStartsWith, 'a']]
 
+Since version 1.5.0 you can use base_filter with dotted notation, necessary joins will be handled for you on
+the background. Study the following example to see how:
+
+https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/extendsecurity
 
 
 Default Order

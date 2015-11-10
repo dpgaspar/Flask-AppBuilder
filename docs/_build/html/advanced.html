@@ -223,27 +223,31 @@ with a certain Model property:</p>
 <div class="section" id="base-filtering">
 <h2>Base Filtering<a class="headerlink" href="#base-filtering" title="Permalink to this headline">¶</a></h2>
 <p>To filter a views data, just set the <em>base_filter</em> property with your base filters. These will allways be applied first on any search.</p>
-<p>It&#8217;s very flexible, you can apply multiple filters with static values, or values based on a function you define. On this next example we are filtering a view by the logged in user and with column <em>name</em> starting with &#8220;a&#8221;</p>
+<p>It&#8217;s very flexible, you can apply multiple filters with static values, or values based on a function you define.
+On this next example we are filtering a view by the logged in user and with column <em>name</em> starting with &#8220;a&#8221;</p>
 <p><em>base_filters</em> is a list of lists with 3 values [[&#8216;column name&#8217;,FilterClass,&#8217;filter value],...]</p>
-<dl class="docutils">
-<dt>::</dt>
-<dd><p class="first">from flask import g
-from flask.ext.appbuilder import ModelView
-from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction
-from .models import MyTable</p>
-<dl class="last docutils">
-<dt>def get_user():</dt>
-<dd>return g.user</dd>
-<dt>class MyView(ModelView):</dt>
-<dd><p class="first">datamodel = SQLAInterface(MyTable)
-base_filters = [[&#8216;created_by&#8217;, FilterEqualFunction, get_user],</p>
-<blockquote class="last">
-<div>[&#8216;name&#8217;, FilterStartsWith, &#8216;a&#8217;]]</div></blockquote>
-</dd>
-</dl>
-</dd>
-</dl>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">g</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">ModelView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+<span class="kn">from</span> <span class="nn">flask_appbuilder.models.sqla.filters</span> <span class="kn">import</span> <span class="n">FilterStartsWith</span><span class="p">,</span> <span class="n">FilterEqualFunction</span>
+<span class="c"># If your using Mongo Engine you should import filters like this, everything else is exactly the same</span>
+<span class="c"># from flask_appbuilder.models.mongoengine.filters import FilterStartsWith, FilterEqualFunction</span>
+
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">MyTable</span>
+
+<span class="k">def</span> <span class="nf">get_user</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span>
+
+<span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
+    <span class="n">base_filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s">&#39;created_by&#39;</span><span class="p">,</span> <span class="n">FilterEqualFunction</span><span class="p">,</span> <span class="n">get_user</span><span class="p">],</span>
+                    <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="n">FilterStartsWith</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Since version 1.5.0 you can use base_filter with dotted notation, necessary joins will be handled for you on
+the background. Study the following example to see how:</p>
+<p><a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/extendsecurity">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/extendsecurity</a></p>
 </div>
 <div class="section" id="default-order">
 <h2>Default Order<a class="headerlink" href="#default-order" title="Permalink to this headline">¶</a></h2>

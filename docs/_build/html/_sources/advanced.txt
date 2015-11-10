@@ -52,15 +52,22 @@ Base Filtering
 
 To filter a views data, just set the *base_filter* property with your base filters. These will allways be applied first on any search.
 
-It's very flexible, you can apply multiple filters with static values, or values based on a function you define. On this next example we are filtering a view by the logged in user and with column *name* starting with "a"
+It's very flexible, you can apply multiple filters with static values, or values based on a function you define.
+On this next example we are filtering a view by the logged in user and with column *name* starting with "a"
 
 *base_filters* is a list of lists with 3 values [['column name',FilterClass,'filter value],...]
 
 ::
+
+
     from flask import g
     from flask.ext.appbuilder import ModelView
     from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
     from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction
+    # If your using Mongo Engine you should import filters like this, everything else is exactly the same
+    # from flask_appbuilder.models.mongoengine.filters import FilterStartsWith, FilterEqualFunction
+
+
     from .models import MyTable
 
     def get_user():
@@ -70,6 +77,11 @@ It's very flexible, you can apply multiple filters with static values, or values
         datamodel = SQLAInterface(MyTable)
         base_filters = [['created_by', FilterEqualFunction, get_user],
                         ['name', FilterStartsWith, 'a']]
+
+Since version 1.5.0 you can use base_filter with dotted notation, necessary joins will be handled for you on
+the background. Study the following example to see how:
+
+https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/extendsecurity
 
 
 Default Order
