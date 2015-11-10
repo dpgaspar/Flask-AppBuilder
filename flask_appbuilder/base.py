@@ -9,7 +9,8 @@ from .version import VERSION_STRING
 from .const import LOGMSG_WAR_FAB_VIEW_EXISTS, \
                    LOGMSG_ERR_FAB_ADD_PERMISSION_MENU, \
                    LOGMSG_INF_FAB_ADD_VIEW, \
-                   LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW
+                   LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW, \
+                   LOGMSF_INF_SEC_ADDON_ADDED
 
 log = logging.getLogger(__name__)
 
@@ -21,9 +22,10 @@ def dynamic_class_import(class_path):
         :return: class
     """
     # Split first occurrence of path
-    tmp = class_path.split('.', 1)
-    package = __import__(tmp[0])
-    return reduce(getattr, tmp[1].split('.'), package)
+    tmp = class_path.split('.')
+    module_path = '.'.join(tmp[0:-1])
+    package = __import__(module_path)
+    return reduce(getattr, tmp[1:], package)
 
 
 class AppBuilder(object):
@@ -65,6 +67,7 @@ class AppBuilder(object):
     session = None
     sm = None  # Security Manager Class
     bm = None  # Babel Manager Class
+    addons_managers = None
 
     menu = None
     indexview = None
@@ -101,6 +104,7 @@ class AppBuilder(object):
                 optional, pass your own security manager class
         """
         self.baseviews = []
+        self.addon_managers = []
         self.menu = menu or Menu()
         self.base_template = base_template
         self.security_manager_class = security_manager_class
@@ -125,9 +129,11 @@ class AppBuilder(object):
         app.config.setdefault('APP_ICON', '')
         app.config.setdefault('LANGUAGES',
                               {'en': {'flag': 'gb', 'name': 'English'}})
+        app.config.setdefault('ADDON_MANAGERS',[])
         if self.security_manager_class is None:
             from flask_appbuilder.security.sqla.manager import SecurityManager
             self.security_manager_class = SecurityManager
+        self.addon_managers = app.config['ADDON_MANAGERS']
         self.session = session
         self.sm = self.security_manager_class(self)
         self.bm = BabelManager(self)
@@ -135,6 +141,7 @@ class AppBuilder(object):
         self._add_global_filters()
         app.before_request(self.sm.before_request)
         self._add_admin_views()
+        self._add_addon_views()
         self._add_menu_permissions()
         if not self.app:
             for baseview in self.baseviews:
@@ -223,11 +230,21 @@ class AppBuilder(object):
         self.get_app.register_blueprint(bp)
 
     def _add_admin_views(self):
+        """
+            Registers indexview, utilview (back function), babel views and Security views.
+        """
         self.indexview = self._check_and_init(self.indexview)
         self.add_view_no_menu(self.indexview)
         self.add_view_no_menu(UtilView())
         self.bm.register_views()
         self.sm.register_views()
+
+    def _add_addon_views(self):
+        for addon in self.addon_managers:
+            addon_class = dynamic_class_import(addon)
+            addon_class = addon_class(self)
+            addon_class.register_views()
+            log.info(LOGMSF_INF_SEC_ADDON_ADDED.format(str(addon)))
 
     def _add_permissions_menu(self, name):
         try:

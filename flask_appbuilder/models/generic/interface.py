@@ -70,5 +70,6 @@ class GenericInterface(BaseInterface):
             if self.is_pk(col_name):
                 return col_name
 
-    def get(self, id):
+    def get(self, id, filters=None):
+        # TODO: need to implement filters!
         return self.session.get(id)
