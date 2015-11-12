@@ -17,6 +17,8 @@ Take a quick look to the current possibilities. The bold ones require to import 
 
   - create-app - Create a Skeleton application (SQLAlchemy or MongoEngine).
 
+  - create-addon - Create a Skeleton AddOn.
+
   - **create-db** - Create all your database objects (SQLAlchemy only)
 
   - **list-users** - List all users on the database.
@@ -52,6 +54,12 @@ Command Line uses the excelent click package, so you can have a detailed help fo
 ----------------------------------------
 
 To create a ready to dev skeleton application, you can use this command for SQLAlchemy engine and MongoEngine (MongoDB).
+This commands needs an internet connection to **github.com**, because it will download a zip version of the skeleton repos.
+
+**create-addon** - Create new AddOns
+------------------------------------
+
+To create a ready to dev skeleton addon.
 This commands needs an internet connection to **github.com**, because it will download a zip version of the skeleton repos.
 
 **create-admin** - Create an admin user
