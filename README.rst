@@ -69,6 +69,7 @@ Includes:
       - Various view widgets: lists, master-detail, list of thumbnails etc
       - Select2, Datepicker, DateTimePicker
       - Google charts with automatic group by or direct values and filters.
+      - AddOn system, write your own and contribute.
   - Forms
       - Automatic, Add, Edit and Show from Database Models
       - Labels and descriptions for each field.
