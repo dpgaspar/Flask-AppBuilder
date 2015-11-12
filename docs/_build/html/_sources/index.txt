@@ -52,6 +52,7 @@ Contents:
 .. toctree::
    :maxdepth: 1
 
+   addons
    generic_datasource
    multipledbs
    i18n
