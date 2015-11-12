@@ -69,8 +69,14 @@ LOGMSG_INF_SEC_ADD_USER = "Added user {0}"
 """ User added, format with username """
 LOGMSG_INF_SEC_UPD_USER = "Updated user {0}"
 """ User updated, format with username """
-LOGMSF_INF_SEC_ADDON_ADDED = "Registered AddOn: {0}"
+
+LOGMSG_INF_FAB_ADDON_ADDED = "Registered AddOn: {0}"
 """ Addon imported and registered """
+LOGMSG_ERR_FAB_ADDON_IMPORT = "An error occurred when importing declared addon {0}: {1}"
+""" Error on addon import, format with addon class path and error message """
+LOGMSG_ERR_FAB_ADDON_PROCESS = "An error occurred when processing declared addon {0}: {1}"
+""" Error on addon processing (pre, register, post), format with addon class path and error message """
+
 
 LOGMSG_ERR_FAB_ADD_PERMISSION_MENU = "Add Permission on Menu Error: {0}"
 """ Error when adding a permission to a menu, format with err """

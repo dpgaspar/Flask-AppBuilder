@@ -1,11 +1,11 @@
 Versions
 ========
 
-Improvements and Bug fixes on 1.5.1
+Improvements and Bug fixes on 1.6.0
 -----------------------------------
 
 - Fix, GenericInterface.get(pk) bug created on 1.5.0 correction, missing optional extra base_filter parameter
-- New, Simple addon system. Possible modular instalation of views, model and functionality.
+- New, Simple addon system. Possible modular instalation of views, models and functionality.
 
 Improvements and Bug fixes on 1.5.0
 -----------------------------------

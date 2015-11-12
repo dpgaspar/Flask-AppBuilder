@@ -10,7 +10,9 @@ from .const import LOGMSG_WAR_FAB_VIEW_EXISTS, \
                    LOGMSG_ERR_FAB_ADD_PERMISSION_MENU, \
                    LOGMSG_INF_FAB_ADD_VIEW, \
                    LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW, \
-                   LOGMSF_INF_SEC_ADDON_ADDED
+                   LOGMSG_INF_FAB_ADDON_ADDED, \
+                   LOGMSG_ERR_FAB_ADDON_IMPORT, \
+                   LOGMSG_ERR_FAB_ADDON_PROCESS
 
 log = logging.getLogger(__name__)
 
@@ -22,10 +24,13 @@ def dynamic_class_import(class_path):
         :return: class
     """
     # Split first occurrence of path
-    tmp = class_path.split('.')
-    module_path = '.'.join(tmp[0:-1])
-    package = __import__(module_path)
-    return reduce(getattr, tmp[1:], package)
+    try:
+        tmp = class_path.split('.')
+        module_path = '.'.join(tmp[0:-1])
+        package = __import__(module_path)
+        return reduce(getattr, tmp[1:], package)
+    except Exception as e:
+        log.error(LOGMSG_ERR_FAB_ADDON_IMPORT.format(class_path, e))
 
 
 class AppBuilder(object):
@@ -63,11 +68,18 @@ class AppBuilder(object):
     """
     baseviews = []
     security_manager_class = None
+    # Flask app
     app = None
+    # Database Session
     session = None
-    sm = None  # Security Manager Class
-    bm = None  # Babel Manager Class
-    addons_managers = None
+    # Security Manager Class
+    sm = None
+    # Babel Manager Class
+    bm = None
+    # dict with addon name has key and intantiated class has value
+    addon_managers = None
+    # temporary list that hold addon_managers config key
+    _addon_managers = None
 
     menu = None
     indexview = None
@@ -104,7 +116,8 @@ class AppBuilder(object):
                 optional, pass your own security manager class
         """
         self.baseviews = []
-        self.addon_managers = []
+        self._addon_managers = []
+        self.addon_managers = {}
         self.menu = menu or Menu()
         self.base_template = base_template
         self.security_manager_class = security_manager_class
@@ -133,7 +146,7 @@ class AppBuilder(object):
         if self.security_manager_class is None:
             from flask_appbuilder.security.sqla.manager import SecurityManager
             self.security_manager_class = SecurityManager
-        self.addon_managers = app.config['ADDON_MANAGERS']
+        self._addon_managers = app.config['ADDON_MANAGERS']
         self.session = session
         self.sm = self.security_manager_class(self)
         self.bm = BabelManager(self)
@@ -240,11 +253,22 @@ class AppBuilder(object):
         self.sm.register_views()
 
     def _add_addon_views(self):
-        for addon in self.addon_managers:
+        """
+            Registers declared addon's
+        """
+        for addon in self._addon_managers:
             addon_class = dynamic_class_import(addon)
-            addon_class = addon_class(self)
-            addon_class.register_views()
-            log.info(LOGMSF_INF_SEC_ADDON_ADDED.format(str(addon)))
+            if addon_class:
+                # Intantiate manager with appbuilder (self)
+                addon_class = addon_class(self)
+                try:
+                    addon_class.pre_process()
+                    addon_class.register_views()
+                    addon_class.post_process()
+                    self.addon_managers[addon] = addon_class
+                    log.info(LOGMSG_INF_FAB_ADDON_ADDED.format(str(addon)))
+                except Exception as e:
+                    log.error(LOGMSG_ERR_FAB_ADDON_PROCESS.format(addon, e))
 
     def _add_permissions_menu(self, name):
         try:

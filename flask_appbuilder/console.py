@@ -22,6 +22,7 @@ from io import BytesIO
 
 SQLA_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip'
 MONGOENGIE_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-me/archive/master.zip'
+ADDON_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-AddOn/archive/master.zip'
 
 def import_application(app_package, appbuilder):
     sys.path.append(os.getcwd())
@@ -352,6 +353,32 @@ def create_app(name, engine):
         elif engine.lower() =='mongoengine':
             click.echo(click.style('Try downloading from {0}'.format(MONGOENGIE_REPO_URL), fg='green'))
         return False
+
+@cli_app.command("create-addon")
+@click.option('--name', prompt="Your new addon name", help="Your addon name will be prefixed by fab_addon_, directory will have this name")
+def create_addon(name):
+    """
+        Create a Skeleton AddOn (needs internet connection to github)
+    """
+    try:
+        full_name = 'fab_addon_' + name
+        dirname = "Flask-AppBuilder-Skeleton-AddOn-master"
+        url = urlopen(ADDON_REPO_URL)
+        zipfile = ZipFile(BytesIO(url.read()))
+        zipfile.extractall()
+        os.rename(dirname, full_name)
+        addon_path =  os.path.join(full_name,full_name)
+        os.rename(os.path.join(full_name, 'fab_addon'), addon_path)
+        f = open(os.path.join(full_name, 'config.py'), 'w')
+        f.write("ADDON_NAME='" + name + "'\n")
+        f.write("FULL_ADDON_NAME='fab_addon_' + ADDON_NAME\n")
+        f.close()
+        click.echo(click.style('Downloaded the skeleton addon, good coding!', fg='green'))
+        return True
+    except Exception as e:
+        click.echo(click.style('Something went wrong {0}'.format(e), fg='red'))
+        return False
+
 
 def cli():
     cli_app()
