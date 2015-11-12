@@ -47,8 +47,10 @@ A very simple manager would look something like this::
 
    import logging
    from flask.ext.appbuilder.basemanager import BaseManager
-   from .views import FirstModelView1
    from flask_babelpkg import lazy_gettext as _
+   from .views import FirstModelView1
+   from .model import MyModel
+
 
    log = logging.getLogger(__name__)
 
@@ -68,7 +70,8 @@ A very simple manager would look something like this::
            self.appbuilder.add_view(FirstModelView1, "First View1",icon = "fa-user",category = "First AddOn")
 
        def pre_process(self):
-           pass
+           stuff = self.appbuilder.get_session.query(MyModel).filter(name == 'something').all()
+           # process stuff
 
        def post_process(self):
            pass

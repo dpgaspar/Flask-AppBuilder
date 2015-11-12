@@ -132,6 +132,9 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | APP_ICON                          | path of your application icons             |   No      |
 |                                   | will be shown on the left side of the menu |           |
 +-----------------------------------+--------------------------------------------+-----------+
+| ADDON_MANAGERS                    | A list of addon manager's classes          |   No      |
+|                                   | Take a look at addon chapter on docs.      |           |
++-----------------------------------+--------------------------------------------+-----------+
 | UPLOAD_FOLDER                     | Files upload folder.                       |   No      |
 |                                   | Mandatory for file uploads.                |           |
 +-----------------------------------+--------------------------------------------+-----------+
