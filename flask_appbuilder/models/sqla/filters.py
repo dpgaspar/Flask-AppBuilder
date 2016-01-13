@@ -27,7 +27,7 @@ def get_field_setup_query(query, model, column_name):
         return query, getattr(model, column_name)
 
 class FilterStartsWith(BaseFilter):
-    name = lazy_gettext('Starts with')
+    name = lazy_gettext('Begins with')
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -35,7 +35,7 @@ class FilterStartsWith(BaseFilter):
 
 
 class FilterNotStartsWith(BaseFilter):
-    name = lazy_gettext('Not Starts with')
+    name = lazy_gettext('Does not begin with')
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -51,7 +51,7 @@ class FilterEndsWith(BaseFilter):
 
 
 class FilterNotEndsWith(BaseFilter):
-    name = lazy_gettext('Not Ends with')
+    name = lazy_gettext('Does not end with')
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -67,7 +67,7 @@ class FilterContains(BaseFilter):
 
 
 class FilterNotContains(BaseFilter):
-    name = lazy_gettext('Not Contains')
+    name = lazy_gettext('Does not Contains')
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -86,7 +86,7 @@ class FilterEqual(BaseFilter):
 
 
 class FilterNotEqual(BaseFilter):
-    name = lazy_gettext('Not Equal to')
+    name = lazy_gettext('Not equal to')
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -105,7 +105,7 @@ class FilterGreater(BaseFilter):
 
 
 class FilterSmaller(BaseFilter):
-    name = lazy_gettext('Smaller than')
+    name = lazy_gettext('Less than')
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -113,7 +113,7 @@ class FilterSmaller(BaseFilter):
 
 
 class FilterRelationOneToManyEqual(FilterRelation):
-    name = lazy_gettext('Relation')
+    name = lazy_gettext('Is')
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -122,7 +122,7 @@ class FilterRelationOneToManyEqual(FilterRelation):
 
 
 class FilterRelationOneToManyNotEqual(FilterRelation):
-    name = lazy_gettext('No Relation')
+    name = lazy_gettext('Is not')
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
