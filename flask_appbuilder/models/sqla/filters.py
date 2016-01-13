@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 __all__ = ['SQLAFilterConverter', 'FilterEqual', 'FilterNotStartsWith', 'FilterStartsWith', 'FilterContains',
            'FilterNotEqual', 'FilterEndsWith', 'FilterEqualFunction', 'FilterGreater', 'FilterNotEndsWith',
            'FilterRelationManyToManyEqual', 'FilterRelationOneToManyEqual', 'FilterRelationOneToManyNotEqual',
-           'FilterSmaller']
+           'FilterSmaller', 'FilterBefore', 'FilterAfter']
 
 def get_field_setup_query(query, model, column_name):
     """
@@ -112,6 +112,20 @@ class FilterSmaller(BaseFilter):
         return query.filter(field < value)
 
 
+class FilterAfter(BaseFilter):
+    name = lazy_gettext('After')
+
+    def apply(self, query, value):
+        return query.filter(getattr(self.model, self.column_name) > value)
+
+
+class FilterBefore(BaseFilter):
+    name = lazy_gettext('Before')
+
+    def apply(self, query, value):
+        return query.filter(getattr(self.model, self.column_name) < value)
+
+
 class FilterRelationOneToManyEqual(FilterRelation):
     name = lazy_gettext('Relation')
 
@@ -188,14 +202,14 @@ class SQLAFilterConverter(BaseFilterConverter):
                                       FilterSmaller,
                                       FilterNotEqual]),
                         ('is_date', [FilterEqual,
-                                     FilterGreater,
-                                     FilterSmaller,
+                                     FilterAfter,
+                                     FilterBefore,
                                      FilterNotEqual]),
                         ('is_boolean', [FilterEqual,
                                      FilterNotEqual]),
                         ('is_datetime', [FilterEqual,
-                                         FilterGreater,
-                                         FilterSmaller,
+                                         FilterAfter,
+                                         FilterBefore,
                                          FilterNotEqual]),
     )
 
