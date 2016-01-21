@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.6.1
+-----------------------------------
+
+- New, Allowing apps to alter title using a jinja block #284
+
 Improvements and Bug fixes on 1.6.0
 -----------------------------------
 
