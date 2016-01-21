@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{{app_name}}</title>
+    <title>{% block page_title %}{{app_name}}{% endblock %}</title>
 
     {% block head_meta %}
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
