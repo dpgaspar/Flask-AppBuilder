@@ -3,6 +3,7 @@ __author__ = 'dpgaspar'
 import operator
 import os
 from ..._compat import with_metaclass
+from datetime import date
 
 #--------------------------------------
 #        Exceptions
@@ -287,9 +288,24 @@ class GenericSession(object):
 
     def _equal(self, item, col_name, value):
         source_value = getattr(item, col_name)
+
         try:
-            return source_value == type(source_value)(value)
+            #whatever we have to copare it will never match
+            if source_value == None:
+                return 0.0
+
+            #date has special constructor, tested only on sqlite
+            elif isinstance(source_value, date):
+                parts = value.split('-')
+                value = date(int(parts[0]), int(parts[1]), int(parts[2]))
+
+            #fallback to native python types
+            else:            
+                value = type(source_value)(value)
+
+            return source_value == value
         except:
+            #when everything fails silently report False
             return 0.0
 
     def not_equal(self, col_name, value):
