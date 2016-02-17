@@ -3,7 +3,7 @@ __author__ = 'dpgaspar'
 import operator
 import os
 from ..._compat import with_metaclass
-from datetime import date
+from datetime import date, datetime
 
 #--------------------------------------
 #        Exceptions
@@ -296,8 +296,7 @@ class GenericSession(object):
 
             #date has special constructor, tested only on sqlite
             elif isinstance(source_value, date):
-                parts = value.split('-')
-                value = date(int(parts[0]), int(parts[1]), int(parts[2]))
+                value = datetime.strptime(value, "%Y-%m-%d").date()
 
             #fallback to native python types
             else:            
