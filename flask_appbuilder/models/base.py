@@ -98,6 +98,9 @@ class BaseInterface(object):
                     item[key] = [str(v) for v in value]
                 else:
                     print(type(value))
+                    type_str = str(type(value))
+                    if type_str[8:19] == 'app.models.':
+                        value = str(value)
             result.append(item)
         return result
 
