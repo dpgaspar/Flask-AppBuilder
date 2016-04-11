@@ -249,15 +249,14 @@ class RestCRUDView(BaseCRUDView):
                 http_return_code = 200
             else:
                 http_return_code = 500
+
+            response = make_response(jsonify({'status': self.datamodel.message[1],
+                                              'message': self.datamodel.message[0]}), http_return_code)
+
         else:
-            is_valid_form = False
-        if is_valid_form:
-            response = make_response(jsonify({'message': self.datamodel.message[0],
-                                              'severity': self.datamodel.message[1]}), http_return_code)
-        else:
-            # TODO return dict with errors
-            response = make_response(jsonify({'message': 'Invalid form',
-                                              'severity': 'warning'}), 500)
+            response = make_response(jsonify({'status': 'fail'
+                                              'message': 'Invalid form'}), 500)
+
         return response
 
 
@@ -288,15 +287,14 @@ class RestCRUDView(BaseCRUDView):
                 http_return_code = 200
             else:
                 http_return_code = 500
+                
+            response = make_response(jsonify({'status': self.datamodel.message[1],
+                                              'message': self.datamodel.message[0]}), http_return_code)
+
         else:
-            is_valid_form = False
-        if is_valid_form:
-            response = make_response(jsonify({'message': self.datamodel.message[0],
-                                              'severity': self.datamodel.message[1]}), http_return_code)
-        else:
-            # TODO return dict with from errors validation
-            response = make_response(jsonify({'message': 'Invalid form',
-                                              'severity': 'warning'}), 500)
+            response = make_response(jsonify({'status': 'fail'
+                                              'message': 'Invalid form'}), 500)
+
         return response
 
 
