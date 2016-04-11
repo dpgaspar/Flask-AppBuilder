@@ -97,11 +97,9 @@ class BaseInterface(object):
                 elif isinstance(value, list):
                     item[key] = [str(v) for v in value]
                 else:
-                    print(type(value))
                     type_str = str(type(value))
                     if type_str[8:19] == 'app.models.':
-                        print("model class")
-                        item[key] = str(value)
+                        item[key] = str(value)                    
             result.append(item)
         return result
 
