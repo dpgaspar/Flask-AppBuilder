@@ -254,7 +254,7 @@ class RestCRUDView(BaseCRUDView):
                                               'message': self.datamodel.message[0]}), http_return_code)
 
         else:
-            response = make_response(jsonify({'status': 'fail'
+            response = make_response(jsonify({'status': 'fail',
                                               'message': 'Invalid form'}), 500)
 
         return response
@@ -292,7 +292,7 @@ class RestCRUDView(BaseCRUDView):
                                               'message': self.datamodel.message[0]}), http_return_code)
 
         else:
-            response = make_response(jsonify({'status': 'fail'
+            response = make_response(jsonify({'status': 'fail',
                                               'message': 'Invalid form'}), 500)
 
         return response
