@@ -216,7 +216,6 @@ class RestCRUDView(BaseCRUDView):
         joined_filters = self._filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         result = self.datamodel.get_values_json(lst, self.list_columns)
-        print(result)
         pks = self.datamodel.get_keys(lst)
         ret_json = jsonify(label_columns=self._label_columns_json(),
                            list_columns=self.list_columns,
