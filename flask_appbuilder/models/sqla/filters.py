@@ -147,6 +147,14 @@ class FilterEqualFunction(BaseFilter):
         return query.filter(field == func())
 
 
+class FilterInFunction(BaseFilter):
+    name = "Filter view where field is in a list returned by a function"
+
+    def apply(self, query, func):
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        return query.filter(field.in_(func()))
+
+
 class SQLAFilterConverter(BaseFilterConverter):
     """
         Class for converting columns into a supported list of filters
