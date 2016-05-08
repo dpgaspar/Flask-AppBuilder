@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
@@ -9,13 +9,13 @@
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.0',
+        VERSION:     '1.6.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="i18n Translations" href="i18n.html" />
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.6.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -106,7 +106,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="addons.html">AddOn development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generic_datasource.html">Generic Data Sources</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Multiple Databases</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Multiple Databases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="i18n.html">i18n Translations</a></li>
 </ul>
 <ul>
@@ -170,38 +170,38 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 content">
       
   <div class="section" id="multiple-databases">
 <h1>Multiple Databases<a class="headerlink" href="#multiple-databases" title="Permalink to this headline">¶</a></h1>
 <p>Because you can use Flask-SQLAlchemy (using the framework SQLA class) multiple databases is supported.</p>
 <p>You can configure them the following way, first setup config.py:</p>
-<div class="highlight-python"><div class="highlight"><pre>SQLALCHEMY_DATABASE_URI = &#39;sqlite:///&#39; + os.path.join(basedir, &#39;app.db&#39;)
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">SQLALCHEMY_DATABASE_URI</span> <span class="o">=</span> <span class="s1">&#39;sqlite:///&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="s1">&#39;app.db&#39;</span><span class="p">)</span>
 
-SQLALCHEMY_BINDS = {
-    &#39;my_sql1&#39;: &#39;mysql://root:password@localhost/quickhowto&#39;
-    &#39;my_sql2&#39;: &#39;mysql://root:password@externalserver.domain.com/quickhowto2&#39;
-}
+<span class="n">SQLALCHEMY_BINDS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;my_sql1&#39;</span><span class="p">:</span> <span class="s1">&#39;mysql://root:password@localhost/quickhowto&#39;</span>
+    <span class="s1">&#39;my_sql2&#39;</span><span class="p">:</span> <span class="s1">&#39;mysql://root:password@externalserver.domain.com/quickhowto2&#39;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>The <strong>SQLALCHEMY_DATABASE_URI</strong> is the default connection this is where the framework&#8217;s
 security tables will be created. The <strong>SQLALCHEMY_BINDS</strong> are the extra binds.</p>
 <p>Now you can configure which models reside on which database using the __bind_key__ property</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Model1</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">__bind_key__</span> <span class="o">=</span> <span class="s">&#39;my_sql1&#39;</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Model1</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">__bind_key__</span> <span class="o">=</span> <span class="s1">&#39;my_sql1&#39;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">Model2</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">__bind_key__</span> <span class="o">=</span> <span class="s">&#39;my_sql2&#39;</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">__bind_key__</span> <span class="o">=</span> <span class="s1">&#39;my_sql2&#39;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">Model3</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="docutils">
@@ -228,7 +228,7 @@ security tables will be created. The <strong>SQLALCHEMY_BINDS</strong> are the e
     </p>
     <p>
         &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
     </p>
   </div>
 </footer>

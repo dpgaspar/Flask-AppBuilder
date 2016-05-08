@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>flask_appbuilder.widgets &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.6.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+  
+  <a href="https://github.com/dpgaspar/Flask-AppBuilder"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
+
+
+  <div id="navbar" class="navbar  navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          Flask-AppBuilder</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../diagrams.html">Diagrams</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fabmanager.html">Command Line Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config.html">Base Configuration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../views.html">Base Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickhowto.html">Model Views (Quick How to)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickhowto_mongo.html">Model Views on MongoDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickcharts.html">Chart Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickfiles.html">Model Views with Files and Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickminimal.html">Quick Minimal Application</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../relations.html">Model Relations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../customizing.html">Customizing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../templates.html">Templates</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../addons.html">AddOn development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generic_datasource.html">Generic Data Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../multipledbs.html">Multiple Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../i18n.html">i18n Translations</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_registration.html">User Registration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../versionmigration.html">Version Migration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../versions.html">Versions</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <h1>Source code for flask_appbuilder.widgets</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Created on Oct 12, 2013</span>
+
+<span class="sd">@author: Daniel Gaspar</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">flask.globals</span> <span class="kn">import</span> <span class="n">_request_ctx_stack</span>
+<span class="kn">from</span> <span class="nn">._compat</span> <span class="kn">import</span> <span class="n">as_unicode</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">RenderTemplateWidget</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Base template for every widget</span>
+<span class="sd">        Enables the possibility of rendering a template</span>
+<span class="sd">         inside a template with run time options</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/render.html&#39;</span>
+    <span class="n">template_args</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_args</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span>
+        <span class="n">jinja_env</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">jinja_env</span>
+
+        <span class="n">template</span> <span class="o">=</span> <span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_args</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">FormWidget</span><span class="p">(</span><span class="n">RenderTemplateWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        FormWidget</span>
+
+<span class="sd">        form = None</span>
+<span class="sd">        include_cols = []</span>
+<span class="sd">        exclude_cols = []</span>
+<span class="sd">        fieldsets = []</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/form.html&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">FormVerticalWidget</span><span class="p">(</span><span class="n">RenderTemplateWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        FormWidget</span>
+
+<span class="sd">        form = None</span>
+<span class="sd">        include_cols = []</span>
+<span class="sd">        exclude_cols = []</span>
+<span class="sd">        fieldsets = []</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/form_vertical.html&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">FormHorizontalWidget</span><span class="p">(</span><span class="n">RenderTemplateWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        FormWidget</span>
+
+<span class="sd">        form = None</span>
+<span class="sd">        include_cols = []</span>
+<span class="sd">        exclude_cols = []</span>
+<span class="sd">        fieldsets = []</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/form_horizontal.html&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">FormInlineWidget</span><span class="p">(</span><span class="n">RenderTemplateWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        FormWidget</span>
+
+<span class="sd">        form = None</span>
+<span class="sd">        include_cols = []</span>
+<span class="sd">        exclude_cols = []</span>
+<span class="sd">        fieldsets = []</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/form_inline.html&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">GroupFormListWidget</span><span class="p">(</span><span class="n">RenderTemplateWidget</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/group_form_list.html&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">SearchWidget</span><span class="p">(</span><span class="n">FormWidget</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/search.html&#39;</span>
+    <span class="n">filters</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;filters&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">SearchWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; create dict labels based on form &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; create dict of form widgets &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; create dict of possible filters &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; create list of active filters &quot;&quot;&quot;</span>
+        <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">form_fields</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">search_filters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">dict_filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">get_search_filters</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_args</span><span class="p">[</span><span class="s1">&#39;include_cols&#39;</span><span class="p">]:</span>
+            <span class="n">label_columns</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template_args</span><span class="p">[</span><span class="s1">&#39;form&#39;</span><span class="p">][</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">form_fields</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_args</span><span class="p">[</span><span class="s1">&#39;form&#39;</span><span class="p">][</span><span class="n">col</span><span class="p">]()</span>
+            <span class="n">search_filters</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">as_unicode</span><span class="p">(</span><span class="n">flt</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">flt</span> <span class="ow">in</span> <span class="n">dict_filters</span><span class="p">[</span><span class="n">col</span><span class="p">]]</span>
+
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;label_columns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">label_columns</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;form_fields&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form_fields</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;search_filters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">search_filters</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;active_filters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">get_filters_values_tojson</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">SearchWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__call__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ShowWidget</span><span class="p">(</span><span class="n">RenderTemplateWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ShowWidget implements a template as an widget</span>
+<span class="sd">        it takes the following arguments</span>
+
+<span class="sd">        pk = None</span>
+<span class="sd">        label_columns = []</span>
+<span class="sd">        include_columns = []</span>
+<span class="sd">        value_columns = []</span>
+<span class="sd">        actions = None</span>
+<span class="sd">        fieldsets = []</span>
+<span class="sd">        modelview_name = &#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/show.html&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">ShowBlockWidget</span><span class="p">(</span><span class="n">RenderTemplateWidget</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/show_block.html&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">ShowVerticalWidget</span><span class="p">(</span><span class="n">RenderTemplateWidget</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/show_vertical.html&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">ListWidget</span><span class="p">(</span><span class="n">RenderTemplateWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List Widget implements a Template as an widget.</span>
+<span class="sd">        It takes the following arguments</span>
+
+<span class="sd">        label_columns = []</span>
+<span class="sd">        include_columns = []</span>
+<span class="sd">        value_columns = []</span>
+<span class="sd">        order_columns = []</span>
+<span class="sd">        page = None</span>
+<span class="sd">        page_size = None</span>
+<span class="sd">        count = 0</span>
+<span class="sd">        pks = []</span>
+<span class="sd">        actions = None</span>
+<span class="sd">        filters = {}</span>
+<span class="sd">        modelview_name = &#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/list.html&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">ListMasterWidget</span><span class="p">(</span><span class="n">ListWidget</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/list_master.html&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">ListAddWidget</span><span class="p">(</span><span class="n">ListWidget</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/list_add.html&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ListAddWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">ListAddWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__call__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ListThumbnail</span><span class="p">(</span><span class="n">ListWidget</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/list_thumbnail.html&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">ListLinkWidget</span><span class="p">(</span><span class="n">ListWidget</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/list_link.html&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">ListCarousel</span><span class="p">(</span><span class="n">ListWidget</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/list_carousel.html&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">ListItem</span><span class="p">(</span><span class="n">ListWidget</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/list_item.html&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">ListBlock</span><span class="p">(</span><span class="n">ListWidget</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/widgets/list_block.html&#39;</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

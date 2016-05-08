@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>flask_appbuilder.security.views &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.6.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+  
+  <a href="https://github.com/dpgaspar/Flask-AppBuilder"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
+
+
+  <div id="navbar" class="navbar  navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          Flask-AppBuilder</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../diagrams.html">Diagrams</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fabmanager.html">Command Line Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../config.html">Base Configuration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../views.html">Base Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickhowto.html">Model Views (Quick How to)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickhowto_mongo.html">Model Views on MongoDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickcharts.html">Chart Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickfiles.html">Model Views with Files and Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickminimal.html">Quick Minimal Application</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../relations.html">Model Relations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../customizing.html">Customizing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../templates.html">Templates</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../addons.html">AddOn development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generic_datasource.html">Generic Data Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../multipledbs.html">Multiple Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../i18n.html">i18n Translations</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_registration.html">User Registration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../versionmigration.html">Version Migration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../versions.html">Versions</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <h1>Source code for flask_appbuilder.security.views</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">flash</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">make_response</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">abort</span>
+<span class="kn">from</span> <span class="nn">werkzeug.security</span> <span class="kn">import</span> <span class="n">generate_password_hash</span>
+<span class="kn">from</span> <span class="nn">wtforms</span> <span class="kn">import</span> <span class="n">validators</span><span class="p">,</span> <span class="n">PasswordField</span>
+<span class="kn">from</span> <span class="nn">wtforms.validators</span> <span class="kn">import</span> <span class="n">EqualTo</span>
+<span class="kn">from</span> <span class="nn">flask_babelpkg</span> <span class="kn">import</span> <span class="n">lazy_gettext</span>
+<span class="kn">from</span> <span class="nn">flask_login</span> <span class="kn">import</span> <span class="n">login_user</span><span class="p">,</span> <span class="n">logout_user</span>
+
+<span class="kn">from</span> <span class="nn">..views</span> <span class="kn">import</span> <span class="n">ModelView</span><span class="p">,</span> <span class="n">SimpleFormView</span><span class="p">,</span> <span class="n">expose</span><span class="p">,</span> <span class="n">expose_api</span>
+<span class="kn">from</span> <span class="nn">..baseviews</span> <span class="kn">import</span> <span class="n">BaseView</span>
+<span class="kn">from</span> <span class="nn">..charts.views</span> <span class="kn">import</span> <span class="n">DirectByChartView</span>
+<span class="kn">from</span> <span class="nn">..fieldwidgets</span> <span class="kn">import</span> <span class="n">BS3PasswordFieldWidget</span>
+<span class="kn">from</span> <span class="nn">..actions</span> <span class="kn">import</span> <span class="n">action</span>
+<span class="kn">from</span> <span class="nn">.._compat</span> <span class="kn">import</span> <span class="n">as_unicode</span>
+<span class="kn">from</span> <span class="nn">.forms</span> <span class="kn">import</span> <span class="n">LoginForm_db</span><span class="p">,</span> <span class="n">LoginForm_oid</span><span class="p">,</span> <span class="n">ResetPasswordForm</span><span class="p">,</span> <span class="n">UserInfoEdit</span>
+<span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">has_access</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">PermissionModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s1">&#39;/permissions&#39;</span>
+    <span class="n">base_permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;can_list&#39;</span><span class="p">]</span>
+
+    <span class="n">list_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;List Base Permissions&#39;</span><span class="p">)</span>
+    <span class="n">show_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Show Base Permission&#39;</span><span class="p">)</span>
+    <span class="n">add_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Add Base Permission&#39;</span><span class="p">)</span>
+    <span class="n">edit_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Edit Base Permission&#39;</span><span class="p">)</span>
+
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Name&#39;</span><span class="p">)}</span>
+
+
+<span class="k">class</span> <span class="nc">ViewMenuModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s1">&#39;/viewmenus&#39;</span>
+    <span class="n">base_permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;can_list&#39;</span><span class="p">]</span>
+
+    <span class="n">list_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;List View Menus&#39;</span><span class="p">)</span>
+    <span class="n">show_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Show View Menu&#39;</span><span class="p">)</span>
+    <span class="n">add_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Add View Menu&#39;</span><span class="p">)</span>
+    <span class="n">edit_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Edit View Menu&#39;</span><span class="p">)</span>
+
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Name&#39;</span><span class="p">)}</span>
+
+
+<span class="k">class</span> <span class="nc">PermissionViewModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s1">&#39;/permissionviews&#39;</span>
+    <span class="n">base_permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;can_list&#39;</span><span class="p">]</span>
+
+    <span class="n">list_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;List Permissions on Views/Menus&#39;</span><span class="p">)</span>
+    <span class="n">show_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Show Permission on Views/Menus&#39;</span><span class="p">)</span>
+    <span class="n">add_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Add Permission on Views/Menus&#39;</span><span class="p">)</span>
+    <span class="n">edit_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Edit Permission on Views/Menus&#39;</span><span class="p">)</span>
+
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;permission&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Permission&#39;</span><span class="p">),</span> <span class="s1">&#39;view_menu&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;View/Menu&#39;</span><span class="p">)}</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;permission&#39;</span><span class="p">,</span> <span class="s1">&#39;view_menu&#39;</span><span class="p">]</span>
+    
+
+<span class="k">class</span> <span class="nc">ResetMyPasswordView</span><span class="p">(</span><span class="n">SimpleFormView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View for resetting own user password</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s1">&#39;/resetmypassword&#39;</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">ResetPasswordForm</span>
+    <span class="n">form_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Reset Password Form&#39;</span><span class="p">)</span>
+    <span class="n">redirect_url</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Password Changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">form_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">reset_password</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">password</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">),</span> <span class="s1">&#39;info&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ResetPasswordView</span><span class="p">(</span><span class="n">SimpleFormView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View for reseting all users password</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s1">&#39;/resetpassword&#39;</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">ResetPasswordForm</span>
+    <span class="n">form_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Reset Password Form&#39;</span><span class="p">)</span>
+    <span class="n">redirect_url</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Password Changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">form_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="n">pk</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pk&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">reset_password</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">password</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">),</span> <span class="s1">&#39;info&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">UserInfoEditView</span><span class="p">(</span><span class="n">SimpleFormView</span><span class="p">):</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">UserInfoEdit</span>
+    <span class="n">form_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Edit User Information&#39;</span><span class="p">)</span>
+    <span class="n">redirect_url</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;User information changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">form_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">get_user_by_id</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="c1"># fills the form generic solution</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span>  <span class="n">form</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">form_field</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="n">form_field</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">form_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">)</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">get_user_by_id</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">populate_obj</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">update_user</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">),</span> <span class="s1">&#39;info&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">UserModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s1">&#39;/users&#39;</span>
+
+    <span class="n">list_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;List Users&#39;</span><span class="p">)</span>
+    <span class="n">show_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Show User&#39;</span><span class="p">)</span>
+    <span class="n">add_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Add User&#39;</span><span class="p">)</span>
+    <span class="n">edit_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Edit User&#39;</span><span class="p">)</span>
+
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;get_full_name&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Full Name&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;first_name&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;First Name&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;last_name&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Last Name&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;User Name&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Password&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;active&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Is Active?&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;EMail&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;roles&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Role&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;last_login&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Last login&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;login_count&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Login count&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;fail_login_count&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Failed login count&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;created_on&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Created on&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;created_by&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Created by&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;changed_on&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Changed on&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;changed_by&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Changed by&#39;</span><span class="p">)}</span>
+
+    <span class="n">description_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;first_name&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Write the user first name or names&#39;</span><span class="p">),</span>
+                           <span class="s1">&#39;last_name&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Write the user last name&#39;</span><span class="p">),</span>
+                           <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span>
+                               <span class="s1">&#39;Username valid for authentication on DB or LDAP, unused for OID auth&#39;</span><span class="p">),</span>
+                           <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span>
+                               <span class="s1">&#39;Please use a good password policy, this application does not check this for you&#39;</span><span class="p">),</span>
+                           <span class="s1">&#39;active&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;It</span><span class="se">\&#39;</span><span class="s1">s not a good policy to remove a user, just make it inactive&#39;</span><span class="p">),</span>
+                           <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;The user</span><span class="se">\&#39;</span><span class="s1">s email, this will also be used for OID auth&#39;</span><span class="p">),</span>
+                           <span class="s1">&#39;roles&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span>
+                               <span class="s1">&#39;The user role on the application, this will associate with a list of permissions&#39;</span><span class="p">),</span>
+                           <span class="s1">&#39;conf_password&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Please rewrite the user</span><span class="se">\&#39;</span><span class="s1">s password to confirm&#39;</span><span class="p">)}</span>
+
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="s1">&#39;roles&#39;</span><span class="p">]</span>
+
+    <span class="n">show_fieldsets</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;User info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="s1">&#39;roles&#39;</span><span class="p">,</span> <span class="s1">&#39;login_count&#39;</span><span class="p">]}),</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Personal Info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">],</span> <span class="s1">&#39;expanded&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}),</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Audit Info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;last_login&#39;</span><span class="p">,</span> <span class="s1">&#39;fail_login_count&#39;</span><span class="p">,</span> <span class="s1">&#39;created_on&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;created_by&#39;</span><span class="p">,</span> <span class="s1">&#39;changed_on&#39;</span><span class="p">,</span> <span class="s1">&#39;changed_by&#39;</span><span class="p">],</span> <span class="s1">&#39;expanded&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">}),</span>
+    <span class="p">]</span>
+
+    <span class="n">user_show_fieldsets</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;User info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="s1">&#39;roles&#39;</span><span class="p">,</span> <span class="s1">&#39;login_count&#39;</span><span class="p">]}),</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Personal Info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">],</span> <span class="s1">&#39;expanded&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}),</span>
+    <span class="p">]</span>
+
+    <span class="n">search_exclude_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+
+    <span class="n">add_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;roles&#39;</span><span class="p">]</span>
+    <span class="n">edit_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;roles&#39;</span><span class="p">]</span>
+    <span class="n">user_info_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s2">&quot;Your user information&quot;</span><span class="p">)</span>
+
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/userinfo/&#39;</span><span class="p">)</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">userinfo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_filters</span><span class="p">)</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_show_widget</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">show_fieldsets</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_show_fieldsets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_template</span><span class="p">,</span>
+                               <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_info_title</span><span class="p">,</span>
+                               <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">,</span>
+                               <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="p">)</span>
+
+    <span class="nd">@action</span><span class="p">(</span><span class="s1">&#39;userinfoedit&#39;</span><span class="p">,</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s2">&quot;Edit User&quot;</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;fa-edit&quot;</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">userinfoedit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">userinfoeditview</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s1">&#39;.this_form_get&#39;</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">UserOIDModelView</span><span class="p">(</span><span class="n">UserModelView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View that add OID specifics to User view.</span>
+<span class="sd">        Override to implement your own custom view.</span>
+<span class="sd">        Then override useroidmodelview property on SecurityManager</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">UserLDAPModelView</span><span class="p">(</span><span class="n">UserModelView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View that add LDAP specifics to User view.</span>
+<span class="sd">        Override to implement your own custom view.</span>
+<span class="sd">        Then override userldapmodelview property on SecurityManager</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">UserOAuthModelView</span><span class="p">(</span><span class="n">UserModelView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View that add OAUTH specifics to User view.</span>
+<span class="sd">        Override to implement your own custom view.</span>
+<span class="sd">        Then override userldapmodelview property on SecurityManager</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">UserRemoteUserModelView</span><span class="p">(</span><span class="n">UserModelView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View that add REMOTE_USER specifics to User view.</span>
+<span class="sd">        Override to implement your own custom view.</span>
+<span class="sd">        Then override userldapmodelview property on SecurityManager</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">UserDBModelView</span><span class="p">(</span><span class="n">UserModelView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View that add DB specifics to User view.</span>
+<span class="sd">        Override to implement your own custom view.</span>
+<span class="sd">        Then override userdbmodelview property on SecurityManager</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">add_form_extra_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="n">PasswordField</span><span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Password&#39;</span><span class="p">),</span>
+                                                       <span class="n">description</span><span class="o">=</span><span class="n">lazy_gettext</span><span class="p">(</span>
+                                                           <span class="s1">&#39;Please use a good password policy, this application does not check this for you&#39;</span><span class="p">),</span>
+                                                       <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">validators</span><span class="o">.</span><span class="n">DataRequired</span><span class="p">()],</span>
+                                                       <span class="n">widget</span><span class="o">=</span><span class="n">BS3PasswordFieldWidget</span><span class="p">()),</span>
+                             <span class="s1">&#39;conf_password&#39;</span><span class="p">:</span> <span class="n">PasswordField</span><span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Confirm Password&#39;</span><span class="p">),</span>
+                                                            <span class="n">description</span><span class="o">=</span><span class="n">lazy_gettext</span><span class="p">(</span>
+                                                                <span class="s1">&#39;Please rewrite the user</span><span class="se">\&#39;</span><span class="s1">s password to confirm&#39;</span><span class="p">),</span>
+                                                            <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">EqualTo</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">lazy_gettext</span><span class="p">(</span>
+                                                                <span class="s1">&#39;Passwords must match&#39;</span><span class="p">))],</span>
+                                                            <span class="n">widget</span><span class="o">=</span><span class="n">BS3PasswordFieldWidget</span><span class="p">())}</span>
+
+    <span class="n">add_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;roles&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;conf_password&#39;</span><span class="p">]</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/show/&lt;pk&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;resetpasswords&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resetpasswords&#39;</span><span class="p">)</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_filters</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="p">:</span>
+            <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_show_widget</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">actions</span><span class="o">=</span><span class="n">actions</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_template</span><span class="p">,</span>
+                               <span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">,</span>
+                               <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">show_title</span><span class="p">,</span>
+                               <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">,</span>
+                               <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="p">,</span>
+                               <span class="n">related_views</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_related_views</span><span class="p">)</span>
+
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/userinfo/&#39;</span><span class="p">)</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">userinfo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;resetmypassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resetmypassword&#39;</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;userinfoedit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;userinfoedit&#39;</span><span class="p">)</span>
+
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_filters</span><span class="p">)</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_show_widget</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">actions</span><span class="o">=</span><span class="n">actions</span><span class="p">,</span> <span class="n">show_fieldsets</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_show_fieldsets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_template</span><span class="p">,</span>
+                               <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_info_title</span><span class="p">,</span>
+                               <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">,</span>
+                               <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@action</span><span class="p">(</span><span class="s1">&#39;resetmypassword&#39;</span><span class="p">,</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s2">&quot;Reset my password&quot;</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;fa-lock&quot;</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">resetmypassword</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">resetmypasswordview</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s1">&#39;.this_form_get&#39;</span><span class="p">))</span>
+
+    <span class="nd">@action</span><span class="p">(</span><span class="s1">&#39;resetpasswords&#39;</span><span class="p">,</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s2">&quot;Reset Password&quot;</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;fa-lock&quot;</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">resetpasswords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">resetpasswordview</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s1">&#39;.this_form_get&#39;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">pre_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">changed_on</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">changed_by_fk</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span>
+
+    <span class="k">def</span> <span class="nf">pre_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">generate_password_hash</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">UserStatsChartView</span><span class="p">(</span><span class="n">DirectByChartView</span><span class="p">):</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;User Statistics&#39;</span><span class="p">)</span>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;User Name&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;login_count&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Login count&#39;</span><span class="p">),</span>
+                     <span class="s1">&#39;fail_login_count&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Failed login count&#39;</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">search_columns</span> <span class="o">=</span> <span class="n">UserModelView</span><span class="o">.</span><span class="n">search_columns</span>
+
+    <span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Login Count&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;series&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;login_count&#39;</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Failed Login Count&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;series&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;fail_login_count&#39;</span><span class="p">]</span>
+        <span class="p">}</span>
+
+    <span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">RoleModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s1">&#39;/roles&#39;</span>
+
+    <span class="n">list_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;List Roles&#39;</span><span class="p">)</span>
+    <span class="n">show_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Show Role&#39;</span><span class="p">)</span>
+    <span class="n">add_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Add Role&#39;</span><span class="p">)</span>
+    <span class="n">edit_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Edit Role&#39;</span><span class="p">)</span>
+
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Name&#39;</span><span class="p">),</span> <span class="s1">&#39;permissions&#39;</span><span class="p">:</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Permissions&#39;</span><span class="p">)}</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;permissions&#39;</span><span class="p">]</span>
+    <span class="n">order_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+    
+    <span class="nd">@action</span><span class="p">(</span><span class="s2">&quot;Copy Role&quot;</span><span class="p">,</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Copy Role&#39;</span><span class="p">),</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Copy the selected roles?&#39;</span><span class="p">),</span> <span class="n">icon</span><span class="o">=</span><span class="s1">&#39;fa-copy&#39;</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">copy_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="n">new_role</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">__class__</span><span class="p">()</span>
+            <span class="n">new_role</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">new_role</span><span class="o">.</span><span class="n">permissions</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">permissions</span>
+            <span class="n">new_role</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">new_role</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; copy&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_role</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span>
+
+
+<span class="k">class</span> <span class="nc">RegisterUserModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s1">&#39;/registeruser&#39;</span>
+    <span class="n">base_permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;can_list&#39;</span><span class="p">,</span> <span class="s1">&#39;can_show&#39;</span><span class="p">,</span> <span class="s1">&#39;can_delete&#39;</span><span class="p">]</span>
+    <span class="n">list_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;List of Registration Requests&#39;</span><span class="p">)</span>
+    <span class="n">show_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Show Registration&#39;</span><span class="p">)</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">,</span><span class="s1">&#39;registration_date&#39;</span><span class="p">,</span><span class="s1">&#39;email&#39;</span><span class="p">]</span>
+    <span class="n">show_exclude_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+    <span class="n">search_exclude_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">AuthView</span><span class="p">(</span><span class="n">BaseView</span><span class="p">):</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">login_template</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="n">invalid_login_message</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Invalid login. Please try again.&#39;</span><span class="p">)</span>
+
+    <span class="n">title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Sign In&#39;</span><span class="p">)</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/login/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/logout/&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">logout_user</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_index</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">AuthDBView</span><span class="p">(</span><span class="n">AuthView</span><span class="p">):</span>
+    <span class="n">login_template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/security/login_db.html&#39;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/login/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">LoginForm_db</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">auth_user_db</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">password</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
+                <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invalid_login_message</span><span class="p">),</span> <span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_login</span><span class="p">)</span>
+            <span class="n">login_user</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">remember</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">login_template</span><span class="p">,</span>
+                               <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+                               <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span>
+                               <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">AuthLDAPView</span><span class="p">(</span><span class="n">AuthView</span><span class="p">):</span>
+    <span class="n">login_template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/security/login_ldap.html&#39;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/login/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_index</span><span class="p">)</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">LoginForm_db</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">auth_user_ldap</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">password</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
+                <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invalid_login_message</span><span class="p">),</span> <span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_login</span><span class="p">)</span>
+            <span class="n">login_user</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">remember</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">login_template</span><span class="p">,</span>
+                               <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+                               <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span>
+                               <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="p">)</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For Future Use, API Auth, must check howto keep REST stateless</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    @expose_api(name=&#39;auth&#39;,url=&#39;/api/auth&#39;)</span>
+<span class="sd">    def auth(self):</span>
+<span class="sd">        if g.user is not None and g.user.is_authenticated():</span>
+<span class="sd">            http_return_code = 401</span>
+<span class="sd">            response = make_response(jsonify({&#39;message&#39;: &#39;Login Failed already authenticated&#39;,</span>
+<span class="sd">                                              &#39;severity&#39;: &#39;critical&#39;}), http_return_code)</span>
+<span class="sd">        username = str(request.args.get(&#39;username&#39;))</span>
+<span class="sd">        password = str(request.args.get(&#39;password&#39;))</span>
+<span class="sd">        user = self.appbuilder.sm.auth_user_ldap(username, password)</span>
+<span class="sd">        if not user:</span>
+<span class="sd">            http_return_code = 401</span>
+<span class="sd">            response = make_response(jsonify({&#39;message&#39;: &#39;Login Failed&#39;,</span>
+<span class="sd">                                              &#39;severity&#39;: &#39;critical&#39;}), http_return_code)            </span>
+<span class="sd">        else:</span>
+<span class="sd">            login_user(user, remember=False)</span>
+<span class="sd">            http_return_code = 201</span>
+<span class="sd">            response = make_response(jsonify({&#39;message&#39;: &#39;Login Success&#39;,</span>
+<span class="sd">                                              &#39;severity&#39;: &#39;info&#39;}), http_return_code)            </span>
+<span class="sd">        </span>
+<span class="sd">        return response     </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">AuthOIDView</span><span class="p">(</span><span class="n">AuthView</span><span class="p">):</span>
+    <span class="n">login_template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/security/login_oid.html&#39;</span>
+    <span class="n">oid_ask_for</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span>
+    <span class="n">oid_ask_for_optional</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AuthOIDView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/login/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flag</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="nd">@self.appbuilder.sm.oid.loginhandler</span>
+        <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_index</span><span class="p">)</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="n">LoginForm_oid</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+                <span class="n">session</span><span class="p">[</span><span class="s1">&#39;remember_me&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">remember_me</span><span class="o">.</span><span class="n">data</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">oid</span><span class="o">.</span><span class="n">try_login</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">openid</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ask_for</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">oid_ask_for</span><span class="p">,</span>
+                                                        <span class="n">ask_for_optional</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">oid_ask_for_optional</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">login_template</span><span class="p">,</span>
+                                   <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+                                   <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span>
+                                   <span class="n">providers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">openid_providers</span><span class="p">,</span>
+                                   <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span>
+            <span class="p">)</span>
+
+        <span class="nd">@self.appbuilder.sm.oid.after_login</span>
+        <span class="k">def</span> <span class="nf">after_login</span><span class="p">(</span><span class="n">resp</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">email</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">resp</span><span class="o">.</span><span class="n">email</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invalid_login_message</span><span class="p">),</span> <span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">auth_user_oid</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invalid_login_message</span><span class="p">),</span> <span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)</span>
+            <span class="n">remember_me</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="s1">&#39;remember_me&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+                <span class="n">remember_me</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;remember_me&#39;</span><span class="p">]</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;remember_me&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+            <span class="n">login_user</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">remember</span><span class="o">=</span><span class="n">remember_me</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_index</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">login_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">AuthOAuthView</span><span class="p">(</span><span class="n">AuthView</span><span class="p">):</span>
+    <span class="n">login_template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/security/login_oauth.html&#39;</span>
+    
+    
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/login/&#39;</span><span class="p">)</span>
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/login/&lt;provider&gt;&#39;</span><span class="p">)</span>
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/login/&lt;provider&gt;/&lt;register&gt;&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provider</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">register</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Provider: {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">provider</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Already authenticated {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">provider</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">login_template</span><span class="p">,</span>
+                               <span class="n">providers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">oauth_providers</span><span class="p">,</span>
+                               <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+                               <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Going to call authorize for: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">provider</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">register</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Login to Register&#39;</span><span class="p">)</span>
+                    <span class="n">session</span><span class="p">[</span><span class="s1">&#39;register&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">oauth_remotes</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;.oauth_authorized&#39;</span><span class="p">,</span><span class="n">provider</span><span class="o">=</span><span class="n">provider</span><span class="p">,</span> <span class="n">_external</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error on OAuth authorize: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invalid_login_message</span><span class="p">),</span> <span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_index</span><span class="p">)</span>
+            
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/oauth-authorized/&lt;provider&gt;&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">oauth_authorized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provider</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Authorized init&quot;</span><span class="p">)</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">oauth_remotes</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">authorized_response</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">resp</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">u&#39;You denied the request to sign in.&#39;</span><span class="p">,</span> <span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;OAUTH Authorized resp: {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>
+        <span class="c1"># Retrieves specific user info from the provider</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">set_oauth_session</span><span class="p">(</span><span class="n">provider</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+            <span class="n">userinfo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">oauth_user_info</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;User info retrieved from {0}: {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">provider</span><span class="p">,</span> <span class="n">userinfo</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error returning OAuth user info: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="c1"># Is this Authorization to register a new user ?</span>
+        <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;register&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">registeruseroauthview</span><span class="o">.</span><span class="n">get_default_url</span><span class="p">(</span><span class="o">**</span><span class="n">userinfo</span><span class="p">))</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">auth_user_oauth</span><span class="p">(</span><span class="n">userinfo</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invalid_login_message</span><span class="p">),</span> <span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">login_user</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_index</span><span class="p">)</span>
+        
+        
+<span class="k">class</span> <span class="nc">AuthRemoteUserView</span><span class="p">(</span><span class="n">AuthView</span><span class="p">):</span>
+    <span class="n">login_template</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/login/&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;REMOTE_USER&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">username</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">auth_user_remote_user</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invalid_login_message</span><span class="p">),</span> <span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">login_user</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invalid_login_message</span><span class="p">),</span> <span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_index</span><span class="p">)</span>
+
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>flask_appbuilder.security.registerviews &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.6.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+  
+  <a href="https://github.com/dpgaspar/Flask-AppBuilder"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
+
+
+  <div id="navbar" class="navbar  navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          Flask-AppBuilder</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../diagrams.html">Diagrams</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fabmanager.html">Command Line Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../config.html">Base Configuration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../views.html">Base Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickhowto.html">Model Views (Quick How to)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickhowto_mongo.html">Model Views on MongoDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickcharts.html">Chart Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickfiles.html">Model Views with Files and Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickminimal.html">Quick Minimal Application</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../relations.html">Model Relations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../customizing.html">Customizing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../templates.html">Templates</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../addons.html">AddOn development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generic_datasource.html">Generic Data Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../multipledbs.html">Multiple Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../i18n.html">i18n Translations</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_registration.html">User Registration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../versionmigration.html">Version Migration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../versions.html">Versions</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <h1>Source code for flask_appbuilder.security.registerviews</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;dpgaspar&#39;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">werkzeug.security</span> <span class="kn">import</span> <span class="n">generate_password_hash</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">flash</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">request</span>
+<span class="kn">from</span> <span class="nn">openid.consumer.consumer</span> <span class="kn">import</span> <span class="n">Consumer</span><span class="p">,</span> <span class="n">SUCCESS</span><span class="p">,</span> <span class="n">CANCEL</span>
+
+<span class="kn">from</span> <span class="nn">flask_openid</span> <span class="kn">import</span> <span class="n">SessionWrapper</span><span class="p">,</span> <span class="n">OpenIDResponse</span>
+<span class="kn">from</span> <span class="nn">..views</span> <span class="kn">import</span> <span class="n">expose</span><span class="p">,</span> <span class="n">PublicFormView</span>
+<span class="kn">from</span> <span class="nn">flask_babelpkg</span> <span class="kn">import</span> <span class="n">lazy_gettext</span>
+<span class="c1">#from .models import User, RegisterUser</span>
+<span class="kn">from</span> <span class="nn">.forms</span> <span class="kn">import</span> <span class="n">RegisterUserOIDForm</span><span class="p">,</span> <span class="n">RegisterUserDBForm</span><span class="p">,</span> <span class="n">LoginForm_oid</span>
+<span class="kn">from</span> <span class="nn">..models.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+<span class="kn">from</span> <span class="nn">..validators</span> <span class="kn">import</span> <span class="n">Unique</span>
+<span class="kn">from</span> <span class="nn">.._compat</span> <span class="kn">import</span> <span class="n">as_unicode</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">const</span> <span class="k">as</span> <span class="n">c</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_first_last_name</span><span class="p">(</span><span class="n">fullname</span><span class="p">):</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">fullname</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="k">elif</span> <span class="n">names</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="BaseRegisterUser"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseRegisterUser">[docs]</a><span class="k">class</span> <span class="nc">BaseRegisterUser</span><span class="p">(</span><span class="n">PublicFormView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make your own user registration view and inherit from this class if you</span>
+<span class="sd">        want to implement a completely different registration process. If not,</span>
+<span class="sd">        just inherit from RegisterUserDBView or RegisterUserOIDView depending on</span>
+<span class="sd">        your authentication method.</span>
+<span class="sd">        then override SecurityManager property that defines the class to use::</span>
+
+<span class="sd">            from flask.ext.appbuilder.security.registerviews import RegisterUserDBView</span>
+
+<span class="sd">            class MyRegisterUserDBView(BaseRegisterUser):</span>
+<span class="sd">                email_template = &#39;register_mail.html&#39;</span>
+<span class="sd">                ...</span>
+
+
+<span class="sd">            class MySecurityManager(SecurityManager):</span>
+<span class="sd">               registeruserdbview = MyRegisterUserDBView</span>
+
+<span class="sd">        When instantiating AppBuilder set your own SecurityManager class::</span>
+
+<span class="sd">            appbuilder = AppBuilder(app, db.session, security_manager_class=MySecurityManager)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s1">&#39;/register&#39;</span>
+    <span class="n">email_template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/security/register_mail.html&#39;</span>
+    <span class="sd">&quot;&quot;&quot; The template used to generate the email sent to the user &quot;&quot;&quot;</span>
+    <span class="n">email_subject</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Account activation&#39;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot; The email subject sent to the user &quot;&quot;&quot;</span>
+    <span class="n">activation_template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/security/activation.html&#39;</span>
+    <span class="sd">&quot;&quot;&quot; The activation template, shown when the user is activated &quot;&quot;&quot;</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Registration sent to your email&#39;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot; The message shown on a successful registration &quot;&quot;&quot;</span>
+    <span class="n">error_message</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Not possible to register you at the moment, try again later&#39;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot; The message shown on an unsuccessful registration &quot;&quot;&quot;</span>
+    <span class="n">false_error_message</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Registration not found&#39;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot; The message shown on an unsuccessful registration &quot;&quot;&quot;</span>
+    <span class="n">form_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Fill out the registration form&#39;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot; The form title &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BaseRegisterUser.send_email"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseRegisterUser.send_email">[docs]</a>    <span class="k">def</span> <span class="nf">send_email</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">register_user</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Method for sending the registration Email to the user</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">flask_mail</span> <span class="kn">import</span> <span class="n">Mail</span><span class="p">,</span> <span class="n">Message</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Install Flask-Mail to use User registration&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="n">mail</span> <span class="o">=</span> <span class="n">Mail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">()</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_subject</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;.activation&#39;</span><span class="p">,</span> <span class="n">_external</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">activation_hash</span><span class="o">=</span><span class="n">register_user</span><span class="o">.</span><span class="n">registration_hash</span><span class="p">)</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">html</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">email_template</span><span class="p">,</span>
+                                   <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
+                                   <span class="n">username</span><span class="o">=</span><span class="n">register_user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                                   <span class="n">first_name</span><span class="o">=</span><span class="n">register_user</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span>
+                                   <span class="n">last_name</span><span class="o">=</span><span class="n">register_user</span><span class="o">.</span><span class="n">last_name</span><span class="p">)</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">recipients</span> <span class="o">=</span> <span class="p">[</span><span class="n">register_user</span><span class="o">.</span><span class="n">email</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mail</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Send email exception: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="BaseRegisterUser.add_registration"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseRegisterUser.add_registration">[docs]</a>    <span class="k">def</span> <span class="nf">add_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Add a registration request for the user.</span>
+
+<span class="sd">        :rtype : RegisterUser</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">register_user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">add_register_user</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">register_user</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_email</span><span class="p">(</span><span class="n">register_user</span><span class="p">):</span>
+                <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">),</span> <span class="s1">&#39;info&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">register_user</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error_message</span><span class="p">),</span> <span class="s1">&#39;danger&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">del_register_user</span><span class="p">(</span><span class="n">register_user</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">None</span></div>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/activation/&lt;string:activation_hash&gt;&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="BaseRegisterUser.activation"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseRegisterUser.activation">[docs]</a>    <span class="k">def</span> <span class="nf">activation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">activation_hash</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Endpoint to expose an activation url, this url</span>
+<span class="sd">            is sent to the user by email, when accessed the user is inserted</span>
+<span class="sd">            and activated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">find_register_user</span><span class="p">(</span><span class="n">activation_hash</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">reg</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">LOGMSG_ERR_SEC_NO_REGISTER_HASH</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">activation_hash</span><span class="p">))</span>
+            <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">false_error_message</span><span class="p">),</span> <span class="s1">&#39;danger&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">add_user</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">reg</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                                               <span class="n">email</span><span class="o">=</span><span class="n">reg</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
+                                               <span class="n">first_name</span><span class="o">=</span><span class="n">reg</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span>
+                                               <span class="n">last_name</span><span class="o">=</span><span class="n">reg</span><span class="o">.</span><span class="n">last_name</span><span class="p">,</span>
+                                               <span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">find_role</span><span class="p">(</span>
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">auth_user_registration_role</span><span class="p">),</span>
+                                               <span class="n">hashed_password</span><span class="o">=</span><span class="n">reg</span><span class="o">.</span><span class="n">password</span><span class="p">):</span>
+            <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error_message</span><span class="p">),</span> <span class="s1">&#39;danger&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_index</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">del_register_user</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">activation_template</span><span class="p">,</span>
+                               <span class="n">username</span><span class="o">=</span><span class="n">reg</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                               <span class="n">first_name</span><span class="o">=</span><span class="n">reg</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span>
+                               <span class="n">last_name</span><span class="o">=</span><span class="n">reg</span><span class="o">.</span><span class="n">last_name</span><span class="p">,</span>
+                               <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">add_form_unique_validations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="n">datamodel_user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">get_user_datamodel</span>
+        <span class="n">datamodel_register_user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">get_register_user_datamodel</span>        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">validators</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">validators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Unique</span><span class="p">(</span><span class="n">datamodel_user</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">))</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">validators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Unique</span><span class="p">(</span><span class="n">datamodel_register_user</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">validators</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">validators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Unique</span><span class="p">(</span><span class="n">datamodel_user</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">))</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">validators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Unique</span><span class="p">(</span><span class="n">datamodel_register_user</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">))</span></div>
+
+
+<span class="k">class</span> <span class="nc">RegisterUserDBView</span><span class="p">(</span><span class="n">BaseRegisterUser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View for Registering a new user, auth db mode</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">RegisterUserDBForm</span>
+    <span class="sd">&quot;&quot;&quot; The WTForm form presented to the user to register himself &quot;&quot;&quot;</span>
+    <span class="n">redirect_url</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span>
+
+    <span class="k">def</span> <span class="nf">form_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_form_unique_validations</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">form_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_form_unique_validations</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_registration</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                                              <span class="n">first_name</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">first_name</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                                              <span class="n">last_name</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">last_name</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                                              <span class="n">email</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                                              <span class="n">password</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">password</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">RegisterUserOIDView</span><span class="p">(</span><span class="n">BaseRegisterUser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View for Registering a new user, auth OID mode</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s1">&#39;/register&#39;</span>
+
+    <span class="n">form</span> <span class="o">=</span> <span class="n">RegisterUserOIDForm</span>
+    <span class="n">default_view</span> <span class="o">=</span> <span class="s1">&#39;form_oid_post&#39;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s2">&quot;/formoidone&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">form_oid_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flag</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">flag</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">oid_login_handler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">form_oid_post</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">oid</span><span class="p">)</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">LoginForm_oid</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+            <span class="n">session</span><span class="p">[</span><span class="s1">&#39;remember_me&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">remember_me</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">oid</span><span class="o">.</span><span class="n">try_login</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">openid</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ask_for</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;fullname&#39;</span><span class="p">])</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;oid_resp&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_init_vars</span><span class="p">()</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">form_get</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">email</span>
+            <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span> <span class="o">=</span> <span class="n">get_first_last_name</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">fullname</span><span class="p">)</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">first_name</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">first_name</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">last_name</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">last_name</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">email</span>
+            <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edit_widget</span><span class="p">(</span><span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+            <span class="c1">#self.update_redirect()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">form_template</span><span class="p">,</span>
+                                   <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">form_title</span><span class="p">,</span>
+                                   <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">,</span>
+                                   <span class="n">form_action</span><span class="o">=</span><span class="s1">&#39;form&#39;</span><span class="p">,</span>
+                                   <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error_message</span><span class="p">),</span> <span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">oid_login_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">oid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Hackish method to make use of oid.login_handler decorator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;openid_complete&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">u&#39;yes&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">consumer</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span><span class="n">SessionWrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">oid</span><span class="o">.</span><span class="n">store_factory</span><span class="p">())</span>
+        <span class="n">openid_response</span> <span class="o">=</span> <span class="n">consumer</span><span class="o">.</span><span class="n">complete</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+                                            <span class="n">oid</span><span class="o">.</span><span class="n">get_current_url</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">openid_response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">SUCCESS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">after_login</span><span class="p">(</span><span class="n">OpenIDResponse</span><span class="p">(</span><span class="n">openid_response</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="k">elif</span> <span class="n">openid_response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">CANCEL</span><span class="p">:</span>
+            <span class="n">oid</span><span class="o">.</span><span class="n">signal_error</span><span class="p">(</span><span class="s1">u&#39;The request was cancelled&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">oid</span><span class="o">.</span><span class="n">get_current_url</span><span class="p">())</span>
+        <span class="n">oid</span><span class="o">.</span><span class="n">signal_error</span><span class="p">(</span><span class="s1">u&#39;OpenID authentication error&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">oid</span><span class="o">.</span><span class="n">get_current_url</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">after_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Method that adds the return OpenID response object on the session</span>
+<span class="sd">            this session key will be deleted</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">session</span><span class="p">[</span><span class="s1">&#39;oid_resp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resp</span>
+
+    <span class="k">def</span> <span class="nf">form_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_form_unique_validations</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">form_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_registration</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                                              <span class="n">first_name</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">first_name</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                                              <span class="n">last_name</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">last_name</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                                              <span class="n">email</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">RegisterUserOAuthView</span><span class="p">(</span><span class="n">BaseRegisterUser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View for Registering a new user, auth OID mode</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">RegisterUserOIDForm</span>
+    
+    <span class="k">def</span> <span class="nf">form_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_form_unique_validations</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+        <span class="c1"># fills the register form with the collected data from OAuth</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">first_name</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">last_name</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">form_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Adding Registration&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_registration</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                                              <span class="n">first_name</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">first_name</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                                              <span class="n">last_name</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">last_name</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                                              <span class="n">email</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    
+        
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

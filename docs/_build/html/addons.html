@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>AddOn development &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.6.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="index.html" />
+    <link rel="next" title="Generic Data Sources" href="generic_datasource.html" />
+    <link rel="prev" title="Templates" href="templates.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+  
+  <a href="https://github.com/dpgaspar/Flask-AppBuilder"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
+
+
+  <div id="navbar" class="navbar  navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          Flask-AppBuilder</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="diagrams.html">Diagrams</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fabmanager.html">Command Line Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Base Configuration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="views.html">Base Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickhowto.html">Model Views (Quick How to)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickhowto_mongo.html">Model Views on MongoDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickcharts.html">Chart Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickfiles.html">Model Views with Files and Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickminimal.html">Quick Minimal Application</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="relations.html">Model Relations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customizing.html">Customizing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Templates</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">AddOn development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic_datasource.html">Generic Data Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipledbs.html">Multiple Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="i18n.html">i18n Translations</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_registration.html">User Registration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versionmigration.html">Version Migration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">AddOn development</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="templates.html" title="Previous Chapter: Templates"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Templates</span>
+    </a>
+  </li>
+  <li>
+    <a href="generic_datasource.html" title="Next Chapter: Generic Data Sources"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Generic Data ... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="addon-development">
+<h1>AddOn development<a class="headerlink" href="#addon-development" title="Permalink to this headline">¶</a></h1>
+<p>Using AddOn&#8217;s with the framework it a great way to develop your application
+and make public openSource contributions to the community.</p>
+<p>With it you can use a more modular design on your application, you can add functionality,
+views and models that you can build independently and install or uninstall (using different versions).</p>
+<p>To start building your own AddOn&#8217;s you can use issue the following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ fabmanager create-addon --name first
+</pre></div>
+</div>
+<p>Your addon name will be prefixed by &#8216;<a href="#id1"><span class="problematic" id="id2">fab_addon_</span></a>&#8216; so this addon would be called <strong>fab_addon_first</strong>.
+The create-addon will download a default skeleton addon for you to start more easily to code (much like the create-app
+command).</p>
+<p>The structure of the default base addon:</p>
+<ul>
+<li><dl class="first docutils">
+<dt>&lt;fab_addon_first&gt;</dt>
+<dd><ul class="first last">
+<li><p class="first">setup.py: Setup installer use it to install your addon, or upload it to Pypi when your ready to release.</p>
+</li>
+<li><p class="first">config.py: Used internaly by setup.py, this will make your setup more generic.</p>
+</li>
+<li><dl class="first docutils">
+<dt>&lt;fab_addon_first&gt;</dt>
+<dd><ul class="first last simple">
+<li>__init__.py: empty</li>
+<li>models.py: Declare your addon&#8217;s models (if any) just like on a normal app.</li>
+<li>views.py: Declare your addon&#8217;s views but don&#8217;t register them here.</li>
+<li>manager.py: This is where your addon manager will reside, It&#8217;s your manager that will be imported by appbuilder.</li>
+<li>version.py: Declare your addon version here, write your name (author), a small description and your email.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Your can use your addon much like a regular F.A.B. app, just don&#8217;t instantiate anything (appbuilder, flask, SQLAlchemy etc...)
+notice, __init__.py module is empty. So if you or anyone (if you upload your addon to pypi or make it public somewhere
+like github) want to use your addon they just have to install it and declare it using the ADDON_MANAGERS key, this
+key is a list of addon manager&#8217;s.</p>
+<p>So what is a manager? Manager is a class you declare that subclasses appbuilder BaseManager, and you have 4 important
+methods you can override, there are:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">__init__(self, appbuilder):</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Manager&#8217;s constructor. Good place to check for your addon&#8217;s specific keys. For custom configuration</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">register_views(self):</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Use it to register all your views and setup a menu for them (if you want to).</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">pre_processs:</th><td class="field-body">Will be called before register_views. Good place to insert data into your models for example.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">post_process:</th><td class="field-body">Will be called after register_views.</td>
+</tr>
+</tbody>
+</table>
+<p>A very simple manager would look something like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.basemanager</span> <span class="k">import</span> <span class="n">BaseManager</span>
+<span class="kn">from</span> <span class="nn">flask_babelpkg</span> <span class="k">import</span> <span class="n">lazy_gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">.views</span> <span class="k">import</span> <span class="n">FirstModelView1</span>
+<span class="kn">from</span> <span class="nn">.model</span> <span class="k">import</span> <span class="n">MyModel</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">FirstAddOnManager</span><span class="p">(</span><span class="n">BaseManager</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">appbuilder</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">             Use the constructor to setup any config keys specific for your app.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FirstAddOnManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">appbuilder</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">register_views</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            This method is called by AppBuilder when initializing, use it to add you views</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">FirstModelView1</span><span class="p">,</span> <span class="s2">&quot;First View1&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s2">&quot;fa-user&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;First AddOn&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pre_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stuff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;something&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="c1"># process stuff</span>
+
+    <span class="k">def</span> <span class="nf">post_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>How can you or someone use your AddOn? On the app config.py add this key:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ADDON_MANAGERS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;fab_addon_first.manager.FirstAddOnManager&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>And thats it.</p>
+<p>I&#8217;ve just added a simple audit modelViews&#8217;s addon to start contributions and to serve as an example.</p>
+<p>you can install it using:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install fab_addon_audit
+</pre></div>
+</div>
+<p>The source code is pretty simple, use it as an example to write your own:</p>
+<p><a class="reference external" href="https://github.com/dpgaspar/fab_addon_audit">https://github.com/dpgaspar/fab_addon_audit</a></p>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

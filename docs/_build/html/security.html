@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
@@ -9,13 +9,13 @@
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.0',
+        VERSION:     '1.6.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="User Registration" href="user_registration.html" />
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.6.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -110,7 +110,7 @@
 <li class="toctree-l1"><a class="reference internal" href="i18n.html">i18n Translations</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">Security</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Security</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_registration.html">User Registration</a></li>
 </ul>
 <ul>
@@ -184,7 +184,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 content">
       
   <div class="section" id="security">
 <h1>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h1>
@@ -209,13 +209,13 @@ is configured to use kerberos, no need for the user to login with username and p
 </tr>
 </tbody>
 </table>
-<p>Configure the authentication type on config.py, take a look at <a class="reference internal" href="config.html"><em>Base Configuration</em></a></p>
+<p>Configure the authentication type on config.py, take a look at <a class="reference internal" href="config.html"><span class="doc">Base Configuration</span></a></p>
 <p>The session is preserved and encrypted using Flask-Login, OpenID requires Flask-OpenID.</p>
 </div>
 <div class="section" id="role-based">
 <h2>Role based<a class="headerlink" href="#role-based" title="Permalink to this headline">¶</a></h2>
 <p>Each user has multiple roles, and a role holds permissions on views and menus, so a user has permissions on views and menus.</p>
-<p>There are two special roles, you can define their names on the <a class="reference internal" href="config.html"><em>Base Configuration</em></a></p>
+<p>There are two special roles, you can define their names on the <a class="reference internal" href="config.html"><span class="doc">Base Configuration</span></a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -255,13 +255,13 @@ is configured to use kerberos, no need for the user to login with username and p
 </ul>
 <p>If you extend your view with some exposed method via the &#64;expose decorator and you want to protect it
 use the &#64;has_access decorator:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterdace</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
 
     <span class="nd">@has_access</span>
-    <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/mymethod/&#39;</span><span class="p">)</span>
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/mymethod/&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">mymethod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c"># do something</span>
+        <span class="c1"># do something</span>
         <span class="k">pass</span>
 </pre></div>
 </div>
@@ -272,7 +272,7 @@ use the &#64;has_access decorator:</p>
 <p>You can aggregate some of your method&#8217;s on a single permission, this can simplify the security configuration
 if there is no need for granular permissions on a group of methods, for this use &#64;permission_name decorator.</p>
 <p>You can use the &#64;permission_name to override the permission&#8217;s name to whatever you like.</p>
-<p>Take a look at <a class="reference internal" href="api.html"><em>API Reference</em></a></p>
+<p>Take a look at <a class="reference internal" href="api.html"><span class="doc">API Reference</span></a></p>
 </div>
 <div class="section" id="automatic-cleanup">
 <h2>Automatic Cleanup<a class="headerlink" href="#automatic-cleanup" title="Permalink to this headline">¶</a></h2>
@@ -284,11 +284,11 @@ names on the security models, basically <em>garbage</em>. To clean them, use the
 associated permissions to menus and views are exactly what exists on your app. It will prevent orphaned permission names
 and associations.</p>
 <p>Use the cleanup after you have registered all your views.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupModelView</span><span class="p">,</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactModelView</span><span class="p">,</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_separator</span><span class="p">(</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactChartView</span><span class="p">,</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactTimeChartView</span><span class="p">,</span> <span class="s">&quot;Contacts Birth Chart&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupModelView</span><span class="p">,</span> <span class="s2">&quot;List Groups&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactModelView</span><span class="p">,</span> <span class="s2">&quot;List Contacts&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_separator</span><span class="p">(</span><span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactChartView</span><span class="p">,</span> <span class="s2">&quot;Contacts Chart&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactTimeChartView</span><span class="p">,</span> <span class="s2">&quot;Contacts Birth Chart&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
 
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">security_cleanup</span><span class="p">()</span>
 </pre></div>
@@ -304,14 +304,14 @@ On the show detail for each user you can check who created the user and when and
 <p>You can check also, a total login count (successful login), and the last failed logins
 (these are reset if a successful login occurred).</p>
 <p>If your using SQLAlchemy you can mix auditing to your models in a simple way. Mix AuditMixin class to your models:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.models.mixins</span> <span class="kn">import</span> <span class="n">AuditMixin</span>
-<span class="kn">from</span> <span class="nn">flask_appbuilder</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask_appbuilder.models.mixins</span> <span class="k">import</span> <span class="n">AuditMixin</span>
+<span class="kn">from</span> <span class="nn">flask_appbuilder</span> <span class="k">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="k">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
 
 
 <span class="k">class</span> <span class="nc">Project</span><span class="p">(</span><span class="n">AuditMixin</span><span class="p">,</span> <span class="n">Model</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This will add the following columns to your model:</p>
@@ -323,10 +323,10 @@ On the show detail for each user you can check who created the user and when and
 </ul>
 <p>These columns will be automatically updated by the framework upon creation or update of records. So you should
 exclude them from add and edit form. Using our example you will define our view like this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ProjectModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ProjectModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Project</span><span class="p">)</span>
-    <span class="n">add_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
-    <span class="n">edit_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+    <span class="n">add_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+    <span class="n">edit_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -336,7 +336,7 @@ exclude them from add and edit form. Using our example you will define our view 
 The framework as 5 authentication methods and you choose one of them, you configure the method to be used
 on the <strong>config.py</strong> (when using the create-app, or following the propused app structure). First the
 configuration imports the constants for the authentication methods:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.security.manager</span> <span class="kn">import</span> <span class="n">AUTH_OID</span><span class="p">,</span> \
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask_appbuilder.security.manager</span> <span class="k">import</span> <span class="n">AUTH_OID</span><span class="p">,</span> \
                                           <span class="n">AUTH_REMOTE_USER</span><span class="p">,</span> \
                                           <span class="n">AUTH_DB</span><span class="p">,</span> <span class="n">AUTH_LDAP</span><span class="p">,</span> \
                                           <span class="n">AUTH_OAUTH</span><span class="p">,</span> \
@@ -344,17 +344,17 @@ configuration imports the constants for the authentication methods:</p>
 </pre></div>
 </div>
 <p>Next you will use the <strong>AUTH_TYPE</strong> key to choose the type:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_DB</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_DB</span>
 </pre></div>
 </div>
 <p>Additionally you can customize the name of the builtin roles for Admin and Public accesses:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_ROLE_ADMIN</span> <span class="o">=</span> <span class="s">&#39;My Admin Role Name&#39;</span>
-<span class="n">AUTH_ROLE_PUBLIC</span> <span class="o">=</span> <span class="s">&#39;My Public Role Name&#39;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">AUTH_ROLE_ADMIN</span> <span class="o">=</span> <span class="s1">&#39;My Admin Role Name&#39;</span>
+<span class="n">AUTH_ROLE_PUBLIC</span> <span class="o">=</span> <span class="s1">&#39;My Public Role Name&#39;</span>
 </pre></div>
 </div>
 <p>Finally you can allow users to self register (take a look at the following chapters for further detail):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_USER_REGISTRATION</span> <span class="o">=</span> <span class="bp">True</span>
-<span class="n">AUTH_USER_REGISTRATION_ROLE</span> <span class="o">=</span> <span class="s">&quot;My Public Role Name&quot;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">AUTH_USER_REGISTRATION</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">AUTH_USER_REGISTRATION_ROLE</span> <span class="o">=</span> <span class="s2">&quot;My Public Role Name&quot;</span>
 </pre></div>
 </div>
 <p>These settings can apply to all the authentication methods. When you create your first admin user
@@ -372,12 +372,12 @@ username and hashed password field kept on your database.</p>
 <h2>Authentication: OpenID<a class="headerlink" href="#authentication-openid" title="Permalink to this headline">¶</a></h2>
 <p>This authentication method uses <a class="reference external" href="https://github.com/mitsuhiko/flask-openid">Flask-OpenID</a>. All configuration is done
 on <strong>config.py</strong> using OPENID_PROVIDERS key, just add or remove from the list the providers you want to enable:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_OID</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_OID</span>
 <span class="n">OPENID_PROVIDERS</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Yahoo&#39;</span><span class="p">,</span> <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="s">&#39;https://me.yahoo.com&#39;</span> <span class="p">},</span>
-    <span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;AOL&#39;</span><span class="p">,</span> <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="s">&#39;http://openid.aol.com/&lt;username&gt;&#39;</span> <span class="p">},</span>
-    <span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Flickr&#39;</span><span class="p">,</span> <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="s">&#39;http://www.flickr.com/&lt;username&gt;&#39;</span> <span class="p">},</span>
-    <span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;MyOpenID&#39;</span><span class="p">,</span> <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="s">&#39;https://www.myopenid.com&#39;</span> <span class="p">}]</span>
+    <span class="p">{</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Yahoo&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://me.yahoo.com&#39;</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;AOL&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://openid.aol.com/&lt;username&gt;&#39;</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Flickr&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.flickr.com/&lt;username&gt;&#39;</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;MyOpenID&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://www.myopenid.com&#39;</span> <span class="p">}]</span>
 </pre></div>
 </div>
 <p>Each list entry is a dict with a readable OpenID name and it&#8217;s url, if the url needs an username just add it using &lt;username&gt;.
@@ -388,33 +388,33 @@ The login template for this method will provide a text box for the user to fillo
 <h2>Authentication: LDAP<a class="headerlink" href="#authentication-ldap" title="Permalink to this headline">¶</a></h2>
 <p>This method will authenticate the user&#8217;s credentials against an LDAP server. Using this method without self user registration
 is very simple, for MSFT AD just define the LDAP server:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_LDAP</span>
-<span class="n">AUTH_LDAP_SERVER</span> <span class="o">=</span> <span class="s">&quot;ldap://ldapserver.local&quot;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_LDAP</span>
+<span class="n">AUTH_LDAP_SERVER</span> <span class="o">=</span> <span class="s2">&quot;ldap://ldapserver.local&quot;</span>
 </pre></div>
 </div>
 <p>For OpenLDAP or if you need/want to bind first with a query LDAP user,
 then using username to search the LDAP server and binding to it (using the user provided password):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_LDAP</span>
-<span class="n">AUTH_LDAP_SERVER</span> <span class="o">=</span> <span class="s">&quot;ldap://ldapserver.local&quot;</span>
-<span class="n">AUTH_LDAP_SEARCH</span> <span class="o">=</span> <span class="s">&quot;dc=domain,dc=local&quot;</span>
-<span class="n">AUTH_LDAP_BIND_USER</span> <span class="o">=</span> <span class="s">&quot;CN=Query User,OU=People,dc=domain,dc=local&quot;</span>
-<span class="n">AUTH_LDAP_BIND_PASSWORD</span> <span class="o">=</span> <span class="s">&quot;password&quot;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_LDAP</span>
+<span class="n">AUTH_LDAP_SERVER</span> <span class="o">=</span> <span class="s2">&quot;ldap://ldapserver.local&quot;</span>
+<span class="n">AUTH_LDAP_SEARCH</span> <span class="o">=</span> <span class="s2">&quot;dc=domain,dc=local&quot;</span>
+<span class="n">AUTH_LDAP_BIND_USER</span> <span class="o">=</span> <span class="s2">&quot;CN=Query User,OU=People,dc=domain,dc=local&quot;</span>
+<span class="n">AUTH_LDAP_BIND_PASSWORD</span> <span class="o">=</span> <span class="s2">&quot;password&quot;</span>
 </pre></div>
 </div>
-<p>for MSFT AD you can set the UID from which the search user will be based:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_LDAP_UID</span> <span class="o">=</span> <span class="s">&#39;userPrincipalName&#39;</span>
+<p>for MSFT AD users will be authenticated using the attribute &#8216;userPrincipalName&#8217;, so username&#8217;s will be of the form
+<a class="reference external" href="mailto:'someuser&#37;&#52;&#48;somedomail&#46;local">'someuser<span>&#64;</span>somedomail<span>&#46;</span>local</a>&#8216;. Since 1.6.1 you can use a new configuration to set all domains to a certain default,
+this will allow users to authenticate using &#8216;someuser&#8217; be setting:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">AUTH_LDAP_APPEND_DOMAIN</span> <span class="o">=</span> <span class="s1">&#39;somedomain.local&#39;</span>
 </pre></div>
 </div>
-<p>This will use users as: <a class="reference external" href="mailto:username&#37;&#52;&#48;domain&#46;local">username<span>&#64;</span>domain<span>&#46;</span>local</a></p>
-<p>or:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_LDAP_UID</span> <span class="o">=</span> <span class="s">&#39;cn&#39;</span>
-</pre></div>
-</div>
-<p>This will use users as: username</p>
-<p>For OpenLDAP or similar use uid field name:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_LDAP_UID</span> <span class="o">=</span> <span class="s">&#39;uid&#39;</span>
-</pre></div>
-</div>
+<p>When using self user registration, you can use the following to config further:</p>
+<ul class="simple">
+<li>AUTH_LDAP_UID_FIELD: Default to &#8216;uid&#8217; will be used to search the user on the LDAP server. For MSFT AD you can set it to &#8216;userPrincipalName&#8217;</li>
+<li>AUTH_LDAP_FIRSTNAME_FIELD: Default to &#8216;givenName&#8217; will use MSFT AD attribute to register first_name on the db.</li>
+<li>AUTH_LDAP_LASTTNAME_FIELD: Default to &#8216;sn&#8217; will use MSFT AD attribute to register last_name on the db.</li>
+<li>AUTH_LDAP_EMAIL_FIELD: Default to &#8216;mail&#8217; will use MSFT AD attribute to register email on the db. If this attribute is null the framework will register &lt;username + <a class="reference external" href="mailto:'&#37;&#52;&#48;email&#46;notfound'">'<span>&#64;</span>email<span>&#46;</span>notfound'</a>&gt;</li>
+<li>AUTH_LDAP_SEARCH: This must be set when using self user registration.</li>
+</ul>
 </div>
 <div class="section" id="authentication-oauth">
 <h2>Authentication: OAuth<a class="headerlink" href="#authentication-oauth" title="Permalink to this headline">¶</a></h2>
@@ -427,29 +427,29 @@ to get to know this library since F.A.B. will expose the remote application obje
 to get an idea of a simple use for this.</p>
 <p>Use <strong>config.py</strong> configure OAUTH_PROVIDERS with a list of oauth providers, notice that the remote_app
 key is just the configuration for flask-oauthlib:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_OAUTH</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="n">AUTH_OAUTH</span>
 
 <span class="n">OAUTH_PROVIDERS</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;twitter&#39;</span><span class="p">,</span> <span class="s">&#39;icon&#39;</span><span class="p">:</span><span class="s">&#39;fa-twitter&#39;</span><span class="p">,</span>
-        <span class="s">&#39;remote_app&#39;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s">&#39;consumer_key&#39;</span><span class="p">:</span><span class="s">&#39;TWITTER KEY&#39;</span><span class="p">,</span>
-            <span class="s">&#39;consumer_secret&#39;</span><span class="p">:</span><span class="s">&#39;TWITTER SECRET&#39;</span><span class="p">,</span>
-            <span class="s">&#39;base_url&#39;</span><span class="p">:</span><span class="s">&#39;https://api.twitter.com/1.1/&#39;</span><span class="p">,</span>
-            <span class="s">&#39;request_token_url&#39;</span><span class="p">:</span><span class="s">&#39;https://api.twitter.com/oauth/request_token&#39;</span><span class="p">,</span>
-            <span class="s">&#39;access_token_url&#39;</span><span class="p">:</span><span class="s">&#39;https://api.twitter.com/oauth/access_token&#39;</span><span class="p">,</span>
-            <span class="s">&#39;authorize_url&#39;</span><span class="p">:</span><span class="s">&#39;https://api.twitter.com/oauth/authenticate&#39;</span><span class="p">}</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;twitter&#39;</span><span class="p">,</span> <span class="s1">&#39;icon&#39;</span><span class="p">:</span><span class="s1">&#39;fa-twitter&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;remote_app&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;consumer_key&#39;</span><span class="p">:</span><span class="s1">&#39;TWITTER KEY&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;consumer_secret&#39;</span><span class="p">:</span><span class="s1">&#39;TWITTER SECRET&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;base_url&#39;</span><span class="p">:</span><span class="s1">&#39;https://api.twitter.com/1.1/&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;request_token_url&#39;</span><span class="p">:</span><span class="s1">&#39;https://api.twitter.com/oauth/request_token&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;access_token_url&#39;</span><span class="p">:</span><span class="s1">&#39;https://api.twitter.com/oauth/access_token&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;authorize_url&#39;</span><span class="p">:</span><span class="s1">&#39;https://api.twitter.com/oauth/authenticate&#39;</span><span class="p">}</span>
     <span class="p">},</span>
-    <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;google&#39;</span><span class="p">,</span> <span class="s">&#39;icon&#39;</span><span class="p">:</span><span class="s">&#39;fa-google&#39;</span><span class="p">,</span> <span class="s">&#39;token_key&#39;</span><span class="p">:</span><span class="s">&#39;access_token&#39;</span><span class="p">,</span>
-        <span class="s">&#39;remote_app&#39;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s">&#39;consumer_key&#39;</span><span class="p">:</span><span class="s">&#39;GOOGLE KEY&#39;</span><span class="p">,</span>
-            <span class="s">&#39;consumer_secret&#39;</span><span class="p">:</span><span class="s">&#39;GOOGLE SECRET&#39;</span><span class="p">,</span>
-            <span class="s">&#39;base_url&#39;</span><span class="p">:</span><span class="s">&#39;https://www.googleapis.com/plus/v1/&#39;</span><span class="p">,</span>
-            <span class="s">&#39;request_token_params&#39;</span><span class="p">:{</span>
-              <span class="s">&#39;scope&#39;</span><span class="p">:</span> <span class="s">&#39;https://www.googleapis.com/auth/userinfo.email&#39;</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;google&#39;</span><span class="p">,</span> <span class="s1">&#39;icon&#39;</span><span class="p">:</span><span class="s1">&#39;fa-google&#39;</span><span class="p">,</span> <span class="s1">&#39;token_key&#39;</span><span class="p">:</span><span class="s1">&#39;access_token&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;remote_app&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;consumer_key&#39;</span><span class="p">:</span><span class="s1">&#39;GOOGLE KEY&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;consumer_secret&#39;</span><span class="p">:</span><span class="s1">&#39;GOOGLE SECRET&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;base_url&#39;</span><span class="p">:</span><span class="s1">&#39;https://www.googleapis.com/plus/v1/&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;request_token_params&#39;</span><span class="p">:{</span>
+              <span class="s1">&#39;scope&#39;</span><span class="p">:</span> <span class="s1">&#39;https://www.googleapis.com/auth/userinfo.email&#39;</span>
             <span class="p">},</span>
-            <span class="s">&#39;request_token_url&#39;</span><span class="p">:</span><span class="bp">None</span><span class="p">,</span>
-            <span class="s">&#39;access_token_url&#39;</span><span class="p">:</span><span class="s">&#39;https://accounts.google.com/o/oauth2/token&#39;</span><span class="p">,</span>
-            <span class="s">&#39;authorize_url&#39;</span><span class="p">:</span><span class="s">&#39;https://accounts.google.com/o/oauth2/auth&#39;</span><span class="p">}</span>
+            <span class="s1">&#39;request_token_url&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;access_token_url&#39;</span><span class="p">:</span><span class="s1">&#39;https://accounts.google.com/o/oauth2/token&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;authorize_url&#39;</span><span class="p">:</span><span class="s1">&#39;https://accounts.google.com/o/oauth2/auth&#39;</span><span class="p">}</span>
     <span class="p">}</span>
 <span class="p">]</span>
 </pre></div>
@@ -476,11 +476,11 @@ twitter uses <em>&#8216;oauth_token&#8217;</em> and thats the default.</td>
 the framework retrieves information about the user, username and email. This info
 will be checked with the internal user (user record on User Model), first by username next by email.</p>
 <p>To override/customize the user information retrieval from oauth, you can create your own method like this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="nd">@appbuilder.sm.oauth_user_info_getter</span>
-<span class="k">def</span> <span class="nf">my_user_info_getter</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span> <span class="n">provider</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s">&#39;github&#39;</span><span class="p">:</span>
-        <span class="n">me</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">oauth_remotes</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;username&#39;</span><span class="p">:</span> <span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;login&#39;</span><span class="p">)}</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nd">@appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">oauth_user_info_getter</span>
+<span class="k">def</span> <span class="nf">my_user_info_getter</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span> <span class="n">provider</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s1">&#39;github&#39;</span><span class="p">:</span>
+        <span class="n">me</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">oauth_remotes</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)}</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{}</span>
 </pre></div>
@@ -499,14 +499,14 @@ this provider with, <strong>response</strong> is the response.</p>
 The <strong>AppBuilder</strong> has a new optional initialization parameter where you pass your own custom <strong>SecurityManager</strong>
 If you want to add, for example, actions to the list of users you can do it in a simple way.</p>
 <p>First i advise you to create security.py and add the following to it:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">redirect</span>
-<span class="kn">from</span> <span class="nn">flask_appbuilder.security.views</span> <span class="kn">import</span> <span class="n">UserDBModelView</span>
-<span class="kn">from</span> <span class="nn">flask_appbuilder.security.sqla.manager</span> <span class="kn">import</span> <span class="n">SecurityManager</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.actions</span> <span class="kn">import</span> <span class="n">action</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">redirect</span>
+<span class="kn">from</span> <span class="nn">flask_appbuilder.security.views</span> <span class="k">import</span> <span class="n">UserDBModelView</span>
+<span class="kn">from</span> <span class="nn">flask_appbuilder.security.sqla.manager</span> <span class="k">import</span> <span class="n">SecurityManager</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.actions</span> <span class="k">import</span> <span class="n">action</span>
 
 
 <span class="k">class</span> <span class="nc">MyUserDBView</span><span class="p">(</span><span class="n">UserDBModelView</span><span class="p">):</span>
-    <span class="nd">@action</span><span class="p">(</span><span class="s">&quot;muldelete&quot;</span><span class="p">,</span> <span class="s">&quot;Delete&quot;</span><span class="p">,</span> <span class="s">&quot;Delete all Really?&quot;</span><span class="p">,</span> <span class="s">&quot;fa-rocket&quot;</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="nd">@action</span><span class="p">(</span><span class="s2">&quot;muldelete&quot;</span><span class="p">,</span> <span class="s2">&quot;Delete&quot;</span><span class="p">,</span> <span class="s2">&quot;Delete all Really?&quot;</span><span class="p">,</span> <span class="s2">&quot;fa-rocket&quot;</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">muldelete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">delete_all</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
@@ -518,7 +518,7 @@ If you want to add, for example, actions to the list of users you can do it in a
 </pre></div>
 </div>
 <p>Then on the __init__.py initialize AppBuilder with you own security class:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">security_manager_class</span><span class="o">=</span><span class="n">MySecurityManager</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">security_manager_class</span><span class="o">=</span><span class="n">MySecurityManager</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>F.A.B. uses a different user view for each authentication method</p>
@@ -537,10 +537,10 @@ correspondent lower case properties on <strong>SecurityManager</strong> (just li
 <p>If you want to extend the <strong>User</strong> Model with extra columns specific to your application (since 1.3.0) you
 can easily do it. Use the same type of approach as explained earlier.</p>
 <p>First extend the User Model (create a sec_models.py file):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.security.sqla.models</span> <span class="kn">import</span> <span class="n">User</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Table</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span><span class="p">,</span> <span class="n">backref</span>
-<span class="kn">from</span> <span class="nn">flask_appbuilder</span> <span class="kn">import</span> <span class="n">Model</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask_appbuilder.security.sqla.models</span> <span class="k">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="k">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Table</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="k">import</span> <span class="n">relationship</span><span class="p">,</span> <span class="n">backref</span>
+<span class="kn">from</span> <span class="nn">flask_appbuilder</span> <span class="k">import</span> <span class="n">Model</span>
 
 <span class="k">class</span> <span class="nc">MyUser</span><span class="p">(</span><span class="n">User</span><span class="p">):</span>
     <span class="n">extra</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">256</span><span class="p">))</span>
@@ -555,8 +555,8 @@ If your using:</p>
 <li>AUTH_OID extend UserOIDModelView</li>
 <li>AUTH_OAUTH extend UserOAuthModelView</li>
 </ul>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.security.views</span> <span class="kn">import</span> <span class="n">UserDBModelView</span>
-<span class="kn">from</span> <span class="nn">flask_babelpkg</span> <span class="kn">import</span> <span class="n">lazy_gettext</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask_appbuilder.security.views</span> <span class="k">import</span> <span class="n">UserDBModelView</span>
+<span class="kn">from</span> <span class="nn">flask_babelpkg</span> <span class="k">import</span> <span class="n">lazy_gettext</span>
 
 <span class="k">class</span> <span class="nc">MyUserDBModelView</span><span class="p">(</span><span class="n">UserDBModelView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -566,31 +566,31 @@ If your using:</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">show_fieldsets</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;User info&#39;</span><span class="p">),</span>
-         <span class="p">{</span><span class="s">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;active&#39;</span><span class="p">,</span> <span class="s">&#39;roles&#39;</span><span class="p">,</span> <span class="s">&#39;login_count&#39;</span><span class="p">,</span> <span class="s">&#39;extra&#39;</span><span class="p">]}),</span>
-        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Personal Info&#39;</span><span class="p">),</span>
-         <span class="p">{</span><span class="s">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;first_name&#39;</span><span class="p">,</span> <span class="s">&#39;last_name&#39;</span><span class="p">,</span> <span class="s">&#39;email&#39;</span><span class="p">],</span> <span class="s">&#39;expanded&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}),</span>
-        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Audit Info&#39;</span><span class="p">),</span>
-         <span class="p">{</span><span class="s">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;last_login&#39;</span><span class="p">,</span> <span class="s">&#39;fail_login_count&#39;</span><span class="p">,</span> <span class="s">&#39;created_on&#39;</span><span class="p">,</span>
-                     <span class="s">&#39;created_by&#39;</span><span class="p">,</span> <span class="s">&#39;changed_on&#39;</span><span class="p">,</span> <span class="s">&#39;changed_by&#39;</span><span class="p">],</span> <span class="s">&#39;expanded&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">}),</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;User info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="s1">&#39;roles&#39;</span><span class="p">,</span> <span class="s1">&#39;login_count&#39;</span><span class="p">,</span> <span class="s1">&#39;extra&#39;</span><span class="p">]}),</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Personal Info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">],</span> <span class="s1">&#39;expanded&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}),</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Audit Info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;last_login&#39;</span><span class="p">,</span> <span class="s1">&#39;fail_login_count&#39;</span><span class="p">,</span> <span class="s1">&#39;created_on&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;created_by&#39;</span><span class="p">,</span> <span class="s1">&#39;changed_on&#39;</span><span class="p">,</span> <span class="s1">&#39;changed_by&#39;</span><span class="p">],</span> <span class="s1">&#39;expanded&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}),</span>
     <span class="p">]</span>
 
     <span class="n">user_show_fieldsets</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;User info&#39;</span><span class="p">),</span>
-         <span class="p">{</span><span class="s">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;active&#39;</span><span class="p">,</span> <span class="s">&#39;roles&#39;</span><span class="p">,</span> <span class="s">&#39;login_count&#39;</span><span class="p">,</span> <span class="s">&#39;extra&#39;</span><span class="p">]}),</span>
-        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Personal Info&#39;</span><span class="p">),</span>
-         <span class="p">{</span><span class="s">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;first_name&#39;</span><span class="p">,</span> <span class="s">&#39;last_name&#39;</span><span class="p">,</span> <span class="s">&#39;email&#39;</span><span class="p">],</span> <span class="s">&#39;expanded&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}),</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;User info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="s1">&#39;roles&#39;</span><span class="p">,</span> <span class="s1">&#39;login_count&#39;</span><span class="p">,</span> <span class="s1">&#39;extra&#39;</span><span class="p">]}),</span>
+        <span class="p">(</span><span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Personal Info&#39;</span><span class="p">),</span>
+         <span class="p">{</span><span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">],</span> <span class="s1">&#39;expanded&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}),</span>
     <span class="p">]</span>
 
-    <span class="n">add_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;first_name&#39;</span><span class="p">,</span> <span class="s">&#39;last_name&#39;</span><span class="p">,</span> <span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;active&#39;</span><span class="p">,</span> <span class="s">&#39;email&#39;</span><span class="p">,</span> <span class="s">&#39;roles&#39;</span><span class="p">,</span> <span class="s">&#39;extra&#39;</span><span class="p">,</span> <span class="s">&#39;password&#39;</span><span class="p">,</span> <span class="s">&#39;conf_password&#39;</span><span class="p">]</span>
-    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;first_name&#39;</span><span class="p">,</span> <span class="s">&#39;last_name&#39;</span><span class="p">,</span> <span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;email&#39;</span><span class="p">,</span> <span class="s">&#39;active&#39;</span><span class="p">,</span> <span class="s">&#39;roles&#39;</span><span class="p">]</span>
-    <span class="n">edit_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;first_name&#39;</span><span class="p">,</span> <span class="s">&#39;last_name&#39;</span><span class="p">,</span> <span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;active&#39;</span><span class="p">,</span> <span class="s">&#39;email&#39;</span><span class="p">,</span> <span class="s">&#39;roles&#39;</span><span class="p">,</span> <span class="s">&#39;extra&#39;</span><span class="p">]</span>
+    <span class="n">add_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;roles&#39;</span><span class="p">,</span> <span class="s1">&#39;extra&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;conf_password&#39;</span><span class="p">]</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="s1">&#39;roles&#39;</span><span class="p">]</span>
+    <span class="n">edit_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;roles&#39;</span><span class="p">,</span> <span class="s1">&#39;extra&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Next create your own SecurityManager class, overriding your model and view for User (create a sec.py):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.security.sqla.manager</span> <span class="kn">import</span> <span class="n">SecurityManager</span>
-<span class="kn">from</span> <span class="nn">.sec_models</span> <span class="kn">import</span> <span class="n">MyUser</span>
-<span class="kn">from</span> <span class="nn">.sec_views</span> <span class="kn">import</span> <span class="n">MyUserDBModelView</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask_appbuilder.security.sqla.manager</span> <span class="k">import</span> <span class="n">SecurityManager</span>
+<span class="kn">from</span> <span class="nn">.sec_models</span> <span class="k">import</span> <span class="n">MyUser</span>
+<span class="kn">from</span> <span class="nn">.sec_views</span> <span class="k">import</span> <span class="n">MyUserDBModelView</span>
 
 <span class="k">class</span> <span class="nc">MySecurityManager</span><span class="p">(</span><span class="n">SecurityManager</span><span class="p">):</span>
     <span class="n">user_model</span> <span class="o">=</span> <span class="n">MyUser</span>
@@ -606,17 +606,17 @@ If your using:</p>
 </ul>
 <p>Finally (as shown on the previous example) tell F.A.B. to use your SecurityManager class, so when initializing
 <strong>AppBuilder</strong> (on __init__.py):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">SQLA</span><span class="p">,</span> <span class="n">AppBuilder</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.menu</span> <span class="kn">import</span> <span class="n">Menu</span>
-<span class="kn">from</span> <span class="nn">.sec</span> <span class="kn">import</span> <span class="n">MySecurityManager</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="k">import</span> <span class="n">SQLA</span><span class="p">,</span> <span class="n">AppBuilder</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.menu</span> <span class="k">import</span> <span class="n">Menu</span>
+<span class="kn">from</span> <span class="nn">.sec</span> <span class="k">import</span> <span class="n">MySecurityManager</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">)</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">SQLA</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-<span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">Menu</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span> <span class="n">security_manager_class</span><span class="o">=</span><span class="n">MySecurityManager</span><span class="p">)</span>
+<span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">Menu</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">security_manager_class</span><span class="o">=</span><span class="n">MySecurityManager</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">views</span>
+<span class="kn">from</span> <span class="nn">app</span> <span class="k">import</span> <span class="n">views</span>
 </pre></div>
 </div>
 <p>Now you&#8217;ll have your extended User model as the authenticated user, <em>g.user</em> will have your model with the extra col.</p>
@@ -638,7 +638,7 @@ If your using:</p>
     </p>
     <p>
         &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
     </p>
   </div>
 </footer>

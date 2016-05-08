@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
@@ -9,13 +9,13 @@
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.0',
+        VERSION:     '1.6.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Versions" href="versions.html" />
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.6.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -115,7 +115,7 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Version Migration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Version Migration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
 </ul>
 </ul>
@@ -180,7 +180,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 content">
       
   <div class="section" id="version-migration">
 <h1>Version Migration<a class="headerlink" href="#version-migration" title="Permalink to this headline">¶</a></h1>
@@ -196,12 +196,12 @@
 <div><p>1 - <em>Backup your DB</em>.</p>
 <p>2 - If you haven&#8217;t already, upgrade to flask-appbuilder 1.3.0.</p>
 <p>3 - Issue the following commands, on your project folder where config.py exists:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ cd /your-main-project-folder/
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ cd /your-main-project-folder/
 $ fabmanager upgrade-db
 </pre></div>
 </div>
 <p>4 - Test and Run (if you have a run.py for development)</p>
-<div class="highlight-python"><div class="highlight"><pre>$ fabmanager run
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ fabmanager run
 </pre></div>
 </div>
 </div></blockquote>
@@ -213,40 +213,40 @@ $ fabmanager upgrade-db
 changed. So, modules have changes and changed place, each backend engine will have it&#8217;s SecurityManager, and views
 are common to all of them. Change:</p>
 <p>from:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.sqla.views</span> <span class="kn">import</span> <span class="n">UserDBModelView</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.manager</span> <span class="kn">import</span> <span class="n">SecurityManager</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.sqla.views</span> <span class="k">import</span> <span class="n">UserDBModelView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.manager</span> <span class="k">import</span> <span class="n">SecurityManager</span>
 </pre></div>
 </div>
 <p>to:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.views</span> <span class="kn">import</span> <span class="n">UserDBModelView</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.sqla.manager</span> <span class="kn">import</span> <span class="n">SecurityManager</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.views</span> <span class="k">import</span> <span class="n">UserDBModelView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.sqla.manager</span> <span class="k">import</span> <span class="n">SecurityManager</span>
 </pre></div>
 </div>
 <p>3 - SQLAInteface, SQLAModel. If you were importing like the following, change:</p>
 <p>from:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models</span> <span class="k">import</span> <span class="n">SQLAInterface</span>
 </pre></div>
 </div>
 <p>to:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="k">import</span> <span class="n">SQLAInterface</span>
 </pre></div>
 </div>
 <p>4 - Filters, filters import moved:</p>
 <p>to:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.models.sqla.filters</span> <span class="kn">import</span> <span class="n">FilterStartsWith</span><span class="p">,</span> <span class="n">FilterEqualFunction</span><span class="p">,</span> <span class="n">FilterEqual</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask_appbuilder.models.sqla.filters</span> <span class="k">import</span> <span class="n">FilterStartsWith</span><span class="p">,</span> <span class="n">FilterEqualFunction</span><span class="p">,</span> <span class="n">FilterEqual</span>
 </pre></div>
 </div>
 <p>5 - Filters, filtering relationship fields (rendered with select2) changed:</p>
 <p>from:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">edit_form_query_rel_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;group&#39;</span><span class="p">,</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">edit_form_query_rel_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;group&#39;</span><span class="p">,</span>
                                <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Model1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
-                               <span class="p">[[</span><span class="s">&#39;field_string&#39;</span><span class="p">,</span> <span class="n">FilterEqual</span><span class="p">,</span> <span class="s">&#39;G2&#39;</span><span class="p">]]</span>
+                               <span class="p">[[</span><span class="s1">&#39;field_string&#39;</span><span class="p">,</span> <span class="n">FilterEqual</span><span class="p">,</span> <span class="s1">&#39;G2&#39;</span><span class="p">]]</span>
                               <span class="p">)</span>
                             <span class="p">]</span>
 </pre></div>
 </div>
 <p>to:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">edit_form_query_rel_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;group&#39;</span><span class="p">:[[</span><span class="s">&#39;field_string&#39;</span><span class="p">,</span> <span class="n">FilterEqual</span><span class="p">,</span> <span class="s">&#39;G2&#39;</span><span class="p">]]}</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">edit_form_query_rel_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;group&#39;</span><span class="p">:[[</span><span class="s1">&#39;field_string&#39;</span><span class="p">,</span> <span class="n">FilterEqual</span><span class="p">,</span> <span class="s1">&#39;G2&#39;</span><span class="p">]]}</span>
 </pre></div>
 </div>
 </div>
@@ -254,13 +254,13 @@ are common to all of them. Change:</p>
 <h2>Migrating from 1.1.X to 1.2.X<a class="headerlink" href="#migrating-from-1-1-x-to-1-2-x" title="Permalink to this headline">¶</a></h2>
 <p>There is a breaking feature, change your filters import like this:</p>
 <p>from:</p>
-<div class="highlight-python"><div class="highlight"><pre>flask.ext.appbuilder.models.base import Filters, BaseFilter, BaseFilterConverter
-flask.ext.appbuilder.models.filters import FilterEqual, FilterRelation ....
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">flask</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">base</span> <span class="kn">import</span> <span class="nn">Filters</span><span class="o">,</span> <span class="nn">BaseFilter</span><span class="o">,</span> <span class="nn">BaseFilterConverter</span>
+<span class="n">flask</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">filters</span> <span class="kn">import</span> <span class="nn">FilterEqual</span><span class="o">,</span> <span class="nn">FilterRelation</span> <span class="o">....</span>
 </pre></div>
 </div>
 <p>to:</p>
-<div class="highlight-python"><div class="highlight"><pre>flask.ext.appbuilder.models.filters import Filters, BaseFilter, BaseFilterConverter
-flask.ext.appbuilder.models.sqla.filter import FilterEqual, FilterRelation ....
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">flask</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">filters</span> <span class="kn">import</span> <span class="nn">Filters</span><span class="o">,</span> <span class="nn">BaseFilter</span><span class="o">,</span> <span class="nn">BaseFilterConverter</span>
+<span class="n">flask</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">sqla</span><span class="o">.</span><span class="n">filter</span> <span class="kn">import</span> <span class="nn">FilterEqual</span><span class="o">,</span> <span class="nn">FilterRelation</span> <span class="o">....</span>
 </pre></div>
 </div>
 </div>
@@ -269,13 +269,13 @@ flask.ext.appbuilder.models.sqla.filter import FilterEqual, FilterRelation ....
 <p>This new version has NO breaking features, all your code will work, unless you are hacking directly onto SQLAModel,
 Filters, DataModel etc.</p>
 <p>But, to keep up with the changes, you should change these:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.datamodel</span> <span class="kn">import</span> <span class="n">SQLAModel</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.filters</span> <span class="kn">import</span> <span class="n">FilterEqual</span><span class="p">,</span> <span class="n">FilterContains</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.datamodel</span> <span class="k">import</span> <span class="n">SQLAModel</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.filters</span> <span class="k">import</span> <span class="n">FilterEqual</span><span class="p">,</span> <span class="n">FilterContains</span>
 </pre></div>
 </div>
 <p>to:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.filters</span> <span class="kn">import</span> <span class="n">FilterEqual</span><span class="p">,</span> <span class="n">FilterContains</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="k">import</span> <span class="n">SQLAInterface</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.filters</span> <span class="k">import</span> <span class="n">FilterEqual</span><span class="p">,</span> <span class="n">FilterContains</span>
 </pre></div>
 </div>
 </div>
@@ -287,31 +287,31 @@ internal retro compatibility was created, but many things have changed</p>
 this is the breaking feature.</p>
 <blockquote>
 <div><p>from (__init__.py)</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>to (__init__.py)</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 </pre></div>
 </div>
 </div></blockquote>
 <p>2 - &#8216;BaseApp&#8217; changed to &#8216;AppBuilder&#8217;. Has you already noticed on 1.</p>
 <p>3 - BaseApp or now AppBuilder will not automatically create your models, after declaring them just invoke create_db method:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">create_db</span><span class="p">()</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">appbuilder</span><span class="o">.</span><span class="n">create_db</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>4 - Change your models inheritance</p>
 <blockquote>
 <div><p>from:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">first_name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">first_name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>to:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">first_name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">first_name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -319,23 +319,23 @@ this is the breaking feature.</p>
 Use F.A.B. SQLA class instead, read the docs to know why.</p>
 <blockquote>
 <div><p>from (__init__.py):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-<span class="kn">from</span> <span class="nn">flask.ext.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemy</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseapp</span> <span class="kn">import</span> <span class="n">BaseApp</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">flask.ext.sqlalchemy</span> <span class="k">import</span> <span class="n">SQLAlchemy</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.baseapp</span> <span class="k">import</span> <span class="n">BaseApp</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">)</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">SQLAlchemy</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
 <span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>to (__init__.py):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">SQLA</span><span class="p">,</span> <span class="n">AppBuilder</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="k">import</span> <span class="n">SQLA</span><span class="p">,</span> <span class="n">AppBuilder</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">)</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">SQLA</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
 <span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 </pre></div>
@@ -354,15 +354,15 @@ Use F.A.B. SQLA class instead, read the docs to know why.</p>
 <div><p>1 - <em>Backup your DB</em>.</p>
 <p>2 - If you haven&#8217;t already, upgrade to flask-appbuilder 0.7.0.</p>
 <p>3 - Issue the following commands, on your project folder where config.py exists:</p>
-<div class="highlight-python"><div class="highlight"><pre>cd /your-main-project-folder/
-wget https://raw.github.com/dpgaspar/Flask-AppBuilder/master/bin/migrate_db_0.7.py
-python migrate_db_0.7.py
-wget https://raw.github.com/dpgaspar/Flask-AppBuilder/master/bin/hash_db_password.py
-python hash_db_password.py
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">your</span><span class="o">-</span><span class="n">main</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="n">folder</span><span class="o">/</span>
+<span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">dpgaspar</span><span class="o">/</span><span class="n">Flask</span><span class="o">-</span><span class="n">AppBuilder</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">migrate_db_0</span><span class="o">.</span><span class="mf">7.</span><span class="n">py</span>
+<span class="n">python</span> <span class="n">migrate_db_0</span><span class="o">.</span><span class="mf">7.</span><span class="n">py</span>
+<span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">dpgaspar</span><span class="o">/</span><span class="n">Flask</span><span class="o">-</span><span class="n">AppBuilder</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">hash_db_password</span><span class="o">.</span><span class="n">py</span>
+<span class="n">python</span> <span class="n">hash_db_password</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
 <p>4 - Test and Run (if you have a run.py for development)</p>
-<div class="highlight-python"><div class="highlight"><pre>python run.py
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">run</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -380,8 +380,8 @@ python hash_db_password.py
 <p>ALTER TABLE ab_user ADD COLUMN last_login DATETIME</p>
 <p>ALTER TABLE ab_user ADD COLUMN fail_login_count INTEGER</p>
 <p>4 - Then hash your passwords:</p>
-<div class="highlight-python"><div class="highlight"><pre>wget https://raw.github.com/dpgaspar/Flask-AppBuilder/master/bin/hash_db_password.py
-python hash_db_password.py
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">dpgaspar</span><span class="o">/</span><span class="n">Flask</span><span class="o">-</span><span class="n">AppBuilder</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">hash_db_password</span><span class="o">.</span><span class="n">py</span>
+<span class="n">python</span> <span class="n">hash_db_password</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -404,13 +404,13 @@ python hash_db_password.py
 <p>If you feel lost please post an issue on github: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open">https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open</a></p>
 <p>If your using the <strong>related_views</strong> attribute on ModelView classes, you must not instantiate the related classes. This is the correct form, it will be less memory and cpu resource consuming.</p>
 <p>From this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyOtherView</span><span class="p">()]</span>
 </pre></div>
 </div>
 <p>Change to this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">GeneralView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAModel</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyOtherView</span><span class="p">]</span>
 </pre></div>
@@ -424,50 +424,50 @@ python hash_db_password.py
 <p>Security tables have changed their names, AppBuilder will automatically migrate all your data to the new tables.</p>
 <p>1 - Change your BaseApp initialization (views.py)</p>
 <p>From this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Change to this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>2 - Remove from OpenID and Login initialization (__init__.py)</p>
 <p>From this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">)</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">SQLAlchemy</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
 <span class="n">babel</span> <span class="o">=</span> <span class="n">Babel</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
 <span class="n">lm</span> <span class="o">=</span> <span class="n">LoginManager</span><span class="p">()</span>
 <span class="n">lm</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-<span class="n">lm</span><span class="o">.</span><span class="n">login_view</span> <span class="o">=</span> <span class="s">&#39;login&#39;</span>
-<span class="n">oid</span> <span class="o">=</span> <span class="n">OpenID</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="s">&#39;tmp&#39;</span><span class="p">))</span>
+<span class="n">lm</span><span class="o">.</span><span class="n">login_view</span> <span class="o">=</span> <span class="s1">&#39;login&#39;</span>
+<span class="n">oid</span> <span class="o">=</span> <span class="n">OpenID</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="s1">&#39;tmp&#39;</span><span class="p">))</span>
 
-<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">models</span><span class="p">,</span> <span class="n">views</span>
+<span class="kn">from</span> <span class="nn">app</span> <span class="k">import</span> <span class="n">models</span><span class="p">,</span> <span class="n">views</span>
 </pre></div>
 </div>
 <p>Change to this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">)</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">SQLAlchemy</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">models</span><span class="p">,</span> <span class="n">views</span>
+<span class="kn">from</span> <span class="nn">app</span> <span class="k">import</span> <span class="n">models</span><span class="p">,</span> <span class="n">views</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="migrating-from-0-1-x-to-0-2-x">
 <h2>Migrating from 0.1.X to 0.2.X<a class="headerlink" href="#migrating-from-0-1-x-to-0-2-x" title="Permalink to this headline">¶</a></h2>
 <p>It&#8217;s very simple, change this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">,</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="s">&quot;/groups/list&quot;</span><span class="p">,</span><span class="s">&quot;th-large&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonGeneralView</span><span class="p">,</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="s">&quot;/persons/list&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonChartView</span><span class="p">,</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span><span class="s">&quot;/persons/chart&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">,</span> <span class="s2">&quot;List Groups&quot;</span><span class="p">,</span><span class="s2">&quot;/groups/list&quot;</span><span class="p">,</span><span class="s2">&quot;th-large&quot;</span><span class="p">,</span><span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonGeneralView</span><span class="p">,</span> <span class="s2">&quot;List Contacts&quot;</span><span class="p">,</span><span class="s2">&quot;/persons/list&quot;</span><span class="p">,</span><span class="s2">&quot;earphone&quot;</span><span class="p">,</span><span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonChartView</span><span class="p">,</span> <span class="s2">&quot;Contacts Chart&quot;</span><span class="p">,</span><span class="s2">&quot;/persons/chart&quot;</span><span class="p">,</span><span class="s2">&quot;earphone&quot;</span><span class="p">,</span><span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="s">&quot;/groups/list&quot;</span><span class="p">,</span><span class="s">&quot;th-large&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonGeneralView</span><span class="p">(),</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="s">&quot;/persons/list&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonChartView</span><span class="p">(),</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span><span class="s">&quot;/persons/chart&quot;</span><span class="p">,</span><span class="s">&quot;earphone&quot;</span><span class="p">,</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">baseapp</span> <span class="o">=</span> <span class="n">BaseApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupGeneralView</span><span class="p">(),</span> <span class="s2">&quot;List Groups&quot;</span><span class="p">,</span><span class="s2">&quot;/groups/list&quot;</span><span class="p">,</span><span class="s2">&quot;th-large&quot;</span><span class="p">,</span><span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonGeneralView</span><span class="p">(),</span> <span class="s2">&quot;List Contacts&quot;</span><span class="p">,</span><span class="s2">&quot;/persons/list&quot;</span><span class="p">,</span><span class="s2">&quot;earphone&quot;</span><span class="p">,</span><span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">baseapp</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">PersonChartView</span><span class="p">(),</span> <span class="s2">&quot;Contacts Chart&quot;</span><span class="p">,</span><span class="s2">&quot;/persons/chart&quot;</span><span class="p">,</span><span class="s2">&quot;earphone&quot;</span><span class="p">,</span><span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Small change you just have to instantiate your classes.</p>
@@ -487,7 +487,7 @@ python hash_db_password.py
     </p>
     <p>
         &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
     </p>
   </div>
 </footer>

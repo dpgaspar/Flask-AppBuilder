@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
@@ -9,13 +9,13 @@
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.0',
+        VERSION:     '1.6.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="AddOn development" href="addons.html" />
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.6.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -101,7 +101,7 @@
 <li class="toctree-l1"><a class="reference internal" href="actions.html">Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="customizing.html">Customizing</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Templates</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Templates</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="addons.html">AddOn development</a></li>
@@ -181,7 +181,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 content">
       
   <div class="section" id="templates">
 <h1>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h1>
@@ -197,70 +197,70 @@ You will need to tell the framework to use your own base <em>jinja2</em> templat
 template is extended by all the templates. It&#8217;s very simple, first create your own
 template on you <strong>templates</strong> directory.</p>
 <p>On a simple application structure create <em>mybase.html</em> (or whatever name you want):</p>
-<div class="highlight-python"><div class="highlight"><pre>&lt;my_project&gt;
-    &lt;app&gt;
-        __init__.py
-        models.py
-        views.py
-        &lt;templates&gt;
-            **mybase.html**
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">my_project</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">app</span><span class="o">&gt;</span>
+        <span class="n">__init__</span><span class="o">.</span><span class="n">py</span>
+        <span class="n">models</span><span class="o">.</span><span class="n">py</span>
+        <span class="n">views</span><span class="o">.</span><span class="n">py</span>
+        <span class="o">&lt;</span><span class="n">templates</span><span class="o">&gt;</span>
+            <span class="o">**</span><span class="n">mybase</span><span class="o">.</span><span class="n">html</span><span class="o">**</span>
 </pre></div>
 </div>
 <p>Then on mybase.html add your js files and css files, use <strong>head_css</strong> for css&#8217;s and <strong>head_js</strong> for javascript.
 These are <em>jinja2</em> blocks, F.A.B. uses them so that you can override or extend critical parts of the default
 templates, making it easy to change the UI, without having to develop your own from scratch:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% extends &#39;appbuilder/baselayout.html&#39; %}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s1">&#39;appbuilder/baselayout.html&#39;</span> <span class="o">%</span><span class="p">}</span>
 
-{% block head_css %}
-    {{ super() }}
-    &lt;script src=&quot;{{url_for(&#39;static&#39;,filename=&#39;css/your_css_file.js&#39;)}}&quot;&gt;&lt;/script&gt;
-{% endblock %}
+<span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">head_css</span> <span class="o">%</span><span class="p">}</span>
+    <span class="p">{{</span> <span class="nb">super</span><span class="p">()</span> <span class="p">}}</span>
+    <span class="o">&lt;</span><span class="n">script</span> <span class="n">src</span><span class="o">=</span><span class="s2">&quot;{{url_for(&#39;static&#39;,filename=&#39;css/your_css_file.js&#39;)}}&quot;</span><span class="o">&gt;&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 
-{% block head_js %}
-    {{ super() }}
-    &lt;script src=&quot;{{url_for(&#39;static&#39;,filename=&#39;js/your_js_file.js&#39;)}}&quot;&gt;&lt;/script&gt;
-{% endblock %}
+<span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">head_js</span> <span class="o">%</span><span class="p">}</span>
+    <span class="p">{{</span> <span class="nb">super</span><span class="p">()</span> <span class="p">}}</span>
+    <span class="o">&lt;</span><span class="n">script</span> <span class="n">src</span><span class="o">=</span><span class="s2">&quot;{{url_for(&#39;static&#39;,filename=&#39;js/your_js_file.js&#39;)}}&quot;</span><span class="o">&gt;&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>If you want to import your javascript files at the end of the templates use <strong>tail_js</strong>:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% block tail_js %}
-    {{ super() }}
-    &lt;script src=&quot;{{url_for(&#39;static&#39;,filename=&#39;js/your_js_file.js&#39;)}}&quot;&gt;&lt;/script&gt;
-{% endblock %}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">tail_js</span> <span class="o">%</span><span class="p">}</span>
+    <span class="p">{{</span> <span class="nb">super</span><span class="p">()</span> <span class="p">}}</span>
+    <span class="o">&lt;</span><span class="n">script</span> <span class="n">src</span><span class="o">=</span><span class="s2">&quot;{{url_for(&#39;static&#39;,filename=&#39;js/your_js_file.js&#39;)}}&quot;</span><span class="o">&gt;&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>Finally tell the framework to use it, instead of the default base template,
 when initializing on __init__.py use the <em>base_template</em> parameter:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">base_template</span><span class="o">=</span><span class="s">&#39;mybase.html&#39;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">AppBuilder</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">base_template</span><span class="o">=</span><span class="s1">&#39;mybase.html&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You have an example that changes the way the menu is displayed on
 <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quicktemplates">examples</a></p>
 <p>This main structure of jinja2 on the baselayout template is:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% block head_meta %}
-    ... HTML Meta
-{% endblock %}
-{% block head_css %}
-    ... CSS imports (bootstrap, fontAwesome, select2, fab specific etc...
-{% endblock %}
-{% block head_js %}
-    ... JS imports (JQuery, fab specific)
-{% endblock %}
-{% block body %}
-    {% block navbar %}
-        ... The navigation bar (Menu)
-    {% endblock %}
-     {% block messages %}
-        ... Where the flask flash messages are shown (&quot;Added row&quot;, etc)
-      {% endblock %}
-      {% block content %}
-        ... All the content goes here, forms, lists, index, charts etc..
-      {% endblock %}
-    {% block footer %}
-        ... The footer, by default its almost empty.
-    {% endblock %}
-{% block tail_js %}
-{% endblock %}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">head_meta</span> <span class="o">%</span><span class="p">}</span>
+    <span class="o">...</span> <span class="n">HTML</span> <span class="n">Meta</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">head_css</span> <span class="o">%</span><span class="p">}</span>
+    <span class="o">...</span> <span class="n">CSS</span> <span class="n">imports</span> <span class="p">(</span><span class="n">bootstrap</span><span class="p">,</span> <span class="n">fontAwesome</span><span class="p">,</span> <span class="n">select2</span><span class="p">,</span> <span class="n">fab</span> <span class="n">specific</span> <span class="n">etc</span><span class="o">...</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">head_js</span> <span class="o">%</span><span class="p">}</span>
+    <span class="o">...</span> <span class="n">JS</span> <span class="n">imports</span> <span class="p">(</span><span class="n">JQuery</span><span class="p">,</span> <span class="n">fab</span> <span class="n">specific</span><span class="p">)</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">body</span> <span class="o">%</span><span class="p">}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">navbar</span> <span class="o">%</span><span class="p">}</span>
+        <span class="o">...</span> <span class="n">The</span> <span class="n">navigation</span> <span class="n">bar</span> <span class="p">(</span><span class="n">Menu</span><span class="p">)</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
+     <span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">messages</span> <span class="o">%</span><span class="p">}</span>
+        <span class="o">...</span> <span class="n">Where</span> <span class="n">the</span> <span class="n">flask</span> <span class="n">flash</span> <span class="n">messages</span> <span class="n">are</span> <span class="n">shown</span> <span class="p">(</span><span class="s2">&quot;Added row&quot;</span><span class="p">,</span> <span class="n">etc</span><span class="p">)</span>
+      <span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
+      <span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">content</span> <span class="o">%</span><span class="p">}</span>
+        <span class="o">...</span> <span class="n">All</span> <span class="n">the</span> <span class="n">content</span> <span class="n">goes</span> <span class="n">here</span><span class="p">,</span> <span class="n">forms</span><span class="p">,</span> <span class="n">lists</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">charts</span> <span class="n">etc</span><span class="o">..</span>
+      <span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">footer</span> <span class="o">%</span><span class="p">}</span>
+        <span class="o">...</span> <span class="n">The</span> <span class="n">footer</span><span class="p">,</span> <span class="n">by</span> <span class="n">default</span> <span class="n">its</span> <span class="n">almost</span> <span class="n">empty</span><span class="o">.</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">tail_js</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -272,20 +272,20 @@ You can completely override it, or just partially.</p>
 and then extend the existing one and override the <strong>navbar</strong> block</p>
 <p>As an example, lets say you created your own base layout named <strong>my_layout.html</strong>
 on your <strong>templates</strong> folder:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% extends &#39;appbuilder/baselayout.html&#39; %}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s1">&#39;appbuilder/baselayout.html&#39;</span> <span class="o">%</span><span class="p">}</span>
 
-{% block navbar %}
-    &lt;div class=&quot;navbar&quot; role=&quot;navigation&quot;&gt;
-       &lt;div class=&quot;container&quot;&gt;
-            &lt;div class=&quot;navbar-header&quot;&gt;
-                    ....
-            &lt;/div&gt;
-            &lt;div class=&quot;navbar-collapse collapse&quot;&gt;
-                    ....
-            &lt;/div&gt;
-       &lt;/div&gt;
-    &lt;/div&gt;
-{% endblock %}
+<span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">navbar</span> <span class="o">%</span><span class="p">}</span>
+    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;navbar&quot;</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;navigation&quot;</span><span class="o">&gt;</span>
+       <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;navbar-header&quot;</span><span class="o">&gt;</span>
+                    <span class="o">....</span>
+            <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;navbar-collapse collapse&quot;</span><span class="o">&gt;</span>
+                    <span class="o">....</span>
+            <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+       <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>Remember to tell Flask-Appbuilder to use your layout instead (previous chapter)</p>
@@ -351,46 +351,46 @@ each block:</p>
 </li>
 </ul>
 <p>To insert your template section over a block, say &#8220;list_search&#8221; just do:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;appbuilder/general/model/list.html&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s2">&quot;appbuilder/general/model/list.html&quot;</span> <span class="o">%</span><span class="p">}</span>
 
-    {% block list_search scoped %}
-        This Text will replace the search widget
-    {% endblock %}
+    <span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">list_search</span> <span class="n">scoped</span> <span class="o">%</span><span class="p">}</span>
+        <span class="n">This</span> <span class="n">Text</span> <span class="n">will</span> <span class="n">replace</span> <span class="n">the</span> <span class="n">search</span> <span class="n">widget</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>To insert your template section after a block do:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;appbuilder/general/model/list.html&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s2">&quot;appbuilder/general/model/list.html&quot;</span> <span class="o">%</span><span class="p">}</span>
 
-    {% block list_search scoped %}
-        {{ super() }}
-        This Text will show after the search widget
-    {% endblock %}
+    <span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">list_search</span> <span class="n">scoped</span> <span class="o">%</span><span class="p">}</span>
+        <span class="p">{{</span> <span class="nb">super</span><span class="p">()</span> <span class="p">}}</span>
+        <span class="n">This</span> <span class="n">Text</span> <span class="n">will</span> <span class="n">show</span> <span class="n">after</span> <span class="n">the</span> <span class="n">search</span> <span class="n">widget</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>I guess you get the general ideal, make use of {{ super() }} to render the block&#8217;s original content.
 To use your templates override <strong>list_template</strong> to your templates relative path, on your ModelView&#8217;s declaration.</p>
 <p>If you have your template on ./your_project/app/templates/list_contacts.html</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
-    <span class="n">list_template</span> <span class="o">=</span> <span class="s">&#39;list_contacts.html&#39;</span>
+    <span class="n">list_template</span> <span class="o">=</span> <span class="s1">&#39;list_contacts.html&#39;</span>
 </pre></div>
 </div>
 <p>On your template you can do something like this</p>
-<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;appbuilder/general/model/list.html&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s2">&quot;appbuilder/general/model/list.html&quot;</span> <span class="o">%</span><span class="p">}</span>
 
-{% block content %}
-    Text on top of the page
-    {{ super() }}
-    {% block list_search scoped %}
-        Text before the search section
-        {{ super() }}
-    {% endblock %}
+<span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">content</span> <span class="o">%</span><span class="p">}</span>
+    <span class="n">Text</span> <span class="n">on</span> <span class="n">top</span> <span class="n">of</span> <span class="n">the</span> <span class="n">page</span>
+    <span class="p">{{</span> <span class="nb">super</span><span class="p">()</span> <span class="p">}}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">list_search</span> <span class="n">scoped</span> <span class="o">%</span><span class="p">}</span>
+        <span class="n">Text</span> <span class="n">before</span> <span class="n">the</span> <span class="n">search</span> <span class="n">section</span>
+        <span class="p">{{</span> <span class="nb">super</span><span class="p">()</span> <span class="p">}}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 
-    {% block list_list scoped %}
-        Text before the list
-        {{ super() }}
-    {% endblock %}
-{% endblock %}
+    <span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">list_list</span> <span class="n">scoped</span> <span class="o">%</span><span class="p">}</span>
+        <span class="n">Text</span> <span class="n">before</span> <span class="n">the</span> <span class="nb">list</span>
+        <span class="p">{{</span> <span class="nb">super</span><span class="p">()</span> <span class="p">}}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -429,20 +429,20 @@ each block:</p>
 </li>
 </ul>
 <p>To insert your template section before the a block, say &#8220;add_form&#8221; just create your own template like this:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;appbuilder/general/model/add.html&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s2">&quot;appbuilder/general/model/add.html&quot;</span> <span class="o">%</span><span class="p">}</span>
 
-    {% block add_form %}
-        This Text is before the add form widget
-        {{ super() }}
-    {% endblock %}
+    <span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">add_form</span> <span class="o">%</span><span class="p">}</span>
+        <span class="n">This</span> <span class="n">Text</span> <span class="ow">is</span> <span class="n">before</span> <span class="n">the</span> <span class="n">add</span> <span class="n">form</span> <span class="n">widget</span>
+        <span class="p">{{</span> <span class="nb">super</span><span class="p">()</span> <span class="p">}}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>To use your template define you ModelView with <strong>add_template</strong> declaration to your templates relative path</p>
 <p>If you have your template on ./your_project/app/templates/add_contacts.html</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 
-    <span class="n">add_template</span> <span class="o">=</span> <span class="s">&#39;add_contacts.html&#39;</span>
+    <span class="n">add_template</span> <span class="o">=</span> <span class="s1">&#39;add_contacts.html&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -481,20 +481,20 @@ each block:</p>
 </li>
 </ul>
 <p>To insert your template section before the edit widget, just create your own template like this:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;appbuilder/general/model/edit.html&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s2">&quot;appbuilder/general/model/edit.html&quot;</span> <span class="o">%</span><span class="p">}</span>
 
-    {% block add_form %}
-        This Text is before the add form widget
-        {{ super() }}
-    {% endblock %}
+    <span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">add_form</span> <span class="o">%</span><span class="p">}</span>
+        <span class="n">This</span> <span class="n">Text</span> <span class="ow">is</span> <span class="n">before</span> <span class="n">the</span> <span class="n">add</span> <span class="n">form</span> <span class="n">widget</span>
+        <span class="p">{{</span> <span class="nb">super</span><span class="p">()</span> <span class="p">}}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>To use your template define you ModelView with <strong>edit_template</strong> declaration to your templates relative path</p>
 <p>If you have your template on ./your_project/app/templates/edit_contacts.html</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 
-    <span class="n">edit_template</span> <span class="o">=</span> <span class="s">&#39;edit_contacts.html&#39;</span>
+    <span class="n">edit_template</span> <span class="o">=</span> <span class="s1">&#39;edit_contacts.html&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -533,20 +533,20 @@ each block:</p>
 </li>
 </ul>
 <p>To insert your template section before the a block, say &#8220;show_form&#8221; just create your own template like this:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;appbuilder/general/model/edit.html&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s2">&quot;appbuilder/general/model/edit.html&quot;</span> <span class="o">%</span><span class="p">}</span>
 
-    {% block show_form %}
-        This Text is before the show widget
-        {{ super() }}
-    {% endblock %}
+    <span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">show_form</span> <span class="o">%</span><span class="p">}</span>
+        <span class="n">This</span> <span class="n">Text</span> <span class="ow">is</span> <span class="n">before</span> <span class="n">the</span> <span class="n">show</span> <span class="n">widget</span>
+        <span class="p">{{</span> <span class="nb">super</span><span class="p">()</span> <span class="p">}}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>To use your template define you ModelView with <strong>edit_template</strong> declaration to your templates relative path</p>
 <p>If you have your template on ./your_project/app/templates/edit_contacts.html</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 
-    <span class="n">edit_template</span> <span class="o">=</span> <span class="s">&#39;edit_contacts.html&#39;</span>
+    <span class="n">edit_template</span> <span class="o">=</span> <span class="s1">&#39;edit_contacts.html&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -606,52 +606,52 @@ with widgets.</p>
 since version 1.4.1 list widgets extend <strong>base_list.html</strong> this will make your life
 simpler, this base template declares the following blocks you should use, when implementing
 your own widget for lists:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% block list_header scoped %}
-    This is where the list controls are rendered, extend it to *inject* your own controls.
-{% endblock %}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">list_header</span> <span class="n">scoped</span> <span class="o">%</span><span class="p">}</span>
+    <span class="n">This</span> <span class="ow">is</span> <span class="n">where</span> <span class="n">the</span> <span class="nb">list</span> <span class="n">controls</span> <span class="n">are</span> <span class="n">rendered</span><span class="p">,</span> <span class="n">extend</span> <span class="n">it</span> <span class="n">to</span> <span class="o">*</span><span class="n">inject</span><span class="o">*</span> <span class="n">your</span> <span class="n">own</span> <span class="n">controls</span><span class="o">.</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 
-{% block begin_content scoped %}
-    Area next to the controls
-{% endblock %}
+<span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">begin_content</span> <span class="n">scoped</span> <span class="o">%</span><span class="p">}</span>
+    <span class="n">Area</span> <span class="nb">next</span> <span class="n">to</span> <span class="n">the</span> <span class="n">controls</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 
-{% block begin_loop_header scoped %}
-    Nice place to render your list headers.
-{% endblock %}
+<span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">begin_loop_header</span> <span class="n">scoped</span> <span class="o">%</span><span class="p">}</span>
+    <span class="n">Nice</span> <span class="n">place</span> <span class="n">to</span> <span class="n">render</span> <span class="n">your</span> <span class="nb">list</span> <span class="n">headers</span><span class="o">.</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 
-{% block begin_loop_values %}
-    Make your loop and render the list itself.
-{% endblock %}
+<span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">begin_loop_values</span> <span class="o">%</span><span class="p">}</span>
+    <span class="n">Make</span> <span class="n">your</span> <span class="n">loop</span> <span class="ow">and</span> <span class="n">render</span> <span class="n">the</span> <span class="nb">list</span> <span class="n">itself</span><span class="o">.</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 </li>
 </ul>
 <p>Let&#8217;s make a simple example:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% import &#39;appbuilder/general/lib.html&#39; as lib %}
-{% extends &#39;appbuilder/general/widgets/base_list.html&#39; %}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="kn">import</span> <span class="s1">&#39;appbuilder/general/lib.html&#39;</span> <span class="k">as</span> <span class="n">lib</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s1">&#39;appbuilder/general/widgets/base_list.html&#39;</span> <span class="o">%</span><span class="p">}</span>
 
-{% block list_header %}
-   {{ super() }}
-   &lt;a href=&quot;url_for(&#39;Class.method for my control&#39;)&quot; class=&quot;btn btn-sm btn-primary&quot;
-        &lt;i class=&quot;fa fa-rocket&quot;&gt;&lt;/i&gt;
-   &lt;/a&gt;
-{% endblock %}
+<span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">list_header</span> <span class="o">%</span><span class="p">}</span>
+   <span class="p">{{</span> <span class="nb">super</span><span class="p">()</span> <span class="p">}}</span>
+   <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;url_for(&#39;Class.method for my control&#39;)&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-sm btn-primary&quot;</span>
+        <span class="o">&lt;</span><span class="n">i</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;fa fa-rocket&quot;</span><span class="o">&gt;&lt;/</span><span class="n">i</span><span class="o">&gt;</span>
+   <span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 
-{% block begin_loop_values %}
-    {% for item in value_columns %}
-        {% set pk = pks[loop.index-1] %}
-        {% if actions %}
-            &lt;input id=&quot;{{pk}}&quot; class=&quot;action_check&quot; name=&quot;rowid&quot; value=&quot;{{pk}}&quot; type=&quot;checkbox&quot;&gt;
-        {% endif %}
-        {% if can_show or can_edit or can_delete %}
-            {{ lib.btn_crud(can_show, can_edit, can_delete, pk, modelview_name, filters) }}
-        {% endif %}
-        &lt;/div&gt;
+<span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">begin_loop_values</span> <span class="o">%</span><span class="p">}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value_columns</span> <span class="o">%</span><span class="p">}</span>
+        <span class="p">{</span><span class="o">%</span> <span class="nb">set</span> <span class="n">pk</span> <span class="o">=</span> <span class="n">pks</span><span class="p">[</span><span class="n">loop</span><span class="o">.</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">%</span><span class="p">}</span>
+        <span class="p">{</span><span class="o">%</span> <span class="k">if</span> <span class="n">actions</span> <span class="o">%</span><span class="p">}</span>
+            <span class="o">&lt;</span><span class="nb">input</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;{{pk}}&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;action_check&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rowid&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;{{pk}}&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;checkbox&quot;</span><span class="o">&gt;</span>
+        <span class="p">{</span><span class="o">%</span> <span class="n">endif</span> <span class="o">%</span><span class="p">}</span>
+        <span class="p">{</span><span class="o">%</span> <span class="k">if</span> <span class="n">can_show</span> <span class="ow">or</span> <span class="n">can_edit</span> <span class="ow">or</span> <span class="n">can_delete</span> <span class="o">%</span><span class="p">}</span>
+            <span class="p">{{</span> <span class="n">lib</span><span class="o">.</span><span class="n">btn_crud</span><span class="p">(</span><span class="n">can_show</span><span class="p">,</span> <span class="n">can_edit</span><span class="p">,</span> <span class="n">can_delete</span><span class="p">,</span> <span class="n">pk</span><span class="p">,</span> <span class="n">modelview_name</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span> <span class="p">}}</span>
+        <span class="p">{</span><span class="o">%</span> <span class="n">endif</span> <span class="o">%</span><span class="p">}</span>
+        <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
 
-        {% for value in include_columns %}
-            &lt;p {{ item[value]|safe }}&lt;/p&gt;
-        {% endfor %}
-    {% endfor %}
-{% endblock %}
+        <span class="p">{</span><span class="o">%</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">include_columns</span> <span class="o">%</span><span class="p">}</span>
+            <span class="o">&lt;</span><span class="n">p</span> <span class="p">{{</span> <span class="n">item</span><span class="p">[</span><span class="n">value</span><span class="p">]</span><span class="o">|</span><span class="n">safe</span> <span class="p">}}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+        <span class="p">{</span><span class="o">%</span> <span class="n">endfor</span> <span class="o">%</span><span class="p">}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">endfor</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>This example will just use two blocks <strong>list_header</strong> and <strong>begin_loop_values</strong>.
@@ -684,16 +684,16 @@ subfolder named <em>widgets</em>. So on our example we will keep our template on
 <ul>
 <li><p class="first">Next we must create our python class to contain our widget. on your <strong>app</strong> folder
 create a file named widgets.py:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder.widgets</span> <span class="kn">import</span> <span class="n">ListWidget</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask_appbuilder.widgets</span> <span class="k">import</span> <span class="n">ListWidget</span>
 
 
 <span class="k">class</span> <span class="nc">MyListWidget</span><span class="p">(</span><span class="n">ListWidget</span><span class="p">):</span>
-     <span class="n">template</span> <span class="o">=</span> <span class="s">&#39;widgets/my_list.html&#39;</span>
+     <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;widgets/my_list.html&#39;</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Finnaly use your new widget on your views:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
     <span class="n">list_widget</span> <span class="o">=</span> <span class="n">MyListWidget</span>
 </pre></div>
@@ -723,16 +723,16 @@ components easily. Using them will ease your productivity and help you introduce
 new html that shares the same look and feel has the framework.</p>
 <ul>
 <li><p class="first">Panel component:</p>
-<div class="highlight-python"><div class="highlight"><pre>{{ lib.panel_begin(&quot;Panel&#39;s Title&quot;) }}
-    Your html goes here
-{{ lib.panel_end() }}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{{</span> <span class="n">lib</span><span class="o">.</span><span class="n">panel_begin</span><span class="p">(</span><span class="s2">&quot;Panel&#39;s Title&quot;</span><span class="p">)</span> <span class="p">}}</span>
+    <span class="n">Your</span> <span class="n">html</span> <span class="n">goes</span> <span class="n">here</span>
+<span class="p">{{</span> <span class="n">lib</span><span class="o">.</span><span class="n">panel_end</span><span class="p">()</span> <span class="p">}}</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Accordion (pass your view&#8217;s name, or something that will serve as an id):</p>
-<div class="highlight-python"><div class="highlight"><pre>{% call lib.accordion_tag(view.__class__.__name__,&quot;Accordion Title&quot;, False) %}
-    Your HTML goes here
-{% endcall %}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">call</span> <span class="n">lib</span><span class="o">.</span><span class="n">accordion_tag</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span><span class="s2">&quot;Accordion Title&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="o">%</span><span class="p">}</span>
+    <span class="n">Your</span> <span class="n">HTML</span> <span class="n">goes</span> <span class="n">here</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endcall</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 </li>
@@ -753,7 +753,7 @@ new html that shares the same look and feel has the framework.</p>
     </p>
     <p>
         &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
     </p>
   </div>
 </footer>

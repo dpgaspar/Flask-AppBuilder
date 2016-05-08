@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Diagrams &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.6.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+  
+  <a href="https://github.com/dpgaspar/Flask-AppBuilder"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
+
+
+  <div id="navbar" class="navbar  navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          Flask-AppBuilder</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="#">Diagrams</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fabmanager.html">Command Line Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Base Configuration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="views.html">Base Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickhowto.html">Model Views (Quick How to)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickhowto_mongo.html">Model Views on MongoDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickcharts.html">Chart Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickfiles.html">Model Views with Files and Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickminimal.html">Quick Minimal Application</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="relations.html">Model Relations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customizing.html">Customizing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Templates</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="addons.html">AddOn development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic_datasource.html">Generic Data Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipledbs.html">Multiple Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="i18n.html">i18n Translations</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_registration.html">User Registration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versionmigration.html">Version Migration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Diagrams</a><ul>
+<li><a class="reference internal" href="#class-view-diagram-tree">Class View Diagram Tree</a></li>
+<li><a class="reference internal" href="#class-data-diagram-tree">Class Data Diagram Tree</a></li>
+<li><a class="reference internal" href="#class-security-diagram-tree">Class Security Diagram Tree</a></li>
+<li><a class="reference internal" href="#security-models-erd">Security Models ERD</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="diagrams">
+<h1>Diagrams<a class="headerlink" href="#diagrams" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
+<p>This page will show various diagrams about the framework structure.</p>
+<div class="section" id="class-view-diagram-tree">
+<h2>Class View Diagram Tree<a class="headerlink" href="#class-view-diagram-tree" title="Permalink to this headline">¶</a></h2>
+<hr class="docutils" />
+<p>All class views tree reflect functionality each layer is responsible for a certain goal. You will be essentially using
+BaseViews, IndexViews and the leafs ModelView, chart views and form views.</p>
+<div><img height="840" src="_images/blockdiag-08f10482b0afaab4fe198ff2dec64b15d489b182.png" width="1024" /></div><p>Next is a summary explanation for each class:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">BaseView:</th><td class="field-body">Collects all the exposed methods, creates the Flask blueprint and registers the URLs, initializes base permissions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">UtilView:</th><td class="field-body">Implements exposes <strong>back</strong> for special back UI functionality.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">IndexView:</th><td class="field-body">Special view for rendering the index page.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">SimpleFormView:</th><td class="field-body">Subclass it to render WTForms.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">PublicFormView:</th><td class="field-body">Same as SimpleFormView but with public access only.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">BaseModelView:</th><td class="field-body">Class responsible for an initial datamodel layer, implements search form and filters.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">BaseChartView:</th><td class="field-body">Basic chart view functionality.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">GroupByChartView:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Subclass it to render Google charts with group by queries.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">DirectByChartView:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Subclass it to render Google charts with queries.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">BaseCRUDView:</th><td class="field-body">Implement base functionality for add, edit, delete, creates all forms.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">RestCRUDView:</th><td class="field-body">Exposes the JSON REST API for CRUD methods and more.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">ModelView:</th><td class="field-body">Subclass it to render your views based on models, with complete CRUD UI functionality.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">MasterDetailView:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Renders a master ModelView and multiple detail ModelViews thar are database related.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">MultipleView:</th><td class="field-body">Renders multiple views on the same page (ex: ModelView and GroupByChartView)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="class-data-diagram-tree">
+<h2>Class Data Diagram Tree<a class="headerlink" href="#class-data-diagram-tree" title="Permalink to this headline">¶</a></h2>
+<hr class="docutils" />
+<p>All classes for data access aim for abstracting the backend.</p>
+<div><img height="280" src="_images/blockdiag-c13911bc522f6e33b9ebee5484f6dbe2b02f3204.png" width="448" /></div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">BaseInterface:</th><td class="field-body">Interface class, imposes a unique API layer for data access.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">SQLAInterface:</th><td class="field-body">Data access for SQLAlchemy.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">MongoEngineInterface:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Data access for MongoEngine (MongoDB).</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">GenericInterface:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Data access for custom data structures.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="class-security-diagram-tree">
+<h2>Class Security Diagram Tree<a class="headerlink" href="#class-security-diagram-tree" title="Permalink to this headline">¶</a></h2>
+<hr class="docutils" />
+<p>Classes that are involved in implementing security. Register security views, implement various methods of authentication
+manage permissions (insert/remove all permission on the backend).</p>
+<div><img height="200" src="_images/blockdiag-114d74895afcb14b6c646878525148b8996ea20b.png" width="832" /></div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">BaseManager:</th><td class="field-body">Base class for all Manager classes, holds AppBuilder class.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">AbstractSecurityManager:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Abstract class for Security managers, defines the must have methods.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">BaseSecurityManager:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Base class for security, registers security views, implements authentication,
+inserts/removes all permission on the database, manages roles/users and views.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">sqla.SecurityManager:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Implements BaseSecurityManager for SQAlchemy.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">mongoengine.SecurityManager:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Implements BaseSecurityManager for MongoEngine.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="security-models-erd">
+<h2>Security Models ERD<a class="headerlink" href="#security-models-erd" title="Permalink to this headline">¶</a></h2>
+<hr class="docutils" />
+<p>This is the ERD of the frameworks security models.</p>
+<div><img height="200" src="_images/blockdiag-ec2b8762c466c1b2f34ccd5497f593e6da8c7a52.png" width="832" /></div></div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

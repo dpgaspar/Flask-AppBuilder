@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>flask_appbuilder.security.manager &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.6.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+  
+  <a href="https://github.com/dpgaspar/Flask-AppBuilder"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
+
+
+  <div id="navbar" class="navbar  navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          Flask-AppBuilder</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../diagrams.html">Diagrams</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fabmanager.html">Command Line Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../config.html">Base Configuration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../views.html">Base Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickhowto.html">Model Views (Quick How to)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickhowto_mongo.html">Model Views on MongoDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickcharts.html">Chart Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickfiles.html">Model Views with Files and Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickminimal.html">Quick Minimal Application</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../relations.html">Model Relations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../customizing.html">Customizing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../templates.html">Templates</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../addons.html">AddOn development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generic_datasource.html">Generic Data Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../multipledbs.html">Multiple Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../i18n.html">i18n Translations</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_registration.html">User Registration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../versionmigration.html">Version Migration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../versions.html">Versions</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <h1>Source code for flask_appbuilder.security.manager</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">session</span>
+<span class="kn">from</span> <span class="nn">werkzeug.security</span> <span class="kn">import</span> <span class="n">generate_password_hash</span><span class="p">,</span> <span class="n">check_password_hash</span>
+<span class="kn">from</span> <span class="nn">flask_login</span> <span class="kn">import</span> <span class="n">LoginManager</span><span class="p">,</span> <span class="n">current_user</span>
+<span class="kn">from</span> <span class="nn">flask_openid</span> <span class="kn">import</span> <span class="n">OpenID</span>
+<span class="kn">from</span> <span class="nn">flask_babelpkg</span> <span class="kn">import</span> <span class="n">lazy_gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">.views</span> <span class="kn">import</span> <span class="n">AuthDBView</span><span class="p">,</span> <span class="n">AuthOIDView</span><span class="p">,</span> <span class="n">ResetMyPasswordView</span><span class="p">,</span> <span class="n">AuthLDAPView</span><span class="p">,</span> <span class="n">AuthOAuthView</span><span class="p">,</span> <span class="n">AuthRemoteUserView</span><span class="p">,</span> \
+    <span class="n">ResetPasswordView</span><span class="p">,</span> <span class="n">UserDBModelView</span><span class="p">,</span> <span class="n">UserLDAPModelView</span><span class="p">,</span> <span class="n">UserOIDModelView</span><span class="p">,</span> <span class="n">UserOAuthModelView</span><span class="p">,</span> <span class="n">UserRemoteUserModelView</span><span class="p">,</span> \
+    <span class="n">RoleModelView</span><span class="p">,</span> <span class="n">PermissionViewModelView</span><span class="p">,</span> <span class="n">ViewMenuModelView</span><span class="p">,</span> <span class="n">PermissionModelView</span><span class="p">,</span> <span class="n">UserStatsChartView</span><span class="p">,</span> <span class="n">RegisterUserModelView</span><span class="p">,</span> \
+    <span class="n">UserInfoEditView</span>
+<span class="kn">from</span> <span class="nn">.registerviews</span> <span class="kn">import</span> <span class="n">RegisterUserDBView</span><span class="p">,</span> <span class="n">RegisterUserOIDView</span><span class="p">,</span> <span class="n">RegisterUserOAuthView</span>
+<span class="kn">from</span> <span class="nn">..basemanager</span> <span class="kn">import</span> <span class="n">BaseManager</span>
+<span class="kn">from</span> <span class="nn">..const</span> <span class="kn">import</span> <span class="n">AUTH_OID</span><span class="p">,</span> <span class="n">AUTH_DB</span><span class="p">,</span> <span class="n">AUTH_LDAP</span><span class="p">,</span> \
+                    <span class="n">AUTH_REMOTE_USER</span><span class="p">,</span> <span class="n">AUTH_OAUTH</span><span class="p">,</span> \
+                    <span class="n">LOGMSG_ERR_SEC_AUTH_LDAP</span><span class="p">,</span> \
+                    <span class="n">LOGMSG_WAR_SEC_NO_USER</span><span class="p">,</span> \
+                    <span class="n">LOGMSG_WAR_SEC_NOLDAP_OBJ</span><span class="p">,</span> \
+                    <span class="n">LOGMSG_WAR_SEC_LOGIN_FAILED</span>
+                    
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">AbstractSecurityManager</span><span class="p">(</span><span class="n">BaseManager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Abstract SecurityManager class, declares all methods used by the</span>
+<span class="sd">        framework. There is no assumptions about security models or auth types.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">add_permissions_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_permissions</span><span class="p">,</span> <span class="n">view_menu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Adds a permission on a view menu to the backend</span>
+
+<span class="sd">            :param base_permissions:</span>
+<span class="sd">                list of permissions from view (all exposed methods): &#39;can_add&#39;,&#39;can_edit&#39; etc...</span>
+<span class="sd">            :param view_menu:</span>
+<span class="sd">                name of the view or menu to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">add_permissions_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view_menu_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Adds menu_access to menu on permission_view_menu</span>
+
+<span class="sd">            :param view_menu_name:</span>
+<span class="sd">                The menu name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">register_views</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Generic function to create the security views</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">is_item_public</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permission_name</span><span class="p">,</span> <span class="n">view_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Check if view has public permissions</span>
+
+<span class="sd">            :param permission_name:</span>
+<span class="sd">                the permission: can_show, can_edit...</span>
+<span class="sd">            :param view_name:</span>
+<span class="sd">                the name of the class view (child of BaseView)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">has_access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permission_name</span><span class="p">,</span> <span class="n">view_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Check if current user or public has access to view or menu</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">security_cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">baseviews</span><span class="p">,</span> <span class="n">menus</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="k">def</span> <span class="nf">_oauth_tokengetter</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Default function to return the current user oauth token</span>
+<span class="sd">        from session cookie.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;oauth&#39;</span><span class="p">)</span> 
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Token Get: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">token</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">token</span>
+
+
+<div class="viewcode-block" id="BaseSecurityManager"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager">[docs]</a><span class="k">class</span> <span class="nc">BaseSecurityManager</span><span class="p">(</span><span class="n">AbstractSecurityManager</span><span class="p">):</span>
+    <span class="n">auth_view</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; The obj instance for authentication view &quot;&quot;&quot;</span>
+    <span class="n">user_view</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; The obj instance for user view &quot;&quot;&quot;</span>
+    <span class="n">registeruser_view</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; The obj instance for registering user view &quot;&quot;&quot;</span>
+    <span class="n">lm</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Flask-Login LoginManager &quot;&quot;&quot;</span>
+    <span class="n">oid</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Flask-OpenID OpenID &quot;&quot;&quot;</span>
+    <span class="n">oauth</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Flask-OAuth &quot;&quot;&quot;</span>
+    <span class="n">oauth_remotes</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Initialized (remote_app) providers dict {&#39;provider_name&#39;, OBJ } &quot;&quot;&quot;</span>
+    <span class="n">oauth_tokengetter</span> <span class="o">=</span> <span class="n">_oauth_tokengetter</span>
+    <span class="sd">&quot;&quot;&quot; OAuth tokengetter function override to implement your own tokengetter method &quot;&quot;&quot;</span>
+    <span class="n">oauth_user_info</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">user_model</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Override to set your own User Model &quot;&quot;&quot;</span>
+    <span class="n">role_model</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Override to set your own Role Model &quot;&quot;&quot;</span>
+    <span class="n">permission_model</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Override to set your own Permission Model &quot;&quot;&quot;</span>
+    <span class="n">viewmenu_model</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Override to set your own ViewMenu Model &quot;&quot;&quot;</span>
+    <span class="n">permissionview_model</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Override to set your own PermissionView Model &quot;&quot;&quot;</span>
+    <span class="n">registeruser_model</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Override to set your own RegisterUser Model &quot;&quot;&quot;</span>
+    
+    <span class="n">userdbmodelview</span> <span class="o">=</span> <span class="n">UserDBModelView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own user db view &quot;&quot;&quot;</span>
+    <span class="n">userldapmodelview</span> <span class="o">=</span> <span class="n">UserLDAPModelView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own user ldap view &quot;&quot;&quot;</span>
+    <span class="n">useroidmodelview</span> <span class="o">=</span> <span class="n">UserOIDModelView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own user OID view &quot;&quot;&quot;</span>
+    <span class="n">useroauthmodelview</span> <span class="o">=</span> <span class="n">UserOAuthModelView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own user OAuth view &quot;&quot;&quot;</span>
+    <span class="n">userremoteusermodelview</span> <span class="o">=</span> <span class="n">UserRemoteUserModelView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own user REMOTE_USER view &quot;&quot;&quot;</span>
+    <span class="n">registerusermodelview</span> <span class="o">=</span> <span class="n">RegisterUserModelView</span>
+
+    <span class="n">authdbview</span> <span class="o">=</span> <span class="n">AuthDBView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own Authentication DB view &quot;&quot;&quot;</span>
+    <span class="n">authldapview</span> <span class="o">=</span> <span class="n">AuthLDAPView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own Authentication LDAP view &quot;&quot;&quot;</span>
+    <span class="n">authoidview</span> <span class="o">=</span> <span class="n">AuthOIDView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own Authentication OID view &quot;&quot;&quot;</span>
+    <span class="n">authoauthview</span> <span class="o">=</span> <span class="n">AuthOAuthView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own Authentication OAuth view &quot;&quot;&quot;</span>
+    <span class="n">authremoteuserview</span> <span class="o">=</span> <span class="n">AuthRemoteUserView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own Authentication OAuth view &quot;&quot;&quot;</span>
+
+    <span class="n">registeruserdbview</span> <span class="o">=</span> <span class="n">RegisterUserDBView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own register user db view &quot;&quot;&quot;</span>
+    <span class="n">registeruseroidview</span> <span class="o">=</span> <span class="n">RegisterUserOIDView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own register user OpenID view &quot;&quot;&quot;</span>
+    <span class="n">registeruseroauthview</span> <span class="o">=</span> <span class="n">RegisterUserOAuthView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own register user OAuth view &quot;&quot;&quot;</span>
+
+    <span class="n">resetmypasswordview</span> <span class="o">=</span> <span class="n">ResetMyPasswordView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own reset my password view &quot;&quot;&quot;</span>
+    <span class="n">resetpasswordview</span> <span class="o">=</span> <span class="n">ResetPasswordView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own reset password view &quot;&quot;&quot;</span>
+    <span class="n">userinfoeditview</span> <span class="o">=</span> <span class="n">UserInfoEditView</span>
+    <span class="sd">&quot;&quot;&quot; Override if you want your own User information edit view &quot;&quot;&quot;</span>
+
+    <span class="n">rolemodelview</span> <span class="o">=</span> <span class="n">RoleModelView</span>
+    <span class="n">permissionmodelview</span> <span class="o">=</span> <span class="n">PermissionModelView</span>
+    <span class="n">userstatschartview</span> <span class="o">=</span> <span class="n">UserStatsChartView</span>
+    <span class="n">viewmenumodelview</span> <span class="o">=</span> <span class="n">ViewMenuModelView</span>
+    <span class="n">permissionviewmodelview</span> <span class="o">=</span> <span class="n">PermissionViewModelView</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">appbuilder</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseSecurityManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">appbuilder</span><span class="p">)</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span>
+        <span class="c1"># Base Security Config</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;AUTH_ROLE_ADMIN&#39;</span><span class="p">,</span> <span class="s1">&#39;Admin&#39;</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;AUTH_ROLE_PUBLIC&#39;</span><span class="p">,</span> <span class="s1">&#39;Public&#39;</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;AUTH_TYPE&#39;</span><span class="p">,</span> <span class="n">AUTH_DB</span><span class="p">)</span>
+        <span class="c1"># Self Registration</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;AUTH_USER_REGISTRATION&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;AUTH_USER_REGISTRATION_ROLE&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_role_public</span><span class="p">)</span>
+              
+        <span class="c1"># LDAP Config</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_type</span> <span class="o">==</span> <span class="n">AUTH_LDAP</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;AUTH_LDAP_SERVER&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type.&quot;</span><span class="p">)</span>
+            <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;AUTH_LDAP_SEARCH&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;AUTH_LDAP_BIND_USER&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;AUTH_LDAP_APPEND_DOMAIN&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;AUTH_LDAP_BIND_PASSWORD&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;AUTH_LDAP_ALLOW_SELF_SIGNED&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+            <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;AUTH_LDAP_UID_FIELD&#39;</span><span class="p">,</span> <span class="s1">&#39;uid&#39;</span><span class="p">)</span>
+            <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;AUTH_LDAP_FIRSTNAME_FIELD&#39;</span><span class="p">,</span> <span class="s1">&#39;givenName&#39;</span><span class="p">)</span>
+            <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;AUTH_LDAP_LASTNAME_FIELD&#39;</span><span class="p">,</span> <span class="s1">&#39;sn&#39;</span><span class="p">)</span>
+            <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;AUTH_LDAP_EMAIL_FIELD&#39;</span><span class="p">,</span> <span class="s1">&#39;mail&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_type</span> <span class="o">==</span> <span class="n">AUTH_OID</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">oid</span> <span class="o">=</span> <span class="n">OpenID</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_type</span> <span class="o">==</span> <span class="n">AUTH_OAUTH</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">flask_oauthlib.client</span> <span class="kn">import</span> <span class="n">OAuth</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuth</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">oauth_remotes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">_provider</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">oauth_providers</span><span class="p">:</span>
+                <span class="n">provider_name</span> <span class="o">=</span> <span class="n">_provider</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;OAuth providers init {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">provider_name</span><span class="p">))</span>
+                <span class="n">obj_provider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">oauth</span><span class="o">.</span><span class="n">remote_app</span><span class="p">(</span><span class="n">provider_name</span><span class="p">,</span> <span class="o">**</span><span class="n">_provider</span><span class="p">[</span><span class="s1">&#39;remote_app&#39;</span><span class="p">])</span>
+                <span class="n">obj_provider</span><span class="o">.</span><span class="n">_tokengetter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">oauth_tokengetter</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">oauth_user_info</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">oauth_user_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_oauth_user_info</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">oauth_remotes</span><span class="p">[</span><span class="n">provider_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj_provider</span>
+        
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lm</span> <span class="o">=</span> <span class="n">LoginManager</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lm</span><span class="o">.</span><span class="n">login_view</span> <span class="o">=</span> <span class="s1">&#39;login&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lm</span><span class="o">.</span><span class="n">user_loader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_user</span><span class="p">)</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">get_url_for_registeruser</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registeruser_view</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">registeruser_view</span><span class="o">.</span><span class="n">default_view</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">get_user_datamodel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_view</span><span class="o">.</span><span class="n">datamodel</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">get_register_user_datamodel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">registerusermodelview</span><span class="o">.</span><span class="n">datamodel</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_TYPE&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_role_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_ROLE_ADMIN&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_role_public</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_ROLE_PUBLIC&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_ldap_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_LDAP_SERVER&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_user_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_USER_REGISTRATION&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_user_registration_role</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_USER_REGISTRATION_ROLE&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_ldap_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_LDAP_SEARCH&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_ldap_bind_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_LDAP_BIND_USER&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_ldap_bind_password</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_LDAP_BIND_PASSWORD&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_ldap_append_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_LDAP_APPEND_DOMAIN&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_ldap_uid_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_LDAP_UID_FIELD&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_ldap_firstname_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_LDAP_FIRSTNAME_FIELD&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_ldap_lastname_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_LDAP_LASTNAME_FIELD&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_ldap_email_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_LDAP_EMAIL_FIELD&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_ldap_bind_first</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_LDAP_BIND_FIRST&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">auth_ldap_allow_self_signed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;AUTH_LDAP_ALLOW_SELF_SIGNED&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">openid_providers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;OPENID_PROVIDERS&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">oauth_providers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;OAUTH_PROVIDERS&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="BaseSecurityManager.oauth_user_info_getter"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.oauth_user_info_getter">[docs]</a>    <span class="k">def</span> <span class="nf">oauth_user_info_getter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Decorator function to be the OAuth user info getter</span>
+<span class="sd">            for all the providers, receives provider and response </span>
+<span class="sd">            return a dict with the information returned from the provider.</span>
+<span class="sd">            The returned user info dict should have it&#39;s keys with the same</span>
+<span class="sd">            name as the User Model.</span>
+<span class="sd">            </span>
+<span class="sd">            Use it like this an example for GitHub ::</span>
+<span class="sd">                </span>
+<span class="sd">                @appbuilder.sm.oauth_user_info_getter</span>
+<span class="sd">                def my_oauth_user_info(sm, provider, response=None):</span>
+<span class="sd">                    if provider == &#39;github&#39;:</span>
+<span class="sd">                        me = sm.oauth_remotes[provider].get(&#39;user&#39;)</span>
+<span class="sd">                        return {&#39;username&#39;: me.data.get(&#39;login&#39;)}</span>
+<span class="sd">                    else:</span>
+<span class="sd">                        return {}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">wraps</span><span class="p">(</span><span class="n">provider</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>    
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">oauth_remotes</span><span class="p">,</span> <span class="n">provider</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">)</span>
+            <span class="c1"># Checks if decorator is well behaved and returns a dict as supposed.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;OAuth user info decorated function did not returned a dict, but: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ret</span><span class="p">)))</span>
+                <span class="k">return</span> <span class="p">{}</span>
+            <span class="k">return</span> <span class="n">ret</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oauth_user_info</span> <span class="o">=</span> <span class="n">wraps</span>
+        <span class="k">return</span> <span class="n">wraps</span></div>
+    
+
+<div class="viewcode-block" id="BaseSecurityManager.get_oauth_token_key_name"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_key_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_oauth_token_key_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provider</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Returns the token_key name for the oauth provider</span>
+<span class="sd">            if none is configured defaults to oauth_token</span>
+<span class="sd">            this is configured using OAUTH_PROVIDERS and token_key key.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_provider</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">oauth_providers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">_provider</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">provider</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">_provider</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;token_key&#39;</span><span class="p">,</span> <span class="s1">&#39;oauth_token&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.get_oauth_token_secret_name"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_token_secret_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_oauth_token_secret_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provider</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Returns the token_secret name for the oauth provider</span>
+<span class="sd">            if none is configured defaults to oauth_secret</span>
+<span class="sd">            this is configured using OAUTH_PROVIDERS and token_secret</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_provider</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">oauth_providers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">_provider</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">provider</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">_provider</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;token_secret&#39;</span><span class="p">,</span> <span class="s1">&#39;oauth_token_secret&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.set_oauth_session"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.set_oauth_session">[docs]</a>    <span class="k">def</span> <span class="nf">set_oauth_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provider</span><span class="p">,</span> <span class="n">oauth_response</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Set the current session with OAuth user secrets</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get this provider key names for token_key and token_secret</span>
+        <span class="n">token_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">get_oauth_token_key_name</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span>
+        <span class="n">token_secret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">get_oauth_token_secret_name</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span>
+        <span class="c1"># Save users token on encrypted session cookie</span>
+        <span class="n">session</span><span class="p">[</span><span class="s1">&#39;oauth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">oauth_response</span><span class="p">[</span><span class="n">token_key</span><span class="p">],</span>
+            <span class="n">oauth_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token_secret</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">session</span><span class="p">[</span><span class="s1">&#39;oauth_provider&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">provider</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.get_oauth_user_info"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_oauth_user_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_oauth_user_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provider</span><span class="p">,</span> <span class="n">resp</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Since there are different OAuth API&#39;s with different ways to</span>
+<span class="sd">            retrieve user info</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># for GITHUB</span>
+        <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s1">&#39;github&#39;</span> <span class="ow">or</span> <span class="n">provider</span> <span class="o">==</span> <span class="s1">&#39;githublocal&#39;</span><span class="p">:</span>
+            <span class="n">me</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">oauth_remotes</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;User info from Github: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)}</span>
+        <span class="c1"># for twitter</span>
+        <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s1">&#39;twitter&#39;</span><span class="p">:</span>
+            <span class="n">me</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">oauth_remotes</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;account/settings.json&#39;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;User info from Twitter: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;screen_name&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)}</span>
+        <span class="c1"># for linkedin</span>
+        <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s1">&#39;linkedin&#39;</span><span class="p">:</span>
+            <span class="n">me</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">oauth_remotes</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;people/~:(id,email-address,first-name,last-name)?format=json&#39;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;User info from Linkedin: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;email-address&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;first_name&#39;</span><span class="p">:</span> <span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;firstName&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;last_name&#39;</span><span class="p">:</span> <span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lastName&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)}</span>
+        <span class="c1"># for Google</span>
+        <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s1">&#39;google&#39;</span><span class="p">:</span>
+            <span class="n">me</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">oauth_remotes</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;people/me&#39;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;User info from Google: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;displayName&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;emails&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;first_name&#39;</span><span class="p">:</span> <span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;givenName&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;last_name&#39;</span><span class="p">:</span> <span class="n">me</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;familyName&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)}</span>
+        <span class="k">else</span><span class="p">:</span> <span class="k">return</span> <span class="p">{}</span></div>
+
+
+    <span class="k">def</span> <span class="nf">register_views</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user_registration</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_type</span> <span class="o">==</span> <span class="n">AUTH_DB</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">registeruser_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registeruserdbview</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_type</span> <span class="o">==</span> <span class="n">AUTH_OID</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">registeruser_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registeruseroidview</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_type</span> <span class="o">==</span> <span class="n">AUTH_OAUTH</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">registeruser_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registeruseroauthview</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registeruser_view</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registeruser_view</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resetpasswordview</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resetmypasswordview</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">userinfoeditview</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_type</span> <span class="o">==</span> <span class="n">AUTH_DB</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">userdbmodelview</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">auth_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">authdbview</span><span class="p">()</span>
+            
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_type</span> <span class="o">==</span> <span class="n">AUTH_LDAP</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">userldapmodelview</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">auth_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">authldapview</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_type</span> <span class="o">==</span> <span class="n">AUTH_OAUTH</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">useroauthmodelview</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">auth_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">authoauthview</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_type</span> <span class="o">==</span> <span class="n">AUTH_REMOTE_USER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">userremoteusermodelview</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">auth_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">authremoteuserview</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">useroidmodelview</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">auth_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">authoidview</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user_registration</span><span class="p">:</span>
+                <span class="k">pass</span>
+                <span class="c1"># self.registeruser_view = self.registeruseroidview()</span>
+                <span class="c1"># self.appbuilder.add_view_no_menu(self.registeruser_view)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_view</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_view</span><span class="p">,</span> <span class="s2">&quot;List Users&quot;</span><span class="p">,</span>
+                                                  <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;fa-user&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;List Users&quot;</span><span class="p">),</span>
+                                                  <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Security&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s2">&quot;fa-cogs&quot;</span><span class="p">,</span>
+                                                  <span class="n">category_label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Security&#39;</span><span class="p">))</span>
+
+        <span class="n">role_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rolemodelview</span><span class="p">,</span> <span class="s2">&quot;List Roles&quot;</span><span class="p">,</span>
+                                             <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;fa-group&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;List Roles&#39;</span><span class="p">),</span>
+                                             <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Security&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s2">&quot;fa-cogs&quot;</span><span class="p">)</span>
+        <span class="n">role_view</span><span class="o">.</span><span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_view</span><span class="o">.</span><span class="n">__class__</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">userstatschartview</span><span class="p">,</span>
+                                 <span class="s2">&quot;User&#39;s Statistics&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;fa-bar-chart-o&quot;</span><span class="p">,</span>
+                                 <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;User&#39;s Statistics&quot;</span><span class="p">),</span>
+                                 <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Security&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user_registration</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registerusermodelview</span><span class="p">,</span>
+                                 <span class="s2">&quot;User&#39;s Statistics&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;fa-user-plus&quot;</span><span class="p">,</span>
+                                 <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;User Registrations&quot;</span><span class="p">),</span>
+                                 <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Security&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">add_separator</span><span class="p">(</span><span class="s2">&quot;Security&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">permissionmodelview</span><span class="p">,</span>
+                                 <span class="s2">&quot;Base Permissions&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;fa-lock&quot;</span><span class="p">,</span>
+                                 <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Base Permissions&quot;</span><span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Security&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">viewmenumodelview</span><span class="p">,</span>
+                                 <span class="s2">&quot;Views/Menus&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;fa-list-alt&quot;</span><span class="p">,</span>
+                                 <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Views/Menus&#39;</span><span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Security&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">permissionviewmodelview</span><span class="p">,</span>
+                                 <span class="s2">&quot;Permission on Views/Menus&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;fa-link&quot;</span><span class="p">,</span>
+                                 <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Permission on Views/Menus&#39;</span><span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Security&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseSecurityManager.create_db"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.create_db">[docs]</a>    <span class="k">def</span> <span class="nf">create_db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Setups the DB, creates admin and public roles if they don&#39;t exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_role</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_role_admin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_role</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_role_public</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_users</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">LOGMSG_WAR_SEC_NO_USER</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.reset_password"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.reset_password">[docs]</a>    <span class="k">def</span> <span class="nf">reset_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userid</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Change/Reset a user&#39;s password for authdb.</span>
+<span class="sd">            Password will be hashed and saved.</span>
+
+<span class="sd">            :param userid:</span>
+<span class="sd">                the user.id to reset the password</span>
+<span class="sd">            :param password:</span>
+<span class="sd">                The clear text password to reset and save hashed on the db</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_user_by_id</span><span class="p">(</span><span class="n">userid</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">generate_password_hash</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_user</span><span class="p">(</span><span class="n">user</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.update_user_auth_stat"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.update_user_auth_stat">[docs]</a>    <span class="k">def</span> <span class="nf">update_user_auth_stat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Update authentication successful to user.</span>
+
+<span class="sd">            :param user:</span>
+<span class="sd">                The authenticated user model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">login_count</span><span class="p">:</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">login_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">fail_login_count</span><span class="p">:</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">fail_login_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">login_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">fail_login_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">fail_login_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">last_login</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_user</span><span class="p">(</span><span class="n">user</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.auth_user_db"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_db">[docs]</a>    <span class="k">def</span> <span class="nf">auth_user_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Method for authenticating user, auth db style</span>
+
+<span class="sd">            :param username:</span>
+<span class="sd">                The username</span>
+<span class="sd">            :param password:</span>
+<span class="sd">                The password, will be tested against hashed password on db</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">username</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">username</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_user</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">()):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">LOGMSG_WAR_SEC_LOGIN_FAILED</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="n">check_password_hash</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_user_auth_stat</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">user</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_user_auth_stat</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">LOGMSG_WAR_SEC_LOGIN_FAILED</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">None</span></div>
+
+    <span class="k">def</span> <span class="nf">_search_ldap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ldap</span><span class="p">,</span> <span class="n">con</span><span class="p">,</span> <span class="n">username</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Searches LDAP for user, assumes ldap_search is set.</span>
+
+<span class="sd">            :param ldap: The ldap module reference</span>
+<span class="sd">            :param con: The ldap connection</span>
+<span class="sd">            :param username: username to match with auth_ldap_uid_field</span>
+<span class="sd">            :return: ldap object array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_append_domain</span><span class="p">:</span>
+            <span class="n">username</span> <span class="o">=</span> <span class="n">username</span> <span class="o">+</span> <span class="s1">&#39;@&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_append_domain</span>
+        <span class="n">filter_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_uid_field</span><span class="p">,</span> <span class="n">username</span><span class="p">)</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">search_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_search</span><span class="p">,</span>
+                            <span class="n">ldap</span><span class="o">.</span><span class="n">SCOPE_SUBTREE</span><span class="p">,</span>
+                            <span class="n">filter_str</span><span class="p">,</span>
+                            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_firstname_field</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_lastname_field</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_email_field</span>
+                            <span class="p">])</span>
+        <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">user</span>
+
+    <span class="k">def</span> <span class="nf">_bind_ldap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ldap</span><span class="p">,</span> <span class="n">con</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Privete to bind/Authenticate a user.</span>
+<span class="sd">            If AUTH_LDAP_BIND_USER exists then it will bind first with it,</span>
+<span class="sd">            next will search the LDAP server using the username with UID</span>
+<span class="sd">            and try to bind to it (OpenLDAP).</span>
+<span class="sd">            If AUTH_LDAP_BIND_USER does not exit, will bind with username/password</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">indirect_user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_bind_user</span>
+            <span class="k">if</span> <span class="n">indirect_user</span><span class="p">:</span>
+                <span class="n">indirect_password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_bind_password</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;LDAP indirect bind with: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">indirect_user</span><span class="p">))</span>
+                <span class="n">con</span><span class="o">.</span><span class="n">bind_s</span><span class="p">(</span><span class="n">indirect_user</span><span class="p">,</span> <span class="n">indirect_password</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;LDAP BIND indirect OK&quot;</span><span class="p">)</span>
+                <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_ldap</span><span class="p">(</span><span class="n">ldap</span><span class="p">,</span> <span class="n">con</span><span class="p">,</span> <span class="n">username</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;LDAP got User {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="p">))</span>
+                    <span class="c1"># username = DN from search</span>
+                    <span class="n">username</span> <span class="o">=</span> <span class="n">user</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">False</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;LDAP bind with: {0} {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="s2">&quot;XXXXXX&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_append_domain</span><span class="p">:</span>
+                <span class="n">username</span> <span class="o">=</span> <span class="n">username</span> <span class="o">+</span> <span class="s1">&#39;@&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_append_domain</span>
+            <span class="n">con</span><span class="o">.</span><span class="n">bind_s</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;LDAP bind OK: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">except</span> <span class="n">ldap</span><span class="o">.</span><span class="n">INVALID_CREDENTIALS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+
+<div class="viewcode-block" id="BaseSecurityManager.auth_user_ldap"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_ldap">[docs]</a>    <span class="k">def</span> <span class="nf">auth_user_ldap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Method for authenticating user, auth LDAP style.</span>
+<span class="sd">            depends on ldap module that is not mandatory requirement</span>
+<span class="sd">            for F.A.B.</span>
+
+<span class="sd">            :param username:</span>
+<span class="sd">                The username</span>
+<span class="sd">            :param password:</span>
+<span class="sd">                The password</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">username</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">username</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_user</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">ldap</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No ldap library for python.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">None</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_allow_self_signed</span><span class="p">:</span>
+                    <span class="n">ldap</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="n">ldap</span><span class="o">.</span><span class="n">OPT_X_TLS_REQUIRE_CERT</span><span class="p">,</span> <span class="n">ldap</span><span class="o">.</span><span class="n">OPT_X_TLS_ALLOW</span><span class="p">)</span>
+                <span class="n">con</span> <span class="o">=</span> <span class="n">ldap</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_server</span><span class="p">)</span>
+                <span class="n">con</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="n">ldap</span><span class="o">.</span><span class="n">OPT_REFERRALS</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="c1"># Authenticate user</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bind_ldap</span><span class="p">(</span><span class="n">ldap</span><span class="p">,</span> <span class="n">con</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">update_user_auth_stat</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">LOGMSG_WAR_SEC_LOGIN_FAILED</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="bp">None</span>
+                <span class="c1"># If user does not exist on the DB and not self user registration, go away</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user_registration</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">None</span>
+                <span class="c1"># User does not exist, create one if self registration.</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">user</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user_registration</span><span class="p">:</span>
+                    <span class="n">new_user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_ldap</span><span class="p">(</span><span class="n">ldap</span><span class="p">,</span> <span class="n">con</span><span class="p">,</span> <span class="n">username</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">new_user</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">LOGMSG_WAR_SEC_NOLDAP_OBJ</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="p">))</span>
+                        <span class="k">return</span> <span class="bp">None</span>
+                    <span class="n">ldap_user_info</span> <span class="o">=</span> <span class="n">new_user</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user_registration</span> <span class="ow">and</span> <span class="n">user</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_user</span><span class="p">(</span>
+                                <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+                                <span class="n">first_name</span><span class="o">=</span><span class="n">ldap_user_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_firstname_field</span><span class="p">,</span> <span class="p">[</span><span class="n">username</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="n">last_name</span><span class="o">=</span><span class="n">ldap_user_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_lastname_field</span><span class="p">,</span> <span class="p">[</span><span class="n">username</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="n">email</span><span class="o">=</span><span class="n">ldap_user_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_ldap_email_field</span><span class="p">,</span> <span class="p">[</span><span class="n">username</span> <span class="o">+</span> <span class="s1">&#39;@email.notfound&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">find_role</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user_registration_role</span><span class="p">)</span>
+                            <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_user_auth_stat</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">user</span>
+
+            <span class="k">except</span> <span class="n">ldap</span><span class="o">.</span><span class="n">LDAPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span> <span class="ow">and</span> <span class="s1">&#39;desc&#39;</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">LOGMSG_ERR_SEC_AUTH_LDAP</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;desc&#39;</span><span class="p">]))</span>
+                    <span class="k">return</span> <span class="bp">None</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="bp">None</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.auth_user_oid"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_oid">[docs]</a>    <span class="k">def</span> <span class="nf">auth_user_oid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            OpenID user Authentication</span>
+
+<span class="sd">            :type self: User model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_user</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">()):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">LOGMSG_WAR_SEC_LOGIN_FAILED</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_user_auth_stat</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">user</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.auth_user_remote_user"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_remote_user">[docs]</a>    <span class="k">def</span> <span class="nf">auth_user_remote_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            REMOTE_USER user Authentication</span>
+
+<span class="sd">            :type self: User model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_user</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">()):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">LOGMSG_WAR_SEC_LOGIN_FAILED</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_user_auth_stat</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">user</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.auth_user_oauth"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.auth_user_oauth">[docs]</a>    <span class="k">def</span> <span class="nf">auth_user_oauth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userinfo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            OAuth user Authentication</span>
+<span class="sd">            </span>
+<span class="sd">            :userinfo: dict with user information the keys have the same name</span>
+<span class="sd">            as User model columns.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;username&#39;</span> <span class="ow">in</span> <span class="n">userinfo</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_user</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">userinfo</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s1">&#39;email&#39;</span> <span class="ow">in</span> <span class="n">userinfo</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_user</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">userinfo</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;User info does not have username or email {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">userinfo</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">()):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">LOGMSG_WAR_SEC_LOGIN_FAILED</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">userinfo</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_user_auth_stat</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">user</span></div>
+            
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ----------------------------------------</span>
+<span class="sd">            PERMISSION ACCESS CHECK</span>
+<span class="sd">        ----------------------------------------</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BaseSecurityManager.is_item_public"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.is_item_public">[docs]</a>    <span class="k">def</span> <span class="nf">is_item_public</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permission_name</span><span class="p">,</span> <span class="n">view_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Check if view has public permissions</span>
+
+<span class="sd">            :param permission_name:</span>
+<span class="sd">                the permission: can_show, can_edit...</span>
+<span class="sd">            :param view_name:</span>
+<span class="sd">                the name of the class view (child of BaseView)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">permissions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_public_permissions</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">permissions</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">permissions</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">view_name</span> <span class="o">==</span> <span class="n">i</span><span class="o">.</span><span class="n">view_menu</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">permission_name</span> <span class="o">==</span> <span class="n">i</span><span class="o">.</span><span class="n">permission</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="bp">True</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span></div>
+
+    <span class="k">def</span> <span class="nf">_has_view_access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">permission_name</span><span class="p">,</span> <span class="n">view_name</span><span class="p">):</span>
+        <span class="n">roles</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">roles</span>
+        <span class="k">for</span> <span class="n">role</span> <span class="ow">in</span> <span class="n">roles</span><span class="p">:</span>
+            <span class="n">permissions</span> <span class="o">=</span> <span class="n">role</span><span class="o">.</span><span class="n">permissions</span>
+            <span class="k">if</span> <span class="n">permissions</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">permissions</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">view_name</span> <span class="o">==</span> <span class="n">permission</span><span class="o">.</span><span class="n">view_menu</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">permission_name</span> <span class="o">==</span> <span class="n">permission</span><span class="o">.</span><span class="n">permission</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+<div class="viewcode-block" id="BaseSecurityManager.has_access"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.has_access">[docs]</a>    <span class="k">def</span> <span class="nf">has_access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permission_name</span><span class="p">,</span> <span class="n">view_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Check if current user or public has access to view or menu</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">current_user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_view_access</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">permission_name</span><span class="p">,</span> <span class="n">view_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_item_public</span><span class="p">(</span><span class="n">permission_name</span><span class="p">,</span> <span class="n">view_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseSecurityManager.add_permissions_view"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permissions_view">[docs]</a>    <span class="k">def</span> <span class="nf">add_permissions_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_permissions</span><span class="p">,</span> <span class="n">view_menu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Adds a permission on a view menu to the backend</span>
+
+<span class="sd">            :param base_permissions:</span>
+<span class="sd">                list of permissions from view (all exposed methods): &#39;can_add&#39;,&#39;can_edit&#39; etc...</span>
+<span class="sd">            :param view_menu:</span>
+<span class="sd">                name of the view or menu to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">view_menu_db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_view_menu</span><span class="p">(</span><span class="n">view_menu</span><span class="p">)</span>
+        <span class="n">perm_views</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_permissions_view_menu</span><span class="p">(</span><span class="n">view_menu_db</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">perm_views</span><span class="p">:</span>
+            <span class="c1"># No permissions yet on this view</span>
+            <span class="k">for</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">base_permissions</span><span class="p">:</span>
+                <span class="n">pv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_permission_view_menu</span><span class="p">(</span><span class="n">permission</span><span class="p">,</span> <span class="n">view_menu</span><span class="p">)</span>
+                <span class="n">role_admin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_role</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_role_admin</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_permission_role</span><span class="p">(</span><span class="n">role_admin</span><span class="p">,</span> <span class="n">pv</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Permissions on this view exist but....</span>
+            <span class="n">role_admin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_role</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_role_admin</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">base_permissions</span><span class="p">:</span>
+                <span class="c1"># Check if base view permissions exist</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">exist_permission_on_views</span><span class="p">(</span><span class="n">perm_views</span><span class="p">,</span> <span class="n">permission</span><span class="p">):</span>
+                    <span class="n">pv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_permission_view_menu</span><span class="p">(</span><span class="n">permission</span><span class="p">,</span> <span class="n">view_menu</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_permission_role</span><span class="p">(</span><span class="n">role_admin</span><span class="p">,</span> <span class="n">pv</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">perm_view</span> <span class="ow">in</span> <span class="n">perm_views</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">perm_view</span><span class="o">.</span><span class="n">permission</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">base_permissions</span><span class="p">:</span>
+                    <span class="c1"># perm to delete</span>
+                    <span class="n">roles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_roles</span><span class="p">()</span>
+                    <span class="n">perm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_permission</span><span class="p">(</span><span class="n">perm_view</span><span class="o">.</span><span class="n">permission</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="c1"># del permission from all roles</span>
+                    <span class="k">for</span> <span class="n">role</span> <span class="ow">in</span> <span class="n">roles</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">del_permission_role</span><span class="p">(</span><span class="n">role</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">del_permission_view_menu</span><span class="p">(</span><span class="n">perm_view</span><span class="o">.</span><span class="n">permission</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">view_menu</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">perm_view</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">role_admin</span><span class="o">.</span><span class="n">permissions</span><span class="p">:</span>
+                    <span class="c1"># Role Admin must have all permissions</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_permission_role</span><span class="p">(</span><span class="n">role_admin</span><span class="p">,</span> <span class="n">perm_view</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.add_permissions_menu"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permissions_menu">[docs]</a>    <span class="k">def</span> <span class="nf">add_permissions_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view_menu_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Adds menu_access to menu on permission_view_menu</span>
+
+<span class="sd">            :param view_menu_name:</span>
+<span class="sd">                The menu name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_view_menu</span><span class="p">(</span><span class="n">view_menu_name</span><span class="p">)</span>
+        <span class="n">pv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_permission_view_menu</span><span class="p">(</span><span class="s1">&#39;menu_access&#39;</span><span class="p">,</span> <span class="n">view_menu_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pv</span><span class="p">:</span>
+            <span class="n">pv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_permission_view_menu</span><span class="p">(</span><span class="s1">&#39;menu_access&#39;</span><span class="p">,</span> <span class="n">view_menu_name</span><span class="p">)</span>
+            <span class="n">role_admin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_role</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_role_admin</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_permission_role</span><span class="p">(</span><span class="n">role_admin</span><span class="p">,</span> <span class="n">pv</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.security_cleanup"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.security_cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">security_cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">baseviews</span><span class="p">,</span> <span class="n">menus</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Will cleanup from the database all unused permissions</span>
+
+<span class="sd">            :param baseviews: A list of BaseViews class</span>
+<span class="sd">            :param menus: Menu class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">viewsmenus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_view_menu</span><span class="p">()</span>
+        <span class="n">roles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_roles</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">viewmenu</span> <span class="ow">in</span> <span class="n">viewsmenus</span><span class="p">:</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">for</span> <span class="n">baseview</span> <span class="ow">in</span> <span class="n">baseviews</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">viewmenu</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">baseview</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">:</span>
+                    <span class="n">found</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">menus</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">viewmenu</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+                <span class="n">permissions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_permissions_view_menu</span><span class="p">(</span><span class="n">viewmenu</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">permissions</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">role</span> <span class="ow">in</span> <span class="n">roles</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">del_permission_role</span><span class="p">(</span><span class="n">role</span><span class="p">,</span> <span class="n">permission</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">del_permission_view_menu</span><span class="p">(</span><span class="n">permission</span><span class="o">.</span><span class="n">permission</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">viewmenu</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">del_view_menu</span><span class="p">(</span><span class="n">viewmenu</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ---------------------------------------</span>
+    <span class="c1"># INTERFACE ABSTRACT METHODS</span>
+    <span class="c1"># ---------------------------------------</span>
+    <span class="c1"># ------------------------------------</span>
+    <span class="c1"># PRIMITIVES FOR USERS</span>
+    <span class="c1">#------------------------------------</span>
+<div class="viewcode-block" id="BaseSecurityManager.find_register_user"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_register_user">[docs]</a>    <span class="k">def</span> <span class="nf">find_register_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">registration_hash</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Generic function to return user registration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        
+<div class="viewcode-block" id="BaseSecurityManager.add_register_user"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_register_user">[docs]</a>    <span class="k">def</span> <span class="nf">add_register_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">hashed_password</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Generic function to add user registration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        
+<div class="viewcode-block" id="BaseSecurityManager.del_register_user"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.del_register_user">[docs]</a>    <span class="k">def</span> <span class="nf">del_register_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">register_user</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Generic function to delete user registration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        
+<div class="viewcode-block" id="BaseSecurityManager.get_user_by_id"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_user_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Generic function to return user by it&#39;s id (pk)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.find_user"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_user">[docs]</a>    <span class="k">def</span> <span class="nf">find_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Generic function find a user by it&#39;s username or email</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.get_all_users"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.get_all_users">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Generic function that returns all exsiting users</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.add_user"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_user">[docs]</a>    <span class="k">def</span> <span class="nf">add_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Generic function to create user</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.update_user"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.update_user">[docs]</a>    <span class="k">def</span> <span class="nf">update_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Generic function to update user</span>
+
+<span class="sd">            :param user: User model to update to database</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.count_users"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.count_users">[docs]</a>    <span class="k">def</span> <span class="nf">count_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Generic function to count the existing users</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="c1">#------------------------------------</span>
+    <span class="c1"># PRIMITIVES FOR ROLES</span>
+    <span class="c1">#------------------------------------</span>
+    <span class="k">def</span> <span class="nf">find_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">add_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">get_all_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="c1">#------------------------------------</span>
+    <span class="c1"># PRIMITIVES FOR PERMISSIONS</span>
+    <span class="c1">#------------------------------------</span>
+    <span class="k">def</span> <span class="nf">get_public_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            returns all permissions from public role</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+<div class="viewcode-block" id="BaseSecurityManager.find_permission"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_permission">[docs]</a>    <span class="k">def</span> <span class="nf">find_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Finds and returns a Permission by name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.add_permission"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permission">[docs]</a>    <span class="k">def</span> <span class="nf">add_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Adds a permission to the backend, model permission</span>
+
+<span class="sd">            :param name:</span>
+<span class="sd">                name of the permission: &#39;can_add&#39;,&#39;can_edit&#39; etc...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.del_permission"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.del_permission">[docs]</a>    <span class="k">def</span> <span class="nf">del_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Deletes a permission from the backend, model permission</span>
+
+<span class="sd">            :param name:</span>
+<span class="sd">                name of the permission: &#39;can_add&#39;,&#39;can_edit&#39; etc...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="k">def</span> <span class="nf">get_public_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="c1"># ------------------------------------------</span>
+    <span class="c1">#       PRIMITIVES VIEW MENU</span>
+    <span class="c1">#-------------------------------------------</span>
+<div class="viewcode-block" id="BaseSecurityManager.find_view_menu"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_view_menu">[docs]</a>    <span class="k">def</span> <span class="nf">find_view_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Finds and returns a ViewMenu by name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="k">def</span> <span class="nf">get_all_view_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+<div class="viewcode-block" id="BaseSecurityManager.add_view_menu"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_view_menu">[docs]</a>    <span class="k">def</span> <span class="nf">add_view_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Adds a view or menu to the backend, model view_menu</span>
+<span class="sd">            param name:</span>
+<span class="sd">                name of the view menu to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.del_view_menu"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.del_view_menu">[docs]</a>    <span class="k">def</span> <span class="nf">del_view_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Deletes a ViewMenu from the backend</span>
+
+<span class="sd">            :param name:</span>
+<span class="sd">                name of the ViewMenu</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="c1">#----------------------------------------------</span>
+    <span class="c1">#          PERMISSION VIEW MENU</span>
+    <span class="c1">#----------------------------------------------</span>
+<div class="viewcode-block" id="BaseSecurityManager.find_permission_view_menu"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_permission_view_menu">[docs]</a>    <span class="k">def</span> <span class="nf">find_permission_view_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permission_name</span><span class="p">,</span> <span class="n">view_menu_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Finds and returns a PermissionView by names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.find_permissions_view_menu"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.find_permissions_view_menu">[docs]</a>    <span class="k">def</span> <span class="nf">find_permissions_view_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view_menu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Finds all permissions from ViewMenu, returns list of PermissionView</span>
+
+<span class="sd">            :param view_menu: ViewMenu object</span>
+<span class="sd">            :return: list of PermissionView objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.add_permission_view_menu"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permission_view_menu">[docs]</a>    <span class="k">def</span> <span class="nf">add_permission_view_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permission_name</span><span class="p">,</span> <span class="n">view_menu_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Adds a permission on a view or menu to the backend</span>
+
+<span class="sd">            :param permission_name:</span>
+<span class="sd">                name of the permission to add: &#39;can_add&#39;,&#39;can_edit&#39; etc...</span>
+<span class="sd">            :param view_menu_name:</span>
+<span class="sd">                name of the view menu to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="k">def</span> <span class="nf">del_permission_view_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permission_name</span><span class="p">,</span> <span class="n">view_menu_name</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">exist_permission_on_views</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">exist_permission_on_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">permission</span><span class="p">,</span> <span class="n">view_menu</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+<div class="viewcode-block" id="BaseSecurityManager.add_permission_role"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.add_permission_role">[docs]</a>    <span class="k">def</span> <span class="nf">add_permission_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">perm_view</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Add permission-ViewMenu object to Role</span>
+
+<span class="sd">            :param role:</span>
+<span class="sd">                The role object</span>
+<span class="sd">            :param perm_view:</span>
+<span class="sd">                The PermissionViewMenu object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseSecurityManager.del_permission_role"><a class="viewcode-back" href="../../../api.html#flask.ext.appbuilder.security.manager.BaseSecurityManager.del_permission_role">[docs]</a>    <span class="k">def</span> <span class="nf">del_permission_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">perm_view</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Remove permission-ViewMenu object to Role</span>
+
+<span class="sd">            :param role:</span>
+<span class="sd">                The role object</span>
+<span class="sd">            :param perm_view:</span>
+<span class="sd">                The PermissionViewMenu object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="k">def</span> <span class="nf">load_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_user_by_id</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pk</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">before_request</span><span class="p">():</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">current_user</span></div>
+
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

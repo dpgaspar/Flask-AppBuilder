@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
@@ -9,13 +9,13 @@
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.0',
+        VERSION:     '1.6.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Model Views (Quick How to)" href="quickhowto.html" />
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.6.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -89,7 +89,7 @@
 <li class="toctree-l1"><a class="reference internal" href="config.html">Base Configuration</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">Base Views</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Base Views</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickhowto.html">Model Views (Quick How to)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickhowto_mongo.html">Model Views on MongoDB</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickcharts.html">Chart Views</a></li>
@@ -174,7 +174,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 content">
       
   <div class="section" id="base-views">
 <h1>Base Views<a class="headerlink" href="#base-views" title="Permalink to this headline">¶</a></h1>
@@ -186,7 +186,7 @@ You will map your methods to routing points, and each method will be registered
 as a possible security permission if you want to.</p>
 <p>So your methods will have automatic routing points much like Flask, but this time in a class.
 Additionally you can have granular security (method access security) that can be associated with a user&#8217;s role
-(take a look at <a class="reference internal" href="security.html"><em>Security</em></a> for more detail).</p>
+(take a look at <a class="reference internal" href="security.html"><span class="doc">Security</span></a> for more detail).</p>
 <p>The views documented on this chapter are the building blocks of F.A.B, but the juicy part is on the next chapter
 with ModelView, ChartView and others.</p>
 <div class="section" id="baseview">
@@ -198,24 +198,24 @@ as well as all security permissions that need to be defined and protected.</p>
 attached to a menu or linked from any point of your site.</p>
 <p>Decorate your url routing methods with <strong>&#64;expose</strong>.
 Additionally add <strong>&#64;has_access</strong> decorator to tell flask that this is a security protected method.</p>
-<p>Using the Flask-AppBuilder-Skeleton (take a look at the <a class="reference internal" href="installation.html"><em>Installation</em></a> chapter). Edit views.py file and add:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">AppBuilder</span><span class="p">,</span> <span class="n">expose</span><span class="p">,</span> <span class="n">BaseView</span>
-<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">appbuilder</span>
+<p>Using the Flask-AppBuilder-Skeleton (take a look at the <a class="reference internal" href="installation.html"><span class="doc">Installation</span></a> chapter). Edit views.py file and add:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="k">import</span> <span class="n">AppBuilder</span><span class="p">,</span> <span class="n">expose</span><span class="p">,</span> <span class="n">BaseView</span>
+<span class="kn">from</span> <span class="nn">app</span> <span class="k">import</span> <span class="n">appbuilder</span>
 
 <span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">BaseView</span><span class="p">):</span>
-    <span class="n">route_base</span> <span class="o">=</span> <span class="s">&quot;/myview&quot;</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s2">&quot;/myview&quot;</span>
 
-    <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/method1/&lt;string:param1&gt;&#39;</span><span class="p">)</span>
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/method1/&lt;string:param1&gt;&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">method1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param1</span><span class="p">):</span>
-        <span class="c"># do something with param1</span>
-        <span class="c"># and return it</span>
+        <span class="c1"># do something with param1</span>
+        <span class="c1"># and return it</span>
         <span class="k">return</span> <span class="n">param1</span>
 
-    <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/method2/&lt;string:param1&gt;&#39;</span><span class="p">)</span>
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/method2/&lt;string:param1&gt;&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">method2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param1</span><span class="p">):</span>
-        <span class="c"># do something with param1</span>
-        <span class="c"># and render it</span>
-        <span class="n">param1</span> <span class="o">=</span> <span class="s">&#39;Hello </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param1</span><span class="p">)</span>
+        <span class="c1"># do something with param1</span>
+        <span class="c1"># and render it</span>
+        <span class="n">param1</span> <span class="o">=</span> <span class="s1">&#39;Hello </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">param1</span>
 
 <span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="n">MyView</span><span class="p">())</span>
@@ -231,38 +231,38 @@ look at the file app/views.py</p>
 <p>No menu will be created for this and no security permissions will be created,
 if you want to enable detailed security access for your methods just add <strong>&#64;has_access</strong> decorator to them.</p>
 <p>Now run this example</p>
-<div class="highlight-python"><div class="highlight"><pre>$ fabmanager run
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ fabmanager run
 </pre></div>
 </div>
 <p>You can test your methods using the following url&#8217;s:</p>
 <p><a class="reference external" href="http://localhost:8080/myview/method1/john">http://localhost:8080/myview/method1/john</a></p>
 <p><a class="reference external" href="http://localhost:8080/myview/method2/john">http://localhost:8080/myview/method2/john</a></p>
 <p>As you can see, this methods are public, let&#8217;s secure them, edit views.py and change it to:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">AppBuilder</span><span class="p">,</span> <span class="n">BaseView</span><span class="p">,</span> <span class="n">expose</span><span class="p">,</span> <span class="n">has_access</span>
-<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">appbuilder</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="k">import</span> <span class="n">AppBuilder</span><span class="p">,</span> <span class="n">BaseView</span><span class="p">,</span> <span class="n">expose</span><span class="p">,</span> <span class="n">has_access</span>
+<span class="kn">from</span> <span class="nn">app</span> <span class="k">import</span> <span class="n">appbuilder</span>
 
 
 <span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">BaseView</span><span class="p">):</span>
 
-    <span class="n">default_view</span> <span class="o">=</span> <span class="s">&#39;method1&#39;</span>
+    <span class="n">default_view</span> <span class="o">=</span> <span class="s1">&#39;method1&#39;</span>
 
-    <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/method1/&#39;</span><span class="p">)</span>
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/method1/&#39;</span><span class="p">)</span>
     <span class="nd">@has_access</span>
     <span class="k">def</span> <span class="nf">method1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c"># do something with param1</span>
-        <span class="c"># and return to previous page or index</span>
-        <span class="k">return</span> <span class="s">&#39;Hello&#39;</span>
+        <span class="c1"># do something with param1</span>
+        <span class="c1"># and return to previous page or index</span>
+        <span class="k">return</span> <span class="s1">&#39;Hello&#39;</span>
 
-    <span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/method2/&lt;string:param1&gt;&#39;</span><span class="p">)</span>
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/method2/&lt;string:param1&gt;&#39;</span><span class="p">)</span>
     <span class="nd">@has_access</span>
     <span class="k">def</span> <span class="nf">method2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param1</span><span class="p">):</span>
-        <span class="c"># do something with param1</span>
-        <span class="c"># and render template with param</span>
-        <span class="n">param1</span> <span class="o">=</span> <span class="s">&#39;Goodbye </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param1</span><span class="p">)</span>
+        <span class="c1"># do something with param1</span>
+        <span class="c1"># and render template with param</span>
+        <span class="n">param1</span> <span class="o">=</span> <span class="s1">&#39;Goodbye </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">param1</span>
 
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">,</span> <span class="s">&quot;Method1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;Method2&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method2/john&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyView</span><span class="p">,</span> <span class="s2">&quot;Method1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;My View&#39;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s2">&quot;Method2&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;/myview/method2/john&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;My View&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can find this example on <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2">SimpleView2</a>.
@@ -301,28 +301,28 @@ for this you have to create your own template.
 under your projects directory and app folder create a folder named &#8216;templates&#8217;
 inside it create a file name &#8216;method3.html&#8217;</p>
 <p>1 - Develop your template (on your &lt;PROJECT_NAME&gt;/app/templates/method3.html):</p>
-<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;appbuilder/base.html&quot; %}
-{% block content %}
-    &lt;h1&gt;{{param1}}&lt;/h1&gt;
-{% endblock %}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s2">&quot;appbuilder/base.html&quot;</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">content</span> <span class="o">%</span><span class="p">}</span>
+    <span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="p">{{</span><span class="n">param1</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>2 - Add the following method on your <em>MyView</em> class:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">render_template</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">render_template</span>
 
-<span class="nd">@expose</span><span class="p">(</span><span class="s">&#39;/method3/&lt;string:param1&gt;&#39;</span><span class="p">)</span>
+<span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/method3/&lt;string:param1&gt;&#39;</span><span class="p">)</span>
 <span class="nd">@has_access</span>
 <span class="k">def</span> <span class="nf">method3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param1</span><span class="p">):</span>
-    <span class="c"># do something with param1</span>
-    <span class="c"># and render template with param</span>
-    <span class="n">param1</span> <span class="o">=</span> <span class="s">&#39;Goodbye </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param1</span><span class="p">)</span>
+    <span class="c1"># do something with param1</span>
+    <span class="c1"># and render template with param</span>
+    <span class="n">param1</span> <span class="o">=</span> <span class="s1">&#39;Goodbye </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param1</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="s">&#39;method3.html&#39;</span><span class="p">,</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;method3.html&#39;</span><span class="p">,</span>
                            <span class="n">param1</span> <span class="o">=</span> <span class="n">param1</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>3 - Create a menu link to your new method:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s">&quot;Method3&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s">&#39;/myview/method3/john&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&#39;My View&#39;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="s2">&quot;Method3&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;/myview/method3/john&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;My View&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>As you can see you just have to extend &#8220;appbuilder/base.html&#8221; on your template and then override <em>block content</em>.
@@ -350,18 +350,18 @@ because when they do, F.A.B. can automatically generate them and you can add or 
 as well as custom validators. For this you can use ModelView instead.</p>
 <p>To create a custom form view, first define your <a class="reference external" href="https://wtforms.readthedocs.org/en/latest/">WTForm</a>
 fields, but inherit them from F.A.B. <em>DynamicForm</em>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">wtforms</span> <span class="kn">import</span> <span class="n">Form</span><span class="p">,</span> <span class="n">StringField</span>
-<span class="kn">from</span> <span class="nn">wtforms.validators</span> <span class="kn">import</span> <span class="n">DataRequired</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.fieldwidgets</span> <span class="kn">import</span> <span class="n">BS3TextFieldWidget</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.forms</span> <span class="kn">import</span> <span class="n">DynamicForm</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wtforms</span> <span class="k">import</span> <span class="n">Form</span><span class="p">,</span> <span class="n">StringField</span>
+<span class="kn">from</span> <span class="nn">wtforms.validators</span> <span class="k">import</span> <span class="n">DataRequired</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.fieldwidgets</span> <span class="k">import</span> <span class="n">BS3TextFieldWidget</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.forms</span> <span class="k">import</span> <span class="n">DynamicForm</span>
 
 
 <span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">DynamicForm</span><span class="p">):</span>
-    <span class="n">field1</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">((</span><span class="s">&#39;Field1&#39;</span><span class="p">),</span>
-        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;Your field number one!&#39;</span><span class="p">),</span>
+    <span class="n">field1</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">((</span><span class="s1">&#39;Field1&#39;</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Your field number one!&#39;</span><span class="p">),</span>
         <span class="n">validators</span> <span class="o">=</span> <span class="p">[</span><span class="n">DataRequired</span><span class="p">()],</span> <span class="n">widget</span><span class="o">=</span><span class="n">BS3TextFieldWidget</span><span class="p">())</span>
-    <span class="n">field2</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">((</span><span class="s">&#39;Field2&#39;</span><span class="p">),</span>
-        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;Your field number two!&#39;</span><span class="p">),</span> <span class="n">widget</span><span class="o">=</span><span class="n">BS3TextFieldWidget</span><span class="p">())</span>
+    <span class="n">field2</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">((</span><span class="s1">&#39;Field2&#39;</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Your field number two!&#39;</span><span class="p">),</span> <span class="n">widget</span><span class="o">=</span><span class="n">BS3TextFieldWidget</span><span class="p">())</span>
 </pre></div>
 </div>
 <p>Now define your form view to expose urls, create a menu entry, create security accesses, define pre and post processing.</p>
@@ -370,24 +370,24 @@ You can use <em>form_get</em> to prefill the form with your data, and/or pre pro
 use <em>form_post</em> to post process the form after the user submits it, you can save the data to database, send an email
 or something.</p>
 <p>On your form_post method you can also return None, or a Flask response to render a custom template or redirect the user.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask_appbuilder</span> <span class="kn">import</span> <span class="n">SimpleFormView</span>
-<span class="kn">from</span> <span class="nn">flask.ext.babelpkg</span> <span class="kn">import</span> <span class="n">lazy_gettext</span> <span class="k">as</span> <span class="n">_</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask_appbuilder</span> <span class="k">import</span> <span class="n">SimpleFormView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.babelpkg</span> <span class="k">import</span> <span class="n">lazy_gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 
 <span class="k">class</span> <span class="nc">MyFormView</span><span class="p">(</span><span class="n">SimpleFormView</span><span class="p">):</span>
     <span class="n">form</span> <span class="o">=</span> <span class="n">MyForm</span>
-    <span class="n">form_title</span> <span class="o">=</span> <span class="s">&#39;This is my first form view&#39;</span>
-    <span class="n">message</span> <span class="o">=</span> <span class="s">&#39;My form submitted&#39;</span>
+    <span class="n">form_title</span> <span class="o">=</span> <span class="s1">&#39;This is my first form view&#39;</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;My form submitted&#39;</span>
 
     <span class="k">def</span> <span class="nf">form_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
-        <span class="n">form</span><span class="o">.</span><span class="n">field1</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s">&#39;This was prefilled&#39;</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">field1</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s1">&#39;This was prefilled&#39;</span>
 
     <span class="k">def</span> <span class="nf">form_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
-        <span class="c"># post process form</span>
-        <span class="n">flash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s">&#39;info&#39;</span><span class="p">)</span>
+        <span class="c1"># post process form</span>
+        <span class="n">flash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">)</span>
 
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyFormView</span><span class="p">,</span> <span class="s">&quot;My form View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-group&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;My form View&#39;</span><span class="p">),</span>
-                     <span class="n">category</span><span class="o">=</span><span class="s">&quot;My Forms&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s">&quot;fa-cogs&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MyFormView</span><span class="p">,</span> <span class="s2">&quot;My form View&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;fa-group&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;My form View&#39;</span><span class="p">),</span>
+                     <span class="n">category</span><span class="o">=</span><span class="s2">&quot;My Forms&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s2">&quot;fa-cogs&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Notice that this class derives from <em>BaseView</em> so all properties from the parent class can be overridden also.
@@ -422,7 +422,7 @@ Notice also how label uses babel&#8217;s lazy_gettext as _(&#8216;text&#8217;) f
     </p>
     <p>
         &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
     </p>
   </div>
 </footer>

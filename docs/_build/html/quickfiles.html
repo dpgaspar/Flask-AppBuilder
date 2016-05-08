@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
@@ -9,13 +9,13 @@
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.0',
+        VERSION:     '1.6.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Quick Minimal Application" href="quickminimal.html" />
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.6.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -93,7 +93,7 @@
 <li class="toctree-l1"><a class="reference internal" href="quickhowto.html">Model Views (Quick How to)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickhowto_mongo.html">Model Views on MongoDB</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickcharts.html">Chart Views</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Model Views with Files and Images</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model Views with Files and Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickminimal.html">Quick Minimal Application</a></li>
 </ul>
 <ul>
@@ -175,7 +175,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 content">
       
   <div class="section" id="model-views-with-files-and-images">
 <h1>Model Views with Files and Images<a class="headerlink" href="#model-views-with-files-and-images" title="Permalink to this headline">¶</a></h1>
@@ -183,33 +183,33 @@
 MongoDB (MongoEngine). When using SQLAlchemy, files and images are saved on the filesystem, on MongoDB on the db (GridFS).</p>
 <div class="section" id="define-your-model-models-py">
 <h2>Define your model (models.py)<a class="headerlink" href="#define-your-model-models-py" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.model.mixins</span> <span class="kn">import</span> <span class="n">ImageColumn</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="k">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.model.mixins</span> <span class="k">import</span> <span class="n">ImageColumn</span>
 
 <span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">photo</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">ImageColumn</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="bp">True</span><span class="p">),</span> <span class="n">thumbnail_size</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="bp">True</span><span class="p">)))</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">photo</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">ImageColumn</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="n">thumbnail_size</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="kc">True</span><span class="p">)))</span>
 
     <span class="k">def</span> <span class="nf">photo_img</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">ImageManager</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span>\
-             <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;&#39;</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">)</span> <span class="o">+</span>\
-              <span class="s">&#39;&quot; alt=&quot;Photo&quot; class=&quot;img-rounded img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s1">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span>\
+             <span class="s1">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;&#39;</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">)</span> <span class="o">+</span>\
+              <span class="s1">&#39;&quot; alt=&quot;Photo&quot; class=&quot;img-rounded img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span>\
-             <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s1">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span>\
+             <span class="s1">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">photo_img_thumbnail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">ImageManager</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span>\
-             <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;&#39;</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">get_url_thumbnail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">)</span> <span class="o">+</span>\
-              <span class="s">&#39;&quot; alt=&quot;Photo&quot; class=&quot;img-rounded img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s1">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span>\
+             <span class="s1">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;&#39;</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">get_url_thumbnail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photo</span><span class="p">)</span> <span class="o">+</span>\
+              <span class="s1">&#39;&quot; alt=&quot;Photo&quot; class=&quot;img-rounded img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span>\
-             <span class="s">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s1">&#39;&lt;a href=&quot;&#39;</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;PersonModelView.show&#39;</span><span class="p">,</span><span class="n">pk</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="o">+</span>\
+             <span class="s1">&#39;&quot; class=&quot;thumbnail&quot;&gt;&lt;img src=&quot;//:0&quot; alt=&quot;Photo&quot; class=&quot;img-responsive&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Create two additional methods in this case <em>photo_img</em> and <em>photo_img_thumbnail</em>, to inject your own custom HTML,
@@ -227,17 +227,17 @@ Each image will have two files with different sizes, images are saved as &lt;uui
 </div>
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">ModelView</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="k">import</span> <span class="n">ModelView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="k">import</span> <span class="n">SQLAInterface</span>
 
 <span class="k">class</span> <span class="nc">PersonModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span>
 
     <span class="n">list_widget</span> <span class="o">=</span> <span class="n">ListThumbnail</span>
 
-    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;Name&#39;</span><span class="p">,</span><span class="s">&#39;photo&#39;</span><span class="p">:</span><span class="s">&#39;Photo&#39;</span><span class="p">,</span><span class="s">&#39;photo_img&#39;</span><span class="p">:</span><span class="s">&#39;Photo&#39;</span><span class="p">,</span> <span class="s">&#39;photo_img_thumbnail&#39;</span><span class="p">:</span><span class="s">&#39;Photo&#39;</span><span class="p">}</span>
-    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;photo_img_thumbnail&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">]</span>
-    <span class="n">show_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;photo_img&#39;</span><span class="p">,</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span><span class="s1">&#39;photo&#39;</span><span class="p">:</span><span class="s1">&#39;Photo&#39;</span><span class="p">,</span><span class="s1">&#39;photo_img&#39;</span><span class="p">:</span><span class="s1">&#39;Photo&#39;</span><span class="p">,</span> <span class="s1">&#39;photo_img_thumbnail&#39;</span><span class="p">:</span><span class="s1">&#39;Photo&#39;</span><span class="p">}</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;photo_img_thumbnail&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">]</span>
+    <span class="n">show_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;photo_img&#39;</span><span class="p">,</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>We are overriding the <em>list_widget</em>, the widget that is normally used by ModelView.
@@ -276,7 +276,7 @@ Their file names will result in the concatenation of UUID with their original na
     </p>
     <p>
         &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
     </p>
   </div>
 </footer>

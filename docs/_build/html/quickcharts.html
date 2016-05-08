@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
@@ -9,13 +9,13 @@
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.0',
+        VERSION:     '1.6.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Model Views with Files and Images" href="quickfiles.html" />
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.6.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -92,7 +92,7 @@
 <li class="toctree-l1"><a class="reference internal" href="views.html">Base Views</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickhowto.html">Model Views (Quick How to)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickhowto_mongo.html">Model Views on MongoDB</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Chart Views</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Chart Views</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickfiles.html">Model Views with Files and Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickminimal.html">Quick Minimal Application</a></li>
 </ul>
@@ -176,7 +176,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 content">
       
   <div class="section" id="chart-views">
 <h1>Chart Views<a class="headerlink" href="#chart-views" title="Permalink to this headline">¶</a></h1>
@@ -207,9 +207,9 @@
 You can display multiple charts on the same view.</p>
 <p>Let&#8217;s create a simple model first, the gold is to display a chart showing the unemployment evolution
 versus the percentage of the population with higher education, our model will be:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CountryStats</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">stat_date</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Date</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CountryStats</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">stat_date</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Date</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">population</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
     <span class="n">unemployed_perc</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
     <span class="n">poor_perc</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
@@ -219,7 +219,7 @@ versus the percentage of the population with higher education, our model will be
 <p>Suppose that the college field will have the total number of college students on some date.
 But the <em>unemployed_perc</em> field holds a percentage, we can&#8217;t draw a chart with these two together,
 we must create a function to calculate the <em>college_perc</em>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">college_perc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">college_perc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">college</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span>
     <span class="k">else</span><span class="p">:</span>
@@ -227,19 +227,19 @@ we must create a function to calculate the <em>college_perc</em>:</p>
 </pre></div>
 </div>
 <p>Now we are ready to define our view:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.charts.views</span> <span class="kn">import</span> <span class="n">DirectByChartView</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.model.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.charts.views</span> <span class="k">import</span> <span class="n">DirectByChartView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.model.sqla.interface</span> <span class="k">import</span> <span class="n">SQLAInterface</span>
 
 <span class="k">class</span> <span class="nc">CountryDirectChartView</span><span class="p">(</span><span class="n">DirectByChartView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
-    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Direct Data Example&#39;</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="s1">&#39;Direct Data Example&#39;</span>
 
     <span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span>
-        <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Unemployment&#39;</span><span class="p">,</span>
-        <span class="s">&#39;group&#39;</span><span class="p">:</span> <span class="s">&#39;stat_date&#39;</span><span class="p">,</span>
-        <span class="s">&#39;series&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;unemployed_perc&#39;</span><span class="p">,</span>
-                   <span class="s">&#39;college_perc&#39;</span><span class="p">]</span>
+        <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Unemployment&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;stat_date&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;series&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;unemployed_perc&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;college_perc&#39;</span><span class="p">]</span>
     <span class="p">}</span>
 <span class="p">]</span>
 </pre></div>
@@ -247,43 +247,43 @@ we must create a function to calculate the <em>college_perc</em>:</p>
 <p>This view definition will produce this:</p>
 <a class="reference internal image-reference" href="_images/direct_chart.png"><img alt="_images/direct_chart.png" src="_images/direct_chart.png" style="width: 100%;" /></a>
 <p>The <strong>definitions</strong> property respects the following grammar:</p>
-<div class="highlight-python"><div class="highlight"><pre>definitions = [
-                {
-                 &#39;label&#39;: &#39;label for chart definition&#39;,
-                 &#39;group&#39;: &#39;&lt;COLNAME&gt;&#39;|&#39;&lt;MODEL FUNCNAME&gt;&#39;,
-                 &#39;formatter&#39;: &lt;FUNC FORMATTER FOR GROUP COL&gt;,
-                 &#39;series&#39;: [&#39;&lt;COLNAME&gt;&#39;|&#39;&lt;MODEL FUNCNAME&gt;&#39;,...]
-                }, ...
-              ]
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">{</span>
+                 <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;label for chart definition&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;COLNAME&gt;&#39;</span><span class="o">|</span><span class="s1">&#39;&lt;MODEL FUNCNAME&gt;&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;formatter&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">FUNC</span> <span class="n">FORMATTER</span> <span class="n">FOR</span> <span class="n">GROUP</span> <span class="n">COL</span><span class="o">&gt;</span><span class="p">,</span>
+                 <span class="s1">&#39;series&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;&lt;COLNAME&gt;&#39;</span><span class="o">|</span><span class="s1">&#39;&lt;MODEL FUNCNAME&gt;&#39;</span><span class="p">,</span><span class="o">...</span><span class="p">]</span>
+                <span class="p">},</span> <span class="o">...</span>
+              <span class="p">]</span>
 </pre></div>
 </div>
 <p>Where &#8216;label&#8217; and &#8216;formatter&#8217; are optional parameters.
 So on the same view you can have multiple direct chart definitions, like this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.charts.views</span> <span class="kn">import</span> <span class="n">DirectByChartView</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.model.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.charts.views</span> <span class="k">import</span> <span class="n">DirectByChartView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.model.sqla.interface</span> <span class="k">import</span> <span class="n">SQLAInterface</span>
 
 <span class="k">class</span> <span class="nc">CountryDirectChartView</span><span class="p">(</span><span class="n">DirectByChartView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
-    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Direct Data Example&#39;</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="s1">&#39;Direct Data Example&#39;</span>
 
     <span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span>
-        <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Unemployment&#39;</span><span class="p">,</span>
-        <span class="s">&#39;group&#39;</span><span class="p">:</span> <span class="s">&#39;stat_date&#39;</span><span class="p">,</span>
-        <span class="s">&#39;series&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;unemployed_perc&#39;</span><span class="p">,</span>
-                   <span class="s">&#39;college_perc&#39;</span><span class="p">]</span>
+        <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Unemployment&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;stat_date&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;series&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;unemployed_perc&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;college_perc&#39;</span><span class="p">]</span>
     <span class="p">},</span>
     <span class="p">{</span>
-        <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Poor&#39;</span><span class="p">,</span>
-        <span class="s">&#39;group&#39;</span><span class="p">:</span> <span class="s">&#39;stat_date&#39;</span><span class="p">,</span>
-        <span class="s">&#39;series&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;poor_perc&#39;</span><span class="p">,</span>
-                   <span class="s">&#39;college_perc&#39;</span><span class="p">]</span>
+        <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Poor&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;stat_date&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;series&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;poor_perc&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;college_perc&#39;</span><span class="p">]</span>
     <span class="p">}</span>
 <span class="p">]</span>
 </pre></div>
 </div>
 <p>Next register your view like this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">CountryDirectChartView</span><span class="p">,</span> <span class="s">&quot;Show Country Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-dashboard&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Statistics&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">CountryDirectChartView</span><span class="p">,</span> <span class="s2">&quot;Show Country Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;fa-dashboard&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Statistics&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This kind of chart inherits from <strong>BaseChartView</strong> that has some properties that you can configure
@@ -332,25 +332,25 @@ You can display multiple charts on the same view. This data can be grouped and a
 support has many countries has we like.
 The gold is to display a chart showing the unemployment
 versus the percentage of the population with higher education per country:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">Model</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="k">import</span> <span class="n">Model</span>
 
 <span class="k">class</span> <span class="nc">Country</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
 
 <span class="k">class</span> <span class="nc">CountryStats</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">stat_date</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Date</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">stat_date</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Date</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">population</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
     <span class="n">unemployed_perc</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
     <span class="n">poor_perc</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
     <span class="n">college</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
-    <span class="n">country_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;country.id&#39;</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">country</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s">&quot;Country&quot;</span><span class="p">)</span>
+    <span class="n">country_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;country.id&#39;</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">country</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;Country&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">college_perc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -363,29 +363,29 @@ versus the percentage of the population with higher education per country:</p>
 </pre></div>
 </div>
 <p>Now we are ready to define our view:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.charts.views</span> <span class="kn">import</span> <span class="n">GroupByChartView</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.group</span> <span class="kn">import</span> <span class="n">aggregate_count</span><span class="p">,</span> <span class="n">aggregate_sum</span><span class="p">,</span> <span class="n">aggregate_avg</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.model.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.charts.views</span> <span class="k">import</span> <span class="n">GroupByChartView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.group</span> <span class="k">import</span> <span class="n">aggregate_count</span><span class="p">,</span> <span class="n">aggregate_sum</span><span class="p">,</span> <span class="n">aggregate_avg</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.model.sqla.interface</span> <span class="k">import</span> <span class="n">SQLAInterface</span>
 
 
 <span class="k">class</span> <span class="nc">CountryGroupByChartView</span><span class="p">(</span><span class="n">GroupByChartView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
-    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Statistics&#39;</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="s1">&#39;Statistics&#39;</span>
 
     <span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">{</span>
-            <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Country Stat&#39;</span><span class="p">,</span>
-            <span class="s">&#39;group&#39;</span><span class="p">:</span> <span class="s">&#39;country&#39;</span><span class="p">,</span>
-            <span class="s">&#39;series&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="n">aggregate_avg</span><span class="p">,</span> <span class="s">&#39;unemployed_perc&#39;</span><span class="p">),</span>
-                       <span class="p">(</span><span class="n">aggregate_avg</span><span class="p">,</span> <span class="s">&#39;population&#39;</span><span class="p">),</span>
-                       <span class="p">(</span><span class="n">aggregate_avg</span><span class="p">,</span> <span class="s">&#39;college_perc&#39;</span><span class="p">)</span>
+            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Country Stat&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;country&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;series&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="n">aggregate_avg</span><span class="p">,</span> <span class="s1">&#39;unemployed_perc&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="n">aggregate_avg</span><span class="p">,</span> <span class="s1">&#39;population&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="n">aggregate_avg</span><span class="p">,</span> <span class="s1">&#39;college_perc&#39;</span><span class="p">)</span>
                       <span class="p">]</span>
         <span class="p">}</span>
     <span class="p">]</span>
 </pre></div>
 </div>
 <p>Next register your view like this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">CountryGroupByChartView</span><span class="p">,</span> <span class="s">&quot;Show Country Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-dashboard&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Statistics&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">CountryGroupByChartView</span><span class="p">,</span> <span class="s2">&quot;Show Country Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;fa-dashboard&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Statistics&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>F.A.B. has already some aggregation functions that you can use, for count, sum and average.
@@ -393,25 +393,25 @@ On this example we are using average, this will display the historical average o
 unemployment and college formation, grouped by country.</p>
 <p>A different and interesting example is to group data monthly from all countries, this will show the use of
 <strong>formater</strong> property:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">calendar</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.charts.views</span> <span class="kn">import</span> <span class="n">GroupByChartView</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.group</span> <span class="kn">import</span> <span class="n">aggregate_count</span><span class="p">,</span> <span class="n">aggregate_sum</span><span class="p">,</span> <span class="n">aggregate_avg</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.model.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">calendar</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.charts.views</span> <span class="k">import</span> <span class="n">GroupByChartView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.group</span> <span class="k">import</span> <span class="n">aggregate_count</span><span class="p">,</span> <span class="n">aggregate_sum</span><span class="p">,</span> <span class="n">aggregate_avg</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.model.sqla.interface</span> <span class="k">import</span> <span class="n">SQLAInterface</span>
 
 <span class="k">def</span> <span class="nf">pretty_month_year</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">calendar</span><span class="o">.</span><span class="n">month_name</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">month</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">calendar</span><span class="o">.</span><span class="n">month_name</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">month</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">CountryGroupByChartView</span><span class="p">(</span><span class="n">GroupByChartView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">CountryStats</span><span class="p">)</span>
-    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Statistics&#39;</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="s1">&#39;Statistics&#39;</span>
 
     <span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">{</span>
-            <span class="s">&#39;group&#39;</span><span class="p">:</span> <span class="s">&#39;month_year&#39;</span><span class="p">,</span>
-            <span class="s">&#39;formatter&#39;</span><span class="p">:</span> <span class="n">pretty_month_year</span><span class="p">,</span>
-            <span class="s">&#39;series&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="n">aggregate_avg</span><span class="p">,</span> <span class="s">&#39;unemployed_perc&#39;</span><span class="p">),</span>
-                       <span class="p">(</span><span class="n">aggregate_avg</span><span class="p">,</span> <span class="s">&#39;college_perc&#39;</span><span class="p">)</span>
+            <span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;month_year&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;formatter&#39;</span><span class="p">:</span> <span class="n">pretty_month_year</span><span class="p">,</span>
+            <span class="s1">&#39;series&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="n">aggregate_avg</span><span class="p">,</span> <span class="s1">&#39;unemployed_perc&#39;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="n">aggregate_avg</span><span class="p">,</span> <span class="s1">&#39;college_perc&#39;</span><span class="p">)</span>
             <span class="p">]</span>
         <span class="p">}</span>
     <span class="p">]</span>
@@ -425,7 +425,7 @@ by month and year, this grouping will be processed by averaging data from <em>un
 <a class="reference internal image-reference" href="_images/grouped_chart.png"><img alt="_images/grouped_chart.png" src="_images/grouped_chart.png" style="width: 100%;" /></a>
 <p>You can create your own aggregation functions and <em>decorate</em> them for automatic labeling (and babel).
 Has an example let&#8217;s look at F.A.B.&#8217;s code for <em>aggregate_sum</em>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="nd">@aggregate</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Count of&#39;</span><span class="p">))</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nd">@aggregate</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Count of&#39;</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">aggregate_count</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">items</span><span class="p">))</span>
 </pre></div>
@@ -435,12 +435,12 @@ by the framework of the columns them selfs.</p>
 </div>
 <div class="section" id="deprecated-define-your-chart-views-views-py">
 <h2>(Deprecated) Define your Chart Views (views.py)<a class="headerlink" href="#deprecated-define-your-chart-views-views-py" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactChartView</span><span class="p">(</span><span class="n">ChartView</span><span class="p">):</span>
-    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;contact_group&#39;</span><span class="p">]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ContactChartView</span><span class="p">(</span><span class="n">ChartView</span><span class="p">):</span>
+    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;contact_group&#39;</span><span class="p">]</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
-    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped contacts&#39;</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="s1">&#39;Grouped contacts&#39;</span>
     <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactModelView</span><span class="o">.</span><span class="n">label_columns</span>
-    <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;contact_group&#39;</span><span class="p">]</span>
+    <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;contact_group&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Notice that:</p>
@@ -457,27 +457,27 @@ by the framework of the columns them selfs.</p>
 </table>
 <p>this will produce a Pie chart, with the percentage of contacts by group.
 If you want a column chart just define:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">chart_type</span> <span class="o">=</span> <span class="s">&#39;ColumnChart&#39;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">chart_type</span> <span class="o">=</span> <span class="s1">&#39;ColumnChart&#39;</span>
 </pre></div>
 </div>
 <p>You can use &#8216;BarChart&#8217;, &#8216;LineChart&#8217;, &#8216;AreaChart&#8217; the default is &#8216;PieChart&#8217;, take a look at the google charts documentation, the <em>chart_type</em> is the function on &#8216;google.visualization&#8217; object</p>
 <p>Let&#8217;s define a chart grouped by a time frame?</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactTimeChartView</span><span class="p">(</span><span class="n">TimeChartView</span><span class="p">):</span>
-    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;contact_group&#39;</span><span class="p">]</span>
-    <span class="n">chart_title</span> <span class="o">=</span> <span class="s">&#39;Grouped Birth contacts&#39;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ContactTimeChartView</span><span class="p">(</span><span class="n">TimeChartView</span><span class="p">):</span>
+    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;contact_group&#39;</span><span class="p">]</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="s1">&#39;Grouped Birth contacts&#39;</span>
     <span class="n">label_columns</span> <span class="o">=</span> <span class="n">ContactModelView</span><span class="o">.</span><span class="n">label_columns</span>
-    <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;birthday&#39;</span><span class="p">]</span>
+    <span class="n">group_by_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;birthday&#39;</span><span class="p">]</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>this will produce a column chart, with the number of contacts that were born on a particular month or year.
-Notice that the label_columns are from and already defined <em>ContactModelView</em> take a look at the <a class="reference internal" href="quickhowto.html"><em>Model Views (Quick How to)</em></a></p>
+Notice that the label_columns are from and already defined <em>ContactModelView</em> take a look at the <a class="reference internal" href="quickhowto.html"><span class="doc">Model Views (Quick How to)</span></a></p>
 <p>Finally we will define a direct data chart</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">StatsChartView</span><span class="p">(</span><span class="n">DirectChartView</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">StatsChartView</span><span class="p">(</span><span class="n">DirectChartView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Stats</span><span class="p">)</span>
-    <span class="n">chart_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s">&#39;Statistics&#39;</span><span class="p">)</span>
-    <span class="n">direct_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;Some Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;stat1&#39;</span><span class="p">,</span> <span class="s">&#39;col1&#39;</span><span class="p">,</span> <span class="s">&#39;col2&#39;</span><span class="p">),</span>
-                    <span class="s">&#39;Other Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;stat2&#39;</span><span class="p">,</span> <span class="s">&#39;col3&#39;</span><span class="p">)}</span>
+    <span class="n">chart_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Statistics&#39;</span><span class="p">)</span>
+    <span class="n">direct_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Some Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;stat1&#39;</span><span class="p">,</span> <span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">),</span>
+                    <span class="s1">&#39;Other Stats&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;stat2&#39;</span><span class="p">,</span> <span class="s1">&#39;col3&#39;</span><span class="p">)}</span>
 </pre></div>
 </div>
 <p>direct_columns is a dictionary you define to identify a label for your X column, and the Y columns (series) you want to include on the chart</p>
@@ -488,12 +488,12 @@ Notice that the label_columns are from and already defined <em>ContactModelView<
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
 <p>Register everything, to present your charts and create the menu:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactTimeChartView</span><span class="p">,</span> <span class="s">&quot;Contacts Birth Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactChartView</span><span class="p">,</span> <span class="s">&quot;Contacts Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-dashboard&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactTimeChartView</span><span class="p">,</span> <span class="s2">&quot;Contacts Birth Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;fa-envelope&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactChartView</span><span class="p">,</span> <span class="s2">&quot;Contacts Chart&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;fa-dashboard&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>
-<p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a>. For additional customization</p>
+<p>Take a look at the <a class="reference internal" href="api.html"><span class="doc">API Reference</span></a>. For additional customization</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">You can use charts has related views also, just add them on your related_views properties.</p>
@@ -518,7 +518,7 @@ Notice that the label_columns are from and already defined <em>ContactModelView<
     </p>
     <p>
         &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
     </p>
   </div>
 </footer>

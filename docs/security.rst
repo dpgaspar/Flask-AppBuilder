@@ -226,12 +226,11 @@ this will allow users to authenticate using 'someuser' be setting::
 
 When using self user registration, you can use the following to config further:
 
-AUTH_LDAP_UID_FIELD: Default to 'uid' will be used to search the user on the LDAP server. For MSFT AD you can set it to 'userPrincipalName'
-AUTH_LDAP_FIRSTNAME_FIELD: Default to 'givenName' will use MSFT AD attribute to register first_name on the db.
-AUTH_LDAP_LASTTNAME_FIELD: Default to 'sn' will use MSFT AD attribute to register last_name on the db.
-AUTH_LDAP_EMAIL_FIELD: Default to 'mail' will use MSFT AD attribute to register email on the db. If this attribute is
-null the framework will register <username + '@email.notfound'>
-AUTH_LDAP_SEARCH: This must be set when using self user registration.
+- AUTH_LDAP_UID_FIELD: Default to 'uid' will be used to search the user on the LDAP server. For MSFT AD you can set it to 'userPrincipalName'
+- AUTH_LDAP_FIRSTNAME_FIELD: Default to 'givenName' will use MSFT AD attribute to register first_name on the db.
+- AUTH_LDAP_LASTTNAME_FIELD: Default to 'sn' will use MSFT AD attribute to register last_name on the db.
+- AUTH_LDAP_EMAIL_FIELD: Default to 'mail' will use MSFT AD attribute to register email on the db. If this attribute is null the framework will register <username + '@email.notfound'>
+- AUTH_LDAP_SEARCH: This must be set when using self user registration.
 
 
 Authentication: OAuth

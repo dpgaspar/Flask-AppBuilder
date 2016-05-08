@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Command Line Manager &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.6.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="index.html" />
+    <link rel="next" title="Base Configuration" href="config.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+  
+  <a href="https://github.com/dpgaspar/Flask-AppBuilder"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
+
+
+  <div id="navbar" class="navbar  navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          Flask-AppBuilder</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="diagrams.html">Diagrams</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command Line Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Base Configuration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="views.html">Base Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickhowto.html">Model Views (Quick How to)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickhowto_mongo.html">Model Views on MongoDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickcharts.html">Chart Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickfiles.html">Model Views with Files and Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickminimal.html">Quick Minimal Application</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="relations.html">Model Relations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customizing.html">Customizing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Templates</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="addons.html">AddOn development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic_datasource.html">Generic Data Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipledbs.html">Multiple Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="i18n.html">i18n Translations</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_registration.html">User Registration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versionmigration.html">Version Migration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Command Line Manager</a><ul>
+<li><a class="reference internal" href="#create-app-create-new-applications"><strong>create-app</strong> - Create new Applications</a></li>
+<li><a class="reference internal" href="#create-addon-create-new-addons"><strong>create-addon</strong> - Create new AddOns</a></li>
+<li><a class="reference internal" href="#create-admin-create-an-admin-user"><strong>create-admin</strong> - Create an admin user</a></li>
+<li><a class="reference internal" href="#upgrade-db-upgrade-your-database-after-f-a-b-upgrade-to-1-3-0"><strong>upgrade-db</strong> - Upgrade your database after F.A.B. upgrade to 1.3.0</a></li>
+<li><a class="reference internal" href="#reset-password-resets-a-user-s-password"><strong>reset-password</strong> - Resets a user&#8217;s password.</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="installation.html" title="Previous Chapter: Installation"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Installation</span>
+    </a>
+  </li>
+  <li>
+    <a href="config.html" title="Next Chapter: Base Configuration"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Base Configur... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="command-line-manager">
+<h1>Command Line Manager<a class="headerlink" href="#command-line-manager" title="Permalink to this headline">¶</a></h1>
+<p>Since version 1.3.0 F.A.B. has a command line manager, you can use it for many development tasks.</p>
+<p>Many of the commands are designed to import <strong>AppBuilder</strong> class initialized by your application.
+By default it will assume your application follows the skeleton structure, so it will try to import
+appbuilder from <em>app/__init__.py</em>. You can pass your own info to where appbuilder is being initialized.</p>
+<p>Take a quick look to the current possibilities. The bold ones require to import your appbuilder.</p>
+<blockquote>
+<div><ul class="simple">
+<li>babel-compile - Babel, Compiles all translations</li>
+<li>babel-extract - Babel, Extracts and updates all messages.</li>
+<li><strong>create-admin</strong> - Creates an admin user</li>
+<li>create-app - Create a Skeleton application (SQLAlchemy or MongoEngine).</li>
+<li>create-addon - Create a Skeleton AddOn.</li>
+<li><strong>create-db</strong> - Create all your database objects (SQLAlchemy only)</li>
+<li><strong>list-users</strong> - List all users on the database.</li>
+<li><strong>list-views</strong> - List all registered views.</li>
+<li><strong>reset-password</strong> - Resets a user&#8217;s password.</li>
+<li><strong>run</strong> - Runs Flask dev web server.</li>
+<li><strong>security-cleanup</strong> - Cleanup unused permissions from views and roles.</li>
+<li><strong>upgrade-db</strong> - Upgrade your database after F.A.B upgrade.</li>
+<li><strong>version</strong> - Flask-AppBuilder package version.</li>
+</ul>
+</div></blockquote>
+<p>Command Line uses the excelent click package, so you can have a detailed help for each command, for instance:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ fabmanager create-app --help
+Usage: fabmanager create-app [OPTIONS]
+
+Create a Skeleton application
+
+Options:
+--name TEXT                     Your application name, directory will have
+                              this name
+--engine [SQLAlchemy|MongoEngine]
+                              Write your engine type
+--help                          Show this message and exit.
+</pre></div>
+</div>
+<div class="section" id="create-app-create-new-applications">
+<h2><strong>create-app</strong> - Create new Applications<a class="headerlink" href="#create-app-create-new-applications" title="Permalink to this headline">¶</a></h2>
+<p>To create a ready to dev skeleton application, you can use this command for SQLAlchemy engine and MongoEngine (MongoDB).
+This commands needs an internet connection to <strong>github.com</strong>, because it will download a zip version of the skeleton repos.</p>
+</div>
+<div class="section" id="create-addon-create-new-addons">
+<h2><strong>create-addon</strong> - Create new AddOns<a class="headerlink" href="#create-addon-create-new-addons" title="Permalink to this headline">¶</a></h2>
+<p>To create a ready to dev skeleton addon.
+This commands needs an internet connection to <strong>github.com</strong>, because it will download a zip version of the skeleton repos.</p>
+</div>
+<div class="section" id="create-admin-create-an-admin-user">
+<h2><strong>create-admin</strong> - Create an admin user<a class="headerlink" href="#create-admin-create-an-admin-user" title="Permalink to this headline">¶</a></h2>
+<p>Use this to create your first <strong>Admin</strong> user, or additional ones. issue on the root directory of your application
+if your initializing <strong>AppBuilder</strong> on <em>app/__init__.py</em> and have named it appbuilder. If not use the <strong>&#8211;app</strong> and
+<strong>&#8211;appbuilder</strong> switches to identify how to import <strong>appbuilder</strong>.</p>
+<p>This admin user can be used to any type of authentication method configured, but <em>fabmanager</em> will not checkit so
+it will allways ask for a password (assumes AUTH_DB).</p>
+</div>
+<div class="section" id="upgrade-db-upgrade-your-database-after-f-a-b-upgrade-to-1-3-0">
+<h2><strong>upgrade-db</strong> - Upgrade your database after F.A.B. upgrade to 1.3.0<a class="headerlink" href="#upgrade-db-upgrade-your-database-after-f-a-b-upgrade-to-1-3-0" title="Permalink to this headline">¶</a></h2>
+<p>Will upgrade your database, necessary if your already using F.A.B. Users now are able to have multiple roles.
+Take a look at <a class="reference internal" href="versionmigration.html"><span class="doc">Version Migration</span></a></p>
+<p>Issue on the root directory of your application
+if your initializing <strong>AppBuilder</strong> on app/__init__.py and have named it appbuilder. If not use the <strong>&#8211;app</strong> and
+<strong>&#8211;appbuilder</strong> switches to identify how to import <strong>appbuilder</strong>.</p>
+</div>
+<div class="section" id="reset-password-resets-a-user-s-password">
+<h2><strong>reset-password</strong> - Resets a user&#8217;s password.<a class="headerlink" href="#reset-password-resets-a-user-s-password" title="Permalink to this headline">¶</a></h2>
+<p>Reset a user&#8217;s password, also needs to import <strong>appbuilder</strong> so
+Issue on the root directory of your application
+if your initializing <strong>AppBuilder</strong> on app/__init__.py and have named it appbuilder. If not use the <strong>&#8211;app</strong> and
+<strong>&#8211;appbuilder</strong> switches to identify how to import <strong>appbuilder</strong>.</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

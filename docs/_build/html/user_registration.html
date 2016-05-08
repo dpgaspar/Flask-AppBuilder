@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>User Registration &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.6.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="index.html" />
+    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="prev" title="Security" href="security.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+  
+  <a href="https://github.com/dpgaspar/Flask-AppBuilder"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
+
+
+  <div id="navbar" class="navbar  navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          Flask-AppBuilder</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="diagrams.html">Diagrams</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fabmanager.html">Command Line Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Base Configuration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="views.html">Base Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickhowto.html">Model Views (Quick How to)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickhowto_mongo.html">Model Views on MongoDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickcharts.html">Chart Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickfiles.html">Model Views with Files and Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickminimal.html">Quick Minimal Application</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="relations.html">Model Relations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customizing.html">Customizing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Templates</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="addons.html">AddOn development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic_datasource.html">Generic Data Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipledbs.html">Multiple Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="i18n.html">i18n Translations</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="security.html">Security</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Registration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versionmigration.html">Version Migration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">User Registration</a><ul>
+<li><a class="reference internal" href="#database-authentication">Database Authentication</a></li>
+<li><a class="reference internal" href="#openid-authentication">OpenID Authentication</a></li>
+<li><a class="reference internal" href="#ldap-authentication">LDAP Authentication</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="security.html" title="Previous Chapter: Security"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Security</span>
+    </a>
+  </li>
+  <li>
+    <a href="api.html" title="Next Chapter: API Reference"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">API Reference &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="user-registration">
+<h1>User Registration<a class="headerlink" href="#user-registration" title="Permalink to this headline">¶</a></h1>
+<p>Allows users to register themselves has users, will behave differently according to the authentication method.</p>
+<div class="section" id="database-authentication">
+<h2>Database Authentication<a class="headerlink" href="#database-authentication" title="Permalink to this headline">¶</a></h2>
+<p>Using database authentication (auth db) the login screen will present a new &#8216;Register&#8217; option where the
+user is directed to a form where he/she fill&#8217;s a form with the necessary login/user information.
+The form includes a Recaptcha field to ensure a human is filling the form. After the form is correctly filled
+by the user an email is sent to the user with a link with an URL containing a hash belonging to his/her registration.</p>
+<p>If the URL is accessed the user is inserted into the F.A.B user model and activated.</p>
+<p>This behaviour can be easily configured or completely altered. By overriding the <strong>RegisterUserDBView</strong> properties.
+or implementing an all new class. <strong>RegisterUserDBView</strong> inherits from BaseRegisterUser that hold some handy base methods
+and properties.</p>
+<p>Note that the process required for sending email&#8217;s uses the excellent flask-email package so make sure you installed it
+first.</p>
+<p>Enabling and using the default implementation is easy just configure the following global config keys on config.py:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">AUTH_TYPE</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># Database Authentication</span>
+<span class="n">AUTH_USER_REGISTRATION</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">AUTH_USER_REGISTRATION_ROLE</span> <span class="o">=</span> <span class="s1">&#39;Public&#39;</span>
+<span class="c1"># Config for Flask-WTF Recaptcha necessary for user registration</span>
+<span class="n">RECAPTCHA_PUBLIC_KEY</span> <span class="o">=</span> <span class="s1">&#39;GOOGLE PUBLIC KEY FOR RECAPTCHA&#39;</span>
+<span class="n">RECAPTCHA_PRIVATE_KEY</span> <span class="o">=</span> <span class="s1">&#39;GOOGLE PRIVATE KEY FOR RECAPTCHA&#39;</span>
+<span class="c1"># Config for Flask-Mail necessary for user registration</span>
+<span class="n">MAIL_SERVER</span> <span class="o">=</span> <span class="s1">&#39;smtp.gmail.com&#39;</span>
+<span class="n">MAIL_USE_TLS</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">MAIL_USERNAME</span> <span class="o">=</span> <span class="s1">&#39;yourappemail@gmail.com&#39;</span>
+<span class="n">MAIL_PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;passwordformail&#39;</span>
+<span class="n">MAIL_DEFAULT_SENDER</span> <span class="o">=</span> <span class="s1">&#39;fabtest10@gmail.com&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="openid-authentication">
+<h2>OpenID Authentication<a class="headerlink" href="#openid-authentication" title="Permalink to this headline">¶</a></h2>
+<p>Registering a user when using OpenID authentication is very similar to database authentication, but this time
+all the basic necessary information is fetched from the provider and presented to the user to alter it (or not)
+and submit.</p>
+</div>
+<div class="section" id="ldap-authentication">
+<h2>LDAP Authentication<a class="headerlink" href="#ldap-authentication" title="Permalink to this headline">¶</a></h2>
+<p>LDAP user self registration is automatic, no register user option is shown. All users are registered, and the
+required information is fetched from the LDAP server.</p>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>You can configure the default behaviour and UI on many different ways. The easiest one is making your own RegisterUser
+class and inherit from RegisterUserDBView (when using auth db). Let&#8217;s take a look at a practical example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder.security.registerviews</span> <span class="k">import</span> <span class="n">RegisterUserDBView</span>
+
+<span class="k">class</span> <span class="nc">MyRegisterUserDBView</span><span class="p">(</span><span class="n">RegisterUserDBView</span><span class="p">):</span>
+    <span class="n">email_template</span> <span class="o">=</span> <span class="s1">&#39;register_mail.html&#39;</span>
+    <span class="n">email_subject</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Your Account activation&#39;</span><span class="p">)</span>
+    <span class="n">activation_template</span> <span class="o">=</span> <span class="s1">&#39;activation.html&#39;</span>
+    <span class="n">form_title</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Fill out the registration form&#39;</span><span class="p">)</span>
+    <span class="n">error_message</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Not possible to register you at the moment, try again later&#39;</span><span class="p">)</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">lazy_gettext</span><span class="p">(</span><span class="s1">&#39;Registration sent to your email&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This class will override:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">The template used to generate the email sent by the user. Take a look at the default template to get a simple
+starting point <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/blob/1.1.0/flask_appbuilder/templates/appbuilder/general/security/register_mail.html">Mail template</a>.
+Your template will receive the following parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li>first_name</li>
+<li>last_name</li>
+<li>username</li>
+<li>url</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">The email subject</p>
+</li>
+<li><p class="first">The activation template. This the page shown to the user when he/she finishes the activation. Take a look at the default template to get a simple
+starting point <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/blob/1.1.0/flask_appbuilder/templates/appbuilder/general/security/activation.html">Activation Template</a>.</p>
+</li>
+<li><p class="first">The form title. The title that is presented on the registration form.</p>
+</li>
+<li><p class="first">Message is the success message presented to the user when an email was succesfully sent to him and his registration
+was recorded.</p>
+</li>
+</ul>
+</div></blockquote>
+<p>After defining your own class, override SecurityManager class and set the <strong>registeruserdbview</strong> property
+with your own class:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MySecurityManager</span><span class="p">(</span><span class="n">SecurityManager</span><span class="p">):</span>
+    <span class="n">registeruserdbview</span> <span class="o">=</span> <span class="n">MyRegisterUserDBView</span>
+</pre></div>
+</div>
+<p>Then tell F.A.B. to use your security manager class, take a look at the <a class="reference internal" href="security.html"><span class="doc">Security</span></a> on how to do it.</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

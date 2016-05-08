@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>flask_appbuilder.base &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.6.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+  
+  <a href="https://github.com/dpgaspar/Flask-AppBuilder"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
+
+
+  <div id="navbar" class="navbar  navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          Flask-AppBuilder</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../diagrams.html">Diagrams</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fabmanager.html">Command Line Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config.html">Base Configuration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../views.html">Base Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickhowto.html">Model Views (Quick How to)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickhowto_mongo.html">Model Views on MongoDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickcharts.html">Chart Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickfiles.html">Model Views with Files and Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickminimal.html">Quick Minimal Application</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../relations.html">Model Relations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../customizing.html">Customizing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../templates.html">Templates</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../addons.html">AddOn development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generic_datasource.html">Generic Data Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../multipledbs.html">Multiple Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../i18n.html">i18n Translations</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_registration.html">User Registration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../versionmigration.html">Version Migration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../versions.html">Versions</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <h1>Source code for flask_appbuilder.base</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">current_app</span>
+<span class="kn">from</span> <span class="nn">.views</span> <span class="kn">import</span> <span class="n">IndexView</span><span class="p">,</span> <span class="n">UtilView</span>
+<span class="kn">from</span> <span class="nn">.filters</span> <span class="kn">import</span> <span class="n">TemplateFilters</span>
+<span class="kn">from</span> <span class="nn">.menu</span> <span class="kn">import</span> <span class="n">Menu</span>
+<span class="kn">from</span> <span class="nn">.babel.manager</span> <span class="kn">import</span> <span class="n">BabelManager</span>
+<span class="kn">from</span> <span class="nn">.version</span> <span class="kn">import</span> <span class="n">VERSION_STRING</span>
+<span class="kn">from</span> <span class="nn">.const</span> <span class="kn">import</span> <span class="n">LOGMSG_WAR_FAB_VIEW_EXISTS</span><span class="p">,</span> \
+                   <span class="n">LOGMSG_ERR_FAB_ADD_PERMISSION_MENU</span><span class="p">,</span> \
+                   <span class="n">LOGMSG_INF_FAB_ADD_VIEW</span><span class="p">,</span> \
+                   <span class="n">LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW</span><span class="p">,</span> \
+                   <span class="n">LOGMSG_INF_FAB_ADDON_ADDED</span><span class="p">,</span> \
+                   <span class="n">LOGMSG_ERR_FAB_ADDON_IMPORT</span><span class="p">,</span> \
+                   <span class="n">LOGMSG_ERR_FAB_ADDON_PROCESS</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">dynamic_class_import</span><span class="p">(</span><span class="n">class_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Will dynamically import a class from a string path</span>
+<span class="sd">        :param class_path: string with class path</span>
+<span class="sd">        :return: class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Split first occurrence of path</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">class_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">module_path</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">package</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">reduce</span><span class="p">(</span><span class="nb">getattr</span><span class="p">,</span> <span class="n">tmp</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">package</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">LOGMSG_ERR_FAB_ADDON_IMPORT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">class_path</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="AppBuilder"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.base.AppBuilder">[docs]</a><span class="k">class</span> <span class="nc">AppBuilder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="sd">        This is the base class for all the framework.</span>
+<span class="sd">        This is were you will register all your views</span>
+<span class="sd">        and create the menu structure.</span>
+<span class="sd">        Will hold your flask app object, all your views, and security classes.</span>
+
+<span class="sd">        initialize your application like this for SQLAlchemy::</span>
+
+<span class="sd">            from flask import Flask</span>
+<span class="sd">            from flask.ext.appbuilder import SQLA, AppBuilder</span>
+
+<span class="sd">            app = Flask(__name__)</span>
+<span class="sd">            app.config.from_object(&#39;config&#39;)</span>
+<span class="sd">            db = SQLA(app)</span>
+<span class="sd">            appbuilder = AppBuilder(app, db.session)</span>
+
+<span class="sd">        When using MongoEngine::</span>
+
+<span class="sd">            from flask import Flask</span>
+<span class="sd">            from flask_appbuilder import AppBuilder</span>
+<span class="sd">            from flask_appbuilder.security.mongoengine.manager import SecurityManager</span>
+<span class="sd">            from flask_mongoengine import MongoEngine</span>
+
+<span class="sd">            app = Flask(__name__)</span>
+<span class="sd">            app.config.from_object(&#39;config&#39;)</span>
+<span class="sd">            dbmongo = MongoEngine(app)</span>
+<span class="sd">            appbuilder = AppBuilder(app, security_manager_class=SecurityManager)</span>
+
+<span class="sd">        You can also create everything as an application factory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">baseviews</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">security_manager_class</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="c1"># Flask app</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="c1"># Database Session</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="c1"># Security Manager Class</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="c1"># Babel Manager Class</span>
+    <span class="n">bm</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="c1"># dict with addon name has key and intantiated class has value</span>
+    <span class="n">addon_managers</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="c1"># temporary list that hold addon_managers config key</span>
+    <span class="n">_addon_managers</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">menu</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">indexview</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">static_folder</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">static_url_path</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">template_filters</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="AppBuilder.__init__"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.base.AppBuilder.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">session</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">menu</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">indexview</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">base_template</span><span class="o">=</span><span class="s1">&#39;appbuilder/baselayout.html&#39;</span><span class="p">,</span>
+                 <span class="n">static_folder</span><span class="o">=</span><span class="s1">&#39;static/appbuilder&#39;</span><span class="p">,</span>
+                 <span class="n">static_url_path</span><span class="o">=</span><span class="s1">&#39;/appbuilder&#39;</span><span class="p">,</span>
+                 <span class="n">security_manager_class</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            AppBuilder constructor</span>
+
+<span class="sd">            :param app:</span>
+<span class="sd">                The flask app object</span>
+<span class="sd">            :param session:</span>
+<span class="sd">                The SQLAlchemy session object</span>
+<span class="sd">            :param menu:</span>
+<span class="sd">                optional, a previous contructed menu</span>
+<span class="sd">            :param indexview:</span>
+<span class="sd">                optional, your customized indexview</span>
+<span class="sd">            :param static_folder:</span>
+<span class="sd">                optional, your override for the global static folder</span>
+<span class="sd">            :param static_url_path:</span>
+<span class="sd">                optional, your override for the global static url path</span>
+<span class="sd">            :param security_manager_class:</span>
+<span class="sd">                optional, pass your own security manager class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">baseviews</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_addon_managers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addon_managers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu</span> <span class="o">=</span> <span class="n">menu</span> <span class="ow">or</span> <span class="n">Menu</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_template</span> <span class="o">=</span> <span class="n">base_template</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">security_manager_class</span> <span class="o">=</span> <span class="n">security_manager_class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indexview</span> <span class="o">=</span> <span class="n">indexview</span> <span class="ow">or</span> <span class="n">IndexView</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">static_folder</span> <span class="o">=</span> <span class="n">static_folder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">static_url_path</span> <span class="o">=</span> <span class="n">static_url_path</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+        <span class="k">if</span> <span class="n">app</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">session</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AppBuilder.init_app"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.base.AppBuilder.init_app">[docs]</a>    <span class="k">def</span> <span class="nf">init_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Will initialize the Flask app, supporting the app factory pattern.</span>
+
+<span class="sd">            :param app:</span>
+<span class="sd">            :param session: The SQLAlchemy session</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;APP_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;F.A.B.&#39;</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;APP_THEME&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;APP_ICON&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;LANGUAGES&#39;</span><span class="p">,</span>
+                              <span class="p">{</span><span class="s1">&#39;en&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;flag&#39;</span><span class="p">:</span> <span class="s1">&#39;gb&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;English&#39;</span><span class="p">}})</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ADDON_MANAGERS&#39;</span><span class="p">,[])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">security_manager_class</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">flask_appbuilder.security.sqla.manager</span> <span class="kn">import</span> <span class="n">SecurityManager</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">security_manager_class</span> <span class="o">=</span> <span class="n">SecurityManager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_addon_managers</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;ADDON_MANAGERS&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">security_manager_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bm</span> <span class="o">=</span> <span class="n">BabelManager</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_global_static</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_global_filters</span><span class="p">()</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">before_request</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">before_request</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_admin_views</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_addon_views</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_menu_permissions</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">baseview</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseviews</span><span class="p">:</span>
+                <span class="c1"># instantiate the views and add session</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_init</span><span class="p">(</span><span class="n">baseview</span><span class="p">)</span>
+                <span class="c1"># Register the views has blueprints</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">baseview</span><span class="p">)</span>
+                <span class="c1"># Add missing permissions where needed</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_permission</span><span class="p">(</span><span class="n">baseview</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_extension</span><span class="p">(</span><span class="n">app</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_init_extension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="s1">&#39;extensions&#39;</span><span class="p">):</span>
+            <span class="n">app</span><span class="o">.</span><span class="n">extensions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s1">&#39;appbuilder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">get_app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Get current or configured flask app</span>
+
+<span class="sd">            :return: Flask App</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">current_app</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">get_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Get the current sqlalchemy session.</span>
+
+<span class="sd">            :return: SQLAlchemy Session</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">app_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Get the App name</span>
+
+<span class="sd">            :return: String with app name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;APP_NAME&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">app_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Get the App theme name</span>
+
+<span class="sd">            :return: String app theme name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;APP_THEME&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">app_icon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Get the App icon location</span>
+
+<span class="sd">            :return: String with relative app icon location</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;APP_ICON&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">languages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;LANGUAGES&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Get the current F.A.B. version</span>
+
+<span class="sd">            :return: String with the current F.A.B. version</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">VERSION_STRING</span>
+
+    <span class="k">def</span> <span class="nf">_add_global_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_filters</span> <span class="o">=</span> <span class="n">TemplateFilters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_app</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sm</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_global_static</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;appbuilder&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/static&#39;</span><span class="p">,</span>
+                       <span class="n">template_folder</span><span class="o">=</span><span class="s1">&#39;templates&#39;</span><span class="p">,</span>
+                       <span class="n">static_folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">static_folder</span><span class="p">,</span>
+                       <span class="n">static_url_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">static_url_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_admin_views</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Registers indexview, utilview (back function), babel views and Security views.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indexview</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_init</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indexview</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indexview</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_view_no_menu</span><span class="p">(</span><span class="n">UtilView</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bm</span><span class="o">.</span><span class="n">register_views</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">register_views</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_add_addon_views</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Registers declared addon&#39;s</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">addon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_addon_managers</span><span class="p">:</span>
+            <span class="n">addon_class</span> <span class="o">=</span> <span class="n">dynamic_class_import</span><span class="p">(</span><span class="n">addon</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">addon_class</span><span class="p">:</span>
+                <span class="c1"># Intantiate manager with appbuilder (self)</span>
+                <span class="n">addon_class</span> <span class="o">=</span> <span class="n">addon_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">addon_class</span><span class="o">.</span><span class="n">pre_process</span><span class="p">()</span>
+                    <span class="n">addon_class</span><span class="o">.</span><span class="n">register_views</span><span class="p">()</span>
+                    <span class="n">addon_class</span><span class="o">.</span><span class="n">post_process</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">addon_managers</span><span class="p">[</span><span class="n">addon</span><span class="p">]</span> <span class="o">=</span> <span class="n">addon_class</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">LOGMSG_INF_FAB_ADDON_ADDED</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">addon</span><span class="p">)))</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">LOGMSG_ERR_FAB_ADDON_PROCESS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">addon</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_add_permissions_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">add_permissions_menu</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">LOGMSG_ERR_FAB_ADD_PERMISSION_MENU</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">_add_menu_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">get_list</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_permissions_menu</span><span class="p">(</span><span class="n">category</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">category</span><span class="o">.</span><span class="n">childs</span><span class="p">:</span>
+                <span class="c1"># dont add permission for menu separator</span>
+                <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_permissions_menu</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_check_and_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">baseview</span><span class="p">):</span>
+        <span class="c1"># If class if not instantiated, instantiate it</span>
+        <span class="c1"># and add db session from security models.</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">baseview</span><span class="p">,</span> <span class="s1">&#39;datamodel&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">baseview</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">baseview</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">baseview</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">):</span>
+            <span class="n">baseview</span> <span class="o">=</span> <span class="n">baseview</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">baseview</span>
+
+<div class="viewcode-block" id="AppBuilder.add_view"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.base.AppBuilder.add_view">[docs]</a>    <span class="k">def</span> <span class="nf">add_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">baseview</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                 <span class="n">label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                 <span class="n">category_icon</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">category_label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add your views associated with menus using this method.</span>
+
+<span class="sd">        :param baseview:</span>
+<span class="sd">            A BaseView type class instantiated or not.</span>
+<span class="sd">            This method will instantiate the class for you if needed.</span>
+<span class="sd">        :param name:</span>
+<span class="sd">            The string name that identifies the menu.</span>
+<span class="sd">        :param href:</span>
+<span class="sd">            Override the generated href for the menu.</span>
+<span class="sd">            You can use an url string or an endpoint name</span>
+<span class="sd">            if non provided default_view from view will be set as href.</span>
+<span class="sd">        :param icon:</span>
+<span class="sd">            Font-Awesome icon name, optional.</span>
+<span class="sd">        :param label:</span>
+<span class="sd">            The label that will be displayed on the menu,</span>
+<span class="sd">            if absent param name will be used</span>
+<span class="sd">        :param category:</span>
+<span class="sd">            The menu category where the menu will be included,</span>
+<span class="sd">            if non provided the view will be acessible as a top menu.</span>
+<span class="sd">        :param category_icon:</span>
+<span class="sd">            Font-Awesome icon name for the category, optional.</span>
+<span class="sd">        :param category_label:</span>
+<span class="sd">            The label that will be displayed on the menu,</span>
+<span class="sd">            if absent param name will be used</span>
+
+<span class="sd">        Examples::</span>
+
+<span class="sd">            appbuilder = AppBuilder(app, db)</span>
+<span class="sd">            # Register a view, rendering a top menu without icon.</span>
+<span class="sd">            appbuilder.add_view(MyModelView(), &quot;My View&quot;)</span>
+<span class="sd">            # or not instantiated</span>
+<span class="sd">            appbuilder.add_view(MyModelView, &quot;My View&quot;)</span>
+<span class="sd">            # Register a view, a submenu &quot;Other View&quot; from &quot;Other&quot; with a phone icon.</span>
+<span class="sd">            appbuilder.add_view(MyOtherModelView, &quot;Other View&quot;, icon=&#39;fa-phone&#39;, category=&quot;Others&quot;)</span>
+<span class="sd">            # Register a view, with category icon and translation.</span>
+<span class="sd">            appbuilder.add_view(YetOtherModelView(), &quot;Other View&quot;, icon=&#39;fa-phone&#39;,</span>
+<span class="sd">                            label=_(&#39;Other View&#39;), category=&quot;Others&quot;, category_icon=&#39;fa-envelop&#39;,</span>
+<span class="sd">                            category_label=_(&#39;Other View&#39;))</span>
+<span class="sd">            # Add a link</span>
+<span class="sd">            appbuilder.add_link(&quot;google&quot;, href=&quot;www.google.com&quot;, icon = &quot;fa-google-plus&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">baseview</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_init</span><span class="p">(</span><span class="n">baseview</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">LOGMSG_INF_FAB_ADD_VIEW</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">baseview</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view_exists</span><span class="p">(</span><span class="n">baseview</span><span class="p">):</span>
+            <span class="n">baseview</span><span class="o">.</span><span class="n">appbuilder</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">baseviews</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">baseview</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_process_inner_views</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">baseview</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_permission</span><span class="p">(</span><span class="n">baseview</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="n">href</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="n">icon</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                      <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="n">category_icon</span><span class="p">,</span>
+                      <span class="n">category_label</span><span class="o">=</span><span class="n">category_label</span><span class="p">,</span> <span class="n">baseview</span><span class="o">=</span><span class="n">baseview</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">baseview</span></div>
+
+<div class="viewcode-block" id="AppBuilder.add_link"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.base.AppBuilder.add_link">[docs]</a>    <span class="k">def</span> <span class="nf">add_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">href</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                 <span class="n">category</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                 <span class="n">category_label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">baseview</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Add your own links to menu using this method</span>
+
+<span class="sd">            :param name:</span>
+<span class="sd">                The string name that identifies the menu.</span>
+<span class="sd">            :param href:</span>
+<span class="sd">                Override the generated href for the menu.</span>
+<span class="sd">                You can use an url string or an endpoint name</span>
+<span class="sd">            :param icon:</span>
+<span class="sd">                Font-Awesome icon name, optional.</span>
+<span class="sd">            :param label:</span>
+<span class="sd">                The label that will be displayed on the menu,</span>
+<span class="sd">                if absent param name will be used</span>
+<span class="sd">            :param category:</span>
+<span class="sd">                The menu category where the menu will be included,</span>
+<span class="sd">                if non provided the view will be accessible as a top menu.</span>
+<span class="sd">            :param category_icon:</span>
+<span class="sd">                Font-Awesome icon name for the category, optional.</span>
+<span class="sd">            :param category_label:</span>
+<span class="sd">                The label that will be displayed on the menu,</span>
+<span class="sd">                if absent param name will be used</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">add_link</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="n">href</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="n">icon</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                           <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">category_icon</span><span class="o">=</span><span class="n">category_icon</span><span class="p">,</span>
+                           <span class="n">category_label</span><span class="o">=</span><span class="n">category_label</span><span class="p">,</span> <span class="n">baseview</span><span class="o">=</span><span class="n">baseview</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_permissions_menu</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">category</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_permissions_menu</span><span class="p">(</span><span class="n">category</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AppBuilder.add_separator"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.base.AppBuilder.add_separator">[docs]</a>    <span class="k">def</span> <span class="nf">add_separator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Add a separator to the menu, you will sequentially create the menu</span>
+
+<span class="sd">            :param category:</span>
+<span class="sd">                The menu category where the separator will be included.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">add_separator</span><span class="p">(</span><span class="n">category</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AppBuilder.add_view_no_menu"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.base.AppBuilder.add_view_no_menu">[docs]</a>    <span class="k">def</span> <span class="nf">add_view_no_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">baseview</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">static_folder</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Add your views without creating a menu.</span>
+
+<span class="sd">            :param baseview:</span>
+<span class="sd">                A BaseView type class instantiated.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">baseview</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_init</span><span class="p">(</span><span class="n">baseview</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">LOGMSG_INF_FAB_ADD_VIEW</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">baseview</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view_exists</span><span class="p">(</span><span class="n">baseview</span><span class="p">):</span>
+            <span class="n">baseview</span><span class="o">.</span><span class="n">appbuilder</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">baseviews</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">baseview</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_process_inner_views</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">baseview</span><span class="p">,</span>
+                     <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">static_folder</span><span class="o">=</span><span class="n">static_folder</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_permission</span><span class="p">(</span><span class="n">baseview</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">LOGMSG_WAR_FAB_VIEW_EXISTS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">baseview</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">baseview</span></div>
+
+<div class="viewcode-block" id="AppBuilder.security_cleanup"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.base.AppBuilder.security_cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">security_cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            This method is useful if you have changed</span>
+<span class="sd">            the name of your menus or classes,</span>
+<span class="sd">            changing them will leave behind permissions</span>
+<span class="sd">            that are not associated with anything.</span>
+
+<span class="sd">            You can use it always or just sometimes to</span>
+<span class="sd">            perform a security cleanup. Warning this will delete any permission</span>
+<span class="sd">            that is no longer part of any registered view or menu.</span>
+
+<span class="sd">            Remember invoke ONLY AFTER YOU HAVE REGISTERED ALL VIEWS</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">security_cleanup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">baseviews</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">get_url_for_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">auth_view</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">get_url_for_logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">auth_view</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="s1">&#39;logout&#39;</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">get_url_for_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indexview</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexview</span><span class="o">.</span><span class="n">default_view</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">get_url_for_userinfo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">user_view</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="s1">&#39;userinfo&#39;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">get_url_for_locale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bm</span><span class="o">.</span><span class="n">locale_view</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bm</span><span class="o">.</span><span class="n">locale_view</span><span class="o">.</span><span class="n">default_view</span><span class="p">),</span> <span class="n">locale</span><span class="o">=</span><span class="n">lang</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">baseview</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">add_permissions_view</span><span class="p">(</span><span class="n">baseview</span><span class="o">.</span><span class="n">base_permissions</span><span class="p">,</span> <span class="n">baseview</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">register_blueprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">baseview</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">static_folder</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">baseview</span><span class="o">.</span><span class="n">create_blueprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">static_folder</span><span class="o">=</span><span class="n">static_folder</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_view_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">baseview</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseviews</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">baseview</span><span class="o">.</span><span class="n">__class__</span> <span class="o">==</span> <span class="n">view</span><span class="o">.</span><span class="n">__class__</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">_process_inner_views</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseviews</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">inner_class</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">get_uninit_inner_views</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseviews</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">inner_class</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">get_init_inner_views</span><span class="p">():</span>
+                        <span class="n">view</span><span class="o">.</span><span class="n">get_init_inner_views</span><span class="p">()</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></div>
+
+
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

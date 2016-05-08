@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>flask_appbuilder.views &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.6.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+  
+  <a href="https://github.com/dpgaspar/Flask-AppBuilder"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
+
+
+  <div id="navbar" class="navbar  navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          Flask-AppBuilder</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../diagrams.html">Diagrams</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fabmanager.html">Command Line Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config.html">Base Configuration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../views.html">Base Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickhowto.html">Model Views (Quick How to)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickhowto_mongo.html">Model Views on MongoDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickcharts.html">Chart Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickfiles.html">Model Views with Files and Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickminimal.html">Quick Minimal Application</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../relations.html">Model Relations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../customizing.html">Customizing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../templates.html">Templates</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../addons.html">AddOn development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generic_datasource.html">Generic Data Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../multipledbs.html">Multiple Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../i18n.html">i18n Translations</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_registration.html">User Registration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../versionmigration.html">Version Migration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../versions.html">Versions</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <h1>Source code for flask_appbuilder.views</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">flash</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">send_file</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">make_response</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">abort</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">._compat</span> <span class="kn">import</span> <span class="n">as_unicode</span>
+<span class="kn">from</span> <span class="nn">.filemanager</span> <span class="kn">import</span> <span class="n">uuid_originalname</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="kn">import</span> <span class="n">GroupFormListWidget</span><span class="p">,</span> <span class="n">ListMasterWidget</span>
+<span class="kn">from</span> <span class="nn">.baseviews</span> <span class="kn">import</span> <span class="n">BaseView</span><span class="p">,</span> <span class="n">BaseCRUDView</span><span class="p">,</span> <span class="n">BaseFormView</span><span class="p">,</span> <span class="n">expose</span><span class="p">,</span> <span class="n">expose_api</span>
+<span class="kn">from</span> <span class="nn">.security.decorators</span> <span class="kn">import</span> <span class="n">has_access</span><span class="p">,</span> <span class="n">permission_name</span><span class="p">,</span> <span class="n">has_access_api</span>
+<span class="kn">from</span> <span class="nn">.urltools</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.const</span> <span class="kn">import</span> <span class="n">FLAMSG_ERR_SEC_ACCESS_DENIED</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="IndexView"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.views.IndexView">[docs]</a><span class="k">class</span> <span class="nc">IndexView</span><span class="p">(</span><span class="n">BaseView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A simple view that implements the index for the site</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">default_view</span> <span class="o">=</span> <span class="s1">&#39;index&#39;</span>
+    <span class="n">index_template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/index.html&#39;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_template</span><span class="p">,</span>
+                                    <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">UtilView</span><span class="p">(</span><span class="n">BaseView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A simple view that implements special util routes.</span>
+<span class="sd">        At the moment it only supports the back special endpoint.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">route_base</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">default_view</span> <span class="o">=</span> <span class="s1">&#39;back&#39;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/back&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">back</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="SimpleFormView"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.views.SimpleFormView">[docs]</a><span class="k">class</span> <span class="nc">SimpleFormView</span><span class="p">(</span><span class="n">BaseFormView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View for presenting your own forms</span>
+<span class="sd">        Inherit from this view to provide some base processing for your customized form views.</span>
+
+<span class="sd">        Notice that this class inherits from BaseView so all properties from the parent class can be overridden also.</span>
+
+<span class="sd">        Implement form_get and form_post to implement your form pre-processing and post-processing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@expose</span><span class="p">(</span><span class="s2">&quot;/form&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">this_form_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_vars</span><span class="p">()</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">form_get</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edit_widget</span><span class="p">(</span><span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">form_template</span><span class="p">,</span>
+                                    <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">form_title</span><span class="p">,</span>
+                                    <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">,</span>
+                                    <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span>
+        <span class="p">)</span>
+
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s2">&quot;/form&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">this_form_post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_vars</span><span class="p">()</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_post</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span>
+            <span class="k">return</span> <span class="n">response</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edit_widget</span><span class="p">(</span><span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">form_template</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">form_title</span><span class="p">,</span>
+                <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">,</span>
+                <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PublicFormView"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.views.PublicFormView">[docs]</a><span class="k">class</span> <span class="nc">PublicFormView</span><span class="p">(</span><span class="n">BaseFormView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View for presenting your own forms</span>
+<span class="sd">        Inherit from this view to provide some base processing for your customized form views.</span>
+
+<span class="sd">        Notice that this class inherits from BaseView so all properties from the parent class can be overridden also.</span>
+
+<span class="sd">        Implement form_get and form_post to implement your form pre-processing and post-processing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@expose</span><span class="p">(</span><span class="s2">&quot;/form&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">this_form_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_vars</span><span class="p">()</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">form_get</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edit_widget</span><span class="p">(</span><span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">form_template</span><span class="p">,</span>
+                                    <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">form_title</span><span class="p">,</span>
+                                    <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">,</span>
+                                    <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span>
+        <span class="p">)</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s2">&quot;/form&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">this_form_post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_vars</span><span class="p">()</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_post</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span>
+            <span class="k">return</span> <span class="n">response</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edit_widget</span><span class="p">(</span><span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">form_template</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">form_title</span><span class="p">,</span>
+                <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">,</span>
+                <span class="n">appbuilder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span>
+            <span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">RestCRUDView</span><span class="p">(</span><span class="n">BaseCRUDView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This class view exposes REST method for CRUD operations on you models</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_search_form_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_get_api_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_urls</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Completes a dict with the CRUD urls of the API.</span>
+
+<span class="sd">        :param api_urls: A dict with the urls {&#39;&lt;FUNCTION&gt;&#39;:&#39;&lt;URL&gt;&#39;,...}</span>
+<span class="sd">        :return: A dict with the CRUD urls of the base API.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">view_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="n">api_urls</span> <span class="o">=</span> <span class="n">api_urls</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">api_urls</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">url_for</span><span class="p">(</span><span class="n">view_name</span> <span class="o">+</span> <span class="s2">&quot;.api_read&quot;</span><span class="p">)</span>
+        <span class="n">api_urls</span><span class="p">[</span><span class="s1">&#39;delete&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">url_for</span><span class="p">(</span><span class="n">view_name</span> <span class="o">+</span> <span class="s2">&quot;.api_delete&quot;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">api_urls</span><span class="p">[</span><span class="s1">&#39;create&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">url_for</span><span class="p">(</span><span class="n">view_name</span> <span class="o">+</span> <span class="s2">&quot;.api_create&quot;</span><span class="p">)</span>
+        <span class="n">api_urls</span><span class="p">[</span><span class="s1">&#39;update&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">url_for</span><span class="p">(</span><span class="n">view_name</span> <span class="o">+</span> <span class="s2">&quot;.api_update&quot;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">api_urls</span>
+
+    <span class="k">def</span> <span class="nf">_get_modelview_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modelview_urls</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">view_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="n">modelview_urls</span> <span class="o">=</span> <span class="n">modelview_urls</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">modelview_urls</span><span class="p">[</span><span class="s1">&#39;show&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">url_for</span><span class="p">(</span><span class="n">view_name</span> <span class="o">+</span> <span class="s2">&quot;.show&quot;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">modelview_urls</span><span class="p">[</span><span class="s1">&#39;add&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">url_for</span><span class="p">(</span><span class="n">view_name</span> <span class="o">+</span> <span class="s2">&quot;.add&quot;</span><span class="p">)</span>
+        <span class="n">modelview_urls</span><span class="p">[</span><span class="s1">&#39;edit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">url_for</span><span class="p">(</span><span class="n">view_name</span> <span class="o">+</span> <span class="s2">&quot;.edit&quot;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">modelview_urls</span>
+
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/api&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access_api</span>
+    <span class="nd">@permission_name</span><span class="p">(</span><span class="s1">&#39;list&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">api</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">view_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="n">api_urls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_api_urls</span><span class="p">()</span>
+        <span class="n">modelview_urls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_modelview_urls</span><span class="p">()</span>
+        <span class="c1">#</span>
+        <span class="c1"># Collects the CRUD permissions</span>
+        <span class="n">can_show</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">has_access</span><span class="p">(</span><span class="s1">&#39;can_show&#39;</span><span class="p">,</span> <span class="n">view_name</span><span class="p">)</span>
+        <span class="n">can_edit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">has_access</span><span class="p">(</span><span class="s1">&#39;can_edit&#39;</span><span class="p">,</span> <span class="n">view_name</span><span class="p">)</span>
+        <span class="n">can_add</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">has_access</span><span class="p">(</span><span class="s1">&#39;can_add&#39;</span><span class="p">,</span> <span class="n">view_name</span><span class="p">)</span>
+        <span class="n">can_delete</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">has_access</span><span class="p">(</span><span class="s1">&#39;can_delete&#39;</span><span class="p">,</span> <span class="n">view_name</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="c1"># Prepares the form with the search fields make it JSON serializable</span>
+        <span class="n">form_fields</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">search_filters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">dict_filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="o">.</span><span class="n">get_search_filters</span><span class="p">()</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_form</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_columns</span><span class="p">:</span>
+            <span class="n">form_fields</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span><span class="p">[</span><span class="n">col</span><span class="p">]()</span>
+            <span class="n">search_filters</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">as_unicode</span><span class="p">(</span><span class="n">flt</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">flt</span> <span class="ow">in</span> <span class="n">dict_filters</span><span class="p">[</span><span class="n">col</span><span class="p">]]</span>
+
+        <span class="n">ret_json</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">can_show</span><span class="o">=</span><span class="n">can_show</span><span class="p">,</span>
+                           <span class="n">can_add</span><span class="o">=</span><span class="n">can_add</span><span class="p">,</span>
+                           <span class="n">can_edit</span><span class="o">=</span><span class="n">can_edit</span><span class="p">,</span>
+                           <span class="n">can_delete</span><span class="o">=</span><span class="n">can_delete</span><span class="p">,</span>
+                           <span class="n">label_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_label_columns_json</span><span class="p">(),</span>
+                           <span class="n">list_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">list_columns</span><span class="p">,</span>
+                           <span class="n">order_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">order_columns</span><span class="p">,</span>
+                           <span class="n">page_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">page_size</span><span class="p">,</span>
+                           <span class="n">modelview_name</span><span class="o">=</span><span class="n">view_name</span><span class="p">,</span>
+                           <span class="n">api_urls</span><span class="o">=</span><span class="n">api_urls</span><span class="p">,</span>
+                           <span class="n">search_filters</span><span class="o">=</span><span class="n">search_filters</span><span class="p">,</span>
+                           <span class="n">search_fields</span><span class="o">=</span><span class="n">form_fields</span><span class="p">,</span>
+                           <span class="n">modelview_urls</span><span class="o">=</span><span class="n">modelview_urls</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">make_response</span><span class="p">(</span><span class="n">ret_json</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;application/json&quot;</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="nd">@expose_api</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/read&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access_api</span>
+    <span class="nd">@permission_name</span><span class="p">(</span><span class="s1">&#39;list&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">api_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get arguments for ordering</span>
+        <span class="k">if</span> <span class="n">get_order_args</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">):</span>
+            <span class="n">order_column</span><span class="p">,</span> <span class="n">order_direction</span> <span class="o">=</span> <span class="n">get_order_args</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">order_column</span><span class="p">,</span> <span class="n">order_direction</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">page</span> <span class="o">=</span> <span class="n">get_page_args</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="n">page_size</span> <span class="o">=</span> <span class="n">get_page_size_args</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="n">get_filter_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="p">)</span>
+        <span class="n">joined_filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="o">.</span><span class="n">get_joined_filters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_filters</span><span class="p">)</span>
+        <span class="n">count</span><span class="p">,</span> <span class="n">lst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">joined_filters</span><span class="p">,</span> <span class="n">order_column</span><span class="p">,</span> <span class="n">order_direction</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="n">page</span><span class="p">,</span> <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_values_json</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_columns</span><span class="p">)</span>
+        <span class="n">pks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_keys</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+        <span class="n">ret_json</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">label_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_label_columns_json</span><span class="p">(),</span>
+                           <span class="n">list_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">list_columns</span><span class="p">,</span>
+                           <span class="n">order_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">order_columns</span><span class="p">,</span>
+                           <span class="n">page</span><span class="o">=</span><span class="n">page</span><span class="p">,</span>
+                           <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
+                           <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span>
+                           <span class="n">modelview_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>
+                           <span class="n">pks</span><span class="o">=</span><span class="n">pks</span><span class="p">,</span>
+                           <span class="n">result</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">make_response</span><span class="p">(</span><span class="n">ret_json</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;application/json&quot;</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="nd">@expose_api</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;create&#39;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/create&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access_api</span>
+    <span class="nd">@permission_name</span><span class="p">(</span><span class="s1">&#39;add&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">api_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">is_valid_form</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">get_filter_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="p">)</span>
+        <span class="n">exclude_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="o">.</span><span class="n">get_relation_cols</span><span class="p">()</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_form</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fill_form_exclude_cols</span><span class="p">(</span><span class="n">exclude_cols</span><span class="p">,</span> <span class="n">form</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate</span><span class="p">():</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">obj</span><span class="p">()</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">populate_obj</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pre_add</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">post_add</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="n">http_return_code</span> <span class="o">=</span> <span class="mi">200</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">http_return_code</span> <span class="o">=</span> <span class="mi">500</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">is_valid_form</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">is_valid_form</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">make_response</span><span class="p">(</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                              <span class="s1">&#39;severity&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="mi">1</span><span class="p">]}),</span> <span class="n">http_return_code</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># TODO return dict with errors</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">make_response</span><span class="p">(</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Invalid form&#39;</span><span class="p">,</span>
+                                              <span class="s1">&#39;severity&#39;</span><span class="p">:</span> <span class="s1">&#39;warning&#39;</span><span class="p">}),</span> <span class="mi">500</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+
+    <span class="nd">@expose_api</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;update&#39;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/update/&lt;pk&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;PUT&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access_api</span>
+    <span class="nd">@permission_name</span><span class="p">(</span><span class="s1">&#39;edit&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">api_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+        <span class="n">is_valid_form</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">get_filter_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="p">)</span>
+        <span class="n">exclude_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="o">.</span><span class="n">get_relation_cols</span><span class="p">()</span>
+
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_filters</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="p">:</span>
+            <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+        <span class="c1"># convert pk to correct type, if pk is non string type.</span>
+        <span class="n">pk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_pk_value</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_form</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">)</span>
+        <span class="c1"># fill the form with the suppressed cols, generated from exclude_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fill_form_exclude_cols</span><span class="p">(</span><span class="n">exclude_cols</span><span class="p">,</span> <span class="n">form</span><span class="p">)</span>
+        <span class="c1"># trick to pass unique validation</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">pk</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate</span><span class="p">():</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">populate_obj</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pre_update</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">edit</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">post_update</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="n">http_return_code</span> <span class="o">=</span> <span class="mi">200</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">http_return_code</span> <span class="o">=</span> <span class="mi">500</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">is_valid_form</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">is_valid_form</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">make_response</span><span class="p">(</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                              <span class="s1">&#39;severity&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="mi">1</span><span class="p">]}),</span> <span class="n">http_return_code</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># TODO return dict with from errors validation</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">make_response</span><span class="p">(</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Invalid form&#39;</span><span class="p">,</span>
+                                              <span class="s1">&#39;severity&#39;</span><span class="p">:</span> <span class="s1">&#39;warning&#39;</span><span class="p">}),</span> <span class="mi">500</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+
+    <span class="nd">@expose_api</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/delete/&lt;pk&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;DELETE&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access_api</span>
+    <span class="nd">@permission_name</span><span class="p">(</span><span class="s1">&#39;delete&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">api_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_filters</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="p">:</span>
+            <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pre_delete</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">post_delete</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">http_return_code</span> <span class="o">=</span> <span class="mi">200</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">http_return_code</span> <span class="o">=</span> <span class="mi">500</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">make_response</span><span class="p">(</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                          <span class="s1">&#39;severity&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="mi">1</span><span class="p">]}),</span> <span class="n">http_return_code</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;application/json&quot;</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="nd">@expose_api</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;column&#39;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/column/&lt;col_name&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access_api</span>
+    <span class="nd">@permission_name</span><span class="p">(</span><span class="s1">&#39;list&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">api_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col_name</span><span class="p">):</span>
+        <span class="n">filter_rel_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_form_query_rel_fields</span>
+        <span class="k">if</span> <span class="n">filter_rel_fields</span> <span class="ow">and</span> <span class="n">filter_rel_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col_name</span><span class="p">):</span>
+            <span class="n">datamodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_related_interface</span><span class="p">(</span><span class="n">col_name</span><span class="p">)</span>
+            <span class="n">filters</span> <span class="o">=</span> <span class="n">datamodel</span><span class="o">.</span><span class="n">get_filters</span><span class="p">()</span><span class="o">.</span><span class="n">add_filter_list</span><span class="p">(</span><span class="n">filter_rel_fields</span><span class="p">[</span><span class="n">col_name</span><span class="p">])</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">datamodel</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">filters</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_related_interface</span><span class="p">(</span><span class="n">col_name</span><span class="p">)</span><span class="o">.</span><span class="n">query</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ret_json</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="n">pk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_related_interface</span><span class="p">(</span><span class="n">col_name</span><span class="p">)</span><span class="o">.</span><span class="n">get_pk_value</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">ret_json</span><span class="p">[</span><span class="n">pk</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">ret_json</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">ret_json</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">make_response</span><span class="p">(</span><span class="n">ret_json</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;application/json&quot;</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+
+<div class="viewcode-block" id="ModelView"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.views.ModelView">[docs]</a><span class="k">class</span> <span class="nc">ModelView</span><span class="p">(</span><span class="n">RestCRUDView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is the CRUD generic view.</span>
+<span class="sd">        If you want to automatically implement create, edit,</span>
+<span class="sd">        delete, show, and list from your database tables, inherit your views from this class.</span>
+
+<span class="sd">        Notice that this class inherits from BaseCRUDView and BaseModelView</span>
+<span class="sd">        so all properties from the parent class can be overriden.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    --------------------------------</span>
+<span class="sd">            LIST</span>
+<span class="sd">    --------------------------------</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/list/&#39;</span><span class="p">)</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_template</span><span class="p">,</span>
+                                    <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">list_title</span><span class="p">,</span>
+                                    <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">)</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    --------------------------------</span>
+<span class="sd">            SHOW</span>
+<span class="sd">    --------------------------------</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/show/&lt;pk&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show</span><span class="p">(</span><span class="n">pk</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_template</span><span class="p">,</span>
+                                    <span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">,</span>
+                                    <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">show_title</span><span class="p">,</span>
+                                    <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">,</span>
+                                    <span class="n">related_views</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_related_views</span><span class="p">)</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ---------------------------</span>
+<span class="sd">            ADD</span>
+<span class="sd">    ---------------------------</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/add&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">widget</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_template</span><span class="p">,</span>
+                                        <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">add_title</span><span class="p">,</span>
+                                        <span class="n">widgets</span><span class="o">=</span><span class="n">widget</span><span class="p">)</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ---------------------------</span>
+<span class="sd">            EDIT</span>
+<span class="sd">    ---------------------------</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/edit/&lt;pk&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edit</span><span class="p">(</span><span class="n">pk</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">widgets</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edit_template</span><span class="p">,</span>
+                                        <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">edit_title</span><span class="p">,</span>
+                                        <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">,</span>
+                                        <span class="n">related_views</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_related_views</span><span class="p">)</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ---------------------------</span>
+<span class="sd">            DELETE</span>
+<span class="sd">    ---------------------------</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/delete/&lt;pk&gt;&#39;</span><span class="p">)</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delete</span><span class="p">(</span><span class="n">pk</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/download/&lt;string:filename&gt;&#39;</span><span class="p">)</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">send_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;UPLOAD_FOLDER&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">filename</span><span class="p">,</span>
+                         <span class="n">attachment_filename</span><span class="o">=</span><span class="n">uuid_originalname</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span>
+                         <span class="n">as_attachment</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/action/&lt;string:name&gt;/&lt;pk&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="ModelView.action"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.views.ModelView.action">[docs]</a>    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Action method to handle actions from a show view</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">has_access</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">):</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">action</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="n">FLAMSG_ERR_SEC_ACCESS_DENIED</span><span class="p">),</span> <span class="s2">&quot;danger&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span></div>
+
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/action_post&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="ModelView.action_post"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.views.ModelView.action_post">[docs]</a>    <span class="k">def</span> <span class="nf">action_post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Action method to handle multiple records selected from a list view</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">]</span>
+        <span class="n">pks</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">getlist</span><span class="p">(</span><span class="s1">&#39;rowid&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">has_access</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">):</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="p">)</span> <span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">pks</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">action</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="n">as_unicode</span><span class="p">(</span><span class="n">FLAMSG_ERR_SEC_ACCESS_DENIED</span><span class="p">),</span> <span class="s2">&quot;danger&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="MasterDetailView"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.views.MasterDetailView">[docs]</a><span class="k">class</span> <span class="nc">MasterDetailView</span><span class="p">(</span><span class="n">BaseCRUDView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implements behaviour for controlling two CRUD views</span>
+<span class="sd">        linked by PK and FK, in a master/detail type with</span>
+<span class="sd">        two lists.</span>
+
+<span class="sd">        Master view will behave like a left menu::</span>
+
+<span class="sd">            class DetailView(ModelView):</span>
+<span class="sd">                datamodel = SQLAInterface(DetailTable, db.session)</span>
+
+<span class="sd">            class MasterView(MasterDetailView):</span>
+<span class="sd">                datamodel = SQLAInterface(MasterTable, db.session)</span>
+<span class="sd">                related_views = [DetailView]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">list_template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/model/left_master_detail.html&#39;</span>
+    <span class="n">list_widget</span> <span class="o">=</span> <span class="n">ListMasterWidget</span>
+    <span class="n">master_div_width</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set to configure bootstrap class for master grid size</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/list/&#39;</span><span class="p">)</span>
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/list/&lt;pk&gt;&#39;</span><span class="p">)</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">pages</span> <span class="o">=</span> <span class="n">get_page_args</span><span class="p">()</span>
+        <span class="n">page_sizes</span> <span class="o">=</span> <span class="n">get_page_size_args</span><span class="p">()</span>
+        <span class="n">orders</span> <span class="o">=</span> <span class="n">get_order_args</span><span class="p">()</span>
+
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">pk</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="p">)</span>
+            <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_related_views_widgets</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">orders</span><span class="o">=</span><span class="n">orders</span><span class="p">,</span>
+                                                      <span class="n">pages</span><span class="o">=</span><span class="n">pages</span><span class="p">,</span> <span class="n">page_sizes</span><span class="o">=</span><span class="n">page_sizes</span><span class="p">,</span> <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">)</span>
+            <span class="n">related_views</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_related_views</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">related_views</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_template</span><span class="p">,</span>
+                                    <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">list_title</span><span class="p">,</span>
+                                    <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">,</span>
+                                    <span class="n">related_views</span><span class="o">=</span><span class="n">related_views</span><span class="p">,</span>
+                                    <span class="n">master_div_width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">master_div_width</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MultipleView"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.views.MultipleView">[docs]</a><span class="k">class</span> <span class="nc">MultipleView</span><span class="p">(</span><span class="n">BaseView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use this view to render multiple views on the same page, exposed on the list endpoint.</span>
+
+<span class="sd">        example (after defining GroupModelView and ContactModelView)::</span>
+
+<span class="sd">            class MultipleViewsExp(MultipleView):</span>
+<span class="sd">                views = [GroupModelView, ContactModelView]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">list_template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/model/multiple_views.html&#39;</span>
+    <span class="sd">&quot;&quot;&quot; Override this to implement your own template for the list endpoint &quot;&quot;&quot;</span>
+
+    <span class="n">views</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="s2">&quot; A list of ModelView&#39;s to render on the same page &quot;</span>
+    <span class="n">_views</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MultipleView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">views</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">views</span> <span class="ow">or</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_views</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_views</span> <span class="ow">or</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">get_uninit_inner_views</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">views</span>
+
+    <span class="k">def</span> <span class="nf">get_init_inner_views</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_views</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/list/&#39;</span><span class="p">)</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pages</span> <span class="o">=</span> <span class="n">get_page_args</span><span class="p">()</span>
+        <span class="n">page_sizes</span> <span class="o">=</span> <span class="n">get_page_size_args</span><span class="p">()</span>
+        <span class="n">orders</span> <span class="o">=</span> <span class="n">get_order_args</span><span class="p">()</span>
+        <span class="n">views_widgets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_views</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">orders</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">):</span>
+                <span class="n">order_column</span><span class="p">,</span> <span class="n">order_direction</span> <span class="o">=</span> <span class="n">orders</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">order_column</span><span class="p">,</span> <span class="n">order_direction</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+            <span class="n">page</span> <span class="o">=</span> <span class="n">pages</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+            <span class="n">page_size</span> <span class="o">=</span> <span class="n">page_sizes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+            <span class="n">views_widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">_get_view_widget</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="n">view</span><span class="o">.</span><span class="n">_base_filters</span><span class="p">,</span>
+                                                       <span class="n">order_column</span><span class="o">=</span><span class="n">order_column</span><span class="p">,</span>
+                                                       <span class="n">order_direction</span><span class="o">=</span><span class="n">order_direction</span><span class="p">,</span>
+                                                       <span class="n">page</span><span class="o">=</span><span class="n">page</span><span class="p">,</span> <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_template</span><span class="p">,</span>
+                                    <span class="n">views</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_views</span><span class="p">,</span>
+                                    <span class="n">views_widgets</span><span class="o">=</span><span class="n">views_widgets</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CompactCRUDMixin"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.views.CompactCRUDMixin">[docs]</a><span class="k">class</span> <span class="nc">CompactCRUDMixin</span><span class="p">(</span><span class="n">BaseCRUDView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mix with ModelView to implement a list with add and edit on the same page.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="CompactCRUDMixin.set_key"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.views.CompactCRUDMixin.set_key">[docs]</a>    <span class="k">def</span> <span class="nf">set_key</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Allows attaching stateless information to the class using the</span>
+<span class="sd">        flask session dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s1">&#39;__&#39;</span> <span class="o">+</span> <span class="n">k</span>
+        <span class="n">session</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="CompactCRUDMixin.get_key"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.views.CompactCRUDMixin.get_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_key</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Matching get method for ``set_key``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s1">&#39;__&#39;</span> <span class="o">+</span> <span class="n">k</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">session</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">default</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_list_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; get joined base filter and current active filter for query &quot;&quot;&quot;</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">CompactCRUDMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_get_list_widget</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">session_form_widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_key</span><span class="p">(</span><span class="s1">&#39;session_form_widget&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+        <span class="n">form_widget</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">session_form_widget</span> <span class="o">==</span> <span class="s1">&#39;add&#39;</span><span class="p">:</span>
+            <span class="n">form_widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;add&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">session_form_widget</span> <span class="o">==</span> <span class="s1">&#39;edit&#39;</span><span class="p">:</span>
+            <span class="n">pk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_key</span><span class="p">(</span><span class="s1">&#39;session_form_edit_pk&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pk</span><span class="p">:</span>
+                <span class="n">form_widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edit</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pk</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;edit&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;list&#39;</span><span class="p">:</span> <span class="n">GroupFormListWidget</span><span class="p">(</span>
+                <span class="n">list_widget</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;list&#39;</span><span class="p">),</span>
+                <span class="n">form_widget</span><span class="o">=</span><span class="n">form_widget</span><span class="p">,</span>
+                <span class="n">form_action</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_key</span><span class="p">(</span><span class="s1">&#39;session_form_action&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                <span class="n">form_title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_key</span><span class="p">(</span><span class="s1">&#39;session_form_title&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">}</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/list/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">list_widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_template</span><span class="p">,</span>
+                                    <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">list_title</span><span class="p">,</span>
+                                    <span class="n">widgets</span><span class="o">=</span><span class="n">list_widgets</span><span class="p">)</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/add/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">widgets</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_key</span><span class="p">(</span><span class="s1">&#39;session_form_action&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_key</span><span class="p">(</span><span class="s1">&#39;session_form_widget&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">referrer</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_key</span><span class="p">(</span><span class="s1">&#39;session_form_widget&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_key</span><span class="p">(</span><span class="s1">&#39;session_form_action&#39;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">full_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_key</span><span class="p">(</span><span class="s1">&#39;session_form_title&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_title</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span>
+
+    <span class="nd">@expose</span><span class="p">(</span><span class="s1">&#39;/edit/&lt;pk&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+    <span class="nd">@has_access</span>
+    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edit</span><span class="p">(</span><span class="n">pk</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">widgets</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_key</span><span class="p">(</span><span class="s1">&#39;session_form_action&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_key</span><span class="p">(</span><span class="s1">&#39;session_form_widget&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_key</span><span class="p">(</span><span class="s1">&#39;session_form_widget&#39;</span><span class="p">,</span> <span class="s1">&#39;edit&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_key</span><span class="p">(</span><span class="s1">&#39;session_form_action&#39;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">full_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_key</span><span class="p">(</span><span class="s1">&#39;session_form_title&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_title</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_key</span><span class="p">(</span><span class="s1">&#39;session_form_edit_pk&#39;</span><span class="p">,</span> <span class="n">pk</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_redirect</span><span class="p">())</span></div>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is for retro compatibility</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">GeneralView</span> <span class="o">=</span> <span class="n">ModelView</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

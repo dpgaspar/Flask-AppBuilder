@@ -218,21 +218,19 @@ then using username to search the LDAP server and binding to it (using the user 
     AUTH_LDAP_BIND_USER = "CN=Query User,OU=People,dc=domain,dc=local"
     AUTH_LDAP_BIND_PASSWORD = "password"
 
-for MSFT AD you can set the UID from which the search user will be based::
+for MSFT AD users will be authenticated using the attribute 'userPrincipalName', so username's will be of the form
+'someuser@somedomail.local'. Since 1.6.1 you can use a new configuration to set all domains to a certain default,
+this will allow users to authenticate using 'someuser' be setting::
 
-    AUTH_LDAP_UID = 'userPrincipalName'
+    AUTH_LDAP_APPEND_DOMAIN = 'somedomain.local'
 
-This will use users as: username@domain.local
+When using self user registration, you can use the following to config further:
 
-or::
-
-    AUTH_LDAP_UID = 'cn'
-
-This will use users as: username
-
-For OpenLDAP or similar use uid field name::
-
-    AUTH_LDAP_UID = 'uid'
+- AUTH_LDAP_UID_FIELD: Default to 'uid' will be used to search the user on the LDAP server. For MSFT AD you can set it to 'userPrincipalName'
+- AUTH_LDAP_FIRSTNAME_FIELD: Default to 'givenName' will use MSFT AD attribute to register first_name on the db.
+- AUTH_LDAP_LASTTNAME_FIELD: Default to 'sn' will use MSFT AD attribute to register last_name on the db.
+- AUTH_LDAP_EMAIL_FIELD: Default to 'mail' will use MSFT AD attribute to register email on the db. If this attribute is null the framework will register <username + '@email.notfound'>
+- AUTH_LDAP_SEARCH: This must be set when using self user registration.
 
 
 Authentication: OAuth

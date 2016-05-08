@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
@@ -9,13 +9,13 @@
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.6.0',
+        VERSION:     '1.6.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="Flask AppBuilder" href="index.html" />
     <link rel="next" title="Model Views on MongoDB" href="quickhowto_mongo.html" />
@@ -65,7 +65,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           Flask-AppBuilder</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.6.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -90,7 +90,7 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="views.html">Base Views</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Model Views (Quick How to)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model Views (Quick How to)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickhowto_mongo.html">Model Views on MongoDB</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickcharts.html">Chart Views</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickfiles.html">Model Views with Files and Images</a></li>
@@ -183,7 +183,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 content">
       
   <div class="section" id="model-views-quick-how-to">
 <h1>Model Views (Quick How to)<a class="headerlink" href="#model-views-quick-how-to" title="Permalink to this headline">¶</a></h1>
@@ -193,14 +193,14 @@
 <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">examples</a></p>
 <div class="section" id="the-base-skeleton-application">
 <h2>The Base Skeleton Application<a class="headerlink" href="#the-base-skeleton-application" title="Permalink to this headline">¶</a></h2>
-<p>If your working with the base skeleton application (take a look at the <a class="reference internal" href="installation.html"><em>Installation</em></a> chapter).</p>
+<p>If your working with the base skeleton application (take a look at the <a class="reference internal" href="installation.html"><span class="doc">Installation</span></a> chapter).</p>
 <p>you now have the following directory structure:</p>
-<div class="highlight-python"><div class="highlight"><pre>&lt;your project name&gt;/
-    config.py : All the application&#39;s configuration
-    app/
-        __init__.py : Application&#39;s initialization
-        models.py : Declare your database models here
-        views.py  : Implement your views here
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">your</span> <span class="n">project</span> <span class="n">name</span><span class="o">&gt;/</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">py</span> <span class="p">:</span> <span class="n">All</span> <span class="n">the</span> <span class="n">application</span><span class="s1">&#39;s configuration</span>
+    <span class="n">app</span><span class="o">/</span>
+        <span class="n">__init__</span><span class="o">.</span><span class="n">py</span> <span class="p">:</span> <span class="n">Application</span><span class="s1">&#39;s initialization</span>
+        <span class="n">models</span><span class="o">.</span><span class="n">py</span> <span class="p">:</span> <span class="n">Declare</span> <span class="n">your</span> <span class="n">database</span> <span class="n">models</span> <span class="n">here</span>
+        <span class="n">views</span><span class="o">.</span><span class="n">py</span>  <span class="p">:</span> <span class="n">Implement</span> <span class="n">your</span> <span class="n">views</span> <span class="n">here</span>
 </pre></div>
 </div>
 <p>It&#8217;s very easy and fast to create an application out of the box, with detailed security.</p>
@@ -227,34 +227,34 @@ You can of course inherit from <strong>db.Model</strong> normal Flask-SQLAlchemy
 The reason for this is that <strong>Model</strong> is on the same declarative space of F.A.B.
 and using it will allow you to define relations to User&#8217;s.</p>
 <p>You can add automatic <em>Audit</em> triggered columns to your models,
-by inherit them from <em>AuditMixin</em> also. (see <a class="reference internal" href="api.html"><em>API Reference</em></a>)</p>
+by inherit them from <em>AuditMixin</em> also. (see <a class="reference internal" href="api.html"><span class="doc">API Reference</span></a>)</p>
 <p>So, first we are going to create a <em>ContactGroup</em> model, to group our contacts</p>
 </div>
 <div class="section" id="define-your-models-models-py">
 <h2>Define your models (models.py)<a class="headerlink" href="#define-your-models-models-py" title="Permalink to this headline">¶</a></h2>
 <p>The <em>ContactGroup</em> model.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">Date</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">Model</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="k">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">Date</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="k">import</span> <span class="n">relationship</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="k">import</span> <span class="n">Model</span>
 
 <span class="k">class</span> <span class="nc">ContactGroup</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </pre></div>
 </div>
 <p>The <em>Contacts</em> table.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Contact</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">address</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">564</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="s">&#39;Street &#39;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Contact</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n">unique</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">address</span> <span class="o">=</span>  <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">564</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Street &#39;</span><span class="p">)</span>
     <span class="n">birthday</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Date</span><span class="p">)</span>
     <span class="n">personal_phone</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
     <span class="n">personal_celphone</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
-    <span class="n">contact_group_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;contact_group.id&#39;</span><span class="p">))</span>
-    <span class="n">contact_group</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s">&quot;ContactGroup&quot;</span><span class="p">)</span>
+    <span class="n">contact_group_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;contact_group.id&#39;</span><span class="p">))</span>
+    <span class="n">contact_group</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;ContactGroup&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
@@ -264,7 +264,7 @@ by inherit them from <em>AuditMixin</em> also. (see <a class="reference internal
 treatment. In this case when adding a new <em>Contact</em> a query will be made to validate
 if someone with the same name already exists. Empty name contacts will not be allowed. Column types
 are validated. The address field will contain &#8216;Street&#8217; has default on add form.
-You can add your own custom validations also, take a look at <a class="reference internal" href="advanced.html"><em>Advanced Configuration</em></a></p>
+You can add your own custom validations also, take a look at <a class="reference internal" href="advanced.html"><span class="doc">Advanced Configuration</span></a></p>
 </div>
 <div class="section" id="define-your-views-views-py">
 <h2>Define your Views (views.py)<a class="headerlink" href="#define-your-views-views-py" title="Permalink to this headline">¶</a></h2>
@@ -272,9 +272,9 @@ You can add your own custom validations also, take a look at <a class="reference
 This view will setup functionality for create, remove, update and show primitives for your model&#8217;s definition.</p>
 <p>Inherit from <em>ModelView</em> class that inherits from <em>BaseCRUDView</em> that inherits from <em>BaseModelView</em>,
 so you can override all their public properties to configure many details for your CRUD primitives.
-take a look at <a class="reference internal" href="advanced.html"><em>Advanced Configuration</em></a>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">ModelView</span>
-<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="kn">import</span> <span class="n">SQLAInterface</span>
+take a look at <a class="reference internal" href="advanced.html"><span class="doc">Advanced Configuration</span></a>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="k">import</span> <span class="n">ModelView</span>
+<span class="kn">from</span> <span class="nn">flask.ext.appbuilder.models.sqla.interface</span> <span class="k">import</span> <span class="n">SQLAInterface</span>
 
 <span class="k">class</span> <span class="nc">GroupModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">ContactGroup</span><span class="p">)</span>
@@ -304,15 +304,15 @@ will relate 1/N relations automatically, it will display a show or edit view wit
 <p>This is the most basic configuration (with an added related view).</p>
 <p>But where is ContactModelView ? (that was a reference in <em>related_views</em> list)</p>
 <p>Let&#8217;s define it:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ContactModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">Contact</span><span class="p">)</span>
 
-    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;contact_group&#39;</span><span class="p">:</span><span class="s">&#39;Contacts Group&#39;</span><span class="p">}</span>
-    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s">&#39;birthday&#39;</span><span class="p">,</span><span class="s">&#39;contact_group&#39;</span><span class="p">]</span>
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;contact_group&#39;</span><span class="p">:</span><span class="s1">&#39;Contacts Group&#39;</span><span class="p">}</span>
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;personal_celphone&#39;</span><span class="p">,</span><span class="s1">&#39;birthday&#39;</span><span class="p">,</span><span class="s1">&#39;contact_group&#39;</span><span class="p">]</span>
 
     <span class="n">show_fieldsets</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">(</span><span class="s">&#39;Summary&#39;</span><span class="p">,{</span><span class="s">&#39;fields&#39;</span><span class="p">:[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">,</span><span class="s">&#39;contact_group&#39;</span><span class="p">]}),</span>
-        <span class="p">(</span><span class="s">&#39;Personal Info&#39;</span><span class="p">,{</span><span class="s">&#39;fields&#39;</span><span class="p">:[</span><span class="s">&#39;birthday&#39;</span><span class="p">,</span><span class="s">&#39;personal_phone&#39;</span><span class="p">,</span><span class="s">&#39;personal_celphone&#39;</span><span class="p">],</span><span class="s">&#39;expanded&#39;</span><span class="p">:</span><span class="bp">False</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">&#39;Summary&#39;</span><span class="p">,{</span><span class="s1">&#39;fields&#39;</span><span class="p">:[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;address&#39;</span><span class="p">,</span><span class="s1">&#39;contact_group&#39;</span><span class="p">]}),</span>
+        <span class="p">(</span><span class="s1">&#39;Personal Info&#39;</span><span class="p">,{</span><span class="s1">&#39;fields&#39;</span><span class="p">:[</span><span class="s1">&#39;birthday&#39;</span><span class="p">,</span><span class="s1">&#39;personal_phone&#39;</span><span class="p">,</span><span class="s1">&#39;personal_celphone&#39;</span><span class="p">],</span><span class="s1">&#39;expanded&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">}),</span>
         <span class="p">]</span>
 </pre></div>
 </div>
@@ -399,9 +399,9 @@ Customize ModelView and ChartView overriding this properties</p>
 <code class="descname">search_columns</code><em class="property"> = None</em><a class="headerlink" href="#flask.ext.appbuilder.baseviews.BaseModelView.search_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>List with allowed search columns, if not provided all possible search columns will be used
 If you want to limit the search (<em>filter</em>) columns possibilities, define it with a list of column names from your model:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">MyTable</span><span class="p">)</span>
-    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;address&#39;</span><span class="p">]</span>
+    <span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;address&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -427,13 +427,13 @@ them using dotted notation. On this example you can reference them using &#8216;
 <div class="section" id="register-views-py">
 <h2>Register (views.py)<a class="headerlink" href="#register-views-py" title="Permalink to this headline">¶</a></h2>
 <p>Register everything, to present the models and create the menu. Issue <strong>create_all</strong> to create your models also.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">create_all</span><span class="p">()</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupModelView</span><span class="p">,</span> <span class="s">&quot;List Groups&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-folder-open-o&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">,</span>
-                <span class="n">category_icon</span> <span class="o">=</span> <span class="s">&quot;fa-envelope&quot;</span><span class="p">)</span>
-<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactModelView</span><span class="p">,</span> <span class="s">&quot;List Contacts&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">db</span><span class="o">.</span><span class="n">create_all</span><span class="p">()</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">GroupModelView</span><span class="p">,</span> <span class="s2">&quot;List Groups&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s2">&quot;fa-folder-open-o&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;Contacts&quot;</span><span class="p">,</span>
+                <span class="n">category_icon</span> <span class="o">=</span> <span class="s2">&quot;fa-envelope&quot;</span><span class="p">)</span>
+<span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">ContactModelView</span><span class="p">,</span> <span class="s2">&quot;List Contacts&quot;</span><span class="p">,</span><span class="n">icon</span> <span class="o">=</span> <span class="s2">&quot;fa-envelope&quot;</span><span class="p">,</span><span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Take a look at the <a class="reference internal" href="api.html"><em>API Reference</em></a> for add_view method.</p>
+<p>Take a look at the <a class="reference internal" href="api.html"><span class="doc">API Reference</span></a> for add_view method.</p>
 <p>You can find this example at: <a class="reference external" href="https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto">https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto</a></p>
 <p>Live quickhowto <a class="reference external" href="http://flaskappbuilder.pythonanywhere.com/">Demo</a> (login with guest/welcome).</p>
 <div class="admonition note">
@@ -630,32 +630,32 @@ key issue an HTTP DELETE to the following URL: htpp://localhost:8080/contactmode
 <h2>Extra Views<a class="headerlink" href="#extra-views" title="Permalink to this headline">¶</a></h2>
 <p>F.A.B. as some extra views like <strong>ModelView</strong> but with different behaviours. You can radically change the way a ModelView
 looks like using various approaches like changing CRUD templates or widgets, CSS, inserting or injecting your own
-HTML etc, take a look at <a class="reference internal" href="templates.html"><em>Templates</em></a>, <a class="reference internal" href="advanced.html"><em>Advanced Configuration</em></a>, <a class="reference internal" href="customizing.html"><em>Customizing</em></a>.</p>
+HTML etc, take a look at <a class="reference internal" href="templates.html"><span class="doc">Templates</span></a>, <a class="reference internal" href="advanced.html"><span class="doc">Advanced Configuration</span></a>, <a class="reference internal" href="customizing.html"><span class="doc">Customizing</span></a>.</p>
 <p>Yet the framework brings 3 extra subclasses from BaseCRUDView (<strong>ModelView</strong> is a subclass of <strong>BaseCRUDView</strong>, this means
 that it implements complete CRUD based on models as well as JSON exposure). This views implement alternative CRUD GUI.</p>
 <p>For rendering multiple views (subclasses of BaseModelView) on the same page use <strong>MultipleView</strong>.
 Using our previous example you could render the Group list and Contact list on the same page, to do it
 add the following view after the definition of <strong>GroupModelView</strong> and <strong>ContactModelView</strong>:</p>
 <p>First remember to import:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="kn">import</span> <span class="n">MultipleView</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask.ext.appbuilder</span> <span class="k">import</span> <span class="n">MultipleView</span>
 </pre></div>
 </div>
 <p>Then define your View:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MultipleViewsExp</span><span class="p">(</span><span class="n">MultipleView</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MultipleViewsExp</span><span class="p">(</span><span class="n">MultipleView</span><span class="p">):</span>
     <span class="n">views</span> <span class="o">=</span> <span class="p">[</span><span class="n">GroupModelView</span><span class="p">,</span> <span class="n">ContactModelView</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Then register the view with a menu:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MultipleViewsExp</span><span class="p">,</span> <span class="s">&quot;Multiple Views&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s">&quot;fa-envelope&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s">&quot;Contacts&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">appbuilder</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">MultipleViewsExp</span><span class="p">,</span> <span class="s2">&quot;Multiple Views&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;fa-envelope&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Contacts&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can render as many views on the same page as you want, this includes Chart type views also,
-take a look at <a class="reference internal" href="quickcharts.html"><em>Chart Views</em></a> to learn about Chart views.</p>
+take a look at <a class="reference internal" href="quickcharts.html"><span class="doc">Chart Views</span></a> to learn about Chart views.</p>
 <p>Another interesting alternative view is the <strong>MasterDetailView</strong> as the name implies it implements a master detail
 GUI, it will render a menu version of a chosen model and then relate with a previous defined BaseModelView subclass
 of you choice.
 Again using the Contact application example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">GroupMasterView</span><span class="p">(</span><span class="n">MasterDetailView</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">GroupMasterView</span><span class="p">(</span><span class="n">MasterDetailView</span><span class="p">):</span>
     <span class="n">datamodel</span> <span class="o">=</span> <span class="n">SQLAInterface</span><span class="p">(</span><span class="n">ContactGroup</span><span class="p">)</span>
     <span class="n">related_views</span> <span class="o">=</span> <span class="p">[</span><span class="n">ContactModelView</span><span class="p">]</span>
 </pre></div>
@@ -680,7 +680,7 @@ and again the framework will figure out how to relate them by inspecting the bac
     </p>
     <p>
         &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
     </p>
   </div>
 </footer>

@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>flask_appbuilder.baseviews &mdash; Flask AppBuilder</title>
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.6.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Flask AppBuilder" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+  
+  <a href="https://github.com/dpgaspar/Flask-AppBuilder"
+     class="visible-desktop hidden-xs"><img
+    id="gh-banner"
+    style="position: absolute; top: 50px; right: 0; border: 0;"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    alt="Fork me on GitHub"></a>
+  <script>
+    // Adjust banner height.
+    $(function () {
+      var navHeight = $(".navbar .container").css("height");
+      $("#gh-banner").css("top", navHeight);
+    });
+  </script>
+
+
+  <div id="navbar" class="navbar  navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          Flask-AppBuilder</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.6.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../diagrams.html">Diagrams</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fabmanager.html">Command Line Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config.html">Base Configuration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../views.html">Base Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickhowto.html">Model Views (Quick How to)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickhowto_mongo.html">Model Views on MongoDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickcharts.html">Chart Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickfiles.html">Model Views with Files and Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickminimal.html">Quick Minimal Application</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../relations.html">Model Relations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../customizing.html">Customizing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../templates.html">Templates</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../addons.html">AddOn development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generic_datasource.html">Generic Data Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../multipledbs.html">Multiple Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../i18n.html">i18n Translations</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_registration.html">User Registration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../versionmigration.html">Version Migration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../versions.html">Versions</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <h1>Source code for flask_appbuilder.baseviews</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">flash</span><span class="p">,</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">abort</span>
+<span class="kn">from</span> <span class="nn">.forms</span> <span class="kn">import</span> <span class="n">GeneralModelConverter</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="kn">import</span> <span class="n">FormWidget</span><span class="p">,</span> <span class="n">ShowWidget</span><span class="p">,</span> <span class="n">ListWidget</span><span class="p">,</span> <span class="n">SearchWidget</span>
+<span class="kn">from</span> <span class="nn">.actions</span> <span class="kn">import</span> <span class="n">ActionItem</span>
+<span class="kn">from</span> <span class="nn">.urltools</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="expose"><a class="viewcode-back" href="../../views.html#flask.ext.appbuilder.baseviews.expose">[docs]</a><span class="k">def</span> <span class="nf">expose</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,)):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use this decorator to expose views on your view classes.</span>
+
+<span class="sd">        :param url:</span>
+<span class="sd">            Relative URL for the view</span>
+<span class="sd">        :param methods:</span>
+<span class="sd">            Allowed HTTP methods. By default only GET is allowed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;_urls&#39;</span><span class="p">):</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">_urls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">_urls</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">url</span><span class="p">,</span> <span class="n">methods</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">f</span>
+    <span class="k">return</span> <span class="n">wrap</span></div>
+
+
+<span class="k">def</span> <span class="nf">expose_api</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,),</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="n">api_name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">f</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="n">api_url</span> <span class="o">=</span> <span class="n">url</span> <span class="ow">or</span> <span class="s2">&quot;/api/{0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;_urls&#39;</span><span class="p">):</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">_urls</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">_extra</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">_urls</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">api_url</span><span class="p">,</span> <span class="n">methods</span><span class="p">))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">_extra</span><span class="p">[</span><span class="n">api_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span>
+    <span class="k">return</span> <span class="n">wrap</span>
+
+
+<div class="viewcode-block" id="BaseView"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseView">[docs]</a><span class="k">class</span> <span class="nc">BaseView</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        All views inherit from this class.</span>
+<span class="sd">        it&#39;s constructor will register your exposed urls on flask as a Blueprint.</span>
+
+<span class="sd">        This class does not expose any urls, but provides a common base for all views.</span>
+
+<span class="sd">        Extend this class if you want to expose methods for your own templates</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">appbuilder</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">blueprint</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">endpoint</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">route_base</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Override this if you want to define your own relative url &quot;&quot;&quot;</span>
+
+    <span class="n">template_folder</span> <span class="o">=</span> <span class="s1">&#39;templates&#39;</span>
+    <span class="sd">&quot;&quot;&quot; The template folder relative location &quot;&quot;&quot;</span>
+    <span class="n">static_folder</span> <span class="o">=</span> <span class="s1">&#39;static&#39;</span>
+    <span class="sd">&quot;&quot;&quot;  The static folder relative location &quot;&quot;&quot;</span>
+    <span class="n">base_permissions</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List with allowed base permission.</span>
+<span class="sd">        Use it like this if you want to restrict your view to readonly::</span>
+
+<span class="sd">            class MyView(ModelView):</span>
+<span class="sd">                base_permissions = [&#39;can_list&#39;,&#39;can_show&#39;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default_view</span> <span class="o">=</span> <span class="s1">&#39;list&#39;</span>
+    <span class="sd">&quot;&quot;&quot; the default view for this BaseView, to be used with url_for (method name) &quot;&quot;&quot;</span>
+    <span class="n">extra_args</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="sd">&quot;&quot;&quot; dictionary for injecting extra arguments into template &quot;&quot;&quot;</span>
+    <span class="n">_apis</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Initialization of base permissions</span>
+<span class="sd">            based on exposed methods and actions</span>
+
+<span class="sd">            Initialization of extra args</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_permissions</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">base_permissions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">),</span> <span class="s1">&#39;_permission_name&#39;</span><span class="p">):</span>
+                    <span class="n">permission_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">),</span> <span class="s1">&#39;_permission_name&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">base_permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;can_&#39;</span> <span class="o">+</span> <span class="n">permission_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">base_permissions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_permissions</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">extra_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">),</span> <span class="s1">&#39;_extra&#39;</span><span class="p">):</span>
+                <span class="n">_extra</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">),</span> <span class="s1">&#39;_extra&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_extra</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apis</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_extra</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+<div class="viewcode-block" id="BaseView.create_blueprint"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseView.create_blueprint">[docs]</a>    <span class="k">def</span> <span class="nf">create_blueprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">appbuilder</span><span class="p">,</span>
+                         <span class="n">endpoint</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                         <span class="n">static_folder</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Create Flask blueprint. You will generally not use it</span>
+
+<span class="sd">            :param appbuilder:</span>
+<span class="sd">               the AppBuilder object</span>
+<span class="sd">            :param endpoint:</span>
+<span class="sd">               endpoint override for this blueprint, will assume class name if not provided</span>
+<span class="sd">            :param static_folder:</span>
+<span class="sd">               the relative override for static folder, if ommited application will use the appbuilder static</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Store appbuilder instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span> <span class="o">=</span> <span class="n">appbuilder</span>
+
+        <span class="c1"># If endpoint name is not provided, get it from the class name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">=</span> <span class="n">endpoint</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_base</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">route_base</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">static_folder</span> <span class="o">=</span> <span class="n">static_folder</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">static_folder</span><span class="p">:</span>
+            <span class="c1"># Create blueprint and register rules</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blueprint</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">__name__</span><span class="p">,</span>
+                                       <span class="n">url_prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">route_base</span><span class="p">,</span>
+                                       <span class="n">template_folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template_folder</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blueprint</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">__name__</span><span class="p">,</span>
+                                       <span class="n">url_prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">route_base</span><span class="p">,</span>
+                                       <span class="n">template_folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template_folder</span><span class="p">,</span>
+                                       <span class="n">static_folder</span><span class="o">=</span><span class="n">static_folder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_urls</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">blueprint</span></div>
+
+    <span class="k">def</span> <span class="nf">_register_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="s1">&#39;_urls&#39;</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">url</span><span class="p">,</span> <span class="n">methods</span> <span class="ow">in</span> <span class="n">attr</span><span class="o">.</span><span class="n">_urls</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">blueprint</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="n">url</span><span class="p">,</span>
+                                                <span class="n">attr_name</span><span class="p">,</span>
+                                                <span class="n">attr</span><span class="p">,</span>
+                                                <span class="n">methods</span><span class="o">=</span><span class="n">methods</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseView.render_template"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseView.render_template">[docs]</a>    <span class="k">def</span> <span class="nf">render_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Use this method on your own endpoints, will pass the extra_args</span>
+<span class="sd">            to the templates.</span>
+
+<span class="sd">            :param template: The template relative path</span>
+<span class="sd">            :param kwargs: arguments to be passed to the template</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;base_template&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">base_template</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;appbuilder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extra_args</span><span class="o">.</span><span class="n">items</span><span class="p">())))</span></div>
+
+    <span class="k">def</span> <span class="nf">_prettify_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Prettify pythonic variable name.</span>
+
+<span class="sd">            For example, &#39;HelloWorld&#39; will be converted to &#39;Hello World&#39;</span>
+
+<span class="sd">            :param name:</span>
+<span class="sd">                Name to prettify.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;(?&lt;=.)([A-Z])&#39;</span><span class="p">,</span> <span class="s1">r&#39; \1&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_prettify_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Prettify pythonic variable name.</span>
+
+<span class="sd">            For example, &#39;hello_world&#39; will be converted to &#39;Hello World&#39;</span>
+
+<span class="sd">            :param name:</span>
+<span class="sd">                Name to prettify.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;[._]&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BaseView.update_redirect"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseView.update_redirect">[docs]</a>    <span class="k">def</span> <span class="nf">update_redirect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Call it on your own endpoint&#39;s to update the back history navigation.</span>
+<span class="sd">            If you bypass it, the next submit or back will go over it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">page_history</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;page_history&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="n">page_history</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">session</span><span class="p">[</span><span class="s1">&#39;page_history&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">page_history</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BaseView.get_redirect"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseView.get_redirect">[docs]</a>    <span class="k">def</span> <span class="nf">get_redirect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Returns the previous url.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">index_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appbuilder</span><span class="o">.</span><span class="n">get_url_for_index</span>
+        <span class="n">page_history</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;page_history&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+
+        <span class="k">if</span> <span class="n">page_history</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">index_url</span>
+        <span class="n">session</span><span class="p">[</span><span class="s1">&#39;page_history&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">page_history</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">page_history</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span> <span class="ow">or</span> <span class="n">index_url</span>
+        <span class="k">return</span> <span class="n">url</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BaseView.get_default_url"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseView.get_default_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_url</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Returns the url for this class default endpoint</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">url_for</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">cls</span><span class="o">.</span><span class="n">default_view</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseView.get_uninit_inner_views"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseView.get_uninit_inner_views">[docs]</a>    <span class="k">def</span> <span class="nf">get_uninit_inner_views</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Will return a list with views that need to be initialized.</span>
+<span class="sd">            Normally related_views from ModelView</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="BaseView.get_init_inner_views"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseView.get_init_inner_views">[docs]</a>    <span class="k">def</span> <span class="nf">get_init_inner_views</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">views</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Sets initialized inner views</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">BaseFormView</span><span class="p">(</span><span class="n">BaseView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Base class FormView&#39;s</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">form_template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/model/edit.html&#39;</span>
+
+    <span class="n">edit_widget</span> <span class="o">=</span> <span class="n">FormWidget</span>
+    <span class="sd">&quot;&quot;&quot; Form widget to override &quot;&quot;&quot;</span>
+    <span class="n">form_title</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot; The form title to be displayed &quot;&quot;&quot;</span>
+    <span class="n">form_columns</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; The form columns to include, if empty will include all&quot;&quot;&quot;</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; The WTF form to render &quot;&quot;&quot;</span>
+    <span class="n">form_fieldsets</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Form field sets &quot;&quot;&quot;</span>
+    <span class="n">default_view</span> <span class="o">=</span> <span class="s1">&#39;this_form_get&#39;</span>
+    <span class="sd">&quot;&quot;&quot; The form view default entry endpoint &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_init_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">form_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_columns</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">form_fieldsets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_fieldsets</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">list_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">refresh</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_fieldsets</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">form_columns</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">fieldset_item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_fieldsets</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">form_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_columns</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">fieldset_item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fields&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_columns</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">form_columns</span> <span class="o">=</span> <span class="n">list_cols</span>
+
+    <span class="k">def</span> <span class="nf">form_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Override this method to implement your form processing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">form_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Override this method to implement your form processing</span>
+<span class="sd">            </span>
+<span class="sd">            :param form: WTForm form</span>
+<span class="sd">            </span>
+<span class="sd">            Return None or a flask response to render </span>
+<span class="sd">            a custom template or redirect the user</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_get_edit_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">exclude_cols</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">widgets</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">exclude_cols</span> <span class="o">=</span> <span class="n">exclude_cols</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="n">widgets</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">widgets</span><span class="p">[</span><span class="s1">&#39;edit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_widget</span><span class="p">(</span><span class="n">route_base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">route_base</span><span class="p">,</span>
+                                           <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span>
+                                           <span class="n">include_cols</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">form_columns</span><span class="p">,</span>
+                                           <span class="n">exclude_cols</span><span class="o">=</span><span class="n">exclude_cols</span><span class="p">,</span>
+                                           <span class="n">fieldsets</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">form_fieldsets</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">widgets</span>
+
+
+<div class="viewcode-block" id="BaseModelView"><a class="viewcode-back" href="../../quickhowto.html#flask.ext.appbuilder.baseviews.BaseModelView">[docs]</a><span class="k">class</span> <span class="nc">BaseModelView</span><span class="p">(</span><span class="n">BaseView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The base class of ModelView and ChartView, all properties are inherited</span>
+<span class="sd">        Customize ModelView and ChartView overriding this properties</span>
+
+<span class="sd">        This class supports all the basics for query</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">datamodel</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Your sqla model you must initialize it like::</span>
+
+<span class="sd">            class MyView(ModelView):</span>
+<span class="sd">                datamodel = SQLAInterface(MyTable)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Title&#39;</span>
+
+    <span class="n">search_columns</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List with allowed search columns, if not provided all possible search columns will be used</span>
+<span class="sd">        If you want to limit the search (*filter*) columns possibilities, define it with a list of column names from your model::</span>
+
+<span class="sd">            class MyView(ModelView):</span>
+<span class="sd">                datamodel = SQLAInterface(MyTable)</span>
+<span class="sd">                search_columns = [&#39;name&#39;,&#39;address&#39;]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">search_exclude_columns</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List with columns to exclude from search. Search includes all possible columns by default</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">search_form_extra_fields</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A dictionary containing column names and a WTForm</span>
+<span class="sd">        Form fields to be added to the Add form, these fields do not</span>
+<span class="sd">        exist on the model itself ex::</span>
+
+<span class="sd">        search_form_extra_fields = {&#39;some_col&#39;:BooleanField(&#39;Some Col&#39;, default=False)}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">search_form_query_rel_fields</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add Customized query for related fields on search form.</span>
+<span class="sd">        Assign a dictionary where the keys are the column names of</span>
+<span class="sd">        the related models to filter, the value for each key, is a list of lists with the</span>
+<span class="sd">        same format as base_filter</span>
+<span class="sd">        {&#39;relation col name&#39;:[[&#39;Related model col&#39;,FilterClass,&#39;Filter Value&#39;],...],...}</span>
+<span class="sd">        Add a custom filter to form related fields::</span>
+
+<span class="sd">            class ContactModelView(ModelView):</span>
+<span class="sd">                datamodel = SQLAModel(Contact, db.session)</span>
+<span class="sd">                search_form_query_rel_fields = [(&#39;group&#39;:[[&#39;name&#39;,FilterStartsWith,&#39;W&#39;]]}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">label_columns</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary of labels for your columns, override this if you want diferent pretify labels</span>
+
+<span class="sd">        example (will just override the label for name column)::</span>
+
+<span class="sd">            class MyView(ModelView):</span>
+<span class="sd">                datamodel = SQLAInterface(MyTable)</span>
+<span class="sd">                label_columns = {&#39;name&#39;:&#39;My Name Label Override&#39;}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">search_form</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; To implement your own add WTF form for Search &quot;&quot;&quot;</span>
+    <span class="n">base_filters</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter the view use: [[&#39;column_name&#39;,BaseFilter,&#39;value&#39;],]</span>
+
+<span class="sd">        example::</span>
+
+<span class="sd">            def get_user():</span>
+<span class="sd">                return g.user</span>
+
+<span class="sd">            class MyView(ModelView):</span>
+<span class="sd">                datamodel = SQLAInterface(MyTable)</span>
+<span class="sd">                base_filters = [[&#39;created_by&#39;, FilterEqualFunction, get_user],</span>
+<span class="sd">                                [&#39;name&#39;, FilterStartsWith, &#39;a&#39;]]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">base_order</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use this property to set default ordering for lists (&#39;col_name&#39;,&#39;asc|desc&#39;)::</span>
+
+<span class="sd">            class MyView(ModelView):</span>
+<span class="sd">                datamodel = SQLAInterface(MyTable)</span>
+<span class="sd">                base_order = (&#39;my_column_name&#39;,&#39;asc&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">search_widget</span> <span class="o">=</span> <span class="n">SearchWidget</span>
+    <span class="sd">&quot;&quot;&quot; Search widget you can override with your own &quot;&quot;&quot;</span>
+
+    <span class="n">_base_filters</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Internal base Filter from class Filters will always filter view &quot;&quot;&quot;</span>
+    <span class="n">_filters</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Filters object will calculate all possible filter types based on search_columns &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">datamodel</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;datamodel&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">datamodel</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span> <span class="o">=</span> <span class="n">datamodel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_properties</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_forms</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_titles</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseModelView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_gen_labels_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_columns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Auto generates pretty label_columns from list of columns</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">list_columns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_columns</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">label_columns</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prettify_column</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_init_titles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_init_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_columns</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_filters</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_exclude_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_exclude_columns</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_columns</span> <span class="ow">or</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_filters</span><span class="p">()</span><span class="o">.</span><span class="n">add_filter_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_filters</span><span class="p">)</span>
+        <span class="n">list_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_columns_list</span><span class="p">()</span>
+        <span class="n">search_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_search_columns_list</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_columns</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">search_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">search_columns</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_exclude_columns</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gen_labels_columns</span><span class="p">(</span><span class="n">list_cols</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_filters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">search_columns</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_init_forms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">conv</span> <span class="o">=</span> <span class="n">GeneralModelConverter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_form</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">search_form</span> <span class="o">=</span> <span class="n">conv</span><span class="o">.</span><span class="n">create_form</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_columns</span><span class="p">,</span> 
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">search_columns</span><span class="p">,</span>
+                                                <span class="n">extra_fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">search_form_extra_fields</span><span class="p">,</span>
+                                                <span class="n">filter_rel_fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">search_form_query_rel_fields</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">_get_search_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">exclude_cols</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">widgets</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">exclude_cols</span> <span class="o">=</span> <span class="n">exclude_cols</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="n">widgets</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">widgets</span><span class="p">[</span><span class="s1">&#39;search&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_widget</span><span class="p">(</span><span class="n">route_base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">route_base</span><span class="p">,</span>
+                                               <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span>
+                                               <span class="n">include_cols</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">search_columns</span><span class="p">,</span>
+                                               <span class="n">exclude_cols</span><span class="o">=</span><span class="n">exclude_cols</span><span class="p">,</span>
+                                               <span class="n">filters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_filters</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">widgets</span>
+
+    <span class="k">def</span> <span class="nf">_label_columns_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Prepares dict with labels to be JSON serializable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_columns</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">ret</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+
+
+<div class="viewcode-block" id="BaseCRUDView"><a class="viewcode-back" href="../../quickhowto.html#flask.ext.appbuilder.baseviews.BaseCRUDView">[docs]</a><span class="k">class</span> <span class="nc">BaseCRUDView</span><span class="p">(</span><span class="n">BaseModelView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The base class for ModelView, all properties are inherited</span>
+<span class="sd">        Customize ModelView overriding this properties</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">related_views</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List with ModelView classes</span>
+<span class="sd">        Will be displayed related with this one using relationship sqlalchemy property::</span>
+
+<span class="sd">            class MyView(ModelView):</span>
+<span class="sd">                datamodel = SQLAModel(Group, db.session)</span>
+<span class="sd">                related_views = [MyOtherRelatedView]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_related_views</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; internal list with ref to instantiated view classes &quot;&quot;&quot;</span>
+    <span class="n">list_title</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; List Title, if not configured the default is &#39;List &#39; with pretty model name &quot;&quot;&quot;</span>
+    <span class="n">show_title</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; Show Title , if not configured the default is &#39;Show &#39; with pretty model name &quot;&quot;&quot;</span>
+    <span class="n">add_title</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; Add Title , if not configured the default is &#39;Add &#39; with pretty model name &quot;&quot;&quot;</span>
+    <span class="n">edit_title</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; Edit Title , if not configured the default is &#39;Edit &#39; with pretty model name &quot;&quot;&quot;</span>
+
+    <span class="n">list_columns</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A list of columns (or model&#39;s methods) to be displayed on the list view.</span>
+<span class="sd">        Use it to control the order of the display</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">show_columns</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A list of columns (or model&#39;s methods) to be displayed on the show view.</span>
+<span class="sd">        Use it to control the order of the display</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">add_columns</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A list of columns (or model&#39;s methods) to be displayed on the add form view.</span>
+<span class="sd">        Use it to control the order of the display</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edit_columns</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A list of columns (or model&#39;s methods) to be displayed on the edit form view.</span>
+<span class="sd">        Use it to control the order of the display</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">show_exclude_columns</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       A list of columns to exclude from the show view. By default all columns are included.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">add_exclude_columns</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       A list of columns to exclude from the add form. By default all columns are included.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edit_exclude_columns</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       A list of columns to exclude from the edit form. By default all columns are included.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">order_columns</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Allowed order columns &quot;&quot;&quot;</span>
+    <span class="n">page_size</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use this property to change default page size</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">show_fieldsets</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        show fieldsets django style [(&lt;&#39;TITLE&#39;|None&gt;, {&#39;fields&#39;:[&lt;F1&gt;,&lt;F2&gt;,...]}),....]</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            class MyView(ModelView):</span>
+<span class="sd">                datamodel = SQLAModel(MyTable, db.session)</span>
+
+<span class="sd">                show_fieldsets = [</span>
+<span class="sd">                    (&#39;Summary&#39;,{&#39;fields&#39;:[&#39;name&#39;,&#39;address&#39;,&#39;group&#39;]}),</span>
+<span class="sd">                    (&#39;Personal Info&#39;,{&#39;fields&#39;:[&#39;birthday&#39;,&#39;personal_phone&#39;],&#39;expanded&#39;:False}),</span>
+<span class="sd">                    ]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">add_fieldsets</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        add fieldsets django style (look at show_fieldsets for an example)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edit_fieldsets</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        edit fieldsets django style (look at show_fieldsets for an example)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">description_columns</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary with column descriptions that will be shown on the forms::</span>
+
+<span class="sd">            class MyView(ModelView):</span>
+<span class="sd">                datamodel = SQLAModel(MyTable, db.session)</span>
+
+<span class="sd">                description_columns = {&#39;name&#39;:&#39;your models name column&#39;,&#39;address&#39;:&#39;the address column&#39;}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">validators_columns</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Dictionary to add your own validators for forms &quot;&quot;&quot;</span>
+
+    <span class="n">add_form_extra_fields</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A dictionary containing column names and a WTForm</span>
+<span class="sd">        Form fields to be added to the Add form, these fields do not</span>
+<span class="sd">        exist on the model itself ex::</span>
+
+<span class="sd">        add_form_extra_fields = {&#39;some_col&#39;:BooleanField(&#39;Some Col&#39;, default=False)}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edit_form_extra_fields</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; Dictionary to add extra fields to the Edit form using this property &quot;&quot;&quot;</span>
+
+    <span class="n">add_form_query_rel_fields</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add Customized query for related fields to add form.</span>
+<span class="sd">        Assign a dictionary where the keys are the column names of</span>
+<span class="sd">        the related models to filter, the value for each key, is a list of lists with the</span>
+<span class="sd">        same format as base_filter</span>
+<span class="sd">        {&#39;relation col name&#39;:[[&#39;Related model col&#39;,FilterClass,&#39;Filter Value&#39;],...],...}</span>
+<span class="sd">        Add a custom filter to form related fields::</span>
+
+<span class="sd">            class ContactModelView(ModelView):</span>
+<span class="sd">                datamodel = SQLAModel(Contact, db.session)</span>
+<span class="sd">                add_form_query_rel_fields = [(&#39;group&#39;:[[&#39;name&#39;,FilterStartsWith,&#39;W&#39;]]}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edit_form_query_rel_fields</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add Customized query for related fields to edit form.</span>
+<span class="sd">        Assign a dictionary where the keys are the column names of</span>
+<span class="sd">        the related models to filter, the value for each key, is a list of lists with the</span>
+<span class="sd">        same format as base_filter</span>
+<span class="sd">        {&#39;relation col name&#39;:[[&#39;Related model col&#39;,FilterClass,&#39;Filter Value&#39;],...],...}</span>
+<span class="sd">        Add a custom filter to form related fields::</span>
+
+<span class="sd">            class ContactModelView(ModelView):</span>
+<span class="sd">                datamodel = SQLAModel(Contact, db.session)</span>
+<span class="sd">                add_form_query_rel_fields = [(&#39;group&#39;:[[&#39;name&#39;,FilterStartsWith,&#39;W&#39;]]}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">add_form</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; To implement your own, assign WTF form for Add &quot;&quot;&quot;</span>
+    <span class="n">edit_form</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; To implement your own, assign WTF form for Edit &quot;&quot;&quot;</span>
+
+    <span class="n">list_template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/model/list.html&#39;</span>
+    <span class="sd">&quot;&quot;&quot; Your own add jinja2 template for list &quot;&quot;&quot;</span>
+    <span class="n">edit_template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/model/edit.html&#39;</span>
+    <span class="sd">&quot;&quot;&quot; Your own add jinja2 template for edit &quot;&quot;&quot;</span>
+    <span class="n">add_template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/model/add.html&#39;</span>
+    <span class="sd">&quot;&quot;&quot; Your own add jinja2 template for add &quot;&quot;&quot;</span>
+    <span class="n">show_template</span> <span class="o">=</span> <span class="s1">&#39;appbuilder/general/model/show.html&#39;</span>
+    <span class="sd">&quot;&quot;&quot; Your own add jinja2 template for show &quot;&quot;&quot;</span>
+
+    <span class="n">list_widget</span> <span class="o">=</span> <span class="n">ListWidget</span>
+    <span class="sd">&quot;&quot;&quot; List widget override &quot;&quot;&quot;</span>
+    <span class="n">edit_widget</span> <span class="o">=</span> <span class="n">FormWidget</span>
+    <span class="sd">&quot;&quot;&quot; Edit widget override &quot;&quot;&quot;</span>
+    <span class="n">add_widget</span> <span class="o">=</span> <span class="n">FormWidget</span>
+    <span class="sd">&quot;&quot;&quot; Add widget override &quot;&quot;&quot;</span>
+    <span class="n">show_widget</span> <span class="o">=</span> <span class="n">ShowWidget</span>
+    <span class="sd">&quot;&quot;&quot; Show widget override &quot;&quot;&quot;</span>
+
+    <span class="n">actions</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseCRUDView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># collect and setup actions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s1">&#39;_action&#39;</span><span class="p">):</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">ActionItem</span><span class="p">(</span><span class="o">*</span><span class="n">func</span><span class="o">.</span><span class="n">_action</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">base_permissions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="p">[</span><span class="n">action</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+
+    <span class="k">def</span> <span class="nf">_init_forms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Init forms for Add and Edit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseCRUDView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_init_forms</span><span class="p">()</span>
+        <span class="n">conv</span> <span class="o">=</span> <span class="n">GeneralModelConverter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_form</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_form</span> <span class="o">=</span> <span class="n">conv</span><span class="o">.</span><span class="n">create_form</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_columns</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">add_columns</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">description_columns</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">validators_columns</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">add_form_extra_fields</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">add_form_query_rel_fields</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_form</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edit_form</span> <span class="o">=</span> <span class="n">conv</span><span class="o">.</span><span class="n">create_form</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_columns</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">edit_columns</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">description_columns</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">validators_columns</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">edit_form_extra_fields</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">edit_form_query_rel_fields</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_init_titles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Init Titles if not defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseCRUDView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_init_titles</span><span class="p">()</span>
+        <span class="n">class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">model_name</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_title</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">list_title</span> <span class="o">=</span> <span class="s1">&#39;List &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prettify_name</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_title</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_title</span> <span class="o">=</span> <span class="s1">&#39;Add &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prettify_name</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_title</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edit_title</span> <span class="o">=</span> <span class="s1">&#39;Edit &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prettify_name</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_title</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_title</span> <span class="o">=</span> <span class="s1">&#39;Show &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prettify_name</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_title</span>
+
+    <span class="k">def</span> <span class="nf">_init_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Init Properties</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseCRUDView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_init_properties</span><span class="p">()</span>
+        <span class="c1"># Reset init props</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">related_views</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_views</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_related_views</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_related_views</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">description_columns</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validators_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validators_columns</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_form_extra_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_form_extra_fields</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edit_form_extra_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_form_extra_fields</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_exclude_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_exclude_columns</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_exclude_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_exclude_columns</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edit_exclude_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_exclude_columns</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="c1"># Generate base props</span>
+        <span class="n">list_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_user_columns_list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_columns</span> <span class="ow">or</span> <span class="p">[</span><span class="n">list_cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gen_labels_columns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_columns</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">order_columns</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_order_columns_list</span><span class="p">(</span><span class="n">list_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">list_columns</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_fieldsets</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_columns</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">fieldset_item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_fieldsets</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_columns</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">fieldset_item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fields&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_columns</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">list_cols</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_exclude_columns</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_fieldsets</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_columns</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">fieldset_item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_fieldsets</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_columns</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">fieldset_item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fields&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_columns</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">list_cols</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_exclude_columns</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_fieldsets</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edit_columns</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">fieldset_item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_fieldsets</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edit_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_columns</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">fieldset_item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fields&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_columns</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edit_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">list_cols</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_exclude_columns</span><span class="p">]</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    -----------------------------------------------------</span>
+<span class="sd">            GET WIDGETS SECTION</span>
+<span class="sd">    -----------------------------------------------------</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_related_view_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">related_view</span><span class="p">,</span>
+                                 <span class="n">order_column</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">order_direction</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                 <span class="n">page</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">page_size</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="n">fk</span> <span class="o">=</span> <span class="n">related_view</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_related_fk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
+        <span class="n">filters</span> <span class="o">=</span> <span class="n">related_view</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_filters</span><span class="p">()</span>
+        <span class="c1"># Check if it&#39;s a many to one model relation</span>
+        <span class="k">if</span> <span class="n">related_view</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">is_relation_many_to_one</span><span class="p">(</span><span class="n">fk</span><span class="p">):</span>
+            <span class="n">filters</span><span class="o">.</span><span class="n">add_filter_related_view</span><span class="p">(</span><span class="n">fk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">FilterRelationOneToManyEqual</span><span class="p">,</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_pk_value</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+        <span class="c1"># Check if it&#39;s a many to many model relation</span>
+        <span class="k">elif</span> <span class="n">related_view</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">is_relation_many_to_many</span><span class="p">(</span><span class="n">fk</span><span class="p">):</span>
+            <span class="n">filters</span><span class="o">.</span><span class="n">add_filter_related_view</span><span class="p">(</span><span class="n">fk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">FilterRelationManyToManyEqual</span><span class="p">,</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_pk_value</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find relation on related view {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">related_view</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">related_view</span><span class="o">.</span><span class="n">_get_view_widget</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="n">filters</span><span class="p">,</span>
+                                             <span class="n">order_column</span><span class="o">=</span><span class="n">order_column</span><span class="p">,</span>
+                                             <span class="n">order_direction</span><span class="o">=</span><span class="n">order_direction</span><span class="p">,</span>
+                                             <span class="n">page</span><span class="o">=</span><span class="n">page</span><span class="p">,</span> <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_related_views_widgets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">orders</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                   <span class="n">pages</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">page_sizes</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                   <span class="n">widgets</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            :return:</span>
+<span class="sd">                Returns a dict with &#39;related_views&#39; key with a list of</span>
+<span class="sd">                Model View widgets</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="n">widgets</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">widgets</span><span class="p">[</span><span class="s1">&#39;related_views&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_related_views</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">orders</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">):</span>
+                <span class="n">order_column</span><span class="p">,</span> <span class="n">order_direction</span> <span class="o">=</span> <span class="n">orders</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">order_column</span><span class="p">,</span> <span class="n">order_direction</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+            <span class="n">widgets</span><span class="p">[</span><span class="s1">&#39;related_views&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_related_view_widget</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span>
+                                                                          <span class="n">order_column</span><span class="p">,</span> <span class="n">order_direction</span><span class="p">,</span>
+                                                                          <span class="n">page</span><span class="o">=</span><span class="n">pages</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">),</span>
+                                                                          <span class="n">page_size</span><span class="o">=</span><span class="n">page_sizes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                                                              <span class="n">view</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">widgets</span>
+
+    <span class="k">def</span> <span class="nf">_get_view_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            :return:</span>
+<span class="sd">                Returns a Model View widget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_list_widget</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;list&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_list_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span>
+                         <span class="n">actions</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                         <span class="n">order_column</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                         <span class="n">order_direction</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                         <span class="n">page</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                         <span class="n">page_size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                         <span class="n">widgets</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                         <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; get joined base filter and current active filter for query &quot;&quot;&quot;</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="n">widgets</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="n">actions</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span>
+        <span class="n">page_size</span> <span class="o">=</span> <span class="n">page_size</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">order_column</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_order</span><span class="p">:</span>
+            <span class="n">order_column</span><span class="p">,</span> <span class="n">order_direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_order</span>
+        <span class="n">joined_filters</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">get_joined_filters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_filters</span><span class="p">)</span>
+        <span class="n">count</span><span class="p">,</span> <span class="n">lst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">joined_filters</span><span class="p">,</span> <span class="n">order_column</span><span class="p">,</span> <span class="n">order_direction</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="n">page</span><span class="p">,</span> <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">)</span>
+        <span class="n">pks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_keys</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+        <span class="n">widgets</span><span class="p">[</span><span class="s1">&#39;list&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_widget</span><span class="p">(</span><span class="n">label_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">label_columns</span><span class="p">,</span>
+                                           <span class="n">include_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">list_columns</span><span class="p">,</span>
+                                           <span class="n">value_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_columns</span><span class="p">),</span>
+                                           <span class="n">order_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">order_columns</span><span class="p">,</span>
+                                           <span class="n">page</span><span class="o">=</span><span class="n">page</span><span class="p">,</span>
+                                           <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
+                                           <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span>
+                                           <span class="n">pks</span><span class="o">=</span><span class="n">pks</span><span class="p">,</span>
+                                           <span class="n">actions</span><span class="o">=</span><span class="n">actions</span><span class="p">,</span>
+                                           <span class="n">filters</span><span class="o">=</span><span class="n">filters</span><span class="p">,</span>
+                                           <span class="n">modelview_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">widgets</span>
+
+    <span class="k">def</span> <span class="nf">_get_show_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">widgets</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">actions</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">show_fieldsets</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="n">widgets</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="n">actions</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span>
+        <span class="n">show_fieldsets</span> <span class="o">=</span> <span class="n">show_fieldsets</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_fieldsets</span>
+        <span class="n">widgets</span><span class="p">[</span><span class="s1">&#39;show&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_widget</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">,</span>
+                                           <span class="n">label_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">label_columns</span><span class="p">,</span>
+                                           <span class="n">include_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">show_columns</span><span class="p">,</span>
+                                           <span class="n">value_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_values_item</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_columns</span><span class="p">),</span>
+                                           <span class="n">actions</span><span class="o">=</span><span class="n">actions</span><span class="p">,</span>
+                                           <span class="n">fieldsets</span><span class="o">=</span><span class="n">show_fieldsets</span><span class="p">,</span>
+                                           <span class="n">modelview_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">widgets</span>
+
+
+    <span class="k">def</span> <span class="nf">_get_add_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">exclude_cols</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">widgets</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">exclude_cols</span> <span class="o">=</span> <span class="n">exclude_cols</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="n">widgets</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">widgets</span><span class="p">[</span><span class="s1">&#39;add&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span>
+                                         <span class="n">include_cols</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">add_columns</span><span class="p">,</span>
+                                         <span class="n">exclude_cols</span><span class="o">=</span><span class="n">exclude_cols</span><span class="p">,</span>
+                                         <span class="n">fieldsets</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">add_fieldsets</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">widgets</span>
+
+    <span class="k">def</span> <span class="nf">_get_edit_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">exclude_cols</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">widgets</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">exclude_cols</span> <span class="o">=</span> <span class="n">exclude_cols</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="n">widgets</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">widgets</span><span class="p">[</span><span class="s1">&#39;edit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_widget</span><span class="p">(</span><span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span>
+                                           <span class="n">include_cols</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">edit_columns</span><span class="p">,</span>
+                                           <span class="n">exclude_cols</span><span class="o">=</span><span class="n">exclude_cols</span><span class="p">,</span>
+                                           <span class="n">fieldsets</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">edit_fieldsets</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">widgets</span>
+
+<div class="viewcode-block" id="BaseCRUDView.get_uninit_inner_views"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseCRUDView.get_uninit_inner_views">[docs]</a>    <span class="k">def</span> <span class="nf">get_uninit_inner_views</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Will return a list with views that need to be initialized.</span>
+<span class="sd">            Normally related_views from ModelView</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_views</span></div>
+
+<div class="viewcode-block" id="BaseCRUDView.get_init_inner_views"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseCRUDView.get_init_inner_views">[docs]</a>    <span class="k">def</span> <span class="nf">get_init_inner_views</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Get the list of related ModelViews after they have been initialized</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_related_views</span></div>
+
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    -----------------------------------------------------</span>
+<span class="sd">            CRUD functions behaviour</span>
+<span class="sd">    -----------------------------------------------------</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            list function logic, override to implement different logic</span>
+<span class="sd">            returns list and search widget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">get_order_args</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">):</span>
+            <span class="n">order_column</span><span class="p">,</span> <span class="n">order_direction</span> <span class="o">=</span> <span class="n">get_order_args</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">order_column</span><span class="p">,</span> <span class="n">order_direction</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">page</span> <span class="o">=</span> <span class="n">get_page_args</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="n">page_size</span> <span class="o">=</span> <span class="n">get_page_size_args</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="n">get_filter_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="p">)</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_list_widget</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="p">,</span>
+                                        <span class="n">order_column</span><span class="o">=</span><span class="n">order_column</span><span class="p">,</span>
+                                        <span class="n">order_direction</span><span class="o">=</span><span class="n">order_direction</span><span class="p">,</span>
+                                        <span class="n">page</span><span class="o">=</span><span class="n">page</span><span class="p">,</span>
+                                        <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">)</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_form</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_search_widget</span><span class="p">(</span><span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span> <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            show function logic, override to implement diferent logic</span>
+<span class="sd">            returns show and related list widget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pages</span> <span class="o">=</span> <span class="n">get_page_args</span><span class="p">()</span>
+        <span class="n">page_sizes</span> <span class="o">=</span> <span class="n">get_page_size_args</span><span class="p">()</span>
+        <span class="n">orders</span> <span class="o">=</span> <span class="n">get_order_args</span><span class="p">()</span>
+
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_filters</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="p">:</span>
+            <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_show_widget</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_related_views_widgets</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">orders</span><span class="o">=</span><span class="n">orders</span><span class="p">,</span>
+                                               <span class="n">pages</span><span class="o">=</span><span class="n">pages</span><span class="p">,</span> <span class="n">page_sizes</span><span class="o">=</span><span class="n">page_sizes</span><span class="p">,</span> <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Add function logic, override to implement diferent logic</span>
+<span class="sd">            returns add widget or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_valid_form</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">get_filter_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="p">)</span>
+        <span class="n">exclude_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="o">.</span><span class="n">get_relation_cols</span><span class="p">()</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_form</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fill_form_exclude_cols</span><span class="p">(</span><span class="n">exclude_cols</span><span class="p">,</span> <span class="n">form</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate</span><span class="p">():</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">obj</span><span class="p">()</span>
+                <span class="n">form</span><span class="o">.</span><span class="n">populate_obj</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pre_add</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">post_add</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="n">flash</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">is_valid_form</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">is_valid_form</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_add_widget</span><span class="p">(</span><span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span> <span class="n">exclude_cols</span><span class="o">=</span><span class="n">exclude_cols</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Edit function logic, override to implement diferent logic</span>
+<span class="sd">            returns Edit widget and related list or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_valid_form</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">pages</span> <span class="o">=</span> <span class="n">get_page_args</span><span class="p">()</span>
+        <span class="n">page_sizes</span> <span class="o">=</span> <span class="n">get_page_size_args</span><span class="p">()</span>
+        <span class="n">orders</span> <span class="o">=</span> <span class="n">get_order_args</span><span class="p">()</span>
+        <span class="n">get_filter_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="p">)</span>
+        <span class="n">exclude_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="o">.</span><span class="n">get_relation_cols</span><span class="p">()</span>
+
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_filters</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="p">:</span>
+            <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+        <span class="c1"># convert pk to correct type, if pk is non string type.</span>
+        <span class="n">pk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_pk_value</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_form</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">)</span>
+            <span class="c1"># fill the form with the suppressed cols, generated from exclude_cols</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fill_form_exclude_cols</span><span class="p">(</span><span class="n">exclude_cols</span><span class="p">,</span> <span class="n">form</span><span class="p">)</span>
+            <span class="c1"># trick to pass unique validation</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">pk</span>
+            <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate</span><span class="p">():</span>
+                <span class="n">form</span><span class="o">.</span><span class="n">populate_obj</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pre_update</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">edit</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">post_update</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="n">flash</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">is_valid_form</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Only force form refresh for select cascade events</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_form</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edit_widget</span><span class="p">(</span><span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span> <span class="n">exclude_cols</span><span class="o">=</span><span class="n">exclude_cols</span><span class="p">)</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_related_views_widgets</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">{},</span>
+                                                  <span class="n">orders</span><span class="o">=</span><span class="n">orders</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="n">pages</span><span class="p">,</span> <span class="n">page_sizes</span><span class="o">=</span><span class="n">page_sizes</span><span class="p">,</span> <span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_valid_form</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">widgets</span>
+
+    <span class="k">def</span> <span class="nf">_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Delete function logic, override to implement diferent logic</span>
+<span class="sd">            deletes the record with primary_key = pk</span>
+
+<span class="sd">            :param pk:</span>
+<span class="sd">                record primary key to delete</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_filters</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="p">:</span>
+            <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pre_delete</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">post_delete</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">flash</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_redirect</span><span class="p">()</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ------------------------------------------------</span>
+<span class="sd">                HELPER FUNCTIONS</span>
+<span class="sd">    ------------------------------------------------</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_fill_form_exclude_cols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_cols</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            fill the form with the suppressed cols, generated from exclude_cols</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">filter_key</span> <span class="ow">in</span> <span class="n">exclude_cols</span><span class="p">:</span>
+            <span class="n">filter_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="o">.</span><span class="n">get_filter_value</span><span class="p">(</span><span class="n">filter_key</span><span class="p">)</span>
+            <span class="n">rel_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">get_related_obj</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="n">filter_value</span><span class="p">)</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="n">filter_key</span><span class="p">)</span>
+            <span class="n">field</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">rel_obj</span>
+
+<div class="viewcode-block" id="BaseCRUDView.pre_update"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseCRUDView.pre_update">[docs]</a>    <span class="k">def</span> <span class="nf">pre_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Override this, will be called before update</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseCRUDView.post_update"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseCRUDView.post_update">[docs]</a>    <span class="k">def</span> <span class="nf">post_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Override this, will be called after update</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseCRUDView.pre_add"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseCRUDView.pre_add">[docs]</a>    <span class="k">def</span> <span class="nf">pre_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Override this, will be called before add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseCRUDView.post_add"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseCRUDView.post_add">[docs]</a>    <span class="k">def</span> <span class="nf">post_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Override this, will be called after update</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseCRUDView.pre_delete"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseCRUDView.pre_delete">[docs]</a>    <span class="k">def</span> <span class="nf">pre_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Override this, will be called before delete</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseCRUDView.post_delete"><a class="viewcode-back" href="../../api.html#flask.ext.appbuilder.baseviews.BaseCRUDView.post_delete">[docs]</a>    <span class="k">def</span> <span class="nf">post_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Override this, will be called after delete</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Daniel Vaz Gaspar.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
