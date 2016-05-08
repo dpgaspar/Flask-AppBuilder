@@ -516,7 +516,6 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
 
-
     def _search_ldap(self, ldap, con, username):
         """
             Searches LDAP for user, assumes ldap_search is set.

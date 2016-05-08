@@ -8,6 +8,7 @@
 
 import click
 import os
+import shutil
 import sys
 from zipfile import ZipFile
 from . import const as c
@@ -379,6 +380,22 @@ def create_addon(name):
         click.echo(click.style('Something went wrong {0}'.format(e), fg='red'))
         return False
 
+@cli_app.command("collect-static")
+@click.option('--static_folder', default='app/static', help='Your projects static folder')
+def collect_static(static_folder):
+    """
+        Copies flask-appbuilder static files to your projects static folder
+    """
+    appbuilder_static_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/appbuilder')
+    app_static_path = os.path.join(os.getcwd(), static_folder)
+    if not os.path.isdir(app_static_path):
+        click.echo(click.style('Static folder does not exist creating: %s' % app_static_path, fg='green'))
+        os.makedirs(app_static_path)
+    try:
+        shutil.copytree(appbuilder_static_path, os.path.join(app_static_path,'appbuilder'))
+    except Exception as e:
+        click.echo(click.style('Appbuilder static folder already exists on your project', fg='red'))
+        
 
 def cli():
     cli_app()
