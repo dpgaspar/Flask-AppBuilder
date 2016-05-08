@@ -3,6 +3,7 @@ __author__ = 'dpgaspar'
 import operator
 import os
 from ..._compat import with_metaclass
+from datetime import date, datetime
 
 #--------------------------------------
 #        Exceptions
@@ -218,28 +219,50 @@ class GenericSession(object):
         return self
 
     def _greater(self, item, col_name, value):
-        if getattr(item, col_name) == None:
-            return False
-        else:
-            try:
-                right_val = float(value)
-                return getattr(item, col_name) > right_val
-            except:
+        source_value = getattr(item, col_name)
+
+        try:
+            #whatever we have to copare it will never match
+            if source_value == None:
                 return False
+
+            #date has special constructor, tested only on sqlite
+            elif isinstance(source_value, date):
+                value = datetime.strptime(value, "%Y-%m-%d").date()
+
+            #fallback to native python types
+            else:            
+                value = type(source_value)(value)
+
+            return source_value > value
+        except:
+            #when everything fails silently report False
+            return False
 
     def smaller(self, col_name, value):
         self._filters_cmd.append((self._smaller, col_name, value))
         return self
 
     def _smaller(self, item, col_name, value):
-        if getattr(item, col_name) == None:
-            return False
-        else:
-            try:
-                right_val = float(value)
-                return getattr(item, col_name) < right_val
-            except:
+        source_value = getattr(item, col_name)
+
+        try:
+            #whatever we have to copare it will never match
+            if source_value == None:
                 return False
+
+            #date has special constructor, tested only on sqlite
+            elif isinstance(source_value, date):
+                value = datetime.strptime(value, "%Y-%m-%d").date()
+
+            #fallback to native python types
+            else:            
+                value = type(source_value)(value)
+
+            return source_value < value
+        except:
+            #when everything fails silently report False
+            return False
 
     def ilike(self, col_name, value):
         self._filters_cmd.append((self._ilike, col_name, value))
@@ -287,18 +310,31 @@ class GenericSession(object):
 
     def _equal(self, item, col_name, value):
         source_value = getattr(item, col_name)
+
         try:
-            return source_value == type(source_value)(value)
+            #whatever we have to copare it will never match
+            if source_value == None:
+                return False
+
+            #date has special constructor, tested only on sqlite
+            elif isinstance(source_value, date):
+                value = datetime.strptime(value, "%Y-%m-%d").date()
+
+            #fallback to native python types
+            else:            
+                value = type(source_value)(value)
+
+            return source_value == value
         except:
-            return 0.0
+            #when everything fails silently report False
+            return False
 
     def not_equal(self, col_name, value):
         self._filters_cmd.append((self._not_equal, col_name, value))
         return self
 
     def _not_equal(self, item, col_name, value):
-        source_value = getattr(item, col_name)
-        return source_value != type(source_value)(value)
+        return not self._equal(item, col_name, value)
 
     def offset(self, offset=0):
         self._offset = offset

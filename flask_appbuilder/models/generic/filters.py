@@ -80,4 +80,8 @@ class GenericFilterConverter(BaseFilterConverter):
                                         FilterNotEqual,
                                         FilterGreater,
                                         FilterSmaller]),
+                        ('is_date', [FilterEqual,
+                                        FilterNotEqual,
+                                        FilterGreater,
+                                        FilterSmaller]),
                         )
