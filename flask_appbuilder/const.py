@@ -19,6 +19,7 @@ from flask_babelpkg import lazy_gettext
 
 LOGMSG_ERR_SEC_ACCESS_DENIED = "Access is Denied for: {0} on: {1}"
 """ Access denied log message, format with user and view/resource """
+LOGMSG_WAR_SEC_LOGIN_FAILED = "Login Failed for user: {0}"
 LOGMSG_ERR_SEC_CREATE_DB = "DB Creation and initialization failed: {0}"
 """ security models creation fails, format with error message """
 LOGMSG_ERR_SEC_ADD_ROLE = "Add Role: {0}"

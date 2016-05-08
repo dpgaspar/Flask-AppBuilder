@@ -15,7 +15,8 @@ from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
                     AUTH_REMOTE_USER, AUTH_OAUTH, \
                     LOGMSG_ERR_SEC_AUTH_LDAP, \
                     LOGMSG_WAR_SEC_NO_USER, \
-                    LOGMSG_WAR_SEC_NOLDAP_OBJ
+                    LOGMSG_WAR_SEC_NOLDAP_OBJ, \
+                    LOGMSG_WAR_SEC_LOGIN_FAILED
                     
 log = logging.getLogger(__name__)
 
@@ -505,12 +506,14 @@ class BaseSecurityManager(AbstractSecurityManager):
             return None
         user = self.find_user(username=username)
         if user is None or (not user.is_active()):
+            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
         elif check_password_hash(user.password, password):
             self.update_user_auth_stat(user, True)
             return user
         else:
             self.update_user_auth_stat(user, False)
+            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
 
 
@@ -524,6 +527,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             :return: ldap object array
         """
         filter_str = "%s=%s" % (self.auth_ldap_uid_field, username)
+        print "FILTER %s" % filter_str
         user = con.search_s(self.auth_ldap_search,
                             ldap.SCOPE_SUBTREE,
                             filter_str,
@@ -531,6 +535,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                              self.auth_ldap_lastname_field,
                              self.auth_ldap_email_field
                             ])
+        print "USER %s" % user
         if user:
             if not user[0][0]:
                 return None
@@ -595,7 +600,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                 con.set_option(ldap.OPT_REFERRALS, 0)
                 # Authenticate user
                 if not self._bind_ldap(ldap, con, username, password):
-                    if user: self.update_user_auth_stat(user, False)
+                    if user:
+                        self.update_user_auth_stat(user, False)
+                    log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
                     return None
                 # If user does not exist on the DB and not self user registration, go away
                 if not user and not self.auth_user_registration:
@@ -635,6 +642,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         user = self.find_user(email=email)
         if user is None or (not user.is_active()):
+            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(email))
             return None
         else:
             self.update_user_auth_stat(user)
@@ -648,6 +656,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         user = self.find_user(username=username)
         if user is None or (not user.is_active()):
+            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
         else:
             self.update_user_auth_stat(user)
@@ -668,6 +677,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.error('User info does not have username or email {0}'.format(userinfo))
             return None
         if user is None or (not user.is_active()):
+            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(userinfo))
             return None
         else:
             self.update_user_auth_stat(user)
