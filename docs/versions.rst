@@ -5,6 +5,11 @@ Improvements and Bug fixes on 1.6.1
 -----------------------------------
 
 - New, Allowing apps to alter title using a jinja block #284
+- Fix, Prevented user's password being written to debug.
+- New, Added login failed message to log.
+- Fix, Fixes #273 by not registering a view that will not exist for LDAP
+- New, added missing filters for date types for generic models.
+- New, #316, Adding FilterInFunction to models.sqla.filters.
 
 Improvements and Bug fixes on 1.6.0
 -----------------------------------
