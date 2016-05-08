@@ -135,123 +135,6 @@ def create_db(app, appbuilder):
     click.echo(click.style('DB objects created', fg='green'))
 
 
-@cli_app.command("upgrade-db")
-@click.option('--config', default='config', help='Your application config file path')
-@click.option('--backup', default='no', prompt='Going to upgrade your DB to version 1.3.0, Did you backup your database?')
-def upgrade_db(config, backup):
-    """
-        Upgrade your database after F.A.B. upgrade if necessary (SQLAlchemy only)
-
-        Version 1.3.0 upgrade needs database upgrade, read version migration on docs for
-        further details.
-    """
-    from flask import Flask
-    from flask_appbuilder import SQLA
-    from flask_appbuilder.security.sqla.models import User
-    from sqlalchemy import Column, Integer, ForeignKey
-    from sqlalchemy.orm import relationship
-
-
-    class UpgProxyUser(User):
-        role_id = Column(Integer, ForeignKey('ab_role.id'))
-        role = relationship('Role')
-
-    sequenceremap={ 'seq_ab_permission_pk':'ab_permission_id_seq',
-                    'seq_ab_view_menu_pk' :'ab_view_menu_id_seq',
-                    'seq_permission_view_pk': 'ab_permission_view_id_seq',
-                    'seq_ab_permission_view_role_pk': 'ab_permission_view_role_id_seq',
-                    'seq_ab_role_pk rename': 'ab_role_id_seq',
-                    'seq_ab_user_role_pk': 'ab_user_role_id_seq',
-                    'seq_ab_user_pk': 'ab_user_id_seq',
-                    'seq_ab_register_user_pk': 'ab_register_user_id_seq'
-                }
-
-    del_column_stmt = {'mysql': 'ALTER TABLE %s DROP COLUMN %s',
-                    'postgresql': 'ALTER TABLE %s DROP COLUMN %s',
-                    'oracle': 'ALTER TABLE %s DROP COLUMN %s',
-                    'mssql': 'ALTER TABLE %s DROP COLUMN %s'}
-
-    del_foreign_stmt = {'mysql': 'ALTER TABLE %s DROP FOREIGN KEY %s',
-                    'postgresql': 'ALTER TABLE %s DROP CONSTRAINT %s',
-                    'oracle': 'ALTER TABLE %s DROP CONSTRAINT %s',
-                    'mssql': 'ALTER TABLE %s DROP CONSTRAINT %s'}
-
-    def del_column(conn, table_name, column_name):
-        try:
-            if conn.engine.name in del_column_stmt:
-                click.echo(click.style("Going to delete Column {0} on {1}".format(column_name, table_name), fg='green'))
-                conn.engine.execute(del_column_stmt[conn.engine.name] % (table_name, column_name))
-                click.echo(click.style("Deleted Column {0} on {1}".format(column_name, table_name), fg='green'))
-            else:
-                click.echo(click.style("Engine {0} not supported for auto upgrade, del column {1}.{2} yourself" \
-                                       .format(conn.engine.name, table_name, column_name), fg='red'))
-        except Exception as e:
-            click.echo(click.style("Error deleting Column {0} on {1}: {2}".format(column_name, table_name, str(e)), fg='red'))
-
-    def del_foreign_key(conn, table_name, column_name):
-        try:
-            if conn.engine.name in del_foreign_stmt:
-                click.echo(click.style("Going to drop FK {0} on {1}".format(column_name, table_name), fg='green'))
-                conn.engine.execute(del_foreign_stmt[conn.engine.name] % (table_name, column_name))
-                click.echo(click.style("Droped FK {0} on {1}".format(column_name, table_name), fg='green'))
-            else:
-                click.echo(click.style("Engine {0} not supported for auto upgrade, del FK {1}.{2} yourself" \
-                                       .format(conn.engine.name, table_name, column_name), fg='red'))
-        except Exception as e:
-            click.echo(click.style("Error droping FK {0} on {1}: {2}".format(column_name, table_name, str(e)), fg='red'))
-
-
-    if not backup.lower() in ('yes', 'y'):
-        click.echo(click.style('Please backup first', fg='red'))
-        exit(0)
-    sys.path.append(os.getcwd())
-    
-    app = Flask(__name__)
-    app.config.from_object(config)
-    db = SQLA(app)
-    db.create_all()
-
-    # Upgrade Users append role on roles, allows 1.3.0 multiple roles for user.
-    click.echo(click.style('Beginning user migration, hope you have backed up first', fg='green'))
-    try:
-        for user in db.session.query(UpgProxyUser).all():
-            user.roles.append(user.role)
-            db.session.commit()
-            click.echo(click.style('Altered user {0}'.format(user.username), fg='green'))
-    except:
-            click.echo(click.style('Error on Upgrade, DB is probably already compliant', fg='green'))
-            exit(0)
-    db.session.remove()
-
-    if db.engine.name == 'sqlite':
-        click.echo(click.style('\n------------------\nTo finish the upgrade you must download and execute the following sql\n\
-        Download from https://github.com/dpgaspar/Flask-AppBuilder/tree/master/bin/sqlite_upgrade_1.3.sql', fg='green'))
-        exit(0)
-
-    del_foreign_key(db, 'ab_user', 'ab_user_role_id_fkey')
-    del_column(db, 'ab_user', 'role_id')
-    
-    # POSTGRESQL
-    if db.engine.name == 'postgresql':
-        for seq in sequenceremap.keys():
-            try:
-                checksequence=db.engine.execute("SELECT 0 from pg_class where relname=%s;", seq)
-                if checksequence.fetchone() is not None:
-                    db.engine.execute("alter sequence %s rename to %s;" % (seq, sequenceremap[seq]))
-                click.echo(click.style('Altered sequence from {0} {1}'.format(seq,sequenceremap[seq]), fg='green'))
-            except:
-                click.echo(click.style('Error Altering sequence from {0} to {1}'.format(seq,sequenceremap[seq]), fg='red'))
-    # ORACLE
-    if db.engine.name == 'oracle':
-        click.echo(click.style('Your using PostgreSQL going to change your sequence names', fg='green'))
-        for seq in sequenceremap.keys():
-            try:
-                db.engine.execute("rename %s to %s;" % (seq, sequenceremap[seq]))
-                click.echo(click.style('Altered sequence from {0} to {1}'.format(seq, sequenceremap[seq]), fg='green'))
-            except:
-                click.echo(click.style('Error Altering sequence from {0} to {1}'.format(seq, sequenceremap[seq]), fg='red'))
-
-
 @cli_app.command("version")
 @click.option('--app', default='app', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
@@ -355,6 +238,7 @@ def create_app(name, engine):
             click.echo(click.style('Try downloading from {0}'.format(MONGOENGIE_REPO_URL), fg='green'))
         return False
 
+
 @cli_app.command("create-addon")
 @click.option('--name', prompt="Your new addon name", help="Your addon name will be prefixed by fab_addon_, directory will have this name")
 def create_addon(name):
@@ -380,6 +264,7 @@ def create_addon(name):
         click.echo(click.style('Something went wrong {0}'.format(e), fg='red'))
         return False
 
+
 @cli_app.command("collect-static")
 @click.option('--static_folder', default='app/static', help='Your projects static folder')
 def collect_static(static_folder):
@@ -395,7 +280,7 @@ def collect_static(static_folder):
         shutil.copytree(appbuilder_static_path, os.path.join(app_static_path,'appbuilder'))
     except Exception as e:
         click.echo(click.style('Appbuilder static folder already exists on your project', fg='red'))
-        
+
 
 def cli():
     cli_app()

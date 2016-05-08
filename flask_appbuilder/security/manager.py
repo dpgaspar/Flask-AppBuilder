@@ -176,6 +176,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 raise Exception("No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type.")
             app.config.setdefault('AUTH_LDAP_SEARCH', '')
             app.config.setdefault('AUTH_LDAP_BIND_USER', '')
+            app.config.setdefault('AUTH_LDAP_APPEND_DOMAIN', '')
             app.config.setdefault('AUTH_LDAP_BIND_PASSWORD', '')
             app.config.setdefault('AUTH_LDAP_ALLOW_SELF_SIGNED', False)
             app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
@@ -251,6 +252,9 @@ class BaseSecurityManager(AbstractSecurityManager):
     def auth_ldap_bind_password(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_BIND_PASSWORD']
 
+    @property
+    def auth_ldap_append_domain(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_APPEND_DOMAIN']
 
     @property
     def auth_ldap_uid_field(self):
@@ -525,6 +529,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             :param username: username to match with auth_ldap_uid_field
             :return: ldap object array
         """
+        if self.auth_ldap_append_domain:
+            username = username + '@' + self.auth_ldap_append_domain
         filter_str = "%s=%s" % (self.auth_ldap_uid_field, username)
         user = con.search_s(self.auth_ldap_search,
                             ldap.SCOPE_SUBTREE,
@@ -561,6 +567,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                 else:
                     return False
             log.debug("LDAP bind with: {0} {1}".format(username, "XXXXXX"))
+            if self.auth_ldap_append_domain:
+                username = username + '@' + self.auth_ldap_append_domain
             con.bind_s(username, password)
             log.debug("LDAP bind OK: {0}".format(username))
             return True
