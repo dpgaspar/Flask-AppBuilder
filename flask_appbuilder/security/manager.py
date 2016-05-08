@@ -527,7 +527,6 @@ class BaseSecurityManager(AbstractSecurityManager):
             :return: ldap object array
         """
         filter_str = "%s=%s" % (self.auth_ldap_uid_field, username)
-        print "FILTER %s" % filter_str
         user = con.search_s(self.auth_ldap_search,
                             ldap.SCOPE_SUBTREE,
                             filter_str,
@@ -535,7 +534,6 @@ class BaseSecurityManager(AbstractSecurityManager):
                              self.auth_ldap_lastname_field,
                              self.auth_ldap_email_field
                             ])
-        print "USER %s" % user
         if user:
             if not user[0][0]:
                 return None
