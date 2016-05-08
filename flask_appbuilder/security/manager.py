@@ -388,7 +388,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                 self.registeruser_view = self.registeruseroidview()
             elif self.auth_type == AUTH_OAUTH:
                 self.registeruser_view = self.registeruseroauthview()
-            self.appbuilder.add_view_no_menu(self.registeruser_view)
+            if self.registeruser_view:
+                self.appbuilder.add_view_no_menu(self.registeruser_view)
 
         self.appbuilder.add_view_no_menu(self.resetpasswordview())
         self.appbuilder.add_view_no_menu(self.resetmypasswordview())
