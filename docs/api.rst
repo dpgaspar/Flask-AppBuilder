@@ -43,6 +43,12 @@ BaseView
 .. autoclass:: BaseView
     :members:
 
+BaseFormView
+------------
+
+.. autoclass::BaseFormView
+    :members:
+
 BaseModelView
 -------------
 

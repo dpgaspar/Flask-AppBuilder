@@ -376,7 +376,6 @@ class ModelView(RestCRUDView):
     @expose('/show/<pk>', methods=['GET'])
     @has_access
     def show(self, pk):
-
         widgets = self._show(pk)
         return self.render_template(self.show_template,
                                     pk=pk,
@@ -393,7 +392,6 @@ class ModelView(RestCRUDView):
     @expose('/add', methods=['GET', 'POST'])
     @has_access
     def add(self):
-
         widget = self._add()
         if not widget:
             return redirect(self.get_redirect())
