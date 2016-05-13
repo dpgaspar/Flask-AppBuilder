@@ -1,5 +1,6 @@
 import logging
 from flask import Blueprint, session, flash, render_template, url_for, abort
+from ._compat import as_unicode
 from .forms import GeneralModelConverter
 from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
 from .actions import ActionItem
@@ -447,7 +448,7 @@ class BaseModelView(BaseView):
         """
         ret = {}
         for key, value in list(self.label_columns.items()):
-            ret[key] = str(value.encode('UTF-8'))
+            ret[key] = as_unicode(value.encode('UTF-8'))
         return ret
 
 
