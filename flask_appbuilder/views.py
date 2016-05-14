@@ -589,6 +589,13 @@ class CompactCRUDMixin(BaseCRUDView):
         else:
             return default
 
+    @classmethod
+    def del_key(cls, k):
+        """Matching get method for ``set_key``
+        """
+        k = cls.__name__ + '__' + k
+        session.pop(k)
+
     def _get_list_widget(self, **args):
         """ get joined base filter and current active filter for query """
         widgets = super(CompactCRUDMixin, self)._get_list_widget(**args)
@@ -636,6 +643,7 @@ class CompactCRUDMixin(BaseCRUDView):
     @has_access
     def edit(self, pk):
         widgets = self._edit(pk)
+        self.update_redirect()
         if not widgets:
             self.set_key('session_form_action', '')
             self.set_key('session_form_widget', None)
@@ -647,6 +655,14 @@ class CompactCRUDMixin(BaseCRUDView):
             self.set_key('session_form_edit_pk', pk)
             return redirect(self.get_redirect())
 
+    @expose('/delete/<pk>')
+    @has_access
+    def delete(self, pk):
+        self._delete(pk)
+        edit_pk = self.get_key('session_form_edit_pk')
+        if pk == edit_pk:
+            self.del_key('session_form_edit_pk')
+        return redirect(self.get_redirect())
 
 """
     This is for retro compatibility
