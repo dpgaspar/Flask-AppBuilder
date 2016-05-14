@@ -10,12 +10,13 @@ msgstr ""
 "POT-Creation-Date: 2015-09-17 13:23+0100\n"
 "PO-Revision-Date: 2014-04-21 15:20+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.0\n"
+"Generated-By: Babel 2.3.4\n"
 
 #: flask_appbuilder/const.py:100
 msgid "Access is Denied"
@@ -28,10 +29,10 @@ msgid "Not a valid choice"
 msgstr "不是有效的日期值"
 
 #: flask_appbuilder/messages.py:9
-#: flask_appbuilder/templates/appbuilder/general/lib.html:305
 #: flask_appbuilder/templates/appbuilder/general/charts/chart.html:8
 #: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:10
 #: flask_appbuilder/templates/appbuilder/general/charts/jsonchart.html:8
+#: flask_appbuilder/templates/appbuilder/general/lib.html:305
 #: flask_appbuilder/templates/appbuilder/general/model/list.html:8
 msgid "Search"
 msgstr "搜索"
@@ -545,8 +546,8 @@ msgstr "注销"
 msgid "Login"
 msgstr "登录"
 
-#: flask_appbuilder/templates/appbuilder/index.html:4
 #: flask_appbuilder/templates/appbuilder/general/security/activation.html:5
+#: flask_appbuilder/templates/appbuilder/index.html:4
 msgid "Welcome"
 msgstr "欢迎"
 

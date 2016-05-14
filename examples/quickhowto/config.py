@@ -27,7 +27,8 @@ LANGUAGES = {
     'de': {'flag': 'de', 'name': 'German'},
     'zh': {'flag': 'cn', 'name': 'Chinese'},
     'ru': {'flag': 'ru', 'name': 'Russian'},
-    'pl': {'flag': 'pl', 'name': 'Polish'}
+    'pl': {'flag': 'pl', 'name': 'Polish'},
+    'ja_JP': {'flag': 'jp', 'name': 'Japanese'}
 }
 
 

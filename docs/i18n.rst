@@ -13,6 +13,7 @@ F.A.B. has support for seven languages (planning for some more):
  - Russian
  - German
  - Polish
+ - Japanese
 
 This means that all messages, builtin on the framework are translated to these languages.
 
