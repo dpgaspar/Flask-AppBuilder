@@ -21,6 +21,8 @@ Take a quick look to the current possibilities. The bold ones require to import 
 
   - **create-db** - Create all your database objects (SQLAlchemy only)
 
+  - **collect-static** - Copies static files from flask-appbuilder to your static folder. Nice to have on certain deploys
+
   - **list-users** - List all users on the database.
 
   - **list-views** - List all registered views.
@@ -71,6 +73,12 @@ if your initializing **AppBuilder** on *app/__init__.py* and have named it appbu
 
 This admin user can be used to any type of authentication method configured, but *fabmanager* will not checkit so
 it will allways ask for a password (assumes AUTH_DB).
+
+**collect-static** - Collect static files
+---------------------------------------
+
+Use this to copy all static files from flask-appbuilder package to your application static folder. Nice to have
+on certain deploys, if your web server is serving the static files directly.
 
 **upgrade-db** - Upgrade your database after F.A.B. upgrade to 1.3.0
 --------------------------------------------------------------------
