@@ -35,12 +35,15 @@ class BaseInterface(object):
     def _get_attr_value(self, item, col):
         if not hasattr(item, col):
             # it's an inner obj attr
-            return reduce(getattr, col.split('.'), item)
+            try:
+                return reduce(getattr, col.split('.'), item)
+            except Exception as e:
+                return ''
         if hasattr(getattr(item, col), '__call__'):
             # its a function
             return getattr(item, col)()
         else:
-            # its attribute
+            # its an attribute
             return getattr(item, col)
 
     def get_filters(self, search_columns=None):
