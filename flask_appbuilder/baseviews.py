@@ -73,7 +73,7 @@ class BaseView(object):
     default_view = 'list'
     """ the default view for this BaseView, to be used with url_for (method name) """
     extra_args = None
-    
+
     """ dictionary for injecting extra arguments into template """
     _apis = None
 
@@ -262,10 +262,10 @@ class BaseFormView(BaseView):
     def form_post(self, form):
         """
             Override this method to implement your form processing
-            
+
             :param form: WTForm form
-            
-            Return None or a flask response to render 
+
+            Return None or a flask response to render
             a custom template or redirect the user
         """
         pass
@@ -376,7 +376,7 @@ class BaseModelView(BaseView):
                 base_order = ('my_column_name','asc')
 
     """
-    
+
     search_widget = SearchWidget
     """ Search widget you can override with your own """
 
@@ -426,11 +426,11 @@ class BaseModelView(BaseView):
     def _init_forms(self):
         conv = GeneralModelConverter(self.datamodel)
         if not self.search_form:
-            self.search_form = conv.create_form(self.label_columns, 
+            self.search_form = conv.create_form(self.label_columns,
                                                 self.search_columns,
                                                 extra_fields=self.search_form_extra_fields,
                                                 filter_rel_fields=self.search_form_query_rel_fields)
-        
+
     def _get_search_widget(self, form=None, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []
         widgets = widgets or {}
@@ -906,11 +906,17 @@ class BaseCRUDView(BaseModelView):
             if form.validate():
                 item = self.datamodel.obj()
                 form.populate_obj(item)
-                self.pre_add(item)
-                if self.datamodel.add(item):
-                    self.post_add(item)
-                flash(*self.datamodel.message)
-                return None
+
+                try:
+                    self.pre_add(item)
+                except Exception as e:
+                    flash(str(e), "danger")
+                else:
+                    if self.datamodel.add(item):
+                        self.post_add(item)
+                    flash(*self.datamodel.message)
+                finally:
+                    return None
             else:
                 is_valid_form = False
         if is_valid_form:
@@ -943,11 +949,16 @@ class BaseCRUDView(BaseModelView):
             form._id = pk
             if form.validate():
                 form.populate_obj(item)
-                self.pre_update(item)
-                if self.datamodel.edit(item):
-                    self.post_update(item)
-                flash(*self.datamodel.message)
-                return None
+                try:
+                    self.pre_update(item)
+                except Exception as e:
+                    flash(str(e), "danger")
+                else:
+                    if self.datamodel.edit(item):
+                        self.post_update(item)
+                    flash(*self.datamodel.message)
+                finally:
+                    return None
             else:
                 is_valid_form = False
         else:
@@ -971,11 +982,15 @@ class BaseCRUDView(BaseModelView):
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
             abort(404)
-        self.pre_delete(item)
-        if self.datamodel.delete(item):
-            self.post_delete(item)
-        flash(*self.datamodel.message)
-        self.update_redirect()
+        try:
+            self.pre_delete(item)
+        except Exception as e:
+            flash(str(e), "danger")
+        else:
+            if self.datamodel.delete(item):
+                self.post_delete(item)
+            flash(*self.datamodel.message)
+            self.update_redirect()
 
     """
     ------------------------------------------------
@@ -995,7 +1010,12 @@ class BaseCRUDView(BaseModelView):
 
     def pre_update(self, item):
         """
-            Override this, will be called before update
+            Override this, this method is called before the update takes place.
+            If an exception is raised by this method,
+            the message is shown to the user and the update operation is
+            aborted. Because of this behavior, it can be used as a way to
+            implement more complex logic around updates. For instance
+            allowing only the original creator of the object to update it.
         """
         pass
 
@@ -1007,7 +1027,9 @@ class BaseCRUDView(BaseModelView):
 
     def pre_add(self, item):
         """
-            Override this, will be called before add
+            Override this, will be called before add.
+            If an exception is raised by this method,
+            the message is shown to the user and the add operation is aborted.
         """
         pass
 
@@ -1020,6 +1042,11 @@ class BaseCRUDView(BaseModelView):
     def pre_delete(self, item):
         """
             Override this, will be called before delete
+            If an exception is raised by this method,
+            the message is shown to the user and the delete operation is
+            aborted. Because of this behavior, it can be used as a way to
+            implement more complex logic around deletes. For instance
+            allowing only the original creator of the object to delete it.
         """
         pass
 
