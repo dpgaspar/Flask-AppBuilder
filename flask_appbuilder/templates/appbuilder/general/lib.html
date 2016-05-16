@@ -186,13 +186,12 @@
 
 
 {% macro render_field(field, begin_sep_label='', end_sep_label='', begin_sep_field='', end_sep_field='') %}
-<div class="form-group">
 	  {% if field.id != 'csrf_token' %}
           {% if field.type == 'HiddenField' %}
             {{ field}}
           {% else %}
             {{begin_sep_label|safe}}
-                <label for="{{field.id}}">
+                <label for="{{field.id}}" control-label>
                     {{ field.label.text }}
                     {% if field.flags.required %}
                         <strong style="color: red">&#42;</strong>
@@ -210,9 +209,8 @@
             {% endfor %}
             </div>
           {% endif %}
-	  {% endif %}
-    {{end_sep_field|safe}}
-</div>
+            {{end_sep_field|safe}}
+      {% endif %}
 {% endmacro %}
 
 

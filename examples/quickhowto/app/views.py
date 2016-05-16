@@ -3,6 +3,7 @@ from flask.ext.appbuilder import ModelView
 from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
 from flask.ext.appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
+from flask.ext.appbuilder.widgets import FormHorizontalWidget, FormInlineWidget, FormVerticalWidget
 from flask.ext.babelpkg import lazy_gettext as _
 
 
@@ -25,7 +26,6 @@ class ContactModelView(ModelView):
     list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
 
     base_order = ('name', 'asc')
-
     show_fieldsets = [
         ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
