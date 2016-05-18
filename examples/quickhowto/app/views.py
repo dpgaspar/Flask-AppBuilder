@@ -105,4 +105,3 @@ appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", categ
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
 appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
-
