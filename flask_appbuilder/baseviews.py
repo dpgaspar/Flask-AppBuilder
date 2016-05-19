@@ -812,7 +812,6 @@ class BaseCRUDView(BaseModelView):
         )
         return widgets
 
-
     def _get_add_widget(self, form, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []
         widgets = widgets or {}

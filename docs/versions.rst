@@ -6,7 +6,8 @@ Improvements and Bug fixes on 1.6.2
 
 - New, Support for Japanese. Thanks to @giyokun.
 - Fix, #312 Solves String encoding causing column labels to be prefixed with 'b' in Python 3x.
-- Fix, #322 Solves Error on Inline cookie cached, when a record is deleted and it's pk is on the edit cookie
+- Fix, #322 Solves Error on Inline cookie cached, when a record is deleted and it's pk is on the edit cookie.
+- Fix, Bug with numeric filters, converting to correct python type.
 
 Improvements and Bug fixes on 1.6.1
 -----------------------------------
