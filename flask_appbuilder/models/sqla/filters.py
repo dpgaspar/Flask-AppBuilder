@@ -35,6 +35,7 @@ def set_value_to_type(datamodel, column_name, value):
     elif datamodel.is_boolean(column_name):
             if value == 'y':
                 return True
+    return value
 
 
 class FilterStartsWith(BaseFilter):
