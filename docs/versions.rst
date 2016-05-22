@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.6.3
+-----------------------------------
+
+- Fix, Filters were broken on 1.6.2, impact on searches and Unique validators.
+
 Improvements and Bug fixes on 1.6.2
 -----------------------------------
 
