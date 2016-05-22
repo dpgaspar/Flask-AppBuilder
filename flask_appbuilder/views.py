@@ -1,4 +1,5 @@
 import logging
+import json
 from flask import (
     flash, redirect, send_file, jsonify, make_response, url_for, session, abort)
 from ._compat import as_unicode
@@ -329,14 +330,40 @@ class RestCRUDView(BaseCRUDView):
             result = datamodel.query(filters)[1]
         else:
             result = self.datamodel.get_related_interface(col_name).query()[1]
-        ret_json = dict()
+        ret_list = list()
         for item in result:
             pk = self.datamodel.get_related_interface(col_name).get_pk_value(item)
-            ret_json[pk] = str(item)
-        ret_json = jsonify(ret_json)
+            ret_list.append({'id': int(pk), 'text': str(item)})
+        ret_json = json.dumps(ret_list)
         response = make_response(ret_json, 200)
         response.headers['Content-Type'] = "application/json"
         return response
+
+    @expose_api(name='readvalues', url='/api/readvalues', methods=['GET'])
+    @has_access_api
+    @permission_name('list')
+    def api_readvalues(self):
+        """
+        """
+        # Get arguments for ordering
+        if get_order_args().get(self.__class__.__name__):
+            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+        else:
+            order_column, order_direction = '', ''
+        get_filter_args(self._filters)
+        joined_filters = self._filters.get_joined_filters(self._base_filters)
+        count, result = self.datamodel.query(joined_filters, order_column, order_direction)
+
+        ret_list = list()
+        for item in result:
+            pk = self.datamodel.get_pk_value(item)
+            ret_list.append({'id': int(pk), 'text': str(item)})
+
+        ret_json = json.dumps(ret_list)
+        response = make_response(ret_json, 200)
+        response.headers['Content-Type'] = "application/json"
+        return response
+
 
 
 class ModelView(RestCRUDView):

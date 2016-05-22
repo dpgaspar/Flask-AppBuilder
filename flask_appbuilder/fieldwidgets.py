@@ -79,6 +79,55 @@ class BS3PasswordFieldWidget(widgets.PasswordInput):
         return super(BS3PasswordFieldWidget, self).__call__(field, **kwargs)
 
 
+class Select2AJAXWidget(object):
+    extra_classes = None
+
+    data_template = ('<input class="input-group my_select2_ajax" %(text)s"></input>')
+
+    def __init__(self, endpoint):
+        self.endpoint = endpoint
+
+    def __call__(self, field, **kwargs):
+        kwargs.setdefault('id', field.id)
+        kwargs.setdefault('name', field.name)
+        kwargs.setdefault('endpoint', self.endpoint)
+
+        if not field.data:
+            field.data = ""
+        template = self.data_template
+
+        return HTMLString(template % {'text': html_params(type='text',
+                                      value=field.data,
+                                      **kwargs)
+                                      })
+
+
+class Select2SlaveAJAXWidget(object):
+    extra_classes = None
+
+    data_template = ('<input class="input-group my_select2_ajax_slave" %(text)s"></input>')
+
+    def __init__(self, master_id, endpoint):
+        self.endpoint = endpoint
+        self.master_id = master_id
+
+    def __call__(self, field, **kwargs):
+        kwargs.setdefault('id', field.id)
+        kwargs.setdefault('name', field.name)
+        kwargs.setdefault('endpoint', self.endpoint)
+        kwargs.setdefault('master_id', self.master_id)
+
+
+        if not field.data:
+            field.data = ""
+        template = self.data_template
+
+        return HTMLString(template % {'text': html_params(type='text',
+                                      value=field.data,
+                                      **kwargs)
+                                      })
+
+
 class Select2Widget(widgets.Select):
     extra_classes = None
 
