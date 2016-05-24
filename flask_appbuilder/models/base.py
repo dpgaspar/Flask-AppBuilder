@@ -97,8 +97,12 @@ class BaseInterface(object):
                 if isinstance(value, datetime.datetime) or isinstance(value, datetime.date):
                     value = value.isoformat()
                     item[key] = value
-                if isinstance(value, list):
+                elif isinstance(value, list):
                     item[key] = [str(v) for v in value]
+                else:
+                    type_str = str(type(value))
+                    if type_str[8:19] == 'app.models.':
+                        item[key] = str(value)                    
             result.append(item)
         return result
 
