@@ -115,6 +115,9 @@ Forms
 
 - You can create a custom query filter for all related columns like this::
 
+    from flask.ext.appbuilder.models.sqla.filters import FilterStartsWith
+
+
     class ContactModelView(ModelView):
         datamodel = SQLAInterface(Contact)
         add_form_query_rel_fields = {'group': [['name',FilterStartsWith,'W']]}

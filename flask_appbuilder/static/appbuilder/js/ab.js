@@ -15,10 +15,12 @@ function loadSelectDataSlave(elem) {
         }
         $('#' + master_id).on("change", function(e) {
             var endpoint = elem.attr('endpoint');
-            endpoint = endpoint.replace("{{ID}}", e.val);
-            $.get( endpoint, function( data ) {
-                elem.select2({data: data, placeholder: "Select", allowClear: true});
-            });
+            if (e.val) {
+                endpoint = endpoint.replace("{{ID}}", e.val);
+                $.get( endpoint, function( data ) {
+                    elem.select2({data: data, placeholder: "Select", allowClear: true});
+                });
+            }
         })
     }
 }

@@ -319,22 +319,54 @@ class RestCRUDView(BaseCRUDView):
         response.headers['Content-Type'] = "application/json"
         return response
 
-    @expose_api(name='column', url='/api/column/<col_name>', methods=['GET'])
-    @has_access_api
-    @permission_name('list')
-    def api_column(self, col_name):
-        filter_rel_fields = self.add_form_query_rel_fields
-        if filter_rel_fields and filter_rel_fields.get(col_name):
-            datamodel = self.datamodel.get_related_interface(col_name)
-            filters = datamodel.get_filters().add_filter_list(filter_rel_fields[col_name])
-            result = datamodel.query(filters)[1]
+    def _get_related_column_data(self, col_name, filters):
+        rel_datamodel = self.datamodel.get_related_interface(col_name)
+        _filters = rel_datamodel.get_filters(rel_datamodel.get_search_columns_list())
+        get_filter_args(_filters)
+        if filters:
+            filters = _filters.add_filter_list(filters)
         else:
-            result = self.datamodel.get_related_interface(col_name).query()[1]
+            filters = _filters
+        result = rel_datamodel.query(filters)[1]
         ret_list = list()
         for item in result:
-            pk = self.datamodel.get_related_interface(col_name).get_pk_value(item)
+            pk = rel_datamodel.get_pk_value(item)
             ret_list.append({'id': int(pk), 'text': str(item)})
         ret_json = json.dumps(ret_list)
+        return ret_json
+
+    @expose_api(name='column_add', url='/api/column/add/<col_name>', methods=['GET'])
+    @has_access_api
+    @permission_name('add')
+    def api_column_add(self, col_name):
+        """
+            Returns list of (pk, object) nice to use on select2.
+            Use only for related columns.
+            Always filters with add_form_query_rel_fields, and accepts extra filters
+            on endpoint arguments.
+        :param col_name: The related column name
+        :return: JSON response
+        """
+        filter_rel_fields = self.add_form_query_rel_fields.get(col_name)
+        ret_json = self._get_related_column_data(col_name, filter_rel_fields)
+        response = make_response(ret_json, 200)
+        response.headers['Content-Type'] = "application/json"
+        return response
+
+    @expose_api(name='column_edit', url='/api/column/edit/<col_name>', methods=['GET'])
+    @has_access_api
+    @permission_name('edit')
+    def api_column_edit(self, col_name):
+        """
+            Returns list of (pk, object) nice to use on select2.
+            Use only for related columns.
+            Always filters with edit_form_query_rel_fields, and accepts extra filters
+            on endpoint arguments.
+        :param col_name: The related column name
+        :return: JSON response
+        """
+        filter_rel_fields = self.edit_form_query_rel_fields
+        ret_json = self._get_related_column_data(col_name, filter_rel_fields)
         response = make_response(ret_json, 200)
         response.headers['Content-Type'] = "application/json"
         return response
