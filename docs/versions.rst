@@ -1,6 +1,14 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.7.0
+-----------------------------------
+
+- New, REST API endpoints for fetching related data columns.
+- New, REST endpoint for fetching data with simple output (select2 to consume).
+- New, AJAX select fields.
+- New, AJAX select fields that can be setup to be related, when the user chooses on master, the slave show only related data.
+
 Improvements and Bug fixes on 1.6.3
 -----------------------------------
 
