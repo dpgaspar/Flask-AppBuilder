@@ -231,6 +231,29 @@ class RestCRUDView(BaseCRUDView):
         response.headers['Content-Type'] = "application/json"
         return response
 
+    @expose_api(name='get', url='/api/get/<pk>', methods=['GET'])
+    @has_access_api
+    @permission_name('show')
+    def api_get(self, pk):
+        """
+        """
+        # Get arguments for ordering
+        item = self.datamodel.get(pk, self._base_filters)
+        if not item:
+            abort(404)
+        _item = dict()
+        for col in self.show_columns:
+            _item[col] = str(getattr(item, col))
+
+        ret_json = jsonify(pk=pk,
+                           label_columns=self._label_columns_json(),
+                           include_columns=self.show_columns,
+                           modelview_name=self.__class__.__name__,
+                           result=_item)
+        response = make_response(ret_json, 200)
+        response.headers['Content-Type'] = "application/json"
+        return response
+
     @expose_api(name='create', url='/api/create', methods=['POST'])
     @has_access_api
     @permission_name('add')
@@ -260,7 +283,6 @@ class RestCRUDView(BaseCRUDView):
             response = make_response(jsonify({'message': 'Invalid form',
                                               'severity': 'warning'}), 500)
         return response
-
 
     @expose_api(name='update', url='/api/update/<pk>', methods=['PUT'])
     @has_access_api

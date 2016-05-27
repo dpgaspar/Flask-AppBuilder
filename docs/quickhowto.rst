@@ -247,21 +247,27 @@ Each method as it's own security permission, so you can control accesses at this
 The API methods take the same arguments as list, show, add, edit and delete, but return JSON and HTTP return codes
 is case of success or errors, take a close look at the following table for a description of each method.
 
-+--------------+-------------------------------------------------------+-----------------+--------+
-| URL          | Description                                           | Permission Name | HTTP   |
-+==============+=======================================================+=================+========+
-| /api         | Return the existing API URL's                         | can_list        | GET    |
-+--------------+-------------------------------------------------------+-----------------+--------+
-| /api/read    | Queries models data, receives args as list            | can_list        | GET    |
-+--------------+-------------------------------------------------------+-----------------+--------+
-| /api/column  | Returns results for related column                    | can_list        | GET    |
-+--------------+-------------------------------------------------------+-----------------+--------+
-| /api/create  | Receives a form as POST and creates record            | can_add         | POST   |
-+--------------+-------------------------------------------------------+-----------------+--------+
-| /api/update  | Receives a form as PUT and updates record             | can_edit        | PUT    |
-+--------------+-------------------------------------------------------+-----------------+--------+
-| /api/delete  | Deletes record                                        | can_delete      | DELETE |
-+--------------+-------------------------------------------------------+-----------------+--------+
+    .. cssclass:: table-bordered table-hover
+
++-----------------------------+-------------------------------------------------------+-----------------+--------+
+| URL                         | Description                                           | Permission Name | HTTP   |
++=============================+=======================================================+=================+========+
+| /api                        | Return the existing API URL's                         | can_list        | GET    |
++-----------------------------+-------------------------------------------------------+-----------------+--------+
+| /api/read                   | Queries models data, receives args as list            | can_list        | GET    |
++-----------------------------+-------------------------------------------------------+-----------------+--------+
+| /api/column                 | Returns results for related column                    | can_list        | GET    |
++-----------------------------+-------------------------------------------------------+-----------------+--------+
+| /api/create                 | Receives a form as POST and creates record            | can_add         | POST   |
++-----------------------------+-------------------------------------------------------+-----------------+--------+
+| /api/update                 | Receives a form as PUT and updates record             | can_edit        | PUT    |
++-----------------------------+-------------------------------------------------------+-----------------+--------+
+| /api/column/add/<COL NAME/  | Returns values for a related field                    | can_add         | GET    |
++-----------------------------+-------------------------------------------------------+-----------------+--------+
+| /api/column/add/<COL NAME/  | Returns values for a related field                    | can_edit        | GET    |
++-----------------------------+-------------------------------------------------------+-----------------+--------+
+| /api/readvalues             | Query's models data, ready to use on select2 combos   | can_list        | GET    |
++-----------------------------+-------------------------------------------------------+-----------------+--------+
 
 REST API
 --------

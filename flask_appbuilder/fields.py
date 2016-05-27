@@ -12,14 +12,20 @@ class AJAXSelectField(Field):
     """
         Simple class to convert primary key to ORM objects
         for SQLAlchemy and fab normal processing on add and update
+        This WTF field class is prepared to be used in related views or directly on forms.
+
+        :param label: The label to render on form
+        :param validators: A list of form validators
+        :param: datamodel: An initialized SQLAInterface with a model
+        :param: col_name: The column that maps to the model
+        :param: is_related: If the model column is a relationship or direct on this case use col_name with the pk
     """
 
-    def __init__(self, label=None, validators=None, query_func=None,
-                 get_pk_func=None, get_label=None, allow_blank=False,
-                 blank_text='', datamodel=None, col_name=None, **kwargs):
+    def __init__(self, label=None, validators=None, datamodel=None, col_name=None, is_related=True, **kwargs):
         super(AJAXSelectField, self).__init__(label, validators, **kwargs)
         self.datamodel = datamodel
         self.col_name = col_name
+        self.is_related = is_related
 
     def process_data(self, value):
         """
@@ -32,7 +38,10 @@ class AJAXSelectField(Field):
         :param value: The python object containing the value to process.
         """
         if value:
-            self.data = self.datamodel.get_related_interface(self.col_name).get_pk_value(value)
+            if self.is_related:
+                self.data = self.datamodel.get_related_interface(self.col_name).get_pk_value(value)
+            else:
+                self.data = self.datamodel.get(value)
         else:
             self.data = None
 
@@ -47,7 +56,10 @@ class AJAXSelectField(Field):
         :param valuelist: A list of strings to process.
         """
         if valuelist:
-            self.data = self.datamodel.get_related_interface(self.col_name).get(valuelist[0])
+            if self.is_related:
+                self.data = self.datamodel.get_related_interface(self.col_name).get(valuelist[0])
+            else:
+                self.data = self.datamodel.get(valuelist[0])
 
 
 class QuerySelectField(SelectFieldBase):

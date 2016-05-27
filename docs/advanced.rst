@@ -20,9 +20,9 @@ Base available permission are: can_add, can_edit, can_delete, can_list, can_show
 Custom Fields
 -------------
 
-Custom Model properties can be used on lists. This is usefull for formating values like currencies, time or dates.
+Custom Model properties can be used on lists. This is useful for formatting values like currencies, time or dates.
 or for custom HTML. This is very simple to do, first define your custom property on your Model
-and use the **@renders** decorator to tell the framework to map you class method
+and then use the **@renders** decorator to tell the framework to map you class method
 with a certain Model property::
 
     
@@ -35,7 +35,7 @@ with a certain Model property::
                 
         @renders('custom')
         def my_custom(self):
-		# will render this columns as bold on ListWidget
+        # will render this columns as bold on ListWidget
             return Markup('<b>' + custom + '</b>')
 
 
@@ -207,3 +207,58 @@ For select fields to be readonly is a special case, but it's solved in a simpler
         }
 
 Take a look at the :doc:`api`. Experiment with *add_form*, *edit_form*, *add_columns*, *edit_columns*, *validators_columns*, *add_form_extra_fields*, *edit_form_extra_fields*
+
+- You can force F.A.B. to use AJAX select2 (combo) fields. Remember all fields are previously populated on the server.
+  This funcionality will make use of the REST API. Here's a simple example::
+
+    class ContactModelView(ModelView):
+        datamodel = SQLAInterface(Contact)
+
+        add_form_extra_fields = {
+                        'contact_group': AJAXSelectField('contact_group',
+                        description='This will be populated with AJAX',
+                        datamodel=datamodel,
+                        col_name='contact_group',
+                        widget=Select2AJAXWidget(endpoint='/contactmodelview/api/column/add/contact_group')),
+                        }
+
+
+Even better you can (since 1.7.0) create related select2 fields, if you have two (or more) relationships that are
+related them self's, like a group and subgroup on a contact, when the user selects the group the second select2 combo
+will be populated with the subgroup values that belong to the group. Extending the previous example::
+
+    class ContactModelView(ModelView):
+        datamodel = SQLAInterface(Contact)
+
+        add_form_extra_fields = {
+                        'contact_group': AJAXSelectField('contact_group',
+                        description='This will be populated with AJAX',
+                        datamodel=datamodel,
+                        col_name='contact_group',
+                        widget=Select2AJAXWidget(endpoint='/contactmodelview/api/column/add/contact_group')),
+
+                        'contact_sub_group': AJAXSelectField('Extra Field2',
+                        description='Extra Field description',
+                        datamodel=datamodel,
+                        col_name='contact_sub_group',
+                        widget=Select2SlaveAJAXWidget(master_id='contact_group',
+                        endpoint='/contactmodelview/api/column/add/contact_sub_group?_flt_0_contact_group_id={{ID}}'))
+                        }
+
+
+So as seen before add_form_extra_fields is a dictionary that accpects keys as column names and values as WTF Fields.
+
+AJAXSelectField is expecting the following parameters for the constructor:
+- label: A label for the column.
+- description: A description to render on the form.
+- datamodel: SQLAlchemy initialized with the model.
+- col_name: The column name.
+- widget: Use Select2AJAXWidget (for the master) and Select2SlaveAJAXWidget for the slave.
+- endpoint: The REST API that will be used to populate the select2.
+
+You have 3 endpoint's API that will return data ready to use by this fields:
+
+- /<YOUR MODELVIEW NAME>/api/column/add|edit/<COLUMN NAME> : you can append query string's to filter data. This will return all values of the related column on the model.
+- /<YOUR MODELVIEW NAME>/api/readvalues: This will return all values on the modelview prepared to be used on a select2.
+
+
