@@ -1,12 +1,55 @@
+
+function loadSelectDataSlave(elem) {
+    if (elem[0]) {
+        var master_id = elem.attr('master_id');
+        var master_val = $('#' + master_id).val();
+        if (master_val) {
+            var endpoint = elem.attr('endpoint');
+            endpoint = endpoint.replace("{{ID}}", master_val);
+            $.get( endpoint, function( data ) {
+                elem.select2({data: data, placeholder: "Select", allowClear: true});
+            });
+        }
+        else {
+            elem.select2({data: {id: "",text: ""}, placeholder: "Select", allowClear: true});
+        }
+        $('#' + master_id).on("change", function(e) {
+            var endpoint = elem.attr('endpoint');
+            if (e.val) {
+                endpoint = endpoint.replace("{{ID}}", e.val);
+                $.get( endpoint, function( data ) {
+                    elem.select2({data: data, placeholder: "Select", allowClear: true});
+                });
+            }
+        })
+    }
+}
+
+
+//----------------------------------------------------
+// AJAX REST call to server to fetch data for select2
+//----------------------------------------------------
+function loadSelectData(elem) {
+    if (elem[0]) {
+        $.get( elem.attr('endpoint'), function( data ) {
+            elem.select2({data: data, placeholder: "Select", allowClear: true});
+        });
+    }
+}
+
+
 //---------------------------------------
-// Setup date time modal views
+// Setup date time modal views, select2
 //---------------------------------------
 $(document).ready(function() {
+
     $('.appbuilder_datetime').datetimepicker({pickTime: false});
     $('.appbuilder_date').datetimepicker({
         pickTime: false });
-    $(".my_select2").select2({placeholder: "Select a State", allowClear: true});;
-    $(".my_select2.readonly").select2("readonly",true)
+    $(".my_select2").select2({placeholder: "Select a State", allowClear: true});
+    loadSelectData($(".my_select2_ajax"));
+    loadSelectDataSlave($(".my_select2_ajax_slave"));
+    $(".my_select2.readonly").select2("readonly",true);
     $("a").tooltip({container:'.row', 'placement': 'bottom'});
 });
 

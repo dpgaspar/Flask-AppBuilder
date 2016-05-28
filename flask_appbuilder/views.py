@@ -1,4 +1,5 @@
 import logging
+import json
 from flask import (
     flash, redirect, send_file, jsonify, make_response, url_for, session, abort)
 from ._compat import as_unicode
@@ -230,6 +231,29 @@ class RestCRUDView(BaseCRUDView):
         response.headers['Content-Type'] = "application/json"
         return response
 
+    @expose_api(name='get', url='/api/get/<pk>', methods=['GET'])
+    @has_access_api
+    @permission_name('show')
+    def api_get(self, pk):
+        """
+        """
+        # Get arguments for ordering
+        item = self.datamodel.get(pk, self._base_filters)
+        if not item:
+            abort(404)
+        _item = dict()
+        for col in self.show_columns:
+            _item[col] = str(getattr(item, col))
+
+        ret_json = jsonify(pk=pk,
+                           label_columns=self._label_columns_json(),
+                           include_columns=self.show_columns,
+                           modelview_name=self.__class__.__name__,
+                           result=_item)
+        response = make_response(ret_json, 200)
+        response.headers['Content-Type'] = "application/json"
+        return response
+
     @expose_api(name='create', url='/api/create', methods=['POST'])
     @has_access_api
     @permission_name('add')
@@ -259,7 +283,6 @@ class RestCRUDView(BaseCRUDView):
             response = make_response(jsonify({'message': 'Invalid form',
                                               'severity': 'warning'}), 500)
         return response
-
 
     @expose_api(name='update', url='/api/update/<pk>', methods=['PUT'])
     @has_access_api
@@ -318,25 +341,83 @@ class RestCRUDView(BaseCRUDView):
         response.headers['Content-Type'] = "application/json"
         return response
 
-    @expose_api(name='column', url='/api/column/<col_name>', methods=['GET'])
-    @has_access_api
-    @permission_name('list')
-    def api_column(self, col_name):
-        filter_rel_fields = self.add_form_query_rel_fields
-        if filter_rel_fields and filter_rel_fields.get(col_name):
-            datamodel = self.datamodel.get_related_interface(col_name)
-            filters = datamodel.get_filters().add_filter_list(filter_rel_fields[col_name])
-            result = datamodel.query(filters)[1]
+    def _get_related_column_data(self, col_name, filters):
+        rel_datamodel = self.datamodel.get_related_interface(col_name)
+        _filters = rel_datamodel.get_filters(rel_datamodel.get_search_columns_list())
+        get_filter_args(_filters)
+        if filters:
+            filters = _filters.add_filter_list(filters)
         else:
-            result = self.datamodel.get_related_interface(col_name).query()[1]
-        ret_json = dict()
+            filters = _filters
+        result = rel_datamodel.query(filters)[1]
+        ret_list = list()
         for item in result:
-            pk = self.datamodel.get_related_interface(col_name).get_pk_value(item)
-            ret_json[pk] = str(item)
-        ret_json = jsonify(ret_json)
+            pk = rel_datamodel.get_pk_value(item)
+            ret_list.append({'id': int(pk), 'text': str(item)})
+        ret_json = json.dumps(ret_list)
+        return ret_json
+
+    @expose_api(name='column_add', url='/api/column/add/<col_name>', methods=['GET'])
+    @has_access_api
+    @permission_name('add')
+    def api_column_add(self, col_name):
+        """
+            Returns list of (pk, object) nice to use on select2.
+            Use only for related columns.
+            Always filters with add_form_query_rel_fields, and accepts extra filters
+            on endpoint arguments.
+        :param col_name: The related column name
+        :return: JSON response
+        """
+        filter_rel_fields = self.add_form_query_rel_fields.get(col_name)
+        ret_json = self._get_related_column_data(col_name, filter_rel_fields)
         response = make_response(ret_json, 200)
         response.headers['Content-Type'] = "application/json"
         return response
+
+    @expose_api(name='column_edit', url='/api/column/edit/<col_name>', methods=['GET'])
+    @has_access_api
+    @permission_name('edit')
+    def api_column_edit(self, col_name):
+        """
+            Returns list of (pk, object) nice to use on select2.
+            Use only for related columns.
+            Always filters with edit_form_query_rel_fields, and accepts extra filters
+            on endpoint arguments.
+        :param col_name: The related column name
+        :return: JSON response
+        """
+        filter_rel_fields = self.edit_form_query_rel_fields
+        ret_json = self._get_related_column_data(col_name, filter_rel_fields)
+        response = make_response(ret_json, 200)
+        response.headers['Content-Type'] = "application/json"
+        return response
+
+    @expose_api(name='readvalues', url='/api/readvalues', methods=['GET'])
+    @has_access_api
+    @permission_name('list')
+    def api_readvalues(self):
+        """
+        """
+        # Get arguments for ordering
+        if get_order_args().get(self.__class__.__name__):
+            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+        else:
+            order_column, order_direction = '', ''
+        get_filter_args(self._filters)
+        joined_filters = self._filters.get_joined_filters(self._base_filters)
+        count, result = self.datamodel.query(joined_filters, order_column, order_direction)
+
+        ret_list = list()
+        for item in result:
+            pk = self.datamodel.get_pk_value(item)
+            ret_list.append({'id': int(pk), 'text': str(item)})
+
+        ret_json = json.dumps(ret_list)
+        response = make_response(ret_json, 200)
+        response.headers['Content-Type'] = "application/json"
+        return response
+
 
 
 class ModelView(RestCRUDView):

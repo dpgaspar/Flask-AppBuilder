@@ -4,8 +4,62 @@ import operator
 
 from wtforms import widgets
 from wtforms.compat import text_type, string_types
-from wtforms.fields import SelectFieldBase
+from wtforms.fields import SelectFieldBase, Field
 from wtforms.validators import ValidationError
+
+
+class AJAXSelectField(Field):
+    """
+        Simple class to convert primary key to ORM objects
+        for SQLAlchemy and fab normal processing on add and update
+        This WTF field class is prepared to be used in related views or directly on forms.
+
+        :param label: The label to render on form
+        :param validators: A list of form validators
+        :param: datamodel: An initialized SQLAInterface with a model
+        :param: col_name: The column that maps to the model
+        :param: is_related: If the model column is a relationship or direct on this case use col_name with the pk
+    """
+
+    def __init__(self, label=None, validators=None, datamodel=None, col_name=None, is_related=True, **kwargs):
+        super(AJAXSelectField, self).__init__(label, validators, **kwargs)
+        self.datamodel = datamodel
+        self.col_name = col_name
+        self.is_related = is_related
+
+    def process_data(self, value):
+        """
+        Process the Python data applied to this field and store the result.
+        This will be called during form construction by the form's `kwargs` or
+        `obj` argument.
+
+        Converting ORM object to primary key for client form.
+
+        :param value: The python object containing the value to process.
+        """
+        if value:
+            if self.is_related:
+                self.data = self.datamodel.get_related_interface(self.col_name).get_pk_value(value)
+            else:
+                self.data = self.datamodel.get(value)
+        else:
+            self.data = None
+
+    def process_formdata(self, valuelist):
+        """
+        Process data received over the wire from a form.
+        This will be called during form construction with data supplied
+        through the `formdata` argument.
+
+        Converting primary key to ORM for server processing.
+
+        :param valuelist: A list of strings to process.
+        """
+        if valuelist:
+            if self.is_related:
+                self.data = self.datamodel.get_related_interface(self.col_name).get(valuelist[0])
+            else:
+                self.data = self.datamodel.get(valuelist[0])
 
 
 class QuerySelectField(SelectFieldBase):
