@@ -7,3 +7,4 @@ app.db
 env
 venv
 *.sublime*
+*.egg-info/
