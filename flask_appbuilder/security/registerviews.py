@@ -35,7 +35,7 @@ class BaseRegisterUser(PublicFormView):
         your authentication method.
         then override SecurityManager property that defines the class to use::
 
-            from flask.ext.appbuilder.security.registerviews import RegisterUserDBView
+            from flask_appbuilder.security.registerviews import RegisterUserDBView
 
             class MyRegisterUserDBView(BaseRegisterUser):
                 email_template = 'register_mail.html'
@@ -138,7 +138,7 @@ class BaseRegisterUser(PublicFormView):
 
     def add_form_unique_validations(self, form):
         datamodel_user = self.appbuilder.sm.get_user_datamodel
-        datamodel_register_user = self.appbuilder.sm.get_register_user_datamodel        
+        datamodel_register_user = self.appbuilder.sm.get_register_user_datamodel
         if len(form.username.validators) == 1:
             form.username.validators.append(Unique(datamodel_user, 'username'))
             form.username.validators.append(Unique(datamodel_register_user, 'username'))
@@ -243,7 +243,7 @@ class RegisterUserOAuthView(BaseRegisterUser):
         View for Registering a new user, auth OID mode
     """
     form = RegisterUserOIDForm
-    
+
     def form_get(self, form):
         self.add_form_unique_validations(form)
         # fills the register form with the collected data from OAuth
@@ -251,12 +251,12 @@ class RegisterUserOAuthView(BaseRegisterUser):
         form.first_name.data = request.args.get('first_name', '')
         form.last_name.data = request.args.get('last_name', '')
         form.email.data = request.args.get('email', '')
-    
+
     def form_post(self, form):
         log.debug('Adding Registration')
         self.add_registration(username=form.username.data,
                                               first_name=form.first_name.data,
                                               last_name=form.last_name.data,
                                               email=form.email.data)
-    
-        
+
+

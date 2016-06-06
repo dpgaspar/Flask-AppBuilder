@@ -1,4 +1,4 @@
-from flask.ext.babelpkg import lazy_gettext as _
+from flask_babelpkg import lazy_gettext as _
 
 """
 This Module is not used.
