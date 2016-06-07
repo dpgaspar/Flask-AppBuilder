@@ -1,5 +1,4 @@
 from wtforms.widgets import HTMLString, html_params
-#from flask.ext.wtf import fields, widgets, TextField
 from wtforms import fields, widgets, TextField
 
 class DatePickerWidget(object):

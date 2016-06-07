@@ -1,5 +1,5 @@
 from flask import session
-from flask.ext.babelpkg import Babel
+from flask_babelpkg import Babel
 from ..basemanager import BaseManager
 from .. import translations
 from .views import LocaleView

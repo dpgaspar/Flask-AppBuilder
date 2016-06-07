@@ -7,7 +7,7 @@ import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.orm import relationship
 from flask import request, session
-from flask.ext.appbuilder import Model, SQLA
+from flask_appbuilder import Model, SQLA
 from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqual
 from flask_appbuilder.models.mixins import FileColumn, ImageColumn
 from flask_appbuilder.views import MasterDetailView, CompactCRUDMixin
@@ -16,7 +16,7 @@ from flask_appbuilder.charts.views import (ChartView, TimeChartView,
                                            DirectByChartView)
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
 
-from flask.ext.appbuilder.models.generic import PSSession
+from flask_appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.generic import PSModel
 
@@ -68,15 +68,15 @@ class Model2(Model):
         return str(self.field_string)
 
     def field_method(self):
-       return "field_method_value"                                               
+       return "field_method_value"
 
 
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):
         from flask import Flask
-        from flask.ext.appbuilder import AppBuilder
-        from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
-        from flask.ext.appbuilder.views import ModelView
+        from flask_appbuilder import AppBuilder
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+        from flask_appbuilder.views import ModelView
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
@@ -102,7 +102,7 @@ class FlaskTestCase(unittest.TestCase):
             list_columns = ['field_integer', 'field_float', 'field_string', 'field_method', 'group.field_string']
             edit_form_query_rel_fields = {'group':[['field_string', FilterEqual, 'G2']]}
             add_form_query_rel_fields = {'group':[['field_string', FilterEqual, 'G1']]}
-            
+
         class Model22View(ModelView):
             datamodel = SQLAInterface(Model2)
             list_columns = ['field_integer', 'field_float', 'field_string', 'field_method', 'group.field_string']
@@ -155,7 +155,7 @@ class FlaskTestCase(unittest.TestCase):
                             ]
                 }
             ]
-            
+
         class Model2DirectByChartView(DirectByChartView):
             datamodel = SQLAInterface(Model2)
             chart_title = 'Test Model1 Chart'
@@ -255,7 +255,7 @@ class FlaskTestCase(unittest.TestCase):
                     self.db.session.add(model)
                     self.db.session.commit()
             except Exception as e:
-                print("ERROR {0}".format(str(e)))                                                      
+                print("ERROR {0}".format(str(e)))
                 self.db.session.rollback()
 
 
@@ -264,7 +264,7 @@ class FlaskTestCase(unittest.TestCase):
             Test views creation and registration
         """
         eq_(len(self.appbuilder.baseviews), 27)  # current minimal views are 12
-        
+
     def test_back(self):
         """
             Test Back functionality
@@ -362,10 +362,10 @@ class FlaskTestCase(unittest.TestCase):
         data = rv.data.decode('utf-8')
         ok_("Reset Password Form" in data)
         rv = client.post('/resetmypassword/form',
-                         data=dict(password=DEFAULT_ADMIN_PASSWORD, conf_password=DEFAULT_ADMIN_PASSWORD), 
+                         data=dict(password=DEFAULT_ADMIN_PASSWORD, conf_password=DEFAULT_ADMIN_PASSWORD),
                          follow_redirects=True)
         eq_(rv.status_code, 200)
-        
+
 
     def test_generic_interface(self):
         """
@@ -439,7 +439,7 @@ class FlaskTestCase(unittest.TestCase):
         ok_('Field Float' in data)
         ok_('Field Date' in data)
         ok_('Excluded String' not in data)
-        
+
 
     def test_query_rel_fields(self):
         """
@@ -566,7 +566,7 @@ class FlaskTestCase(unittest.TestCase):
         """
         client = self.app.test_client()
         self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        self.insert_data2()                                               
+        self.insert_data2()
         rv = client.get('/model2view/list/')
         eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
