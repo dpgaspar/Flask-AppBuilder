@@ -1,7 +1,7 @@
-Quick How to Example
---------------------
+Related Fields
+--------------
 
-Simple contacts application.
+Simple example with two select2 related fields.
 
 Create an Admin user::
 

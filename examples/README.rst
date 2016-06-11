@@ -41,5 +41,7 @@ Examples of simple applications for Flask-AppBuilder
 
 :user_registration: Shows how to setup, db authentication and self user registration.
 
+:related_fields: Simple example with two select2 related fields.
+
 :widgets: A show case for the various builtin widgets.
 
