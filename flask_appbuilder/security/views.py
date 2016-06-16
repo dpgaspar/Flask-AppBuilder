@@ -5,7 +5,7 @@ from flask import flash, redirect, session, url_for, request, g, make_response, 
 from werkzeug.security import generate_password_hash
 from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
-from flask_babelpkg import lazy_gettext
+from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
 
 from ..views import ModelView, SimpleFormView, expose, expose_api

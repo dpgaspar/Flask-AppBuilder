@@ -3,7 +3,7 @@ import datetime
 import calendar
 import logging
 from itertools import groupby
-from flask_babelpkg import lazy_gettext as _
+from flask_babel import lazy_gettext as _
 from flask_appbuilder._compat import as_unicode
 from .. import const as c
 

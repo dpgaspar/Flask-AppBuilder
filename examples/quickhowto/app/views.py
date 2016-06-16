@@ -4,7 +4,7 @@ from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
 from flask.ext.appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
 from flask.ext.appbuilder.widgets import FormHorizontalWidget, FormInlineWidget, FormVerticalWidget
-from flask.ext.babelpkg import lazy_gettext as _
+from flask.ext.babel import lazy_gettext as _
 
 
 from app import db, appbuilder

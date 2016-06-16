@@ -1,5 +1,5 @@
 import logging
-from flask.ext.babelpkg import lazy_gettext
+from flask_babel import lazy_gettext
 from ..filters import BaseFilter, FilterRelation, BaseFilterConverter
 
 log = logging.getLogger(__name__)

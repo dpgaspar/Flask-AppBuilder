@@ -8,7 +8,7 @@ from openid.consumer.consumer import Consumer, SUCCESS, CANCEL
 
 from flask_openid import SessionWrapper, OpenIDResponse
 from ..views import expose, PublicFormView
-from flask_babelpkg import lazy_gettext
+from flask_babel import lazy_gettext
 #from .models import User, RegisterUser
 from .forms import RegisterUserOIDForm, RegisterUserDBForm, LoginForm_oid
 from ..models.sqla.interface import SQLAInterface

@@ -1,6 +1,6 @@
 from wtforms import StringField, BooleanField, PasswordField
 from flask_wtf.recaptcha import RecaptchaField
-from flask_babelpkg import lazy_gettext
+from flask_babel import lazy_gettext
 from wtforms.validators import DataRequired, EqualTo, Email
 from ..fieldwidgets import BS3PasswordFieldWidget, BS3TextFieldWidget
 from ..forms import DynamicForm
