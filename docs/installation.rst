@@ -120,7 +120,7 @@ Flask App Builder dependes on
     - flask-login : Login, session on flask.
     - flask-openid : Open ID authentication.
     - flask-wtform : Web forms.
-    - flask-BabelPkg : For internationalization, fork from flask-babel.
+    - flask-Babel : For internationalization.
 
 If you plan to use Image on database, you will need to install PIL::
 

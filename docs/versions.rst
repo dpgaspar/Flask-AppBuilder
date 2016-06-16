@@ -1,6 +1,12 @@
 Versions
 ========
 
+
+Improvements and Bug fixes on 1.8.0
+-----------------------------------
+
+- New, Support for python 3.5, now uses flask-babel instead of flask-babelpkg.
+
 Improvements and Bug fixes on 1.7.1
 -----------------------------------
 
