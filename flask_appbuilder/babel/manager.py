@@ -17,7 +17,12 @@ class BabelManager(BaseManager):
         app.config.setdefault('BABEL_DEFAULT_LOCALE', 'en')
         appbuilder_parent_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
         appbuilder_translations_path = os.path.join(appbuilder_parent_dir, 'translations')
-        app.config.setdefault('BABEL_TRANSLATION_DIRECTORIES', appbuilder_translations_path + ';translations')
+        if 'BABEL_TRANSLATION_DIRECTORIES' in app.config:
+            current_translation_directories = app.config.get('BABEL_TRANSLATION_DIRECTORIES')
+            translations_path = appbuilder_translations_path + ';' + current_translation_directories
+        else:
+            translations_path = appbuilder_translations_path + ';translations'
+        app.config['BABEL_TRANSLATION_DIRECTORIES'] = translations_path
         self.babel = Babel(app)
         self.babel.locale_selector_func = self.get_locale
 

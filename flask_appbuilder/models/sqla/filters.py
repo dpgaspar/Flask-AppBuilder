@@ -210,7 +210,7 @@ class SQLAFilterConverter(BaseFilterConverter):
                                      FilterSmaller,
                                      FilterNotEqual]),
                         ('is_boolean', [FilterEqual,
-                                     FilterNotEqual]),
+                                        FilterNotEqual]),
                         ('is_datetime', [FilterEqual,
                                          FilterGreater,
                                          FilterSmaller,
