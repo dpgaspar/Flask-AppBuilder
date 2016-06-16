@@ -31,10 +31,16 @@ class Gender(Document):
 
 
 class Tags(Document):
+    meta = {'allow_inheritance': True,}
+
     name = StringField(max_length=60, required=True, unique=True)
 
     def __unicode__(self):
         return self.name
+
+
+class MyTags(Tags):
+    mytagname = StringField(max_length=60, unique=True, default='mytag')
 
 
 class Contact(Document):
