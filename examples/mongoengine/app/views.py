@@ -5,7 +5,7 @@ from flask.ext.appbuilder import ModelView
 from flask_appbuilder.models.mongoengine.interface import MongoEngineInterface
 from flask_appbuilder.charts.views import GroupByChartView
 from flask.ext.appbuilder.models.group import aggregate_count
-from flask.ext.babelpkg import lazy_gettext as _
+from flask_babel import lazy_gettext as _
 from app import appbuilder
 from .models import ContactGroup, Contact, Tags
 

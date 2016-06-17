@@ -2,9 +2,9 @@ import sqlalchemy as sa
 from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
 from flask.ext.appbuilder import ModelView
 from flask.ext.appbuilder.fieldwidgets import BS3TextFieldWidget
-from flask.ext.babelpkg import gettext
+from flask_babel import gettext
 from flask.ext.appbuilder.models.sqla.filters import BaseFilter
-from flask.ext.babelpkg import lazy_gettext
+from flask_babel import lazy_gettext
 from app import appbuilder, db
 from wtforms.fields import TextField
 from .models import Device, Site, DeviceType, LowerCaseString

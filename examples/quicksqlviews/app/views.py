@@ -9,7 +9,7 @@ from flask.ext.appbuilder.models.sqla.filters import FilterStartsWith
 from flask_appbuilder import SimpleFormView
 from wtforms.fields import TextField
 from flask.ext.appbuilder.widgets import FormHorizontalWidget, FormInlineWidget, FormVerticalWidget
-from flask.ext.babelpkg import lazy_gettext as _
+from flask_babel import lazy_gettext as _
 
 
 from app import db, appbuilder

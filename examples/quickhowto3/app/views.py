@@ -1,7 +1,7 @@
 from flask.ext.appbuilder import GeneralView
 from flask.ext.appbuilder.models.datamodel import SQLAModel
 from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
-from flask.ext.babelpkg import lazy_gettext as _
+from flask_babel import lazy_gettext as _
 
 from app import session, appbuilder
 from .models import Group, Gender, Contact

@@ -1,6 +1,6 @@
 from flask import render_template, flash
 from flask_appbuilder import SimpleFormView
-from flask_babelpkg import lazy_gettext as _
+from flask_babel import lazy_gettext as _
 from .forms import MyForm
 from app import appbuilder, db
 
