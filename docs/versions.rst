@@ -6,6 +6,7 @@ Improvements and Bug fixes on 1.8.1
 
 - Fix, #341 for supporting multiple select2 fields.
 - Fix, #340 Better chinese translations.
+- New, #338 Support of Mongoengine Document inheritance.
 
 Improvements and Bug fixes on 1.8.0
 -----------------------------------
