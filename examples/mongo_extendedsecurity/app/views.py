@@ -7,7 +7,7 @@ from flask_appbuilder.charts.views import GroupByChartView
 from flask_appbuilder.models.group import aggregate_count
 from flask_babel import lazy_gettext as _
 from app import appbuilder
-from .models import ContactGroup, Contact, Tags
+from .models import ContactGroup, Contact, Tags, MyTags
 
 
 def get_user():
@@ -27,6 +27,10 @@ class GroupModelView(ModelView):
 
 class TagsModelView(ModelView):
     datamodel = MongoEngineInterface(Tags)
+
+
+class MyTagsModelView(ModelView):
+    datamodel = MongoEngineInterface(MyTags)
 
 
 class ContactChartView(GroupByChartView):
@@ -81,5 +85,7 @@ appbuilder.add_view(TagsModelView, "List Tags", icon="fa-folder-open-o", categor
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
 appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
+
+appbuilder.add_view(MyTagsModelView, "My Tag List", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
 
 appbuilder.security_cleanup()

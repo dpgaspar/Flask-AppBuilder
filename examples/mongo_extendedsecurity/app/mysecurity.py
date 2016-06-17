@@ -8,7 +8,7 @@ from mongoengine import DateTimeField, StringField, ReferenceField, ListField, B
 from flask_appbuilder.security.mongoengine.manager import SecurityManager
 from flask_appbuilder.security.mongoengine.models import User
 from flask_appbuilder.security.views import UserDBModelView
-from flask_babelpkg import lazy_gettext
+from flask_babel import lazy_gettext
 
 
 #

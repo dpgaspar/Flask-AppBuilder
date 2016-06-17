@@ -1,7 +1,8 @@
 import datetime
+from flask import url_for, Markup
 from mongoengine import Document
 from mongoengine import DateTimeField, StringField, ReferenceField, ListField, FileField, ImageField
-
+from flask_appbuilder.security.mongoengine.models import User
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
@@ -36,6 +37,10 @@ class Tags(Document):
 
     def __unicode__(self):
         return self.name
+
+
+class MyTags(Tags):
+    mytagname = StringField(max_length=60, unique=True, default='mytag')
 
 
 class Contact(Document):
