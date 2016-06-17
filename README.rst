@@ -8,7 +8,7 @@ Flask App Builder
 .. image:: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master/landscape.svg?style=flat
    :target: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master
    :alt: Code Health
-.. image:: https://img.shields.io/pypi/pyversions/caravel.svg?maxAge=2592000
+.. image:: https://img.shields.io/pypi/pyversions/flask-appbuilder.svg?maxAge=2592000
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto CRUD generation for your models, google charts and much more.
