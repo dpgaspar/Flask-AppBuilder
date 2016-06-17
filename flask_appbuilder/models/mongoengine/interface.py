@@ -209,9 +209,7 @@ class MongoEngineInterface(BaseInterface):
         the MongoEngine interface). To disable this behaviour and remove the dependence on the presence of _cls set
         allow_inheritance to False in the meta dictionary."
         """
-        # return self.obj._fields.keys()
-
-        columns = self.obj._fields.keys()
+        columns = list(self.obj._fields.keys())
         if '_cls' in columns:
             columns.remove('_cls')
         return columns
