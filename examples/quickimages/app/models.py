@@ -3,9 +3,9 @@ from flask import Markup, url_for
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, Date, Text
 from sqlalchemy.orm import relationship
 from app import db
-from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
-from flask.ext.appbuilder.filemanager import ImageManager
-from flask.ext.appbuilder import Model
+from flask_appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
+from flask_appbuilder.filemanager import ImageManager
+from flask_appbuilder import Model
 
 
 class PersonGroup(Model):

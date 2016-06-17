@@ -1,8 +1,8 @@
 import calendar
-from flask.ext.appbuilder import ModelView
-from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
-from flask.ext.appbuilder.charts.views import GroupByChartView
-from flask.ext.appbuilder.models.group import aggregate_count
+from flask_appbuilder import ModelView
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.charts.views import GroupByChartView
+from flask_appbuilder.models.group import aggregate_count
 from flask_babel import lazy_gettext as _
 
 

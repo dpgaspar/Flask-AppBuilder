@@ -1,6 +1,6 @@
-from flask.ext.appbuilder import GeneralView
-from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
+from flask_appbuilder import GeneralView
+from flask_appbuilder.models.datamodel import SQLAModel
+from flask_appbuilder.charts.views import ChartView, TimeChartView
 from flask_babel import lazy_gettext as _
 
 from app import session, appbuilder

@@ -1,7 +1,7 @@
-from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
-from flask.ext.appbuilder.views import MasterDetailView
-from flask.ext.appbuilder import ModelView
-from flask.ext.appbuilder.charts.views import ChartView, TimeChartView
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.views import MasterDetailView
+from flask_appbuilder import ModelView
+from flask_appbuilder.charts.views import ChartView, TimeChartView
 from flask_babel import lazy_gettext as _
 
 from app import db, appbuilder

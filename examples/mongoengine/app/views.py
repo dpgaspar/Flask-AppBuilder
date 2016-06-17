@@ -1,10 +1,10 @@
 import calendar
 from flask_appbuilder import expose, has_access
 from flask import url_for, make_response, Response, g
-from flask.ext.appbuilder import ModelView
+from flask_appbuilder import ModelView
 from flask_appbuilder.models.mongoengine.interface import MongoEngineInterface
 from flask_appbuilder.charts.views import GroupByChartView
-from flask.ext.appbuilder.models.group import aggregate_count
+from flask_appbuilder.models.group import aggregate_count
 from flask_babel import lazy_gettext as _
 from app import appbuilder
 from .models import ContactGroup, Contact, Tags

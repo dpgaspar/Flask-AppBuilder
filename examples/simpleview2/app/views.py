@@ -1,5 +1,5 @@
 from flask import render_template
-from flask.ext.appbuilder import BaseView, expose, has_access
+from flask_appbuilder import BaseView, expose, has_access
 from app import appbuilder
 
 class MyView(BaseView):

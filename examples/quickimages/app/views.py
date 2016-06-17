@@ -1,9 +1,9 @@
 from models import Person, PersonGroup
-from flask.ext.appbuilder.views import ModelView, BaseView
-from flask.ext.appbuilder.charts.views import GroupByChartView
-from flask.ext.appbuilder.models.group import aggregate_count
-from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
-from flask.ext.appbuilder.widgets import ListThumbnail
+from flask_appbuilder.views import ModelView, BaseView
+from flask_appbuilder.charts.views import GroupByChartView
+from flask_appbuilder.models.group import aggregate_count
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.widgets import ListThumbnail
 
 from app import app, db, appbuilder
 
