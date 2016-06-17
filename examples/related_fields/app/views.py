@@ -3,10 +3,7 @@ from flask_appbuilder import ModelView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.fields import AJAXSelectField
 from flask_appbuilder.fieldwidgets import Select2AJAXWidget, Select2SlaveAJAXWidget
-from flask_appbuilder.charts.views import GroupByChartView
-from flask_appbuilder.models.group import aggregate_count
-from flask_appbuilder.widgets import FormHorizontalWidget, FormInlineWidget, FormVerticalWidget
-from flask_babel import lazy_gettext as _
+from wtforms import validators
 
 
 from app import db, appbuilder
@@ -44,12 +41,14 @@ class ContactModelView(ModelView):
                     'contact_group': AJAXSelectField('Contact Group',
                     description='Group field populated with AJAX',
                     datamodel=datamodel,
+                    validators=[validators.DataRequired()],
                     col_name='contact_group',
                     widget=Select2AJAXWidget(endpoint='/contactmodelview/api/column/add/contact_group')),
 
                     'contact_sub_group': AJAXSelectField('Sub Contact Group',
                     description='Sub Group related to Group',
                     datamodel=datamodel,
+                    validators=[validators.DataRequired()],
                     col_name='contact_sub_group',
                     widget=Select2SlaveAJAXWidget(master_id='contact_group',
                     endpoint='/contactmodelview/api/column/add/contact_sub_group?_flt_0_contact_group_id={{ID}}')),
