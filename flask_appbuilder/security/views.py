@@ -1,14 +1,13 @@
 import datetime
 import logging
-import copy
 from flask import flash, redirect, session, url_for, request, g, make_response, jsonify, abort
 from werkzeug.security import generate_password_hash
 from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
-from flask_babelpkg import lazy_gettext
+from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
 
-from ..views import ModelView, SimpleFormView, expose, expose_api
+from ..views import ModelView, SimpleFormView, expose
 from ..baseviews import BaseView
 from ..charts.views import DirectByChartView
 from ..fieldwidgets import BS3PasswordFieldWidget
@@ -171,7 +170,6 @@ class UserModelView(ModelView):
     edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles']
     user_info_title = lazy_gettext("Your user information")
 
-
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
@@ -259,7 +257,6 @@ class UserDBModelView(UserModelView):
                                widgets=widgets,
                                appbuilder=self.appbuilder,
                                related_views=self._related_views)
-
 
     @expose('/userinfo/')
     @has_access

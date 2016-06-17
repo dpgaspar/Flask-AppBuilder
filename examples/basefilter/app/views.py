@@ -1,6 +1,6 @@
 from flask import g
-from flask.ext.appbuilder import ModelView
-from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder import ModelView
+from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.sqla.filters import FilterEqualFunction
 from app import db, appbuilder
 from .models import ContactGroup, Gender, Contact

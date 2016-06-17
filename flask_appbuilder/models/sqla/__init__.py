@@ -2,7 +2,7 @@ import logging
 import re
 import datetime
 from sqlalchemy.ext.declarative import declarative_base
-from flask.ext.sqlalchemy import SQLAlchemy, _BoundDeclarativeMeta, _QueryProperty
+from flask_sqlalchemy import SQLAlchemy, _BoundDeclarativeMeta, _QueryProperty
 
 try:
     from sqlalchemy.ext.declarative import as_declarative

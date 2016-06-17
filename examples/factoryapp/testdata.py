@@ -1,5 +1,5 @@
 from flask import Flask
-from flask.ext.appbuilder import SQLA
+from flask_appbuilder import SQLA
 from app.models import ContactGroup, Gender, Contact
 import random
 from datetime import datetime

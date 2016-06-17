@@ -1,7 +1,7 @@
 import datetime
 import logging
 from functools import reduce
-from flask_babelpkg import lazy_gettext
+from flask_babel import lazy_gettext
 from .filters import Filters
 
 log = logging.getLogger(__name__)

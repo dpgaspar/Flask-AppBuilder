@@ -369,7 +369,9 @@ class RestCRUDView(BaseCRUDView):
         :param col_name: The related column name
         :return: JSON response
         """
-        filter_rel_fields = self.add_form_query_rel_fields.get(col_name)
+        filter_rel_fields = None
+        if self.add_form_query_rel_fields:
+            filter_rel_fields = self.add_form_query_rel_fields.get(col_name)
         ret_json = self._get_related_column_data(col_name, filter_rel_fields)
         response = make_response(ret_json, 200)
         response.headers['Content-Type'] = "application/json"
@@ -387,7 +389,9 @@ class RestCRUDView(BaseCRUDView):
         :param col_name: The related column name
         :return: JSON response
         """
-        filter_rel_fields = self.edit_form_query_rel_fields
+        filter_rel_fields = None
+        if self.edit_form_query_rel_fields:
+            filter_rel_fields = self.edit_form_query_rel_fields
         ret_json = self._get_related_column_data(col_name, filter_rel_fields)
         response = make_response(ret_json, 200)
         response.headers['Content-Type'] = "application/json"

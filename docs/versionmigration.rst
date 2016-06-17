@@ -1,6 +1,22 @@
 Version Migration
 =================
 
+Migrating to 1.8.0
+------------------
+
+On this release flask-appbuilder supports python 3.5, and returned to flask-babel original package
+(stopped using the fork flask-babelpkg for multiple tranlation directories).
+
+You can and should, uninstall flask-babelpkg from your package list and change all your imports from::
+
+    from flask_babelpkg import ...
+
+To::
+
+    from flask_babel import ...
+
+
+
 Migrating from 1.2.X to 1.3.X
 ------------------------------
 

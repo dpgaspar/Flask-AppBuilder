@@ -3,7 +3,7 @@ from werkzeug.datastructures import FileStorage
 
 from wtforms import ValidationError, fields
 from wtforms.widgets import HTMLString, html_params
-from flask.ext.babelpkg import gettext
+from flask_babel import gettext
 from .filemanager import ImageManager, FileManager
 
 try:

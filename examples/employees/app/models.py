@@ -1,7 +1,7 @@
 import datetime
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, Date, Text
 from sqlalchemy.orm import relationship
-from flask.ext.appbuilder import Model
+from flask_appbuilder import Model
 
 
 class Department(Model):

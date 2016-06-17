@@ -1,5 +1,6 @@
+import os
 from flask import session
-from flask.ext.babelpkg import Babel
+from flask_babel import Babel
 from ..basemanager import BaseManager
 from .. import translations
 from .views import LocaleView
@@ -14,7 +15,15 @@ class BabelManager(BaseManager):
         super(BabelManager, self).__init__(appbuilder)
         app = appbuilder.get_app
         app.config.setdefault('BABEL_DEFAULT_LOCALE', 'en')
-        self.babel = Babel(app, translations)
+        appbuilder_parent_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
+        appbuilder_translations_path = os.path.join(appbuilder_parent_dir, 'translations')
+        if 'BABEL_TRANSLATION_DIRECTORIES' in app.config:
+            current_translation_directories = app.config.get('BABEL_TRANSLATION_DIRECTORIES')
+            translations_path = appbuilder_translations_path + ';' + current_translation_directories
+        else:
+            translations_path = appbuilder_translations_path + ';translations'
+        app.config['BABEL_TRANSLATION_DIRECTORIES'] = translations_path
+        self.babel = Babel(app)
         self.babel.locale_selector_func = self.get_locale
 
     def register_views(self):

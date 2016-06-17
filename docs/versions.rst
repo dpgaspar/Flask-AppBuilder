@@ -1,6 +1,23 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.8.1
+-----------------------------------
+
+- Fix, #341 for supporting multiple select2 fields.
+- Fix, #340 Better chinese translations.
+
+Improvements and Bug fixes on 1.8.0
+-----------------------------------
+
+- New, Support for python 3.5, now uses flask-babel instead of flask-babelpkg.
+
+Improvements and Bug fixes on 1.7.1
+-----------------------------------
+
+- Fix, REST API endpoints for fetching related data columns crashed.
+- Fix, #332 Realign deprecated references to `flask.ext`.
+
 Improvements and Bug fixes on 1.7.0
 -----------------------------------
 

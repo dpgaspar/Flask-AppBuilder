@@ -1,5 +1,5 @@
 import logging
-from flask.ext.babelpkg import lazy_gettext
+from flask_babel import lazy_gettext
 from ..filters import BaseFilter, FilterRelation, BaseFilterConverter
 
 log = logging.getLogger(__name__)
@@ -29,9 +29,15 @@ def get_field_setup_query(query, model, column_name):
 
 def set_value_to_type(datamodel, column_name, value):
     if datamodel.is_integer(column_name):
-        return int(value)
+        try:
+            return int(value)
+        except Exception as e:
+            return None
     elif datamodel.is_float(column_name):
-        return float(value)
+        try:
+            return float(value)
+        except Exception as e:
+            return None
     elif datamodel.is_boolean(column_name):
             if value == 'y':
                 return True
@@ -210,7 +216,7 @@ class SQLAFilterConverter(BaseFilterConverter):
                                      FilterSmaller,
                                      FilterNotEqual]),
                         ('is_boolean', [FilterEqual,
-                                     FilterNotEqual]),
+                                        FilterNotEqual]),
                         ('is_datetime', [FilterEqual,
                                          FilterGreater,
                                          FilterSmaller,

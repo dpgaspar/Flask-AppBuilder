@@ -1,7 +1,7 @@
 import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Table, MetaData, Text
 from sqlalchemy.orm import relationship
-from flask.ext.appbuilder import Model
+from flask_appbuilder import Model
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 

@@ -1,5 +1,5 @@
 import logging
-from flask.ext.babelpkg import lazy_gettext
+from flask_babel import lazy_gettext
 from .widgets import ChartWidget, DirectChartWidget
 from .jsontools import dict_to_json
 from ..widgets import SearchWidget

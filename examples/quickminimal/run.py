@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from flask.ext.appbuilder import SQLA, AppBuilder
+from flask_appbuilder import SQLA, AppBuilder
 
 app = Flask(__name__)
 

@@ -45,7 +45,7 @@ class AppBuilder(object):
         initialize your application like this for SQLAlchemy::
 
             from flask import Flask
-            from flask.ext.appbuilder import SQLA, AppBuilder
+            from flask_appbuilder import SQLA, AppBuilder
 
             app = Flask(__name__)
             app.config.from_object('config')

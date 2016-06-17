@@ -1,5 +1,5 @@
-from flask.ext.appbuilder.baseviews import BaseView
-from flask.ext.appbuilder.baseviews import expose
+from flask_appbuilder.baseviews import BaseView
+from flask_appbuilder.baseviews import expose
 from . import appbuilder
 
 class MyView(BaseView):

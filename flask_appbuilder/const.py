@@ -1,4 +1,4 @@
-from flask_babelpkg import lazy_gettext
+from flask_babel import lazy_gettext
 
 """
     All constants and messages definitions go here

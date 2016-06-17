@@ -2,8 +2,8 @@ import random
 import logging
 import datetime
 import calendar
-from flask.ext.appbuilder.models.datamodel import SQLAModel
-from flask.ext.appbuilder.views import ModelView
+from flask_appbuilder.models.datamodel import SQLAModel
+from flask_appbuilder.views import ModelView
 from flask_appbuilder.charts.views import DirectChartView, DirectByChartView, GroupByChartView
 from models import CountryStats, Country, PoliticalType
 from app import appbuilder, db
