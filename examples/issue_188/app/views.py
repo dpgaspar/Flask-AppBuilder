@@ -1,7 +1,7 @@
 from flask import redirect, flash
-from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
-from flask.ext.appbuilder import ModelView
-from flask.ext.appbuilder.actions import action
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder import ModelView
+from flask_appbuilder.actions import action
 from models import Job
 from app import appbuilder, db
 

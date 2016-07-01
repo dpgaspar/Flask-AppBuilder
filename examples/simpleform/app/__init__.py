@@ -1,6 +1,6 @@
 import logging
 from flask import Flask
-from flask.ext.appbuilder import SQLA, AppBuilder
+from flask_appbuilder import SQLA, AppBuilder
 
 """
  Logging configuration

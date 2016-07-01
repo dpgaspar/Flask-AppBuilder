@@ -201,7 +201,18 @@ class MongoEngineInterface(BaseInterface):
             return False
 
     def get_columns_list(self):
-        return self.obj._fields.keys()
+        """
+        modified: removing the '_cls' column added by Mongoengine to support mongodb document inheritance
+        cf. http://docs.mongoengine.org/apireference.html#documents:
+        "A Document subclass may be itself subclassed, to create a specialised version of the document that will be
+        stored in the same collection. To facilitate this behaviour a _cls field is added to documents (hidden though
+        the MongoEngine interface). To disable this behaviour and remove the dependence on the presence of _cls set
+        allow_inheritance to False in the meta dictionary."
+        """
+        columns = list(self.obj._fields.keys())
+        if '_cls' in columns:
+            columns.remove('_cls')
+        return columns
 
     def get_search_columns_list(self):
         ret_lst = list()

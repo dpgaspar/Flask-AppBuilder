@@ -1,7 +1,7 @@
 import logging
 from flask import Flask
-from flask.ext.appbuilder import SQLA, AppBuilder
-from flask.ext.appbuilder.menu import Menu
+from flask_appbuilder import SQLA, AppBuilder
+from flask_appbuilder.menu import Menu
 from .sec import MySecurityManager
 from .indexview import MyIndexView
 from sqlalchemy.engine import Engine

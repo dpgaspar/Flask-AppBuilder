@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship
-from flask.ext.appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
-from flask.ext.appbuilder import Model
+from flask_appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
+from flask_appbuilder import Model
 
 
 class Group(Model):

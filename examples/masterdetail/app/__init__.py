@@ -1,7 +1,7 @@
 import os
 import logging
 from flask import Flask
-from flask.ext.appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder, SQLA
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
 

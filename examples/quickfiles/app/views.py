@@ -1,5 +1,5 @@
-from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
-from flask.ext.appbuilder.views import ModelView, CompactCRUDMixin
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.views import ModelView, CompactCRUDMixin
 from app.models import Project, ProjectFiles
 from app import appbuilder, db
 

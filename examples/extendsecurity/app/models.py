@@ -5,7 +5,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Date, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 from flask_appbuilder.models.mixins import AuditMixin
-from flask.ext.appbuilder import Model
+from flask_appbuilder import Model
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 

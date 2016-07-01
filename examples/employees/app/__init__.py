@@ -1,8 +1,8 @@
 import os
 import logging
 from flask import Flask
-from flask.ext.appbuilder import SQLA
-from flask.ext.appbuilder import AppBuilder
+from flask_appbuilder import SQLA
+from flask_appbuilder import AppBuilder
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
 from .security import MySecurityManager

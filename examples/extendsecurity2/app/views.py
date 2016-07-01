@@ -1,6 +1,6 @@
 from flask import g
-from flask.ext.appbuilder import ModelView
-from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder import ModelView
+from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.filters import BaseFilter
 from flask_appbuilder.models.sqla.filters import get_field_setup_query
 from app import db, appbuilder

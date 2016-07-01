@@ -1,6 +1,9 @@
-
+//-----------------------------------------------------------
+// AJAX REST call to server to fetch data for select2 Slaves
+//-----------------------------------------------------------
 function loadSelectDataSlave(elem) {
-    if (elem[0]) {
+    $(".my_select2_ajax_slave").each(function( index ) {
+        var elem = $(this);
         var master_id = elem.attr('master_id');
         var master_val = $('#' + master_id).val();
         if (master_val) {
@@ -22,19 +25,20 @@ function loadSelectDataSlave(elem) {
                 });
             }
         })
-    }
+    });
 }
 
 
 //----------------------------------------------------
 // AJAX REST call to server to fetch data for select2
 //----------------------------------------------------
-function loadSelectData(elem) {
-    if (elem[0]) {
-        $.get( elem.attr('endpoint'), function( data ) {
+function loadSelectData() {
+    $(".my_select2_ajax").each(function( index ) {
+        var elem = $(this);
+        $.get( $(this).attr('endpoint'), function( data ) {
             elem.select2({data: data, placeholder: "Select", allowClear: true});
         });
-    }
+    });
 }
 
 
@@ -47,8 +51,8 @@ $(document).ready(function() {
     $('.appbuilder_date').datetimepicker({
         pickTime: false });
     $(".my_select2").select2({placeholder: "Select a State", allowClear: true});
-    loadSelectData($(".my_select2_ajax"));
-    loadSelectDataSlave($(".my_select2_ajax_slave"));
+    loadSelectData();
+    loadSelectDataSlave();
     $(".my_select2.readonly").select2("readonly",true);
     $("a").tooltip({container:'.row', 'placement': 'bottom'});
 });

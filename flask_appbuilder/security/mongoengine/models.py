@@ -44,6 +44,8 @@ class PermissionView(Document):
 
 
 class Role(Document):
+    meta = {'allow_inheritance': True,}  # Added for role extension via mongoengine Document inheritance
+
     name = StringField(max_length=64, required=True, unique=True)
     permissions = ListField(ReferenceField(PermissionView))
 
@@ -55,6 +57,8 @@ class Role(Document):
 
 
 class User(Document):
+    meta = {'allow_inheritance': True,}  # Added for user extension via Mongoengine Document inheritance
+
     first_name = StringField(max_length=64, required=True)
     last_name = StringField(max_length=64, required=True)
     username = StringField(max_length=64, required=True, unique=True)

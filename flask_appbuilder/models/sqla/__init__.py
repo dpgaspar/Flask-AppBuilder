@@ -2,7 +2,7 @@ import logging
 import re
 import datetime
 from sqlalchemy.ext.declarative import declarative_base
-from flask.ext.sqlalchemy import SQLAlchemy, _BoundDeclarativeMeta, _QueryProperty
+from flask_sqlalchemy import SQLAlchemy, _BoundDeclarativeMeta, _QueryProperty
 
 try:
     from sqlalchemy.ext.declarative import as_declarative
@@ -22,13 +22,13 @@ _camelcase_re = re.compile(r'([A-Z]+)(?=[a-z0-9])')
 
 class SQLA(SQLAlchemy):
     """
-        This is a child class of flask.ext.SQLAlchemy
+        This is a child class of flask_SQLAlchemy
         It's purpose is to override the declarative base of the original
         package. So that it is bound to F.A.B. Model class allowing the dev
         to be in the same namespace of the security tables (and others)
         and can use AuditMixin class alike.
 
-        Use it and configure it just like flask.ext.SQLAlchemy
+        Use it and configure it just like flask_SQLAlchemy
     """
     def make_declarative_base(self):
         """Creates the declarative base."""
@@ -64,7 +64,7 @@ class Model(object):
         ::
 
             from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey, Date
-            from flask.ext.appbuilder import Model
+            from flask_appbuilder import Model
 
             class MyModel(Model):
                 id = Column(Integer, primary_key=True)

@@ -11,7 +11,7 @@ try:
 
 except:
     from flask import Flask
-    from flask.ext.sqlalchemy import SQLAlchemy
+    from flask_sqlalchemy import SQLAlchemy
 
     if len(sys.argv) < 2:
         print "Without typical app structure use parameter to config"
