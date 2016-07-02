@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from flask_appbuilder.security.sqla.models import User
 
 sys.path.append(os.getcwd())
-from flask.ext.appbuilder import SQLA
+from flask_appbuilder import SQLA
 
 #from app import app
 #from app import appbuilder, db

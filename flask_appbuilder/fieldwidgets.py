@@ -1,5 +1,7 @@
 from wtforms.widgets import HTMLString, html_params
 from wtforms import fields, widgets, TextField
+from flask_babel import lazy_gettext as _
+
 
 class DatePickerWidget(object):
     """
@@ -148,7 +150,7 @@ class Select2Widget(widgets.Select):
         if self.extra_classes:
             kwargs['class'] = kwargs['class'] + ' ' + self.extra_classes
         kwargs['style'] = self.style
-        kwargs['data-placeholder'] = u'Select Value'
+        kwargs['data-placeholder'] = _('Select Value')
         if 'name_' in kwargs:
             field.name = kwargs['name_']
         return super(Select2Widget, self).__call__(field, **kwargs)
@@ -167,7 +169,7 @@ class Select2ManyWidget(widgets.Select):
         if self.extra_classes:
             kwargs['class'] = kwargs['class'] + ' ' + self.extra_classes
         kwargs['style'] = self.style
-        kwargs['data-placeholder'] = u'Select Value'
+        kwargs['data-placeholder'] = _('Select Value')
         kwargs['multiple'] = u'true'
         if 'name_' in kwargs:
             field.name = kwargs['name_']

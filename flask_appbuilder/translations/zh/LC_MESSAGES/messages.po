@@ -649,3 +649,9 @@ msgstr "通过以下方式登录："
 #: flask_appbuilder/templates/appbuilder/general/widgets/search.html:7
 msgid "Add Filter"
 msgstr "添加过滤条件"
+
+msgid "Select Value"
+msgstr "请选择"
+
+msgid "Detail"
+msgstr "详细"
