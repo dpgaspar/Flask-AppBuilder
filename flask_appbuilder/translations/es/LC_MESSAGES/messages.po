@@ -550,7 +550,7 @@ msgstr "Salir"
 #: flask_appbuilder/templates/appbuilder/baselib.html:122
 #: flask_appbuilder/templates/appbuilder/navbar_right.html:43
 msgid "Login"
-msgstr "Inicar sesión"
+msgstr "Iniciar sesión"
 
 #: flask_appbuilder/templates/appbuilder/general/security/activation.html:5
 #: flask_appbuilder/templates/appbuilder/index.html:4
@@ -572,7 +572,7 @@ msgstr "Tamaño de página"
 
 #: flask_appbuilder/templates/appbuilder/general/lib.html:83
 msgid "Order by"
-msgstr ""
+msgstr "Ordenar por"
 
 #: flask_appbuilder/templates/appbuilder/general/lib.html:282
 msgid "Record Count"
@@ -592,7 +592,7 @@ msgstr "Mostrar registro"
 
 #: flask_appbuilder/templates/appbuilder/general/lib.html:340
 msgid "You sure you want to delete this item?"
-msgstr "¿Está seguro que quiere borrar este elemento?"
+msgstr "¿Está seguro de que quiere borrar este elemento?"
 
 #: flask_appbuilder/templates/appbuilder/general/lib.html:341
 msgid "Delete record"
@@ -604,7 +604,7 @@ msgstr "Agrupar por campos"
 
 #: flask_appbuilder/templates/appbuilder/general/security/activation.html:7
 msgid "Your user is activated you can now proceed to login"
-msgstr ""
+msgstr "Su usuario está activado. Puede iniciar sesión"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:19
 #: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:16
@@ -620,7 +620,7 @@ msgstr "Usuario"
 #: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:59
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:121
 msgid "If your not already a user, please register"
-msgstr "Si tu no eres usuario, regístrate"
+msgstr "Si no eres usuario, regístrate"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:50
 #: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:60
@@ -634,11 +634,11 @@ msgstr "Por favor, elija una de las siguientes"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:89
 msgid "Click on your OpenID provider below"
-msgstr "Seleccione su OpenID"
+msgstr "Seleccione su proveedor OpenID"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:101
 msgid "Or enter your OpenID here"
-msgstr "O introduzca su OpenID aquí"
+msgstr "O introduzca su OpenID"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:105
 msgid "Please choose a provider"
@@ -651,7 +651,7 @@ msgstr "O introduzca su OpenID aquí"
 
 #: flask_appbuilder/templates/appbuilder/general/security/register_oauth.html:15
 msgid "Sign in using:"
-msgstr ""
+msgstr "Inicie sesión usando:"
 
 #: flask_appbuilder/templates/appbuilder/general/widgets/search.html:7
 msgid "Add Filter"
