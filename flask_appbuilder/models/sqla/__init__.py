@@ -30,9 +30,10 @@ class SQLA(SQLAlchemy):
 
         Use it and configure it just like flask_SQLAlchemy
     """
-    def make_declarative_base(self):
+    def make_declarative_base(self, metadata=None):
         """Creates the declarative base."""
         base = declarative_base(cls=Model, name='Model',
+                                metadata=metadata,
                                 metaclass=ModelDeclarativeMeta)
         base.query = _QueryProperty(self)
         return base
