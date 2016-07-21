@@ -674,7 +674,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             :userinfo: dict with user information the keys have the same name
             as User model columns.
         """
-        if 'username' in userinfo:
+        if 'username' in userinfo and userinfo['username']:
             user = self.find_user(username=userinfo['username'])
         elif 'email' in userinfo:
             user = self.find_user(email=userinfo['email'])
