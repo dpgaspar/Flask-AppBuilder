@@ -577,7 +577,7 @@ class BaseCRUDView(BaseModelView):
 
             class ContactModelView(ModelView):
                 datamodel = SQLAModel(Contact, db.session)
-                add_form_query_rel_fields = [('group':[['name',FilterStartsWith,'W']]}
+                add_form_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
 
     """
     edit_form_query_rel_fields = None
@@ -591,7 +591,7 @@ class BaseCRUDView(BaseModelView):
 
             class ContactModelView(ModelView):
                 datamodel = SQLAModel(Contact, db.session)
-                add_form_query_rel_fields = [('group':[['name',FilterStartsWith,'W']]}
+                edit_form_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
 
     """
 
