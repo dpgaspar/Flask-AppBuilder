@@ -5,7 +5,7 @@ python:
   - "2.7"
   - "2.6"
 install:
-  - "pip install -r requirements.txt --use-mirrors"
+  - "pip install -r requirements.txt"
   - "pip install coveralls"
   - "pip install pymongo==2.8"
   - "pip install flask-mongoengine==0.7.1"
