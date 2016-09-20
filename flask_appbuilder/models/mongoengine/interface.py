@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging, sys
 from flask import flash
 from . import filters
