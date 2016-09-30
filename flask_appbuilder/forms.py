@@ -3,7 +3,7 @@ from flask_wtf import Form
 from wtforms import (BooleanField, StringField,
                      TextAreaField, IntegerField, FloatField,
                       DateField, DateTimeField, DecimalField)
-from .fields import QuerySelectMultipleField, QuerySelectField
+from .fields import QuerySelectMultipleField, QuerySelectField, TagListField
 
 from wtforms import validators
 from .fieldwidgets import (BS3TextAreaFieldWidget,
@@ -46,7 +46,8 @@ class FieldConverter(object):
                         ('is_boolean', BooleanField, None),
                         ('is_date', DateField, DatePickerWidget),
                         ('is_datetime', DateTimeField, DateTimePickerWidget),
-    )
+                        ('is_list', TagListField, BS3TextFieldWidget),  # added for mongoengine is_list
+                        )
 
     def __init__(self, datamodel, colname, label, description, validators, default=None):
         self.datamodel = datamodel
@@ -170,7 +171,12 @@ class GeneralModelConverter(object):
     def _convert_col(self, col_name,
                      label, description,
                      lst_validators, filter_rel_fields,
-                     form_props):
+                     form_props,
+                     search_form=False):
+        if search_form and col_name in self.datamodel.custom_search:
+            # custom search -> BS3Stringfield
+            return self._convert_simple(col_name, label, description, lst_validators, form_props)
+
         if self.datamodel.is_relation(col_name):
             if self.datamodel.is_relation_many_to_one(col_name) or \
                     self.datamodel.is_relation_one_to_one(col_name):
@@ -193,7 +199,8 @@ class GeneralModelConverter(object):
 
     def create_form(self, label_columns=None, inc_columns=None,
                     description_columns=None, validators_columns=None,
-                    extra_fields=None, filter_rel_fields=None):
+                    extra_fields=None, filter_rel_fields=None,
+                    search_form=False):
         """
             Converts a model to a form given
 
@@ -217,6 +224,9 @@ class GeneralModelConverter(object):
 
             :param filter_rel_fields:
                 A filter to be applied on relationships
+            :param search_form:
+                if True, the form to create is a search form
+
         """
         label_columns = label_columns or {}
         inc_columns = inc_columns or []
@@ -231,7 +241,8 @@ class GeneralModelConverter(object):
                 self._convert_col(col_name, self._get_label(col_name, label_columns),
                                   self._get_description(col_name, description_columns),
                                   self._get_validators(col_name, validators_columns),
-                                  filter_rel_fields, form_props)
+                                  filter_rel_fields, form_props,
+                                  search_form)
         return type('DynamicForm', (DynamicForm,), form_props)
 
 

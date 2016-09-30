@@ -6,6 +6,7 @@ from wtforms import widgets
 from wtforms.compat import text_type, string_types
 from wtforms.fields import SelectFieldBase, Field
 from wtforms.validators import ValidationError
+from wtforms.widgets import TextInput
 
 
 class AJAXSelectField(Field):
@@ -192,3 +193,21 @@ class QuerySelectMultipleField(QuerySelectField):
                     raise ValidationError(self.gettext('Not a valid choice'))
 
 
+class TagListField(Field):
+    """
+    List input fied: convert a list into a string of comma separated list ittagsems and conversely
+    for mongoengine ListField(StringField()) processing on add and update
+    """
+    widget = TextInput()
+
+    def _value(self):
+        if self.data:
+            return u', '.join(self.data)
+        else:
+            return u''
+
+    def process_formdata(self, valuelist):
+        if valuelist:
+            self.data = [x.strip() for x in valuelist[0].split(',')]
+        else:
+            self.data = []

@@ -29,6 +29,9 @@ class BaseInterface(object):
     """ Tuple with message and text with severity type ex: ("Added Row", "info") """
     message = ()
 
+    """ Specify custom search parameters"""
+    custom_search = {}
+
     def __init__(self, obj):
         self.obj = obj
 

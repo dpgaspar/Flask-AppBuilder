@@ -4,6 +4,7 @@ from .._compat import as_unicode
 
 log = logging.getLogger(__name__)
 
+
 class BaseFilter(object):
     """
         Base class for all data filters.
@@ -85,9 +86,15 @@ class BaseFilterConverter(object):
         self.datamodel = datamodel
 
     def convert(self, col_name):
-        for conversion in self.conversion_table:
-            if getattr(self.datamodel, conversion[0])(col_name):
-                return [item(col_name, self.datamodel) for item in conversion[1]]
+        if col_name in self.datamodel.custom_search:
+            custom_conversion = self.datamodel.custom_search[col_name][0]
+            for conversion in self.conversion_table:
+                if custom_conversion == conversion[0]:
+                    return [item(col_name, self.datamodel) for item in conversion[1]]
+        else:
+            for conversion in self.conversion_table:
+                if getattr(self.datamodel, conversion[0])(col_name):
+                    return [item(col_name, self.datamodel) for item in conversion[1]]
         log.warning('Filter type not supported for column: %s' % col_name)
 
 
