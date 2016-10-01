@@ -2,12 +2,12 @@
 import logging
 
 from flask import Flask
-from fab.flask_appbuilder import AppBuilder
-from fab.flask_appbuilder.security.mongoengine.manager import SecurityManager
+from flask_appbuilder import AppBuilder
+from flask_appbuilder.security.mongoengine.manager import SecurityManager
 from flask_mongoengine import MongoEngine
 from .security import MySecurityManager
 
-from fab.flask_appbuilder.security.mongoengine.models import User
+from flask_appbuilder.security.mongoengine.models import User
 
 from views import add_views
 from setup import ez_setup

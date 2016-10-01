@@ -1,9 +1,9 @@
 __author__ = 'dpgaspar'
 
 from flask import redirect
-from fab.flask_appbuilder.security.views import UserDBModelView
-from fab.flask_appbuilder.security.mongoengine.manager import SecurityManager
-from fab.flask_appbuilder.actions import action
+from flask_appbuilder.security.views import UserDBModelView
+from flask_appbuilder.security.mongoengine.manager import SecurityManager
+from flask_appbuilder.actions import action
 
 
 class MyUserDBView(UserDBModelView):

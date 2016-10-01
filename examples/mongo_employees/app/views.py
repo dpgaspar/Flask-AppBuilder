@@ -1,5 +1,5 @@
-from fab.flask_appbuilder import ModelView
-from fab.flask_appbuilder.models.mongoengine.interface import MongoEngineInterface
+from flask_appbuilder import ModelView
+from flask_appbuilder.models.mongoengine.interface import MongoEngineInterface
 from .models import Employee, Department, Function, EmployeeHistory, Benefit
 
 
