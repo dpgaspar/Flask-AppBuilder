@@ -59,7 +59,7 @@ Define a special and simple view inherit from IndexView, don't define this view 
 
 
     class MyIndexView(IndexView):
-        index_template = 'index.html'
+        index_template = 'my_index.html'
 
 3 - Tell F.A.B to use your index view, when initializing AppBuilder::
 
