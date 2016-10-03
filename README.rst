@@ -40,6 +40,13 @@ You're welcome to report bugs, propose new features, or even better contribute t
 
 `Contribute <https://github.com/dpgaspar/Flask-AppBuilder/fork>`_
 
+The tests can be run locally (provided Docker and Docker-Compose are installed) by running
+`docker-compose run --rm test`
+
+Or, if you have mongodb and the requirements installed locally-
+`setup.py test`
+
+
 Projects using FAB
 ------------------
 

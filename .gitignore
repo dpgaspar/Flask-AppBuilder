@@ -1,9 +1,13 @@
+.coverage
+*.egg-info
+.eggs/
 *.pyc
 app.db
 ./tmp
 ./build/*
 ./.idea
 ./.idea/*
+.idea/
 env
 venv
 *.sublime*
