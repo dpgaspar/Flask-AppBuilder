@@ -125,13 +125,13 @@ class FlaskTestCase(unittest.TestCase):
             obj_id = 1
 
             def post_add_redirect(self):
-                return redirect('model1viewwithredirects/show/{}'.format(REDIRECT_OBJ_ID))
+                return redirect('model1viewwithredirects/show/{0}'.format(REDIRECT_OBJ_ID))
 
             def post_edit_redirect(self):
-                return redirect('model1viewwithredirects/show/{}'.format(REDIRECT_OBJ_ID))
+                return redirect('model1viewwithredirects/show/{0}'.format(REDIRECT_OBJ_ID))
 
             def post_delete_redirect(self):
-                return redirect('model1viewwithredirects/show/{}'.format(REDIRECT_OBJ_ID))
+                return redirect('model1viewwithredirects/show/{0}'.format(REDIRECT_OBJ_ID))
 
 
 
@@ -445,13 +445,13 @@ class FlaskTestCase(unittest.TestCase):
         ok_('Test Redirects' in data)
 
         model_id = self.db.session.query(Model1).filter_by(field_string='test_redirect').first().id
-        rv = client.post('/model1viewwithredirects/edit/{}'.format(model_id),
+        rv = client.post('/model1viewwithredirects/edit/{0}'.format(model_id),
                          data=dict(field_string='test_redirect_2', field_integer='2'),
                          follow_redirects=True)
         eq_(rv.status_code, 200)
         ok_('Test Redirects' in data)
 
-        rv = client.get('/model1viewwithredirects/delete/{}'.format(model_id),
+        rv = client.get('/model1viewwithredirects/delete/{0}'.format(model_id),
                         follow_redirects=True)
         eq_(rv.status_code, 200)
         ok_('Test Redirects' in data)
