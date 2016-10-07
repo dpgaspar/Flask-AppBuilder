@@ -438,12 +438,15 @@ class ModelView(RestCRUDView):
         super(ModelView, self).__init__(**kwargs)
 
     def post_add_redirect(self):
+        """Override this function to control the redirect after add endpoint is called."""
         return redirect(self.get_redirect())
 
     def post_edit_redirect(self):
+        """Override this function to control the redirect after edit endpoint is called."""
         return redirect(self.get_redirect())
 
     def post_delete_redirect(self):
+        """Override this function to control the redirect after edit endpoint is called."""
         return redirect(self.get_redirect())
 
     """
