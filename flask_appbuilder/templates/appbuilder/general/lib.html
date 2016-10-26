@@ -65,7 +65,7 @@
     {{_('Page size')}}<span class="caret"></span>
     </button>
     <ul class="dropdown-menu" role="menu">
-    	{% for sel_page_size in range(5,40,5) %}
+    	{% for sel_page_size in range(25,125,25) %}
     	{% if sel_page_size == page_size %}
         	<li class="active"><a href="{{sel_page_size | link_page_size(modelview_name) }}">{{sel_page_size}}</a></li>
         {% else %}
@@ -113,7 +113,7 @@
     {% if pages > 1 %}
     <ul class="pagination pagination-sm" style="display:inherit;">
 
-        {% set init_page = 0 %}  
+        {% set init_page = 0 %}
         {% set min = page - 3 %}
         {% set max = page + 3 + 1 %}
 
