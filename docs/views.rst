@@ -2,12 +2,12 @@ Base Views
 ==========
 
 Views are the base concept of F.A.B.
-they work like a class that represent a concept and present the views and methods to implement it.
+They work like a class that represent a concept and present the views and methods to implement it.
 
 Each view is a Flask blueprint that will be created for you automatically by the framework.
 This is a simple but powerful concept.
 You will map your methods to routing points, and each method will be registered
-as a possible security permission if you want to.
+as a possible security permission if you want.
 
 So your methods will have automatic routing points much like Flask, but this time in a class.
 Additionally you can have granular security (method access security) that can be associated with a user's role
@@ -21,11 +21,11 @@ BaseView
 --------
 
 All views inherit from this class.
-it's constructor will register your exposed urls on flask as a Blueprint,
+Its constructor will register your exposed urls on flask as a Blueprint,
 as well as all security permissions that need to be defined and protected.
 
 You can use this kind of view to implement your own custom pages,
-attached to a menu or linked from any point of your site.
+attach it to a menu or link it from any point to your site.
 
 Decorate your url routing methods with **@expose**.
 Additionally add **@has_access** decorator to tell flask that this is a security protected method.
@@ -62,21 +62,21 @@ This simple example will register your view with two routing urls on:
 - /myview/method1/<string:param1>
 - /myview/method2/<string:param1>
     
-No menu will be created for this and no security permissions will be created,
-if you want to enable detailed security access for your methods just add **@has_access** decorator to them.
+No menu will be created for this and no security permissions will be created.
+If you want to enable detailed security access for your methods use the **@has_access** decorator.
 
 Now run this example
 ::
 
     $ fabmanager run
 
-You can test your methods using the following url's:
+You can test your methods using the following urls:
 
 http://localhost:8080/myview/method1/john
 
 http://localhost:8080/myview/method2/john
 
-As you can see, this methods are public, let's secure them, edit views.py and change it to::
+As you can see, those methods are public. So let's secure them. Change views.py to::
 
     from flask.ext.appbuilder import AppBuilder, BaseView, expose, has_access
     from app import appbuilder
@@ -125,8 +125,8 @@ This will create the following menu
 Notice that these methods will render simple pages not integrated with F.A.B's look and feel.
 It's easy to render your method's response integrated with the app's look and feel,
 for this you have to create your own template.
-under your projects directory and app folder create a folder named 'templates'
-inside it create a file name 'method3.html'
+Under your project's directory and app folder create a folder named 'templates'.
+Inside it create a file name 'method3.html'
 
 1 - Develop your template (on your <PROJECT_NAME>/app/templates/method3.html)::
 
@@ -154,13 +154,13 @@ inside it create a file name 'method3.html'
     appbuilder.add_link("Method3", href='/myview/method3/john', category='My View')
 
 As you can see you just have to extend "appbuilder/base.html" on your template and then override *block content*.
-You have many other *blocks* to override extending css includes, javascript, headers, tails etc...
+You have many other *blocks* to override or extend things like css includes, javascript, headers, tails etc...
 Next use **Flask** **render_template** to render your new template.
 
 .. note::
 
     Update redirect, on version 0.10.3, the redirect algorithm was reviewed, and uses session cookies to keep
-    5 records of navigation history, these are very useful to redirect back, keeping url arguments, and
+    5 records of navigation history. This is very useful to redirect back, keeping url arguments and
     improving UI experience. You must call *self.update_redirect()* to insert the current url into the
     navigation history. Sometimes you may want to skip the update, for example on form validation errors, so that
     the *back* operation won't send you to the same form, prior to the validation error.
@@ -175,12 +175,12 @@ Form Views
 
 Subclass SimpleFormView or PublicFormView to provide base processing for your customized form views.
 
-In principle you will only need this kind of view to present forms that are not Database Model based,
+Usually you will need this kind of view to present forms that are not Database Model based,
 because when they do, F.A.B. can automatically generate them and you can add or remove fields to it,
 as well as custom validators. For this you can use ModelView instead.
 
 To create a custom form view, first define your `WTForm <https://wtforms.readthedocs.org/en/latest/>`_
-fields, but inherit them from F.A.B. *DynamicForm*.
+fields and inherit them from F.A.B. *DynamicForm*.
 
 ::
 
@@ -203,9 +203,9 @@ Now define your form view to expose urls, create a menu entry, create security a
 Implement *form_get* and *form_post* to implement your form pre-processing and post-processing. 
 You can use *form_get* to prefill the form with your data, and/or pre process something on your application, then
 use *form_post* to post process the form after the user submits it, you can save the data to database, send an email
-or something.
+or any other action required.
 
-On your form_post method you can also return None, or a Flask response to render a custom template or redirect the user.
+On your form_post method, you can also return None, or a Flask response to render a custom template or redirect the user.
 
 ::
 
@@ -229,7 +229,7 @@ On your form_post method you can also return None, or a Flask response to render
                          category="My Forms", category_icon="fa-cogs")
 
 
-Notice that this class derives from *BaseView* so all properties from the parent class can be overridden also.
+Notice that this class derives from *BaseView* so all properties from the parent class can be overridden.
 Notice also how label uses babel's lazy_gettext as _('text') function so that your menu items can be translated.
 
 Most important Base Properties:
