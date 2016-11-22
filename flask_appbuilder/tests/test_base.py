@@ -416,13 +416,14 @@ class FlaskTestCase(unittest.TestCase):
         model = self.db.session.query(Model1).first()
         eq_(model, None)
 
-    def test_excluded_cols(self):
+    def test_formatted_cols(self):
         """
-            Test formatters_columns
+            Test ModelView's formatters_columns
         """
         client = self.app.test_client()
         rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        rv = client.get('/model1formattedview/list')
+        self.insert_data()
+        rv = client.get('/model1formattedview/list/')
         eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
         ok_('FORMATTED_STRING' in data)
