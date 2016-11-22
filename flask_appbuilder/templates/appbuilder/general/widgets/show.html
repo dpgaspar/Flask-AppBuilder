@@ -29,8 +29,12 @@
 
     {% for item in include_columns %}
         <tr>
-        <th class="col-lg-2 col-md-2 col-sm-2">{{label_columns.get(item)}}</th>
-        <td><span style="white-space: pre-line">{{value_columns[loop.index-1]}}</span></td>
+            <th class="col-lg-2 col-md-2 col-sm-2">{{label_columns.get(item)}}</th>
+            <td>
+                {% set formatter = formatters_columns.get(item) %}
+                {% set v = value_columns[loop.index-1]%}
+                <span style="white-space: pre-line">{{formatter(v) if formatter else v}}</span>
+            </td>
         </tr>
     {% endfor %}
     </table></div>
