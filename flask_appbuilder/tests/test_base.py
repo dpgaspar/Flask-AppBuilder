@@ -6,7 +6,7 @@ import random
 import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.orm import relationship
-from flask import request, session
+from flask import redirect, request, session
 from flask_appbuilder import Model, SQLA
 from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqual
 from flask_appbuilder.models.mixins import FileColumn, ImageColumn
@@ -36,6 +36,7 @@ UNIQUE_VALIDATION_STRING = 'Already exists'
 NOTNULL_VALIDATION_STRING = 'This field is required'
 DEFAULT_ADMIN_USER = 'admin'
 DEFAULT_ADMIN_PASSWORD = 'general'
+REDIRECT_OBJ_ID = 99999
 
 log = logging.getLogger(__name__)
 
@@ -110,7 +111,6 @@ class FlaskTestCase(unittest.TestCase):
             edit_exclude_columns = ['excluded_string']
             show_exclude_columns = ['excluded_string']
 
-
         class Model1View(ModelView):
             datamodel = SQLAInterface(Model1)
             related_views = [Model2View]
@@ -119,6 +119,20 @@ class FlaskTestCase(unittest.TestCase):
 
         class Model1CompactView(CompactCRUDMixin, ModelView):
             datamodel = SQLAInterface(Model1)
+
+        class Model1ViewWithRedirects(ModelView):
+            datamodel = SQLAInterface(Model1)
+            obj_id = 1
+
+            def post_add_redirect(self):
+                return redirect('model1viewwithredirects/show/{0}'.format(REDIRECT_OBJ_ID))
+
+            def post_edit_redirect(self):
+                return redirect('model1viewwithredirects/show/{0}'.format(REDIRECT_OBJ_ID))
+
+            def post_delete_redirect(self):
+                return redirect('model1viewwithredirects/show/{0}'.format(REDIRECT_OBJ_ID))
+
 
 
         class Model1Filtered1View(ModelView):
@@ -187,6 +201,7 @@ class FlaskTestCase(unittest.TestCase):
 
 
         self.appbuilder.add_view(Model1View, "Model1", category='Model1')
+        self.appbuilder.add_view(Model1ViewWithRedirects, "Model1ViewWithRedirects", category='Model1')
         self.appbuilder.add_view(Model1CompactView, "Model1Compact", category='Model1')
         self.appbuilder.add_view(Model1MasterView, "Model1Master", category='Model1')
         self.appbuilder.add_view(Model1MasterChartView, "Model1MasterChart", category='Model1')
@@ -263,7 +278,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 27)  # current minimal views are 12
+        eq_(len(self.appbuilder.baseviews), 28)  # current minimal views are 12
 
     def test_back(self):
         """
@@ -407,6 +422,39 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model1).first()
         eq_(model, None)
+
+    def test_model_redirects(self):
+        """
+            Test Model redirects after add, delete, edit
+        """
+        client = self.app.test_client()
+        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+
+        model1 = Model1(field_string='Test Redirects')
+        self.db.session.add(model1)
+        model1.id = REDIRECT_OBJ_ID
+        self.db.session.flush()
+
+        rv = client.post('/model1viewwithredirects/add',
+                             data=dict(field_string='test_redirect', field_integer='1',
+                                       field_float='0.12',
+                                       field_date='2014-01-01'), follow_redirects=True)
+
+        eq_(rv.status_code, 200)
+        data = rv.data.decode('utf-8')
+        ok_('Test Redirects' in data)
+
+        model_id = self.db.session.query(Model1).filter_by(field_string='test_redirect').first().id
+        rv = client.post('/model1viewwithredirects/edit/{0}'.format(model_id),
+                         data=dict(field_string='test_redirect_2', field_integer='2'),
+                         follow_redirects=True)
+        eq_(rv.status_code, 200)
+        ok_('Test Redirects' in data)
+
+        rv = client.get('/model1viewwithredirects/delete/{0}'.format(model_id),
+                        follow_redirects=True)
+        eq_(rv.status_code, 200)
+        ok_('Test Redirects' in data)
 
     def test_excluded_cols(self):
         """
