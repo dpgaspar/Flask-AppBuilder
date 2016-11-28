@@ -7,6 +7,7 @@ from . import filters
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
+from sqlalchemy.orm.properties import SynonymProperty
 
 from ..base import BaseInterface
 from ..group import GroupByDateYear, GroupByDateMonth, GroupByCol
@@ -41,10 +42,12 @@ class SQLAInterface(BaseInterface):
 
         self.session = session
         # Collect all SQLA columns and properties
-        for col_name in obj.__mapper__.columns.keys():
-            self.list_columns[col_name] = obj.__mapper__.columns[col_name]
         for prop in sa.orm.class_mapper(obj).iterate_properties:
-            self.list_properties[prop.key] = prop
+            if type(prop) != SynonymProperty:
+                self.list_properties[prop.key] = prop
+        for col_name in obj.__mapper__.columns.keys():
+            if col_name in self.list_properties:
+                self.list_columns[col_name] = obj.__mapper__.columns[col_name]
         super(SQLAInterface, self).__init__(obj)
 
     @property
@@ -269,7 +272,7 @@ class SQLAInterface(BaseInterface):
         except:
                 return -1
 
-    
+
 
     """
     -----------------------------------------
@@ -464,7 +467,7 @@ class SQLAInterface(BaseInterface):
         for col_name in list_columns:
             if not self.is_relation(col_name):
                 if hasattr(self.obj, col_name):
-                    if (not hasattr(getattr(self.obj, col_name), '__call__') or 
+                    if (not hasattr(getattr(self.obj, col_name), '__call__') or
                         hasattr(getattr(self.obj, col_name), '_col_name')):
                         ret_lst.append(col_name)
                 else:

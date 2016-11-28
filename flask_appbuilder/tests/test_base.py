@@ -116,7 +116,6 @@ class FlaskTestCase(unittest.TestCase):
             related_views = [Model2View]
             list_columns = ['field_string','field_file']
 
-
         class Model1CompactView(CompactCRUDMixin, ModelView):
             datamodel = SQLAInterface(Model1)
 
@@ -185,6 +184,14 @@ class FlaskTestCase(unittest.TestCase):
             datamodel = SQLAInterface(Model1)
             related_views = [Model2DirectByChartView]
 
+        class Model1FormattedView(ModelView):
+            datamodel = SQLAInterface(Model1)
+            list_columns = ['field_string']
+            show_columns = ['field_string']
+            formatters_columns = {
+                'field_string': lambda x: 'FORMATTED_STRING',
+            }
+
 
         self.appbuilder.add_view(Model1View, "Model1", category='Model1')
         self.appbuilder.add_view(Model1CompactView, "Model1Compact", category='Model1')
@@ -192,6 +199,7 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view(Model1MasterChartView, "Model1MasterChart", category='Model1')
         self.appbuilder.add_view(Model1Filtered1View, "Model1Filtered1", category='Model1')
         self.appbuilder.add_view(Model1Filtered2View, "Model1Filtered2", category='Model1')
+        self.appbuilder.add_view(Model1FormattedView, "Model1FormattedView", category='Model1FormattedView')
 
         self.appbuilder.add_view(Model2View, "Model2")
         self.appbuilder.add_view(Model22View, "Model22")
@@ -263,7 +271,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 27)  # current minimal views are 12
+        eq_(len(self.appbuilder.baseviews), 28)  # current minimal views are 12
 
     def test_back(self):
         """
@@ -407,6 +415,22 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model1).first()
         eq_(model, None)
+
+    def test_formatted_cols(self):
+        """
+            Test ModelView's formatters_columns
+        """
+        client = self.app.test_client()
+        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.insert_data()
+        rv = client.get('/model1formattedview/list/')
+        eq_(rv.status_code, 200)
+        data = rv.data.decode('utf-8')
+        ok_('FORMATTED_STRING' in data)
+        rv = client.get('/model1formattedview/show/1')
+        eq_(rv.status_code, 200)
+        data = rv.data.decode('utf-8')
+        ok_('FORMATTED_STRING' in data)
 
     def test_excluded_cols(self):
         """

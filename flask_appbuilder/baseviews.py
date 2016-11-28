@@ -553,7 +553,11 @@ class BaseCRUDView(BaseModelView):
     """
     validators_columns = None
     """ Dictionary to add your own validators for forms """
+    formatters_columns = None
+    """ Dictionary of formatter used to format the display of columns
 
+        formatters_columns = {'some_date_col': lambda x: x.isoformat() }
+    """
     add_form_extra_fields = None
     """
         A dictionary containing column names and a WTForm
@@ -678,6 +682,7 @@ class BaseCRUDView(BaseModelView):
         self._related_views = self._related_views or []
         self.description_columns = self.description_columns or {}
         self.validators_columns = self.validators_columns or {}
+        self.formatters_columns = self.formatters_columns or {}
         self.add_form_extra_fields = self.add_form_extra_fields or {}
         self.edit_form_extra_fields = self.edit_form_extra_fields or {}
         self.show_exclude_columns = self.show_exclude_columns or []
@@ -789,6 +794,7 @@ class BaseCRUDView(BaseModelView):
                                            include_columns=self.list_columns,
                                            value_columns=self.datamodel.get_values(lst, self.list_columns),
                                            order_columns=self.order_columns,
+                                           formatters_columns=self.formatters_columns,
                                            page=page,
                                            page_size=page_size,
                                            count=count,
@@ -806,6 +812,7 @@ class BaseCRUDView(BaseModelView):
                                            label_columns=self.label_columns,
                                            include_columns=self.show_columns,
                                            value_columns=self.datamodel.get_values_item(item, self.show_columns),
+                                           formatters_columns=self.formatters_columns,
                                            actions=actions,
                                            fieldsets=show_fieldsets,
                                            modelview_name=self.__class__.__name__
@@ -875,7 +882,7 @@ class BaseCRUDView(BaseModelView):
 
     def _show(self, pk):
         """
-            show function logic, override to implement diferent logic
+            show function logic, override to implement different logic
             returns show and related list widget
         """
         pages = get_page_args()
@@ -892,7 +899,7 @@ class BaseCRUDView(BaseModelView):
 
     def _add(self):
         """
-            Add function logic, override to implement diferent logic
+            Add function logic, override to implement different logic
             returns add widget or None
         """
         is_valid_form = True
