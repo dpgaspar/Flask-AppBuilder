@@ -520,13 +520,16 @@ class AuthOAuthView(AuthView):
         try:
             self.appbuilder.sm.set_oauth_session(provider, resp)
             userinfo = self.appbuilder.sm.oauth_user_info(provider)
-            log.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
         except Exception as e:
             log.error("Error returning OAuth user info: {0}".format(e))
-        # Is this Authorization to register a new user ?
-        if session.pop('register', None):
-            return redirect(self.appbuilder.sm.registeruseroauthview.get_default_url(**userinfo))
-        user = self.appbuilder.sm.auth_user_oauth(userinfo)
+            user = None
+        else:
+            log.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
+            # Is this Authorization to register a new user ?
+            if session.pop('register', None):
+                return redirect(self.appbuilder.sm.registeruseroauthview.get_default_url(**userinfo))
+            user = self.appbuilder.sm.auth_user_oauth(userinfo)
+
         if user is None:
             flash(as_unicode(self.invalid_login_message), 'warning')
             return redirect('login')
