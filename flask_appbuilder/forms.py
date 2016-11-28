@@ -1,5 +1,5 @@
 import logging
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import (BooleanField, StringField,
                      TextAreaField, IntegerField, FloatField,
                       DateField, DateTimeField, DecimalField)
@@ -235,7 +235,7 @@ class GeneralModelConverter(object):
         return type('DynamicForm', (DynamicForm,), form_props)
 
 
-class DynamicForm(Form):
+class DynamicForm(FlaskForm):
     """
         Refresh method will force select field to refresh
     """
