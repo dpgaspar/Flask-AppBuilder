@@ -437,6 +437,18 @@ class ModelView(RestCRUDView):
     def __init__(self, **kwargs):
         super(ModelView, self).__init__(**kwargs)
 
+    def post_add_redirect(self):
+        """Override this function to control the redirect after add endpoint is called."""
+        return redirect(self.get_redirect())
+
+    def post_edit_redirect(self):
+        """Override this function to control the redirect after edit endpoint is called."""
+        return redirect(self.get_redirect())
+
+    def post_delete_redirect(self):
+        """Override this function to control the redirect after edit endpoint is called."""
+        return redirect(self.get_redirect())
+
     """
     --------------------------------
             LIST
@@ -479,7 +491,7 @@ class ModelView(RestCRUDView):
     def add(self):
         widget = self._add()
         if not widget:
-            return redirect(self.get_redirect())
+            return self.post_add_redirect()
         else:
             return self.render_template(self.add_template,
                                         title=self.add_title,
@@ -496,7 +508,7 @@ class ModelView(RestCRUDView):
     def edit(self, pk):
         widgets = self._edit(pk)
         if not widgets:
-            return redirect(self.get_redirect())
+            return self.post_edit_redirect()
         else:
             return self.render_template(self.edit_template,
                                         title=self.edit_title,
@@ -513,7 +525,7 @@ class ModelView(RestCRUDView):
     @has_access
     def delete(self, pk):
         self._delete(pk)
-        return redirect(self.get_redirect())
+        return self.post_delete_redirect()
 
     @expose('/download/<string:filename>')
     @has_access
