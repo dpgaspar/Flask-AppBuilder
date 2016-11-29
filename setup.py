@@ -41,7 +41,7 @@ setup(
         'Flask-Login==0.2.11',
         'Flask-OpenID>=1.1.0',
         'Flask-SQLAlchemy>=2.0',
-        'Flask-WTF>=0.12',
+        'Flask-WTF>=0.13.1',
     ],
     tests_require=[
         'nose>=1.0',
