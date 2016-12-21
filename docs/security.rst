@@ -266,9 +266,9 @@ key is just the configuration for flask-oauthlib::
             'remote_app': {
                 'consumer_key':'GOOGLE KEY',
                 'consumer_secret':'GOOGLE SECRET',
-                'base_url':'https://www.googleapis.com/plus/v1/',
+                'base_url':'https://www.googleapis.com/oauth2/v2/',
                 'request_token_params':{
-                  'scope': 'https://www.googleapis.com/auth/userinfo.email'
+                  'scope': 'email profile'
                 },
                 'request_token_url':None,
                 'access_token_url':'https://accounts.google.com/o/oauth2/token',
