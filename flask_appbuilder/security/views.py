@@ -526,9 +526,6 @@ class AuthOAuthView(AuthView):
             user = None
         else:
             log.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
-            # Is this Authorization to register a new user ?
-            if session.pop('register', None):
-                return redirect(self.appbuilder.sm.registeruseroauthview.get_default_url(**userinfo))
             user = self.appbuilder.sm.auth_user_oauth(userinfo)
 
         if user is None:
