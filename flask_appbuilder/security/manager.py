@@ -376,12 +376,12 @@ class BaseSecurityManager(AbstractSecurityManager):
                 'last_name': me.data.get('lastName','')}
         # for Google
         if provider == 'google':
-            me = self.appbuilder.sm.oauth_remotes[provider].get('people/me')
+            me = self.appbuilder.sm.oauth_remotes[provider].get('userinfo')
             log.debug("User info from Google: {0}".format(me.data))
-            return {'username': me.data.get('displayName',''),
-                'email': me.data['emails'][0].get('value',''),
-                'first_name': me.data['name'].get('givenName',''),
-                'last_name': me.data['name'].get('familyName','')}
+            return {'username': me.data.get('id',''),
+                'first_name': me.data.get('given_name',''),
+                'last_name': me.data.get('family_name',''),
+                'email': me.data.get('email','')}
         else: return {}
 
 
