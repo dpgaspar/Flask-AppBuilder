@@ -1,3 +1,4 @@
+import re
 import datetime
 import logging
 from flask import flash, redirect, session, url_for, request, g, make_response, jsonify, abort
@@ -526,6 +527,19 @@ class AuthOAuthView(AuthView):
             user = None
         else:
             log.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
+            # User email is not whitelisted
+            if provider in self.appbuilder.sm.oauth_whitelists:
+                whitelist = self.appbuilder.sm.oauth_whitelists[provider]
+                allow = False
+                for e in whitelist:
+                    if re.search(e, userinfo['email']):
+                        allow = True
+                        break
+                if not allow:
+                    flash(u'You are not authorized.', 'warning')
+                    return redirect('login')
+            else:
+                log.debug('No whitelist for OAuth provider')
             user = self.appbuilder.sm.auth_user_oauth(userinfo)
 
         if user is None:

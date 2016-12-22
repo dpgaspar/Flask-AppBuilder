@@ -98,6 +98,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     oauth = None
     """ Flask-OAuth """
     oauth_remotes = None
+    """ OAuth email whitelists """
+    oauth_whitelists = {}
     """ Initialized (remote_app) providers dict {'provider_name', OBJ } """
     oauth_tokengetter = _oauth_tokengetter
     """ OAuth tokengetter function override to implement your own tokengetter method """
@@ -197,6 +199,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                 obj_provider._tokengetter = self.oauth_tokengetter
                 if not self.oauth_user_info:
                     self.oauth_user_info = self.get_oauth_user_info
+                # Whitelist only users with matching emails
+                if 'whitelist' in _provider:
+                    self.oauth_whitelists[provider_name] = _provider['whitelist']
                 self.oauth_remotes[provider_name] = obj_provider
         
 
