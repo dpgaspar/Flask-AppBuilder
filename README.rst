@@ -52,7 +52,7 @@ Projects using FAB
 
 If you would like to share your projects and join the list, just send me the link.
 
-- `Caravel <https://github.com/airbnb/caravel>`_ - a data exploration and dashboarding platform
+- `Superset <https://github.com/airbnb/superset>`_ - a data exploration platform designed to be visual, intuitive, and interactive
 - `Flog <http://demo-ninmesara.rhcloud.com/category/about>`_
 
 Includes:
