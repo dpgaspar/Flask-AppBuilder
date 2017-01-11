@@ -24,7 +24,7 @@ try:
 except:
     db.session.rollback()
 
-f = open('NAMES.DIC', "rb")
+f = open('NAMES.DIC', "r")
 names_list = [x.strip() for x in f.readlines()]
 
 f.close()
