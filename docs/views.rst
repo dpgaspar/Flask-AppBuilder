@@ -210,7 +210,7 @@ On your form_post method, you can also return None, or a Flask response to rende
 ::
 
     from flask_appbuilder import SimpleFormView
-    from flask.ext.babelpkg import lazy_gettext as _
+    from flask_babel import lazy_gettext as _
 
 
     class MyFormView(SimpleFormView):
