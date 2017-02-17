@@ -357,7 +357,7 @@ class SecurityManager(BaseSecurityManager):
 
     def exist_permission_on_views(self, lst, item):
         for i in lst:
-            if i.permission.name == item:
+            if i.permission and i.permission.name == item:
                 return True
         return False
 
