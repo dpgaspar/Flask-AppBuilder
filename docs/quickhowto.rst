@@ -10,7 +10,7 @@ And the source code for this chapter on
 The Base Skeleton Application
 -----------------------------
 
-If your working with the base skeleton application (take a look at the :doc:`installation` chapter).
+If you're working with the base skeleton application (take a look at the :doc:`installation` chapter).
 
 you now have the following directory structure::
 
@@ -31,26 +31,26 @@ Simple contacts application
 ---------------------------
 
 Let's create a very simple contacts application.
-F.A.B uses the excellent SQLAlchemy ORM package, and it's Flask extension.
-you should be familiar with it's declarative syntax to define your database models on F.A.B.
+F.A.B uses the excellent SQLAlchemy ORM package, and its Flask extension.
+you should be familiar with its declarative syntax to define your database models on F.A.B.
 
 .. note:: Since 1.3.0 there is partial support for **MongoDB** using MongoEngine. You can declare any *normalized*
    database schema, just like on SQLAlchemy, and use ModelView and CharView's exactly the same way. Next releases
    will gradually support non normalized schemas for MongoDB.
 
 On our example application we are going to define two tables,
-a *Contact's* table that will hold the contacts detailed information,
+a *Contacts* table that will hold the contact's detailed information,
 and a *ContactGroup* table to group our contacts or classify them.
 We could additionally define a *Gender* table, to serve the role of enumerated values for 'Male' and 'Female'.
 
-Although your not obliged to, i advise you to inherit your model classes from **Model** class.
-Model class is exactly the same has Flask-SQLALchemy **db.Model** but without the underlying connection.
+Although you're not obliged to, I advise you to inherit your model classes from **Model** class.
+Model class is exactly the same as Flask-SQLALchemy **db.Model** but without the underlying connection.
 You can of course inherit from **db.Model** normal Flask-SQLAlchemy.
 The reason for this is that **Model** is on the same declarative space of F.A.B.
-and using it will allow you to define relations to User's.
+and using it will allow you to define relations to Users.
 
 You can add automatic *Audit* triggered columns to your models,
-by inherit them from *AuditMixin* also. (see :doc:`api`)
+by inheriting them from *AuditMixin* also. (see :doc:`api`)
 
 So, first we are going to create a *ContactGroup* model, to group our contacts
 
@@ -93,9 +93,9 @@ The *Contacts* table.
 
 Notice that SqlAlchemy properties used here like 'unique', 'nullable' and 'default', will have special
 treatment. In this case when adding a new *Contact* a query will be made to validate
-if someone with the same name already exists. Empty name contacts will not be allowed. Column types
-are validated. The address field will contain 'Street' has default on add form.
-You can add your own custom validations also, take a look at :doc:`advanced`
+if someone with the same name already exists. Contacts with empty names will not be allowed. Column types
+are validated. The address field will contain 'Street ' as the default.
+You can add your own custom validations too, take a look at :doc:`advanced`
 
 
 Define your Views (views.py)
@@ -104,9 +104,9 @@ Define your Views (views.py)
 Now we are going to define our view for *ContactGroup* model.
 This view will setup functionality for create, remove, update and show primitives for your model's definition.
 
-Inherit from *ModelView* class that inherits from *BaseCRUDView* that inherits from *BaseModelView*,
+We inherit from the *ModelView* class, which inherits from *BaseCRUDView*, which itself inherits from *BaseModelView*,
 so you can override all their public properties to configure many details for your CRUD primitives.
-take a look at :doc:`advanced`.
+Take a look at :doc:`advanced`.
 
 ::
 
@@ -120,7 +120,7 @@ take a look at :doc:`advanced`.
 
 I hope this was easy enough! Some questions may arise...
 
-Must have properties:
+Required properties:
 
 :datamodel: is the db abstraction layer. Initialize it with your view's model.
 
@@ -154,7 +154,7 @@ Some explanation:
     customize the show, add and edit views independently.
 
 
-Additionally you can customize what columns are displayed and their order on lists and forms.
+Additionally, you can customize which columns are displayed and their order on lists and forms.
 Remember you can include columns, relations or methods from a model's definition. If you have a long
 list of columns and want to exclude just a few from add/edit/show form you can use the exclude columns
 property:
@@ -230,7 +230,7 @@ Some images:
 Exposed methods
 ---------------
 
-Your **ModelView** classes expose the following methods has flask endpoints
+Your **ModelView** classes expose the following methods as flask endpoints
 
 - list
 - show
@@ -242,10 +242,10 @@ Your **ModelView** classes expose the following methods has flask endpoints
 - API methods
 
 This exposes a REST API (not completely strict). You also have an AJAX REST API.
-Each method as it's own security permission, so you can control accesses at this level.
+Each method has its own security permission, so you can control accesses at this level.
 
 The API methods take the same arguments as list, show, add, edit and delete, but return JSON and HTTP return codes
-is case of success or errors, take a close look at the following table for a description of each method.
+in case of success or errors. See the following table for a description of each method.
 
     .. cssclass:: table-bordered table-hover
 
@@ -266,7 +266,7 @@ is case of success or errors, take a close look at the following table for a des
 +-----------------------------+-------------------------------------------------------+-----------------+--------+
 | /api/column/add/<COL NAME/  | Returns values for a related field                    | can_edit        | GET    |
 +-----------------------------+-------------------------------------------------------+-----------------+--------+
-| /api/readvalues             | Query's models data, ready to use on select2 combos   | can_list        | GET    |
+| /api/readvalues             | Queries models data, ready to use on select2 combos   | can_list        | GET    |
 +-----------------------------+-------------------------------------------------------+-----------------+--------+
 
 REST API
