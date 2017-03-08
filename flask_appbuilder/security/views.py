@@ -573,13 +573,23 @@ class AuthRemoteUserView(AuthView):
             flash(as_unicode(self.invalid_login_message), 'warning')
         return redirect(self.appbuilder.get_url_for_index)
 
+"""
+Example to setup CAS providers for hwclouds
+AUTH_TYPE = AUTH_CAS
+CAS_SERVER = 'https://auth.hwclouds.com'
+CAS_LOGIN_ROUTE = 'authui/login'
+CAS_VALIDATE_ROUTE = 'authui/serviceValidate'
+
+# Test only
+CAS_URL_REDIRECT_ROUTE = 'https://account.hwclouds.com/usercenter'
+"""
 class AuthCASView(AuthView):
     login_template = ''
 
-    @property
-    def get_url_for_login_external(self):
-        return 'https://account.hwclouds.com/usercenter'
-        # return url_for('%s.%s' % (self.endpoint, 'login'), _external=True)
+    def _get_url_for_login_external(self):
+        redirect_url_config = self.appbuilder.sm.cas_url_redirect_route
+        return redirect_url_config if redirect_url_config is not None \
+                                    else url_for('%s.%s' % (self.endpoint, 'login'), _external=True)
 
     @expose('/login/')
     def login(self):
@@ -592,8 +602,7 @@ class AuthCASView(AuthView):
         redirect_url = create_cas_login_url(
             self.appbuilder.sm.cas_server,
             self.appbuilder.sm.cas_login_route,
-            self.get_url_for_login_external)
-            #'https://account.hwclouds.com/usercenter')
+            self._get_url_for_login_external())
 
         if 'ticket' in request.args:
             session[cas_token_session_key] = request.args['ticket']
@@ -616,8 +625,12 @@ class AuthCASView(AuthView):
 
     @expose('/logout/')
     def logout(self):
+        cas_token_session_key = self.appbuilder.sm.cas_token_session_key
         cas_username_session_key = self.appbuilder.sm.cas_username_session_key
         cas_attributes_session_key = self.appbuilder.sm.cas_attributes_session_key
+
+        if cas_token_session_key in session:
+            del session[cas_token_session_key]
 
         if cas_username_session_key in session:
             del session[cas_username_session_key]
@@ -635,8 +648,7 @@ class AuthCASView(AuthView):
         cas_validate_url = create_cas_validate_url(
             self.appbuilder.sm.cas_server,
             self.appbuilder.sm.cas_validate_route,
-            self.get_url_for_login_external,
-            # 'https://account.hwclouds.com/usercenter',
+            self._get_url_for_login_external(),
             ticket)
 
         log.debug("Making GET request to {0}".format(cas_validate_url))

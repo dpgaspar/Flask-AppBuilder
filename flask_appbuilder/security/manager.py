@@ -200,6 +200,9 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault('CAS_LOGOUT_ROUTE', '/cas/logout')
             app.config.setdefault('CAS_VALIDATE_ROUTE', '/cas/serviceValidate')
 
+            app.config.setdefault('CAS_AFTER_LOGOUT', None)
+            app.config.setdefault('CAS_URL_REDIRECT_ROUTE', None)
+
         if self.auth_type == AUTH_OID:
             self.oid = OpenID(app)
         if self.auth_type == AUTH_OAUTH:
@@ -335,6 +338,11 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def cas_after_logout(self):
         return self.appbuilder.get_app.config['CAS_AFTER_LOGOUT']
+
+    # Test only to use fiddler to intercept redirect URL for testing purpose
+    @property
+    def cas_url_redirect_route(self):
+        return self.appbuilder.get_app.config['CAS_URL_REDIRECT_ROUTE']
 
     def oauth_user_info_getter(self, f):
         """

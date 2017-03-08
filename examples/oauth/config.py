@@ -78,12 +78,6 @@ OAUTH_PROVIDERS = [
 #    { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
 #    { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
 #    { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }]
-
-# Uncomment to setup CAS providers example for Huawei cloud IAM
-# CAS_SERVER = 'https://auth.hwclouds.com'
-# CAS_LOGIN_ROUTE = 'authui/login'
-# CAS_VALIDATE_ROUTE = 'authui/serviceValidate'
-
 #---------------------------------------------------
 # Babel config for translations
 #---------------------------------------------------
