@@ -118,4 +118,5 @@ AUTH_DB = 1
 AUTH_LDAP = 2
 AUTH_REMOTE_USER = 3
 AUTH_OAUTH = 4
+AUTH_CAS = 5
 """ Constants for supported authentication types """

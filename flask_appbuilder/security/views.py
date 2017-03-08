@@ -1,11 +1,12 @@
 import datetime
 import logging
-from flask import flash, redirect, session, url_for, request, g, make_response, jsonify, abort
+from flask import flash, redirect, session, url_for, request, g, make_response, jsonify, abort, current_app
 from werkzeug.security import generate_password_hash
 from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
+from xmltodict import parse
 
 from ..views import ModelView, SimpleFormView, expose
 from ..baseviews import BaseView
@@ -16,6 +17,14 @@ from .._compat import as_unicode
 from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm, UserInfoEdit
 from .decorators import has_access
 
+from .cas_urls import create_cas_login_url
+from .cas_urls import create_cas_logout_url
+from .cas_urls import create_cas_validate_url
+
+try:
+    from urllib import urlopen
+except ImportError:
+    from urllib.request import urlopen
 
 log = logging.getLogger(__name__)
 
@@ -206,6 +215,14 @@ class UserLDAPModelView(UserModelView):
 class UserOAuthModelView(UserModelView):
     """
         View that add OAUTH specifics to User view.
+        Override to implement your own custom view.
+        Then override userldapmodelview property on SecurityManager
+    """
+    pass
+
+class UserCASModelView(UserModelView):
+    """
+        View that add CAS specifics to User view.
         Override to implement your own custom view.
         Then override userldapmodelview property on SecurityManager
     """
@@ -556,3 +573,102 @@ class AuthRemoteUserView(AuthView):
             flash(as_unicode(self.invalid_login_message), 'warning')
         return redirect(self.appbuilder.get_url_for_index)
 
+class AuthCASView(AuthView):
+    login_template = ''
+
+    @property
+    def get_url_for_login_external(self):
+        return 'https://account.hwclouds.com/usercenter'
+        # return url_for('%s.%s' % (self.endpoint, 'login'), _external=True)
+
+    @expose('/login/')
+    def login(self):
+        if g.user is not None and g.user.is_authenticated():
+            log.debug("Already authenticated {0}".format(g.user))
+            return redirect(self.appbuilder.get_url_for_index)
+
+        cas_token_session_key = self.appbuilder.sm.cas_token_session_key
+
+        redirect_url = create_cas_login_url(
+            self.appbuilder.sm.cas_server,
+            self.appbuilder.sm.cas_login_route,
+            self.get_url_for_login_external)
+            #'https://account.hwclouds.com/usercenter')
+
+        if 'ticket' in request.args:
+            session[cas_token_session_key] = request.args['ticket']
+
+        if cas_token_session_key in session:
+            userinfo = self.validateUser(session[cas_token_session_key])
+            if userinfo is not None:
+                user = self.appbuilder.sm.auth_user_cas(userinfo)
+                if user is None:
+                    flash(as_unicode(self.invalid_login_message), 'warning')
+                else:
+                    login_user(user)
+                    redirect_url = self.appbuilder.get_url_for_index
+            else:
+                del session[cas_token_session_key]
+
+        log.debug('Redirecting to: {0}'.format(redirect_url))
+
+        return redirect(redirect_url)
+
+    @expose('/logout/')
+    def logout(self):
+        cas_username_session_key = self.appbuilder.sm.cas_username_session_key
+        cas_attributes_session_key = self.appbuilder.sm.cas_attributes_session_key
+
+        if cas_username_session_key in session:
+            del session[cas_username_session_key]
+
+        if cas_attributes_session_key in session:
+            del session[cas_attributes_session_key]
+
+        return super(AuthCASView, self).logout()
+
+    def validateUser(self, ticket):
+        cas_username_session_key = self.appbuilder.sm.cas_username_session_key
+        cas_attributes_session_key = self.appbuilder.sm.cas_attributes_session_key
+
+        log.debug("validating token {0}".format(ticket))
+        cas_validate_url = create_cas_validate_url(
+            self.appbuilder.sm.cas_server,
+            self.appbuilder.sm.cas_validate_route,
+            self.get_url_for_login_external,
+            # 'https://account.hwclouds.com/usercenter',
+            ticket)
+
+        log.debug("Making GET request to {0}".format(cas_validate_url))
+
+        xml_from_dict = {}
+        isValid = False
+
+        try:
+            xmldump = urlopen(cas_validate_url).read().strip().decode('utf8', 'ignore')
+            xml_from_dict = parse(xmldump)
+            current_app.logger.debug('Response payload: {0}'.format(xml_from_dict))
+            isValid = True if "cas:authenticationSuccess" in xml_from_dict["cas:serviceResponse"] else False
+        except ValueError:
+            log.error("CAS returned unexpected result")
+
+        if isValid:
+            log.debug("valid CAS login")
+            xml_from_dict = xml_from_dict["cas:serviceResponse"]["cas:authenticationSuccess"]
+            username = xml_from_dict["cas:user"]
+            attributes = xml_from_dict["cas:attributes"]
+
+            if "cas:memberOf" in attributes:
+                attributes["cas:memberOf"] = attributes["cas:memberOf"].lstrip('[').rstrip(']').split(',')
+                for group_number in range(0, len(attributes['cas:memberOf'])):
+                    attributes['cas:memberOf'][group_number] = attributes['cas:memberOf'][group_number].lstrip(
+                        ' ').rstrip(' ')
+
+            session[cas_username_session_key] = username
+            session[cas_attributes_session_key] = attributes
+            return {'username' : username,
+                    'attributes': attributes}
+        else:
+            log.debug("invalid CAS login")
+
+        return None

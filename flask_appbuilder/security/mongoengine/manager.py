@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash
 from ...models.mongoengine.interface import MongoEngineInterface
 from .models import User, Role, PermissionView, Permission, ViewMenu, RegisterUser
 from ..views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
-    ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserRemoteUserModelView,\
+    ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserCASModelView, UserRemoteUserModelView,\
     RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
 #from .registerviews import RegisterUserDBView, RegisterUserOIDView
 from ..manager import BaseSecurityManager
@@ -46,6 +46,8 @@ class SecurityManager(BaseSecurityManager):
             self.useroidmodelview.datamodel = user_datamodel
         elif self.auth_type == c.AUTH_OAUTH:
             self.useroauthmodelview.datamodel = user_datamodel
+        elif self.auth_type == c.AUTH_CAS:
+            self.userCASmodelview.datamodel = user_datamodel
         elif self.auth_type == c.AUTH_REMOTE_USER:
             self.userremoteusermodelview.datamodel = user_datamodel
 

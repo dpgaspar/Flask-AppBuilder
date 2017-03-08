@@ -5,14 +5,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, current_user
 from flask_openid import OpenID
 from flask_babel import lazy_gettext as _
-from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
-    ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserRemoteUserModelView, \
+from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthCASView, AuthRemoteUserView, \
+    ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserCASModelView, UserRemoteUserModelView, \
     RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView, RegisterUserModelView, \
     UserInfoEditView
-from .registerviews import RegisterUserDBView, RegisterUserOIDView, RegisterUserOAuthView
+from .registerviews import RegisterUserDBView, RegisterUserOIDView, RegisterUserOAuthView, RegisterUserCASView
 from ..basemanager import BaseManager
 from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
-                    AUTH_REMOTE_USER, AUTH_OAUTH, \
+                    AUTH_REMOTE_USER, AUTH_OAUTH, AUTH_CAS, \
                     LOGMSG_ERR_SEC_AUTH_LDAP, \
                     LOGMSG_WAR_SEC_NO_USER, \
                     LOGMSG_WAR_SEC_NOLDAP_OBJ, \
@@ -124,6 +124,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own user OID view """
     useroauthmodelview = UserOAuthModelView
     """ Override if you want your own user OAuth view """
+    userCASmodelview = UserCASModelView
+    """ Override if you want your own user CAS view """
     userremoteusermodelview = UserRemoteUserModelView
     """ Override if you want your own user REMOTE_USER view """
     registerusermodelview = RegisterUserModelView
@@ -136,14 +138,18 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own Authentication OID view """
     authoauthview = AuthOAuthView
     """ Override if you want your own Authentication OAuth view """
+    authCASview = AuthCASView
+    """ Override if you want your own Authentication CAS view """
     authremoteuserview = AuthRemoteUserView
-    """ Override if you want your own Authentication OAuth view """
+    """ Override if you want your own Authentication RemoteUser view """
 
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
     registeruseroidview = RegisterUserOIDView
     """ Override if you want your own register user OpenID view """
     registeruseroauthview = RegisterUserOAuthView
+    """ Override if you want your own register user CAS view """
+    registeruserCASview = RegisterUserCASView
     """ Override if you want your own register user OAuth view """
 
     resetmypasswordview = ResetMyPasswordView
@@ -183,6 +189,16 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
             app.config.setdefault('AUTH_LDAP_LASTNAME_FIELD', 'sn')
             app.config.setdefault('AUTH_LDAP_EMAIL_FIELD', 'mail')
+
+        if self.auth_type == AUTH_CAS:
+            if 'CAS_SERVER' not in app.config:
+                raise Exception("No CAS_SERVER defined on config with AUTH_CAS authentication type.")
+            app.config.setdefault('CAS_TOKEN_SESSION_KEY', '_CAS_TOKEN')
+            app.config.setdefault('CAS_USERNAME_SESSION_KEY', 'CAS_USERNAME')
+            app.config.setdefault('CAS_ATTRIBUTES_SESSION_KEY', 'CAS_ATTRIBUTES')
+            app.config.setdefault('CAS_LOGIN_ROUTE', '/cas')
+            app.config.setdefault('CAS_LOGOUT_ROUTE', '/cas/logout')
+            app.config.setdefault('CAS_VALIDATE_ROUTE', '/cas/serviceValidate')
 
         if self.auth_type == AUTH_OID:
             self.oid = OpenID(app)
@@ -287,6 +303,38 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def oauth_providers(self):
         return self.appbuilder.get_app.config['OAUTH_PROVIDERS']
+
+    @property
+    def cas_server(self):
+        return self.appbuilder.get_app.config['CAS_SERVER']
+
+    @property
+    def cas_token_session_key(self):
+        return self.appbuilder.get_app.config['CAS_TOKEN_SESSION_KEY']
+
+    @property
+    def cas_username_session_key(self):
+        return self.appbuilder.get_app.config['CAS_USERNAME_SESSION_KEY']
+
+    @property
+    def cas_attributes_session_key(self):
+        return self.appbuilder.get_app.config['CAS_ATTRIBUTES_SESSION_KEY']
+
+    @property
+    def cas_login_route(self):
+        return self.appbuilder.get_app.config['CAS_LOGIN_ROUTE']
+
+    @property
+    def cas_logout_route(self):
+        return self.appbuilder.get_app.config['CAS_LOGOUT_ROUTE']
+
+    @property
+    def cas_validate_route(self):
+        return self.appbuilder.get_app.config['CAS_VALIDATE_ROUTE']
+
+    @property
+    def cas_after_logout(self):
+        return self.appbuilder.get_app.config['CAS_AFTER_LOGOUT']
 
     def oauth_user_info_getter(self, f):
         """
@@ -393,6 +441,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                 self.registeruser_view = self.registeruseroidview()
             elif self.auth_type == AUTH_OAUTH:
                 self.registeruser_view = self.registeruseroauthview()
+            elif self.auth_type == AUTH_CAS:
+                self.registeruser_view = self.registeruserCASview()
             if self.registeruser_view:
                 self.appbuilder.add_view_no_menu(self.registeruser_view)
 
@@ -403,13 +453,15 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_type == AUTH_DB:
             self.user_view = self.userdbmodelview
             self.auth_view = self.authdbview()
-            
         elif self.auth_type == AUTH_LDAP:
             self.user_view = self.userldapmodelview
             self.auth_view = self.authldapview()
         elif self.auth_type == AUTH_OAUTH:
             self.user_view = self.useroauthmodelview
             self.auth_view = self.authoauthview()
+        elif self.auth_type == AUTH_CAS:
+            self.user_view = self.userCASmodelview
+            self.auth_view = self.authCASview()
         elif self.auth_type == AUTH_REMOTE_USER:
             self.user_view = self.userremoteusermodelview
             self.auth_view = self.authremoteuserview()
@@ -687,7 +739,24 @@ class BaseSecurityManager(AbstractSecurityManager):
         else:
             self.update_user_auth_stat(user)
             return user
-            
+
+    def auth_user_cas(self, userinfo):
+        """
+            CAS user Authentication
+
+            :userinfo: dict with user information including username and a set of attributes.
+        """
+        if 'username' in userinfo:
+            user = self.find_user(username=userinfo['username'])
+        else:
+            log.error('User info does not have username {0}'.format(userinfo))
+            return None
+        if user is None or (not user.is_active()):
+            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(userinfo))
+            return None
+        else:
+            self.update_user_auth_stat(user)
+            return user
     """
         ----------------------------------------
             PERMISSION ACCESS CHECK
