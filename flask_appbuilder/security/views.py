@@ -613,6 +613,7 @@ class AuthCASView(AuthView):
                 user = self.appbuilder.sm.auth_user_cas(userinfo)
                 if user is None:
                     flash(as_unicode(self.invalid_login_message), 'warning')
+                    return make_response(jsonify(message='authentication failed'), 403)
                 else:
                     login_user(user)
                     redirect_url = self.appbuilder.get_url_for_index
