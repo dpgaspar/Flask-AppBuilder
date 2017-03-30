@@ -231,6 +231,16 @@ class RestCRUDView(BaseCRUDView):
         response.headers['Content-Type'] = "application/json"
         return response
 
+    def show_item_dict(self, item):
+        """Returns a json-able dict for show"""
+        d = {}
+        for col in self.show_columns:
+            v = getattr(item, col)
+            if not isinstance(v, (int, float, unicode, str)):
+                v = str(v)
+            d[col] = v
+        return d
+
     @expose_api(name='get', url='/api/get/<pk>', methods=['GET'])
     @has_access_api
     @permission_name('show')
@@ -241,15 +251,11 @@ class RestCRUDView(BaseCRUDView):
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
             abort(404)
-        _item = dict()
-        for col in self.show_columns:
-            _item[col] = str(getattr(item, col))
-
         ret_json = jsonify(pk=pk,
                            label_columns=self._label_columns_json(),
                            include_columns=self.show_columns,
                            modelview_name=self.__class__.__name__,
-                           result=_item)
+                           result=self.show_item_dict(item))
         response = make_response(ret_json, 200)
         response.headers['Content-Type'] = "application/json"
         return response
@@ -258,7 +264,6 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name('add')
     def api_create(self):
-        is_valid_form = True
         get_filter_args(self._filters)
         exclude_cols = self._filters.get_relation_cols()
         form = self.add_form.refresh()
@@ -272,22 +277,23 @@ class RestCRUDView(BaseCRUDView):
                 http_return_code = 200
             else:
                 http_return_code = 500
+            payload = {
+                'message': self.datamodel.message[0],
+                'item': self.show_item_dict(item),
+                'severity': self.datamodel.message[1],
+            }
         else:
-            is_valid_form = False
-        if is_valid_form:
-            response = make_response(jsonify({'message': self.datamodel.message[0],
-                                              'severity': self.datamodel.message[1]}), http_return_code)
-        else:
-            response = make_response(jsonify({'message': 'Validation error',
-                                              'error_details': form.errors,
-                                              'severity': 'warning'}), 500)
-        return response
+            payload = {
+                'message': 'Validation error',
+                'error_details': form.errors,
+            }
+            http_return_code = 500
+        return make_response(jsonify(payload), http_return_code)
 
     @expose_api(name='update', url='/api/update/<pk>', methods=['PUT'])
     @has_access_api
     @permission_name('edit')
     def api_update(self, pk):
-        is_valid_form = True
         get_filter_args(self._filters)
         exclude_cols = self._filters.get_relation_cols()
 
@@ -302,24 +308,26 @@ class RestCRUDView(BaseCRUDView):
         self._fill_form_exclude_cols(exclude_cols, form)
         # trick to pass unique validation
         form._id = pk
+        http_return_code = 500
         if form.validate():
             form.populate_obj(item)
             self.pre_update(item)
             if self.datamodel.edit(item):
                 self.post_update(item)
                 http_return_code = 200
-            else:
-                http_return_code = 500
+            payload = {
+                'message': self.datamodel.message[0],
+                'severity': self.datamodel.message[1],
+                'item': self.show_item_dict(item),
+            }
         else:
-            is_valid_form = False
-        if is_valid_form:
-            response = make_response(jsonify({'message': self.datamodel.message[0],
-                                              'severity': self.datamodel.message[1]}), http_return_code)
-        else:
-            response = make_response(jsonify({'message': 'Validation error',
-                                              'error_details': form.errors,
-                                              'severity': 'warning'}), 500)
-        return response
+            payload = {
+                'message': 'Validation error',
+                'error_details': form.errors,
+                'severity': 'warning',
+            }
+        return make_response(jsonify(payload), http_return_code)
+
 
 
     @expose_api(name='delete', url='/api/delete/<pk>', methods=['DELETE'])
