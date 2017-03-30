@@ -262,7 +262,6 @@ class RestCRUDView(BaseCRUDView):
         get_filter_args(self._filters)
         exclude_cols = self._filters.get_relation_cols()
         form = self.add_form.refresh()
-
         self._fill_form_exclude_cols(exclude_cols, form)
         if form.validate():
             item = self.datamodel.obj()
@@ -279,8 +278,8 @@ class RestCRUDView(BaseCRUDView):
             response = make_response(jsonify({'message': self.datamodel.message[0],
                                               'severity': self.datamodel.message[1]}), http_return_code)
         else:
-            # TODO return dict with errors
-            response = make_response(jsonify({'message': 'Invalid form',
+            response = make_response(jsonify({'message': 'Validation error',
+                                              'error_details': form.errors,
                                               'severity': 'warning'}), 500)
         return response
 
@@ -317,8 +316,8 @@ class RestCRUDView(BaseCRUDView):
             response = make_response(jsonify({'message': self.datamodel.message[0],
                                               'severity': self.datamodel.message[1]}), http_return_code)
         else:
-            # TODO return dict with from errors validation
-            response = make_response(jsonify({'message': 'Invalid form',
+            response = make_response(jsonify({'message': 'Validation error',
+                                              'error_details': form.errors,
                                               'severity': 'warning'}), 500)
         return response
 
