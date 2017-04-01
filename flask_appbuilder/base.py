@@ -30,6 +30,7 @@ def dynamic_class_import(class_path):
         package = __import__(module_path)
         return reduce(getattr, tmp[1:], package)
     except Exception as e:
+        log.exception(e)
         log.error(LOGMSG_ERR_FAB_ADDON_IMPORT.format(class_path, e))
 
 
@@ -268,12 +269,14 @@ class AppBuilder(object):
                     self.addon_managers[addon] = addon_class
                     log.info(LOGMSG_INF_FAB_ADDON_ADDED.format(str(addon)))
                 except Exception as e:
+                    log.exception(e)
                     log.error(LOGMSG_ERR_FAB_ADDON_PROCESS.format(addon, e))
 
     def _add_permissions_menu(self, name):
         try:
             self.sm.add_permissions_menu(name)
         except Exception as e:
+            log.exception(e)
             log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_MENU.format(str(e)))
 
     def _add_menu_permissions(self):
@@ -458,6 +461,7 @@ class AppBuilder(object):
         try:
             self.sm.add_permissions_view(baseview.base_permissions, baseview.__class__.__name__)
         except Exception as e:
+            log.exception(e)
             log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW.format(str(e)))
 
     def register_blueprint(self, baseview, endpoint=None, static_folder=None):
