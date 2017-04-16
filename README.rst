@@ -1,6 +1,10 @@
 Flask App Builder
 =================
 
+.. image:: https://badges.gitter.im/Join%20Chat.svg
+   :alt: Join the chat at https://gitter.im/dpgaspar/Flask-AppBuilder
+   :target: https://gitter.im/dpgaspar/Flask-AppBuilder?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 .. image:: https://travis-ci.org/dpgaspar/Flask-AppBuilder.png?branch=master
 	:target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
 .. image:: https://coveralls.io/repos/dpgaspar/Flask-AppBuilder/badge.png?branch=master
