@@ -98,6 +98,7 @@ class UserInfoEditView(SimpleFormView):
         item = self.appbuilder.sm.get_user_by_id(g.user.id)
         # fills the form generic solution
         for key, value in  form.data.items():
+            if key == 'csrf_token': continue
             form_field = getattr(form, key)
             form_field.data = getattr(item, key)
 
