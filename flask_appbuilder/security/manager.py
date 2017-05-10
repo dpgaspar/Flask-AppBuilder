@@ -502,7 +502,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             Method for authenticating user, auth db style
 
             :param username:
-                The username or email address
+                The username or registered email address
             :param password:
                 The password, will be tested against hashed password on db
         """
