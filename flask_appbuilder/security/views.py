@@ -372,7 +372,7 @@ class AuthDBView(AuthView):
     @expose('/login/', methods=['GET', 'POST'])
     def login(self):
         if g.user is not None and g.user.is_authenticated():
-            return redirect('/')
+            return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_db()
         if form.validate_on_submit():
             user = self.appbuilder.sm.auth_user_db(form.username.data, form.password.data)
