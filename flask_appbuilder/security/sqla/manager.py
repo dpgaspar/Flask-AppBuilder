@@ -40,6 +40,8 @@ class SecurityManager(BaseSecurityManager):
         user_datamodel = SQLAInterface(self.user_model)
         if self.auth_type == c.AUTH_DB:
             self.userdbmodelview.datamodel = user_datamodel
+        elif self.auth_type == c.SSO:
+            self.userldapmodelview.datamodel = user_datamodel
         elif self.auth_type == c.AUTH_LDAP:
             self.userldapmodelview.datamodel = user_datamodel
         elif self.auth_type == c.AUTH_OID:

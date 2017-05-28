@@ -55,7 +55,7 @@ class PermissionViewModelView(ModelView):
 
     label_columns = {'permission': lazy_gettext('Permission'), 'view_menu': lazy_gettext('View/Menu')}
     list_columns = ['permission', 'view_menu']
-    
+
 
 class ResetMyPasswordView(SimpleFormView):
     """
@@ -178,9 +178,9 @@ class UserModelView(ModelView):
         widgets = self._get_show_widget(g.user.id, item, show_fieldsets=self.user_show_fieldsets)
         self.update_redirect()
         return self.render_template(self.show_template,
-                               title=self.user_info_title,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder)
+                                    title=self.user_info_title,
+                                    widgets=widgets,
+                                    appbuilder=self.appbuilder)
 
     @action('userinfoedit', lazy_gettext("Edit User"), "", "fa-edit", multiple=False)
     def userinfoedit(self, item):
@@ -200,6 +200,14 @@ class UserLDAPModelView(UserModelView):
         View that add LDAP specifics to User view.
         Override to implement your own custom view.
         Then override userldapmodelview property on SecurityManager
+    """
+    pass
+
+class UserSSOModelView(UserModelView):
+    """
+        View that add SSO specifics to User view.
+        Override to implement your own custom view.
+        Then override userssomodelview property on SecurityManager
     """
     pass
 
@@ -253,11 +261,11 @@ class UserDBModelView(UserModelView):
         widgets = self._get_show_widget(pk, item, actions=actions)
         self.update_redirect()
         return self.render_template(self.show_template,
-                               pk=pk,
-                               title=self.show_title,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder,
-                               related_views=self._related_views)
+                                    pk=pk,
+                                    title=self.show_title,
+                                    widgets=widgets,
+                                    appbuilder=self.appbuilder,
+                                    related_views=self._related_views)
 
     @expose('/userinfo/')
     @has_access
@@ -270,10 +278,10 @@ class UserDBModelView(UserModelView):
         widgets = self._get_show_widget(g.user.id, item, actions=actions, show_fieldsets=self.user_show_fieldsets)
         self.update_redirect()
         return self.render_template(self.show_template,
-                               title=self.user_info_title,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder,
-        )
+                                    title=self.user_info_title,
+                                    widgets=widgets,
+                                    appbuilder=self.appbuilder,
+                                    )
 
     @action('resetmypassword', lazy_gettext("Reset my password"), "", "fa-lock", multiple=False)
     def resetmypassword(self, item):
@@ -296,7 +304,7 @@ class UserStatsChartView(DirectByChartView):
     label_columns = {'username': lazy_gettext('User Name'),
                      'login_count': lazy_gettext('Login count'),
                      'fail_login_count': lazy_gettext('Failed login count')
-    }
+                     }
 
     search_columns = UserModelView.search_columns
 
@@ -326,7 +334,7 @@ class RoleModelView(ModelView):
     label_columns = {'name': lazy_gettext('Name'), 'permissions': lazy_gettext('Permissions')}
     list_columns = ['name', 'permissions']
     order_columns = ['name']
-    
+
     @action("Copy Role", lazy_gettext('Copy Role'), lazy_gettext('Copy the selected roles?'), icon='fa-copy', single=False)
     def copy_role(self, items):
         self.update_redirect()
@@ -382,9 +390,9 @@ class AuthDBView(AuthView):
             login_user(user, remember=False)
             return redirect(self.appbuilder.get_url_for_index)
         return self.render_template(self.login_template,
-                               title=self.title,
-                               form=form,
-                               appbuilder=self.appbuilder)
+                                    title=self.title,
+                                    form=form,
+                                    appbuilder=self.appbuilder)
 
 
 class AuthLDAPView(AuthView):
@@ -403,14 +411,14 @@ class AuthLDAPView(AuthView):
             login_user(user, remember=False)
             return redirect(self.appbuilder.get_url_for_index)
         return self.render_template(self.login_template,
-                               title=self.title,
-                               form=form,
-                               appbuilder=self.appbuilder)
+                                    title=self.title,
+                                    form=form,
+                                    appbuilder=self.appbuilder)
 
     """
         For Future Use, API Auth, must check howto keep REST stateless
     """
-    
+
     """
     @expose_api(name='auth',url='/api/auth')
     def auth(self):
@@ -424,14 +432,14 @@ class AuthLDAPView(AuthView):
         if not user:
             http_return_code = 401
             response = make_response(jsonify({'message': 'Login Failed',
-                                              'severity': 'critical'}), http_return_code)            
+                                              'severity': 'critical'}), http_return_code)
         else:
             login_user(user, remember=False)
             http_return_code = 201
             response = make_response(jsonify({'message': 'Login Success',
-                                              'severity': 'info'}), http_return_code)            
-        
-        return response     
+                                              'severity': 'info'}), http_return_code)
+
+        return response
     """
 
 class AuthOIDView(AuthView):
@@ -454,11 +462,11 @@ class AuthOIDView(AuthView):
                 return self.appbuilder.sm.oid.try_login(form.openid.data, ask_for=self.oid_ask_for,
                                                         ask_for_optional=self.oid_ask_for_optional)
             return self.render_template(self.login_template,
-                                   title=self.title,
-                                   form=form,
-                                   providers=self.appbuilder.sm.openid_providers,
-                                   appbuilder=self.appbuilder
-            )
+                                        title=self.title,
+                                        form=form,
+                                        providers=self.appbuilder.sm.openid_providers,
+                                        appbuilder=self.appbuilder
+                                        )
 
         @self.appbuilder.sm.oid.after_login
         def after_login(resp):
@@ -482,8 +490,8 @@ class AuthOIDView(AuthView):
 
 class AuthOAuthView(AuthView):
     login_template = 'appbuilder/general/security/login_oauth.html'
-    
-    
+
+
     @expose('/login/')
     @expose('/login/<provider>')
     @expose('/login/<provider>/<register>')
@@ -494,9 +502,9 @@ class AuthOAuthView(AuthView):
             return redirect(self.appbuilder.get_url_for_index)
         if provider is None:
             return self.render_template(self.login_template,
-                               providers = self.appbuilder.sm.oauth_providers,
-                               title=self.title,
-                               appbuilder=self.appbuilder)
+                                        providers = self.appbuilder.sm.oauth_providers,
+                                        title=self.title,
+                                        appbuilder=self.appbuilder)
         else:
             log.debug("Going to call authorize for: {0}".format(provider))
             try:
@@ -508,7 +516,7 @@ class AuthOAuthView(AuthView):
                 log.error("Error on OAuth authorize: {0}".format(e))
                 flash(as_unicode(self.invalid_login_message), 'warning')
                 return redirect(self.appbuilder.get_url_for_index)
-            
+
     @expose('/oauth-authorized/<provider>')
     def oauth_authorized(self, provider):
         log.debug("Authorized init")
@@ -521,24 +529,21 @@ class AuthOAuthView(AuthView):
         try:
             self.appbuilder.sm.set_oauth_session(provider, resp)
             userinfo = self.appbuilder.sm.oauth_user_info(provider)
+            log.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
         except Exception as e:
             log.error("Error returning OAuth user info: {0}".format(e))
-            user = None
-        else:
-            log.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
-            # Is this Authorization to register a new user ?
-            if session.pop('register', None):
-                return redirect(self.appbuilder.sm.registeruseroauthview.get_default_url(**userinfo))
-            user = self.appbuilder.sm.auth_user_oauth(userinfo)
-
+        # Is this Authorization to register a new user ?
+        if session.pop('register', None):
+            return redirect(self.appbuilder.sm.registeruseroauthview.get_default_url(**userinfo))
+        user = self.appbuilder.sm.auth_user_oauth(userinfo)
         if user is None:
             flash(as_unicode(self.invalid_login_message), 'warning')
             return redirect('login')
         else:
             login_user(user)
             return redirect(self.appbuilder.get_url_for_index)
-        
-        
+
+
 class AuthRemoteUserView(AuthView):
     login_template = ''
 
@@ -556,4 +561,79 @@ class AuthRemoteUserView(AuthView):
         else:
             flash(as_unicode(self.invalid_login_message), 'warning')
         return redirect(self.appbuilder.get_url_for_index)
+
+from Crypto.PublicKey import RSA
+from binascii import a2b_base64
+from Crypto.Util.asn1 import DerSequence
+
+import ssl
+import jwt
+
+class AuthSSOView(AuthView):
+    login_template = 'appbuilder/general/security/login_ldap.html'
+    logout_template = 'appbuilder/general/security/logout_sso.html'
+
+    @expose('/logout/')
+    def logout(self):
+        log.debug("log out user from caravel")
+        logout_user()
+        log.debug("redirect to logout page")
+        form = LoginForm_db()
+        return self.render_template(self.logout_template,
+                                    title=self.title,
+                                    form=form,
+                                    appbuilder=self.appbuilder)
+
+    @expose('/logout1/')
+    def logout1(self):
+        log.debug("log out user from caravel")
+        logout_user()
+        log.debug("log out user from sso server")
+
+    @expose('/login1/', methods=['GET', 'POST'])
+    def login1(self):
+
+        jwt_param = request.args.get('jwt')
+
+        pem = self.appbuilder.get_app.config['AUTH_SSO_SERVER_CERT']lines = pem.replace(" ", '').split()
+        der = a2b_base64(''.join(lines[1:-1]))
+        cert = DerSequence()
+        cert.decode(der)
+        tbsCertificate = DerSequence()
+        tbsCertificate.decode(cert[0])
+        subjectPublicKeyInfo = tbsCertificate[6]
+        rsa_key = RSA.importKey(subjectPublicKeyInfo)
+        pub_key = rsa_key.exportKey('PEM')
+        public_key = pub_key
+
+        jwt_token = jwt.decode(jwt_param, public_key, algorithms=['RS256'], verify_expiration=True, leeway=10,
+                               audience="%s:%s" % (self.appbuilder.get_app.config['AUTH_SSO_CARAVEL_SERVER'],self.appbuilder.get_app.config['CARAVEL_WEBSERVER_PORT']))
+        jwt_decoded = jwt_token
+
+        if not jwt_decoded:
+            return 'Not ok'
+        else:
+            username = jwt_decoded['u']
+            session['groups'] = jwt_decoded['g']
+            email = jwt_decoded['email']
+            print username
+            print email
+
+        user = self.appbuilder.sm.find_user(username=email)
+
+        if user is None and self.appbuilder.sm.auth_user_registration:
+            print "user not present, need to register user"
+            user = self.appbuilder.sm.add_user(username=email,first_name=email,last_name=email,email=email,role=self.appbuilder.sm.find_role(self.appbuilder.sm.auth_user_registration_role))
+            print "user registered"
+            self.appbuilder.sm.update_user_auth_stat(user)
+            print "user stats updated"
+        elif user and self.appbuilder.sm.auth_user_registration:
+            print "user is present and user registration is enabled, no need to register user"
+
+        login_user(user, remember=False)
+        return redirect(self.appbuilder.get_url_for_index)
+
+    @expose('/login/', methods=['GET', 'POST'])
+    def login(self):
+        return redirect("http://%s/login?redirect_uri=http://%s:%s/login1&logout=http://%s:%s/logout1" % (self.appbuilder.get_app.config['AUTH_SSO_SERVER'],self.appbuilder.get_app.config['AUTH_SSO_CARAVEL_SERVER'],self.appbuilder.get_app.config['CARAVEL_WEBSERVER_PORT'],self.appbuilder.get_app.config['AUTH_SSO_CARAVEL_SERVER'],self.appbuilder.get_app.config['CARAVEL_WEBSERVER_PORT']), code=302)
 
