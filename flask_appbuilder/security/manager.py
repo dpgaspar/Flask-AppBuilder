@@ -502,13 +502,15 @@ class BaseSecurityManager(AbstractSecurityManager):
             Method for authenticating user, auth db style
 
             :param username:
-                The username
+                The username or registered email address
             :param password:
                 The password, will be tested against hashed password on db
         """
         if username is None or username == "":
             return None
         user = self.find_user(username=username)
+        if user is None:
+            user = self.find_user(email=username)
         if user is None or (not user.is_active()):
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
