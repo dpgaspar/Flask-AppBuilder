@@ -656,6 +656,31 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.get('/model1compactview/list/')
         eq_(rv.status_code, 200)
 
+    def test_edit_add_form_action_prefix_for_compactCRUDMixin(self):
+        """
+            Test form_action in add, form_action in edit (CompactCRUDMixin)
+        """
+        client = self.app.test_client()
+        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+
+        # Make sure we have something to edit.
+        self.insert_data()
+
+        prefix = '/some-prefix'
+        base_url = 'http://localhost' + prefix
+        session_form_action_key = 'Model1CompactView__session_form_action'
+
+        with client as c:
+            expected_form_action = prefix + '/model1compactview/add/?'
+
+            c.get('/model1compactview/add/', base_url=base_url)
+            ok_(session[session_form_action_key] == expected_form_action)
+
+            expected_form_action = prefix + '/model1compactview/edit/1?'
+            c.get('/model1compactview/edit/1', base_url=base_url)
+
+            ok_(session[session_form_action_key] == expected_form_action)
+
     def test_charts_view(self):
         """
             Test Various Chart views
