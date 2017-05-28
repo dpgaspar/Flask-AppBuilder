@@ -683,7 +683,17 @@ class BaseSecurityManager(AbstractSecurityManager):
         else:
             log.error('User info does not have username or email {0}'.format(userinfo))
             return None
-        if user is None or (not user.is_active()):
+
+        if user is None:
+            user = self.add_user(
+                userinfo['username'],
+                userinfo['first_name'],
+                userinfo['last_name'],
+                userinfo['email'],
+                self.find_role(self.auth_user_registration_role)
+            )
+
+        if not user or (not user.is_active()):
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(userinfo))
             return None
         else:
@@ -1018,4 +1028,3 @@ class BaseSecurityManager(AbstractSecurityManager):
     @staticmethod
     def before_request():
         g.user = current_user
-
