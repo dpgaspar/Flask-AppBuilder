@@ -378,7 +378,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if provider == 'google':
             me = self.appbuilder.sm.oauth_remotes[provider].get('people/me')
             log.debug("User info from Google: {0}".format(me.data))
-            return {'username': "google_" + me.data['id'].get('value',''),
+            return {'username': "google_" + me.data['id'],
                 'email': me.data['emails'][0].get('value',''),
                 'first_name': me.data['name'].get('givenName',''),
                 'last_name': me.data['name'].get('familyName','')}
