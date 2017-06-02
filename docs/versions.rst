@@ -1,6 +1,26 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.9.0
+-----------------------------------
+
+- New, Bootstrap updated to version 3.3.7.
+- New, flask-sqlalchemy updated to version 2.1.
+- New, #453 Added support for users to login with their username or email address.
+- Fix, #467 two instances of urls being generated wrongly when running under a prefix.
+- Fix, redirect to actual index view rather than '/' on logout for DBAuthView.
+- Fix, form actions not working under a prefix for CompactCRUDMixin.
+- Fix, #457 Don't overwrite csrf_token on form fill.
+- Fix, #453 [rest api] improve error messages, and return item object upon create/update.
+- New, flask-babel update.
+- New, #402 column_formatters to ModelView.
+- New, #374 default autosizing to app image (if any).
+- New, #393 More sensible default page size.
+- Fix, #397 security: don't crash on oauth errors.
+- Fix, #395 flask_wtf.Form has been renamed to FlaskForm.
+- Fix, #354 Improved spanish translation.
+- Fix, #352 some i18n related bugs.
+
 Improvements and Bug fixes on 1.8.1
 -----------------------------------
 
