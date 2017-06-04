@@ -320,7 +320,6 @@ class BaseSecurityManager(AbstractSecurityManager):
             return ret
         self.oauth_user_info = wraps
         return wraps
-    
 
     def get_oauth_token_key_name(self, provider):
         """
@@ -388,7 +387,6 @@ class BaseSecurityManager(AbstractSecurityManager):
                 'last_name': me.data.get('family_name',''),
                 'email': me.data.get('email','')}
         else: return {}
-
 
     def register_views(self):
         if self.auth_user_registration:
@@ -581,7 +579,6 @@ class BaseSecurityManager(AbstractSecurityManager):
             return True
         except ldap.INVALID_CREDENTIALS:
             return False
-
 
     def auth_user_ldap(self, username, password):
         """

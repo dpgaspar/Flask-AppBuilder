@@ -46,9 +46,9 @@ OAUTH_PROVIDERS = [
         'remote_app': {
             'consumer_key':'GOOGLE_KEY',
             'consumer_secret':'GOOGLE_SECRET',
-            'base_url':'https://www.googleapis.com/plus/v1/',
+            'base_url':'https://www.googleapis.com/oauth2/v2/',
             'request_token_params':{
-              'scope': 'https://www.googleapis.com/auth/userinfo.email'
+              'scope': 'email profile'
             },
             'request_token_url':None,
             'access_token_url':'https://accounts.google.com/o/oauth2/token',
@@ -63,7 +63,7 @@ OAUTH_PROVIDERS = [
 #AUTH_ROLE_PUBLIC = 'Public'
 
 # Will allow user self registration
-#AUTH_USER_REGISTRATION = True
+AUTH_USER_REGISTRATION = False
 
 # The default user self registration role
 #AUTH_USER_REGISTRATION_ROLE = "Public"
