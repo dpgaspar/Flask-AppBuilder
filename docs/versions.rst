@@ -13,6 +13,7 @@ Improvements and Bug fixes on 1.9.0
 - Fix, #457 Don't overwrite csrf_token on form fill.
 - Fix, #453 [rest api] improve error messages, and return item object upon create/update.
 - New, flask-babel update.
+- Fix, #409 Google Oauth login and self registration.
 - New, #402 column_formatters to ModelView.
 - New, #374 default autosizing to app image (if any).
 - New, #393 More sensible default page size.
