@@ -98,6 +98,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     oauth = None
     """ Flask-OAuth """
     oauth_remotes = None
+    """ OAuth email whitelists """
+    oauth_whitelists = {}
     """ Initialized (remote_app) providers dict {'provider_name', OBJ } """
     oauth_tokengetter = _oauth_tokengetter
     """ OAuth tokengetter function override to implement your own tokengetter method """
@@ -197,6 +199,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                 obj_provider._tokengetter = self.oauth_tokengetter
                 if not self.oauth_user_info:
                     self.oauth_user_info = self.get_oauth_user_info
+                # Whitelist only users with matching emails
+                if 'whitelist' in _provider:
+                    self.oauth_whitelists[provider_name] = _provider['whitelist']
                 self.oauth_remotes[provider_name] = obj_provider
         
 
@@ -376,12 +381,12 @@ class BaseSecurityManager(AbstractSecurityManager):
                 'last_name': me.data.get('lastName','')}
         # for Google
         if provider == 'google':
-            me = self.appbuilder.sm.oauth_remotes[provider].get('people/me')
+            me = self.appbuilder.sm.oauth_remotes[provider].get('userinfo')
             log.debug("User info from Google: {0}".format(me.data))
-            return {'username': me.data.get('displayName',''),
-                'email': me.data['emails'][0].get('value',''),
-                'first_name': me.data['name'].get('givenName',''),
-                'last_name': me.data['name'].get('familyName','')}
+            return {'username': me.data.get('id',''),
+                'first_name': me.data.get('given_name',''),
+                'last_name': me.data.get('family_name',''),
+                'email': me.data.get('email','')}
         else: return {}
 
 
@@ -683,12 +688,24 @@ class BaseSecurityManager(AbstractSecurityManager):
         else:
             log.error('User info does not have username or email {0}'.format(userinfo))
             return None
-        if user is None or (not user.is_active()):
+        # User is disabled
+        if user and not user.is_active():
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(userinfo))
             return None
-        else:
-            self.update_user_auth_stat(user)
-            return user
+        # If user does not exist on the DB and not self user registration, go away
+        if not user and not self.auth_user_registration:
+            return None
+        # User does not exist, create one if self registration.
+        if not user:
+            user = self.add_user(
+                    username=userinfo['username'],
+                    first_name=userinfo['first_name'],
+                    last_name=userinfo['last_name'],
+                    email=userinfo['email'],
+                    role=self.find_role(self.auth_user_registration_role)
+                )
+        self.update_user_auth_stat(user)
+        return user
             
     """
         ----------------------------------------
