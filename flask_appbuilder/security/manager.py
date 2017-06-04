@@ -177,6 +177,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_type == AUTH_LDAP:
             if 'AUTH_LDAP_SERVER' not in app.config:
                 raise Exception("No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type.")
+            app.config.setdefault('AUTH_LDAP_USE_TLS', False)
             app.config.setdefault('AUTH_LDAP_SEARCH', '')
             app.config.setdefault('AUTH_LDAP_BIND_USER', '')
             app.config.setdefault('AUTH_LDAP_APPEND_DOMAIN', '')
