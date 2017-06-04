@@ -39,6 +39,7 @@ IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_URL = '/static/uploads/'
 AUTH_TYPE = AUTH_DB
 AUTH_LDAP_SERVER = "ldap://192.168.122.76"
+AUTH_LDAP_USE_TLS = False
 AUTH_LDAP_SEARCH = "dc=casa,dc=local"
 AUTH_LDAP_BIND_USER = "CN=Daniel Gaspar,OU=Familia,dc=casa,dc=local"
 AUTH_LDAP_BIND_PASSWORD = "password1"

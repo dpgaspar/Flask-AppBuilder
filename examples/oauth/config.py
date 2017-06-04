@@ -70,6 +70,7 @@ AUTH_USER_REGISTRATION = False
 
 # When using LDAP Auth, setup the ldap server
 #AUTH_LDAP_SERVER = "ldap://ldapserver.new"
+#AUTH_LDAP_USE_TLS = False
 
 # Uncomment to setup OpenID providers example for OpenID authentication
 #OPENID_PROVIDERS = [

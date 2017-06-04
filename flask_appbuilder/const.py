@@ -46,6 +46,8 @@ LOGMSG_ERR_SEC_NO_REGISTER_HASH = "Attempt to activate user with false hash: {0}
 """ Attempt to activate user with not registered hash, format with hash """
 LOGMSG_ERR_SEC_AUTH_LDAP = "LDAP Error {0}"
 """ Generic LDAP error, format with err message """
+LOGMSG_ERR_SEC_AUTH_LDAP_TLS = "LDAP Could not activate TLS on established connection with {0}"
+""" LDAP Could not activate TLS on established connection with server """
 LOGMSG_ERR_SEC_ADD_USER = "Error adding new user to database. {0}"
 """ Error adding user, format with err message """
 LOGMSG_ERR_SEC_UPD_USER = "Error updating user to database. {0} "
