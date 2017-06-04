@@ -14,6 +14,7 @@ from ..basemanager import BaseManager
 from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
                     AUTH_REMOTE_USER, AUTH_OAUTH, \
                     LOGMSG_ERR_SEC_AUTH_LDAP, \
+                    LOGMSG_ERR_SEC_AUTH_LDAP_TLS, \
                     LOGMSG_WAR_SEC_NO_USER, \
                     LOGMSG_WAR_SEC_NOLDAP_OBJ, \
                     LOGMSG_WAR_SEC_LOGIN_FAILED
@@ -236,6 +237,10 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_server(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_SERVER']
+
+    @property
+    def auth_ldap_use_tls(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_USE_TLS']
 
     @property
     def auth_user_registration(self):
@@ -610,6 +615,12 @@ class BaseSecurityManager(AbstractSecurityManager):
                     ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
                 con = ldap.initialize(self.auth_ldap_server)
                 con.set_option(ldap.OPT_REFERRALS, 0)
+                if self.auth_ldap_use_tls:
+                    try:
+                        con.start_tls_s()
+                    except Exception:
+                        log.info(LOGMSG_ERR_SEC_AUTH_LDAP_TLS.format(self.auth_ldap_server))
+                        return None
                 # Authenticate user
                 if not self._bind_ldap(ldap, con, username, password):
                     if user:
