@@ -17,16 +17,13 @@
             {% endif %}
             {{_(item1.label)}}<b class="caret"></b></a>
             <ul class="dropdown-menu">
-            {% set divider = False %}
             {% for item2 in item1.childs %}
-                {% if item2.name == '-' %}
-                    {% set divider = True %}
-                {% else %}
-                    {% if item2 | is_menu_visible %}
-                        {% if divider %}
-                            <li class="divider"></li>
-                            {% set divider = False %}
+                {% if item2 %}
+                    {% if item2.name == '-' %}
+                        {% if not loop.last %}
+                          <li class="divider"></li>
                         {% endif %}
+                    {% elif item2 | is_menu_visible %}
                         <li>{{ menu_item(item2) }}</li>
                     {% endif %}
                 {% endif %}
