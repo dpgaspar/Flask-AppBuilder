@@ -580,7 +580,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 else:
                     return False
             log.debug("LDAP bind with: {0} {1}".format(username, "XXXXXX"))
-            if self.auth_ldap_append_domain:
+            if self.auth_ldap_append_domain and self.auth_ldap_uid_field != 'userPrincipalName':
                 username = username + '@' + self.auth_ldap_append_domain
             con.bind_s(username, password)
             log.debug("LDAP bind OK: {0}".format(username))
