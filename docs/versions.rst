@@ -4,6 +4,7 @@ Versions
 Improvements and Bug fixes on 1.9.0
 -----------------------------------
 
+- Fix, #474 Missing menu deviders
 - New, Optional TLS for LDAP Authentication.
 - Fix, Factory setup was failing when babel get locale was being called.
 - New, Bootstrap updated to version 3.3.7.
