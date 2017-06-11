@@ -24,7 +24,9 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 1.8.1*.
+*New 1.9.0*.
+
+BREAKING CHANGES relative to 1.8.1 when using OAUTH authentication method.
 
 If you're already using F.A.B.
 read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.

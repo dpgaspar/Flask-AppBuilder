@@ -1,6 +1,59 @@
 Version Migration
 =================
 
+Migrating to 1.9.0
+------------------
+
+If you are using OAuth for authentication, this release will break your logins. This break is due to two reasons
+
+One:
+
+
+There was a security issue when using the default builtin information getter for the providers
+(see github: Prevent masquerade attacks through oauth providers #472)
+This fix will prepend the provider to the user id. So you're usernames will look like 'google_<USER_ID>'
+
+Two:
+
+
+For google OAuth we migrated from the old and deprecated google plus API to OAuth2/v2, the old User.username field
+was based on the Google Plus display name, and now is based on a Google user_id.
+
+
+In order to upgrade without breaking, you can override the current default OAuth information getter using something like this::
+
+
+@appbuilder.sm.oauth_user_info_getter
+def get_oauth_user_info(sm, provider, response=None):
+# for GITHUB
+    if provider == 'github' or provider == 'githublocal':
+        me = sm.oauth_remotes[provider].get('user')
+        return {'username': me.data.get('login')}
+    # for twitter
+    if provider == 'twitter':
+        me = sm.oauth_remotes[provider].get('account/settings.json')
+        return {'username': me.data.get('screen_name', '')}
+    # for linkedin
+    if provider == 'linkedin':
+        me = sm.oauth_remotes[provider].get('people/~:(id,email-address,first-name,last-name)?format=json')
+        return {'username': me.data.get('id', ''),
+                'email': me.data.get('email-address', ''),
+                'first_name': me.data.get('firstName', ''),
+                'last_name': me.data.get('lastName', '')}
+    # for Google
+    if provider == 'google':
+        me = sm.oauth_remotes[provider].get('userinfo')
+        return {'username': me.data.get('id', ''),
+                'first_name': me.data.get('given_name', ''),
+                'last_name': me.data.get('family_name', ''),
+                'email': me.data.get('email', '')}
+
+
+There was a Fix for the **oauth_user_info_getter** decorator also, now it will obey the doc definition.
+
+Any help you need feel free to submit an Issue!
+
+
 Migrating to 1.8.0
 ------------------
 

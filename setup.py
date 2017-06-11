@@ -40,7 +40,7 @@ setup(
         'Flask-Babel>=0.10.0',
         'Flask-Login==0.2.11',
         'Flask-OpenID>=1.1.0',
-        'Flask-SQLAlchemy==2.0',
+        'Flask-SQLAlchemy>=2.0,<2.1.99',
         'Flask-WTF>=0.12',
     ],
     tests_require=[

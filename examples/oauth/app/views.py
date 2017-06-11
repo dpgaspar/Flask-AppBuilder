@@ -25,6 +25,35 @@ class SendTweet(SimpleFormView):
         else:
             flash(self.message, 'info')
 
+"""
+Example of an decorator to override the OAuth provider information getter
+
+@appbuilder.sm.oauth_user_info_getter
+def get_oauth_user_info(sm, provider, response=None):
+# for GITHUB
+    if provider == 'github' or provider == 'githublocal':
+        me = sm.oauth_remotes[provider].get('user')
+        return {'username': "github_" + me.data.get('login')}
+    # for twitter
+    if provider == 'twitter':
+        me = sm.oauth_remotes[provider].get('account/settings.json')
+        return {'username': "twitter_" + me.data.get('screen_name', '')}
+    # for linkedin
+    if provider == 'linkedin':
+        me = sm.oauth_remotes[provider].get('people/~:(id,email-address,first-name,last-name)?format=json')
+        return {'username': "linkedin_" + me.data.get('id', ''),
+                'email': me.data.get('email-address', ''),
+                'first_name': me.data.get('firstName', ''),
+                'last_name': me.data.get('lastName', '')}
+    # for Google
+    if provider == 'google':
+        me = sm.oauth_remotes[provider].get('userinfo')
+        return {'username': me.data.get('id', ''),
+                'first_name': me.data.get('given_name', ''),
+                'last_name': me.data.get('family_name', ''),
+                'email': me.data.get('email', '')}
+"""
+
 
 appbuilder.add_view(SendTweet, "Tweet", icon="fa-twitter", label='Tweet')
 

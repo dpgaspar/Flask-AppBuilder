@@ -1,5 +1,5 @@
 import os
-from flask import session
+from flask import session, has_request_context
 from flask_babel import Babel
 from ..basemanager import BaseManager
 from .. import translations
@@ -35,8 +35,10 @@ class BabelManager(BaseManager):
         return self.appbuilder.get_app.config['BABEL_DEFAULT_LOCALE']
 
     def get_locale(self):
-        locale = session.get('locale')
-        if locale:
-            return locale
-        session['locale'] = self.babel_default_locale
-        return session['locale']
+        if has_request_context():
+            locale = session.get('locale')
+            if locale:
+                return locale
+            session['locale'] = self.babel_default_locale
+            return session['locale']
+
