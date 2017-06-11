@@ -35,24 +35,24 @@ AUTH_TYPE = AUTH_OAUTH
 OAUTH_PROVIDERS = [
     {'name':'twitter', 'icon':'fa-twitter',
         'remote_app': {
-            'consumer_key':os.environ.get('TWITTER_KEY'),
-            'consumer_secret':os.environ.get('TWITTER_SECRET'),
-            'base_url':'https://api.twitter.com/1.1/',
-            'request_token_url':'https://api.twitter.com/oauth/request_token',
-            'access_token_url':'https://api.twitter.com/oauth/access_token',
-            'authorize_url':'https://api.twitter.com/oauth/authenticate'}
+            'consumer_key': os.environ.get('TWITTER_KEY'),
+            'consumer_secret': os.environ.get('TWITTER_SECRET'),
+            'base_url': 'https://api.twitter.com/1.1/',
+            'request_token_url': 'https://api.twitter.com/oauth/request_token',
+            'access_token_url': 'https://api.twitter.com/oauth/access_token',
+            'authorize_url': 'https://api.twitter.com/oauth/authenticate'}
     },
-    {'name':'google', 'icon':'fa-google', 'token_key':'access_token',
+    {'name': 'google', 'icon': 'fa-google', 'token_key': 'access_token',
         'remote_app': {
-            'consumer_key':'GOOGLE_KEY',
-            'consumer_secret':'GOOGLE_SECRET',
-            'base_url':'https://www.googleapis.com/oauth2/v2/',
-            'request_token_params':{
+            'consumer_key': os.environ.get('GOOGLE_KEY'),
+            'consumer_secret': os.environ.get('GOOGLE_SECRET'),
+            'base_url': 'https://www.googleapis.com/oauth2/v2/',
+            'request_token_params': {
               'scope': 'email profile'
             },
-            'request_token_url':None,
-            'access_token_url':'https://accounts.google.com/o/oauth2/token',
-            'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
+            'request_token_url': None,
+            'access_token_url': 'https://accounts.google.com/o/oauth2/token',
+            'authorize_url': 'https://accounts.google.com/o/oauth2/auth'}
     }
 ]
 
@@ -63,10 +63,10 @@ OAUTH_PROVIDERS = [
 #AUTH_ROLE_PUBLIC = 'Public'
 
 # Will allow user self registration
-AUTH_USER_REGISTRATION = False
+AUTH_USER_REGISTRATION = True
 
 # The default user self registration role
-#AUTH_USER_REGISTRATION_ROLE = "Public"
+AUTH_USER_REGISTRATION_ROLE = "Admin"
 
 # When using LDAP Auth, setup the ldap server
 #AUTH_LDAP_SERVER = "ldap://ldapserver.new"

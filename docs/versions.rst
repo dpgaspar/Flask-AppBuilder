@@ -4,6 +4,7 @@ Versions
 Improvements and Bug fixes on 1.9.0
 -----------------------------------
 
+- Fix, Decorator oauth_user_info_getter was not according the docs, parameter bug.
 - Fix, #474 Missing menu deviders
 - Fix, #472 Prevent masquerade attacks through oauth providers.
 - New, Optional TLS for LDAP Authentication.

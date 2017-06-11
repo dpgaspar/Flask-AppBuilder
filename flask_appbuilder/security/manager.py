@@ -318,7 +318,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                         return {}
         """
         def wraps(provider, response=None):    
-            ret = f(self.oauth_remotes, provider, response=response)
+            ret = f(self, provider, response=response)
             # Checks if decorator is well behaved and returns a dict as supposed.
             if not type(ret) == dict:
                 log.error("OAuth user info decorated function did not returned a dict, but: {0}".format(type(ret)))
@@ -714,6 +714,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                     email=userinfo['email'],
                     role=self.find_role(self.auth_user_registration_role)
                 )
+            if not user:
+                log.error("Error creating a new OAuth user %s" % userinfo['username'])
+                return None
         self.update_user_auth_stat(user)
         return user
             
