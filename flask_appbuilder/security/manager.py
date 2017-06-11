@@ -370,29 +370,30 @@ class BaseSecurityManager(AbstractSecurityManager):
         if provider == 'github' or provider == 'githublocal':
             me = self.appbuilder.sm.oauth_remotes[provider].get('user')
             log.debug("User info from Github: {0}".format(me.data))
-            return {'username': me.data.get('login')}
+            return {'username': "github_" + me.data.get('login')}
         # for twitter
         if provider == 'twitter':
             me = self.appbuilder.sm.oauth_remotes[provider].get('account/settings.json')
             log.debug("User info from Twitter: {0}".format(me.data))
-            return {'username': me.data.get('screen_name','')}
+            return {'username': "twitter_" + me.data.get('screen_name', '')}
         # for linkedin
         if provider == 'linkedin':
             me = self.appbuilder.sm.oauth_remotes[provider].get('people/~:(id,email-address,first-name,last-name)?format=json')
             log.debug("User info from Linkedin: {0}".format(me.data))
-            return {'username': me.data.get('id',''),
-                'email': me.data.get('email-address',''),
-                'first_name': me.data.get('firstName',''),
-                'last_name': me.data.get('lastName','')}
+            return {'username': "linkedin_" + me.data.get('id', ''),
+                'email': me.data.get('email-address', ''),
+                'first_name': me.data.get('firstName', ''),
+                'last_name': me.data.get('lastName', '')}
         # for Google
         if provider == 'google':
             me = self.appbuilder.sm.oauth_remotes[provider].get('userinfo')
             log.debug("User info from Google: {0}".format(me.data))
-            return {'username': me.data.get('id',''),
-                'first_name': me.data.get('given_name',''),
-                'last_name': me.data.get('family_name',''),
-                'email': me.data.get('email','')}
-        else: return {}
+            return {'username': "google_" + me.data.get('id', ''),
+                'first_name': me.data.get('given_name', ''),
+                'last_name': me.data.get('family_name', ''),
+                'email': me.data.get('email', '')}
+        else:
+            return {}
 
     def register_views(self):
         if self.auth_user_registration:
