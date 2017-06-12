@@ -18,7 +18,7 @@ from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
                     LOGMSG_WAR_SEC_NO_USER, \
                     LOGMSG_WAR_SEC_NOLDAP_OBJ, \
                     LOGMSG_WAR_SEC_LOGIN_FAILED
-                    
+
 log = logging.getLogger(__name__)
 
 
@@ -80,7 +80,7 @@ def _oauth_tokengetter(token=None):
         Default function to return the current user oauth token
         from session cookie.
     """
-    token = session.get('oauth') 
+    token = session.get('oauth')
     log.debug("Token Get: {0}".format(token))
     return token
 
@@ -118,7 +118,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override to set your own PermissionView Model """
     registeruser_model = None
     """ Override to set your own RegisterUser Model """
-    
+
     userdbmodelview = UserDBModelView
     """ Override if you want your own user db view """
     userldapmodelview = UserLDAPModelView
@@ -172,7 +172,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         # Self Registration
         app.config.setdefault('AUTH_USER_REGISTRATION', False)
         app.config.setdefault('AUTH_USER_REGISTRATION_ROLE', self.auth_role_public)
-              
+
         # LDAP Config
         if self.auth_type == AUTH_LDAP:
             if 'AUTH_LDAP_SERVER' not in app.config:
@@ -181,6 +181,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault('AUTH_LDAP_SEARCH', '')
             app.config.setdefault('AUTH_LDAP_BIND_USER', '')
             app.config.setdefault('AUTH_LDAP_APPEND_DOMAIN', '')
+            app.config.setdefault('AUTH_LDAP_USERNAME_FORMAT', '')
             app.config.setdefault('AUTH_LDAP_BIND_PASSWORD', '')
             app.config.setdefault('AUTH_LDAP_ALLOW_SELF_SIGNED', False)
             app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
@@ -205,12 +206,12 @@ class BaseSecurityManager(AbstractSecurityManager):
                 if 'whitelist' in _provider:
                     self.oauth_whitelists[provider_name] = _provider['whitelist']
                 self.oauth_remotes[provider_name] = obj_provider
-        
+
 
         self.lm = LoginManager(app)
         self.lm.login_view = 'login'
         self.lm.user_loader(self.load_user)
-    
+
     @property
     def get_url_for_registeruser(self):
         return url_for('%s.%s' % (self.registeruser_view.endpoint, self.registeruser_view.default_view))
@@ -218,7 +219,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def get_user_datamodel(self):
         return self.user_view.datamodel
-        
+
     @property
     def get_register_user_datamodel(self):
         return self.registerusermodelview.datamodel
@@ -268,6 +269,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config['AUTH_LDAP_APPEND_DOMAIN']
 
     @property
+    def auth_ldap_username_format(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_USERNAME_FORMAT']
+
+    @property
     def auth_ldap_uid_field(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_UID_FIELD']
 
@@ -302,13 +307,13 @@ class BaseSecurityManager(AbstractSecurityManager):
     def oauth_user_info_getter(self, f):
         """
             Decorator function to be the OAuth user info getter
-            for all the providers, receives provider and response 
+            for all the providers, receives provider and response
             return a dict with the information returned from the provider.
             The returned user info dict should have it's keys with the same
             name as the User Model.
-            
+
             Use it like this an example for GitHub ::
-                
+
                 @appbuilder.sm.oauth_user_info_getter
                 def my_oauth_user_info(sm, provider, response=None):
                     if provider == 'github':
@@ -317,7 +322,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                     else:
                         return {}
         """
-        def wraps(provider, response=None):    
+        def wraps(provider, response=None):
             ret = f(self, provider, response=response)
             # Checks if decorator is well behaved and returns a dict as supposed.
             if not type(ret) == dict:
@@ -413,7 +418,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_type == AUTH_DB:
             self.user_view = self.userdbmodelview
             self.auth_view = self.authdbview()
-            
+
         elif self.auth_type == AUTH_LDAP:
             self.user_view = self.userldapmodelview
             self.auth_view = self.authldapview()
@@ -579,6 +584,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                 else:
                     return False
             log.debug("LDAP bind with: {0} {1}".format(username, "XXXXXX"))
+            if self.auth_ldap_username_format:
+                username = self.auth_ldap_username_format % username
             if self.auth_ldap_append_domain:
                 username = username + '@' + self.auth_ldap_append_domain
             con.bind_s(username, password)
@@ -586,6 +593,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             return True
         except ldap.INVALID_CREDENTIALS:
             return False
+
 
     def auth_user_ldap(self, username, password):
         """
@@ -687,7 +695,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def auth_user_oauth(self, userinfo):
         """
             OAuth user Authentication
-            
+
             :userinfo: dict with user information the keys have the same name
             as User model columns.
         """
@@ -719,7 +727,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 return None
         self.update_user_auth_stat(user)
         return user
-            
+
     """
         ----------------------------------------
             PERMISSION ACCESS CHECK
@@ -854,19 +862,19 @@ class BaseSecurityManager(AbstractSecurityManager):
             Generic function to return user registration
         """
         raise NotImplementedError
-        
+
     def add_register_user(self, username, first_name, last_name, email, password='', hashed_password=''):
         """
             Generic function to add user registration
         """
         raise NotImplementedError
-        
+
     def del_register_user(self, register_user):
         """
             Generic function to delete user registration
         """
         raise NotImplementedError
-        
+
     def get_user_by_id(self, pk):
         """
             Generic function to return user by it's id (pk)
