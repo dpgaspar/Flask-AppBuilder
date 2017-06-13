@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
 import logging, sys
 from flask import flash
+from functools import reduce
 from . import filters
 from ..base import BaseInterface
 from ..._compat import as_unicode
@@ -7,6 +9,7 @@ from ...const import LOGMSG_ERR_DBI_ADD_GENERIC, LOGMSG_ERR_DBI_EDIT_GENERIC, LO
                      LOGMSG_WAR_DBI_ADD_INTEGRITY, LOGMSG_WAR_DBI_EDIT_INTEGRITY, LOGMSG_WAR_DBI_DEL_INTEGRITY
 from mongoengine.fields import StringField, IntField, BooleanField, FloatField, \
     DateTimeField, ReferenceField, ListField, FileField, ImageField, ObjectIdField
+from mongoengine import Q
 
 log = logging.getLogger(__name__)
 
@@ -118,7 +121,8 @@ class MongoEngineInterface(BaseInterface):
     def is_relation(self, col_name):
         try:
             return isinstance(self.obj._fields[col_name], ReferenceField) or \
-                    isinstance(self.obj._fields[col_name], ListField)
+                   (isinstance(self.obj._fields[col_name], ListField) and
+                    isinstance(self.obj._fields[col_name].field, ReferenceField))
         except:
             return False
 
@@ -132,6 +136,13 @@ class MongoEngineInterface(BaseInterface):
         try:
             field = self.obj._fields[col_name]
             return isinstance(field, ListField) and isinstance(field.field, ReferenceField)
+        except:
+            return False
+
+    def is_list(self, col_name):  # added for the ListField filters implementation
+        try:
+            field = self.obj._fields[col_name]
+            return isinstance(field, ListField)
         except:
             return False
 
@@ -158,7 +169,7 @@ class MongoEngineInterface(BaseInterface):
             else:
                 return -1
         except:
-                return -1
+            return -1
 
     def get_min_length(self, col_name):
         try:
@@ -168,7 +179,7 @@ class MongoEngineInterface(BaseInterface):
             else:
                 return -1
         except:
-                return -1
+            return -1
 
     def add(self, item):
         try:
@@ -219,7 +230,9 @@ class MongoEngineInterface(BaseInterface):
         for col_name in self.get_columns_list():
             for conversion in self.filter_converter_class.conversion_table:
                 if getattr(self, conversion[0])(col_name) and not self.is_object_id(col_name):
-                    ret_lst.append(col_name)
+                    # e.g MongoEngineInterface.is_list(col_name) or any other relation test
+                    if col_name not in ret_lst:
+                        ret_lst.append(col_name)
         return ret_lst
 
     def get_user_columns_list(self):
@@ -259,6 +272,16 @@ class MongoEngineInterface(BaseInterface):
         rel_model = self.get_related_model(col_name)
         return rel_model.objects(pk=value)[0]
 
+    def get_related_objects(self, col_name, rel_fk, value):
+        rel_model = self.get_related_model(col_name)
+        kw = [x.strip() for x in value.split(",")]
+        q = Q()
+        for k in kw:
+            flt = {'%s__icontains' % rel_fk: k}
+            q = q | Q(**flt)
+
+        return rel_model.objects(q)
+
     def get_keys(self, lst):
         """
             return a list of pk values from object list
@@ -271,6 +294,7 @@ class MongoEngineInterface(BaseInterface):
             if self.is_relation(col_name):
                 if model == self.get_related_model(col_name):
                     return col_name
+        log.warning("Could not get related foreign key %s" % col_name)
 
     def get_pk_name(self):
         return 'id'
@@ -282,3 +306,24 @@ class MongoEngineInterface(BaseInterface):
             return objs(pk=id).first()
 
         return self.obj.objects(pk=id).first()
+
+    def _get_attr_value(self, item, col):
+        """
+        improve the display of ListFields in the list and show views
+        """
+        if not hasattr(item, col):
+            # it's an inner obj attr
+            try:
+                return reduce(getattr, col.split('.'), item)
+            except Exception as e:
+                return ''
+        if hasattr(getattr(item, col), '__call__'):
+            # its a function
+            return getattr(item, col)()
+        else:
+            # its an attribute
+            if isinstance(item._fields[col], ListField) and isinstance(self.obj._fields[col].field, StringField):
+                # it's a ListField(StringField()) attribute
+                return ", ".join(getattr(item, col))
+            else:
+                return getattr(item, col)

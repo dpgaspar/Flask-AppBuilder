@@ -429,7 +429,8 @@ class BaseModelView(BaseView):
             self.search_form = conv.create_form(self.label_columns,
                                                 self.search_columns,
                                                 extra_fields=self.search_form_extra_fields,
-                                                filter_rel_fields=self.search_form_query_rel_fields)
+                                                filter_rel_fields=self.search_form_query_rel_fields,
+                                                search_form=True)
 
     def _get_search_widget(self, form=None, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []
@@ -598,6 +599,23 @@ class BaseCRUDView(BaseModelView):
                 edit_form_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
 
     """
+    custom_search = {}
+    """
+        Define custom search rules for list columns (mongoengine)
+        {col_name:('relation type', "foreign_key to use in the related model')}
+        (e.g. {'grantees':('is_list', 'full_name')} # Employee.full_name)
+
+        if column (e.g. 'grantees') is a relation (e.g. 'is_list'),
+            search model (e.g. Grantee.grantees) where
+                related_model.foreign_key = value
+                (e.g.  Employee.full_name = 'Abbott, z')
+
+        Mongoengine modelview definition:
+            class GranteeModelView(ModelView):
+                datamodel = MongoEngineInterface(Benefit)
+                custom_search = {'grantees': ('is_list', 'full_name')}
+                # more in the mongoengine_employee example
+    """
 
     add_form = None
     """ To implement your own, assign WTF form for Add """
@@ -625,6 +643,10 @@ class BaseCRUDView(BaseModelView):
     actions = None
 
     def __init__(self, **kwargs):
+        if self.custom_search:
+            # initialize Mongoengine.custom_search before filters & widgets initialization
+            self.datamodel.custom_search = self.custom_search
+
         super(BaseCRUDView, self).__init__(**kwargs)
         # collect and setup actions
         self.actions = {}
@@ -736,8 +758,7 @@ class BaseCRUDView(BaseModelView):
             filters.add_filter_related_view(fk, self.datamodel.FilterRelationManyToManyEqual,
                                         self.datamodel.get_pk_value(item))
         else:
-            log.error("Can't find relation on related view {0}".format(related_view.name))
-            return None
+            log.error("Can't find relation on related view {0}".format(related_view.__class__.__name__))
         return related_view._get_view_widget(filters=filters,
                                              order_column=order_column,
                                              order_direction=order_direction,
@@ -763,6 +784,8 @@ class BaseCRUDView(BaseModelView):
                                                                           page=pages.get(view.__class__.__name__),
                                                                           page_size=page_sizes.get(
                                                                               view.__class__.__name__)))
+        if not widgets['related_views']:
+            log.error("Could not find a widget for related views of item %s" % item)
         return widgets
 
     def _get_view_widget(self, **kwargs):

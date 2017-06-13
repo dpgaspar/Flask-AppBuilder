@@ -1,11 +1,14 @@
+# -*- coding: utf-8 -*-
 import logging
+from mongoengine import Q
 from flask_babel import lazy_gettext
 from ..filters import BaseFilter, FilterRelation, BaseFilterConverter
 
 log = logging.getLogger(__name__)
 
 __all__ = ['MongoEngineFilterConverter', 'FilterEqual', 'FilterContains', 'FilterNotContains',
-           'FilterNotStartsWith', 'FilterStartsWith', 'FilterRelationOneToManyEqual', 'FilterRelationManyToManyEqual']
+           'FilterNotStartsWith', 'FilterStartsWith', 'FilterRelationOneToManyEqual', 'FilterRelationManyToManyEqual',
+           'FilterAllInList', 'FilterInList', 'FilterNotInList']
 
 
 class FilterEqual(BaseFilter):
@@ -87,6 +90,59 @@ class FilterRelationOneToManyEqual(FilterRelation):
         return query.filter(**flt)
 
 
+class FilterInList(BaseFilter):
+    name = lazy_gettext('Contains any')
+
+    def apply(self, query, value):
+        if self.datamodel.is_relation(self.column_name):
+            # warning, this filter requires the custom_search param to be defined
+            # get the related objects where related_objects.rel_fk = value
+            rel_fk = self.datamodel.custom_search[self.column_name][1]
+            rel_objects = self.datamodel.get_related_objects(self.column_name, rel_fk, value)
+            # filter query where query.column_name contains the rel_objects
+            flt = {'%s__in' % self.column_name: rel_objects}
+            return query.filter(**flt)
+
+        else:
+            # build list filter with values and return the filtered query
+            keys = [x.strip() for x in value.split(",")]
+            q = Q()
+            for k in keys:
+                flt = {'%s__icontains' % self.column_name: k}
+                q = q | Q(**flt)
+            return query.filter(q)
+
+
+class FilterNotInList(BaseFilter):
+    name = lazy_gettext('Does not contain')
+
+    def apply(self, query, value):
+        if self.datamodel.is_relation(self.column_name):
+            # warning, this filter requires the custom_search param to be defined
+            rel_fk = self.datamodel.custom_search[self.column_name][1]
+            search_values = self.datamodel.get_related_objects(self.column_name, rel_fk, value)
+        else:
+            search_values = [x.strip() for x in value.split(",")]
+
+        flt = {'%s__in' % self.column_name: search_values}
+        return query.filter(**flt)
+
+
+class FilterAllInList(BaseFilter):
+    name = lazy_gettext('Contains all')
+
+    def apply(self, query, value):
+        if self.datamodel.is_relation(self.column_name):
+            # warning, this filter requires the custom_search param to be defined
+            rel_fk = self.datamodel.custom_search[self.column_name][1]
+            search_values = self.datamodel.get_related_objects(self.column_name, rel_fk, value)
+        else:
+            search_values = [x.strip() for x in value.split(",")]
+
+        flt = {'%s__all' % self.column_name: search_values}
+        return query.filter(**flt)
+
+
 class FilterRelationManyToManyEqual(FilterRelation):
     name = lazy_gettext('Relation as Many')
 
@@ -134,4 +190,8 @@ class MongoEngineFilterConverter(BaseFilterConverter):
                         ('is_float', [FilterEqual,
                                          FilterNotEqual,
                                          FilterGreater,
-                                         FilterSmaller]))
+                                         FilterSmaller]),
+                        ('is_list', [FilterInList,  # + check conversion rules in the FieldConverter.conversion_table
+                                     FilterNotInList,
+                                     FilterAllInList]),
+                        )
