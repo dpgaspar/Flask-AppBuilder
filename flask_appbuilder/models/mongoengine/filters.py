@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 from flask_babel import lazy_gettext
 from ..filters import BaseFilter, FilterRelation, BaseFilterConverter
