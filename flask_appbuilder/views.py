@@ -2,7 +2,7 @@ import logging
 import json
 from flask import (
     flash, redirect, send_file, jsonify, make_response, url_for, session, abort)
-from ._compat import as_unicode
+from ._compat import as_unicode, string_types
 from .filemanager import uuid_originalname
 from .widgets import GroupFormListWidget, ListMasterWidget
 from .baseviews import BaseView, BaseCRUDView, BaseFormView, expose, expose_api
@@ -236,7 +236,7 @@ class RestCRUDView(BaseCRUDView):
         d = {}
         for col in self.show_columns:
             v = getattr(item, col)
-            if not isinstance(v, (int, float, unicode, str)):
+            if not isinstance(v, (int, float, string_types)):
                 v = str(v)
             d[col] = v
         return d
