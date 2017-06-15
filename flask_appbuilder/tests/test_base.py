@@ -1,12 +1,16 @@
-from nose.tools import eq_, ok_, raises
 import unittest
 import os
 import string
 import random
 import datetime
+import json
+import logging
+
+from nose.tools import eq_, ok_
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.orm import relationship
 from flask import redirect, request, session
+
 from flask_appbuilder import Model, SQLA
 from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqual
 from flask_appbuilder.models.mixins import FileColumn, ImageColumn
@@ -19,8 +23,6 @@ from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggreg
 from flask_appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.generic import PSModel
-
-import logging
 
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 logging.getLogger().setLevel(logging.DEBUG)
@@ -114,7 +116,7 @@ class FlaskTestCase(unittest.TestCase):
         class Model1View(ModelView):
             datamodel = SQLAInterface(Model1)
             related_views = [Model2View]
-            list_columns = ['field_string','field_file']
+            list_columns = ['field_string', 'field_file']
 
         class Model1CompactView(CompactCRUDMixin, ModelView):
             datamodel = SQLAInterface(Model1)
@@ -407,7 +409,6 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
-        #with open('test.txt', 'rb') as fp:
         rv = client.post('/model1view/add',
                              data=dict(field_string='test1', field_integer='1',
                                        field_float='0.12',
@@ -717,3 +718,50 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
         rv = client.get('/model1masterchartview/list/1')
         eq_(rv.status_code, 200)
+
+    def test_api_read(self):
+        """
+        Testing the api/read endpoint
+        """
+        client = self.app.test_client()
+        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.insert_data()
+        rv = client.get('/model1formattedview/api/read')
+        eq_(rv.status_code, 200)
+        data = json.loads(rv.data.decode('utf-8'))
+        assert 'result' in data
+        assert 'pks' in data
+        assert len(data.get('result')) > 10
+
+    def test_api_create(self):
+        """
+        Testing the api/create endpoint
+        """
+        client = self.app.test_client()
+        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = client.post(
+            '/model1view/api/create',
+            data=dict(field_string='zzz'),
+            follow_redirects=True)
+        eq_(rv.status_code, 200)
+        objs = self.db.session.query(Model1).all()
+        eq_(len(objs), 1)
+
+    def test_api_update(self):
+        """
+        Validate that the api update endpoint updates [only] the fields in
+        POST data
+        """
+        client = self.app.test_client()
+        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.insert_data()
+        item = self.db.session.query(Model1).filter_by(id=1).one()
+        field_integer_before = item.field_integer
+        rv = client.put(
+            '/model1view/api/update/1',
+            data=dict(field_string='zzz'),
+            follow_redirects=True)
+        eq_(rv.status_code, 200)
+        item = self.db.session.query(Model1).filter_by(id=1).one()
+        eq_(item.field_string, 'zzz')
+        eq_(item.field_integer, field_integer_before)
