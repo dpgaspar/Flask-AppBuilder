@@ -310,6 +310,14 @@ class RestCRUDView(BaseCRUDView):
         form._id = pk
         http_return_code = 500
         if form.validate():
+
+            # Deleting form fields not specified as keys in POST data
+            # this allows for other Model columns to be left untouched when
+            # unspecified.
+            form_fields = set([t for t in form._fields.keys()])
+            for field in form_fields - set(request.form.keys()):
+                delattr(form, field)
+
             form.populate_obj(item)
             self.pre_update(item)
             if self.datamodel.edit(item):
@@ -327,8 +335,6 @@ class RestCRUDView(BaseCRUDView):
                 'severity': 'warning',
             }
         return make_response(jsonify(payload), http_return_code)
-
-
 
     @expose_api(name='delete', url='/api/delete/<pk>', methods=['DELETE'])
     @has_access_api
