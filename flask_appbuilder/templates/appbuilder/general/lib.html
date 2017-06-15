@@ -306,7 +306,7 @@
 {% endmacro %}
 
 {% macro lnk_back() %}
-    <a href="{{url_for('UtilView' + '.back')}}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
+    <a href="{{url_for('UtilView' + '.back')}}" class="btn btn-sm btn-default" data-toggle="tooltip" rel="tooltip"
        title="{{_('Back')}}">
         <i class="fa fa-arrow-left"></i>
     </a>
@@ -321,21 +321,21 @@
 {% endmacro %}
 
 {% macro lnk_edit(my_href) %}
-    <a href="{{my_href}}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
+    <a href="{{my_href}}" class="btn btn-sm btn-default" data-toggle="tooltip" rel="tooltip"
        title="{{_('Edit record')}}">
         <i class="fa fa-edit"></i>
     </a>
 {% endmacro %}
 
 {% macro lnk_show(my_href) %}
-    <a href="{{my_href}}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
+    <a href="{{my_href}}" class="btn btn-sm btn-default" data-toggle="tooltip" rel="tooltip"
        title="{{_('Show record')}}">
         <i class="fa fa-search"></i>
     </a>
 {% endmacro %}
 
 {% macro lnk_delete(my_href) %}
-    <a data-text="{{ _('You sure you want to delete this item?') }}" data-href="{{my_href}}" class="btn btn-sm btn-primary confirm" rel="tooltip"
+    <a data-text="{{ _('You sure you want to delete this item?') }}" data-href="{{my_href}}" class="btn btn-sm btn-default confirm" rel="tooltip"
         title="{{_('Delete record')}}" data-toggle="modal" data-target="#modal-confirm" href="#">
         <i class="fa fa-eraser"></i>
     </a>
