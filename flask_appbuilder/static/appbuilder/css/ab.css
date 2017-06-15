@@ -46,4 +46,6 @@ th.action_checkboxes {
 .fa-black {
     color: black;
 }
-
+.btn.filter {
+    text-align: left;
+}
