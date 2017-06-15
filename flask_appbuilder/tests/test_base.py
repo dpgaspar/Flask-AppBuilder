@@ -729,9 +729,9 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.get('/model1formattedview/api/read')
         eq_(rv.status_code, 200)
         data = json.loads(rv.data.decode('utf-8'))
-        self.assertIn('result', data)
-        self.assertIn('pks', data)
-        self.assertGreater(len(data.get('result')), 10)
+        assert 'result' in data
+        assert 'pks' in data
+        assert len(data.get('result')) > 10
 
     def test_api_create(self):
         """
@@ -745,7 +745,7 @@ class FlaskTestCase(unittest.TestCase):
             follow_redirects=True)
         eq_(rv.status_code, 200)
         objs = self.db.session.query(Model1).all()
-        self.assertEqual(len(objs), 1)
+        eq_(len(objs), 1)
 
     def test_api_update(self):
         """
@@ -763,5 +763,5 @@ class FlaskTestCase(unittest.TestCase):
             follow_redirects=True)
         eq_(rv.status_code, 200)
         item = self.db.session.query(Model1).filter_by(id=1).one()
-        self.assertEqual(item.field_string, 'zzz')
-        self.assertEqual(item.field_integer, field_integer_before)
+        eq_(item.field_string, 'zzz')
+        eq_(item.field_integer, field_integer_before)

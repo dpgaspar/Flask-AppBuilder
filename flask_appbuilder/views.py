@@ -314,7 +314,7 @@ class RestCRUDView(BaseCRUDView):
             # Deleting form fields not specified as keys in POST data
             # this allows for other Model columns to be left untouched when
             # unspecified.
-            form_fields = {t for t in form._fields.keys()}
+            form_fields = set([t for t in form._fields.keys()])
             for field in form_fields - set(request.form.keys()):
                 delattr(form, field)
 
@@ -335,8 +335,6 @@ class RestCRUDView(BaseCRUDView):
                 'severity': 'warning',
             }
         return make_response(jsonify(payload), http_return_code)
-
-
 
     @expose_api(name='delete', url='/api/delete/<pk>', methods=['DELETE'])
     @has_access_api
