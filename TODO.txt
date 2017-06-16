@@ -1,7 +1,7 @@
  - Add easy wizard flow generation.
  - Add tree list with multiple views.
  - Add table with global, and db version key.
- - Diferent UI to add permissions to roles.
+ - Different UI to add permissions to roles.
  - Solution to migrate/alter framework tables.
  - Improve ImageColumn support, update, remove, etc.
  - (TODO) New, possible to disable babel use.

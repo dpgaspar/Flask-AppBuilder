@@ -110,7 +110,7 @@ class BaseView(object):
             :param endpoint:
                endpoint override for this blueprint, will assume class name if not provided
             :param static_folder:
-               the relative override for static folder, if ommited application will use the appbuilder static
+               the relative override for static folder, if omitted application will use the appbuilder static
         """
         # Store appbuilder instance
         self.appbuilder = appbuilder
@@ -340,7 +340,7 @@ class BaseModelView(BaseView):
 
     label_columns = None
     """
-        Dictionary of labels for your columns, override this if you want diferent pretify labels
+        Dictionary of labels for your columns, override this if you want different pretify labels
 
         example (will just override the label for name column)::
 
@@ -931,7 +931,7 @@ class BaseCRUDView(BaseModelView):
 
     def _edit(self, pk):
         """
-            Edit function logic, override to implement diferent logic
+            Edit function logic, override to implement different logic
             returns Edit widget and related list or None
         """
         is_valid_form = True
@@ -979,7 +979,7 @@ class BaseCRUDView(BaseModelView):
 
     def _delete(self, pk):
         """
-            Delete function logic, override to implement diferent logic
+            Delete function logic, override to implement different logic
             deletes the record with primary_key = pk
 
             :param pk:

@@ -15,7 +15,7 @@ Examples of simple applications for Flask-AppBuilder
 
 :mongoimages: Simple Contacts application with files and images example. Using MongoEngine support for MongoDB.
 
-:oauth: OAuth authentication with twitter or google, sending tweets on behalf of ther user.
+:oauth: OAuth authentication with twitter or google, sending tweets on behalf of their user.
 
 :productsale: Just another simple app.
 
@@ -31,7 +31,7 @@ Examples of simple applications for Flask-AppBuilder
 
 :quickminimal: How to setup a minimal application, one file only.
 
-:quicktemplates: Shows how to override the base template and create a diferent menu.
+:quicktemplates: Shows how to override the base template and create a different menu.
 
 :simpleform: Shows how to render a simple form not backed by database models.
 

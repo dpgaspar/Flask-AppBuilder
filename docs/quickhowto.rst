@@ -331,7 +331,7 @@ URL=/api/delete/<PK>
 Deletes a record from the model only accepts HTTP DELETE operations. if you want to delete a record with 8 as primary
 key issue an HTTP DELETE to the following URL: htpp://localhost:8080/contactmodelview/delete/8
 
-It will return a dictionary that on case of success will have the folowing keys (returns HTTP 200):
+It will return a dictionary that on case of success will have the following keys (returns HTTP 200):
 
 {
 "message": "Deleted Row",
