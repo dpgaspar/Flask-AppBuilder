@@ -37,7 +37,7 @@ Take a quick look to the current possibilities. The bold ones require to import 
 
   - **version** - Flask-AppBuilder package version.
 
-Command Line uses the excelent click package, so you can have a detailed help for each command, for instance::
+Command Line uses the excellent click package, so you can have a detailed help for each command, for instance::
 
     $ fabmanager create-app --help
     Usage: fabmanager create-app [OPTIONS]
