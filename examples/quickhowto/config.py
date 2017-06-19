@@ -56,3 +56,10 @@ APP_THEME = ""  # default
 #APP_THEME = "slate.css"          # COOL
 #APP_THEME = "spacelab.css"      # NICE
 #APP_THEME = "united.css"
+#APP_THEME = "darkly.css"
+#APP_THEME = "lumen.css"
+#APP_THEME = "paper.css"
+#APP_THEME = "sandstone.css"
+#APP_THEME = "solar.css"
+#APP_THEME = "superhero.css"
+
