@@ -128,7 +128,7 @@ List contacts example
     :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/contact_list.png
 
 
-`List Group example with search 
+List Group example with search
 
 .. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/group_list.png
     :width: 480px
