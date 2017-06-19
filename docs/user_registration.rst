@@ -84,7 +84,7 @@ This class will override:
 
  - The form title. The title that is presented on the registration form.
 
- - Message is the success message presented to the user when an email was succesfully sent to him and his registration
+ - Message is the success message presented to the user when an email was successfully sent to him and his registration
    was recorded.
 
 After defining your own class, override SecurityManager class and set the **registeruserdbview** property
