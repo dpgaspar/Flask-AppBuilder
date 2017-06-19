@@ -105,11 +105,11 @@ Login page (with AUTH_DB)
     :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_db.png
     
 
-Login page (with AUTH_OID)
+Login page (with AUTH_OAUTH)
 
-.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_oid.png
+.. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_oauth.png
     :width: 480px
-    :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_oid.png
+    :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_oauth.png
 
 
 Security 
@@ -128,11 +128,12 @@ List contacts example
     :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/contact_list.png
 
 
-`List Group example with search 
+List Group example with search
 
 .. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/group_list.png
     :width: 480px
     :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/group_list.png
+
 
 
 Charts:
