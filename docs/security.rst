@@ -152,7 +152,6 @@ configuration imports the constants for the authentication methods::
     from flask_appbuilder.security.manager import AUTH_OID, \ 
                                               AUTH_REMOTE_USER, \ 
                                               AUTH_DB, AUTH_LDAP, \ 
-                                              AUTH_OAUTH, \
                                               AUTH_OAUTH
 
 Next you will use the **AUTH_TYPE** key to choose the type::
