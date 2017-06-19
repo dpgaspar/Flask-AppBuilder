@@ -194,7 +194,7 @@ def babel_extract(config, input, output, target):
         Babel, Extracts and updates all messages marked for translation
     """
     click.echo(click.style('Starting Extractions config:{0} input:{1} output:{2}'.format(config, input, output), fg='green'))
-    os.popen('pybabel extract -F {0} -k lazy_gettext -o {1} {2}'.format(config, output, input))
+    os.popen('pybabel extract -F {0} -k lazy_gettext -k gettext -o {1} {2}'.format(config, output, input))
     click.echo(click.style('Starting Update target:{0}'.format(target), fg='green'))
     os.popen('pybabel update -N -i {0} -d {1}'.format(output, target))
     click.echo(click.style('Finish, you can start your translations', fg='green'))
