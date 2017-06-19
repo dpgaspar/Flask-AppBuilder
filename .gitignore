@@ -6,6 +6,7 @@ app.db
 ./tmp
 build/
 dist/
+docs/_build/
 .idea
 .idea/
 env

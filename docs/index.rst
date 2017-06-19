@@ -41,7 +41,7 @@ Contents:
    quickminimal
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    relations
    actions
@@ -58,14 +58,15 @@ Contents:
    i18n
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    security
    user_registration
 
 .. toctree::
    :maxdepth: 1
-   
+
+   diagrams
    api
    versionmigration
    versions
