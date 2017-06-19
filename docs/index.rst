@@ -23,7 +23,7 @@ Contents:
 ---------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    intro
    installation
@@ -31,7 +31,7 @@ Contents:
    config
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    views
    quickhowto
@@ -50,7 +50,7 @@ Contents:
    templates
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    addons
    generic_datasource
@@ -64,8 +64,9 @@ Contents:
    user_registration
 
 .. toctree::
-   :maxdepth: 1
-   
+   :maxdepth: 2
+
+   diagrams
    api
    versionmigration
    versions
