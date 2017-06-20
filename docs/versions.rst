@@ -11,6 +11,7 @@ Improvements and Bug fixes on 1.9.1
 - New, #508 Updated bootswatch to version 3.3.7 five new themes included.
 - New, #512 Docs now use readthedocs theme.
 - New, #503 FileUploadField: process_on_store() and process_on_delete().
+- Fix, #511 Added new parameter to fabmanager babel-extract to include aditional keywords, defaults to **lazy_gettext, gettext, _, __**
 
 Improvements and Bug fixes on 1.9.0
 -----------------------------------
