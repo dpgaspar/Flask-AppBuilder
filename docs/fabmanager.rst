@@ -52,6 +52,15 @@ Command Line uses the excellent click package, so you can have a detailed help f
     --help                          Show this message and exit.
 
 
+**babel-extract** - Babel, Extracts and updates all messages.
+----------------------------------------
+
+Use multi **-k** options separated by space to specify how to locate the strings you want to translate. 
+Default values: **lazy_gettext, gettext, _, __**.
+For example:
+
+    fabmanager babel-extract --target flask_appbuilder/translations/ -k _ -k __
+
 **create-app** - Create new Applications
 ----------------------------------------
 
