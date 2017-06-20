@@ -128,8 +128,11 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_USERNAME_FORMAT         | It converts username to specific format for|   No      |
 |                                   | LDAP authentications. For example,         |           |
+|                                   |                                            |           |
 |                                   | username = "userexample"                   |           |
+|                                   |                                            |           |
 |                                   | AUTH_LDAP_USERNAME_FORMAT="format-%s".     |           |
+|                                   |                                            |           |
 |                                   | It authenticates with "format-userexample".|           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_ROLE_ADMIN                   | Configure the name of the admin role.      |   No      |
