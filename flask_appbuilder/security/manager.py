@@ -205,7 +205,6 @@ class BaseSecurityManager(AbstractSecurityManager):
                 if 'whitelist' in _provider:
                     self.oauth_whitelists[provider_name] = _provider['whitelist']
                 self.oauth_remotes[provider_name] = obj_provider
-        
 
         self.lm = LoginManager(app)
         self.lm.login_view = 'login'
@@ -558,7 +557,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def _bind_ldap(self, ldap, con, username, password):
         """
-            Privete to bind/Authenticate a user.
+            Private to bind/Authenticate a user.
             If AUTH_LDAP_BIND_USER exists then it will bind first with it,
             next will search the LDAP server using the username with UID
             and try to bind to it (OpenLDAP).
