@@ -152,7 +152,6 @@ configuration imports the constants for the authentication methods::
     from flask_appbuilder.security.manager import AUTH_OID, \ 
                                               AUTH_REMOTE_USER, \ 
                                               AUTH_DB, AUTH_LDAP, \ 
-                                              AUTH_OAUTH, \
                                               AUTH_OAUTH
 
 Next you will use the **AUTH_TYPE** key to choose the type::
@@ -243,7 +242,7 @@ permission to your app to access or manage the user's account on the provider.
 
 So you can send tweets, post on the users facebook, retrieve the user's linkedin profile etc.
 
-To use OAuth you need to install `Flask-OAuthLib <https://flask-oauthlib.readthedocs.org/en/latest/>`_. It's usefull
+To use OAuth you need to install `Flask-OAuthLib <https://flask-oauthlib.readthedocs.org/en/latest/>`_. It's useful
 to get to know this library since F.A.B. will expose the remote application object for you to play with.
 
 Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_ 

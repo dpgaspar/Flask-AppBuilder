@@ -21,8 +21,7 @@ This package has some CSS and JS batteries included:
 	- BootsWatch Themes
 	- Font-Awesome CSS and Fonts
 
-Includes:
----------
+-- Includes
 
   - Database
       - SQLAlchemy, multiple database support: sqlite, MySQL, ORACLE, MSSQL, DB2 etc.
@@ -41,8 +40,9 @@ Includes:
       - Automatic CRUD generation.
       - Multiple actions on db records.
       - Big variety of filters for your lists.
-      - Various view widgets: lists, master-detail, list of thumbnails etc
-      - Select2, Datepicker, DateTimePicker
+      - Various view widgets: lists, master-detail, list of thumbnails etc.
+      - Select2, Datepicker, DateTimePicker.
+      - Select2 related fields.
       - Google charts with automatic group by or direct values and filters.
   - Forms
       - Automatic, Add, Edit and Show from Database Models
@@ -52,10 +52,10 @@ Includes:
       - Image and File support for upload and database field association. It will handle everything for you.
       - Field sets for Form's (Django style).
   - i18n
-      - Support for multi-language via Babel
-  - Bootstrap 3.3.1 CSS and js, with Select2 and DatePicker
+      - Support for multi-language via Babel.
+  - Bootstrap 3.3.1 CSS and js, with Select2 and DatePicker.
   - Font-Awesome icons, for menu icons and actions.
-
+  - Bootswatch Themes.
 
 
 

@@ -14,7 +14,7 @@
 
 import sys
 import os
-import sphinx_bootstrap_theme
+import sphinx_rtd_theme
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -107,8 +107,8 @@ pygments_style = 'sphinx'
 
 # -- Options for HTML output ----------------------------------------------
 sys.path.append(os.path.abspath('_themes'))
-html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-html_theme = 'bootstrap'
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme = "sphinx_rtd_theme"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
@@ -119,11 +119,9 @@ html_theme = 'bootstrap'
 # documentation.
 #html_theme_options = {}
 html_theme_options = {
-'navbar_class': "navbar ",
-'bootswatch_theme': "flatly",
-'bootstrap_version': "3",
-'navbar_links':[("Diagrams", "diagrams")],
-'source_link_position': "xxx",
+    'collapse_navigation': False,
+    'display_version': True,
+    'navigation_depth': 3,
 }
 
 #html_theme_options = {'github_fork': 'dpgaspar/Flask-AppBuilder'}

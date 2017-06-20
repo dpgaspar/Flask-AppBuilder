@@ -37,7 +37,7 @@ Take a quick look to the current possibilities. The bold ones require to import 
 
   - **version** - Flask-AppBuilder package version.
 
-Command Line uses the excelent click package, so you can have a detailed help for each command, for instance::
+Command Line uses the excellent click package, so you can have a detailed help for each command, for instance::
 
     $ fabmanager create-app --help
     Usage: fabmanager create-app [OPTIONS]
@@ -51,6 +51,15 @@ Command Line uses the excelent click package, so you can have a detailed help fo
                                   Write your engine type
     --help                          Show this message and exit.
 
+
+**babel-extract** - Babel, Extracts and updates all messages.
+----------------------------------------
+
+Use multi **-k** options separated by space to specify how to locate the strings you want to translate. 
+Default values: **lazy_gettext, gettext, _, __**.
+For example:
+
+    fabmanager babel-extract --target flask_appbuilder/translations/ -k _ -k __
 
 **create-app** - Create new Applications
 ----------------------------------------

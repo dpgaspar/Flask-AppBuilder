@@ -1,5 +1,5 @@
 sphinxcontrib-blockdiag>=1.5.0
-sphinx-bootstrap-theme>=0.4
+sphinx-rtd-theme>=0.2.4
 colorama>=0.3
 click>=3.0
 Flask>=0.10

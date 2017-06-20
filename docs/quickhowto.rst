@@ -83,7 +83,7 @@ The *Contacts* table.
 	    address =  Column(String(564), default='Street ')
 	    birthday = Column(Date)
 	    personal_phone = Column(String(20))
-	    personal_celphone = Column(String(20))
+	    personal_cellphone = Column(String(20))
 	    contact_group_id = Column(Integer, ForeignKey('contact_group.id'))
 	    contact_group = relationship("ContactGroup")
 	    
@@ -139,11 +139,11 @@ Let's define it::
         datamodel = SQLAInterface(Contact)
 
         label_columns = {'contact_group':'Contacts Group'}
-        list_columns = ['name','personal_celphone','birthday','contact_group']
+        list_columns = ['name','personal_cellphone','birthday','contact_group']
 
         show_fieldsets = [
             ('Summary',{'fields':['name','address','contact_group']}),
-            ('Personal Info',{'fields':['birthday','personal_phone','personal_celphone'],'expanded':False}),
+            ('Personal Info',{'fields':['birthday','personal_phone','personal_cellphone'],'expanded':False}),
             ]
 
 Some explanation:
@@ -331,7 +331,7 @@ URL=/api/delete/<PK>
 Deletes a record from the model only accepts HTTP DELETE operations. if you want to delete a record with 8 as primary
 key issue an HTTP DELETE to the following URL: htpp://localhost:8080/contactmodelview/delete/8
 
-It will return a dictionary that on case of success will have the folowing keys (returns HTTP 200):
+It will return a dictionary that on case of success will have the following keys (returns HTTP 200):
 
 {
 "message": "Deleted Row",

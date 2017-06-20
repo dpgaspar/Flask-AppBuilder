@@ -110,10 +110,91 @@ You can pass extra Jinja2 arguments to your custom template, using extra_args pr
 Your overriding the 'show' template to handle your extra argument.
 You can still use F.A.B. show template using Jinja2 blocks, take a look at the :doc:`templates` chapter
 
-Forms
------
+Forms - Override automatic form creation
+----------------------------------------
 
-- You can create a custom query filter for all related columns like this::
+Define your own Add, Edit forms using WTForms to override the automatic form creation::
+
+    class MyView(ModelView):
+        datamodel = SQLAInterface(MyModel)
+        add_form = AddFormWTF
+
+
+Forms - Add or remove fields
+----------------------------
+
+Define what columns will be included on Add or Edit forms,
+for example if you have automatic fields like user or date, you can remove them from the Add Form::
+
+    class MyView(ModelView):
+        datamodel = SQLAInterface(MyModel)
+        add_columns = ['my_field1','my_field2']
+        edit_columns = ['my_field1']
+
+To contribute with any additional fields that are not on a table/model,
+for example a confirmation field::
+
+    class ContactModelView(ModelView):
+        datamodel = SQLAInterface(Contact)
+        add_form_extra_fields = {'extra': TextField(gettext('Extra Field'),
+                        description=gettext('Extra Field description'),
+                        widget=BS3TextFieldWidget())}
+
+Forms - Readonly fields
+----------------------------
+
+Define/override readonly fields like this, first define a new **Readonly** field::
+
+    from flask_appbuilder.fieldwidgets import BS3TextFieldWidget
+
+    class BS3TextFieldROWidget(BS3TextFieldWidget):
+        def __call__(self, field, **kwargs):
+            kwargs['readonly'] = 'true'
+            return super(BS3TextFieldROWidget, self).__call__(field, **kwargs)
+
+
+Next override your field using your new widget::
+
+    class ExampleView(ModelView):
+        datamodel = SQLAInterface(ExampleModel)
+        edit_form_extra_fields = {'field2': TextField('field2',
+                                    widget=BS3TextFieldROWidget())}
+
+Readonly select fields are a special case, but it's solved in a simpler way::
+
+    # Define the field query
+    def department_query():
+        return db.session.query(Department)
+
+    class EmployeeView(ModelView):
+        datamodel = SQLAInterface(Employee)
+
+        list_columns = ['employee_number', 'full_name', 'department']
+
+        # override the 'department' field, to make it readonly on edit form
+        edit_form_extra_fields = {'department':  QuerySelectField('Department',
+                                    query_factory=department_query,
+                                    widget=Select2Widget(extra_classes="readonly"))}
+
+Forms - Custom validation rules
+-------------------------------
+
+Contribute with your own additional form validations rules.
+Remember FAB will automatically validate any field that is defined on the database
+with *Not Null* (Required) or Unique constraints::
+
+    class MyView(ModelView):
+        datamodel = SQLAInterface(MyModel)
+        validators_columns = {'my_field1':[EqualTo('my_field2',
+                                            message=gettext('fields must match'))
+                                          ]
+        }
+
+
+Forms - Custom query on related fields
+--------------------------------------
+
+You can create a custom query filter for all related columns like this::
 
     from flask.ext.appbuilder.models.sqla.filters import FilterStartsWith
 
@@ -135,81 +216,11 @@ remember you can add multiple filters for each field also, take a look at the *b
         add_form_query_rel_fields = {'group': [['name',FilterStartsWith,'W']],
                                     'gender': [['name',FilterStartsWith,'M']]}
 
+Forms - Related fields
+----------------------
 
-- You can define your own Add, Edit forms to override the automatic form creation::
-
-    class MyView(ModelView):
-        datamodel = SQLAInterface(MyModel)
-        add_form = AddFormWTF
-
-
-- You can define what columns will be included on Add or Edit forms,
-  for example if you have automatic fields like user or date, you can remove this from the Add Form::
-
-    class MyView(ModelView):
-        datamodel = SQLAInterface(MyModel)
-        add_columns = ['my_field1','my_field2']
-        edit_columns = ['my_field1']
-
-- You can contribute with any additional fields that are not on a table/model,
-  for example a confirmation field::
-
-    class ContactModelView(ModelView):
-        datamodel = SQLAInterface(Contact)
-        add_form_extra_fields = {'extra': TextField(gettext('Extra Field'),
-                        description=gettext('Extra Field description'),
-                        widget=BS3TextFieldWidget())}
-
-
-- You can define/override readonly fields like this, first define a new **Readonly** field::
-
-    from flask_appbuilder.fieldwidgets import BS3TextFieldWidget
-
-    class BS3TextFieldROWidget(BS3TextFieldWidget):
-        def __call__(self, field, **kwargs):
-            kwargs['readonly'] = 'true'
-            return super(BS3TextFieldROWidget, self).__call__(field, **kwargs)
-
-
-Next override your field using your new widget::
-
-    class ExampleView(ModelView):
-        datamodel = SQLAInterface(ExampleModel)
-        edit_form_extra_fields = {'field2': TextField('field2',
-                                    widget=BS3TextFieldROWidget())}
-
-For select fields to be readonly is a special case, but it's solved in a simpler way::
-
-    # Define the field query
-    def department_query():
-        return db.session.query(Department)
-
-    class EmployeeView(ModelView):
-        datamodel = SQLAInterface(Employee)
-
-        list_columns = ['employee_number', 'full_name', 'department']
-
-        # override the 'department' field, to make it readonly on edit form
-        edit_form_extra_fields = {'department':  QuerySelectField('Department',
-                                    query_factory=department_query,
-                                    widget=Select2Widget(extra_classes="readonly"))}
-
-
-- You can contribute with your own additional form validations rules.
-  Remember the framework will automatically validate any field that is defined on the database
-  with *Not Null* (Required) or Unique constraints::
-
-    class MyView(ModelView):
-        datamodel = SQLAInterface(MyModel)
-        validators_columns = {'my_field1':[EqualTo('my_field2',
-                                            message=gettext('fields must match'))
-                                          ]
-        }
-
-Take a look at the :doc:`api`. Experiment with *add_form*, *edit_form*, *add_columns*, *edit_columns*, *validators_columns*, *add_form_extra_fields*, *edit_form_extra_fields*
-
-- You can force F.A.B. to use AJAX select2 (combo) fields. Remember all fields are previously populated on the server.
-  This funcionality will make use of the REST API. Here's a simple example::
+To use AJAX select2 (combo) fields and make use of the REST API, by default all fields are previously populated on the server.
+Here's a simple example::
 
     class ContactModelView(ModelView):
         datamodel = SQLAInterface(Contact)
@@ -246,7 +257,7 @@ will be populated with the subgroup values that belong to the group. Extending t
                         }
 
 
-So as seen before add_form_extra_fields is a dictionary that accpects keys as column names and values as WTF Fields.
+So as seen before add_form_extra_fields is a dictionary that expects keys as column names and values as WTF Fields.
 
 AJAXSelectField is expecting the following parameters for the constructor:
 - label: A label for the column.
@@ -260,5 +271,4 @@ You have 3 endpoint's API that will return data ready to use by this fields:
 
 - /<YOUR MODELVIEW NAME>/api/column/add|edit/<COLUMN NAME> : you can append query string's to filter data. This will return all values of the related column on the model.
 - /<YOUR MODELVIEW NAME>/api/readvalues: This will return all values on the modelview prepared to be used on a select2.
-
 

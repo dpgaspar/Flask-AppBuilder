@@ -2,7 +2,7 @@ import logging
 import json
 from flask import (
     flash, redirect, send_file, jsonify, make_response, url_for, session, abort)
-from ._compat import as_unicode
+from ._compat import as_unicode, string_types
 from .filemanager import uuid_originalname
 from .widgets import GroupFormListWidget, ListMasterWidget
 from .baseviews import BaseView, BaseCRUDView, BaseFormView, expose, expose_api
@@ -236,7 +236,7 @@ class RestCRUDView(BaseCRUDView):
         d = {}
         for col in self.show_columns:
             v = getattr(item, col)
-            if not isinstance(v, (int, float, unicode, str)):
+            if not isinstance(v, (int, float, string_types)):
                 v = str(v)
             d[col] = v
         return d
@@ -310,6 +310,14 @@ class RestCRUDView(BaseCRUDView):
         form._id = pk
         http_return_code = 500
         if form.validate():
+
+            # Deleting form fields not specified as keys in POST data
+            # this allows for other Model columns to be left untouched when
+            # unspecified.
+            form_fields = set([t for t in form._fields.keys()])
+            for field in form_fields - set(request.form.keys()):
+                delattr(form, field)
+
             form.populate_obj(item)
             self.pre_update(item)
             if self.datamodel.edit(item):
@@ -327,8 +335,6 @@ class RestCRUDView(BaseCRUDView):
                 'severity': 'warning',
             }
         return make_response(jsonify(payload), http_return_code)
-
-
 
     @expose_api(name='delete', url='/api/delete/<pk>', methods=['DELETE'])
     @has_access_api

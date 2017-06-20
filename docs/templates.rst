@@ -34,7 +34,7 @@ templates, making it easy to change the UI, without having to develop your own f
 
     {% block head_css %}
         {{ super() }}
-        <script src="{{url_for('static',filename='css/your_css_file.js')}}"></script>
+        <script src="{{url_for('static',filename='css/your_css_file.css')}}"></script>
     {% endblock %}
 
     {% block head_js %}
@@ -406,7 +406,7 @@ block. Widgets have the following jinja2 vars that you should use:
 - order_columns: A list with the columns that can be ordered.
 - pks: A list of primary key values.
 - actions: A list of declared actions.
-- modelview_name: The name of the ModelView class responsible for controling this template.
+- modelview_name: The name of the ModelView class responsible for controlling this template.
 
 Save your widget template on your templates folder. I advise you to create a 
 subfolder named *widgets*. So on our example we will keep our template on
@@ -430,7 +430,7 @@ subfolder named *widgets*. So on our example we will keep our template on
         list_widget = MyListWidget
         
 
-Flask-AppBuilder aready has some widgets you can choose from, try them out:
+Flask-AppBuilder already has some widgets you can choose from, try them out:
 
 - ListWidget - The default for lists.
 - ListLinkWidget - The default for lists.
