@@ -105,8 +105,8 @@ all AppBuilder security tables will be created for you.
 All your models can easily be created too (optionally).
 
 .. note:: Since version 1.3.0 no admin user is automatically created, you must use **fabmanager** to do it.
-There are lot's of other useful options you can use with **fabmanager** to reset user's password,
-list all your users and views, etc.
+    There are lot's of other useful options you can use with **fabmanager** like reset user's password,
+    list all your users and views, etc.
 
 Installation Requirements
 -------------------------
@@ -122,7 +122,7 @@ Flask App Builder dependes on
     - flask-wtform : Web forms.
     - flask-Babel : For internationalization.
 
-If you plan to use Image on database, you will need to install PIL::
+If you plan to use Image processing or upload, you will need to install PIL::
 
     pip install pillow
     
