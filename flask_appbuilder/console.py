@@ -189,7 +189,7 @@ def list_users(app, appbuilder):
 @click.option('--input', default='.')
 @click.option('--output', default='./babel/messages.pot')
 @click.option('--target', default='app/translations')
-@click.option('--keywords', '-k', multiple=True, default=['lazy_gettext', 'gettext'])
+@click.option('--keywords', '-k', multiple=True, default=['lazy_gettext', 'gettext', '_', '__'])
 def babel_extract(config, input, output, target, keywords):
     """
         Babel, Extracts and updates all messages marked for translation
