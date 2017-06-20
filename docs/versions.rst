@@ -1,6 +1,17 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.9.1
+-----------------------------------
+
+- Fix, #489 python3 compatibility fix for unicode api_read.
+- Fix, #491 [api/update] only update keys specified in POST data.
+- Fix, #492 [cosmetics] making row button (show/edit/delete) not primary.
+- Fix, #493 [cosmetic] left-align the text in dropdowns.
+- New, #508 Updated bootswatch to version 3.3.7 five new themes included.
+- New, #512 Docs now use readthedocs theme.
+- New, #503 FileUploadField: process_on_store() and process_on_delete().
+
 Improvements and Bug fixes on 1.9.0
 -----------------------------------
 
