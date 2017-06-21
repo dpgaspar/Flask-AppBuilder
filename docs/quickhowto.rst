@@ -63,7 +63,7 @@ The *ContactGroup* model.
 
     from sqlalchemy import Column, Integer, String, ForeignKey, Date
     from sqlalchemy.orm import relationship
-    from flask.ext.appbuilder import Model
+    from flask_appbuilder import Model
 
     class ContactGroup(Model):
         id = Column(Integer, primary_key=True)
@@ -110,8 +110,8 @@ Take a look at :doc:`advanced`.
 
 ::
 
-    from flask.ext.appbuilder import ModelView
-    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
+    from flask_appbuilder import ModelView
+    from flask_appbuilder.models.sqla.interface import SQLAInterface
 
     class GroupModelView(ModelView):
         datamodel = SQLAInterface(ContactGroup)
@@ -142,9 +142,15 @@ Let's define it::
         list_columns = ['name','personal_cellphone','birthday','contact_group']
 
         show_fieldsets = [
-            ('Summary',{'fields':['name','address','contact_group']}),
-            ('Personal Info',{'fields':['birthday','personal_phone','personal_cellphone'],'expanded':False}),
-            ]
+                            (
+                                'Summary',
+                                {'fields':['name','address','contact_group']}
+                            ),
+                            (
+                                'Personal Info',
+                                {'fields':['birthday','personal_phone','personal_cellphone'],'expanded':False}
+                            ),
+                         ]
 
 Some explanation:
 
@@ -159,7 +165,7 @@ Remember you can include columns, relations or methods from a model's definition
 list of columns and want to exclude just a few from add/edit/show form you can use the exclude columns
 property:
 
-.. automodule:: flask.ext.appbuilder.baseviews
+.. automodule:: flask_appbuilder.baseviews
 
     .. autoclass:: BaseCRUDView
         :members: list_columns,add_columns,edit_columns,show_columns,add_exclude_columns,edit_exclude_columns,show_exclude_columns
@@ -168,7 +174,7 @@ property:
 
 You can also control which columns will be included on search, use the same logic for this:
 
-.. automodule:: flask.ext.appbuilder.baseviews
+.. automodule:: flask_appbuilder.baseviews
 
     .. autoclass:: BaseModelView
         :members: search_columns, search_exclude_columns
@@ -193,9 +199,15 @@ Register everything, to present the models and create the menu. Issue **create_a
 ::
 
         db.create_all()
-        appbuilder.add_view(GroupModelView, "List Groups",icon = "fa-folder-open-o",category = "Contacts",
-                        category_icon = "fa-envelope")
-        appbuilder.add_view(ContactModelView, "List Contacts",icon = "fa-envelope",category = "Contacts")
+        appbuilder.add_view(GroupModelView,
+                            "List Groups",
+                            icon = "fa-folder-open-o",
+                            category = "Contacts",
+                            category_icon = "fa-envelope")
+        appbuilder.add_view(ContactModelView,
+                            "List Contacts",
+                            icon = "fa-envelope",
+                            category = "Contacts")
 
 Take a look at the :doc:`api` for add_view method.
 
@@ -361,7 +373,7 @@ add the following view after the definition of **GroupModelView** and **ContactM
 
 First remember to import::
 
-    from flask.ext.appbuilder import MultipleView
+    from flask_appbuilder import MultipleView
 
 Then define your View::
 
@@ -370,7 +382,10 @@ Then define your View::
 
 Then register the view with a menu::
 
-    appbuilder.add_view(MultipleViewsExp, "Multiple Views", icon="fa-envelope", category="Contacts")
+    appbuilder.add_view(MultipleViewsExp,
+                        "Multiple Views",
+                        icon="fa-envelope",
+                        category="Contacts")
 
 You can render as many views on the same page as you want, this includes Chart type views also,
 take a look at :doc:`quickcharts` to learn about Chart views.

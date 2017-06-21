@@ -108,8 +108,8 @@ take a look at :doc:`advanced`.
 
 ::
 
-    from flask.ext.appbuilder import ModelView
-    from flask.ext.appbuilder.models.mongoengine.interface import MongoEngineInterface
+    from flask_appbuilder import ModelView
+    from flask_appbuilder.models.mongoengine.interface import MongoEngineInterface
 
     class GroupModelView(ModelView):
         datamodel = MongoEngineInterface(ContactGroup)

@@ -2,38 +2,38 @@
 API Reference
 =============
 
-flask.ext.appbuilder
+flask_appbuilder
 ====================
 
 AppBuilder
 ----------
 
-.. automodule:: flask.ext.appbuilder.base
+.. automodule:: flask_appbuilder.base
 
     .. autoclass:: AppBuilder
         :members:
         
         .. automethod:: __init__
 
-flask.ext.appbuilder.security.decorators
+flask_appbuilder.security.decorators
 ========================================
 
-.. automodule:: flask.ext.appbuilder.security.decorators
+.. automodule:: flask_appbuilder.security.decorators
 
     .. autofunction:: has_access
     .. autofunction:: permission_name
 
-flask.ext.appbuilder.models.decorators
+flask_appbuilder.models.decorators
 ========================================
 
-.. automodule:: flask.ext.appbuilder.models.decorators
+.. automodule:: flask_appbuilder.models.decorators
 
     .. autofunction:: renders
 
-flask.ext.appbuilder.baseviews
+flask_appbuilder.baseviews
 ==============================
 
-.. automodule:: flask.ext.appbuilder.baseviews
+.. automodule:: flask_appbuilder.baseviews
 
     .. autofunction:: expose
 
@@ -61,10 +61,10 @@ BaseCRUDView
 .. autoclass:: BaseCRUDView
     :members:
 
-flask.ext.appbuilder.views
+flask_appbuilder.views
 ==========================
 
-.. automodule:: flask.ext.appbuilder.views
+.. automodule:: flask_appbuilder.views
 
 IndexView
 ---------
@@ -108,17 +108,17 @@ CompactCRUDMixin
 .. autoclass:: CompactCRUDMixin
     :members:
 
-flask.ext.appbuilder.actions
+flask_appbuilder.actions
 ============================
 
-.. automodule:: flask.ext.appbuilder.actions
+.. automodule:: flask_appbuilder.actions
 
     .. autofunction:: action
 
-flask.ext.appbuilder.security
+flask_appbuilder.security
 =============================
 
-.. automodule:: flask.ext.appbuilder.security.manager
+.. automodule:: flask_appbuilder.security.manager
 
 BaseSecurityManager
 -------------------
@@ -129,31 +129,31 @@ BaseSecurityManager
 BaseRegisterUser
 ----------------
 
-.. automodule:: flask.ext.appbuilder.security.registerviews
+.. automodule:: flask_appbuilder.security.registerviews
 
     .. autoclass:: BaseRegisterUser
         :members:
 
-flask.ext.appbuilder.filemanager
+flask_appbuilder.filemanager
 ================================
 
-.. automodule:: flask.ext.appbuilder.filemanager
+.. automodule:: flask_appbuilder.filemanager
 
     .. autofunction:: get_file_original_name
 
 Aggr Functions for Group By Charts
 ==================================
 
-.. automodule:: flask.ext.appbuilder.models.group
+.. automodule:: flask_appbuilder.models.group
 
     .. autofunction:: aggregate_count
     .. autofunction:: aggregate_avg
     .. autofunction:: aggregate_sum
 
-flask.ext.appbuilder.charts.views
+flask_appbuilder.charts.views
 =================================
 
-.. automodule:: flask.ext.appbuilder.charts.views
+.. automodule:: flask_appbuilder.charts.views
 
 BaseChartView
 -------------
@@ -192,10 +192,10 @@ GroupByChartView
     :members:
 
 
-flask.ext.appbuilder.models.mixins
+flask_appbuilder.models.mixins
 ==================================
 
-.. automodule:: flask.ext.appbuilder.models.mixins
+.. automodule:: flask_appbuilder.models.mixins
 
     .. autoclass:: BaseMixin
         :members:
@@ -215,10 +215,10 @@ Extra Columns
 Generic Data Source (Beta)
 --------------------------
 
-flask.ext.appbuilder.models.generic
+flask_appbuilder.models.generic
 ===================================
 
-.. automodule:: flask.ext.appbuilder.models.generic
+.. automodule:: flask_appbuilder.models.generic
 
     .. autoclass:: GenericColumn
         :members:

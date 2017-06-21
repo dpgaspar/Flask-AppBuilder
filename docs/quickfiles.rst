@@ -9,8 +9,8 @@ Define your model (models.py)
 
 ::
 
-    from flask.ext.appbuilder import Model
-    from flask.ext.appbuilder.model.mixins import ImageColumn
+    from flask_appbuilder import Model
+    from flask_appbuilder.model.mixins import ImageColumn
 
     class Person(Model):
         id = Column(Integer, primary_key=True)
@@ -58,8 +58,8 @@ Define your Views (views.py)
 
 ::
 
-    from flask.ext.appbuilder import ModelView
-    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
+    from flask_appbuilder import ModelView
+    from flask_appbuilder.models.sqla.interface import SQLAInterface
 
     class PersonModelView(ModelView):
         datamodel = SQLAInterface(Person)

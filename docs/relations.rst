@@ -28,7 +28,7 @@ Let's define our models (models.py)::
     import datetime
     from sqlalchemy import Column, Integer, String, ForeignKey, Date, Text
     from sqlalchemy.orm import relationship
-    from flask.ext.appbuilder import Model
+    from flask_appbuilder import Model
 
 
     class Department(Model):
@@ -76,8 +76,8 @@ This has two, one to many relations:
 
 Now let's define ours views (views.py)::
 
-    from flask.ext.appbuilder import ModelView
-    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
+    from flask_appbuilder import ModelView
+    from flask_appbuilder.models.sqla.interface import SQLAInterface
     from .models import Employee,Department, Function, EmployeeHistory
     from app import appbuilder
 

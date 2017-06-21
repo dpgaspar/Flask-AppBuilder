@@ -12,9 +12,9 @@ Just use the @action decorator on your own functions. Here's an example
 
 ::
 
-    from flask.ext.appbuilder.actions import action
-    from flask.ext.appbuilder import ModeView
-    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
+    from flask_appbuilder.actions import action
+    from flask_appbuilder import ModeView
+    from flask_appbuilder.models.sqla.interface import SQLAInterface
 
     class GroupModelView(ModelView):
         datamodel = SQLAInterface(Group)

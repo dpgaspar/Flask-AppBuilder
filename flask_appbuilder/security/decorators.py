@@ -61,7 +61,6 @@ def has_access_api(f):
     return functools.update_wrapper(wraps, f)
 
 
-
 def permission_name(name):
     """
         Use this decorator to override the name of the permission.

@@ -1,6 +1,19 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.9.1
+-----------------------------------
+
+- Fix, #489 python3 compatibility fix for unicode api_read.
+- Fix, #491 [api/update] only update keys specified in POST data.
+- Fix, #492 [cosmetics] making row button (show/edit/delete) not primary.
+- Fix, #493 [cosmetic] left-align the text in dropdowns.
+- New, #508 Updated bootswatch to version 3.3.7 five new themes included.
+- New, #512 Docs now use readthedocs theme.
+- New, #503 FileUploadField: process_on_store() and process_on_delete().
+- Fix, #511 Added new parameter to fabmanager babel-extract to include aditional keywords, defaults to **lazy_gettext, gettext, _, __**
+- New, #483 new parameter for LDAP username formatting AUTH_LDAP_USERNAME_FORMAT.
+
 Improvements and Bug fixes on 1.9.0
 -----------------------------------
 
@@ -188,7 +201,7 @@ Improvements and Bug fixes on 1.3.6
 - SimpleFormView.form_post can return null to redirect back or a Flask response (render or redirect).
 - Changed the way related views are initialized, no bind to the related_views property.
 - #144 New MultipleView for rendering multiple BaseViews on the same page.
-- Can now import all views from flask.ext.appbuilder.
+- Can now import all views from flask_appbuilder.
 
 Improvements and Bug fixes on 1.3.5
 -----------------------------------
@@ -233,7 +246,7 @@ Improvements and Bug fixes on 1.3.0
 - New, edit_form_query_rel_fields, add_form_query_rel_fields changed, accepts dict instead of list (BREAKING CHANGE).
 - Fix, Filter rework datamodel is no longer optional for construct (BREAKING CHANGE).
 - Fix, Filter methods no longer require datamodel parameter (BREAKING CHANGE).
-- Fix, All SQLAlchemy Filter's moved to flask.ext.appbuilder.models.sqla.filters.
+- Fix, All SQLAlchemy Filter's moved to flask_appbuilder.models.sqla.filters.
 - New, All Filters are accessible from datamodel class, ex: datamodel.FilterEqual
 - New, Charts will be database ordered (better performance), and can accept dotted cols on relations.
 - Fix, on menus with dividers if next item has no permission, divider was shown.

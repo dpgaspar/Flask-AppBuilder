@@ -323,7 +323,7 @@ First i advise you to create security.py and add the following to it::
     from flask import redirect
     from flask_appbuilder.security.views import UserDBModelView
     from flask_appbuilder.security.sqla.manager import SecurityManager
-    from flask.ext.appbuilder.actions import action
+    from flask_appbuilder.actions import action
 
 
     class MyUserDBView(UserDBModelView):
@@ -435,8 +435,8 @@ Finally (as shown on the previous example) tell F.A.B. to use your SecurityManag
 **AppBuilder** (on __init__.py)::
 
     from flask import Flask
-    from flask.ext.appbuilder import SQLA, AppBuilder
-    from flask.ext.appbuilder.menu import Menu
+    from flask_appbuilder import SQLA, AppBuilder
+    from flask_appbuilder.menu import Menu
     from .sec import MySecurityManager
 
     app = Flask(__name__)

@@ -103,24 +103,24 @@ are common to all of them. Change:
 
 from::
 
-    from flask.ext.appbuilder.security.sqla.views import UserDBModelView
-    from flask.ext.appbuilder.security.manager import SecurityManager
+    from flask_appbuilder.security.sqla.views import UserDBModelView
+    from flask_appbuilder.security.manager import SecurityManager
 
 
 to::
 
-    from flask.ext.appbuilder.security.views import UserDBModelView
-    from flask.ext.appbuilder.security.sqla.manager import SecurityManager
+    from flask_appbuilder.security.views import UserDBModelView
+    from flask_appbuilder.security.sqla.manager import SecurityManager
 
 3 - SQLAInteface, SQLAModel. If you were importing like the following, change:
 
 from::
 
-    from flask.ext.appbuilder.models import SQLAInterface
+    from flask_appbuilder.models import SQLAInterface
 
 to::
 
-    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
+    from flask_appbuilder.models.sqla.interface import SQLAInterface
 
 4 - Filters, filters import moved::
 
@@ -151,13 +151,13 @@ There is a breaking feature, change your filters import like this:
 
 from::
 
-    flask.ext.appbuilder.models.base import Filters, BaseFilter, BaseFilterConverter
-    flask.ext.appbuilder.models.filters import FilterEqual, FilterRelation ....
+    flask_appbuilder.models.base import Filters, BaseFilter, BaseFilterConverter
+    flask_appbuilder.models.filters import FilterEqual, FilterRelation ....
 
 to::
 
-    flask.ext.appbuilder.models.filters import Filters, BaseFilter, BaseFilterConverter
-    flask.ext.appbuilder.models.sqla.filter import FilterEqual, FilterRelation ....
+    flask_appbuilder.models.filters import Filters, BaseFilter, BaseFilterConverter
+    flask_appbuilder.models.sqla.filter import FilterEqual, FilterRelation ....
 
 
 Migrating from 0.9.X to 0.10.X
@@ -170,12 +170,12 @@ But, to keep up with the changes, you should change these:
 
 ::
 
-    from flask.ext.appbuilder.models.datamodel import SQLAModel
-    from flask.ext.appbuilder.models.filters import FilterEqual, FilterContains
+    from flask_appbuilder.models.datamodel import SQLAModel
+    from flask_appbuilder.models.filters import FilterEqual, FilterContains
 to::
 
-    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
-    from flask.ext.appbuilder.models.sqla.filters import FilterEqual, FilterContains
+    from flask_appbuilder.models.sqla.interface import SQLAInterface
+    from flask_appbuilder.models.sqla.filters import FilterEqual, FilterContains
 
 
 
@@ -224,7 +224,7 @@ Use F.A.B. SQLA class instead, read the docs to know why.
 
         from flask import Flask
         from flask.ext.sqlalchemy import SQLAlchemy
-        from flask.ext.appbuilder.baseapp import BaseApp
+        from flask_appbuilder.baseapp import BaseApp
 
 
         app = Flask(__name__)
@@ -235,7 +235,7 @@ Use F.A.B. SQLA class instead, read the docs to know why.
     to (__init__.py)::
 
         from flask import Flask
-        from flask.ext.appbuilder import SQLA, AppBuilder
+        from flask_appbuilder import SQLA, AppBuilder
 
         app = Flask(__name__)
         app.config.from_object('config')

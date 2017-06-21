@@ -26,7 +26,7 @@ and then use the **@renders** decorator to tell the framework to map you class m
 with a certain Model property::
 
     
-    from flask.ext.appbuilder.models.decorators import renders
+    from flask_appbuilder.models.decorators import renders
 
     class MyModel(Model):
         id = Column(Integer, primary_key=True)
@@ -61,8 +61,8 @@ On this next example we are filtering a view by the logged in user and with colu
 
 
     from flask import g
-    from flask.ext.appbuilder import ModelView
-    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
+    from flask_appbuilder import ModelView
+    from flask_appbuilder.models.sqla.interface import SQLAInterface
     from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction
     # If your using Mongo Engine you should import filters like this, everything else is exactly the same
     # from flask_appbuilder.models.mongoengine.filters import FilterStartsWith, FilterEqualFunction
@@ -196,7 +196,7 @@ Forms - Custom query on related fields
 
 You can create a custom query filter for all related columns like this::
 
-    from flask.ext.appbuilder.models.sqla.filters import FilterStartsWith
+    from flask_appbuilder.models.sqla.filters import FilterStartsWith
 
 
     class ContactModelView(ModelView):

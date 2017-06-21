@@ -223,7 +223,7 @@ class BaseInterface(object):
         pk_name = self.get_pk_name()
         return [getattr(item, pk_name) for item in lst]
 
-    def get_pk_name(self, item):
+    def get_pk_name(self):
         """
             Returns the primary key name
         """
