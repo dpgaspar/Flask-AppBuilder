@@ -3,10 +3,6 @@ import uuid
 from werkzeug.security import generate_password_hash
 from ...models.mongoengine.interface import MongoEngineInterface
 from .models import User, Role, PermissionView, Permission, ViewMenu, RegisterUser
-from ..views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, AuthOAuthView, AuthRemoteUserView, \
-    ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserRemoteUserModelView,\
-    RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView
-#from .registerviews import RegisterUserDBView, RegisterUserOIDView
 from ..manager import BaseSecurityManager
 from ... import const as c
 
@@ -80,7 +76,6 @@ class SecurityManager(BaseSecurityManager):
             log.error(c.LOGMSG_ERR_SEC_ADD_REGISTER_USER.format(str(e)))
             return False
 
-
     def del_register_user(self, register_user):
         try:
             register_user.delete()
@@ -135,11 +130,10 @@ class SecurityManager(BaseSecurityManager):
     def load_user(self, pk):
         return self.get_user_by_id(pk)
 
-
     """
-        ----------------------------------------
-            PERMISSION MANAGEMENT
-        ----------------------------------------
+    -----------------------
+     PERMISSION MANAGEMENT
+    -----------------------
     """
     def add_role(self, name):
         role = self.find_role(name)
@@ -200,9 +194,11 @@ class SecurityManager(BaseSecurityManager):
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
 
-    # ----------------------------------------------
-    #       PRIMITIVES VIEW MENU
-    #----------------------------------------------
+    """
+    ----------------------
+     PRIMITIVES VIEW MENU
+    ----------------------
+    """
     def find_view_menu(self, name):
         """
             Finds and returns a ViewMenu by name
@@ -242,9 +238,11 @@ class SecurityManager(BaseSecurityManager):
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
 
-    #----------------------------------------------
-    #          PERMISSION VIEW MENU
-    #----------------------------------------------
+    """
+    ----------------------
+     PERMISSION VIEW MENU
+    ----------------------
+    """
     def find_permission_view_menu(self, permission_name, view_menu_name):
         """
             Finds and returns a PermissionView by names

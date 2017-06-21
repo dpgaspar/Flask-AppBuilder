@@ -15,7 +15,7 @@ from ..mixins import FileColumn, ImageColumn
 from ...filemanager import FileManager, ImageManager
 from ..._compat import as_unicode
 from ...const import LOGMSG_ERR_DBI_ADD_GENERIC, LOGMSG_ERR_DBI_EDIT_GENERIC, LOGMSG_ERR_DBI_DEL_GENERIC, \
-                     LOGMSG_WAR_DBI_ADD_INTEGRITY, LOGMSG_WAR_DBI_EDIT_INTEGRITY, LOGMSG_WAR_DBI_DEL_INTEGRITY
+    LOGMSG_WAR_DBI_ADD_INTEGRITY, LOGMSG_WAR_DBI_EDIT_INTEGRITY, LOGMSG_WAR_DBI_DEL_INTEGRITY
 
 log = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ class SQLAInterface(BaseInterface):
             # this decorator will add a property to the method named *_col_name*
             if hasattr(self.obj, order_column):
                 if hasattr(getattr(self.obj, order_column), '_col_name'):
-                    order_column = getattr(getattr(self.obj, order_column),'_col_name')
+                    order_column = getattr(getattr(self.obj, order_column), '_col_name')
             query = query.order_by(order_column + ' ' + order_direction)
         return query
 
@@ -114,7 +114,7 @@ class SQLAInterface(BaseInterface):
 
         return count, query.all()
 
-    def query_simple_group(self, group_by='', aggregate_func = None, aggregate_col = None, filters=None):
+    def query_simple_group(self, group_by='', aggregate_func=None, aggregate_col=None, filters=None):
         query = self.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
         query_result = query.all()
@@ -270,14 +270,12 @@ class SQLAInterface(BaseInterface):
             else:
                 return -1
         except:
-                return -1
-
-
+            return -1
 
     """
-    -----------------------------------------
-           FUNCTIONS FOR CRUD OPERATIONS
-    -----------------------------------------
+    -------------------------------
+     FUNCTIONS FOR CRUD OPERATIONS
+    -------------------------------
     """
 
     def add(self, item):
@@ -351,9 +349,10 @@ class SQLAInterface(BaseInterface):
             self.session.rollback()
             return False
 
-
     """
-    FILE HANDLING METHODS
+    -----------------------
+     FILE HANDLING METHODS
+    -----------------------
     """
 
     def _add_files(self, this_request, item):
@@ -379,10 +378,11 @@ class SQLAInterface(BaseInterface):
                     im.delete_file(getattr(item, file_col))
 
     """
-    -----------------------------------------
-         FUNCTIONS FOR RELATED MODELS
-    -----------------------------------------
+    ------------------------------
+     FUNCTIONS FOR RELATED MODELS
+    ------------------------------
     """
+
     def get_col_default(self, col_name):
         default = getattr(self.list_columns[col_name], 'default', None)
         if default is not None:
@@ -418,9 +418,10 @@ class SQLAInterface(BaseInterface):
                 if model == self.get_related_model(col_name):
                     return col_name
 
-
     """
-    ----------- GET METHODS -------------
+    ------------- 
+     GET METHODS
+    -------------
     """
 
     def get_columns_list(self):
@@ -439,7 +440,7 @@ class SQLAInterface(BaseInterface):
                 ret_lst.append(col_name)
         return ret_lst
 
-    #TODO get different solution, more integrated with filters
+    # TODO get different solution, more integrated with filters
     def get_search_columns_list(self):
         ret_lst = list()
         for col_name in self.get_columns_list():
@@ -468,10 +469,10 @@ class SQLAInterface(BaseInterface):
             if not self.is_relation(col_name):
                 if hasattr(self.obj, col_name):
                     if (not hasattr(getattr(self.obj, col_name), '__call__') or
-                        hasattr(getattr(self.obj, col_name), '_col_name')):
+                            hasattr(getattr(self.obj, col_name), '_col_name')):
                         ret_lst.append(col_name)
                 else:
-                     ret_lst.append(col_name)
+                    ret_lst.append(col_name)
         return ret_lst
 
     def get_file_column_list(self):
@@ -501,6 +502,7 @@ class SQLAInterface(BaseInterface):
         for col_name in self.list_columns.keys():
             if self.is_pk(col_name):
                 return col_name
+
 
 """
     For Retro-Compatibility

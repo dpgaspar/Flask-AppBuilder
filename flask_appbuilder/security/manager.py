@@ -615,7 +615,6 @@ class BaseSecurityManager(AbstractSecurityManager):
                 import ldap
             except:
                 raise Exception("No ldap library for python.")
-                return None
             try:
                 if self.auth_ldap_allow_self_signed:
                     ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
@@ -770,7 +769,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         else:
             return self.is_item_public(permission_name, view_name)
 
-
     def add_permissions_view(self, base_permissions, view_menu):
         """
             Adds a permission on a view menu to the backend
@@ -826,7 +824,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def security_cleanup(self, baseviews, menus):
         """
-            Will cleanup from the database all unused permissions
+            Will cleanup all unused permissions from the database
 
             :param baseviews: A list of BaseViews class
             :param menus: Menu class
@@ -849,13 +847,15 @@ class BaseSecurityManager(AbstractSecurityManager):
                     self.del_permission_view_menu(permission.permission.name, viewmenu.name)
                 self.del_view_menu(viewmenu.name)
 
-
-    # ---------------------------------------
-    # INTERFACE ABSTRACT METHODS
-    # ---------------------------------------
-    # ------------------------------------
-    # PRIMITIVES FOR USERS
-    #------------------------------------
+    """
+     ---------------------------
+     INTERFACE ABSTRACT METHODS
+     ---------------------------
+     
+     ---------------------
+     PRIMITIVES FOR USERS
+    ----------------------
+    """
     def find_register_user(self, registration_hash):
         """
             Generic function to return user registration
@@ -912,9 +912,11 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    #------------------------------------
-    # PRIMITIVES FOR ROLES
-    #------------------------------------
+    """
+    ----------------------
+     PRIMITIVES FOR ROLES
+    ----------------------
+    """
     def find_role(self, name):
         raise NotImplementedError
 
@@ -924,9 +926,11 @@ class BaseSecurityManager(AbstractSecurityManager):
     def get_all_roles(self):
         raise NotImplementedError
 
-    #------------------------------------
-    # PRIMITIVES FOR PERMISSIONS
-    #------------------------------------
+    """
+    ----------------------------
+     PRIMITIVES FOR PERMISSIONS
+    ----------------------------
+    """
     def get_public_permissions(self):
         """
             returns all permissions from public role
@@ -957,12 +961,11 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    def get_public_permissions(self):
-        raise NotImplementedError
-
-    # ------------------------------------------
-    #       PRIMITIVES VIEW MENU
-    #-------------------------------------------
+    """
+    ----------------------
+     PRIMITIVES VIEW MENU
+    ----------------------
+    """
     def find_view_menu(self, name):
         """
             Finds and returns a ViewMenu by name
@@ -989,9 +992,11 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    #----------------------------------------------
-    #          PERMISSION VIEW MENU
-    #----------------------------------------------
+    """
+    ----------------------
+     PERMISSION VIEW MENU
+    ----------------------
+    """
     def find_permission_view_menu(self, permission_name, view_menu_name):
         """
             Finds and returns a PermissionView by names

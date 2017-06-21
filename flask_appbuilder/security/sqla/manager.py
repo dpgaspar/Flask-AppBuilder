@@ -57,8 +57,6 @@ class SecurityManager(BaseSecurityManager):
         self.permissionmodelview.datamodel = SQLAInterface(self.permission_model)
         self.viewmenumodelview.datamodel = SQLAInterface(self.viewmenu_model)
         self.permissionviewmodelview.datamodel = SQLAInterface(self.permissionview_model)
-
-        #super(SecurityManager, self).__init__(appbuilder)
         self.create_db()
 
     @property
@@ -179,9 +177,9 @@ class SecurityManager(BaseSecurityManager):
         return self.get_session.query(self.user_model).get(pk)
 
     """
-        ----------------------------------------
-            PERMISSION MANAGEMENT
-        ----------------------------------------
+    -----------------------
+     PERMISSION MANAGEMENT
+    -----------------------
     """
     def add_role(self, name):
         role = self.find_role(name)
@@ -213,7 +211,6 @@ class SecurityManager(BaseSecurityManager):
             Finds and returns a Permission by name
         """
         return self.get_session.query(self.permission_model).filter_by(name=name).first()
-
 
     def add_permission(self, name):
         """
@@ -251,9 +248,11 @@ class SecurityManager(BaseSecurityManager):
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
                 self.get_session.rollback()
 
-    # ----------------------------------------------
-    #       PRIMITIVES VIEW MENU
-    #----------------------------------------------
+    """
+    ----------------------
+     PRIMITIVES VIEW MENU
+    ----------------------
+    """
     def find_view_menu(self, name):
         """
             Finds and returns a ViewMenu by name
@@ -298,9 +297,11 @@ class SecurityManager(BaseSecurityManager):
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
                 self.get_session.rollback()
 
-    #----------------------------------------------
-    #          PERMISSION VIEW MENU
-    #----------------------------------------------
+    """
+    ----------------------
+     PERMISSION VIEW MENU
+    ----------------------
+    """
     def find_permission_view_menu(self, permission_name, view_menu_name):
         """
             Finds and returns a PermissionView by names

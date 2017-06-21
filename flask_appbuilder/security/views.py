@@ -187,6 +187,7 @@ class UserModelView(ModelView):
     def userinfoedit(self, item):
         return redirect(url_for(self.appbuilder.sm.userinfoeditview.__name__ + '.this_form_get'))
 
+
 class UserOIDModelView(UserModelView):
     """
         View that add OID specifics to User view.
@@ -349,6 +350,7 @@ class RegisterUserModelView(ModelView):
     show_exclude_columns = ['password']
     search_exclude_columns = ['password']
 
+
 class AuthView(BaseView):
     route_base = ''
     login_template = ''
@@ -434,6 +436,7 @@ class AuthLDAPView(AuthView):
         
         return response     
     """
+
 
 class AuthOIDView(AuthView):
     login_template = 'appbuilder/general/security/login_oid.html'
