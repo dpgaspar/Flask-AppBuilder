@@ -12,6 +12,7 @@ Improvements and Bug fixes on 1.9.1
 - New, #512 Docs now use readthedocs theme.
 - New, #503 FileUploadField: process_on_store() and process_on_delete().
 - Fix, #511 Added new parameter to fabmanager babel-extract to include aditional keywords, defaults to **lazy_gettext, gettext, _, __**
+- New, #483 new parameter for LDAP username formatting AUTH_LDAP_USERNAME_FORMAT.
 
 Improvements and Bug fixes on 1.9.0
 -----------------------------------
