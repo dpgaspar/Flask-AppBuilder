@@ -1,14 +1,12 @@
 import datetime
 import logging
 
-from sqlalchemy import Column, Integer, ForeignKey, DateTime, String, Boolean
-from sqlalchemy.orm import relationship, backref, remote
+from sqlalchemy import Column, Integer, ForeignKey, DateTime
+from sqlalchemy.orm import relationship
 import sqlalchemy.types as types
 from sqlalchemy.ext.declarative import declared_attr
-from .._compat import as_unicode
 
 from flask import g
-
 
 log = logging.getLogger(__name__)
 
@@ -31,7 +29,7 @@ class ImageColumn(types.TypeDecorator):
         types.TypeDecorator.__init__(self, **kw)
         self.thumbnail_size = thumbnail_size
         self.size = size
-        
+
 
 class AuditMixin(object):
     """
@@ -87,6 +85,7 @@ class UserExtensionMixin(object):
 """
     This is for retro compatibility
 """
+
+
 class BaseMixin(object):
     pass
-

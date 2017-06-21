@@ -4,6 +4,7 @@ from .._compat import as_unicode
 
 log = logging.getLogger(__name__)
 
+
 class BaseFilter(object):
     """
         Base class for all data filters.

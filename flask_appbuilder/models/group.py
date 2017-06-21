@@ -9,6 +9,7 @@ from .. import const as c
 
 log = logging.getLogger(__name__)
 
+
 def aggregate(label=''):
     """
         Use this decorator to set a label for your aggregation functions on charts.
@@ -38,6 +39,7 @@ def aggregate_sum(items, col):
         accepts a list and returns the sum of the list's items
     """
     return sum(getattr(item, col) for item in items)
+
 
 @aggregate(_('Avg. of'))
 def aggregate_avg(items, col):
@@ -112,7 +114,6 @@ class GroupByCol(BaseGroupBy):
             json_data['rows'].append(
                 {"c": [{"v": self.get_format_group_col(grouped)}, {"v": aggregate_value}]})
         return json_data
-
 
     def apply(self, data):
         data = sorted(data, key=self.get_group_col)
@@ -231,8 +232,6 @@ class BaseProcessData(object):
                     row[key] = col_data
             ret.append(row)
         return ret
-
-
 
     def to_json(self, data, labels=None):
         """

@@ -2,7 +2,6 @@ import os
 from flask import session, has_request_context
 from flask_babel import Babel
 from ..basemanager import BaseManager
-from .. import translations
 from .views import LocaleView
 
 

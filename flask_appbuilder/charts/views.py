@@ -45,11 +45,9 @@ class BaseChartView(BaseModelView):
     group_bys = {}
     """ New for 0.6.4, on test, don't use yet """
 
-
     def __init__(self, **kwargs):
         self._init_titles()
         super(BaseChartView, self).__init__(**kwargs)
-
 
     def _init_titles(self):
         self.title = self.chart_title
@@ -67,7 +65,6 @@ class BaseChartView(BaseModelView):
 
 
 class GroupByChartView(BaseChartView):
-
     definitions = []
     """
         These charts can display multiple series,
@@ -135,8 +132,6 @@ class GroupByChartView(BaseChartView):
                 else:
                     self.label_columns[serie] = self._prettify_column(serie)
 
-
-
     def get_group_by_class(self, definition):
         """
             intantiates the processing class (Direct or Grouped) and returns it.
@@ -148,7 +143,6 @@ class GroupByChartView(BaseChartView):
         else:
             formatter = {}
         return self.ProcessClass([group_by], series, formatter)
-
 
     def _get_chart_widget(self, filters=None,
                           order_column='',
@@ -180,7 +174,7 @@ class GroupByChartView(BaseChartView):
                                              height=height,
                                              value_columns=value_columns,
                                              modelview_name=self.__class__.__name__,
-                                              **args)
+                                             **args)
         return widgets
 
     @expose('/chart/<group_by>')
@@ -197,13 +191,13 @@ class GroupByChartView(BaseChartView):
         widgets = self._get_search_widget(form=form, widgets=widgets)
         self.update_redirect()
         return self.render_template(self.chart_template, route_base=self.route_base,
-                               title=self.chart_title,
-                               label_columns=self.label_columns,
-                               definitions=self.definitions,
-                               group_by_label=self.group_by_label,
-                               height=self.height,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder)
+                                    title=self.chart_title,
+                                    label_columns=self.label_columns,
+                                    definitions=self.definitions,
+                                    group_by_label=self.group_by_label,
+                                    height=self.height,
+                                    widgets=widgets,
+                                    appbuilder=self.appbuilder)
 
 
 class DirectByChartView(GroupByChartView):
@@ -252,9 +246,9 @@ class DirectByChartView(GroupByChartView):
     ProcessClass = DirectProcessData
 
 
-#-------------------------------------------------------
+# -------------------------------------------------------
 # DEPRECATED SECTION
-#-------------------------------------------------------
+# -------------------------------------------------------
 
 class BaseSimpleGroupByChartView(BaseChartView):
     group_by_columns = []
@@ -286,7 +280,7 @@ class BaseSimpleGroupByChartView(BaseChartView):
                                              chart_3d=self.chart_3d,
                                              height=height,
                                              value_columns=value_columns,
-                                             modelview_name = self.__class__.__name__,
+                                             modelview_name=self.__class__.__name__,
                                              **args)
         return widgets
 
@@ -304,7 +298,6 @@ class BaseSimpleDirectChartView(BaseChartView):
             raise Exception('Base Chart View property <direct_columns> must not be empty')
         else:
             super(BaseSimpleDirectChartView, self).__init__(**kwargs)
-
 
     def get_group_by_columns(self):
         """
@@ -336,7 +329,7 @@ class BaseSimpleDirectChartView(BaseChartView):
                                              chart_3d=self.chart_3d,
                                              height=height,
                                              value_columns=value_columns,
-                                             modelview_name = self.__class__.__name__,
+                                             modelview_name=self.__class__.__name__,
                                              **args)
         return widgets
 
@@ -362,13 +355,13 @@ class ChartView(BaseSimpleGroupByChartView):
         widgets = self._get_chart_widget(filters=self._filters, group_by=group_by)
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return self.render_template(self.chart_template, route_base=self.route_base,
-                               title=self.chart_title,
-                               label_columns=self.label_columns,
-                               group_by_columns=self.group_by_columns,
-                               group_by_label=self.group_by_label,
-                               height=self.height,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder)
+                                    title=self.chart_title,
+                                    label_columns=self.label_columns,
+                                    group_by_columns=self.group_by_columns,
+                                    group_by_label=self.group_by_label,
+                                    height=self.height,
+                                    widgets=widgets,
+                                    appbuilder=self.appbuilder)
 
 
 class TimeChartView(BaseSimpleGroupByChartView):
@@ -382,7 +375,6 @@ class TimeChartView(BaseSimpleGroupByChartView):
 
     chart_template = 'appbuilder/general/charts/chart_time.html'
     chart_type = 'ColumnChart'
-
 
     def _get_chart_widget(self, filters=None,
                           order_column='',
@@ -413,7 +405,6 @@ class TimeChartView(BaseSimpleGroupByChartView):
                                              **args)
         return widgets
 
-
     @expose('/chart/<group_by>/<period>')
     @expose('/chart/')
     @has_access
@@ -430,12 +421,12 @@ class TimeChartView(BaseSimpleGroupByChartView):
 
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return self.render_template(self.chart_template, route_base=self.route_base,
-                               title=self.chart_title,
-                               label_columns=self.label_columns,
-                               group_by_columns=self.group_by_columns,
-                               group_by_label=self.group_by_label,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder)
+                                    title=self.chart_title,
+                                    label_columns=self.label_columns,
+                                    group_by_columns=self.group_by_columns,
+                                    group_by_label=self.group_by_label,
+                                    widgets=widgets,
+                                    appbuilder=self.appbuilder)
 
 
 class DirectChartView(BaseSimpleDirectChartView):
@@ -479,12 +470,10 @@ class DirectChartView(BaseSimpleDirectChartView):
                                          direct=direct)
         widgets = self._get_search_widget(form=form, widgets=widgets)
         return self.render_template(self.chart_template, route_base=self.route_base,
-                               title=self.chart_title,
-                               label_columns=self.label_columns,
-                               group_by_columns=self.get_group_by_columns(),
-                               group_by_label=self.group_by_label,
-                               height=self.height,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder)
-
-
+                                    title=self.chart_title,
+                                    label_columns=self.label_columns,
+                                    group_by_columns=self.get_group_by_columns(),
+                                    group_by_label=self.group_by_label,
+                                    height=self.height,
+                                    widgets=widgets,
+                                    appbuilder=self.appbuilder)
