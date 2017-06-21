@@ -40,8 +40,8 @@ we must create a function to calculate the *college_perc*::
 
 Now we are ready to define our view::
 
-    from flask.ext.appbuilder.charts.views import DirectByChartView
-    from flask.ext.appbuilder.model.sqla.interface import SQLAInterface
+    from flask_appbuilder.charts.views import DirectByChartView
+    from flask_appbuilder.model.sqla.interface import SQLAInterface
 
     class CountryDirectChartView(DirectByChartView):
         datamodel = SQLAInterface(CountryStats)
@@ -75,8 +75,8 @@ The **definitions** property respects the following grammar::
 Where 'label' and 'formatter' are optional parameters.
 So on the same view you can have multiple direct chart definitions, like this::
 
-    from flask.ext.appbuilder.charts.views import DirectByChartView
-    from flask.ext.appbuilder.model.sqla.interface import SQLAInterface
+    from flask_appbuilder.charts.views import DirectByChartView
+    from flask_appbuilder.model.sqla.interface import SQLAInterface
 
     class CountryDirectChartView(DirectByChartView):
         datamodel = SQLAInterface(CountryStats)
@@ -129,7 +129,7 @@ support has many countries has we like.
 The gold is to display a chart showing the unemployment
 versus the percentage of the population with higher education per country::
 
-    from flask.ext.appbuilder import Model
+    from flask_appbuilder import Model
 
     class Country(Model):
         id = Column(Integer, primary_key=True)
@@ -161,9 +161,9 @@ versus the percentage of the population with higher education per country::
 
 Now we are ready to define our view::
 
-    from flask.ext.appbuilder.charts.views import GroupByChartView
-    from flask.ext.appbuilder.models.group import aggregate_count, aggregate_sum, aggregate_avg
-    from flask.ext.appbuilder.model.sqla.interface import SQLAInterface
+    from flask_appbuilder.charts.views import GroupByChartView
+    from flask_appbuilder.models.group import aggregate_count, aggregate_sum, aggregate_avg
+    from flask_appbuilder.model.sqla.interface import SQLAInterface
 
 
     class CountryGroupByChartView(GroupByChartView):
@@ -193,9 +193,9 @@ A different and interesting example is to group data monthly from all countries,
 **formater** property::
 
     import calendar
-    from flask.ext.appbuilder.charts.views import GroupByChartView
-    from flask.ext.appbuilder.models.group import aggregate_count, aggregate_sum, aggregate_avg
-    from flask.ext.appbuilder.model.sqla.interface import SQLAInterface
+    from flask_appbuilder.charts.views import GroupByChartView
+    from flask_appbuilder.models.group import aggregate_count, aggregate_sum, aggregate_avg
+    from flask_appbuilder.model.sqla.interface import SQLAInterface
 
     def pretty_month_year(value):
         return calendar.month_name[value.month] + ' ' + str(value.year)

@@ -55,7 +55,7 @@ Configuration
 You can configure the default behaviour and UI on many different ways. The easiest one is making your own RegisterUser
 class and inherit from RegisterUserDBView (when using auth db). Let's take a look at a practical example::
 
-    from flask.ext.appbuilder.security.registerviews import RegisterUserDBView
+    from flask_appbuilder.security.registerviews import RegisterUserDBView
 
     class MyRegisterUserDBView(RegisterUserDBView):
         email_template = 'register_mail.html'

@@ -32,7 +32,7 @@ Additionally add **@has_access** decorator to tell flask that this is a security
 
 Using the Flask-AppBuilder-Skeleton (take a look at the :doc:`installation` chapter). Edit views.py file and add::
 
-    from flask.ext.appbuilder import AppBuilder, expose, BaseView
+    from flask_appbuilder import AppBuilder, expose, BaseView
     from app import appbuilder
 
     class MyView(BaseView):
@@ -78,7 +78,7 @@ http://localhost:8080/myview/method2/john
 
 As you can see, those methods are public. So let's secure them. Change views.py to::
 
-    from flask.ext.appbuilder import AppBuilder, BaseView, expose, has_access
+    from flask_appbuilder import AppBuilder, BaseView, expose, has_access
     from app import appbuilder
 
 
@@ -108,11 +108,11 @@ As you can see, those methods are public. So let's secure them. Change views.py 
 You can find this example on `SimpleView2 <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleview2>`_.
 Take a look at their definition:
 
-.. automodule:: flask.ext.appbuilder.baseviews
+.. automodule:: flask_appbuilder.baseviews
 
     .. autofunction:: expose
 
-.. automodule:: flask.ext.appbuilder.security.decorators
+.. automodule:: flask_appbuilder.security.decorators
 
     .. autofunction:: has_access
 
@@ -186,8 +186,8 @@ fields and inherit them from F.A.B. *DynamicForm*.
 
     from wtforms import Form, StringField
     from wtforms.validators import DataRequired
-    from flask.ext.appbuilder.fieldwidgets import BS3TextFieldWidget
-    from flask.ext.appbuilder.forms import DynamicForm
+    from flask_appbuilder.fieldwidgets import BS3TextFieldWidget
+    from flask_appbuilder.forms import DynamicForm
 
 
     class MyForm(DynamicForm):

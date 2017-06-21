@@ -201,7 +201,7 @@ Improvements and Bug fixes on 1.3.6
 - SimpleFormView.form_post can return null to redirect back or a Flask response (render or redirect).
 - Changed the way related views are initialized, no bind to the related_views property.
 - #144 New MultipleView for rendering multiple BaseViews on the same page.
-- Can now import all views from flask.ext.appbuilder.
+- Can now import all views from flask_appbuilder.
 
 Improvements and Bug fixes on 1.3.5
 -----------------------------------
@@ -246,7 +246,7 @@ Improvements and Bug fixes on 1.3.0
 - New, edit_form_query_rel_fields, add_form_query_rel_fields changed, accepts dict instead of list (BREAKING CHANGE).
 - Fix, Filter rework datamodel is no longer optional for construct (BREAKING CHANGE).
 - Fix, Filter methods no longer require datamodel parameter (BREAKING CHANGE).
-- Fix, All SQLAlchemy Filter's moved to flask.ext.appbuilder.models.sqla.filters.
+- Fix, All SQLAlchemy Filter's moved to flask_appbuilder.models.sqla.filters.
 - New, All Filters are accessible from datamodel class, ex: datamodel.FilterEqual
 - New, Charts will be database ordered (better performance), and can accept dotted cols on relations.
 - Fix, on menus with dividers if next item has no permission, divider was shown.

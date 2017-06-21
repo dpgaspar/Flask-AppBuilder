@@ -46,7 +46,7 @@ A very simple manager would look something like this::
 
 
    import logging
-   from flask.ext.appbuilder.basemanager import BaseManager
+   from flask_appbuilder.basemanager import BaseManager
    from flask_babelpkg import lazy_gettext as _
    from .views import FirstModelView1
    from .model import MyModel

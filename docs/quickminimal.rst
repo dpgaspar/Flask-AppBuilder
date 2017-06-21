@@ -16,7 +16,7 @@ I do advise using the skeleton application as described on the :doc:`installatio
 
     import os
     from flask import Flask
-    from flask.ext.appbuilder import SQLA, AppBuilder
+    from flask_appbuilder import SQLA, AppBuilder
 
     # init Flask
     app = Flask(__name__)

@@ -55,7 +55,7 @@ So that we can use Babel to translate our index text
 
 Define a special and simple view inherit from IndexView, don't define this view on views.py, put it on a separate file like index.py::
 
-    from flask.ext.appbuilder import IndexView
+    from flask_appbuilder import IndexView
 
 
     class MyIndexView(IndexView):
@@ -214,8 +214,8 @@ All you have to do is to mix *CompactCRUDMixin* class with the *ModelView* class
 
 ::
 
-    from flask.ext.appbuilder.models.sqla.interface import SQLAInterface
-    from flask.ext.appbuilder.views import ModelView, CompactCRUDMixin
+    from flask_appbuilder.models.sqla.interface import SQLAInterface
+    from flask_appbuilder.views import ModelView, CompactCRUDMixin
     from app.models import Project, ProjectFiles
     from app import appbuilder
 

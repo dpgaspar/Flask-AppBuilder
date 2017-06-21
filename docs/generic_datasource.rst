@@ -18,7 +18,7 @@ override the all method you will implement the data generation at it's heart.
 
 On our example you must first define the **Model** you will represent::
 
-    from flask.ext.appbuilder.models.generic import GenericModel, GenericSession, GenericColumn
+    from flask_appbuilder.models.generic import GenericModel, GenericSession, GenericColumn
 
     class PSModel(GenericModel):
         UID = GenericColumn(str)
