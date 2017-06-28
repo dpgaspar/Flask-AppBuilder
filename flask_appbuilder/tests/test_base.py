@@ -6,8 +6,14 @@ import datetime
 import json
 import logging
 
+try:
+    import enum
+    _has_enum = True
+except ImportError:
+    _has_enum = False
+
 from nose.tools import eq_, ok_
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, Enum
 from sqlalchemy.orm import relationship
 from flask import redirect, request, session
 
@@ -73,6 +79,16 @@ class Model2(Model):
     def field_method(self):
        return "field_method_value"
 
+if _has_enum:
+    class TestEnum(enum.Enum):
+        e1 = 'a'
+        e2 = 2
+
+class ModelWithEnums(Model):
+    id = Column(Integer, primary_key=True)
+    enum1 = Column(Enum('e1', 'e2'))
+    if _has_enum:
+        enum2 = Column(Enum(TestEnum))
 
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):
@@ -208,6 +224,8 @@ class FlaskTestCase(unittest.TestCase):
                 'field_string': lambda x: 'FORMATTED_STRING',
             }
 
+        class ModelWithEnumsView(ModelView):
+            datamodel = SQLAInterface(ModelWithEnums)
 
         self.appbuilder.add_view(Model1View, "Model1", category='Model1')
         self.appbuilder.add_view(Model1ViewWithRedirects, "Model1ViewWithRedirects", category='Model1')
@@ -226,6 +244,8 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view(Model2DirectByChartView, "Model2 Direct By Chart")
         self.appbuilder.add_view(Model2TimeChartView, "Model2 Time Chart")
         self.appbuilder.add_view(Model2DirectChartView, "Model2 Direct Chart")
+
+        self.appbuilder.add_view(ModelWithEnumsView, "ModelWithEnums")
 
         self.appbuilder.add_view(PSView, "Generic DS PS View", category='PSView')
         role_admin = self.appbuilder.sm.find_role('Admin')
@@ -288,7 +308,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 29)  # current minimal views are 12
+        eq_(len(self.appbuilder.baseviews), 30)  # current minimal views are 12
 
     def test_back(self):
         """
@@ -313,6 +333,7 @@ class FlaskTestCase(unittest.TestCase):
         # Check if tables exist
         ok_('model1' in inspector.get_table_names())
         ok_('model2' in inspector.get_table_names())
+        ok_('model_with_enums' in inspector.get_table_names())
 
     def test_index(self):
         """
@@ -430,6 +451,40 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.get('/model1view/delete/1', follow_redirects=True)
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model1).first()
+        eq_(model, None)
+
+    def test_model_crud_with_enum(self):
+        """
+            Test Model add, delete, edit for Model with Enum Columns
+        """
+        client = self.app.test_client()
+        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+
+        data = {'enum1': u'e1'}
+        if _has_enum:
+            data['enum2'] = 'e1'
+        rv = client.post('/modelwithenumsview/add', data=data, follow_redirects=True)
+        eq_(rv.status_code, 200)
+
+        model = self.db.session.query(ModelWithEnums).first()
+        eq_(model.enum1, u'e1')
+        if _has_enum:
+            eq_(model.enum2, TestEnum.e1)
+
+        data = {'enum1': u'e2'}
+        if _has_enum:
+            data['enum2'] = 'e2'
+        rv = client.post('/modelwithenumsview/edit/1', data=data, follow_redirects=True)
+        eq_(rv.status_code, 200)
+
+        model = self.db.session.query(ModelWithEnums).first()
+        eq_(model.enum1, u'e2')
+        if _has_enum:
+            eq_(model.enum2, TestEnum.e2)
+
+        rv = client.get('/modelwithenumsview/delete/1', follow_redirects=True)
+        eq_(rv.status_code, 200)
+        model = self.db.session.query(ModelWithEnums).first()
         eq_(model, None)
 
     def test_formatted_cols(self):
