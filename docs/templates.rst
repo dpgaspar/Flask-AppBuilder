@@ -288,7 +288,7 @@ To insert your template section before the a block, say "show_form" just create 
 
 ::
 
-    {% extends "appbuilder/general/model/edit.html" %}
+    {% extends "appbuilder/general/model/show.html" %}
 
         {% block show_form %}
             This Text is before the show widget
@@ -297,14 +297,14 @@ To insert your template section before the a block, say "show_form" just create 
 
 To use your template define you ModelView with **edit_template** declaration to your templates relative path
 
-If you have your template on ./your_project/app/templates/edit_contacts.html
+If you have your template on ./your_project/app/templates/show_contacts.html
 
 ::
 
     class ContactModelView(ModelView):
         datamodel = SQLAInterface(Contact)
 
-        edit_template = 'edit_contacts.html'
+        show_template = 'edit_contacts.html'
 
 
 Edit/Show Cascade Templates
