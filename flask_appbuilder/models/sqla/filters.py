@@ -183,6 +183,8 @@ class SQLAFilterConverter(BaseFilterConverter):
                         FilterRelationOneToManyNotEqual]),
                         ('is_relation_many_to_many', [FilterRelationManyToManyEqual]),
                         ('is_relation_one_to_many', [FilterRelationManyToManyEqual]),
+                        ('is_enum', [FilterEqual,
+                                     FilterNotEqual]),
                         ('is_text', [FilterStartsWith,
                                      FilterEndsWith,
                                      FilterContains,

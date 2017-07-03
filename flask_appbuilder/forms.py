@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import (BooleanField, StringField,
                      TextAreaField, IntegerField, FloatField,
                       DateField, DateTimeField, DecimalField)
-from .fields import QuerySelectMultipleField, QuerySelectField
+from .fields import QuerySelectMultipleField, QuerySelectField, EnumField
 
 from wtforms import validators
 from .fieldwidgets import (BS3TextAreaFieldWidget,
@@ -57,19 +57,30 @@ class FieldConverter(object):
         self.default = default
 
     def convert(self):
-        for conversion in self.conversion_table:
-            if getattr(self.datamodel, conversion[0])(self.colname):
-                if conversion[2]:
-                    return conversion[1](self.label,
-                                         description=self.description,
-                                         validators=self.validators,
-                                         widget=conversion[2](),
-                                         default=self.default)
+        # sqlalchemy.types.Enum inherits from String, therefore `is_enum` must be
+        # checked before checking for `is_string`:
+        if getattr(self.datamodel, 'is_enum')(self.colname):
+            col_type = self.datamodel.list_columns[self.colname].type
+            return EnumField(enum_class=col_type.enum_class,
+                             enums=col_type.enums,
+                             label=self.label,
+                             description=self.description,
+                             validators=self.validators,
+                             widget=Select2Widget(),
+                             default=self.default)
+        for type_marker, field, widget in self.conversion_table:
+            if getattr(self.datamodel, type_marker)(self.colname):
+                if widget:
+                    return field(self.label,
+                                 description=self.description,
+                                 validators=self.validators,
+                                 widget=widget(),
+                                 default=self.default)
                 else:
-                    return conversion[1](self.label,
-                                         description=self.description,
-                                         validators=self.validators,
-                                         default=self.default)
+                    return field(self.label,
+                                 description=self.description,
+                                 validators=self.validators,
+                                 default=self.default)
         log.error('Column %s Type not supported' % self.colname)
 
 

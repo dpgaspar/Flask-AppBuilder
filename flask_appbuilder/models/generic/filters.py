@@ -63,7 +63,9 @@ class GenericFilterConverter(BaseFilterConverter):
         specific for SQLAlchemy.
 
     """
-    conversion_table = (('is_text', [FilterContains,
+    conversion_table = (('is_enum', [FilterEqual,
+                                     FilterNotEqual]),
+                        ('is_text', [FilterContains,
                                      FilterIContains,
                                      FilterNotContains,
                                      FilterEqual,
