@@ -4,7 +4,7 @@ import operator
 
 from wtforms import widgets
 from wtforms.compat import text_type, string_types
-from wtforms.fields import SelectFieldBase, Field
+from wtforms.fields import SelectFieldBase, Field, SelectField
 from wtforms.validators import ValidationError
 
 
@@ -192,3 +192,51 @@ class QuerySelectMultipleField(QuerySelectField):
                     raise ValidationError(self.gettext('Not a valid choice'))
 
 
+class EnumField(SelectField):
+    """Selection field for Sqlalchemy Enum type.
+
+    The meaning of enum_class and enums is the same as for attributes on sqlalchemy.types.Enum:
+
+    :param enum_class: either None or a subclass of Python enum.Enum
+    :param enums: a sequence of strings, if enum_class is not Null than it should be 
+                  `list(enum_class.__members__)`
+    """
+
+    def __init__(self, enum_class, enums, label=None, validators=None, default=None, **kwargs):
+        self._enum_class = enum_class
+        self._enums = enums
+
+        # Column(Enum(enum.Enum)) case
+        if enum_class is not None:
+            labels = [text_type(enum_class.__members__[enum_member].value)
+                      for enum_member in enums]
+
+            def coerce(value):
+                if value is None:
+                    return None
+                elif isinstance(value, enum_class):
+                    return value
+                else:
+                    return enum_class.__members__[value]
+
+
+        # Column(Enum(*enums)) case
+        else:
+            labels = enums
+
+            def coerce(value):
+                if value is None:
+                    return None
+                return text_type(value)
+
+        choices = list(zip(enums, labels))
+
+        super(EnumField, self).__init__(label=label, validators=validators, default=default,
+                                        coerce=coerce, choices=choices, **kwargs)
+
+    def pre_validate(self, form):
+        for v, _ in self.choices:
+            if self.data == self.coerce(v):
+                break
+        else:
+            raise ValueError(self.gettext('Not a valid choice'))

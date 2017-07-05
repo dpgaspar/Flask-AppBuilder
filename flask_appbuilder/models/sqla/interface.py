@@ -201,6 +201,12 @@ class SQLAInterface(BaseInterface):
         except:
             return False
 
+    def is_enum(self, col_name):
+        try:
+            return isinstance(self.list_columns[col_name].type, sa.types.Enum)
+        except:
+            return False
+
     def is_relation(self, col_name):
         try:
             return isinstance(self.list_properties[col_name], sa.orm.properties.RelationshipProperty)
@@ -264,6 +270,8 @@ class SQLAInterface(BaseInterface):
 
     def get_max_length(self, col_name):
         try:
+            if self.is_enum(col_name):
+                return -1
             col = self.list_columns[col_name]
             if col.type.length:
                 return col.type.length

@@ -4,6 +4,12 @@ from functools import reduce
 from flask_babel import lazy_gettext
 from .filters import Filters
 
+try:
+    import enum
+    _has_enum = True
+except ImportError:
+    _has_enum = False
+
 log = logging.getLogger(__name__)
 
 
@@ -44,7 +50,12 @@ class BaseInterface(object):
             return getattr(item, col)()
         else:
             # its an attribute
-            return getattr(item, col)
+            value = getattr(item, col)
+            # if value is an Enum instance than list and show widgets should display
+            # its .value rather than its .name:
+            if _has_enum and isinstance(value, enum.Enum):
+                return value.value
+            return value
 
     def get_filters(self, search_columns=None):
         search_columns = search_columns or []
@@ -151,6 +162,9 @@ class BaseInterface(object):
         return False
 
     def is_datetime(self, col_name):
+        return False
+
+    def is_enum(self, col_name):
         return False
 
     def is_relation(self, prop):

@@ -41,7 +41,7 @@ we must create a function to calculate the *college_perc*::
 Now we are ready to define our view::
 
     from flask_appbuilder.charts.views import DirectByChartView
-    from flask_appbuilder.model.sqla.interface import SQLAInterface
+    from flask_appbuilder.models.sqla.interface import SQLAInterface
 
     class CountryDirectChartView(DirectByChartView):
         datamodel = SQLAInterface(CountryStats)
@@ -76,7 +76,7 @@ Where 'label' and 'formatter' are optional parameters.
 So on the same view you can have multiple direct chart definitions, like this::
 
     from flask_appbuilder.charts.views import DirectByChartView
-    from flask_appbuilder.model.sqla.interface import SQLAInterface
+    from flask_appbuilder.models.sqla.interface import SQLAInterface
 
     class CountryDirectChartView(DirectByChartView):
         datamodel = SQLAInterface(CountryStats)
@@ -163,7 +163,7 @@ Now we are ready to define our view::
 
     from flask_appbuilder.charts.views import GroupByChartView
     from flask_appbuilder.models.group import aggregate_count, aggregate_sum, aggregate_avg
-    from flask_appbuilder.model.sqla.interface import SQLAInterface
+    from flask_appbuilder.models.sqla.interface import SQLAInterface
 
 
     class CountryGroupByChartView(GroupByChartView):
@@ -195,7 +195,7 @@ A different and interesting example is to group data monthly from all countries,
     import calendar
     from flask_appbuilder.charts.views import GroupByChartView
     from flask_appbuilder.models.group import aggregate_count, aggregate_sum, aggregate_avg
-    from flask_appbuilder.model.sqla.interface import SQLAInterface
+    from flask_appbuilder.models.sqla.interface import SQLAInterface
 
     def pretty_month_year(value):
         return calendar.month_name[value.month] + ' ' + str(value.year)
