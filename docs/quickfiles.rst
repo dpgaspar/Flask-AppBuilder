@@ -10,7 +10,7 @@ Define your model (models.py)
 ::
 
     from flask_appbuilder import Model
-    from flask_appbuilder.model.mixins import ImageColumn
+    from flask_appbuilder.models.mixins import ImageColumn
 
     class Person(Model):
         id = Column(Integer, primary_key=True)
