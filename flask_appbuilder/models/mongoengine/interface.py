@@ -50,7 +50,7 @@ class MongoEngineInterface(BaseInterface):
         # order the data
         if order_column != '':
             if hasattr(getattr(self.obj, order_column), '_col_name'):
-                order_column = getattr(getattr(self.obj, order_column),'_col_name')
+                order_column = getattr(getattr(self.obj, order_column), '_col_name')
             if order_direction == 'asc':
                 objs = objs.order_by('-{0}'.format(order_column))
             else:

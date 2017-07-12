@@ -38,7 +38,23 @@ class BaseInterface(object):
     def __init__(self, obj):
         self.obj = obj
 
-    def _get_attr_value(self, item, col):
+    def _get_attr(self, col_name):
+        if not hasattr(self.obj, col_name):
+            # it's an inner obj attr
+            try:
+                _obj = self.obj
+                for i in col_name.split('.'):
+                    try:
+                        _obj = self.get_related_model(i)
+                    except Exception as e:
+                        _obj = getattr(_obj, i)
+                return _obj
+            except Exception as e:
+                return None
+        return getattr(self.obj, col_name)
+
+    @staticmethod
+    def _get_attr_value(item, col):
         if not hasattr(item, col):
             # it's an inner obj attr
             try:
