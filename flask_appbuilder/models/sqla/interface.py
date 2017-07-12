@@ -67,7 +67,7 @@ class SQLAInterface(BaseInterface):
             if hasattr(self.obj, order_column):
                 if hasattr(getattr(self.obj, order_column), '_col_name'):
                     order_column = getattr(getattr(self.obj, order_column), '_col_name')
-            query = query.order_by(order_column + ' ' + order_direction)
+            query = query.order_by("%s %s" % (order_column, order_direction))
         return query
 
     def query(self, filters=None, order_column='', order_direction='',

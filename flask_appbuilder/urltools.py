@@ -28,6 +28,7 @@ class Stack(object):
     def to_json(self):
         return self.data
 
+
 def get_group_by_args():
     """
         Get page arguments for group by
@@ -35,6 +36,7 @@ def get_group_by_args():
     group_by = request.args.get('group_by')
     if not group_by: group_by = ''
     return group_by
+
 
 def get_page_args():
     """
@@ -51,6 +53,7 @@ def get_page_args():
             pages[re_match[0]] = int(request.args.get(arg))
     return pages
 
+
 def get_page_size_args():
     """
         Get page size arguments, returns an int
@@ -66,6 +69,7 @@ def get_page_size_args():
             page_sizes[re_match[0]] = int(request.args.get(arg))
     return page_sizes
 
+
 def get_order_args():
     """
         Get order arguments, return a dictionary
@@ -78,8 +82,11 @@ def get_order_args():
     for arg in request.args:
         re_match = re.findall('_oc_(.*)', arg)
         if re_match:
-            orders[re_match[0]] = (request.args.get(arg), request.args.get('_od_' + re_match[0]))
+            order_direction = request.args.get('_od_' + re_match[0])
+            if order_direction in ('asc', 'desc'):
+                orders[re_match[0]] = (request.args.get(arg), order_direction)
     return orders
+
 
 def get_filter_args(filters):
     filters.clear_filters()
