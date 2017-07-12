@@ -1,6 +1,12 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.9.2
+-----------------------------------
+
+- New, #528 support for enum type (SQLA only).
+- Fix, Possible sql injection vulnerability.
+
 Improvements and Bug fixes on 1.9.1
 -----------------------------------
 
