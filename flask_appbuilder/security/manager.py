@@ -593,6 +593,11 @@ class BaseSecurityManager(AbstractSecurityManager):
         except ldap.INVALID_CREDENTIALS:
             return False
 
+    @staticmethod
+    def ldap_extract(ldap_dict, field, fallback):
+        if not ldap_dict.get(field):
+            return fallback
+        return ldap_dict[field][0].decode('utf-8') or fallback
 
     def auth_user_ldap(self, username, password):
         """
@@ -644,12 +649,12 @@ class BaseSecurityManager(AbstractSecurityManager):
                     ldap_user_info = new_user[0][1]
                     if self.auth_user_registration and user is None:
                         user = self.add_user(
-                                username=username,
-                                first_name=ldap_user_info.get(self.auth_ldap_firstname_field, [username])[0],
-                                last_name=ldap_user_info.get(self.auth_ldap_lastname_field, [username])[0],
-                                email=ldap_user_info.get(self.auth_ldap_email_field, [username + '@email.notfound'])[0],
-                                role=self.find_role(self.auth_user_registration_role)
-                            )
+                            username=username,
+                            first_name=self.ldap_extract(ldap_user_info, self.auth_ldap_firstname_field, username),
+                            last_name=self.ldap_extract(ldap_user_info, self.auth_ldap_lastname_field, username),
+                            email=self.ldap_extract(ldap_user_info, self.auth_ldap_email_field, username + '@email.notfound'),
+                            role=self.find_role(self.auth_user_registration_role)
+                        )
 
                 self.update_user_auth_stat(user)
                 return user
