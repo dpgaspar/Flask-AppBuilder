@@ -37,7 +37,7 @@ setup(
         'colorama>=0.3',
         'click>=3.0',
         'Flask>=0.10',
-        'Flask-Babel>=0.10.0',
+        'Flask-Babel==0.11.1',  # known issues with 0.11.2
         'Flask-Login==0.2.11',
         'Flask-OpenID>=1.1.0',
         'Flask-SQLAlchemy>=2.0,<2.1.99',
