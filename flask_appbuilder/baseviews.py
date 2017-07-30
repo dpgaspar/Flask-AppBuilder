@@ -1011,8 +1011,9 @@ class BaseCRUDView(BaseModelView):
         for filter_key in exclude_cols:
             filter_value = self._filters.get_filter_value(filter_key)
             rel_obj = self.datamodel.get_related_obj(filter_key, filter_value)
-            field = getattr(form, filter_key)
-            field.data = rel_obj
+            if hasattr(form, filter_key):
+                field = getattr(form, filter_key)
+                field.data = rel_obj
 
     def pre_update(self, item):
         """
