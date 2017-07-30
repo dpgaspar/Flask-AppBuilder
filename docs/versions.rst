@@ -1,6 +1,9 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.9.3
+-----------------------------------
+
 - Fix, #544 for possible sql injection on order by clauses
 - Fix, #550 check whether `session_form_edit_pk` still exist in db, on CompactCRUDMixin.
 - Fix, #553 for AttributeError when edit_columns on a view in related_views does not include relationship
