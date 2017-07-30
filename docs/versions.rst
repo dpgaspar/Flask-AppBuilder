@@ -1,6 +1,13 @@
 Versions
 ========
 
+- Fix, #544 for possible sql injection on order by clauses
+- Fix, #550 check whether `session_form_edit_pk` still exist in db, on CompactCRUDMixin.
+- Fix, #553 for AttributeError when edit_columns on a view in related_views does not include relationship
+- New, #562 Bump flask-babel version to 0.11.1, and pin.
+- Fix, #444 Create LDAP user firstname/lastname may return as bytes instead of str
+- Fix, Fix divergence on versions between setup and requirements, pinned versions
+
 Improvements and Bug fixes on 1.9.2
 -----------------------------------
 
