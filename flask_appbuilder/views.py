@@ -716,7 +716,7 @@ class CompactCRUDMixin(BaseCRUDView):
             form_widget = self._add().get('add')
         elif session_form_widget == 'edit':
             pk = self.get_key('session_form_edit_pk')
-            if pk:
+            if pk and self.datamodel.get(int(pk)):
                 form_widget = self._edit(int(pk)).get('edit')
         return {
             'list': GroupFormListWidget(
