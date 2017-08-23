@@ -24,7 +24,7 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 1.9.3*.
+*New 1.9.4*.
 
 BREAKING CHANGES relative to 1.8.1 when using OAUTH authentication method.
 
