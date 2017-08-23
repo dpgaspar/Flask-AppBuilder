@@ -75,7 +75,7 @@ Migrating from 1.2.X to 1.3.X
 
 There are some breaking features:
 
-1 - Security models have changed, user's can have multiple roles, not just one. So you have to upgrade your db.
+1 - Security models have changed, users can have multiple roles, not just one. So you have to upgrade your db.
 
 - The security models schema have changed.
 
