@@ -1,7 +1,7 @@
 User Registration
 =================
 
-Allows users to register themselves has users, will behave differently according to the authentication method.
+Allows users to register themselves as users, will behave differently according to the authentication method.
 
 Database Authentication
 -----------------------
@@ -17,7 +17,7 @@ This behaviour can be easily configured or completely altered. By overriding the
 or implementing an all new class. **RegisterUserDBView** inherits from BaseRegisterUser that hold some handy base methods
 and properties.
 
-Note that the process required for sending email's uses the excellent flask-email package so make sure you installed it
+Note that the process required for sending email's uses the excellent flask-mail package so make sure you installed it
 first.
 
 Enabling and using the default implementation is easy just configure the following global config keys on config.py::
@@ -69,7 +69,7 @@ class and inherit from RegisterUserDBView (when using auth db). Let's take a loo
 This class will override:
 
  - The template used to generate the email sent by the user. Take a look at the default template to get a simple
-   starting point `Mail template <https://github.com/dpgaspar/Flask-AppBuilder/blob/1.1.0/flask_appbuilder/templates/appbuilder/general/security/register_mail.html>`_.
+   starting point `Mail template <https://github.com/dpgaspar/Flask-AppBuilder/blob/master/flask_appbuilder/templates/appbuilder/general/security/register_mail.html>`_.
    Your template will receive the following parameters:
 
     - first_name
@@ -80,7 +80,7 @@ This class will override:
  - The email subject
 
  - The activation template. This the page shown to the user when he/she finishes the activation. Take a look at the default template to get a simple
-   starting point `Activation Template <https://github.com/dpgaspar/Flask-AppBuilder/blob/1.1.0/flask_appbuilder/templates/appbuilder/general/security/activation.html>`_.
+   starting point `Activation Template <https://github.com/dpgaspar/Flask-AppBuilder/blob/master/flask_appbuilder/templates/appbuilder/general/security/activation.html>`_.
 
  - The form title. The title that is presented on the registration form.
 
