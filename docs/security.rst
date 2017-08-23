@@ -53,7 +53,7 @@ These base permissions will be associated to your view, so if you create a view 
 - can add on MyModelView
 - can edit on MyModelView
 - can delete on MyModelView
-- can doanload on MyModelView
+- can download on MyModelView
 	
 If you extend your view with some exposed method via the @expose decorator and you want to protect it
 use the @has_access decorator::
