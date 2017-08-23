@@ -63,7 +63,7 @@ def cli_app():
 
 
 @cli_app.command("reset-password")
-@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--app', default='app', envvar='FAB_APP', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 @click.option('--username', default='admin', prompt='The username', help='Resets the password for a particular user.')
 @click.password_option()
@@ -80,7 +80,7 @@ def reset_password(app, appbuilder, username, password):
         click.echo(click.style('User {0} reseted.'.format(username), fg='green'))
 
 @cli_app.command("create-admin")
-@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--app', default='app', envvar='FAB_APP', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 @click.option('--username', default='admin', prompt='Username')
 @click.option('--firstname', default='admin', prompt='User first name')
@@ -107,7 +107,7 @@ def create_admin(app, appbuilder, username, firstname, lastname, email, password
 
 
 @cli_app.command("run")
-@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--app', default='app', envvar='FAB_APP', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 @click.option('--host', default='0.0.0.0')
 @click.option('--port', default=8080)
@@ -121,7 +121,7 @@ def run(app, appbuilder, host, port, debug):
 
 
 @cli_app.command("create-db")
-@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--app', default='app', envvar='FAB_APP', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 def create_db(app, appbuilder):
     """
@@ -136,7 +136,7 @@ def create_db(app, appbuilder):
 
 
 @cli_app.command("version")
-@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--app', default='app', envvar='FAB_APP', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 def version(app, appbuilder):
     """
@@ -147,7 +147,7 @@ def version(app, appbuilder):
 
 
 @cli_app.command("security-cleanup")
-@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--app', default='app', envvar='FAB_APP', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 def security_cleanup(app, appbuilder):
     """
@@ -159,7 +159,7 @@ def security_cleanup(app, appbuilder):
 
 
 @cli_app.command("list-views")
-@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--app', default='app', envvar='FAB_APP', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 def list_users(app, appbuilder):
     """
@@ -172,11 +172,11 @@ def list_users(app, appbuilder):
 
 
 @cli_app.command("list-users")
-@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--app', default='app', envvar='FAB_APP', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
 def list_users(app, appbuilder):
     """
-        List all users on the database 
+        List all users on the database
     """
     _appbuilder = import_application(app, appbuilder)
     echo_header('List of users')
