@@ -238,5 +238,5 @@ Most important Base Properties:
 :form_columns: The form column names to include
 :form: Your form class (`WTForm <https://wtforms.readthedocs.org/en/latest/>`_) (this is mandatory) 
     
-You can find this example on `SimpleView2 <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleform>`_.
+You can find this example on `SimpleForm <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/simpleform>`_.
 
