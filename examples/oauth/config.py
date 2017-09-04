@@ -53,6 +53,22 @@ OAUTH_PROVIDERS = [
             'request_token_url': None,
             'access_token_url': 'https://accounts.google.com/o/oauth2/token',
             'authorize_url': 'https://accounts.google.com/o/oauth2/auth'}
+    },
+    {
+       'name': 'keycloak',
+       'icon': 'fa-user-circle',
+       'token_key': 'access_token',
+       'remote_app': {
+            'base_url': 'http://keycloak-host/auth/realms/real-name/protocol/openid-connect/',
+            'request_token_params': {
+              'scope': 'email profile'
+            },
+            'request_token_url': None,
+            'access_token_url': 'http://keycloak-host/auth/realms/real-name/protocol/openid-connect/token',
+            'authorize_url': 'http://keycloak-host/auth/realms/real-name/protocol/openid-connect/auth',
+            'consumer_key': 'client-id',
+            'consumer_secret': 'client-secret'
+        }
     }
 ]
 
