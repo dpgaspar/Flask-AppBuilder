@@ -396,6 +396,14 @@ class BaseSecurityManager(AbstractSecurityManager):
                 'first_name': me.data.get('given_name', ''),
                 'last_name': me.data.get('family_name', ''),
                 'email': me.data.get('email', '')}
+        # for KeyCloak
+        if provider == 'keycloak':
+            me = self.appbuilder.sm.oauth_remotes[provider].get('userinfo')
+            log.debug("User info from Google: {0}".format(me.data))
+            return {'username': "keycloak_" + me.data.get('preferred_username', ''),
+                    'first_name': me.data.get('given_name', ''),
+                    'last_name': me.data.get('family_name', ''),
+                    'email': me.data.get('email', '')}
         else:
             return {}
 
