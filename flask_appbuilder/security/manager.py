@@ -365,6 +365,25 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         session['oauth_provider'] = provider
 
+    def get_oauth_user_endpoint(self, provider):
+        """
+           Returns the user_query endpoint parameter for the
+           oauth provider. If none is configured, the dynamic user get
+           functionality is not used
+       """
+        for _provider in self.oauth_providers:
+            if _provider['name'] == provider:
+                return _provider.get('user_query', None)
+
+    def get_oauth_user_response_resolver(self, provider):
+        """
+           Returns the user_resolver function for the oauth provider.
+           If none is configured, the dynamic user get functionality is not used
+       """
+        for _provider in self.oauth_providers:
+            if _provider['name'] == provider:
+                return _provider.get('user_resolver', None)
+
     def get_oauth_user_info(self, provider, resp=None):
         """
             Since there are different OAuth API's with different ways to
@@ -397,7 +416,17 @@ class BaseSecurityManager(AbstractSecurityManager):
                 'last_name': me.data.get('family_name', ''),
                 'email': me.data.get('email', '')}
         else:
-            return {}
+            user_query = self.get_oauth_user_endpoint(provider)
+            user_resolver = self.get_oauth_user_response_resolver(provider)
+            if user_query is not None and user_resolver is not None:
+                me = self.appbuilder.sm.oauth_remotes[provider].get(user_query)
+                log.debug("User info from {0}: {1}".format(provider, me.data))
+                user = user_resolver(me)
+                user['username'] = provider + '_' + user['username']
+                return user
+            else:
+                return {}
+
 
     def register_views(self):
         if self.auth_user_registration:
