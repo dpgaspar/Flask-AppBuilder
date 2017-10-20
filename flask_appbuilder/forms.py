@@ -39,6 +39,7 @@ class FieldConverter(object):
                         ('is_gridfs_file', MongoFileField, BS3FileUploadFieldWidget),
                         ('is_gridfs_image', MongoImageField, BS3ImageUploadFieldWidget),
                         ('is_text', TextAreaField, BS3TextAreaFieldWidget),
+                        ('is_binary', TextAreaField, BS3TextAreaFieldWidget),
                         ('is_string', StringField, BS3TextFieldWidget),
                         ('is_integer', IntegerField, BS3TextFieldWidget),
                         ('is_numeric', DecimalField, BS3TextFieldWidget),
