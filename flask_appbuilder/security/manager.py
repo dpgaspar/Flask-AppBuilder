@@ -575,13 +575,13 @@ class BaseSecurityManager(AbstractSecurityManager):
                 log.debug("LDAP indirect bind with: {0}".format(indirect_user))
                 con.bind_s(indirect_user, indirect_password)
                 log.debug("LDAP BIND indirect OK")
-                user = self._search_ldap(ldap, con, username)
-                if user:
-                    log.debug("LDAP got User {0}".format(user))
-                    # username = DN from search
-                    username = user[0][0]
-                else:
-                    return False
+            user = self._search_ldap(ldap, con, username)
+            if user:
+                log.debug("LDAP got User {0}".format(user))
+                # username = DN from search
+                username = user[0][0]
+            else:
+                return False
             log.debug("LDAP bind with: {0} {1}".format(username, "XXXXXX"))
             if self.auth_ldap_username_format:
                 username = self.auth_ldap_username_format % username
