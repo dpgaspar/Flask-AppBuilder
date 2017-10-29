@@ -162,6 +162,9 @@ class BaseInterface(object):
     def is_text(self, col_name):
         return False
 
+    def is_binary(self, col_name):
+        return False
+
     def is_integer(self, col_name):
         return False
 
