@@ -789,6 +789,13 @@ class BaseCRUDView(BaseModelView):
             order_column, order_direction = self.base_order
         joined_filters = filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
+
+        if page:
+            page_number = count // page_size
+            if page > page_number:
+                page_qp = 'page_' + self.__class__.__name__
+                args = {k: page_number if k == page_qp else v for k,v in request.args.items()}
+                raise ValueError(url_for(request.endpoint, **args))
         pks = self.datamodel.get_keys(lst)
         widgets['list'] = self.list_widget(label_columns=self.label_columns,
                                            include_columns=self.list_columns,

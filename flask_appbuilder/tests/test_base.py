@@ -536,6 +536,27 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
         ok_('Test Redirects' in data)
 
+    def test_invalid_pagination(self):
+        """
+            Test redirect on invalid page number
+        """
+        client = self.app.test_client()
+        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+
+        model1 = Model1(field_string='Test Pagination')
+        self.db.session.add(model1)
+        model1.id = REDIRECT_OBJ_ID
+        self.db.session.flush()
+
+        rv = client.get('/model1view/list/?page_Model1View=0')
+        eq_(rv.status_code, 200)
+
+        rv = client.get('/model1view/list/?page_Model1View=1')
+        eq_(rv.status_code, 302)
+        print("DBG asdaskjdlaksjdlaksjdlkjasldkajsld")
+        print(rv.data)
+
+
     def test_excluded_cols(self):
         """
             Test add_exclude_columns, edit_exclude_columns, show_exclude_columns

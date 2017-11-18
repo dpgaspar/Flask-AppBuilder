@@ -472,7 +472,11 @@ class ModelView(RestCRUDView):
     @has_access
     def list(self):
 
-        widgets = self._list()
+        try:
+            widgets = self._list()
+        except ValueError as e:
+            return redirect(str(e))
+
         return self.render_template(self.list_template,
                                     title=self.list_title,
                                     widgets=widgets)
@@ -609,7 +613,11 @@ class MasterDetailView(BaseCRUDView):
         page_sizes = get_page_size_args()
         orders = get_order_args()
 
-        widgets = self._list()
+        try:
+            widgets = self._list()
+        except ValueError as e:
+            return redirect(str(e))
+
         if pk:
             item = self.datamodel.get(pk)
             widgets = self._get_related_views_widgets(item, orders=orders,
@@ -730,7 +738,11 @@ class CompactCRUDMixin(BaseCRUDView):
     @expose('/list/', methods=['GET', 'POST'])
     @has_access
     def list(self):
-        list_widgets = self._list()
+        try:
+            list_widgets = self._list()
+        except ValueError as e:
+            return redirect(str(e))
+
         return self.render_template(self.list_template,
                                     title=self.list_title,
                                     widgets=list_widgets)
