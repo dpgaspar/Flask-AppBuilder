@@ -168,6 +168,12 @@ class SQLAInterface(BaseInterface):
         except:
             return False
 
+    def is_binary(self, col_name):
+        try:
+            return isinstance(self.list_columns[col_name].type, sa.types.LargeBinary)
+        except:
+            return False
+
     def is_integer(self, col_name):
         try:
             return isinstance(self.list_columns[col_name].type, sa.types.Integer)

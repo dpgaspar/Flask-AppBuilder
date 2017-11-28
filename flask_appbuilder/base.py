@@ -97,7 +97,8 @@ class AppBuilder(object):
                  base_template='appbuilder/baselayout.html',
                  static_folder='static/appbuilder',
                  static_url_path='/appbuilder',
-                 security_manager_class=None):
+                 security_manager_class=None,
+                 update_perms=True):
         """
             AppBuilder constructor
 
@@ -115,6 +116,8 @@ class AppBuilder(object):
                 optional, your override for the global static url path
             :param security_manager_class:
                 optional, pass your own security manager class
+            :param update_perms:
+                optional, whether to update permissions on app init
         """
         self.baseviews = []
         self._addon_managers = []
@@ -125,6 +128,7 @@ class AppBuilder(object):
         self.indexview = indexview or IndexView
         self.static_folder = static_folder
         self.static_url_path = static_url_path
+        self.update_perms = update_perms
 
         self.app = app
         if app is not None:
@@ -165,6 +169,7 @@ class AppBuilder(object):
                 self.register_blueprint(baseview)
                 # Add missing permissions where needed
                 self._add_permission(baseview)
+
         self._init_extension(app)
 
     def _init_extension(self, app):
@@ -280,12 +285,13 @@ class AppBuilder(object):
             log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_MENU.format(str(e)))
 
     def _add_menu_permissions(self):
-        for category in self.menu.get_list():
-            self._add_permissions_menu(category.name)
-            for item in category.childs:
-                # dont add permission for menu separator
-                if item.name != '-':
-                    self._add_permissions_menu(item.name)
+        if self.update_perms:
+            for category in self.menu.get_list():
+                self._add_permissions_menu(category.name)
+                for item in category.childs:
+                    # dont add permission for menu separator
+                    if item.name != '-':
+                        self._add_permissions_menu(item.name)
 
     def _check_and_init(self, baseview):
         # If class if not instantiated, instantiate it
@@ -458,11 +464,12 @@ class AppBuilder(object):
         return url_for('%s.%s' % (self.bm.locale_view.endpoint, self.bm.locale_view.default_view), locale=lang)
 
     def _add_permission(self, baseview):
-        try:
-            self.sm.add_permissions_view(baseview.base_permissions, baseview.__class__.__name__)
-        except Exception as e:
-            log.exception(e)
-            log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW.format(str(e)))
+        if self.update_perms:
+            try:
+                self.sm.add_permissions_view(baseview.base_permissions, baseview.__class__.__name__)
+            except Exception as e:
+                log.exception(e)
+                log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW.format(str(e)))
 
     def register_blueprint(self, baseview, endpoint=None, static_folder=None):
         self.get_app.register_blueprint(baseview.create_blueprint(self, endpoint=endpoint, static_folder=static_folder))
