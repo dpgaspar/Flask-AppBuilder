@@ -970,6 +970,9 @@ class BaseCRUDView(BaseModelView):
         else:
             # Only force form refresh for select cascade events
             form = self.edit_form.refresh(obj=item)
+            # Perform additional actions to pre-fill the edit form.
+            self.prefill_form(form, pk)
+
         widgets = self._get_edit_widget(form=form, exclude_cols=exclude_cols)
         widgets = self._get_related_views_widgets(item, filters={},
                                                   orders=orders, pages=pages, page_sizes=page_sizes, widgets=widgets)
@@ -1014,6 +1017,24 @@ class BaseCRUDView(BaseModelView):
             if hasattr(form, filter_key):
                 field = getattr(form, filter_key)
                 field.data = rel_obj
+
+    def prefill_form(self, form, pk):
+        """
+            Override this, will be called only if the current action is rendering
+            an edit form, and is used to perform additional action to
+            prefill the form.
+
+            This is useful when you have added custom fields that depend on the
+            database contents. Fields that were added by name of a normal column
+            or relationship should work out of the box.
+
+            example::
+
+                def prefill_form(self, form, pk):
+                    if form.email.data:
+                        form.email_confirmation.data = form.email.data
+        """
+        pass
 
     def pre_update(self, item):
         """
