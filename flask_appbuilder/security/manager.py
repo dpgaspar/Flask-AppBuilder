@@ -140,7 +140,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     authoauthview = AuthOAuthView
     """ Override if you want your own Authentication OAuth view """
     authremoteuserview = AuthRemoteUserView
-    """ Override if you want your own Authentication OAuth view """
+    """ Override if you want your own Authentication REMOTE_USER view """
 
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
