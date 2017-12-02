@@ -1,6 +1,14 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.9.5
+-----------------------------------
+
+- New, #655 add feature to allow form prefill.
+- New, #631 add sqlalchemy support for binary types.
+- New, #626 support for traditional Chinese.
+- New, #626 possible to disable update permissions on startup
+
 Improvements and Bug fixes on 1.9.4
 -----------------------------------
 
