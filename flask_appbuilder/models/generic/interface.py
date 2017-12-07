@@ -47,6 +47,9 @@ class GenericInterface(BaseInterface):
     def is_pk(self, col_name):
         return self.obj.properties[col_name].primary_key
 
+    def is_pk_composite(self):
+        return False
+
     def get_columns_list(self):
         return self.obj.columns
 

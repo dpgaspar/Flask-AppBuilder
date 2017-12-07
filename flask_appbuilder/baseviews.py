@@ -1007,6 +1007,19 @@ class BaseCRUDView(BaseModelView):
     ------------------------------------------------
     """
 
+    def _eval_pk(self, pk):
+        """
+            In the case of a composite primary key, but id is a string
+            representation of a list. Attempt to evaluate to list.
+        """
+        if self.datamodel.is_pk_composite() and not isinstance(pk, (tuple, list)):
+            try:
+                import datetime
+                pk = eval(pk)
+            except Exception as e:
+                pass
+        return pk
+
     def _fill_form_exclude_cols(self, exclude_cols, form):
         """
             fill the form with the suppressed cols, generated from exclude_cols

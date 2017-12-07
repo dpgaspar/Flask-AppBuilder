@@ -150,6 +150,9 @@ class MongoEngineInterface(BaseInterface):
     def is_pk(self, col_name):
         return col_name == 'id'
 
+    def is_pk_composite(self):
+        return False
+
     def get_max_length(self, col_name):
         try:
             col = self.obj._fields[col_name]

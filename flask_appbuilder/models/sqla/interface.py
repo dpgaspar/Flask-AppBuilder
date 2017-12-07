@@ -271,6 +271,9 @@ class SQLAInterface(BaseInterface):
         except:
             return False
 
+    def is_pk_composite(self):
+         return len(self.obj.__mapper__.primary_key) > 1
+
     def is_fk(self, col_name):
         try:
             return self.list_columns[col_name].foreign_keys
@@ -510,15 +513,20 @@ class SQLAInterface(BaseInterface):
         if filters:
             query = query = self.session.query(self.obj)
             _filters = filters.copy()
-            _filters.add_filter(self.get_pk_name(), self.FilterEqual, id)
+            pk = self.get_pk_name()
+            if self.is_pk_composite():
+                for _pk, _id in zip(pk, id):
+                    _filters.add_filter(_pk, self.FilterEqual, _id)
+            else:
+                _filters.add_filter(pk, self.FilterEqual, id)
             query = self._get_base_query(query=query, filters=_filters)
             return query.first()
         return self.session.query(self.obj).get(id)
 
     def get_pk_name(self):
-        for col_name in self.list_columns.keys():
-            if self.is_pk(col_name):
-                return col_name
+        pk = [pk.name for pk in self.obj.__mapper__.primary_key]
+        if pk:
+            return pk if self.is_pk_composite() else pk[0]
 
 
 """
