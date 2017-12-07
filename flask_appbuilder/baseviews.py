@@ -910,6 +910,7 @@ class BaseCRUDView(BaseModelView):
         if request.method == 'POST':
             self._fill_form_exclude_cols(exclude_cols, form)
             if form.validate():
+                self.process_form(form, True)
                 item = self.datamodel.obj()
                 form.populate_obj(item)
 
@@ -954,6 +955,7 @@ class BaseCRUDView(BaseModelView):
             # trick to pass unique validation
             form._id = pk
             if form.validate():
+                self.process_form(form, False)
                 form.populate_obj(item)
                 try:
                     self.pre_update(item)
@@ -1021,7 +1023,7 @@ class BaseCRUDView(BaseModelView):
     def prefill_form(self, form, pk):
         """
             Override this, will be called only if the current action is rendering
-            an edit form, and is used to perform additional action to
+            an edit form (a GET request), and is used to perform additional action to
             prefill the form.
 
             This is useful when you have added custom fields that depend on the
@@ -1033,6 +1035,22 @@ class BaseCRUDView(BaseModelView):
                 def prefill_form(self, form, pk):
                     if form.email.data:
                         form.email_confirmation.data = form.email.data
+        """
+        pass
+
+    def process_form(self, form, is_created):
+        """
+            Override this, will be called only if the current action is submitting
+            a create/edit form (a POST request), and is used to perform additional
+            action before the form is used to populate the item.
+
+            By default does nothing.
+
+            example::
+
+                def process_form(self, form, is_created):
+                    if not form.owner:
+                        form.owner.data = 'n/a'
         """
         pass
 
