@@ -13,7 +13,7 @@ except ImportError:
     _has_enum = False
 
 from nose.tools import eq_, ok_
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, Enum, DateTime
 from sqlalchemy.orm import relationship
 from flask import redirect, request, session
 
@@ -81,7 +81,7 @@ class Model2(Model):
 
 class Model3(Model):
     pk1 = Column(Integer(), primary_key=True)
-    pk2 = Column(Integer(), primary_key=True)
+    pk2 = Column(DateTime(), primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
 
     def __repr__(self):
@@ -323,7 +323,7 @@ class FlaskTestCase(unittest.TestCase):
                 self.db.session.rollback()
 
     def insert_data3(self):
-        model3 = Model3(pk1=1, pk2=2, field_string='foo')
+        model3 = Model3(pk1=3, pk2=datetime.datetime(2017, 3, 3), field_string='foo')
         try:
             self.db.session.add(model3)
             self.db.session.commit()
@@ -494,29 +494,29 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
-        rv = client.post('/model3view/add', data=dict(pk1="1", pk2="2", field_string='foo'),
+        rv = client.post('/model3view/add', data=dict(pk1="1", pk2="2017-01-01 00:00:00", field_string='foo'),
                          follow_redirects=True)
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model3).first()
         eq_(model.pk1, 1)
-        eq_(model.pk2, 2)
+        eq_(model.pk2, datetime.datetime(2017, 1, 1))
         eq_(model.field_string, u'foo')
 
-        rv = client.get('/model3view/show/' + quote('[1, 2]'),
-                        follow_redirects=True)
+        pk = '[1, {"_type": "datetime", "value": "2017-01-01T00:00:00.000000"}]'
+        rv = client.get('/model3view/show/' + quote(pk), follow_redirects=True)
         eq_(rv.status_code, 200)
 
-        rv = client.post('/model3view/edit/' + quote('[1, 2]'),
-                         data=dict(pk1='4', pk2='5', field_string='bar'),
+        rv = client.post('/model3view/edit/' + quote(pk),
+                         data=dict(pk1='2', pk2='2017-02-02 00:00:00', field_string='bar'),
                          follow_redirects=True)
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model3).first()
-        eq_(model.pk1, 4)
-        eq_(model.pk2, 5)
+        eq_(model.pk1, 2)
+        eq_(model.pk2, datetime.datetime(2017, 2, 2))
         eq_(model.field_string, u'bar')
 
-        rv = client.get('/model3view/delete/' + quote('[4, 5]'),
-                        follow_redirects=True)
+        pk = '[2, {"_type": "datetime", "value": "2017-02-02T00:00:00.000000"}]'
+        rv = client.get('/model3view/delete/' + quote(pk), follow_redirects=True)
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model3).first()
         eq_(model, None)
@@ -788,14 +788,14 @@ class FlaskTestCase(unittest.TestCase):
             from urllib.parse import quote
 
         self.insert_data3()
-        rv = client.post('/model3compactview/edit/' + quote('[1, 2]'),
+        pk = '[3, {"_type": "datetime", "value": "2017-03-03T00:00:00"}]'
+        rv = client.post('/model3compactview/edit/' + quote(pk),
                          data=dict(field_string='bar'), follow_redirects=True)
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model3).first()
         eq_(model.field_string, u'bar')
 
-        rv = client.get('/model3compactview/delete/' + quote('[1, 2]'),
-                        follow_redirects=True)
+        rv = client.get('/model3compactview/delete/' + quote(pk), follow_redirects=True)
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model3).first()
         eq_(model, None)
