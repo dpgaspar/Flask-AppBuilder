@@ -145,8 +145,8 @@ Authentication Methods
 ----------------------
 
 We are now looking at the authentication methods, and how you can configure them and customize them.
-The framework as 5 authentication methods and you choose one of them, you configure the method to be used
-on the **config.py** (when using the create-app, or following the propused app structure). First the
+The framework has 5 authentication methods and you choose one of them, you configure the method to be used
+on the **config.py** (when using the create-app, or following the proposed app structure). First the
 configuration imports the constants for the authentication methods::
 
     from flask_appbuilder.security.manager import AUTH_OID, \ 
