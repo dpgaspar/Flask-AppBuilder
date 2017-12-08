@@ -217,7 +217,7 @@ this is the breaking feature.
             id = Column(Integer, primary_key=True)
             first_name = Column(String(64), nullable=False)
 
-5 - Although your not obligated, you should not directly use your flask.ext.sqlalchemy class SQLAlchemy.
+5 - Although you're not obligated, you should not directly use your flask.ext.sqlalchemy class SQLAlchemy.
 Use F.A.B. SQLA class instead, read the docs to know why.
 
     from (__init__.py)::
@@ -269,7 +269,7 @@ This new version has some breaking features. You don't have to change any code, 
 
             python run.py
 
-    If not (DB is not sqlite, mysql or pgsql), you will have to alter the schema your self. use the following procedure:
+    If not (DB is not sqlite, mysql or pgsql), you will have to alter the schema yourself. use the following procedure:
 
         1 - *Backup your DB*.
 
@@ -311,7 +311,7 @@ This new version has some breaking features, that i hope will be easily changeab
 
 If you feel lost please post an issue on github: https://github.com/dpgaspar/Flask-AppBuilder/issues?state=open
 
-If your using the **related_views** attribute on ModelView classes, you must not instantiate the related classes. This is the correct form, it will be less memory and cpu resource consuming.
+If you're using the **related_views** attribute on ModelView classes, you must not instantiate the related classes. This is the correct form, it will be less memory and cpu resource consuming.
 
 From this::
 
