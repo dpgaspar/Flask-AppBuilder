@@ -691,7 +691,6 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         # User does not exist, create one if auto user registration.
         if user is None and self.auth_user_registration:
-            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             user = self.add_user(
                 # All we have is REMOTE_USER, so we set
                 # the other fields to blank.
