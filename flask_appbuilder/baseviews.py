@@ -1,4 +1,6 @@
+import json
 import logging
+from datetime import datetime, date
 from flask import Blueprint, session, flash, render_template, url_for, abort
 from ._compat import as_unicode
 from .forms import GeneralModelConverter
@@ -790,6 +792,10 @@ class BaseCRUDView(BaseModelView):
         joined_filters = filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
         pks = self.datamodel.get_keys(lst)
+
+        # serialize composite pks
+        pks = [self._serialize_pk_if_composite(pk) for pk in pks]
+
         widgets['list'] = self.list_widget(label_columns=self.label_columns,
                                            include_columns=self.list_columns,
                                            value_columns=self.datamodel.get_values(lst, self.list_columns),
@@ -1008,6 +1014,46 @@ class BaseCRUDView(BaseModelView):
                 HELPER FUNCTIONS
     ------------------------------------------------
     """
+
+    def _serialize_pk_if_composite(self, pk):
+        def date_serializer(obj):
+            if isinstance(obj, datetime):
+                return {
+                    "_type": "datetime",
+                    "value": obj.isoformat()
+                }
+            elif isinstance(obj, date):
+                return {
+                    "_type": "date",
+                    "value": obj.isoformat()
+                }
+
+        if self.datamodel.is_pk_composite():
+            try:
+                pk = json.dumps(pk, default=date_serializer)
+            except:
+                pass
+        return pk
+
+    def _deserialize_pk_if_composite(self, pk):
+        def date_deserializer(obj):
+            if '_type' not in obj:
+                return obj
+            type = obj['_type']
+            if type == 'datetime' and '.' in obj['value']:
+                return datetime.strptime(obj['value'], "%Y-%m-%dT%H:%M:%S.%f")
+            elif type == 'datetime':
+                return datetime.strptime(obj['value'], "%Y-%m-%dT%H:%M:%S")
+            elif type == 'date':
+                return  datetime.strptime(obj['value'], "%Y-%m-%d").date()
+            return obj
+
+        if self.datamodel.is_pk_composite():
+            try:
+                pk = json.loads(pk, object_hook=date_deserializer)
+            except:
+                pass
+        return pk
 
     def _fill_form_exclude_cols(self, exclude_cols, form):
         """

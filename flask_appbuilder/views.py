@@ -486,6 +486,7 @@ class ModelView(RestCRUDView):
     @expose('/show/<pk>', methods=['GET'])
     @has_access
     def show(self, pk):
+        pk = self._deserialize_pk_if_composite(pk)
         widgets = self._show(pk)
         return self.render_template(self.show_template,
                                     pk=pk,
@@ -519,6 +520,7 @@ class ModelView(RestCRUDView):
     @expose('/edit/<pk>', methods=['GET', 'POST'])
     @has_access
     def edit(self, pk):
+        pk = self._deserialize_pk_if_composite(pk)
         widgets = self._edit(pk)
         if not widgets:
             return self.post_edit_redirect()
@@ -537,6 +539,7 @@ class ModelView(RestCRUDView):
     @expose('/delete/<pk>')
     @has_access
     def delete(self, pk):
+        pk = self._deserialize_pk_if_composite(pk)
         self._delete(pk)
         return self.post_delete_redirect()
 
@@ -553,6 +556,7 @@ class ModelView(RestCRUDView):
         """
             Action method to handle actions from a show view
         """
+        pk = self._deserialize_pk_if_composite(pk)
         if self.appbuilder.sm.has_access(name, self.__class__.__name__):
             action = self.actions.get(name)
             return action.func(self.datamodel.get(pk))
@@ -570,7 +574,7 @@ class ModelView(RestCRUDView):
         pks = request.form.getlist('rowid')
         if self.appbuilder.sm.has_access(name, self.__class__.__name__):
             action = self.actions.get(name)
-            items = [self.datamodel.get(pk) for pk in pks]
+            items = [self.datamodel.get(self._deserialize_pk_if_composite(pk)) for pk in pks]
             return action.func(items)
         else:
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
@@ -755,6 +759,7 @@ class CompactCRUDMixin(BaseCRUDView):
     @expose('/edit/<pk>', methods=['GET', 'POST'])
     @has_access
     def edit(self, pk):
+        pk = self._deserialize_pk_if_composite(pk)
         widgets = self._edit(pk)
         self.update_redirect()
         if not widgets:
@@ -774,6 +779,7 @@ class CompactCRUDMixin(BaseCRUDView):
     @expose('/delete/<pk>')
     @has_access
     def delete(self, pk):
+        pk = self._deserialize_pk_if_composite(pk)
         self._delete(pk)
         edit_pk = self.get_key('session_form_edit_pk')
         if pk == edit_pk:
