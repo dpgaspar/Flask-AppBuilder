@@ -44,7 +44,7 @@ Next extract your strings to be translated, execute on you projects root::
 
     $ fabmanager babel-extract
 
-If you want to, or if your using a version prior to 1.3.0 you can use::
+If you want to, or if you're using a version prior to 1.3.0 you can use::
 
 	pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
 
@@ -73,7 +73,7 @@ so you want to add translations for the menus "List Groups" and "List Contacts".
 
     $ fabmanager babel-extract
 
-If you want to, or if your using a version prior to 1.3.0 you can use::
+If you want to, or if you're using a version prior to 1.3.0 you can use::
 
     pybabel extract -F ./babel/babel.cfg -k lazy_gettext -o ./babel/messages.pot .
 
