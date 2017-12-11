@@ -51,13 +51,13 @@ def cli_app():
         of your flask-appbuilder applications.
 
         All commands that import your app will assume by default that
-        your running on your projects directory just before the app directory.
-        will assume also that on the __init__.py your initializing AppBuilder
+        you're running on your projects directory just before the app directory.
+        They will also assume that __init__.py initializes AppBuilder
         like this (using a var named appbuilder) just like the skeleton app::
 
         appbuilder = AppBuilder(......)
 
-        If your using different namings use app and appbuilder parameters.
+        If you're using different namings use app and appbuilder parameters.
     """
     pass
 
