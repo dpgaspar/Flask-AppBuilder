@@ -611,7 +611,7 @@ msgstr "ユーザー名"
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:49
 #: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:59
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:121
-msgid "If your not already a user, please register"
+msgid "If you are not already a user, please register"
 msgstr "もしあなたが新規ユーザで登録がまだならばまずはご登録下さい"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:50
