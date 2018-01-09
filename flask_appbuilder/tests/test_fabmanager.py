@@ -28,26 +28,24 @@ class FlaskTestCase(unittest.TestCase):
             Test create app
         """
         runner = CliRunner()
-        result = runner.invoke(create_app, input='myapp\nSQLAlchemy\n')
-        ok_('Downloaded the skeleton app, good coding!' in result.output)
+        with runner.isolated_filesystem():
+            result = runner.invoke(create_app, input='myapp\nSQLAlchemy\n')
+            ok_('Downloaded the skeleton app, good coding!' in result.output)
 
-        with open('myapp/__init__.py', 'w') as f:
-            f.write("""
-                from flask import Flask
-                from flask_appbuilder import AppBuilder, SQLA
-                app = Flask(__name__)
-                db = SQLA(app)
-                appbuilder = AppBuilder(app, db.session)
-            """)
+            with open('myapp/__init__.py', 'w') as f:
+                f.write("""
+                    from flask import Flask
+                    from flask_appbuilder import AppBuilder, SQLA
+                    app = Flask(__name__)
+                    db = SQLA(app)
+                    appbuilder = AppBuilder(app, db.session)
+                """)
 
-        result = runner.invoke(create_user,[
-            '--app=myapp', '--username=bob', '--role=Public', '--firstname=Bob',
-            '--lastname=Smith', '--email=bob@fab.com', '--password=foo'])
-        ok_('User bob created.' in result.output)
+            result = runner.invoke(create_user,[
+                '--app=myapp', '--username=bob', '--role=Public', '--firstname=Bob',
+                '--lastname=Smith', '--email=bob@fab.com', '--password=foo'])
+            ok_('User bob created.' in result.output)
 
-        shutil.rmtree('myapp')
-        result = runner.invoke(create_app, input='myapp\nMongoEngine\n')
-        ok_('Downloaded the skeleton app, good coding!' in result.output)
-        shutil.rmtree('myapp')
-
-
+        with runner.isolated_filesystem():
+            result = runner.invoke(create_app, input='myapp\nMongoEngine\n')
+            ok_('Downloaded the skeleton app, good coding!' in result.output)
