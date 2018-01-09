@@ -33,13 +33,14 @@ class FlaskTestCase(unittest.TestCase):
             ok_('Downloaded the skeleton app, good coding!' in result.output)
 
             with open('myapp/__init__.py', 'w') as f:
-                f.write("""
-                    from flask import Flask
-                    from flask_appbuilder import AppBuilder, SQLA
-                    app = Flask(__name__)
-                    db = SQLA(app)
-                    appbuilder = AppBuilder(app, db.session)
-                """)
+                for line in [
+                    'from flask import Flask\n',
+                    'from flask_appbuilder import AppBuilder, SQLA\n',
+                    'app = Flask(__name__)\n',
+                    'db = SQLA(app)\n',
+                    'appbuilder = AppBuilder(app, db.session)\n',
+                ]:
+                    f.write(line)
 
             result = runner.invoke(create_user,[
                 '--app=myapp', '--username=bob', '--role=Public', '--firstname=Bob',
