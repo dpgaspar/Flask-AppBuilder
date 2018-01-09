@@ -5,7 +5,7 @@ import string
 import random
 import datetime
 import shutil
-from flask_appbuilder.console import create_app, create_admin
+from flask_appbuilder.console import create_app, create_admin, create_user
 from click.testing import CliRunner
 
 import logging
