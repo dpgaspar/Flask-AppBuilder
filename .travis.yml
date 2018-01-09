@@ -3,7 +3,6 @@ python:
   - "3.5"
   - "3.3"
   - "2.7"
-  - "2.6"
 install:
   - "pip install --upgrade 'pip>=9.0.1,<9.99'"
   - "pip -V"
