@@ -14,7 +14,7 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 CSRF_ENABLED = True
 
 #------------------------------
-# GLOBALS FOR APP Builder 
+# GLOBALS FOR APP Builder
 #------------------------------
 # Uncomment to setup Your App name
 #APP_NAME = "My App Name"
@@ -63,13 +63,34 @@ BABEL_DEFAULT_LOCALE = 'en'
 BABEL_DEFAULT_FOLDER = 'translations'
 # The allowed translation for you app
 LANGUAGES = {
-    'en': {'flag':'gb', 'name':'English'},
-    'pt': {'flag':'pt', 'name':'Portuguese'},
-    'pt_BR': {'flag':'br', 'name': 'Pt Brazil'},
-    'es': {'flag':'es', 'name':'Spanish'},
-    'de': {'flag':'de', 'name':'German'},
-    'zh': {'flag':'cn', 'name':'Chinese'},
-    'ru': {'flag':'ru', 'name':'Russian'}
+    'en': {
+        'flag': 'gb',
+        'name': 'English'
+    },
+    'pt': {
+        'flag': 'pt',
+        'name': 'Portuguese'
+    },
+    'pt_BR': {
+        'flag': 'br',
+        'name': 'Pt Brazil'
+    },
+    'es': {
+        'flag': 'es',
+        'name': 'Spanish'
+    },
+    'de': {
+        'flag': 'de',
+        'name': 'German'
+    },
+    'zh': {
+        'flag': 'cn',
+        'name': 'Chinese'
+    },
+    'ru': {
+        'flag': 'ru',
+        'name': 'Russian'
+    }
 }
 #---------------------------------------------------
 # Image and file configuration
@@ -92,13 +113,12 @@ IMG_UPLOAD_URL = '/static/uploads/'
 #APP_THEME = "cerulean.css"
 #APP_THEME = "amelia.css"
 #APP_THEME = "cosmo.css"
-#APP_THEME = "cyborg.css"  
+#APP_THEME = "cyborg.css"
 #APP_THEME = "flatly.css"
 #APP_THEME = "journal.css"
 #APP_THEME = "readable.css"
 #APP_THEME = "simplex.css"
-#APP_THEME = "slate.css"   
+#APP_THEME = "slate.css"
 #APP_THEME = "spacelab.css"
 #APP_THEME = "united.css"
 #APP_THEME = "yeti.css"
-

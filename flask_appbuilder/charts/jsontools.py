@@ -1,6 +1,7 @@
 import datetime
 from flask_appbuilder._compat import as_unicode
 
+
 def dict_to_json(xcol, ycols, labels, value_columns):
     """
         Converts a list of dicts from datamodel query results
@@ -17,13 +18,17 @@ def dict_to_json(xcol, ycols, labels, value_columns):
     """
     json_data = dict()
 
-    json_data['cols'] = [{'id': xcol,
-                          'label': as_unicode(labels[xcol]),
-                          'type': 'string'}]
+    json_data['cols'] = [{
+        'id': xcol,
+        'label': as_unicode(labels[xcol]),
+        'type': 'string'
+    }]
     for ycol in ycols:
-        json_data['cols'].append({'id': ycol,
-                                  'label': as_unicode(labels[ycol]),
-                                  'type': 'number'})
+        json_data['cols'].append({
+            'id': ycol,
+            'label': as_unicode(labels[ycol]),
+            'type': 'number'
+        })
     json_data['rows'] = []
     for value in value_columns:
         row = {'c': []}

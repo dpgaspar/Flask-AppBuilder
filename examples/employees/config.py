@@ -10,12 +10,30 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 BABEL_DEFAULT_LOCALE = 'en'
 
 LANGUAGES = {
-    'en': {'flag':'gb', 'name':'English'},
-    'pt': {'flag':'pt', 'name':'Portuguese'},
-    'es': {'flag':'es', 'name':'Spanish'},
-    'de': {'flag':'de', 'name':'German'},
-    'zh': {'flag':'cn', 'name':'Chinese'},
-    'ru': {'flag':'ru', 'name':'Russian'}
+    'en': {
+        'flag': 'gb',
+        'name': 'English'
+    },
+    'pt': {
+        'flag': 'pt',
+        'name': 'Portuguese'
+    },
+    'es': {
+        'flag': 'es',
+        'name': 'Spanish'
+    },
+    'de': {
+        'flag': 'de',
+        'name': 'German'
+    },
+    'zh': {
+        'flag': 'cn',
+        'name': 'Chinese'
+    },
+    'ru': {
+        'flag': 'ru',
+        'name': 'Russian'
+    }
 }
 
 #------------------------------
@@ -24,12 +42,12 @@ LANGUAGES = {
 UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_URL = '/static/uploads/'
-IMG_SIZE = (150,150,True)
+IMG_SIZE = (150, 150, True)
 AUTH_TYPE = 1
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
 APP_NAME = "F.A.B. Example"
-APP_THEME = ""                  # default
+APP_THEME = ""  # default
 #APP_THEME = "cerulean.css"      # COOL
 #APP_THEME = "amelia.css"
 #APP_THEME = "cosmo.css"

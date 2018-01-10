@@ -9,9 +9,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLA(app)
 
-
 appbuilder = AppBuilder(app, db.session)
-
 """
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):

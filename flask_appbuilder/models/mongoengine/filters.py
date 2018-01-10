@@ -4,8 +4,11 @@ from ..filters import BaseFilter, FilterRelation, BaseFilterConverter
 
 log = logging.getLogger(__name__)
 
-__all__ = ['MongoEngineFilterConverter', 'FilterEqual', 'FilterContains', 'FilterNotContains',
-           'FilterNotStartsWith', 'FilterStartsWith', 'FilterRelationOneToManyEqual', 'FilterRelationManyToManyEqual']
+__all__ = [
+    'MongoEngineFilterConverter', 'FilterEqual', 'FilterContains',
+    'FilterNotContains', 'FilterNotStartsWith', 'FilterStartsWith',
+    'FilterRelationOneToManyEqual', 'FilterRelationManyToManyEqual'
+]
 
 
 class FilterEqual(BaseFilter):
@@ -110,28 +113,19 @@ class MongoEngineFilterConverter(BaseFilterConverter):
         specific for SQLAlchemy.
 
     """
-    conversion_table = (('is_relation_many_to_one', [FilterRelationOneToManyEqual]),
-                        ('is_relation_one_to_one', [FilterRelationOneToManyEqual]),
-                        ('is_relation_many_to_many', [FilterRelationManyToManyEqual]),
-                        ('is_relation_one_to_many', [FilterRelationManyToManyEqual]),
-                        ('is_object_id', [FilterEqual]),
-                        ('is_string', [FilterEqual,
-                                       FilterNotEqual,
-                                       FilterStartsWith,
-                                       FilterNotStartsWith,
-                                       FilterContains,
-                                       FilterNotContains]),
-                        ('is_boolean', [FilterEqual,
-                                        FilterNotEqual]),
-                        ('is_datetime', [FilterEqual,
-                                         FilterNotEqual,
-                                         FilterGreater,
-                                         FilterSmaller]),
-                        ('is_integer', [FilterEqual,
-                                         FilterNotEqual,
-                                         FilterGreater,
-                                         FilterSmaller]),
-                        ('is_float', [FilterEqual,
-                                         FilterNotEqual,
-                                         FilterGreater,
-                                         FilterSmaller]))
+    conversion_table = (('is_relation_many_to_one', [
+        FilterRelationOneToManyEqual
+    ]), ('is_relation_one_to_one',
+         [FilterRelationOneToManyEqual]), ('is_relation_many_to_many', [
+             FilterRelationManyToManyEqual
+         ]), ('is_relation_one_to_many', [
+             FilterRelationManyToManyEqual
+         ]), ('is_object_id', [FilterEqual]), ('is_string', [
+             FilterEqual, FilterNotEqual, FilterStartsWith,
+             FilterNotStartsWith, FilterContains, FilterNotContains
+         ]), ('is_boolean', [FilterEqual, FilterNotEqual]), ('is_datetime', [
+             FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller
+         ]), ('is_integer', [
+             FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller
+         ]), ('is_float',
+              [FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller]))

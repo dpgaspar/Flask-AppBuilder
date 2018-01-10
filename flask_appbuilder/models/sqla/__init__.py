@@ -30,11 +30,14 @@ class SQLA(SQLAlchemy):
 
         Use it and configure it just like flask_SQLAlchemy
     """
+
     def make_declarative_base(self, metadata=None):
         """Creates the declarative base."""
-        base = declarative_base(cls=Model, name='Model',
-                                metadata=metadata,
-                                metaclass=ModelDeclarativeMeta)
+        base = declarative_base(
+            cls=Model,
+            name='Model',
+            metadata=metadata,
+            metaclass=ModelDeclarativeMeta)
         base.query = _QueryProperty(self)
         return base
 
@@ -79,15 +82,14 @@ class Model(object):
         result = dict()
         for key in self.__mapper__.c.keys():
             col = getattr(self, key)
-            if isinstance(col, datetime.datetime) or isinstance(col, datetime.date):
+            if isinstance(col, datetime.datetime) or isinstance(
+                    col, datetime.date):
                 col = col.isoformat()
             result[key] = col
         return result
 
-    
 
 """
     This is for retro compatibility
 """
 Base = Model
-

@@ -5,13 +5,25 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 CSRF_ENABLED = True
 SECRET_KEY = '\2\1thisismyscretkey\1\2\e\y\y\h'
 
-OPENID_PROVIDERS = [
-    {'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id'},
-    {'name': 'Yahoo', 'url': 'https://me.yahoo.com'},
-    {'name': 'AOL', 'url': 'http://openid.aol.com/<username>'},
-    {'name': 'Flickr', 'url': 'http://www.flickr.com/<username>'},
-    {'name': 'OpenID', 'url': ''},
-    {'name': 'MyOpenID', 'url': 'https://www.myopenid.com'}]
+OPENID_PROVIDERS = [{
+    'name': 'Google',
+    'url': 'https://www.google.com/accounts/o8/id'
+}, {
+    'name': 'Yahoo',
+    'url': 'https://me.yahoo.com'
+}, {
+    'name': 'AOL',
+    'url': 'http://openid.aol.com/<username>'
+}, {
+    'name': 'Flickr',
+    'url': 'http://www.flickr.com/<username>'
+}, {
+    'name': 'OpenID',
+    'url': ''
+}, {
+    'name': 'MyOpenID',
+    'url': 'https://www.myopenid.com'
+}]
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 #SQLALCHEMY_DATABASE_URI = 'mysql://root:password@localhost/quickhowto'
@@ -21,14 +33,31 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 BABEL_DEFAULT_LOCALE = 'en'
 BABEL_DEFAULT_FOLDER = 'translations'
 LANGUAGES = {
-    'en': {'flag': 'gb', 'name': 'English'},
-    'pt': {'flag': 'pt', 'name': 'Portuguese'},
-    'es': {'flag': 'es', 'name': 'Spanish'},
-    'de': {'flag': 'de', 'name': 'German'},
-    'zh': {'flag': 'cn', 'name': 'Chinese'},
-    'ru': {'flag': 'ru', 'name': 'Russian'}
+    'en': {
+        'flag': 'gb',
+        'name': 'English'
+    },
+    'pt': {
+        'flag': 'pt',
+        'name': 'Portuguese'
+    },
+    'es': {
+        'flag': 'es',
+        'name': 'Spanish'
+    },
+    'de': {
+        'flag': 'de',
+        'name': 'German'
+    },
+    'zh': {
+        'flag': 'cn',
+        'name': 'Chinese'
+    },
+    'ru': {
+        'flag': 'ru',
+        'name': 'Russian'
+    }
 }
-
 
 #------------------------------
 # GLOBALS FOR GENERAL APP's
@@ -50,8 +79,8 @@ RECAPTCHA_PUBLIC_KEY = '6LedRP0SAAAAAOF03Nsv_ny2NzOF_Dthe_Xn269v'
 RECAPTCHA_PRIVATE_KEY = '6LedRP0SAAAAAPnsdEKgj5VU1QbFcPv7mO8cW0So'
 # Config for Flask-Mail necessary for user registration
 
-MAIL_PORT=587
-MAIL_USE_SSL=False
+MAIL_PORT = 587
+MAIL_USE_SSL = False
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_USE_TLS = True
 MAIL_USERNAME = 'fabtest10@gmail.com'

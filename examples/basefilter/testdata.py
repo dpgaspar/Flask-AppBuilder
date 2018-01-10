@@ -9,14 +9,20 @@ log = logging.getLogger(__name__)
 
 
 def get_random_name(names_list, size=1):
-    name_lst = [names_list[random.randrange(0, len(names_list))].capitalize() for i in range(0, size)]
+    name_lst = [
+        names_list[random.randrange(0, len(names_list))].capitalize()
+        for i in range(0, size)
+    ]
     return " ".join(name_lst)
 
 
 role_admin = appbuilder.sm.find_role(appbuilder.sm.auth_role_admin)
-user1 = appbuilder.sm.add_user('user1', 'user1', 'test', 'user1@fab.org', role_admin, 'password')
-user2 = appbuilder.sm.add_user('user2', 'user2', 'test', 'user2@fab.org', role_admin, 'password')
-user3 = appbuilder.sm.add_user('user3', 'user3', 'test', 'user3@fab.org', role_admin, 'password')
+user1 = appbuilder.sm.add_user('user1', 'user1', 'test', 'user1@fab.org',
+                               role_admin, 'password')
+user2 = appbuilder.sm.add_user('user2', 'user2', 'test', 'user2@fab.org',
+                               role_admin, 'password')
+user3 = appbuilder.sm.add_user('user3', 'user3', 'test', 'user3@fab.org',
+                               role_admin, 'password')
 
 try:
     db.session.add(ContactGroup(name='Friends'))
@@ -58,17 +64,16 @@ for i in range(1, 100):
     c.changed_on = datetime.now()
     c.created_on = datetime.now()
     if j == 1:
-        j+=1
+        j += 1
         _user = user1
     elif j == 2:
-        j+=1
+        j += 1
         _user = user2
     else:
         j = 1
         _user = user3
     c.created_by = _user
     c.changed_by = _user
-
 
     db.session.add(c)
     try:
@@ -77,5 +82,3 @@ for i in range(1, 100):
     except Exception, e:
         log.error('Contact creation error: %s', e)
         db.session.rollback()
-    
-

@@ -26,12 +26,13 @@ except ImportError:
 
 
 class FileManager(object):
-    def __init__(self, base_path=None,
+    def __init__(self,
+                 base_path=None,
                  relative_path='',
                  namegen=None,
                  allowed_extensions=None,
-                 permission=0o666, **kwargs):
-
+                 permission=0o666,
+                 **kwargs):
 
         ctx = app_stack.top
 
@@ -50,19 +51,19 @@ class FileManager(object):
         self.permission = permission
         self._should_delete = False
 
-
     def is_file_allowed(self, filename):
         if not self.allowed_extensions:
             return True
-        return ('.' in filename and
-                filename.rsplit('.', 1)[1].lower() in self.allowed_extensions)
+        return ('.' in filename and filename.rsplit(
+            '.', 1)[1].lower() in self.allowed_extensions)
 
     def generate_name(self, obj, file_data):
         return self.namegen(file_data)
 
     def get_path(self, filename):
         if not self.base_path:
-            raise ValueError('FileUploadField field requires base_path to be set.')
+            raise ValueError(
+                'FileUploadField field requires base_path to be set.')
         return op.join(self.base_path, filename)
 
     def delete_file(self, filename):
@@ -84,14 +85,16 @@ class ImageManager(FileManager):
         will save files on IMG_UPLOAD_FOLDER as <uuid>_sep_<filename>
     """
 
-    keep_image_formats = ('PNG',)
+    keep_image_formats = ('PNG', )
 
-    def __init__(self, base_path=None,
+    def __init__(self,
+                 base_path=None,
                  relative_path=None,
                  max_size=None,
                  namegen=None,
                  allowed_extensions=None,
-                 thumbgen=None, thumbnail_size=None,
+                 thumbgen=None,
+                 thumbnail_size=None,
                  permission=0o666,
                  **kwargs):
 
@@ -120,13 +123,13 @@ class ImageManager(FileManager):
         if not allowed_extensions:
             allowed_extensions = ('gif', 'jpg', 'jpeg', 'png', 'tiff')
 
-        super(ImageManager, self).__init__(base_path=base_path,
-                                           relative_path=relative_path,
-                                           namegen=namegen,
-                                           allowed_extensions=allowed_extensions,
-                                           permission=permission,
-                                           **kwargs)
-
+        super(ImageManager, self).__init__(
+            base_path=base_path,
+            relative_path=relative_path,
+            namegen=namegen,
+            allowed_extensions=allowed_extensions,
+            permission=permission,
+            **kwargs)
 
     def get_url(self, filename):
         if isinstance(filename, FileStorage):
@@ -190,9 +193,8 @@ class ImageManager(FileManager):
         if self.image and thumbnail_size:
             path = self.get_path(self.thumbnail_fn(filename))
 
-            self.save_image(self.resize(self.image, thumbnail_size),
-                            path,
-                            format)
+            self.save_image(
+                self.resize(self.image, thumbnail_size), path, format)
 
     def resize(self, image, size):
         """
@@ -205,7 +207,8 @@ class ImageManager(FileManager):
 
         if image.size[0] > width or image.size[1] > height:
             if force:
-                return ImageOps.fit(self.image, (width, height), Image.ANTIALIAS)
+                return ImageOps.fit(self.image, (width, height),
+                                    Image.ANTIALIAS)
             else:
                 thumb = self.image.copy()
                 thumb.thumbnail((width, height), Image.ANTIALIAS)
@@ -265,4 +268,3 @@ def uuid_originalname(uuid_filename):
 def thumbgen_filename(filename):
     name, ext = op.splitext(filename)
     return '%s_thumb%s' % (name, ext)
-

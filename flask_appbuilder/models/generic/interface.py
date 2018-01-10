@@ -17,9 +17,12 @@ class GenericInterface(BaseInterface):
         self.session = session
         super(GenericInterface, self).__init__(obj)
 
-
-    def query(self, filters=None, order_column='', order_direction='',
-              page=None, page_size=None):
+    def query(self,
+              filters=None,
+              order_column='',
+              order_direction='',
+              page=None,
+              page_size=None):
 
         query = self.session.query(self.obj)
         if filters:

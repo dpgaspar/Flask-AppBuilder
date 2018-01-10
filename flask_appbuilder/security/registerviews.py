@@ -54,7 +54,8 @@ class BaseRegisterUser(PublicFormView):
     """ The activation template, shown when the user is activated """
     message = lazy_gettext('Registration sent to your email')
     """ The message shown on a successful registration """
-    error_message = lazy_gettext('Not possible to register you at the moment, try again later')
+    error_message = lazy_gettext(
+        'Not possible to register you at the moment, try again later')
     """ The message shown on an unsuccessful registration """
     false_error_message = lazy_gettext('Registration not found')
     """ The message shown on an unsuccessful registration """
@@ -73,12 +74,16 @@ class BaseRegisterUser(PublicFormView):
         mail = Mail(self.appbuilder.get_app)
         msg = Message()
         msg.subject = self.email_subject
-        url = url_for('.activation', _external=True, activation_hash=register_user.registration_hash)
-        msg.html = self.render_template(self.email_template,
-                                   url=url,
-                                   username=register_user.username,
-                                   first_name=register_user.first_name,
-                                   last_name=register_user.last_name)
+        url = url_for(
+            '.activation',
+            _external=True,
+            activation_hash=register_user.registration_hash)
+        msg.html = self.render_template(
+            self.email_template,
+            url=url,
+            username=register_user.username,
+            first_name=register_user.first_name,
+            last_name=register_user.last_name)
         msg.recipients = [register_user.email]
         try:
             mail.send(msg)
@@ -87,13 +92,19 @@ class BaseRegisterUser(PublicFormView):
             return False
         return True
 
-    def add_registration(self, username, first_name, last_name, email, password=''):
+    def add_registration(self,
+                         username,
+                         first_name,
+                         last_name,
+                         email,
+                         password=''):
         """
             Add a registration request for the user.
 
         :rtype : RegisterUser
         """
-        register_user = self.appbuilder.sm.add_register_user(username, first_name, last_name, email, password)
+        register_user = self.appbuilder.sm.add_register_user(
+            username, first_name, last_name, email, password)
         if register_user:
             if self.send_email(register_user):
                 flash(as_unicode(self.message), 'info')
@@ -112,35 +123,40 @@ class BaseRegisterUser(PublicFormView):
         """
         reg = self.appbuilder.sm.find_register_user(activation_hash)
         if not reg:
-            log.error(c.LOGMSG_ERR_SEC_NO_REGISTER_HASH.format(activation_hash))
+            log.error(
+                c.LOGMSG_ERR_SEC_NO_REGISTER_HASH.format(activation_hash))
             flash(as_unicode(self.false_error_message), 'danger')
             return redirect(self.appbuilder.get_url_for_index)
-        if not self.appbuilder.sm.add_user(username=reg.username,
-                                               email=reg.email,
-                                               first_name=reg.first_name,
-                                               last_name=reg.last_name,
-                                               role=self.appbuilder.sm.find_role(
-                                                       self.appbuilder.sm.auth_user_registration_role),
-                                               hashed_password=reg.password):
+        if not self.appbuilder.sm.add_user(
+                username=reg.username,
+                email=reg.email,
+                first_name=reg.first_name,
+                last_name=reg.last_name,
+                role=self.appbuilder.sm.find_role(
+                    self.appbuilder.sm.auth_user_registration_role),
+                hashed_password=reg.password):
             flash(as_unicode(self.error_message), 'danger')
             return redirect(self.appbuilder.get_url_for_index)
         else:
             self.appbuilder.sm.del_register_user(reg)
-            return self.render_template(self.activation_template,
-                               username=reg.username,
-                               first_name=reg.first_name,
-                               last_name=reg.last_name,
-                               appbuilder=self.appbuilder)
+            return self.render_template(
+                self.activation_template,
+                username=reg.username,
+                first_name=reg.first_name,
+                last_name=reg.last_name,
+                appbuilder=self.appbuilder)
 
     def add_form_unique_validations(self, form):
         datamodel_user = self.appbuilder.sm.get_user_datamodel
         datamodel_register_user = self.appbuilder.sm.get_register_user_datamodel
         if len(form.username.validators) == 1:
             form.username.validators.append(Unique(datamodel_user, 'username'))
-            form.username.validators.append(Unique(datamodel_register_user, 'username'))
+            form.username.validators.append(
+                Unique(datamodel_register_user, 'username'))
         if len(form.email.validators) == 2:
             form.email.validators.append(Unique(datamodel_user, 'email'))
-            form.email.validators.append(Unique(datamodel_register_user, 'email'))
+            form.email.validators.append(
+                Unique(datamodel_register_user, 'email'))
 
 
 class RegisterUserDBView(BaseRegisterUser):
@@ -156,11 +172,12 @@ class RegisterUserDBView(BaseRegisterUser):
 
     def form_post(self, form):
         self.add_form_unique_validations(form)
-        self.add_registration(username=form.username.data,
-                                              first_name=form.first_name.data,
-                                              last_name=form.last_name.data,
-                                              email=form.email.data,
-                                              password=form.password.data)
+        self.add_registration(
+            username=form.username.data,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            email=form.email.data,
+            password=form.password.data)
 
 
 class RegisterUserOIDView(BaseRegisterUser):
@@ -179,7 +196,8 @@ class RegisterUserOIDView(BaseRegisterUser):
         form = LoginForm_oid()
         if form.validate_on_submit():
             session['remember_me'] = form.remember_me.data
-            return self.appbuilder.sm.oid.try_login(form.openid.data, ask_for=['email', 'fullname'])
+            return self.appbuilder.sm.oid.try_login(
+                form.openid.data, ask_for=['email', 'fullname'])
         resp = session.pop('oid_resp', None)
         if resp:
             self._init_vars()
@@ -192,11 +210,12 @@ class RegisterUserOIDView(BaseRegisterUser):
             form.email.data = resp.email
             widgets = self._get_edit_widget(form=form)
             #self.update_redirect()
-            return self.render_template(self.form_template,
-                                   title=self.form_title,
-                                   widgets=widgets,
-                                   form_action='form',
-                                   appbuilder=self.appbuilder)
+            return self.render_template(
+                self.form_template,
+                title=self.form_title,
+                widgets=widgets,
+                form_action='form',
+                appbuilder=self.appbuilder)
         else:
             flash(as_unicode(self.error_message), 'warning')
             return redirect(self.get_redirect())
@@ -229,10 +248,11 @@ class RegisterUserOIDView(BaseRegisterUser):
         self.add_form_unique_validations(form)
 
     def form_post(self, form):
-        self.add_registration(username=form.username.data,
-                                              first_name=form.first_name.data,
-                                              last_name=form.last_name.data,
-                                              email=form.email.data)
+        self.add_registration(
+            username=form.username.data,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            email=form.email.data)
 
 
 class RegisterUserOAuthView(BaseRegisterUser):
@@ -251,9 +271,8 @@ class RegisterUserOAuthView(BaseRegisterUser):
 
     def form_post(self, form):
         log.debug('Adding Registration')
-        self.add_registration(username=form.username.data,
-                                              first_name=form.first_name.data,
-                                              last_name=form.last_name.data,
-                                              email=form.email.data)
-
-
+        self.add_registration(
+            username=form.username.data,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            email=form.email.data)

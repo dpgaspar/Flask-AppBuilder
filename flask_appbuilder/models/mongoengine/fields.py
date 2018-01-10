@@ -42,15 +42,17 @@ class MongoFileField(fields.FileField):
                 field.delete()
                 return
 
-            if isinstance(self.data, FileStorage) and not is_empty(self.data.stream):
+            if isinstance(self.data,
+                          FileStorage) and not is_empty(self.data.stream):
                 if not field.grid_id:
                     func = field.put
                 else:
                     func = field.replace
 
-                func(self.data.stream,
-                     filename=self.data.filename,
-                     content_type=self.data.content_type)
+                func(
+                    self.data.stream,
+                    filename=self.data.filename,
+                    content_type=self.data.content_type)
 
 
 class MongoImageField(MongoFileField):

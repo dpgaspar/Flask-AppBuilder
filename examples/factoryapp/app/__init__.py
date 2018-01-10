@@ -22,7 +22,3 @@ def create_app(config):
         db.create_all(app=app)
         views.fill_gender()
     return app
-
-
-
-

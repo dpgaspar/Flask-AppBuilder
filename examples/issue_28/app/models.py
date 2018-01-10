@@ -6,25 +6,23 @@ from flask_appbuilder import Model
 
 
 class Parent(Model):
- 
     """ Contains the fields of the deliverable list. """
- 
+
     __tablename__ = 'parent'
- 
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     number = Column(Float, nullable=False)
     name = Column(String)
- 
+
+
 class Child(Model):
- 
     """ Contains the fields of the deliverable list. """
- 
+
     __tablename__ = 'child'
- 
+
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     number = Column(Float, nullable=False)
     name = Column(String)
     parent_id = Column(Integer, ForeignKey('parent.id'), nullable=False)
- 
-    parent = relationship('Parent')
 
+    parent = relationship('Parent')

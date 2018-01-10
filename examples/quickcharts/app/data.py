@@ -8,7 +8,10 @@ log = logging.getLogger(__name__)
 
 
 def fill_data():
-    countries = ['Portugal', 'Germany', 'Spain', 'France', 'USA', 'China', 'Russia', 'Japan']
+    countries = [
+        'Portugal', 'Germany', 'Spain', 'France', 'USA', 'China', 'Russia',
+        'Japan'
+    ]
     politicals = ['Democratic', 'Authorative']
     for country in countries:
         c = Country(name=country)
@@ -43,4 +46,3 @@ def fill_data():
     except Exception as e:
         log.error("Update ViewMenu error: {0}".format(str(e)))
         db.session.rollback()
-

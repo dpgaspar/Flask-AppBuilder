@@ -34,8 +34,12 @@ class MongoEngineInterface(BaseInterface):
         """
         return self.obj.__name__
 
-    def query(self, filters=None, order_column='', order_direction='',
-              page=None, page_size=None):
+    def query(self,
+              filters=None,
+              order_column='',
+              order_direction='',
+              page=None,
+              page_size=None):
 
         # base query : all objects
         objs = self.obj.objects
@@ -50,20 +54,24 @@ class MongoEngineInterface(BaseInterface):
         # order the data
         if order_column != '':
             if hasattr(getattr(self.obj, order_column), '_col_name'):
-                order_column = getattr(getattr(self.obj, order_column), '_col_name')
+                order_column = getattr(
+                    getattr(self.obj, order_column), '_col_name')
             if order_direction == 'asc':
                 objs = objs.order_by('-{0}'.format(order_column))
             else:
                 objs = objs.order_by('+{0}'.format(order_column))
 
-        if page_size is None: # error checking and warnings
+        if page_size is None:  # error checking and warnings
             if page is not None:
-                log.error('Attempting to get page %s but page_size is undefined' % page)
+                log.error(
+                    'Attempting to get page %s but page_size is undefined' %
+                    page)
             if count > 100:
-                log.warn('Retrieving %s %s items from DB' % (count, str(self.obj)))
-        else: # get data segment for paginated page
+                log.warn('Retrieving %s %s items from DB' % (count,
+                                                             str(self.obj)))
+        else:  # get data segment for paginated page
             offset = (page or 0) * page_size
-            objs = objs[offset : offset + page_size]
+            objs = objs[offset:offset + page_size]
 
         return count, objs
 
@@ -131,7 +139,8 @@ class MongoEngineInterface(BaseInterface):
     def is_relation_many_to_many(self, col_name):
         try:
             field = self.obj._fields[col_name]
-            return isinstance(field, ListField) and isinstance(field.field, ReferenceField)
+            return isinstance(field, ListField) and isinstance(
+                field.field, ReferenceField)
         except:
             return False
 
@@ -161,7 +170,7 @@ class MongoEngineInterface(BaseInterface):
             else:
                 return -1
         except:
-                return -1
+            return -1
 
     def get_min_length(self, col_name):
         try:
@@ -171,7 +180,7 @@ class MongoEngineInterface(BaseInterface):
             else:
                 return -1
         except:
-                return -1
+            return -1
 
     def add(self, item):
         try:
@@ -179,7 +188,9 @@ class MongoEngineInterface(BaseInterface):
             self.message = (as_unicode(self.add_row_message), 'success')
             return True
         except Exception as e:
-            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (as_unicode(
+                self.general_error_message + ' ' + str(sys.exc_info()[0])),
+                            'danger')
             log.exception(LOGMSG_ERR_DBI_ADD_GENERIC.format(str(e)))
             return False
 
@@ -189,7 +200,9 @@ class MongoEngineInterface(BaseInterface):
             self.message = (as_unicode(self.edit_row_message), 'success')
             return True
         except Exception as e:
-            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (as_unicode(
+                self.general_error_message + ' ' + str(sys.exc_info()[0])),
+                            'danger')
             log.exception(LOGMSG_ERR_DBI_EDIT_GENERIC.format(str(e)))
             return False
 
@@ -199,7 +212,9 @@ class MongoEngineInterface(BaseInterface):
             self.message = (as_unicode(self.delete_row_message), 'success')
             return True
         except Exception as e:
-            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (as_unicode(
+                self.general_error_message + ' ' + str(sys.exc_info()[0])),
+                            'danger')
             log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
             return False
 
@@ -221,7 +236,8 @@ class MongoEngineInterface(BaseInterface):
         ret_lst = list()
         for col_name in self.get_columns_list():
             for conversion in self.filter_converter_class.conversion_table:
-                if getattr(self, conversion[0])(col_name) and not self.is_object_id(col_name):
+                if getattr(self, conversion[0])(
+                        col_name) and not self.is_object_id(col_name):
                     ret_lst.append(col_name)
         return ret_lst
 
@@ -229,7 +245,10 @@ class MongoEngineInterface(BaseInterface):
         """
             Returns all model's columns except pk
         """
-        return [col_name for col_name in self.get_columns_list() if not self.is_pk(col_name)]
+        return [
+            col_name for col_name in self.get_columns_list()
+            if not self.is_pk(col_name)
+        ]
 
     def get_order_columns_list(self, list_columns=None):
         """

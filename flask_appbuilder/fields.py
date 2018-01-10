@@ -21,7 +21,13 @@ class AJAXSelectField(Field):
         :param: is_related: If the model column is a relationship or direct on this case use col_name with the pk
     """
 
-    def __init__(self, label=None, validators=None, datamodel=None, col_name=None, is_related=True, **kwargs):
+    def __init__(self,
+                 label=None,
+                 validators=None,
+                 datamodel=None,
+                 col_name=None,
+                 is_related=True,
+                 **kwargs):
         super(AJAXSelectField, self).__init__(label, validators, **kwargs)
         self.datamodel = datamodel
         self.col_name = col_name
@@ -39,7 +45,8 @@ class AJAXSelectField(Field):
         """
         if value:
             if self.is_related:
-                self.data = self.datamodel.get_related_interface(self.col_name).get_pk_value(value)
+                self.data = self.datamodel.get_related_interface(
+                    self.col_name).get_pk_value(value)
             else:
                 self.data = self.datamodel.get(value)
         else:
@@ -57,7 +64,8 @@ class AJAXSelectField(Field):
         """
         if valuelist:
             if self.is_related:
-                self.data = self.datamodel.get_related_interface(self.col_name).get(valuelist[0])
+                self.data = self.datamodel.get_related_interface(
+                    self.col_name).get(valuelist[0])
             else:
                 self.data = self.datamodel.get(valuelist[0])
 
@@ -68,9 +76,15 @@ class QuerySelectField(SelectFieldBase):
     """
     widget = widgets.Select()
 
-    def __init__(self, label=None, validators=None, query_func=None,
-                 get_pk_func=None, get_label=None, allow_blank=False,
-                 blank_text='', **kwargs):
+    def __init__(self,
+                 label=None,
+                 validators=None,
+                 query_func=None,
+                 get_pk_func=None,
+                 get_label=None,
+                 allow_blank=False,
+                 blank_text='',
+                 **kwargs):
         super(QuerySelectField, self).__init__(label, validators, **kwargs)
         self.query_func = query_func
         self.get_pk_func = get_pk_func
@@ -103,7 +117,8 @@ class QuerySelectField(SelectFieldBase):
     def _get_object_list(self):
         if self._object_list is None:
             objs = self.query_func()
-            self._object_list = list((text_type(self.get_pk_func(obj)), obj) for obj in objs)
+            self._object_list = list(
+                (text_type(self.get_pk_func(obj)), obj) for obj in objs)
         return self._object_list
 
     def iter_choices(self):
@@ -146,10 +161,13 @@ class QuerySelectMultipleField(QuerySelectField):
     def __init__(self, label=None, validators=None, default=None, **kwargs):
         if default is None:
             default = []
-        super(QuerySelectMultipleField, self).__init__(label, validators, default=default, **kwargs)
+        super(QuerySelectMultipleField, self).__init__(
+            label, validators, default=default, **kwargs)
         if kwargs.get('allow_blank', False):
             import warnings
-            warnings.warn('allow_blank=True does not do anything for QuerySelectMultipleField.')
+            warnings.warn(
+                'allow_blank=True does not do anything for QuerySelectMultipleField.'
+            )
         self._invalid_formdata = False
 
     def _get_data(self):
@@ -202,14 +220,22 @@ class EnumField(SelectField):
                   `list(enum_class.__members__)`
     """
 
-    def __init__(self, enum_class, enums, label=None, validators=None, default=None, **kwargs):
+    def __init__(self,
+                 enum_class,
+                 enums,
+                 label=None,
+                 validators=None,
+                 default=None,
+                 **kwargs):
         self._enum_class = enum_class
         self._enums = enums
 
         # Column(Enum(enum.Enum)) case
         if enum_class is not None:
-            labels = [text_type(enum_class.__members__[enum_member].value)
-                      for enum_member in enums]
+            labels = [
+                text_type(enum_class.__members__[enum_member].value)
+                for enum_member in enums
+            ]
 
             def coerce(value):
                 if value is None:
@@ -218,7 +244,6 @@ class EnumField(SelectField):
                     return value
                 else:
                     return enum_class.__members__[value]
-
 
         # Column(Enum(*enums)) case
         else:
@@ -231,8 +256,13 @@ class EnumField(SelectField):
 
         choices = list(zip(enums, labels))
 
-        super(EnumField, self).__init__(label=label, validators=validators, default=default,
-                                        coerce=coerce, choices=choices, **kwargs)
+        super(EnumField, self).__init__(
+            label=label,
+            validators=validators,
+            default=default,
+            coerce=coerce,
+            choices=choices,
+            **kwargs)
 
     def pre_validate(self, form):
         for v, _ in self.choices:

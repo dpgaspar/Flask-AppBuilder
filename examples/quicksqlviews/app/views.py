@@ -11,7 +11,6 @@ from wtforms.fields import TextField
 from flask_appbuilder.widgets import FormHorizontalWidget, FormInlineWidget, FormVerticalWidget
 from flask_babel import lazy_gettext as _
 
-
 from app import db, appbuilder
 from .models import ContactGroup, Gender, Contact, ContactGroupView
 
@@ -26,14 +25,16 @@ def fill_gender():
 
 
 class ContactGroupViewModelView(ModelView):
-    base_permissions = ['can_list','can_show']
+    base_permissions = ['can_list', 'can_show']
     datamodel = SQLAInterface(ContactGroupView)
     list_columns = ['group_name', 'group_count']
 
 
 class ContactModelView(ModelView):
     datamodel = SQLAInterface(Contact)
-    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
+    list_columns = [
+        'name', 'personal_celphone', 'birthday', 'contact_group.name'
+    ]
 
     base_order = ('name', 'asc')
 
@@ -49,16 +50,13 @@ class ContactChartView(GroupByChartView):
     label_columns = ContactModelView.label_columns
     chart_type = 'PieChart'
 
-    definitions = [
-        {
-            'group' : 'contact_group',
-            'series' : [(aggregate_count,'contact_group')]
-        },
-        {
-            'group' : 'gender',
-            'series' : [(aggregate_count,'contact_group')]
-        }
-    ]
+    definitions = [{
+        'group': 'contact_group',
+        'series': [(aggregate_count, 'contact_group')]
+    }, {
+        'group': 'gender',
+        'series': [(aggregate_count, 'contact_group')]
+    }]
 
 
 def pretty_month_year(value):
@@ -75,25 +73,40 @@ class ContactTimeChartView(GroupByChartView):
     chart_title = 'Grouped Birth contacts'
     chart_type = 'AreaChart'
     label_columns = ContactModelView.label_columns
-    definitions = [
-        {
-            'group' : 'month_year',
-            'formatter': pretty_month_year,
-            'series': [(aggregate_count, 'group')]
-        },
-        {
-            'group': 'year',
-            'formatter': pretty_year,
-            'series': [(aggregate_count, 'group')]
-        }
-    ]
+    definitions = [{
+        'group': 'month_year',
+        'formatter': pretty_month_year,
+        'series': [(aggregate_count, 'group')]
+    }, {
+        'group': 'year',
+        'formatter': pretty_year,
+        'series': [(aggregate_count, 'group')]
+    }]
 
 
 db.create_all()
 fill_gender()
-appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
-appbuilder.add_view(ContactGroupViewModelView, "Contacts By Group View", icon="fa-dashboard", category="Contacts")
+appbuilder.add_view(
+    GroupModelView,
+    "List Groups",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon='fa-envelope')
+appbuilder.add_view(
+    ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
+appbuilder.add_view(
+    ContactGroupViewModelView,
+    "Contacts By Group View",
+    icon="fa-dashboard",
+    category="Contacts")
 appbuilder.add_separator("Contacts")
-appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
-appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
+appbuilder.add_view(
+    ContactChartView,
+    "Contacts Chart",
+    icon="fa-dashboard",
+    category="Contacts")
+appbuilder.add_view(
+    ContactTimeChartView,
+    "Contacts Birth Chart",
+    icon="fa-dashboard",
+    category="Contacts")

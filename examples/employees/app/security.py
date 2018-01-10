@@ -8,7 +8,8 @@ from flask_appbuilder.actions import action
 
 
 class MyUserDBView(UserDBModelView):
-    @action("muldelete", "Delete", "Delete all Really?", "fa-rocket", single=False)
+    @action(
+        "muldelete", "Delete", "Delete all Really?", "fa-rocket", single=False)
     def muldelete(self, items):
         self.datamodel.delete_all(items)
         self.update_redirect()
@@ -17,4 +18,3 @@ class MyUserDBView(UserDBModelView):
 
 class MySecurityManager(SecurityManager):
     userdbmodelview = MyUserDBView
-

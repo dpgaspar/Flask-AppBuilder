@@ -48,7 +48,6 @@ class Contact(Document):
     file = FileField()
     image = ImageField(size=(350, 250, True), thumbnail_size=(30, 30, True))
 
-
     def month_year(self):
         date = self.birthday or mindate
         return datetime.datetime(date.year, date.month, 1) or mindate
@@ -62,8 +61,9 @@ class Contact(Document):
 
     def file_show(self):
         if self.file:
-            return Markup(
-                '<a href="' + url_for('ContactModelView.mongo_download', pk=str(self.id)) + '">Download {0}</a>'.format(self.file.name))
+            return Markup('<a href="' + url_for(
+                'ContactModelView.mongo_download', pk=str(self.id)) +
+                          '">Download {0}</a>'.format(self.file.name))
         else:
             return Markup('')
 

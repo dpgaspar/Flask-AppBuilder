@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
     Some py2/py3 compatibility support based on a stripped down
@@ -15,7 +14,7 @@ VER = sys.version_info
 
 if not PY2:
     text_type = str
-    string_types = (str,)
+    string_types = (str, )
     integer_types = (int, )
 
     iterkeys = lambda d: iter(d.keys())
@@ -60,5 +59,5 @@ def with_metaclass(meta, *bases):
             if this_bases is None:
                 return type.__new__(cls, name, (), d)
             return meta(name, bases, d)
+
     return metaclass('temporary_class', None, {})
-    

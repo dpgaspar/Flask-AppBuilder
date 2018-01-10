@@ -25,7 +25,10 @@ class ImageColumn(types.TypeDecorator):
     """
     impl = types.Text
 
-    def __init__(self, thumbnail_size=(20, 20, True), size=(100, 100, True), **kw):
+    def __init__(self,
+                 thumbnail_size=(20, 20, True),
+                 size=(100, 100, True),
+                 **kw):
         types.TypeDecorator.__init__(self, **kw)
         self.thumbnail_size = thumbnail_size
         self.size = size
@@ -42,27 +45,44 @@ class AuditMixin(object):
         :created by:
         :changed by:
     """
-    created_on = Column(DateTime, default=datetime.datetime.now, nullable=False)
-    changed_on = Column(DateTime, default=datetime.datetime.now,
-                        onupdate=datetime.datetime.now, nullable=False)
+    created_on = Column(
+        DateTime, default=datetime.datetime.now, nullable=False)
+    changed_on = Column(
+        DateTime,
+        default=datetime.datetime.now,
+        onupdate=datetime.datetime.now,
+        nullable=False)
 
     @declared_attr
     def created_by_fk(cls):
-        return Column(Integer, ForeignKey('ab_user.id'),
-                      default=cls.get_user_id, nullable=False)
+        return Column(
+            Integer,
+            ForeignKey('ab_user.id'),
+            default=cls.get_user_id,
+            nullable=False)
 
     @declared_attr
     def created_by(cls):
-        return relationship("User", primaryjoin='%s.created_by_fk == User.id' % cls.__name__, enable_typechecks=False)
+        return relationship(
+            "User",
+            primaryjoin='%s.created_by_fk == User.id' % cls.__name__,
+            enable_typechecks=False)
 
     @declared_attr
     def changed_by_fk(cls):
-        return Column(Integer, ForeignKey('ab_user.id'),
-                      default=cls.get_user_id, onupdate=cls.get_user_id, nullable=False)
+        return Column(
+            Integer,
+            ForeignKey('ab_user.id'),
+            default=cls.get_user_id,
+            onupdate=cls.get_user_id,
+            nullable=False)
 
     @declared_attr
     def changed_by(cls):
-        return relationship("User", primaryjoin='%s.changed_by_fk == User.id' % cls.__name__, enable_typechecks=False)
+        return relationship(
+            "User",
+            primaryjoin='%s.changed_by_fk == User.id' % cls.__name__,
+            enable_typechecks=False)
 
     @classmethod
     def get_user_id(cls):

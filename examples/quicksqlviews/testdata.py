@@ -6,8 +6,12 @@ from datetime import datetime
 
 log = logging.getLogger(__name__)
 
+
 def get_random_name(names_list, size=1):
-    name_lst = [names_list[random.randrange(0, len(names_list))].capitalize() for i in range(0, size)]
+    name_lst = [
+        names_list[random.randrange(0, len(names_list))].capitalize()
+        for i in range(0, size)
+    ]
     return " ".join(name_lst)
 
 
@@ -68,5 +72,3 @@ for i in range(1, 1000):
     except Exception, e:
         log.error("Creating Contact: %s", e)
         db.session.rollback()
-    
-

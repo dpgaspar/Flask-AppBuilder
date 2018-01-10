@@ -32,9 +32,7 @@ from flask_appbuilder.version import VERSION_STRING
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode',
-    'sphinxcontrib.blockdiag'
+    'sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinxcontrib.blockdiag'
 ]
 
 #
@@ -103,7 +101,6 @@ pygments_style = 'sphinx'
 
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
-
 
 # -- Options for HTML output ----------------------------------------------
 sys.path.append(os.path.abspath('_themes'))
@@ -199,26 +196,25 @@ html_static_path = ['_static']
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'Flask-AppBuilderdoc'
 
-
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-#'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    #'preamble': '',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'Flask-AppBuilder.tex', u'Flask-AppBuilder Documentation',
-   u'Daniel Vaz Gaspar', 'manual'),
+    ('index', 'Flask-AppBuilder.tex', u'Flask-AppBuilder Documentation',
+     u'Daniel Vaz Gaspar', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -241,19 +237,15 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_domain_indices = True
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ('index', 'flask-appbuilder', u'Flask-AppBuilder Documentation',
-     [u'Daniel Vaz Gaspar'], 1)
-]
+man_pages = [('index', 'flask-appbuilder', u'Flask-AppBuilder Documentation',
+              [u'Daniel Vaz Gaspar'], 1)]
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
-
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -261,9 +253,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Flask-AppBuilder', u'Flask-AppBuilder Documentation',
-   u'Daniel Vaz Gaspar', 'Flask-AppBuilder', 'One line description of project.',
-   'Miscellaneous'),
+    ('index', 'Flask-AppBuilder', u'Flask-AppBuilder Documentation',
+     u'Daniel Vaz Gaspar', 'Flask-AppBuilder',
+     'One line description of project.', 'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.
@@ -277,4 +269,3 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
-

@@ -6,7 +6,7 @@ from flask_appbuilder import Model
 
 class Group(Model):
     id = Column(Integer, primary_key=True)
-    name = Column(String(50), unique = True, nullable=False)
+    name = Column(String(50), unique=True, nullable=False)
 
     def __repr__(self):
         return self.name
@@ -14,7 +14,7 @@ class Group(Model):
 
 class Gender(Model):
     id = Column(Integer, primary_key=True)
-    name = Column(String(50), unique = True, nullable=False)
+    name = Column(String(50), unique=True, nullable=False)
 
     def __repr__(self):
         return self.name
@@ -22,7 +22,7 @@ class Gender(Model):
 
 class Contact(Model):
     id = Column(Integer, primary_key=True)
-    name =  Column(String(150), unique = True, nullable=False)
+    name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))
     birthday = Column(Date, nullable=True)
     personal_phone = Column(String(20))
@@ -34,4 +34,3 @@ class Contact(Model):
 
     def __repr__(self):
         return self.name
-

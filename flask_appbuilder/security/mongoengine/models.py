@@ -6,10 +6,10 @@ from mongoengine import DateTimeField, StringField, ReferenceField, ListField, B
 
 
 def get_user_id():
-        try:
-            return g.user.id
-        except Exception as e:
-            return None
+    try:
+        return g.user.id
+    except Exception as e:
+        return None
 
 
 class Permission(Document):
@@ -23,7 +23,8 @@ class ViewMenu(Document):
     name = StringField(max_length=100, required=True, unique=True)
 
     def __eq__(self, other):
-        return (isinstance(other, self.__class__)) and (self.name == other.name)
+        return (isinstance(other,
+                           self.__class__)) and (self.name == other.name)
 
     def __neq__(self, other):
         return self.name != other.name
@@ -37,14 +38,18 @@ class PermissionView(Document):
     view_menu = ReferenceField(ViewMenu)
 
     def __unicode__(self):
-        return str(self.permission).replace('_', ' ') + ' on ' + str(self.view_menu)
+        return str(self.permission).replace('_', ' ') + ' on ' + str(
+            self.view_menu)
 
     def __repr__(self):
-        return str(self.permission).replace('_', ' ') + ' on ' + str(self.view_menu)
+        return str(self.permission).replace('_', ' ') + ' on ' + str(
+            self.view_menu)
 
 
 class Role(Document):
-    meta = {'allow_inheritance': True,}  # Added for role extension via mongoengine Document inheritance
+    meta = {
+        'allow_inheritance': True,
+    }  # Added for role extension via mongoengine Document inheritance
 
     name = StringField(max_length=64, required=True, unique=True)
     permissions = ListField(ReferenceField(PermissionView))
@@ -57,7 +62,9 @@ class Role(Document):
 
 
 class User(Document):
-    meta = {'allow_inheritance': True,}  # Added for user extension via Mongoengine Document inheritance
+    meta = {
+        'allow_inheritance': True,
+    }  # Added for user extension via Mongoengine Document inheritance
 
     first_name = StringField(max_length=64, required=True)
     last_name = StringField(max_length=64, required=True)
@@ -102,4 +109,3 @@ class RegisterUser(Document):
     email = StringField(max_length=64, required=True)
     registration_date = DateTimeField(default=datetime.datetime.now)
     registration_hash = StringField(max_length=256)
-

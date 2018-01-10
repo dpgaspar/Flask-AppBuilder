@@ -18,34 +18,92 @@ class PersonModelView(ModelView):
 
     #list_widget = ListThumbnail
 
-    label_columns = {'person_group_id': 'Group', 'photo_img': 'Photo', 'photo_img_thumbnail': 'Photo'}
-    list_columns = ['photo_img_thumbnail', 'name', 'personal_celphone', 'business_celphone', 'birthday', 'person_group']
+    label_columns = {
+        'person_group_id': 'Group',
+        'photo_img': 'Photo',
+        'photo_img_thumbnail': 'Photo'
+    }
+    list_columns = [
+        'photo_img_thumbnail', 'name', 'personal_celphone',
+        'business_celphone', 'birthday', 'person_group'
+    ]
 
     show_fieldsets = [
-        ('Summary', {'fields': ['photo_img', 'name', 'address', 'person_group']}),
-        ('Personal Info',
-         {'fields': ['birthday', 'personal_phone', 'personal_celphone', 'personal_email'], 'expanded': False}),
-        ('Professional Info',
-         {'fields': ['business_function', 'business_phone', 'business_celphone', 'business_email'], 'expanded': False}),
-        ('Extra', {'fields': ['notes'], 'expanded': False}),
+        ('Summary', {
+            'fields': ['photo_img', 'name', 'address', 'person_group']
+        }),
+        ('Personal Info', {
+            'fields': [
+                'birthday', 'personal_phone', 'personal_celphone',
+                'personal_email'
+            ],
+            'expanded':
+            False
+        }),
+        ('Professional Info', {
+            'fields': [
+                'business_function', 'business_phone', 'business_celphone',
+                'business_email'
+            ],
+            'expanded':
+            False
+        }),
+        ('Extra', {
+            'fields': ['notes'],
+            'expanded': False
+        }),
     ]
 
     add_fieldsets = [
-        ('Summary', {'fields': ['name', 'photo', 'address', 'person_group']}),
-        ('Personal Info',
-         {'fields': ['birthday', 'personal_phone', 'personal_celphone', 'personal_email'], 'expanded': False}),
-        ('Professional Info',
-         {'fields': ['business_function', 'business_phone', 'business_celphone', 'business_email'], 'expanded': False}),
-        ('Extra', {'fields': ['notes'], 'expanded': False}),
+        ('Summary', {
+            'fields': ['name', 'photo', 'address', 'person_group']
+        }),
+        ('Personal Info', {
+            'fields': [
+                'birthday', 'personal_phone', 'personal_celphone',
+                'personal_email'
+            ],
+            'expanded':
+            False
+        }),
+        ('Professional Info', {
+            'fields': [
+                'business_function', 'business_phone', 'business_celphone',
+                'business_email'
+            ],
+            'expanded':
+            False
+        }),
+        ('Extra', {
+            'fields': ['notes'],
+            'expanded': False
+        }),
     ]
 
     edit_fieldsets = [
-        ('Summary', {'fields': ['name', 'photo', 'address', 'person_group']}),
-        ('Personal Info',
-         {'fields': ['birthday', 'personal_phone', 'personal_celphone', 'personal_email'], 'expanded': False}),
-        ('Professional Info',
-         {'fields': ['business_function', 'business_phone', 'business_celphone', 'business_email'], 'expanded': False}),
-        ('Extra', {'fields': ['notes'], 'expanded': False}),
+        ('Summary', {
+            'fields': ['name', 'photo', 'address', 'person_group']
+        }),
+        ('Personal Info', {
+            'fields': [
+                'birthday', 'personal_phone', 'personal_celphone',
+                'personal_email'
+            ],
+            'expanded':
+            False
+        }),
+        ('Professional Info', {
+            'fields': [
+                'business_function', 'business_phone', 'business_celphone',
+                'business_email'
+            ],
+            'expanded':
+            False
+        }),
+        ('Extra', {
+            'fields': ['notes'],
+            'expanded': False
+        }),
     ]
 
 
@@ -53,7 +111,11 @@ class GroupModelView(ModelView):
     datamodel = SQLAInterface(PersonGroup, db.session)
     related_views = [PersonModelView]
 
-    label_columns = {'phone1': 'Phone (1)', 'phone2': 'Phone (2)', 'taxid': 'Tax ID'}
+    label_columns = {
+        'phone1': 'Phone (1)',
+        'phone2': 'Phone (2)',
+        'taxid': 'Tax ID'
+    }
     list_columns = ['name', 'notes']
 
 
@@ -63,15 +125,25 @@ class PersonChartView(GroupByChartView):
     label_columns = PersonModelView.label_columns
     chart_type = 'PieChart'
 
-    definitions = [
-        {
-            'group': 'person_group',
-            'series': [(aggregate_count,'person_group')]
-        }
-    ]
+    definitions = [{
+        'group': 'person_group',
+        'series': [(aggregate_count, 'person_group')]
+    }]
 
 
 db.create_all()
-appbuilder.add_view(GroupModelView(), "List Groups", icon="fa-folder-open-o", category="Contacts")
-appbuilder.add_view(PersonModelView(), "List Contacts", icon="fa-envelope", category="Contacts")
-appbuilder.add_view(PersonChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts")
+appbuilder.add_view(
+    GroupModelView(),
+    "List Groups",
+    icon="fa-folder-open-o",
+    category="Contacts")
+appbuilder.add_view(
+    PersonModelView(),
+    "List Contacts",
+    icon="fa-envelope",
+    category="Contacts")
+appbuilder.add_view(
+    PersonChartView(),
+    "Contacts Chart",
+    icon="fa-dashboard",
+    category="Contacts")

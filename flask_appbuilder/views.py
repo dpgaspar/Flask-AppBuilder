@@ -1,7 +1,7 @@
 import logging
 import json
-from flask import (
-    flash, redirect, send_file, jsonify, make_response, url_for, session, abort)
+from flask import (flash, redirect, send_file, jsonify, make_response, url_for,
+                   session, abort)
 from ._compat import as_unicode, string_types
 from .filemanager import uuid_originalname
 from .widgets import GroupFormListWidget, ListMasterWidget
@@ -24,8 +24,8 @@ class IndexView(BaseView):
     @expose('/')
     def index(self):
         self.update_redirect()
-        return self.render_template(self.index_template,
-                                    appbuilder=self.appbuilder)
+        return self.render_template(
+            self.index_template, appbuilder=self.appbuilder)
 
 
 class UtilView(BaseView):
@@ -50,6 +50,7 @@ class SimpleFormView(BaseFormView):
 
         Implement form_get and form_post to implement your form pre-processing and post-processing
     """
+
     @expose("/form", methods=['GET'])
     @has_access
     def this_form_get(self):
@@ -59,12 +60,11 @@ class SimpleFormView(BaseFormView):
         self.form_get(form)
         widgets = self._get_edit_widget(form=form)
         self.update_redirect()
-        return self.render_template(self.form_template,
-                                    title=self.form_title,
-                                    widgets=widgets,
-                                    appbuilder=self.appbuilder
-        )
-
+        return self.render_template(
+            self.form_template,
+            title=self.form_title,
+            widgets=widgets,
+            appbuilder=self.appbuilder)
 
     @expose("/form", methods=['POST'])
     @has_access
@@ -83,8 +83,7 @@ class SimpleFormView(BaseFormView):
                 self.form_template,
                 title=self.form_title,
                 widgets=widgets,
-                appbuilder=self.appbuilder
-            )
+                appbuilder=self.appbuilder)
 
 
 class PublicFormView(BaseFormView):
@@ -96,6 +95,7 @@ class PublicFormView(BaseFormView):
 
         Implement form_get and form_post to implement your form pre-processing and post-processing
     """
+
     @expose("/form", methods=['GET'])
     def this_form_get(self):
         self._init_vars()
@@ -103,11 +103,11 @@ class PublicFormView(BaseFormView):
         self.form_get(form)
         widgets = self._get_edit_widget(form=form)
         self.update_redirect()
-        return self.render_template(self.form_template,
-                                    title=self.form_title,
-                                    widgets=widgets,
-                                    appbuilder=self.appbuilder
-        )
+        return self.render_template(
+            self.form_template,
+            title=self.form_title,
+            widgets=widgets,
+            appbuilder=self.appbuilder)
 
     @expose("/form", methods=['POST'])
     def this_form_post(self):
@@ -124,8 +124,7 @@ class PublicFormView(BaseFormView):
                 self.form_template,
                 title=self.form_title,
                 widgets=widgets,
-                appbuilder=self.appbuilder
-            )
+                appbuilder=self.appbuilder)
 
 
 class RestCRUDView(BaseCRUDView):
@@ -159,7 +158,6 @@ class RestCRUDView(BaseCRUDView):
         modelview_urls['edit'] = url_for(view_name + ".edit", pk="")
         return modelview_urls
 
-
     @expose('/api', methods=['GET'])
     @has_access_api
     @permission_name('list')
@@ -181,21 +179,24 @@ class RestCRUDView(BaseCRUDView):
         form = self.search_form.refresh()
         for col in self.search_columns:
             form_fields[col] = form[col]()
-            search_filters[col] = [as_unicode(flt.name) for flt in dict_filters[col]]
+            search_filters[col] = [
+                as_unicode(flt.name) for flt in dict_filters[col]
+            ]
 
-        ret_json = jsonify(can_show=can_show,
-                           can_add=can_add,
-                           can_edit=can_edit,
-                           can_delete=can_delete,
-                           label_columns=self._label_columns_json(),
-                           list_columns=self.list_columns,
-                           order_columns=self.order_columns,
-                           page_size=self.page_size,
-                           modelview_name=view_name,
-                           api_urls=api_urls,
-                           search_filters=search_filters,
-                           search_fields=form_fields,
-                           modelview_urls=modelview_urls)
+        ret_json = jsonify(
+            can_show=can_show,
+            can_add=can_add,
+            can_edit=can_edit,
+            can_delete=can_delete,
+            label_columns=self._label_columns_json(),
+            list_columns=self.list_columns,
+            order_columns=self.order_columns,
+            page_size=self.page_size,
+            modelview_name=view_name,
+            api_urls=api_urls,
+            search_filters=search_filters,
+            search_fields=form_fields,
+            modelview_urls=modelview_urls)
         response = make_response(ret_json, 200)
         response.headers['Content-Type'] = "application/json"
         return response
@@ -208,25 +209,32 @@ class RestCRUDView(BaseCRUDView):
         """
         # Get arguments for ordering
         if get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+            order_column, order_direction = get_order_args().get(
+                self.__class__.__name__)
         else:
             order_column, order_direction = '', ''
         page = get_page_args().get(self.__class__.__name__)
         page_size = get_page_size_args().get(self.__class__.__name__)
         get_filter_args(self._filters)
         joined_filters = self._filters.get_joined_filters(self._base_filters)
-        count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
+        count, lst = self.datamodel.query(
+            joined_filters,
+            order_column,
+            order_direction,
+            page=page,
+            page_size=page_size)
         result = self.datamodel.get_values_json(lst, self.list_columns)
         pks = self.datamodel.get_keys(lst)
-        ret_json = jsonify(label_columns=self._label_columns_json(),
-                           list_columns=self.list_columns,
-                           order_columns=self.order_columns,
-                           page=page,
-                           page_size=page_size,
-                           count=count,
-                           modelview_name=self.__class__.__name__,
-                           pks=pks,
-                           result=result)
+        ret_json = jsonify(
+            label_columns=self._label_columns_json(),
+            list_columns=self.list_columns,
+            order_columns=self.order_columns,
+            page=page,
+            page_size=page_size,
+            count=count,
+            modelview_name=self.__class__.__name__,
+            pks=pks,
+            result=result)
         response = make_response(ret_json, 200)
         response.headers['Content-Type'] = "application/json"
         return response
@@ -251,11 +259,12 @@ class RestCRUDView(BaseCRUDView):
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
             abort(404)
-        ret_json = jsonify(pk=pk,
-                           label_columns=self._label_columns_json(),
-                           include_columns=self.show_columns,
-                           modelview_name=self.__class__.__name__,
-                           result=self.show_item_dict(item))
+        ret_json = jsonify(
+            pk=pk,
+            label_columns=self._label_columns_json(),
+            include_columns=self.show_columns,
+            modelview_name=self.__class__.__name__,
+            result=self.show_item_dict(item))
         response = make_response(ret_json, 200)
         response.headers['Content-Type'] = "application/json"
         return response
@@ -349,14 +358,18 @@ class RestCRUDView(BaseCRUDView):
             http_return_code = 200
         else:
             http_return_code = 500
-        response = make_response(jsonify({'message': self.datamodel.message[0],
-                                          'severity': self.datamodel.message[1]}), http_return_code)
+        response = make_response(
+            jsonify({
+                'message': self.datamodel.message[0],
+                'severity': self.datamodel.message[1]
+            }), http_return_code)
         response.headers['Content-Type'] = "application/json"
         return response
 
     def _get_related_column_data(self, col_name, filters):
         rel_datamodel = self.datamodel.get_related_interface(col_name)
-        _filters = rel_datamodel.get_filters(rel_datamodel.get_search_columns_list())
+        _filters = rel_datamodel.get_filters(
+            rel_datamodel.get_search_columns_list())
         get_filter_args(_filters)
         if filters:
             filters = _filters.add_filter_list(filters)
@@ -370,7 +383,8 @@ class RestCRUDView(BaseCRUDView):
         ret_json = json.dumps(ret_list)
         return ret_json
 
-    @expose_api(name='column_add', url='/api/column/add/<col_name>', methods=['GET'])
+    @expose_api(
+        name='column_add', url='/api/column/add/<col_name>', methods=['GET'])
     @has_access_api
     @permission_name('add')
     def api_column_add(self, col_name):
@@ -390,7 +404,8 @@ class RestCRUDView(BaseCRUDView):
         response.headers['Content-Type'] = "application/json"
         return response
 
-    @expose_api(name='column_edit', url='/api/column/edit/<col_name>', methods=['GET'])
+    @expose_api(
+        name='column_edit', url='/api/column/edit/<col_name>', methods=['GET'])
     @has_access_api
     @permission_name('edit')
     def api_column_edit(self, col_name):
@@ -418,12 +433,14 @@ class RestCRUDView(BaseCRUDView):
         """
         # Get arguments for ordering
         if get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+            order_column, order_direction = get_order_args().get(
+                self.__class__.__name__)
         else:
             order_column, order_direction = '', ''
         get_filter_args(self._filters)
         joined_filters = self._filters.get_joined_filters(self._base_filters)
-        count, result = self.datamodel.query(joined_filters, order_column, order_direction)
+        count, result = self.datamodel.query(joined_filters, order_column,
+                                             order_direction)
 
         ret_list = list()
         for item in result:
@@ -434,7 +451,6 @@ class RestCRUDView(BaseCRUDView):
         response = make_response(ret_json, 200)
         response.headers['Content-Type'] = "application/json"
         return response
-
 
 
 class ModelView(RestCRUDView):
@@ -473,9 +489,8 @@ class ModelView(RestCRUDView):
     def list(self):
 
         widgets = self._list()
-        return self.render_template(self.list_template,
-                                    title=self.list_title,
-                                    widgets=widgets)
+        return self.render_template(
+            self.list_template, title=self.list_title, widgets=widgets)
 
     """
     --------------------------------
@@ -488,11 +503,12 @@ class ModelView(RestCRUDView):
     def show(self, pk):
         pk = self._deserialize_pk_if_composite(pk)
         widgets = self._show(pk)
-        return self.render_template(self.show_template,
-                                    pk=pk,
-                                    title=self.show_title,
-                                    widgets=widgets,
-                                    related_views=self._related_views)
+        return self.render_template(
+            self.show_template,
+            pk=pk,
+            title=self.show_title,
+            widgets=widgets,
+            related_views=self._related_views)
 
     """
     ---------------------------
@@ -507,9 +523,8 @@ class ModelView(RestCRUDView):
         if not widget:
             return self.post_add_redirect()
         else:
-            return self.render_template(self.add_template,
-                                        title=self.add_title,
-                                        widgets=widget)
+            return self.render_template(
+                self.add_template, title=self.add_title, widgets=widget)
 
     """
     ---------------------------
@@ -525,10 +540,11 @@ class ModelView(RestCRUDView):
         if not widgets:
             return self.post_edit_redirect()
         else:
-            return self.render_template(self.edit_template,
-                                        title=self.edit_title,
-                                        widgets=widgets,
-                                        related_views=self._related_views)
+            return self.render_template(
+                self.edit_template,
+                title=self.edit_title,
+                widgets=widgets,
+                related_views=self._related_views)
 
     """
     ---------------------------
@@ -546,10 +562,10 @@ class ModelView(RestCRUDView):
     @expose('/download/<string:filename>')
     @has_access
     def download(self, filename):
-        return send_file(self.appbuilder.app.config['UPLOAD_FOLDER'] + filename,
-                         attachment_filename=uuid_originalname(filename),
-                         as_attachment=True)
-
+        return send_file(
+            self.appbuilder.app.config['UPLOAD_FOLDER'] + filename,
+            attachment_filename=uuid_originalname(filename),
+            as_attachment=True)
 
     @expose('/action/<string:name>/<pk>', methods=['GET'])
     def action(self, name, pk):
@@ -564,7 +580,6 @@ class ModelView(RestCRUDView):
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
             return redirect('.')
 
-
     @expose('/action_post', methods=['POST'])
     def action_post(self):
         """
@@ -574,7 +589,10 @@ class ModelView(RestCRUDView):
         pks = request.form.getlist('rowid')
         if self.appbuilder.sm.has_access(name, self.__class__.__name__):
             action = self.actions.get(name)
-            items = [self.datamodel.get(self._deserialize_pk_if_composite(pk)) for pk in pks]
+            items = [
+                self.datamodel.get(self._deserialize_pk_if_composite(pk))
+                for pk in pks
+            ]
             return action.func(items)
         else:
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
@@ -616,17 +634,22 @@ class MasterDetailView(BaseCRUDView):
         widgets = self._list()
         if pk:
             item = self.datamodel.get(pk)
-            widgets = self._get_related_views_widgets(item, orders=orders,
-                                                      pages=pages, page_sizes=page_sizes, widgets=widgets)
+            widgets = self._get_related_views_widgets(
+                item,
+                orders=orders,
+                pages=pages,
+                page_sizes=page_sizes,
+                widgets=widgets)
             related_views = self._related_views
         else:
             related_views = []
 
-        return self.render_template(self.list_template,
-                                    title=self.list_title,
-                                    widgets=widgets,
-                                    related_views=related_views,
-                                    master_div_width=self.master_div_width)
+        return self.render_template(
+            self.list_template,
+            title=self.list_title,
+            widgets=widgets,
+            related_views=related_views,
+            master_div_width=self.master_div_width)
 
 
 class MultipleView(BaseView):
@@ -666,25 +689,29 @@ class MultipleView(BaseView):
         views_widgets = list()
         for view in self._views:
             if orders.get(view.__class__.__name__):
-                order_column, order_direction = orders.get(view.__class__.__name__)
+                order_column, order_direction = orders.get(
+                    view.__class__.__name__)
             else:
                 order_column, order_direction = '', ''
             page = pages.get(view.__class__.__name__)
             page_size = page_sizes.get(view.__class__.__name__)
-            views_widgets.append(view._get_view_widget(filters=view._base_filters,
-                                                       order_column=order_column,
-                                                       order_direction=order_direction,
-                                                       page=page, page_size=page_size))
+            views_widgets.append(
+                view._get_view_widget(
+                    filters=view._base_filters,
+                    order_column=order_column,
+                    order_direction=order_direction,
+                    page=page,
+                    page_size=page_size))
         self.update_redirect()
-        return self.render_template(self.list_template,
-                                    views=self._views,
-                                    views_widgets=views_widgets)
+        return self.render_template(
+            self.list_template, views=self._views, views_widgets=views_widgets)
 
 
 class CompactCRUDMixin(BaseCRUDView):
     """
         Mix with ModelView to implement a list with add and edit on the same page.
     """
+
     @classmethod
     def set_key(cls, k, v):
         """Allows attaching stateless information to the class using the
@@ -723,7 +750,8 @@ class CompactCRUDMixin(BaseCRUDView):
             if pk and self.datamodel.get(int(pk)):
                 form_widget = self._edit(int(pk)).get('edit')
         return {
-            'list': GroupFormListWidget(
+            'list':
+            GroupFormListWidget(
                 list_widget=widgets.get('list'),
                 form_widget=form_widget,
                 form_action=self.get_key('session_form_action', ''),
@@ -735,9 +763,8 @@ class CompactCRUDMixin(BaseCRUDView):
     @has_access
     def list(self):
         list_widgets = self._list()
-        return self.render_template(self.list_template,
-                                    title=self.list_title,
-                                    widgets=list_widgets)
+        return self.render_template(
+            self.list_template, title=self.list_title, widgets=list_widgets)
 
     @expose('/add/', methods=['GET', 'POST'])
     @has_access
@@ -749,10 +776,8 @@ class CompactCRUDMixin(BaseCRUDView):
             return redirect(request.referrer)
         else:
             self.set_key('session_form_widget', 'add')
-            self.set_key(
-                'session_form_action',
-                request.script_root + request.full_path
-            )
+            self.set_key('session_form_action',
+                         request.script_root + request.full_path)
             self.set_key('session_form_title', self.add_title)
             return redirect(self.get_redirect())
 
@@ -768,10 +793,8 @@ class CompactCRUDMixin(BaseCRUDView):
             return redirect(self.get_redirect())
         else:
             self.set_key('session_form_widget', 'edit')
-            self.set_key(
-                'session_form_action',
-                request.script_root + request.full_path
-            )
+            self.set_key('session_form_action',
+                         request.script_root + request.full_path)
             self.set_key('session_form_title', self.add_title)
             self.set_key('session_form_edit_pk', pk)
             return redirect(self.get_redirect())
@@ -785,6 +808,7 @@ class CompactCRUDMixin(BaseCRUDView):
         if pk == edit_pk:
             self.del_key('session_form_edit_pk')
         return redirect(self.get_redirect())
+
 
 """
     This is for retro compatibility

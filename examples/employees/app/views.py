@@ -1,7 +1,7 @@
 from flask_appbuilder import ModelView
 from flask_appbuilder.fieldwidgets import Select2Widget
 from flask_appbuilder.models.sqla.interface import SQLAInterface
-from .models import Employee,Department, Function, EmployeeHistory, Benefit
+from .models import Employee, Department, Function, EmployeeHistory, Benefit
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from app import appbuilder, db
 
@@ -20,10 +20,13 @@ class EmployeeView(ModelView):
     datamodel = SQLAInterface(Employee)
 
     list_columns = ['full_name', 'department.name', 'employee_number']
-    edit_form_extra_fields = {'department':  QuerySelectField('Department',
-                                query_factory=department_query,
-                                widget=Select2Widget(extra_classes="readonly"))}
-
+    edit_form_extra_fields = {
+        'department':
+        QuerySelectField(
+            'Department',
+            query_factory=department_query,
+            widget=Select2Widget(extra_classes="readonly"))
+    }
 
     related_views = [EmployeeHistoryView]
     show_template = 'appbuilder/general/model/show_cascade.html'
@@ -50,9 +53,12 @@ class BenefitView(ModelView):
 db.create_all()
 
 appbuilder.add_view_no_menu(EmployeeHistoryView, "EmployeeHistoryView")
-appbuilder.add_view(EmployeeView, "Employees", icon="fa-folder-open-o", category="Company")
+appbuilder.add_view(
+    EmployeeView, "Employees", icon="fa-folder-open-o", category="Company")
 appbuilder.add_separator("Company")
-appbuilder.add_view(DepartmentView, "Departments", icon="fa-folder-open-o", category="Company")
-appbuilder.add_view(FunctionView, "Functions", icon="fa-folder-open-o", category="Company")
-appbuilder.add_view(BenefitView, "Benefits", icon="fa-folder-open-o", category="Company")
-
+appbuilder.add_view(
+    DepartmentView, "Departments", icon="fa-folder-open-o", category="Company")
+appbuilder.add_view(
+    FunctionView, "Functions", icon="fa-folder-open-o", category="Company")
+appbuilder.add_view(
+    BenefitView, "Benefits", icon="fa-folder-open-o", category="Company")

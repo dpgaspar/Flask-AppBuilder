@@ -7,9 +7,18 @@ from flask_appbuilder.forms import DynamicForm
 
 
 class UserInfoEdit(DynamicForm):
-    first_name = StringField(lazy_gettext('First Name'), validators=[DataRequired()], widget=BS3TextFieldWidget(),
-                             description=lazy_gettext('Write the user first name or names'))
-    last_name = StringField(lazy_gettext('Last Name'), validators=[DataRequired()], widget=BS3TextFieldWidget(),
-                            description=lazy_gettext('Write the user last name'))
-    emp_number = StringField(lazy_gettext('Emp. Number'), validators=[DataRequired()], widget=BS3TextFieldWidget(),
-                            description=lazy_gettext('Employee Number'))
+    first_name = StringField(
+        lazy_gettext('First Name'),
+        validators=[DataRequired()],
+        widget=BS3TextFieldWidget(),
+        description=lazy_gettext('Write the user first name or names'))
+    last_name = StringField(
+        lazy_gettext('Last Name'),
+        validators=[DataRequired()],
+        widget=BS3TextFieldWidget(),
+        description=lazy_gettext('Write the user last name'))
+    emp_number = StringField(
+        lazy_gettext('Emp. Number'),
+        validators=[DataRequired()],
+        widget=BS3TextFieldWidget(),
+        description=lazy_gettext('Employee Number'))

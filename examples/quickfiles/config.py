@@ -4,12 +4,22 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 CSRF_ENABLED = True
 SECRET_KEY = '\2\1thisismyscretkey\1\2\e\y\y\h'
 
-OPENID_PROVIDERS = [
-    { 'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id' },
-    { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
-    { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
-    { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
-    { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }]
+OPENID_PROVIDERS = [{
+    'name': 'Google',
+    'url': 'https://www.google.com/accounts/o8/id'
+}, {
+    'name': 'Yahoo',
+    'url': 'https://me.yahoo.com'
+}, {
+    'name': 'AOL',
+    'url': 'http://openid.aol.com/<username>'
+}, {
+    'name': 'Flickr',
+    'url': 'http://www.flickr.com/<username>'
+}, {
+    'name': 'MyOpenID',
+    'url': 'https://www.myopenid.com'
+}]
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 #SQLALCHEMY_DATABASE_URI = 'mysql://myapp@localhost/myapp'
@@ -17,16 +27,35 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 BABEL_DEFAULT_LOCALE = 'en'
 BABEL_DEFAULT_FOLDER = 'translations'
 LANGUAGES = {
-    'en': {'flag':'gb', 'name':'English'},
-    'pt': {'flag':'pt', 'name':'Portuguese'},
-    'es': {'flag':'es', 'name':'Spanish'},
-    'de': {'flag':'de', 'name':'German'},
-    'zh': {'flag':'cn', 'name':'Chinese'},
-    'ru': {'flag':'ru', 'name':'Russian'},
-    'ja_JP': {'flag': 'jp', 'name': 'Japanese'}
+    'en': {
+        'flag': 'gb',
+        'name': 'English'
+    },
+    'pt': {
+        'flag': 'pt',
+        'name': 'Portuguese'
+    },
+    'es': {
+        'flag': 'es',
+        'name': 'Spanish'
+    },
+    'de': {
+        'flag': 'de',
+        'name': 'German'
+    },
+    'zh': {
+        'flag': 'cn',
+        'name': 'Chinese'
+    },
+    'ru': {
+        'flag': 'ru',
+        'name': 'Russian'
+    },
+    'ja_JP': {
+        'flag': 'jp',
+        'name': 'Japanese'
+    }
 }
-
-
 
 #------------------------------
 # GLOBALS FOR GENERAL APP's
@@ -39,7 +68,7 @@ AUTH_TYPE = 1
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
 APP_NAME = "F.A.B. Example"
-APP_THEME = ""                  # default
+APP_THEME = ""  # default
 #APP_THEME = "cerulean.css"      # COOL
 #APP_THEME = "amelia.css"
 #APP_THEME = "cosmo.css"

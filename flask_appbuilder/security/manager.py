@@ -171,12 +171,15 @@ class BaseSecurityManager(AbstractSecurityManager):
         app.config.setdefault('AUTH_TYPE', AUTH_DB)
         # Self Registration
         app.config.setdefault('AUTH_USER_REGISTRATION', False)
-        app.config.setdefault('AUTH_USER_REGISTRATION_ROLE', self.auth_role_public)
+        app.config.setdefault('AUTH_USER_REGISTRATION_ROLE',
+                              self.auth_role_public)
 
         # LDAP Config
         if self.auth_type == AUTH_LDAP:
             if 'AUTH_LDAP_SERVER' not in app.config:
-                raise Exception("No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type.")
+                raise Exception(
+                    "No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type."
+                )
             app.config.setdefault('AUTH_LDAP_USE_TLS', False)
             app.config.setdefault('AUTH_LDAP_SEARCH', '')
             app.config.setdefault('AUTH_LDAP_BIND_USER', '')
@@ -198,13 +201,15 @@ class BaseSecurityManager(AbstractSecurityManager):
             for _provider in self.oauth_providers:
                 provider_name = _provider['name']
                 log.debug("OAuth providers init {0}".format(provider_name))
-                obj_provider = self.oauth.remote_app(provider_name, **_provider['remote_app'])
+                obj_provider = self.oauth.remote_app(provider_name,
+                                                     **_provider['remote_app'])
                 obj_provider._tokengetter = self.oauth_tokengetter
                 if not self.oauth_user_info:
                     self.oauth_user_info = self.get_oauth_user_info
                 # Whitelist only users with matching emails
                 if 'whitelist' in _provider:
-                    self.oauth_whitelists[provider_name] = _provider['whitelist']
+                    self.oauth_whitelists[provider_name] = _provider[
+                        'whitelist']
                 self.oauth_remotes[provider_name] = obj_provider
 
         self.lm = LoginManager(app)
@@ -213,7 +218,8 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     @property
     def get_url_for_registeruser(self):
-        return url_for('%s.%s' % (self.registeruser_view.endpoint, self.registeruser_view.default_view))
+        return url_for('%s.%s' % (self.registeruser_view.endpoint,
+                                  self.registeruser_view.default_view))
 
     @property
     def get_user_datamodel(self):
@@ -321,13 +327,17 @@ class BaseSecurityManager(AbstractSecurityManager):
                     else:
                         return {}
         """
+
         def wraps(provider, response=None):
             ret = f(self, provider, response=response)
             # Checks if decorator is well behaved and returns a dict as supposed.
             if not type(ret) == dict:
-                log.error("OAuth user info decorated function did not returned a dict, but: {0}".format(type(ret)))
+                log.error(
+                    "OAuth user info decorated function did not returned a dict, but: {0}".
+                    format(type(ret)))
                 return {}
             return ret
+
         self.oauth_user_info = wraps
         return wraps
 
@@ -359,10 +369,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         token_key = self.appbuilder.sm.get_oauth_token_key_name(provider)
         token_secret = self.appbuilder.sm.get_oauth_token_secret_name(provider)
         # Save users token on encrypted session cookie
-        session['oauth'] = (
-            oauth_response[token_key],
-            oauth_response.get(token_secret,'')
-        )
+        session['oauth'] = (oauth_response[token_key],
+                            oauth_response.get(token_secret, ''))
         session['oauth_provider'] = provider
 
     def get_oauth_user_info(self, provider, resp=None):
@@ -377,25 +385,31 @@ class BaseSecurityManager(AbstractSecurityManager):
             return {'username': "github_" + me.data.get('login')}
         # for twitter
         if provider == 'twitter':
-            me = self.appbuilder.sm.oauth_remotes[provider].get('account/settings.json')
+            me = self.appbuilder.sm.oauth_remotes[provider].get(
+                'account/settings.json')
             log.debug("User info from Twitter: {0}".format(me.data))
             return {'username': "twitter_" + me.data.get('screen_name', '')}
         # for linkedin
         if provider == 'linkedin':
-            me = self.appbuilder.sm.oauth_remotes[provider].get('people/~:(id,email-address,first-name,last-name)?format=json')
+            me = self.appbuilder.sm.oauth_remotes[provider].get(
+                'people/~:(id,email-address,first-name,last-name)?format=json')
             log.debug("User info from Linkedin: {0}".format(me.data))
-            return {'username': "linkedin_" + me.data.get('id', ''),
+            return {
+                'username': "linkedin_" + me.data.get('id', ''),
                 'email': me.data.get('email-address', ''),
                 'first_name': me.data.get('firstName', ''),
-                'last_name': me.data.get('lastName', '')}
+                'last_name': me.data.get('lastName', '')
+            }
         # for Google
         if provider == 'google':
             me = self.appbuilder.sm.oauth_remotes[provider].get('userinfo')
             log.debug("User info from Google: {0}".format(me.data))
-            return {'username': "google_" + me.data.get('id', ''),
+            return {
+                'username': "google_" + me.data.get('id', ''),
                 'first_name': me.data.get('given_name', ''),
                 'last_name': me.data.get('family_name', ''),
-                'email': me.data.get('email', '')}
+                'email': me.data.get('email', '')
+            }
         else:
             return {}
 
@@ -437,37 +451,58 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         self.appbuilder.add_view_no_menu(self.auth_view)
 
-        self.user_view = self.appbuilder.add_view(self.user_view, "List Users",
-                                                  icon="fa-user", label=_("List Users"),
-                                                  category="Security", category_icon="fa-cogs",
-                                                  category_label=_('Security'))
+        self.user_view = self.appbuilder.add_view(
+            self.user_view,
+            "List Users",
+            icon="fa-user",
+            label=_("List Users"),
+            category="Security",
+            category_icon="fa-cogs",
+            category_label=_('Security'))
 
-        role_view = self.appbuilder.add_view(self.rolemodelview, "List Roles",
-                                             icon="fa-group", label=_('List Roles'),
-                                             category="Security", category_icon="fa-cogs")
+        role_view = self.appbuilder.add_view(
+            self.rolemodelview,
+            "List Roles",
+            icon="fa-group",
+            label=_('List Roles'),
+            category="Security",
+            category_icon="fa-cogs")
         role_view.related_views = [self.user_view.__class__]
 
-        self.appbuilder.add_view(self.userstatschartview,
-                                 "User's Statistics", icon="fa-bar-chart-o",
-                                 label=_("User's Statistics"),
-                                 category="Security")
+        self.appbuilder.add_view(
+            self.userstatschartview,
+            "User's Statistics",
+            icon="fa-bar-chart-o",
+            label=_("User's Statistics"),
+            category="Security")
 
         if self.auth_user_registration:
-            self.appbuilder.add_view(self.registerusermodelview,
-                                 "User's Statistics", icon="fa-user-plus",
-                                 label=_("User Registrations"),
-                                 category="Security")
+            self.appbuilder.add_view(
+                self.registerusermodelview,
+                "User's Statistics",
+                icon="fa-user-plus",
+                label=_("User Registrations"),
+                category="Security")
 
         self.appbuilder.menu.add_separator("Security")
-        self.appbuilder.add_view(self.permissionmodelview,
-                                 "Base Permissions", icon="fa-lock",
-                                 label=_("Base Permissions"), category="Security")
-        self.appbuilder.add_view(self.viewmenumodelview,
-                                 "Views/Menus", icon="fa-list-alt",
-                                 label=_('Views/Menus'), category="Security")
-        self.appbuilder.add_view(self.permissionviewmodelview,
-                                 "Permission on Views/Menus", icon="fa-link",
-                                 label=_('Permission on Views/Menus'), category="Security")
+        self.appbuilder.add_view(
+            self.permissionmodelview,
+            "Base Permissions",
+            icon="fa-lock",
+            label=_("Base Permissions"),
+            category="Security")
+        self.appbuilder.add_view(
+            self.viewmenumodelview,
+            "Views/Menus",
+            icon="fa-list-alt",
+            label=_('Views/Menus'),
+            category="Security")
+        self.appbuilder.add_view(
+            self.permissionviewmodelview,
+            "Permission on Views/Menus",
+            icon="fa-link",
+            label=_('Permission on Views/Menus'),
+            category="Security")
 
     def create_db(self):
         """
@@ -548,13 +583,11 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_ldap_append_domain:
             username = username + '@' + self.auth_ldap_append_domain
         filter_str = "%s=%s" % (self.auth_ldap_uid_field, username)
-        user = con.search_s(self.auth_ldap_search,
-                            ldap.SCOPE_SUBTREE,
-                            filter_str,
-                            [self.auth_ldap_firstname_field,
-                             self.auth_ldap_lastname_field,
-                             self.auth_ldap_email_field
-                            ])
+        user = con.search_s(
+            self.auth_ldap_search, ldap.SCOPE_SUBTREE, filter_str, [
+                self.auth_ldap_firstname_field, self.auth_ldap_lastname_field,
+                self.auth_ldap_email_field
+            ])
         if user:
             if not user[0][0]:
                 return None
@@ -622,14 +655,17 @@ class BaseSecurityManager(AbstractSecurityManager):
                 raise Exception("No ldap library for python.")
             try:
                 if self.auth_ldap_allow_self_signed:
-                    ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
+                    ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT,
+                                    ldap.OPT_X_TLS_ALLOW)
                 con = ldap.initialize(self.auth_ldap_server)
                 con.set_option(ldap.OPT_REFERRALS, 0)
                 if self.auth_ldap_use_tls:
                     try:
                         con.start_tls_s()
                     except Exception:
-                        log.info(LOGMSG_ERR_SEC_AUTH_LDAP_TLS.format(self.auth_ldap_server))
+                        log.info(
+                            LOGMSG_ERR_SEC_AUTH_LDAP_TLS.format(
+                                self.auth_ldap_server))
                         return None
                 # Authenticate user
                 if not self._bind_ldap(ldap, con, username, password):
@@ -650,18 +686,25 @@ class BaseSecurityManager(AbstractSecurityManager):
                     if self.auth_user_registration and user is None:
                         user = self.add_user(
                             username=username,
-                            first_name=self.ldap_extract(ldap_user_info, self.auth_ldap_firstname_field, username),
-                            last_name=self.ldap_extract(ldap_user_info, self.auth_ldap_lastname_field, username),
-                            email=self.ldap_extract(ldap_user_info, self.auth_ldap_email_field, username + '@email.notfound'),
-                            role=self.find_role(self.auth_user_registration_role)
-                        )
+                            first_name=self.ldap_extract(
+                                ldap_user_info, self.auth_ldap_firstname_field,
+                                username),
+                            last_name=self.ldap_extract(
+                                ldap_user_info, self.auth_ldap_lastname_field,
+                                username),
+                            email=self.ldap_extract(
+                                ldap_user_info, self.auth_ldap_email_field,
+                                username + '@email.notfound'),
+                            role=self.find_role(
+                                self.auth_user_registration_role))
 
                 self.update_user_auth_stat(user)
                 return user
 
             except ldap.LDAPError as e:
                 if type(e.message) == dict and 'desc' in e.message:
-                    log.error(LOGMSG_ERR_SEC_AUTH_LDAP.format(e.message['desc']))
+                    log.error(
+                        LOGMSG_ERR_SEC_AUTH_LDAP.format(e.message['desc']))
                     return None
                 else:
                     log.error(e)
@@ -698,8 +741,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 first_name=username,
                 last_name='-',
                 email='-',
-                role=self.find_role(self.auth_user_registration_role)
-            )
+                role=self.find_role(self.auth_user_registration_role))
 
         # If user does not exist on the DB and not auto user registration,
         # or user is inactive, go away.
@@ -722,7 +764,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         elif 'email' in userinfo:
             user = self.find_user(email=userinfo['email'])
         else:
-            log.error('User info does not have username or email {0}'.format(userinfo))
+            log.error('User info does not have username or email {0}'.format(
+                userinfo))
             return None
         # User is disabled
         if user and not user.is_active():
@@ -734,14 +777,14 @@ class BaseSecurityManager(AbstractSecurityManager):
         # User does not exist, create one if self registration.
         if not user:
             user = self.add_user(
-                    username=userinfo['username'],
-                    first_name=userinfo['first_name'],
-                    last_name=userinfo['last_name'],
-                    email=userinfo['email'],
-                    role=self.find_role(self.auth_user_registration_role)
-                )
+                username=userinfo['username'],
+                first_name=userinfo['first_name'],
+                last_name=userinfo['last_name'],
+                email=userinfo['email'],
+                role=self.find_role(self.auth_user_registration_role))
             if not user:
-                log.error("Error creating a new OAuth user %s" % userinfo['username'])
+                log.error("Error creating a new OAuth user %s" %
+                          userinfo['username'])
                 return None
         self.update_user_auth_stat(user)
         return user
@@ -764,7 +807,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         permissions = self.get_public_permissions()
         if permissions:
             for i in permissions:
-                if (view_name == i.view_menu.name) and (permission_name == i.permission.name):
+                if (view_name == i.view_menu.name) and (
+                        permission_name == i.permission.name):
                     return True
             return False
         else:
@@ -776,7 +820,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             permissions = role.permissions
             if permissions:
                 for permission in permissions:
-                    if (view_name == permission.view_menu.name) and (permission_name == permission.permission.name):
+                    if (view_name == permission.view_menu.name) and (
+                            permission_name == permission.permission.name):
                         return True
         return False
 
@@ -823,7 +868,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                     # del permission from all roles
                     for role in roles:
                         self.del_permission_role(role, perm)
-                    self.del_permission_view_menu(perm_view.permission.name, view_menu)
+                    self.del_permission_view_menu(perm_view.permission.name,
+                                                  view_menu)
                 elif perm_view not in role_admin.permissions:
                     # Role Admin must have all permissions
                     self.add_permission_role(role_admin, perm_view)
@@ -864,7 +910,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                 for permission in permissions:
                     for role in roles:
                         self.del_permission_role(role, permission)
-                    self.del_permission_view_menu(permission.permission.name, viewmenu.name)
+                    self.del_permission_view_menu(permission.permission.name,
+                                                  viewmenu.name)
                 self.del_view_menu(viewmenu.name)
 
     """
@@ -876,13 +923,20 @@ class BaseSecurityManager(AbstractSecurityManager):
      PRIMITIVES FOR USERS
     ----------------------
     """
+
     def find_register_user(self, registration_hash):
         """
             Generic function to return user registration
         """
         raise NotImplementedError
 
-    def add_register_user(self, username, first_name, last_name, email, password='', hashed_password=''):
+    def add_register_user(self,
+                          username,
+                          first_name,
+                          last_name,
+                          email,
+                          password='',
+                          hashed_password=''):
         """
             Generic function to add user registration
         """
@@ -912,7 +966,13 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    def add_user(self, username, first_name, last_name, email, role, password=''):
+    def add_user(self,
+                 username,
+                 first_name,
+                 last_name,
+                 email,
+                 role,
+                 password=''):
         """
             Generic function to create user
         """
@@ -937,6 +997,7 @@ class BaseSecurityManager(AbstractSecurityManager):
      PRIMITIVES FOR ROLES
     ----------------------
     """
+
     def find_role(self, name):
         raise NotImplementedError
 
@@ -951,6 +1012,7 @@ class BaseSecurityManager(AbstractSecurityManager):
      PRIMITIVES FOR PERMISSIONS
     ----------------------------
     """
+
     def get_public_permissions(self):
         """
             returns all permissions from public role
@@ -986,6 +1048,7 @@ class BaseSecurityManager(AbstractSecurityManager):
      PRIMITIVES VIEW MENU
     ----------------------
     """
+
     def find_view_menu(self, name):
         """
             Finds and returns a ViewMenu by name
@@ -1017,6 +1080,7 @@ class BaseSecurityManager(AbstractSecurityManager):
      PERMISSION VIEW MENU
     ----------------------
     """
+
     def find_permission_view_menu(self, permission_name, view_menu_name):
         """
             Finds and returns a PermissionView by names
@@ -1080,4 +1144,3 @@ class BaseSecurityManager(AbstractSecurityManager):
     @staticmethod
     def before_request():
         g.user = current_user
-

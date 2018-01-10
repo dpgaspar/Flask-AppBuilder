@@ -7,10 +7,8 @@ from flask_appbuilder.charts.views import GroupByChartView
 from flask_appbuilder.models.group import aggregate_count
 from flask_babel import lazy_gettext as _
 
-
 from app import appbuilder
 from .models import ContactGroup, Contact, Tags, Gender
-
 
 
 def fill_gender():
@@ -22,11 +20,17 @@ def fill_gender():
     except:
         pass
 
+
 class ContactModelView(ModelView):
     datamodel = MongoEngineInterface(Contact)
     label_columns = {'image_thumb_show': 'Photo', 'image_show': 'Photo'}
-    list_columns = ['image_thumb_show', 'name', 'personal_celphone', 'birthday', 'contact_group']
-    show_columns = ['image_show', 'name', 'personal_celphone', 'birthday', 'contact_group']
+    list_columns = [
+        'image_thumb_show', 'name', 'personal_celphone', 'birthday',
+        'contact_group'
+    ]
+    show_columns = [
+        'image_show', 'name', 'personal_celphone', 'birthday', 'contact_group'
+    ]
 
     @expose('/mongo_download/<pk>')
     @has_access
@@ -34,7 +38,9 @@ class ContactModelView(ModelView):
         item = self.datamodel.get(pk)
         file = item.file.read()
         response = make_response(file)
-        response.headers["Content-Disposition"] = "attachment; filename={0}".format(item.file.name)
+        response.headers[
+            "Content-Disposition"] = "attachment; filename={0}".format(
+                item.file.name)
         return response
 
     @expose('/img/<pk>')
@@ -43,7 +49,8 @@ class ContactModelView(ModelView):
     def img(self, pk):
         item = self.datamodel.get(pk)
         mime_type = item.image.content_type
-        return Response(item.image.read(), mimetype=mime_type,direct_passthrough=True)
+        return Response(
+            item.image.read(), mimetype=mime_type, direct_passthrough=True)
 
     @expose('/img_thumb/<pk>')
     @has_access
@@ -51,7 +58,10 @@ class ContactModelView(ModelView):
     def img_thumb(self, pk):
         item = self.datamodel.get(pk)
         mime_type = item.image.content_type
-        return Response(item.image.thumbnail.read(),mimetype=mime_type,direct_passthrough=True)
+        return Response(
+            item.image.thumbnail.read(),
+            mimetype=mime_type,
+            direct_passthrough=True)
 
 
 class GroupModelView(ModelView):
@@ -70,16 +80,13 @@ class ContactChartView(GroupByChartView):
     label_columns = ContactModelView.label_columns
     chart_type = 'PieChart'
 
-    definitions = [
-        {
-            'group': 'contact_group',
-            'series': [(aggregate_count, 'contact_group')]
-        },
-        {
-            'group': 'gender',
-            'series': [(aggregate_count, 'gender')]
-        }
-    ]
+    definitions = [{
+        'group': 'contact_group',
+        'series': [(aggregate_count, 'contact_group')]
+    }, {
+        'group': 'gender',
+        'series': [(aggregate_count, 'gender')]
+    }]
 
 
 def pretty_month_year(value):
@@ -96,27 +103,46 @@ class ContactTimeChartView(GroupByChartView):
     chart_title = 'Grouped Birth contacts'
     chart_type = 'AreaChart'
     label_columns = ContactModelView.label_columns
-    definitions = [
-        {
-            'group': 'month_year',
-            'formatter': pretty_month_year,
-            'series': [(aggregate_count, 'contact_group')]
-        },
-        {
-            'group': 'year',
-            'formatter': pretty_year,
-            'series': [(aggregate_count, 'contact_group')]
-        }
-    ]
+    definitions = [{
+        'group': 'month_year',
+        'formatter': pretty_month_year,
+        'series': [(aggregate_count, 'contact_group')]
+    }, {
+        'group': 'year',
+        'formatter': pretty_year,
+        'series': [(aggregate_count, 'contact_group')]
+    }]
 
 
-appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-appbuilder.add_view(TagsModelView, "List Tags", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
+appbuilder.add_view(
+    GroupModelView,
+    "List Groups",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon='fa-envelope')
+appbuilder.add_view(
+    ContactModelView,
+    "List Contacts",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon='fa-envelope')
+appbuilder.add_view(
+    TagsModelView,
+    "List Tags",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon='fa-envelope')
 appbuilder.add_separator("Contacts")
-appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
-appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
+appbuilder.add_view(
+    ContactChartView,
+    "Contacts Chart",
+    icon="fa-dashboard",
+    category="Contacts")
+appbuilder.add_view(
+    ContactTimeChartView,
+    "Contacts Birth Chart",
+    icon="fa-dashboard",
+    category="Contacts")
 
 appbuilder.security_cleanup()
 fill_gender()
-

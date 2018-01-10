@@ -5,7 +5,6 @@ from flask_appbuilder.fields import AJAXSelectField
 from flask_appbuilder.fieldwidgets import Select2AJAXWidget, Select2SlaveAJAXWidget
 from wtforms import validators
 
-
 from app import db, appbuilder
 from .models import ContactGroup, ContactSubGroup, Gender, Contact, ContactGroup2, ContactSubGroup2
 
@@ -17,56 +16,89 @@ class ContactModelView(ModelView):
 
     base_order = ('name', 'asc')
     show_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'contact_group', 'contact_sub_group']}),
-        (
-            'Personal Info',
-            {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
+        ('Summary', {
+            'fields': ['name', 'gender', 'contact_group', 'contact_sub_group']
+        }),
+        ('Personal Info', {
+            'fields':
+            ['address', 'birthday', 'personal_phone', 'personal_celphone'],
+            'expanded':
+            False
+        }),
     ]
 
     add_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'contact_group2', 'contact_sub_group2', 'contact_group', 'contact_sub_group']}),
-        (
-            'Personal Info',
-            {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
+        ('Summary', {
+            'fields': [
+                'name', 'gender', 'contact_group2', 'contact_sub_group2',
+                'contact_group', 'contact_sub_group'
+            ]
+        }),
+        ('Personal Info', {
+            'fields':
+            ['address', 'birthday', 'personal_phone', 'personal_celphone'],
+            'expanded':
+            False
+        }),
     ]
 
     edit_fieldsets = [
-        ('Summary', {'fields': ['name', 'gender', 'contact_group2', 'contact_sub_group2', 'contact_group', 'contact_sub_group']}),
-        (
-            'Personal Info',
-            {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
+        ('Summary', {
+            'fields': [
+                'name', 'gender', 'contact_group2', 'contact_sub_group2',
+                'contact_group', 'contact_sub_group'
+            ]
+        }),
+        ('Personal Info', {
+            'fields':
+            ['address', 'birthday', 'personal_phone', 'personal_celphone'],
+            'expanded':
+            False
+        }),
     ]
 
     add_form_extra_fields = {
-                    'contact_group': AJAXSelectField('Contact Group',
-                    description='Group field populated with AJAX',
-                    datamodel=datamodel,
-                    validators=[validators.DataRequired()],
-                    col_name='contact_group',
-                    widget=Select2AJAXWidget(endpoint='/contactmodelview/api/column/add/contact_group')),
-
-                    'contact_sub_group': AJAXSelectField('Sub Contact Group',
-                    description='Sub Group related to Group',
-                    datamodel=datamodel,
-                    validators=[validators.DataRequired()],
-                    col_name='contact_sub_group',
-                    widget=Select2SlaveAJAXWidget(master_id='contact_group',
-                    endpoint='/contactmodelview/api/column/add/contact_sub_group?_flt_0_contact_group_id={{ID}}')),
-
-                    'contact_group2': AJAXSelectField('Contact Group 2',
-                    description='Group field populated with AJAX',
-                    datamodel=datamodel,
-                    col_name='contact_group2',
-                    widget=Select2AJAXWidget(endpoint='/contactmodelview/api/column/add/contact_group2')),
-
-                    'contact_sub_group2': AJAXSelectField('Sub Contact Group 2',
-                    description='Sub Group related to Group',
-                    datamodel=datamodel,
-                    col_name='contact_sub_group2',
-                    widget=Select2SlaveAJAXWidget(master_id='contact_group2',
-                    endpoint='/contactmodelview/api/column/add/contact_sub_group2?_flt_0_contact_group2_id={{ID}}')),
-
-                    }
+        'contact_group':
+        AJAXSelectField(
+            'Contact Group',
+            description='Group field populated with AJAX',
+            datamodel=datamodel,
+            validators=[validators.DataRequired()],
+            col_name='contact_group',
+            widget=Select2AJAXWidget(
+                endpoint='/contactmodelview/api/column/add/contact_group')),
+        'contact_sub_group':
+        AJAXSelectField(
+            'Sub Contact Group',
+            description='Sub Group related to Group',
+            datamodel=datamodel,
+            validators=[validators.DataRequired()],
+            col_name='contact_sub_group',
+            widget=Select2SlaveAJAXWidget(
+                master_id='contact_group',
+                endpoint=
+                '/contactmodelview/api/column/add/contact_sub_group?_flt_0_contact_group_id={{ID}}'
+            )),
+        'contact_group2':
+        AJAXSelectField(
+            'Contact Group 2',
+            description='Group field populated with AJAX',
+            datamodel=datamodel,
+            col_name='contact_group2',
+            widget=Select2AJAXWidget(
+                endpoint='/contactmodelview/api/column/add/contact_group2')),
+        'contact_sub_group2':
+        AJAXSelectField(
+            'Sub Contact Group 2',
+            description='Sub Group related to Group',
+            datamodel=datamodel,
+            col_name='contact_sub_group2',
+            widget=Select2SlaveAJAXWidget(
+                master_id='contact_group2',
+                endpoint=
+                '/contactmodelview/api/column/add/contact_sub_group2?_flt_0_contact_group2_id={{ID}}'
+            )),
+    }
 
     edit_form_extra_fields = add_form_extra_fields
 
@@ -100,8 +132,29 @@ class SubGroup2ModelView(ModelView):
 
 
 db.create_all()
-appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-appbuilder.add_view(Group2ModelView, "List Groups2", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-appbuilder.add_view(SubGroupModelView, "List Sub Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-appbuilder.add_view(SubGroup2ModelView, "List Sub Groups2", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
+appbuilder.add_view(
+    GroupModelView,
+    "List Groups",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon='fa-envelope')
+appbuilder.add_view(
+    Group2ModelView,
+    "List Groups2",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon='fa-envelope')
+appbuilder.add_view(
+    SubGroupModelView,
+    "List Sub Groups",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon='fa-envelope')
+appbuilder.add_view(
+    SubGroup2ModelView,
+    "List Sub Groups2",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon='fa-envelope')
+appbuilder.add_view(
+    ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")

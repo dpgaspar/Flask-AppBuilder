@@ -14,7 +14,6 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLA(app)
 appbuilder = AppBuilder(app, db.session, base_template='mybase.html')
-
 """
 Only include this for SQLLite constraints
 
@@ -23,6 +22,6 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
-"""    
+"""
 
 from app import models, views

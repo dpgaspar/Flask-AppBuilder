@@ -14,10 +14,12 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLA(app)
 
-
-appbuilder = AppBuilder(app, db.session, indexview=MyIndexView,
-                        menu=Menu(reverse=False), security_manager_class=MySecurityManager)
-
+appbuilder = AppBuilder(
+    app,
+    db.session,
+    indexview=MyIndexView,
+    menu=Menu(reverse=False),
+    security_manager_class=MySecurityManager)
 """
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
@@ -27,4 +29,3 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 """
 
 from app import views
-
