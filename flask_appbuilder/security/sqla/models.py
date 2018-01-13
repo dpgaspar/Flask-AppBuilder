@@ -24,7 +24,8 @@ class ViewMenu(Model):
     name = Column(String(100), unique=True, nullable=False)
 
     def __eq__(self, other):
-        return (isinstance(other, self.__class__)) and (self.name == other.name)
+        return (isinstance(other,
+                           self.__class__)) and (self.name == other.name)
 
     def __neq__(self, other):
         return self.name != other.name
@@ -35,21 +36,27 @@ class ViewMenu(Model):
 
 class PermissionView(Model):
     __tablename__ = 'ab_permission_view'
-    id = Column(Integer, Sequence('ab_permission_view_id_seq'), primary_key=True)
+    id = Column(
+        Integer, Sequence('ab_permission_view_id_seq'), primary_key=True)
     permission_id = Column(Integer, ForeignKey('ab_permission.id'))
     permission = relationship("Permission")
     view_menu_id = Column(Integer, ForeignKey('ab_view_menu.id'))
     view_menu = relationship("ViewMenu")
 
     def __repr__(self):
-        return str(self.permission).replace('_', ' ') + ' on ' + str(self.view_menu)
+        return str(self.permission).replace('_', ' ') + ' on ' + str(
+            self.view_menu)
 
 
-assoc_permissionview_role = Table('ab_permission_view_role', Model.metadata,
-                                  Column('id', Integer, Sequence('ab_permission_view_role_id_seq'), primary_key=True),
-                                  Column('permission_view_id', Integer, ForeignKey('ab_permission_view.id')),
-                                  Column('role_id', Integer, ForeignKey('ab_role.id'))
-)
+assoc_permissionview_role = Table(
+    'ab_permission_view_role', Model.metadata,
+    Column(
+        'id',
+        Integer,
+        Sequence('ab_permission_view_role_id_seq'),
+        primary_key=True),
+    Column('permission_view_id', Integer, ForeignKey('ab_permission_view.id')),
+    Column('role_id', Integer, ForeignKey('ab_role.id')))
 
 
 class Role(Model):
@@ -57,17 +64,21 @@ class Role(Model):
 
     id = Column(Integer, Sequence('ab_role_id_seq'), primary_key=True)
     name = Column(String(64), unique=True, nullable=False)
-    permissions = relationship('PermissionView', secondary=assoc_permissionview_role, backref='role')
+    permissions = relationship(
+        'PermissionView', secondary=assoc_permissionview_role, backref='role')
 
     def __repr__(self):
         return self.name
 
 
 assoc_user_role = Table('ab_user_role', Model.metadata,
-                                  Column('id', Integer, Sequence('ab_user_role_id_seq'), primary_key=True),
-                                  Column('user_id', Integer, ForeignKey('ab_user.id')),
-                                  Column('role_id', Integer, ForeignKey('ab_role.id'))
-)
+                        Column(
+                            'id',
+                            Integer,
+                            Sequence('ab_user_role_id_seq'),
+                            primary_key=True),
+                        Column('user_id', Integer, ForeignKey('ab_user.id')),
+                        Column('role_id', Integer, ForeignKey('ab_role.id')))
 
 
 class User(Model):
@@ -88,18 +99,32 @@ class User(Model):
 
     @declared_attr
     def created_by_fk(self):
-        return Column(Integer, ForeignKey('ab_user.id'),
-                      default=self.get_user_id, nullable=True)
+        return Column(
+            Integer,
+            ForeignKey('ab_user.id'),
+            default=self.get_user_id,
+            nullable=True)
 
     @declared_attr
     def changed_by_fk(self):
-        return Column(Integer, ForeignKey('ab_user.id'),
-                      default=self.get_user_id, nullable=True)
+        return Column(
+            Integer,
+            ForeignKey('ab_user.id'),
+            default=self.get_user_id,
+            nullable=True)
 
-    created_by = relationship("User", backref=backref("created", uselist=True),
-                              remote_side=[id], primaryjoin='User.created_by_fk == User.id', uselist=False)
-    changed_by = relationship("User", backref=backref("changed", uselist=True),
-                              remote_side=[id], primaryjoin='User.changed_by_fk == User.id', uselist=False)
+    created_by = relationship(
+        "User",
+        backref=backref("created", uselist=True),
+        remote_side=[id],
+        primaryjoin='User.created_by_fk == User.id',
+        uselist=False)
+    changed_by = relationship(
+        "User",
+        backref=backref("changed", uselist=True),
+        remote_side=[id],
+        primaryjoin='User.changed_by_fk == User.id',
+        uselist=False)
 
     @classmethod
     def get_user_id(cls):
@@ -135,6 +160,6 @@ class RegisterUser(Model):
     username = Column(String(64), unique=True, nullable=False)
     password = Column(String(256))
     email = Column(String(64), nullable=False)
-    registration_date = Column(DateTime, default=datetime.datetime.now, nullable=True)
+    registration_date = Column(
+        DateTime, default=datetime.datetime.now, nullable=True)
     registration_hash = Column(String(256))
-

@@ -2,13 +2,14 @@ from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.baseviews import expose
 from . import appbuilder
 
+
 class MyView(BaseView):
     route_base = "/myview"
 
     @expose('/method1/<string:param1>')
     def method1(self, param1):
-            # do something with param1
-            # and return to previous page or index
+        # do something with param1
+        # and return to previous page or index
         param1 = 'Hello %s' % (param1)
         return param1
 
@@ -19,6 +20,5 @@ class MyView(BaseView):
         param1 = 'Goodbye %s' % (param1)
         return param1
 
+
 appbuilder.add_view_no_menu(MyView())
-
-

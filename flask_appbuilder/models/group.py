@@ -17,9 +17,11 @@ def aggregate(label=''):
         :param label:
             The label to complement with the column
     """
+
     def wrap(f):
         f._label = label
         return f
+
     return wrap
 
 
@@ -60,7 +62,11 @@ class BaseGroupBy(object):
     aggregate_func = None
     aggregate_col = ''
 
-    def __init__(self, column_name, name, aggregate_func=aggregate_count, aggregate_col=''):
+    def __init__(self,
+                 column_name,
+                 name,
+                 aggregate_func=aggregate_count,
+                 aggregate_col=''):
         """
             Constructor.
 
@@ -98,38 +104,48 @@ class BaseGroupBy(object):
 
 
 class GroupByCol(BaseGroupBy):
-
     def _apply(self, data):
         data = sorted(data, key=self.get_group_col)
         json_data = dict()
-        json_data['cols'] = [{'id': self.column_name,
-                              'label': self.column_name,
-                              'type': 'string'},
-                             {'id': self.aggregate_func.__name__ + '_' + self.column_name,
-                              'label': self.aggregate_func.__name__ + '_' + self.column_name,
-                              'type': 'number'}]
+        json_data['cols'] = [{
+            'id': self.column_name,
+            'label': self.column_name,
+            'type': 'string'
+        }, {
+            'id':
+            self.aggregate_func.__name__ + '_' + self.column_name,
+            'label':
+            self.aggregate_func.__name__ + '_' + self.column_name,
+            'type':
+            'number'
+        }]
         json_data['rows'] = []
         for (grouped, items) in groupby(data, self.get_group_col):
             aggregate_value = self.aggregate_func(items, self.aggregate_col)
-            json_data['rows'].append(
-                {"c": [{"v": self.get_format_group_col(grouped)}, {"v": aggregate_value}]})
+            json_data['rows'].append({
+                "c": [{
+                    "v": self.get_format_group_col(grouped)
+                }, {
+                    "v": aggregate_value
+                }]
+            })
         return json_data
 
     def apply(self, data):
         data = sorted(data, key=self.get_group_col)
-        return [
-            [self.get_format_group_col(grouped), self.aggregate_func(items, self.aggregate_col)]
-            for (grouped, items) in groupby(data, self.get_group_col)
-        ]
+        return [[
+            self.get_format_group_col(grouped),
+            self.aggregate_func(items, self.aggregate_col)
+        ] for (grouped, items) in groupby(data, self.get_group_col)]
 
 
 class GroupByDateYear(BaseGroupBy):
     def apply(self, data):
         data = sorted(data, key=self.get_group_col)
-        return [
-            [self.get_format_group_col(grouped), self.aggregate_func(items, self.aggregate_col)]
-            for (grouped, items) in groupby(data, self.get_group_col)
-        ]
+        return [[
+            self.get_format_group_col(grouped),
+            self.aggregate_func(items, self.aggregate_col)
+        ] for (grouped, items) in groupby(data, self.get_group_col)]
 
     def get_group_col(self, item):
         value = getattr(item, self.column_name)
@@ -140,11 +156,10 @@ class GroupByDateYear(BaseGroupBy):
 class GroupByDateMonth(BaseGroupBy):
     def apply(self, data):
         data = sorted(data, key=self.get_group_col)
-        return [
-            [self.get_format_group_col(grouped), self.aggregate_func(items, self.aggregate_col)]
-            for (grouped, items) in groupby(data, self.get_group_col)
-            if grouped
-        ]
+        return [[
+            self.get_format_group_col(grouped),
+            self.aggregate_func(items, self.aggregate_col)
+        ] for (grouped, items) in groupby(data, self.get_group_col) if grouped]
 
     def get_group_col(self, item):
         value = getattr(item, self.column_name)
@@ -170,6 +185,7 @@ class BaseProcessData(object):
     aggr_by_cols = None
     # [(<AGGR FUNC>,'<COLNAME>'),...]
     formatter_by_cols = {}
+
     # {<FUNC>: '<COLNAME>',...}
 
     def __init__(self, group_by_cols, aggr_by_cols, formatter_by_cols):
@@ -184,8 +200,10 @@ class BaseProcessData(object):
             def g(obj):
                 return self.resolve_attr(obj, attr)
         else:
+
             def g(obj):
                 return tuple(self.resolve_attr(obj, attr) for attr in items)
+
         return g
 
     def resolve_attr(self, obj, attr):
@@ -203,7 +221,9 @@ class BaseProcessData(object):
         if len(values) == 1:
             return self.format_column(self.group_bys_cols[0], values[0])
         else:
-            return tuple(self.format_column(item, value) for item, value in (self.group_bys_cols, values))
+            return tuple(
+                self.format_column(item, value)
+                for item, value in (self.group_bys_cols, values))
 
     def format_column(self, item, value):
         if item in self.formatter_by_cols:
@@ -254,9 +274,11 @@ class BaseProcessData(object):
         # Create Structure to identify the grouped columns
         for group_col in self.group_bys_cols:
             label = '' or as_unicode(labels[group_col])
-            json_data['cols'].append({'id': group_col,
-                                      'label': label,
-                                      'type': 'string'})
+            json_data['cols'].append({
+                'id': group_col,
+                'label': label,
+                'type': 'string'
+            })
         # Create Structure to identify the Aggregated columns
         for aggr_col in self.aggr_by_cols:
             if isinstance(aggr_col, tuple):
@@ -265,9 +287,11 @@ class BaseProcessData(object):
             else:
                 label_key = aggr_col
             label = '' or as_unicode(labels[label_key])
-            json_data['cols'].append({'id': aggr_col,
-                                      'label': label,
-                                      'type': 'number'})
+            json_data['cols'].append({
+                'id': aggr_col,
+                'label': label,
+                'type': 'number'
+            })
         # Create Structure with the data
         json_data['rows'] = []
         for item in data:
@@ -287,14 +311,15 @@ class BaseProcessData(object):
 
 
 class DirectProcessData(BaseProcessData):
-
     def apply(self, data, sort=True):
         group_by = self.group_bys_cols[0]
         if sort:
             data = sorted(data, key=self.attrgetter(group_by))
         result = []
         for item in data:
-            result_item = [self.format_columns(self.attrgetter(group_by)(item))]
+            result_item = [
+                self.format_columns(self.attrgetter(group_by)(item))
+            ]
             for aggr_by_col in self.aggr_by_cols:
                 result_item.append(self.attrgetter(aggr_by_col)(item))
             result.append(result_item)
@@ -309,16 +334,16 @@ class GroupByProcessData(BaseProcessData):
         :sort: boolean, if true python will sort the data
         :return: A List of lists with group column and aggregation
     """
+
     def apply(self, data, sort=True):
         if sort:
             data = sorted(data, key=self.attrgetter(*self.group_bys_cols))
         result = []
-        for (grouped, items) in groupby(data, key=self.attrgetter(*self.group_bys_cols)):
+        for (grouped, items) in groupby(
+                data, key=self.attrgetter(*self.group_bys_cols)):
             items = list(items)
             result_item = [self.format_columns(grouped)]
             for aggr_by_col in self.aggr_by_cols:
                 result_item.append(aggr_by_col[0](items, aggr_by_col[1]))
             result.append(result_item)
         return result
-
-

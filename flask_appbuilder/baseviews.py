@@ -11,7 +11,7 @@ from .urltools import *
 log = logging.getLogger(__name__)
 
 
-def expose(url='/', methods=('GET',)):
+def expose(url='/', methods=('GET', )):
     """
         Use this decorator to expose views on your view classes.
 
@@ -26,10 +26,11 @@ def expose(url='/', methods=('GET',)):
             f._urls = []
         f._urls.append((url, methods))
         return f
+
     return wrap
 
 
-def expose_api(name='', url='', methods=('GET',), description=''):
+def expose_api(name='', url='', methods=('GET', ), description=''):
     def wrap(f):
         api_name = name or f.__name__
         api_url = url or "/api/{0}".format(name)
@@ -39,6 +40,7 @@ def expose_api(name='', url='', methods=('GET',), description=''):
         f._urls.append((api_url, methods))
         f._extra[api_name] = (api_url, f.__name__, description)
         return f
+
     return wrap
 
 
@@ -75,7 +77,6 @@ class BaseView(object):
     default_view = 'list'
     """ the default view for this BaseView, to be used with url_for (method name) """
     extra_args = None
-
     """ dictionary for injecting extra arguments into template """
     _apis = None
 
@@ -90,7 +91,8 @@ class BaseView(object):
             self.base_permissions = set()
             for attr_name in dir(self):
                 if hasattr(getattr(self, attr_name), '_permission_name'):
-                    permission_name = getattr(getattr(self, attr_name), '_permission_name')
+                    permission_name = getattr(
+                        getattr(self, attr_name), '_permission_name')
                     self.base_permissions.add('can_' + permission_name)
             self.base_permissions = list(self.base_permissions)
         if not self.extra_args:
@@ -99,11 +101,10 @@ class BaseView(object):
         for attr_name in dir(self):
             if hasattr(getattr(self, attr_name), '_extra'):
                 _extra = getattr(getattr(self, attr_name), '_extra')
-                for key in _extra: self._apis[key] = _extra[key]
+                for key in _extra:
+                    self._apis[key] = _extra[key]
 
-    def create_blueprint(self, appbuilder,
-                         endpoint=None,
-                         static_folder=None):
+    def create_blueprint(self, appbuilder, endpoint=None, static_folder=None):
         """
             Create Flask blueprint. You will generally not use it
 
@@ -126,14 +127,18 @@ class BaseView(object):
         self.static_folder = static_folder
         if not static_folder:
             # Create blueprint and register rules
-            self.blueprint = Blueprint(self.endpoint, __name__,
-                                       url_prefix=self.route_base,
-                                       template_folder=self.template_folder)
+            self.blueprint = Blueprint(
+                self.endpoint,
+                __name__,
+                url_prefix=self.route_base,
+                template_folder=self.template_folder)
         else:
-            self.blueprint = Blueprint(self.endpoint, __name__,
-                                       url_prefix=self.route_base,
-                                       template_folder=self.template_folder,
-                                       static_folder=static_folder)
+            self.blueprint = Blueprint(
+                self.endpoint,
+                __name__,
+                url_prefix=self.route_base,
+                template_folder=self.template_folder,
+                static_folder=static_folder)
         self._register_urls()
         return self.blueprint
 
@@ -142,10 +147,8 @@ class BaseView(object):
             attr = getattr(self, attr_name)
             if hasattr(attr, '_urls'):
                 for url, methods in attr._urls:
-                    self.blueprint.add_url_rule(url,
-                                                attr_name,
-                                                attr,
-                                                methods=methods)
+                    self.blueprint.add_url_rule(
+                        url, attr_name, attr, methods=methods)
 
     def render_template(self, template, **kwargs):
         """
@@ -157,7 +160,9 @@ class BaseView(object):
         """
         kwargs['base_template'] = self.appbuilder.base_template
         kwargs['appbuilder'] = self.appbuilder
-        return render_template(template, **dict(list(kwargs.items()) + list(self.extra_args.items())))
+        return render_template(
+            template,
+            **dict(list(kwargs.items()) + list(self.extra_args.items())))
 
     def _prettify_name(self, name):
         """
@@ -250,7 +255,8 @@ class BaseFormView(BaseView):
         if self.form_fieldsets:
             self.form_columns = []
             for fieldset_item in self.form_fieldsets:
-                self.form_columns = self.form_columns + list(fieldset_item[1].get('fields'))
+                self.form_columns = self.form_columns + list(
+                    fieldset_item[1].get('fields'))
         else:
             if not self.form_columns:
                 self.form_columns = list_cols
@@ -275,12 +281,12 @@ class BaseFormView(BaseView):
     def _get_edit_widget(self, form=None, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []
         widgets = widgets or {}
-        widgets['edit'] = self.edit_widget(route_base=self.route_base,
-                                           form=form,
-                                           include_cols=self.form_columns,
-                                           exclude_cols=exclude_cols,
-                                           fieldsets=self.form_fieldsets
-        )
+        widgets['edit'] = self.edit_widget(
+            route_base=self.route_base,
+            form=form,
+            include_cols=self.form_columns,
+            exclude_cols=exclude_cols,
+            fieldsets=self.form_fieldsets)
         return widgets
 
 
@@ -416,11 +422,15 @@ class BaseModelView(BaseView):
         self.search_exclude_columns = self.search_exclude_columns or []
         self.search_columns = self.search_columns or []
 
-        self._base_filters = self.datamodel.get_filters().add_filter_list(self.base_filters)
+        self._base_filters = self.datamodel.get_filters().add_filter_list(
+            self.base_filters)
         list_cols = self.datamodel.get_columns_list()
         search_columns = self.datamodel.get_search_columns_list()
         if not self.search_columns:
-            self.search_columns = [x for x in search_columns if x not in self.search_exclude_columns]
+            self.search_columns = [
+                x for x in search_columns
+                if x not in self.search_exclude_columns
+            ]
 
         self._gen_labels_columns(list_cols)
         self._filters = self.datamodel.get_filters(self.search_columns)
@@ -428,20 +438,21 @@ class BaseModelView(BaseView):
     def _init_forms(self):
         conv = GeneralModelConverter(self.datamodel)
         if not self.search_form:
-            self.search_form = conv.create_form(self.label_columns,
-                                                self.search_columns,
-                                                extra_fields=self.search_form_extra_fields,
-                                                filter_rel_fields=self.search_form_query_rel_fields)
+            self.search_form = conv.create_form(
+                self.label_columns,
+                self.search_columns,
+                extra_fields=self.search_form_extra_fields,
+                filter_rel_fields=self.search_form_query_rel_fields)
 
     def _get_search_widget(self, form=None, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []
         widgets = widgets or {}
-        widgets['search'] = self.search_widget(route_base=self.route_base,
-                                               form=form,
-                                               include_cols=self.search_columns,
-                                               exclude_cols=exclude_cols,
-                                               filters=self._filters
-        )
+        widgets['search'] = self.search_widget(
+            route_base=self.route_base,
+            form=form,
+            include_cols=self.search_columns,
+            exclude_cols=exclude_cols,
+            filters=self._filters)
         return widgets
 
     def _label_columns_json(self):
@@ -452,7 +463,6 @@ class BaseModelView(BaseView):
         for key, value in list(self.label_columns.items()):
             ret[key] = as_unicode(value.encode('UTF-8'))
         return ret
-
 
 
 class BaseCRUDView(BaseModelView):
@@ -644,19 +654,15 @@ class BaseCRUDView(BaseModelView):
         super(BaseCRUDView, self)._init_forms()
         conv = GeneralModelConverter(self.datamodel)
         if not self.add_form:
-            self.add_form = conv.create_form(self.label_columns,
-                                             self.add_columns,
-                                             self.description_columns,
-                                             self.validators_columns,
-                                             self.add_form_extra_fields,
-                                             self.add_form_query_rel_fields)
+            self.add_form = conv.create_form(
+                self.label_columns, self.add_columns, self.description_columns,
+                self.validators_columns, self.add_form_extra_fields,
+                self.add_form_query_rel_fields)
         if not self.edit_form:
-            self.edit_form = conv.create_form(self.label_columns,
-                                              self.edit_columns,
-                                              self.description_columns,
-                                              self.validators_columns,
-                                              self.edit_form_extra_fields,
-                                              self.edit_form_query_rel_fields)
+            self.edit_form = conv.create_form(
+                self.label_columns, self.edit_columns,
+                self.description_columns, self.validators_columns,
+                self.edit_form_extra_fields, self.edit_form_query_rel_fields)
 
     def _init_titles(self):
         """
@@ -694,28 +700,38 @@ class BaseCRUDView(BaseModelView):
         list_cols = self.datamodel.get_user_columns_list()
         self.list_columns = self.list_columns or [list_cols[0]]
         self._gen_labels_columns(self.list_columns)
-        self.order_columns = self.order_columns or self.datamodel.get_order_columns_list(list_columns=self.list_columns)
+        self.order_columns = self.order_columns or self.datamodel.get_order_columns_list(
+            list_columns=self.list_columns)
         if self.show_fieldsets:
             self.show_columns = []
             for fieldset_item in self.show_fieldsets:
-                self.show_columns = self.show_columns + list(fieldset_item[1].get('fields'))
+                self.show_columns = self.show_columns + list(
+                    fieldset_item[1].get('fields'))
         else:
             if not self.show_columns:
-                self.show_columns = [x for x in list_cols if x not in self.show_exclude_columns]
+                self.show_columns = [
+                    x for x in list_cols if x not in self.show_exclude_columns
+                ]
         if self.add_fieldsets:
             self.add_columns = []
             for fieldset_item in self.add_fieldsets:
-                self.add_columns = self.add_columns + list(fieldset_item[1].get('fields'))
+                self.add_columns = self.add_columns + list(
+                    fieldset_item[1].get('fields'))
         else:
             if not self.add_columns:
-                self.add_columns = [x for x in list_cols if x not in self.add_exclude_columns]
+                self.add_columns = [
+                    x for x in list_cols if x not in self.add_exclude_columns
+                ]
         if self.edit_fieldsets:
             self.edit_columns = []
             for fieldset_item in self.edit_fieldsets:
-                self.edit_columns = self.edit_columns + list(fieldset_item[1].get('fields'))
+                self.edit_columns = self.edit_columns + list(
+                    fieldset_item[1].get('fields'))
         else:
             if not self.edit_columns:
-                self.edit_columns = [x for x in list_cols if x not in self.edit_exclude_columns]
+                self.edit_columns = [
+                    x for x in list_cols if x not in self.edit_exclude_columns
+                ]
 
     """
     -----------------------------------------------------
@@ -723,31 +739,44 @@ class BaseCRUDView(BaseModelView):
     -----------------------------------------------------
     """
 
-    def _get_related_view_widget(self, item, related_view,
-                                 order_column='', order_direction='',
-                                 page=None, page_size=None):
+    def _get_related_view_widget(self,
+                                 item,
+                                 related_view,
+                                 order_column='',
+                                 order_direction='',
+                                 page=None,
+                                 page_size=None):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
         filters = related_view.datamodel.get_filters()
         # Check if it's a many to one model relation
         if related_view.datamodel.is_relation_many_to_one(fk):
-            filters.add_filter_related_view(fk, self.datamodel.FilterRelationOneToManyEqual,
-                                        self.datamodel.get_pk_value(item))
+            filters.add_filter_related_view(
+                fk, self.datamodel.FilterRelationOneToManyEqual,
+                self.datamodel.get_pk_value(item))
         # Check if it's a many to many model relation
         elif related_view.datamodel.is_relation_many_to_many(fk):
-            filters.add_filter_related_view(fk, self.datamodel.FilterRelationManyToManyEqual,
-                                        self.datamodel.get_pk_value(item))
+            filters.add_filter_related_view(
+                fk, self.datamodel.FilterRelationManyToManyEqual,
+                self.datamodel.get_pk_value(item))
         else:
-            log.error("Can't find relation on related view {0}".format(related_view.name))
+            log.error("Can't find relation on related view {0}".format(
+                related_view.name))
             return None
-        return related_view._get_view_widget(filters=filters,
-                                             order_column=order_column,
-                                             order_direction=order_direction,
-                                             page=page, page_size=page_size)
+        return related_view._get_view_widget(
+            filters=filters,
+            order_column=order_column,
+            order_direction=order_direction,
+            page=page,
+            page_size=page_size)
 
-    def _get_related_views_widgets(self, item, orders=None,
-                                   pages=None, page_sizes=None,
-                                   widgets=None, **args):
+    def _get_related_views_widgets(self,
+                                   item,
+                                   orders=None,
+                                   pages=None,
+                                   page_sizes=None,
+                                   widgets=None,
+                                   **args):
         """
             :return:
                 Returns a dict with 'related_views' key with a list of
@@ -757,14 +786,18 @@ class BaseCRUDView(BaseModelView):
         widgets['related_views'] = []
         for view in self._related_views:
             if orders.get(view.__class__.__name__):
-                order_column, order_direction = orders.get(view.__class__.__name__)
+                order_column, order_direction = orders.get(
+                    view.__class__.__name__)
             else:
                 order_column, order_direction = '', ''
-            widgets['related_views'].append(self._get_related_view_widget(item, view,
-                                                                          order_column, order_direction,
-                                                                          page=pages.get(view.__class__.__name__),
-                                                                          page_size=page_sizes.get(
-                                                                              view.__class__.__name__)))
+            widgets['related_views'].append(
+                self._get_related_view_widget(
+                    item,
+                    view,
+                    order_column,
+                    order_direction,
+                    page=pages.get(view.__class__.__name__),
+                    page_size=page_sizes.get(view.__class__.__name__)))
         return widgets
 
     def _get_view_widget(self, **kwargs):
@@ -774,7 +807,8 @@ class BaseCRUDView(BaseModelView):
         """
         return self._get_list_widget(**kwargs).get('list')
 
-    def _get_list_widget(self, filters,
+    def _get_list_widget(self,
+                         filters,
                          actions=None,
                          order_column='',
                          order_direction='',
@@ -782,7 +816,6 @@ class BaseCRUDView(BaseModelView):
                          page_size=None,
                          widgets=None,
                          **args):
-
         """ get joined base filter and current active filter for query """
         widgets = widgets or {}
         actions = actions or self.actions
@@ -790,59 +823,71 @@ class BaseCRUDView(BaseModelView):
         if not order_column and self.base_order:
             order_column, order_direction = self.base_order
         joined_filters = filters.get_joined_filters(self._base_filters)
-        count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
+        count, lst = self.datamodel.query(
+            joined_filters,
+            order_column,
+            order_direction,
+            page=page,
+            page_size=page_size)
         pks = self.datamodel.get_keys(lst)
 
         # serialize composite pks
         pks = [self._serialize_pk_if_composite(pk) for pk in pks]
 
-        widgets['list'] = self.list_widget(label_columns=self.label_columns,
-                                           include_columns=self.list_columns,
-                                           value_columns=self.datamodel.get_values(lst, self.list_columns),
-                                           order_columns=self.order_columns,
-                                           formatters_columns=self.formatters_columns,
-                                           page=page,
-                                           page_size=page_size,
-                                           count=count,
-                                           pks=pks,
-                                           actions=actions,
-                                           filters=filters,
-                                           modelview_name=self.__class__.__name__)
+        widgets['list'] = self.list_widget(
+            label_columns=self.label_columns,
+            include_columns=self.list_columns,
+            value_columns=self.datamodel.get_values(lst, self.list_columns),
+            order_columns=self.order_columns,
+            formatters_columns=self.formatters_columns,
+            page=page,
+            page_size=page_size,
+            count=count,
+            pks=pks,
+            actions=actions,
+            filters=filters,
+            modelview_name=self.__class__.__name__)
         return widgets
 
-    def _get_show_widget(self, pk, item, widgets=None, actions=None, show_fieldsets=None):
+    def _get_show_widget(self,
+                         pk,
+                         item,
+                         widgets=None,
+                         actions=None,
+                         show_fieldsets=None):
         widgets = widgets or {}
         actions = actions or self.actions
         show_fieldsets = show_fieldsets or self.show_fieldsets
-        widgets['show'] = self.show_widget(pk=pk,
-                                           label_columns=self.label_columns,
-                                           include_columns=self.show_columns,
-                                           value_columns=self.datamodel.get_values_item(item, self.show_columns),
-                                           formatters_columns=self.formatters_columns,
-                                           actions=actions,
-                                           fieldsets=show_fieldsets,
-                                           modelview_name=self.__class__.__name__
-        )
+        widgets['show'] = self.show_widget(
+            pk=pk,
+            label_columns=self.label_columns,
+            include_columns=self.show_columns,
+            value_columns=self.datamodel.get_values_item(
+                item, self.show_columns),
+            formatters_columns=self.formatters_columns,
+            actions=actions,
+            fieldsets=show_fieldsets,
+            modelview_name=self.__class__.__name__)
         return widgets
 
     def _get_add_widget(self, form, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []
         widgets = widgets or {}
-        widgets['add'] = self.add_widget(form=form,
-                                         include_cols=self.add_columns,
-                                         exclude_cols=exclude_cols,
-                                         fieldsets=self.add_fieldsets
-        )
+        widgets['add'] = self.add_widget(
+            form=form,
+            include_cols=self.add_columns,
+            exclude_cols=exclude_cols,
+            fieldsets=self.add_fieldsets)
         return widgets
 
     def _get_edit_widget(self, form, exclude_cols=None, widgets=None):
         exclude_cols = exclude_cols or []
         widgets = widgets or {}
-        widgets['edit'] = self.edit_widget(form=form,
-                                           include_cols=self.edit_columns,
-                                           exclude_cols=exclude_cols,
-                                           fieldsets=self.edit_fieldsets
-        )
+        widgets['edit'] = self.edit_widget(
+            form=form,
+            include_cols=self.edit_columns,
+            exclude_cols=exclude_cols,
+            fieldsets=self.edit_fieldsets)
         return widgets
 
     def get_uninit_inner_views(self):
@@ -858,33 +903,34 @@ class BaseCRUDView(BaseModelView):
         """
         return self._related_views
 
-
     """
     -----------------------------------------------------
             CRUD functions behaviour
     -----------------------------------------------------
     """
+
     def _list(self):
         """
             list function logic, override to implement different logic
             returns list and search widget
         """
         if get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+            order_column, order_direction = get_order_args().get(
+                self.__class__.__name__)
         else:
             order_column, order_direction = '', ''
         page = get_page_args().get(self.__class__.__name__)
         page_size = get_page_size_args().get(self.__class__.__name__)
         get_filter_args(self._filters)
-        widgets = self._get_list_widget(filters=self._filters,
-                                        order_column=order_column,
-                                        order_direction=order_direction,
-                                        page=page,
-                                        page_size=page_size)
+        widgets = self._get_list_widget(
+            filters=self._filters,
+            order_column=order_column,
+            order_direction=order_direction,
+            page=page,
+            page_size=page_size)
         form = self.search_form.refresh()
         self.update_redirect()
         return self._get_search_widget(form=form, widgets=widgets)
-
 
     def _show(self, pk):
         """
@@ -900,8 +946,12 @@ class BaseCRUDView(BaseModelView):
             abort(404)
         widgets = self._get_show_widget(pk, item)
         self.update_redirect()
-        return self._get_related_views_widgets(item, orders=orders,
-                                               pages=pages, page_sizes=page_sizes, widgets=widgets)
+        return self._get_related_views_widgets(
+            item,
+            orders=orders,
+            pages=pages,
+            page_sizes=page_sizes,
+            widgets=widgets)
 
     def _add(self):
         """
@@ -982,8 +1032,13 @@ class BaseCRUDView(BaseModelView):
             self.prefill_form(form, pk)
 
         widgets = self._get_edit_widget(form=form, exclude_cols=exclude_cols)
-        widgets = self._get_related_views_widgets(item, filters={},
-                                                  orders=orders, pages=pages, page_sizes=page_sizes, widgets=widgets)
+        widgets = self._get_related_views_widgets(
+            item,
+            filters={},
+            orders=orders,
+            pages=pages,
+            page_sizes=page_sizes,
+            widgets=widgets)
         if is_valid_form:
             self.update_redirect()
         return widgets
@@ -1018,15 +1073,9 @@ class BaseCRUDView(BaseModelView):
     def _serialize_pk_if_composite(self, pk):
         def date_serializer(obj):
             if isinstance(obj, datetime):
-                return {
-                    "_type": "datetime",
-                    "value": obj.isoformat()
-                }
+                return {"_type": "datetime", "value": obj.isoformat()}
             elif isinstance(obj, date):
-                return {
-                    "_type": "date",
-                    "value": obj.isoformat()
-                }
+                return {"_type": "date", "value": obj.isoformat()}
 
         if self.datamodel.is_pk_composite():
             try:
@@ -1045,7 +1094,7 @@ class BaseCRUDView(BaseModelView):
             elif type == 'datetime':
                 return datetime.strptime(obj['value'], "%Y-%m-%dT%H:%M:%S")
             elif type == 'date':
-                return  datetime.strptime(obj['value'], "%Y-%m-%d").date()
+                return datetime.strptime(obj['value'], "%Y-%m-%d").date()
             return obj
 
         if self.datamodel.is_pk_composite():

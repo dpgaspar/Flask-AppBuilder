@@ -5,6 +5,7 @@ import os
 from ..._compat import with_metaclass
 from datetime import date, datetime
 
+
 #--------------------------------------
 #        Exceptions
 #--------------------------------------
@@ -20,7 +21,11 @@ class GenericColumn(object):
     unique = None
     nullable = None
 
-    def __init__(self, col_type, primary_key=False, unique=False, nullable=False):
+    def __init__(self,
+                 col_type,
+                 primary_key=False,
+                 unique=False,
+                 nullable=False):
         self.col_type = col_type
         self.primary_key = primary_key
         self.unique = unique
@@ -95,7 +100,6 @@ class GenericModel(with_metaclass(MetaGenericModel, object)):
     def get_col_type(self, col_name):
         return self._col_defs[col_name].col_type
 
-
     def __repr__(self):
         return str(self)
 
@@ -117,6 +121,7 @@ class GenericSession(object):
         **GenericSession** will implement filter and orders
         based on your data generation on the **all** method.
     """
+
     def __init__(self):
         self._order_by_cmd = None
         self._filters_cmd = list()
@@ -168,6 +173,7 @@ class GenericSession(object):
     def _order_by(self, data, order_cmd):
         col_name, direction = order_cmd.split()
         reverse_flag = direction == 'desc'
+
         #patched as suggested by:
         #http://stackoverflow.com/questions/18411560/python-sort-list-with-none-at-the-end
         #and
@@ -183,8 +189,8 @@ class GenericSession(object):
             this function tries to patch the issue
             '''
             op = operator.attrgetter(col_name)
-            missing = (getattr(data,col_name) is not None)
-            return (missing, getattr(data,col_name))
+            missing = (getattr(data, col_name) is not None)
+            return (missing, getattr(data, col_name))
 
         return sorted(data, key=col_name_if_not_none, reverse=reverse_flag)
 
@@ -231,7 +237,7 @@ class GenericSession(object):
                 value = datetime.strptime(value, "%Y-%m-%d").date()
 
             #fallback to native python types
-            else:            
+            else:
                 value = type(source_value)(value)
 
             return source_value > value
@@ -256,7 +262,7 @@ class GenericSession(object):
                 value = datetime.strptime(value, "%Y-%m-%d").date()
 
             #fallback to native python types
-            else:            
+            else:
                 value = type(source_value)(value)
 
             return source_value < value
@@ -321,7 +327,7 @@ class GenericSession(object):
                 value = datetime.strptime(value, "%Y-%m-%d").date()
 
             #fallback to native python types
-            else:            
+            else:
                 value = type(source_value)(value)
 
             return source_value == value
@@ -409,14 +415,12 @@ class PSSession(GenericSession):
             model.CMD = group[0][7]
             self.add(model)
 
-
     def get(self, pk):
         self.delete_all(PSModel())
         out = os.popen('ps -p {0} -f'.format(pk))
         for line in out.readlines():
             self.add_object(line)
         return super(PSSession, self).get(pk)
-
 
     def all(self):
         self.delete_all(PSModel())

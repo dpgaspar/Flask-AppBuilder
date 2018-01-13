@@ -1,6 +1,6 @@
 from flask_appbuilder import Model
 from flask_appbuilder.models.mixins import AuditMixin, FileColumn, ImageColumn
-from sqlalchemy import Column, Integer, String, Boolean, BigInteger, ForeignKey 
+from sqlalchemy import Column, Integer, String, Boolean, BigInteger, ForeignKey
 from sqlalchemy.orm import relationship
 """
 
@@ -10,13 +10,14 @@ AuditMixin will add automatic timestamp of created and modified by who
 
 
 """
-        
+
+
 class Job(Model, AuditMixin):
     id = Column(Integer, primary_key=True)
-    jid = Column(Integer,  nullable=True)
-    name =  Column(String(564), nullable=False)
+    jid = Column(Integer, nullable=True)
+    name = Column(String(564), nullable=False)
     module_type = Column(String(150))
-    start_time  = Column(String(150))
+    start_time = Column(String(150))
     SSL = Column(Boolean)
     SSLVersion = Column(String(20), default='Empty')
     SRVHOST = Column(String(564), default='Empty')
@@ -27,4 +28,3 @@ class Job(Model, AuditMixin):
 
     def __repr__(self):
         return self.name
-

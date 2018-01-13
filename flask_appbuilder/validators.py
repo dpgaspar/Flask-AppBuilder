@@ -20,13 +20,14 @@ class Unique(object):
         self.message = message
 
     def __call__(self, form, field):
-        filters = self.datamodel.get_filters().add_filter(self.col_name,
-                                                          self.datamodel.FilterEqual,
-                                                          field.data)
+        filters = self.datamodel.get_filters().add_filter(
+            self.col_name, self.datamodel.FilterEqual, field.data)
         count, obj = self.datamodel.query(filters)
         if count > 0:
             # only test if Unique, if pk value is different on update.
-            if not hasattr(form,'_id') or form._id != self.datamodel.get_keys(obj)[0]:
+            if not hasattr(
+                    form,
+                    '_id') or form._id != self.datamodel.get_keys(obj)[0]:
                 if self.message is None:
                     self.message = field.gettext(u'Already exists.')
                 raise ValidationError(self.message)

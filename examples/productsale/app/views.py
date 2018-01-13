@@ -19,14 +19,19 @@ class ProductPubView(ModelView):
     search_columns = ['name', 'price', 'product_type']
 
     show_fieldsets = [
-        ('Summary', {'fields': ['name', 'price_label', 'photo_img', 'product_type']}),
-        (
-            'Description',
-            {'fields': ['description'], 'expanded': True}),
+        ('Summary', {
+            'fields': ['name', 'price_label', 'photo_img', 'product_type']
+        }),
+        ('Description', {
+            'fields': ['description'],
+            'expanded': True
+        }),
     ]
+
 
 class ProductView(ModelView):
     datamodel = SQLAInterface(Product)
+
 
 class ProductTypeView(ModelView):
     datamodel = SQLAInterface(ProductType)
@@ -35,7 +40,14 @@ class ProductTypeView(ModelView):
 
 db.create_all()
 appbuilder.add_view(ProductPubView, "Our Products", icon="fa-folder-open-o")
-appbuilder.add_view(ProductView, "List Products", icon="fa-folder-open-o", category="Management")
+appbuilder.add_view(
+    ProductView,
+    "List Products",
+    icon="fa-folder-open-o",
+    category="Management")
 appbuilder.add_separator("Management")
-appbuilder.add_view(ProductTypeView, "List Product Types", icon="fa-envelope", category="Management")
-
+appbuilder.add_view(
+    ProductTypeView,
+    "List Product Types",
+    icon="fa-envelope",
+    category="Management")

@@ -58,7 +58,11 @@ class SQLAInterface(BaseInterface):
         """
         return self.obj.__name__
 
-    def _get_base_query(self, query=None, filters=None, order_column='', order_direction=''):
+    def _get_base_query(self,
+                        query=None,
+                        filters=None,
+                        order_column='',
+                        order_direction=''):
         if filters:
             query = filters.apply_all(query)
         if order_column != '':
@@ -66,15 +70,20 @@ class SQLAInterface(BaseInterface):
             # this decorator will add a property to the method named *_col_name*
             if hasattr(self.obj, order_column):
                 if hasattr(getattr(self.obj, order_column), '_col_name'):
-                    order_column = getattr(self._get_attr(order_column), '_col_name')
+                    order_column = getattr(
+                        self._get_attr(order_column), '_col_name')
             if order_direction == 'asc':
                 query = query.order_by(self._get_attr(order_column).asc())
             else:
                 query = query.order_by(self._get_attr(order_column).desc())
         return query
 
-    def query(self, filters=None, order_column='', order_direction='',
-              page=None, page_size=None):
+    def query(self,
+              filters=None,
+              order_column='',
+              order_direction='',
+              page=None,
+              page_size=None):
         """
             QUERY
             :param filters:
@@ -101,12 +110,12 @@ class SQLAInterface(BaseInterface):
             order_column = tmp_order_column + order_column.split('.')[-1]
         query_count = self.session.query(func.count('*')).select_from(self.obj)
 
-        query_count = self._get_base_query(query=query_count,
-                                           filters=filters)
-        query = self._get_base_query(query=query,
-                                     filters=filters,
-                                     order_column=order_column,
-                                     order_direction=order_direction)
+        query_count = self._get_base_query(query=query_count, filters=filters)
+        query = self._get_base_query(
+            query=query,
+            filters=filters,
+            order_column=order_column,
+            order_direction=order_direction)
 
         count = query_count.scalar()
 
@@ -117,7 +126,11 @@ class SQLAInterface(BaseInterface):
 
         return count, query.all()
 
-    def query_simple_group(self, group_by='', aggregate_func=None, aggregate_col=None, filters=None):
+    def query_simple_group(self,
+                           group_by='',
+                           aggregate_func=None,
+                           aggregate_col=None,
+                           filters=None):
         query = self.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
         query_result = query.all()
@@ -158,7 +171,8 @@ class SQLAInterface(BaseInterface):
 
     def is_string(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.String)
+            return isinstance(self.list_columns[col_name].type,
+                              sa.types.String)
         except:
             return False
 
@@ -170,19 +184,22 @@ class SQLAInterface(BaseInterface):
 
     def is_binary(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.LargeBinary)
+            return isinstance(self.list_columns[col_name].type,
+                              sa.types.LargeBinary)
         except:
             return False
 
     def is_integer(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Integer)
+            return isinstance(self.list_columns[col_name].type,
+                              sa.types.Integer)
         except:
             return False
 
     def is_numeric(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Numeric)
+            return isinstance(self.list_columns[col_name].type,
+                              sa.types.Numeric)
         except:
             return False
 
@@ -194,7 +211,8 @@ class SQLAInterface(BaseInterface):
 
     def is_boolean(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Boolean)
+            return isinstance(self.list_columns[col_name].type,
+                              sa.types.Boolean)
         except:
             return False
 
@@ -206,7 +224,8 @@ class SQLAInterface(BaseInterface):
 
     def is_datetime(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.DateTime)
+            return isinstance(self.list_columns[col_name].type,
+                              sa.types.DateTime)
         except:
             return False
 
@@ -218,35 +237,40 @@ class SQLAInterface(BaseInterface):
 
     def is_relation(self, col_name):
         try:
-            return isinstance(self.list_properties[col_name], sa.orm.properties.RelationshipProperty)
+            return isinstance(self.list_properties[col_name],
+                              sa.orm.properties.RelationshipProperty)
         except:
             return False
 
     def is_relation_many_to_one(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'MANYTOONE'
+                return self.list_properties[
+                    col_name].direction.name == 'MANYTOONE'
         except:
             return False
 
     def is_relation_many_to_many(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'MANYTOMANY'
+                return self.list_properties[
+                    col_name].direction.name == 'MANYTOMANY'
         except:
             return False
 
     def is_relation_one_to_one(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'ONETOONE'
+                return self.list_properties[
+                    col_name].direction.name == 'ONETOONE'
         except:
             return False
 
     def is_relation_one_to_many(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'ONETOMANY'
+                return self.list_properties[
+                    col_name].direction.name == 'ONETOMANY'
         except:
             return False
 
@@ -272,7 +296,7 @@ class SQLAInterface(BaseInterface):
             return False
 
     def is_pk_composite(self):
-         return len(self.obj.__mapper__.primary_key) > 1
+        return len(self.obj.__mapper__.primary_key) > 1
 
     def is_fk(self, col_name):
         try:
@@ -305,12 +329,15 @@ class SQLAInterface(BaseInterface):
             self.message = (as_unicode(self.add_row_message), 'success')
             return True
         except IntegrityError as e:
-            self.message = (as_unicode(self.add_integrity_error_message), 'warning')
+            self.message = (as_unicode(self.add_integrity_error_message),
+                            'warning')
             log.warning(LOGMSG_WAR_DBI_ADD_INTEGRITY.format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
-            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (as_unicode(
+                self.general_error_message + ' ' + str(sys.exc_info()[0])),
+                            'danger')
             log.exception(LOGMSG_ERR_DBI_ADD_GENERIC.format(str(e)))
             self.session.rollback()
             return False
@@ -322,12 +349,15 @@ class SQLAInterface(BaseInterface):
             self.message = (as_unicode(self.edit_row_message), 'success')
             return True
         except IntegrityError as e:
-            self.message = (as_unicode(self.edit_integrity_error_message), 'warning')
+            self.message = (as_unicode(self.edit_integrity_error_message),
+                            'warning')
             log.warning(LOGMSG_WAR_DBI_EDIT_INTEGRITY.format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
-            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (as_unicode(
+                self.general_error_message + ' ' + str(sys.exc_info()[0])),
+                            'danger')
             log.exception(LOGMSG_ERR_DBI_EDIT_GENERIC.format(str(e)))
             self.session.rollback()
             return False
@@ -340,12 +370,15 @@ class SQLAInterface(BaseInterface):
             self.message = (as_unicode(self.delete_row_message), 'success')
             return True
         except IntegrityError as e:
-            self.message = (as_unicode(self.delete_integrity_error_message), 'warning')
+            self.message = (as_unicode(self.delete_integrity_error_message),
+                            'warning')
             log.warning(LOGMSG_WAR_DBI_DEL_INTEGRITY.format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
-            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (as_unicode(
+                self.general_error_message + ' ' + str(sys.exc_info()[0])),
+                            'danger')
             log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
             self.session.rollback()
             return False
@@ -359,12 +392,15 @@ class SQLAInterface(BaseInterface):
             self.message = (as_unicode(self.delete_row_message), 'success')
             return True
         except IntegrityError as e:
-            self.message = (as_unicode(self.delete_integrity_error_message), 'warning')
+            self.message = (as_unicode(self.delete_integrity_error_message),
+                            'warning')
             log.warning(LOGMSG_WAR_DBI_DEL_INTEGRITY.format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
-            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (as_unicode(
+                self.general_error_message + ' ' + str(sys.exc_info()[0])),
+                            'danger')
             log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
             self.session.rollback()
             return False
@@ -380,10 +416,12 @@ class SQLAInterface(BaseInterface):
         im = ImageManager()
         for file_col in this_request.files:
             if self.is_file(file_col):
-                fm.save_file(this_request.files[file_col], getattr(item, file_col))
+                fm.save_file(this_request.files[file_col],
+                             getattr(item, file_col))
         for file_col in this_request.files:
             if self.is_image(file_col):
-                im.save_file(this_request.files[file_col], getattr(item, file_col))
+                im.save_file(this_request.files[file_col],
+                             getattr(item, file_col))
 
     def _delete_files(self, item):
         for file_col in self.get_file_column_list():
@@ -430,7 +468,9 @@ class SQLAInterface(BaseInterface):
         return self.session.query(rel_model).get(value)
 
     def get_related_fks(self, related_views):
-        return [view.datamodel.get_related_fk(self.obj) for view in related_views]
+        return [
+            view.datamodel.get_related_fk(self.obj) for view in related_views
+        ]
 
     def get_related_fk(self, model):
         for col_name in self.list_properties.keys():
@@ -488,18 +528,25 @@ class SQLAInterface(BaseInterface):
         for col_name in list_columns:
             if not self.is_relation(col_name):
                 if hasattr(self.obj, col_name):
-                    if (not hasattr(getattr(self.obj, col_name), '__call__') or
-                            hasattr(getattr(self.obj, col_name), '_col_name')):
+                    if (not hasattr(getattr(self.obj, col_name), '__call__')
+                            or hasattr(
+                                getattr(self.obj, col_name), '_col_name')):
                         ret_lst.append(col_name)
                 else:
                     ret_lst.append(col_name)
         return ret_lst
 
     def get_file_column_list(self):
-        return [i.name for i in self.obj.__mapper__.columns if isinstance(i.type, FileColumn)]
+        return [
+            i.name for i in self.obj.__mapper__.columns
+            if isinstance(i.type, FileColumn)
+        ]
 
     def get_image_column_list(self):
-        return [i.name for i in self.obj.__mapper__.columns if isinstance(i.type, ImageColumn)]
+        return [
+            i.name for i in self.obj.__mapper__.columns
+            if isinstance(i.type, ImageColumn)
+        ]
 
     def get_property_first_col(self, col_name):
         # support for only one col for pk and fk

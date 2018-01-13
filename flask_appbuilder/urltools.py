@@ -7,6 +7,7 @@ class Stack(object):
         Stack data structure will not insert
         equal sequential data
     """
+
     def __init__(self, list=None, size=5):
         self.size = size
         self.data = list or []
@@ -93,4 +94,5 @@ def get_filter_args(filters):
     for arg in request.args:
         re_match = re.findall('_flt_(\d)_(.*)', arg)
         if re_match:
-            filters.add_filter_index(re_match[0][1], int(re_match[0][0]), request.args.get(arg))
+            filters.add_filter_index(re_match[0][1], int(re_match[0][0]),
+                                     request.args.get(arg))

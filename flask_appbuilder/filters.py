@@ -6,6 +6,7 @@ def app_template_filter(filter_name=''):
         if not hasattr(f, '_filter'):
             f._filter = filter_name
         return f
+
     return wrap
 
 
@@ -26,7 +27,8 @@ class TemplateFilters(object):
         res_actions = dict()
         for action_key in actions:
             action = actions[action_key]
-            if self.is_item_visible(action.name, modelview_name) and action.multiple:
+            if self.is_item_visible(action.name,
+                                    modelview_name) and action.multiple:
                 res_actions[action_key] = action
         return res_actions
 
@@ -35,7 +37,8 @@ class TemplateFilters(object):
         res_actions = dict()
         for action_key in actions:
             action = actions[action_key]
-            if self.is_item_visible(action.name, modelview_name) and action.single:
+            if self.is_item_visible(action.name,
+                                    modelview_name) and action.single:
                 res_actions[action_key] = action
         return res_actions
 
@@ -55,7 +58,9 @@ class TemplateFilters(object):
         else:
             args['_oc_' + modelview_name] = column
             args['_od_' + modelview_name] = 'asc'
-        return url_for(request.endpoint,**dict(list(new_args.items()) + list(args.to_dict().items())))
+        return url_for(
+            request.endpoint,
+            **dict(list(new_args.items()) + list(args.to_dict().items())))
 
     @app_template_filter('link_page')
     def link_page_filter(self, page, modelview_name):
@@ -65,8 +70,9 @@ class TemplateFilters(object):
         new_args = request.view_args.copy()
         args = request.args.copy()
         args['page_' + modelview_name] = page
-        return url_for(request.endpoint, **dict(list(new_args.items()) + list(args.to_dict().items())))
-
+        return url_for(
+            request.endpoint,
+            **dict(list(new_args.items()) + list(args.to_dict().items())))
 
     @app_template_filter('link_page_size')
     def link_page_size_filter(self, page_size, modelview_name):
@@ -76,7 +82,9 @@ class TemplateFilters(object):
         new_args = request.view_args.copy()
         args = request.args.copy()
         args['psize_' + modelview_name] = page_size
-        return url_for(request.endpoint, **dict(list(new_args.items()) + list(args.to_dict().items())))
+        return url_for(
+            request.endpoint,
+            **dict(list(new_args.items()) + list(args.to_dict().items())))
 
     @app_template_filter('get_link_next')
     def get_link_next_filter(self, s):
@@ -86,7 +94,6 @@ class TemplateFilters(object):
     def get_link_back_filter(self, request):
         return request.args.get('next') or request.referrer
 
-
     # TODO improve this
     @app_template_filter('set_link_filters')
     def set_link_filters_filter(self, path, filters):
@@ -94,9 +101,11 @@ class TemplateFilters(object):
         for flt, value in filters.get_filters_values():
             if flt.is_related_view:
                 if '?' in lnkstr:
-                    lnkstr = lnkstr + '&_flt_0_' + flt.column_name + '=' + str(value)
+                    lnkstr = lnkstr + '&_flt_0_' + flt.column_name + '=' + str(
+                        value)
                 else:
-                    lnkstr = lnkstr + '?_flt_0_' + flt.column_name + '=' + str(value)
+                    lnkstr = lnkstr + '?_flt_0_' + flt.column_name + '=' + str(
+                        value)
         return lnkstr
 
     @app_template_filter('get_link_order')
@@ -120,4 +129,3 @@ class TemplateFilters(object):
     @app_template_filter('is_item_visible')
     def is_item_visible(self, permission, item):
         return self.security_manager.has_access(permission, item)
-

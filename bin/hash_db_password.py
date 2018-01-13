@@ -5,7 +5,6 @@ from werkzeug.security import generate_password_hash
 
 from flask_appbuilder.security.sqla.models import User
 
-
 try:
     from app import app, db
 
@@ -22,14 +21,13 @@ except:
     app.config['SQLALCHEMY_DATABASE_URI'] = con_str
     db = SQLAlchemy(app)
 
-
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 logging.getLogger().setLevel(logging.DEBUG)
 log = logging.getLogger(__name__)
 
-
 try:
-    log.info("using connection string: {0}".format(app.config['SQLALCHEMY_DATABASE_URI']))
+    log.info("using connection string: {0}".format(
+        app.config['SQLALCHEMY_DATABASE_URI']))
     users = db.session.query(User).all()
 except Exception as e:
     log.error("Query, connection error {0}".format(e))
@@ -44,6 +42,5 @@ for user in users:
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        log.error("Error updating password for {0}: {1}".format(user.full_name, str(e)))
-        
-
+        log.error("Error updating password for {0}: {1}".format(
+            user.full_name, str(e)))

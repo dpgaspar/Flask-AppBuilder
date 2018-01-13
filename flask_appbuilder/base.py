@@ -90,7 +90,8 @@ class AppBuilder(object):
 
     template_filters = None
 
-    def __init__(self, app=None,
+    def __init__(self,
+                 app=None,
                  session=None,
                  menu=None,
                  indexview=None,
@@ -145,9 +146,13 @@ class AppBuilder(object):
         app.config.setdefault('APP_NAME', 'F.A.B.')
         app.config.setdefault('APP_THEME', '')
         app.config.setdefault('APP_ICON', '')
-        app.config.setdefault('LANGUAGES',
-                              {'en': {'flag': 'gb', 'name': 'English'}})
-        app.config.setdefault('ADDON_MANAGERS',[])
+        app.config.setdefault('LANGUAGES', {
+            'en': {
+                'flag': 'gb',
+                'name': 'English'
+            }
+        })
+        app.config.setdefault('ADDON_MANAGERS', [])
         if self.security_manager_class is None:
             from flask_appbuilder.security.sqla.manager import SecurityManager
             self.security_manager_class = SecurityManager
@@ -242,10 +247,13 @@ class AppBuilder(object):
         self.template_filters = TemplateFilters(self.get_app, self.sm)
 
     def _add_global_static(self):
-        bp = Blueprint('appbuilder', __name__, url_prefix='/static',
-                       template_folder='templates',
-                       static_folder=self.static_folder,
-                       static_url_path=self.static_url_path)
+        bp = Blueprint(
+            'appbuilder',
+            __name__,
+            url_prefix='/static',
+            template_folder='templates',
+            static_folder=self.static_folder,
+            static_url_path=self.static_url_path)
         self.get_app.register_blueprint(bp)
 
     def _add_admin_views(self):
@@ -303,9 +311,15 @@ class AppBuilder(object):
             baseview = baseview()
         return baseview
 
-    def add_view(self, baseview, name, href="", icon="",
-                 label="", category="",
-                 category_icon="", category_label=""):
+    def add_view(self,
+                 baseview,
+                 name,
+                 href="",
+                 icon="",
+                 label="",
+                 category="",
+                 category_icon="",
+                 category_label=""):
         """
         Add your views associated with menus using this method.
 
@@ -349,7 +363,8 @@ class AppBuilder(object):
             appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
         baseview = self._check_and_init(baseview)
-        log.info(LOGMSG_INF_FAB_ADD_VIEW.format(baseview.__class__.__name__, name))
+        log.info(
+            LOGMSG_INF_FAB_ADD_VIEW.format(baseview.__class__.__name__, name))
 
         if not self._view_exists(baseview):
             baseview.appbuilder = self
@@ -358,14 +373,26 @@ class AppBuilder(object):
             if self.app:
                 self.register_blueprint(baseview)
                 self._add_permission(baseview)
-        self.add_link(name=name, href=href, icon=icon, label=label,
-                      category=category, category_icon=category_icon,
-                      category_label=category_label, baseview=baseview)
+        self.add_link(
+            name=name,
+            href=href,
+            icon=icon,
+            label=label,
+            category=category,
+            category_icon=category_icon,
+            category_label=category_label,
+            baseview=baseview)
         return baseview
 
-    def add_link(self, name, href, icon="", label="",
-                 category="", category_icon="",
-                 category_label="", baseview=None):
+    def add_link(self,
+                 name,
+                 href,
+                 icon="",
+                 label="",
+                 category="",
+                 category_icon="",
+                 category_label="",
+                 baseview=None):
         """
             Add your own links to menu using this method
 
@@ -389,9 +416,15 @@ class AppBuilder(object):
                 if absent param name will be used
 
         """
-        self.menu.add_link(name=name, href=href, icon=icon, label=label,
-                           category=category, category_icon=category_icon,
-                           category_label=category_label, baseview=baseview)
+        self.menu.add_link(
+            name=name,
+            href=href,
+            icon=icon,
+            label=label,
+            category=category,
+            category_icon=category_icon,
+            category_label=category_label,
+            baseview=baseview)
         if self.app:
             self._add_permissions_menu(name)
             if category:
@@ -415,18 +448,20 @@ class AppBuilder(object):
 
         """
         baseview = self._check_and_init(baseview)
-        log.info(LOGMSG_INF_FAB_ADD_VIEW.format(baseview.__class__.__name__, ""))
+        log.info(
+            LOGMSG_INF_FAB_ADD_VIEW.format(baseview.__class__.__name__, ""))
 
         if not self._view_exists(baseview):
             baseview.appbuilder = self
             self.baseviews.append(baseview)
             self._process_inner_views()
             if self.app:
-                self.register_blueprint(baseview,
-                     endpoint=endpoint, static_folder=static_folder)
+                self.register_blueprint(
+                    baseview, endpoint=endpoint, static_folder=static_folder)
                 self._add_permission(baseview)
         else:
-            log.warning(LOGMSG_WAR_FAB_VIEW_EXISTS.format(baseview.__class__.__name__))
+            log.warning(
+                LOGMSG_WAR_FAB_VIEW_EXISTS.format(baseview.__class__.__name__))
         return baseview
 
     def security_cleanup(self):
@@ -454,25 +489,32 @@ class AppBuilder(object):
 
     @property
     def get_url_for_index(self):
-        return url_for('%s.%s' % (self.indexview.endpoint, self.indexview.default_view))
+        return url_for('%s.%s' % (self.indexview.endpoint,
+                                  self.indexview.default_view))
 
     @property
     def get_url_for_userinfo(self):
         return url_for('%s.%s' % (self.sm.user_view.endpoint, 'userinfo'))
 
     def get_url_for_locale(self, lang):
-        return url_for('%s.%s' % (self.bm.locale_view.endpoint, self.bm.locale_view.default_view), locale=lang)
+        return url_for(
+            '%s.%s' % (self.bm.locale_view.endpoint,
+                       self.bm.locale_view.default_view),
+            locale=lang)
 
     def _add_permission(self, baseview):
         if self.update_perms:
             try:
-                self.sm.add_permissions_view(baseview.base_permissions, baseview.__class__.__name__)
+                self.sm.add_permissions_view(baseview.base_permissions,
+                                             baseview.__class__.__name__)
             except Exception as e:
                 log.exception(e)
                 log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW.format(str(e)))
 
     def register_blueprint(self, baseview, endpoint=None, static_folder=None):
-        self.get_app.register_blueprint(baseview.create_blueprint(self, endpoint=endpoint, static_folder=static_folder))
+        self.get_app.register_blueprint(
+            baseview.create_blueprint(
+                self, endpoint=endpoint, static_folder=static_folder))
 
     def _view_exists(self, view):
         for baseview in self.baseviews:
@@ -484,7 +526,6 @@ class AppBuilder(object):
         for view in self.baseviews:
             for inner_class in view.get_uninit_inner_views():
                 for v in self.baseviews:
-                    if isinstance(v, inner_class) and v not in view.get_init_inner_views():
+                    if isinstance(v, inner_class
+                                  ) and v not in view.get_init_inner_views():
                         view.get_init_inner_views().append(v)
-
-

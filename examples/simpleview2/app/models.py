@@ -1,5 +1,4 @@
 from flask_appbuilder import Model
-
 """
 
 You can use the extra Flask-AppBuilder fields and Mixin's

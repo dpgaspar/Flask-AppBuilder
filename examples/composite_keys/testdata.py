@@ -12,7 +12,9 @@ ITEM_MAX = 1000
 
 cities = ['Lisbon', 'Porto', 'Madrid', 'Barcelona', 'Frankfurt', 'London']
 
-models = ['Server MX', 'Server MY', 'Server DL380', 'Server x440', 'Server x460']
+models = [
+    'Server MX', 'Server MY', 'Server DL380', 'Server x440', 'Server x460'
+]
 
 datacenters = list()
 
@@ -20,7 +22,8 @@ datacenters = list()
 def get_random_name(names_list, size=1):
     return names_list[random.randrange(0, len(names_list))]
 
-def serial_generator(size = 6, chars = string.ascii_uppercase + string.digits):
+
+def serial_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
@@ -54,4 +57,3 @@ for i in range(1, ITEM_MAX):
     except Exception as e:
         log.error("Creating Item: %s", e)
         db.session.rollback()
-

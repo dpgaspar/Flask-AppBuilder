@@ -1,5 +1,4 @@
 from flask_babel import lazy_gettext
-
 """
     All constants and messages definitions go here
 
@@ -80,7 +79,6 @@ LOGMSG_ERR_FAB_ADDON_IMPORT = "An error occurred when importing declared addon {
 LOGMSG_ERR_FAB_ADDON_PROCESS = "An error occurred when processing declared addon {0}: {1}"
 """ Error on addon processing (pre, register, post), format with addon class path and error message """
 
-
 LOGMSG_ERR_FAB_ADD_PERMISSION_MENU = "Add Permission on Menu Error: {0}"
 """ Error when adding a permission to a menu, format with err """
 LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW = "Add Permission on View Error: {0}"
@@ -106,11 +104,8 @@ LOGMSG_WAR_DBI_DEL_INTEGRITY = "Delete record integrity error: {0}"
 LOGMSG_INF_FAB_ADD_VIEW = "Registering class {0} on menu {1}"
 """ Inform that view class was added, format with class name, name"""
 
-
-
 FLAMSG_ERR_SEC_ACCESS_DENIED = lazy_gettext("Access is Denied")
 """ Access denied flash message """
-
 
 PERMISSION_PREFIX = 'can_'
 """ Prefix to be concatenated to permission names, and inserted in the backend """

@@ -4,8 +4,13 @@ import random
 from datetime import datetime
 
 db.create_all()
+
+
 def get_random_name(names_list, size=1):
-    name_lst = [names_list[random.randrange(0, len(names_list))].capitalize() for i in range(0, size)]
+    name_lst = [
+        names_list[random.randrange(0, len(names_list))].capitalize()
+        for i in range(0, size)
+    ]
     return " ".join(name_lst)
 
 
@@ -48,5 +53,3 @@ for i in range(1, 50):
     except:
         print("error", c)
         db.session.rollback()
-    
-

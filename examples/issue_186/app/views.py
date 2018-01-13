@@ -13,10 +13,13 @@ from .models import Device, Site, DeviceType, LowerCaseString
 class MySQLAInterface(SQLAInterface):
     def is_string(self, col_name):
         try:
-            return (isinstance(self.list_columns[col_name].type, sa.types.String) or
-                    isinstance(self.list_columns[col_name].type, LowerCaseString))
+            return (isinstance(self.list_columns[col_name].type,
+                               sa.types.String)
+                    or isinstance(self.list_columns[col_name].type,
+                                  LowerCaseString))
         except:
             return False
+
 
 class SiteModelView(ModelView):
     datamodel = SQLAInterface(Site)
@@ -28,10 +31,25 @@ class DeviceTypeModelView(ModelView):
 
 class DeviceModelView(ModelView):
     datamodel = MySQLAInterface(Device)
-    
+
+
 db.create_all()
 
-appbuilder.add_view(SiteModelView, "Site", icon="fa-folder-open-o", category="Management", category_icon='fa-envelope')
-appbuilder.add_view(DeviceTypeModelView, "DeviceType", icon="fa-folder-open-o", category="Management", category_icon='fa-envelope')
-appbuilder.add_view(DeviceModelView, "Devices", icon="fa-folder-open-o", category="Management", category_icon='fa-envelope')
-
+appbuilder.add_view(
+    SiteModelView,
+    "Site",
+    icon="fa-folder-open-o",
+    category="Management",
+    category_icon='fa-envelope')
+appbuilder.add_view(
+    DeviceTypeModelView,
+    "DeviceType",
+    icon="fa-folder-open-o",
+    category="Management",
+    category_icon='fa-envelope')
+appbuilder.add_view(
+    DeviceModelView,
+    "Devices",
+    icon="fa-folder-open-o",
+    category="Management",
+    category_icon='fa-envelope')

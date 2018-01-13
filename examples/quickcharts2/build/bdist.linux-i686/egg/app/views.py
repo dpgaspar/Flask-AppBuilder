@@ -13,7 +13,10 @@ log = logging.getLogger(__name__)
 
 
 def fill_data():
-    countries = ['Portugal', 'Germany', 'Spain', 'France', 'USA', 'China', 'Russia', 'Japan']
+    countries = [
+        'Portugal', 'Germany', 'Spain', 'France', 'USA', 'China', 'Russia',
+        'Japan'
+    ]
     politicals = ['Democratic', 'Authorative']
     for country in countries:
         c = Country(name=country)
@@ -52,7 +55,9 @@ def fill_data():
 
 class CountryStatsModelView(ModelView):
     datamodel = SQLAModel(CountryStats)
-    list_columns = ['country', 'stat_date', 'population', 'unemployed', 'college']
+    list_columns = [
+        'country', 'stat_date', 'population', 'unemployed', 'college'
+    ]
 
 
 class CountryModelView(ModelView):
@@ -67,7 +72,9 @@ class CountryStatsDirectChart(DirectChartView):
     datamodel = SQLAModel(CountryStats)
     chart_title = 'Statistics'
     chart_type = 'LineChart'
-    direct_columns = {'General Stats': ('stat_date', 'population', 'unemployed', 'college')}
+    direct_columns = {
+        'General Stats': ('stat_date', 'population', 'unemployed', 'college')
+    }
     base_order = ('stat_date', 'asc')
 
 
@@ -79,39 +86,36 @@ class CountryDirectChartView(DirectByChartView):
     datamodel = SQLAModel(CountryStats)
     chart_title = 'Direct Data'
 
-    definitions = [
-        {
-            #'label': 'Monthly',
-            'group': 'stat_date',
-            'series': ['unemployed',
-                       'population',
-                       'college']
-        }
-    ]
+    definitions = [{
+        #'label': 'Monthly',
+        'group': 'stat_date',
+        'series': ['unemployed', 'population', 'college']
+    }]
 
 
 class CountryGroupByChartView(GroupByChartView):
     datamodel = SQLAModel(CountryStats)
     chart_title = 'Statistics'
 
-
     definitions = [
         {
-            'label': 'Country Stat',
-            'group': 'country',
+            'label':
+            'Country Stat',
+            'group':
+            'country',
             'series': [(aggregate_avg, 'unemployed'),
-                       (aggregate_avg, 'population'),
-                       (aggregate_avg, 'college')
-            ]
+                       (aggregate_avg, 'population'), (aggregate_avg,
+                                                       'college')]
         },
         {
             #'label': 'Monthly',
-            'group': 'month_year',
-            'formatter': pretty_month_year,
+            'group':
+            'month_year',
+            'formatter':
+            pretty_month_year,
             'series': [(aggregate_avg, 'unemployed'),
-                       (aggregate_avg, 'population'),
-                       (aggregate_avg, 'college')
-            ]
+                       (aggregate_avg, 'population'), (aggregate_avg,
+                                                       'college')]
         }
     ]
     """
@@ -126,20 +130,47 @@ class CountryGroupByChartView(GroupByChartView):
     """
 
     #label_columns = {'month_year': 'Month Year', 'country_political': 'Country Political'}
-    group_by_columns = ['country', 'political_type', 'country_political', 'month_year']
+    group_by_columns = [
+        'country', 'political_type', 'country_political', 'month_year'
+    ]
     # ['<COL NAME>']
-    aggregate_by_column = [(aggregate_avg, 'unemployed'), (aggregate_avg, 'population'), (aggregate_avg, 'college')]
+    aggregate_by_column = [(aggregate_avg, 'unemployed'),
+                           (aggregate_avg, 'population'), (aggregate_avg,
+                                                           'college')]
     # [{'aggr_func':<FUNC>,'column':'<COL NAME>'}]
     formatter_by_columns = {'month_year': pretty_month_year}
 
 
 db.create_all()
 fill_data()
-appbuilder.add_view(CountryModelView, "List Countries", icon="fa-folder-open-o", category="Statistics")
-appbuilder.add_view(PoliticalTypeModelView, "List Political Types", icon="fa-folder-open-o", category="Statistics")
-appbuilder.add_view(CountryStatsModelView, "List Country Stats", icon="fa-folder-open-o", category="Statistics")
+appbuilder.add_view(
+    CountryModelView,
+    "List Countries",
+    icon="fa-folder-open-o",
+    category="Statistics")
+appbuilder.add_view(
+    PoliticalTypeModelView,
+    "List Political Types",
+    icon="fa-folder-open-o",
+    category="Statistics")
+appbuilder.add_view(
+    CountryStatsModelView,
+    "List Country Stats",
+    icon="fa-folder-open-o",
+    category="Statistics")
 appbuilder.add_separator("Statistics")
-appbuilder.add_view(CountryStatsDirectChart, "Show Country Chart", icon="fa-dashboard", category="Statistics")
-appbuilder.add_view(CountryGroupByChartView, "Group Country Chart", icon="fa-dashboard", category="Statistics")
-appbuilder.add_view(CountryDirectChartView, "Show Country Chart", icon="fa-dashboard", category="Statistics")
-
+appbuilder.add_view(
+    CountryStatsDirectChart,
+    "Show Country Chart",
+    icon="fa-dashboard",
+    category="Statistics")
+appbuilder.add_view(
+    CountryGroupByChartView,
+    "Group Country Chart",
+    icon="fa-dashboard",
+    category="Statistics")
+appbuilder.add_view(
+    CountryDirectChartView,
+    "Show Country Chart",
+    icon="fa-dashboard",
+    category="Statistics")

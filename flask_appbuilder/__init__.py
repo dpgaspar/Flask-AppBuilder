@@ -1,6 +1,5 @@
 __author__ = 'Daniel Vaz Gaspar'
 
-
 from .models.sqla import Model, Base, SQLA
 from .base import AppBuilder
 from .baseviews import expose, BaseView

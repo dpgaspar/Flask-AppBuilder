@@ -1,4 +1,3 @@
-
 from werkzeug.datastructures import FileStorage
 
 from wtforms import ValidationError, fields
@@ -10,80 +9,76 @@ try:
     from wtforms.fields.core import _unset_value as unset_value
 except ImportError:
     from wtforms.utils import unset_value
-
-
 """
     Based and thanks to https://github.com/mrjoes/flask-admin/blob/master/flask_admin/form/upload.py
 """
 
+
 class BS3FileUploadFieldWidget(object):
 
-    empty_template = ('<div class="input-group">'
-                    '<span class="input-group-addon"><i class="fa fa-upload"></i>'
-                    '</span>'
-                    '<input class="form-control" %(file)s/>'
-        '</div>'
-        )
+    empty_template = (
+        '<div class="input-group">'
+        '<span class="input-group-addon"><i class="fa fa-upload"></i>'
+        '</span>'
+        '<input class="form-control" %(file)s/>'
+        '</div>')
 
-    data_template = ('<div>'
-                     ' <input %(text)s>'
-                     ' <input type="checkbox" name="%(marker)s">Delete</input>'
-                     '</div>'
-                     '<div class="input-group">'
-                    '<span class="input-group-addon"><i class="fa fa-upload"></i>'
-                    '</span>'
-                    '<input class="form-control" %(file)s/>'
+    data_template = (
+        '<div>'
+        ' <input %(text)s>'
+        ' <input type="checkbox" name="%(marker)s">Delete</input>'
         '</div>'
-        )
+        '<div class="input-group">'
+        '<span class="input-group-addon"><i class="fa fa-upload"></i>'
+        '</span>'
+        '<input class="form-control" %(file)s/>'
+        '</div>')
 
     def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
         kwargs.setdefault('name', field.name)
 
         args = {
-            'file': html_params(type='file',
-                                **kwargs),
+            'file': html_params(type='file', **kwargs),
             'marker': '_%s-delete' % field.name
         }
 
         template = self.data_template if field.data else self.empty_template
 
-        return HTMLString(template % {
-            'text': html_params(type='text',
-                                value=field.data),
-            'file': html_params(type='file',
-                                **kwargs),
-            'marker': '_%s-delete' % field.name
-        })
+        return HTMLString(
+            template % {
+                'text': html_params(type='text', value=field.data),
+                'file': html_params(type='file', **kwargs),
+                'marker': '_%s-delete' % field.name
+            })
 
 
 class BS3ImageUploadFieldWidget(object):
 
-    empty_template = ('<div class="input-group">'
-                    '<span class="input-group-addon"><span class="glyphicon glyphicon-upload"></span>'
-                    '</span>'
-                    '<input class="form-control" %(file)s/>'
-        '</div>'
-        )
+    empty_template = (
+        '<div class="input-group">'
+        '<span class="input-group-addon"><span class="glyphicon glyphicon-upload"></span>'
+        '</span>'
+        '<input class="form-control" %(file)s/>'
+        '</div>')
 
-    data_template = ('<div class="thumbnail">'
-                     ' <img %(image)s>'
-                     ' <input type="checkbox" name="%(marker)s">Delete</input>'
-                     '</div>'
-                     '<div class="input-group">'
-                    '<span class="input-group-addon"><span class="glyphicon glyphicon-upload"></span>'
-                    '</span>'
-                    '<input class="form-control" %(file)s/>'
-                    '</div>'
-        )
+    data_template = (
+        '<div class="thumbnail">'
+        ' <img %(image)s>'
+        ' <input type="checkbox" name="%(marker)s">Delete</input>'
+        '</div>'
+        '<div class="input-group">'
+        '<span class="input-group-addon"><span class="glyphicon glyphicon-upload"></span>'
+        '</span>'
+        '<input class="form-control" %(file)s/>'
+        '</div>')
 
     def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
         kwargs.setdefault('name', field.name)
 
         args = {
-            'file': html_params(type='file',
-                                **kwargs),
+            'file': html_params(type='file', **kwargs),
             'marker': '_%s-delete' % field.name
         }
 
@@ -112,8 +107,7 @@ class FileUploadField(fields.TextField):
     """
     widget = BS3FileUploadFieldWidget()
 
-    def __init__(self, label=None, validators=None,
-                 filemanager = None,
+    def __init__(self, label=None, validators=None, filemanager=None,
                  **kwargs):
         """
             Constructor.
@@ -153,9 +147,8 @@ class FileUploadField(fields.TextField):
         pass
 
     def pre_validate(self, form):
-        if (self.data and
-                isinstance(self.data, FileStorage) and
-                not self.filemanager.is_file_allowed(self.data.filename)):
+        if (self.data and isinstance(self.data, FileStorage)
+                and not self.filemanager.is_file_allowed(self.data.filename)):
             raise ValidationError(gettext('Invalid file extension'))
 
     def process(self, formdata, data=unset_value):
@@ -196,8 +189,10 @@ class ImageUploadField(fields.StringField):
     """
     widget = BS3ImageUploadFieldWidget()
 
-    def __init__(self, label=None, validators=None,
-                 imagemanager = None,
+    def __init__(self,
+                 label=None,
+                 validators=None,
+                 imagemanager=None,
                  **kwargs):
 
         self.imagemanager = imagemanager or ImageManager()
@@ -205,9 +200,8 @@ class ImageUploadField(fields.StringField):
         super(ImageUploadField, self).__init__(label, validators, **kwargs)
 
     def pre_validate(self, form):
-        if (self.data and
-                isinstance(self.data, FileStorage) and
-                not self.imagemanager.is_file_allowed(self.data.filename)):
+        if (self.data and isinstance(self.data, FileStorage)
+                and not self.imagemanager.is_file_allowed(self.data.filename)):
             raise ValidationError(gettext('Invalid file extension'))
 
     def process(self, formdata, data=unset_value):
@@ -233,7 +227,7 @@ class ImageUploadField(fields.StringField):
                 self.imagemanager.delete_file(field)
 
             filename = self.imagemanager.generate_name(obj, self.data)
-            filename = self.imagemanager.save_file(self.data, filename, size, thumbnail_size)
+            filename = self.imagemanager.save_file(self.data, filename, size,
+                                                   thumbnail_size)
 
             setattr(obj, name, filename)
-

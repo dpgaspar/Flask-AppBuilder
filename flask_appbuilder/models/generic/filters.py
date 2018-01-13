@@ -1,9 +1,11 @@
 from flask_babel import lazy_gettext
 from ..filters import BaseFilter, FilterRelation, BaseFilterConverter
 
-
-__all__ = ['GenericFilterConverter', 'FilterNotContains', 'FilterEqual', 'FilterContains', 'FilterIContains',
-           'FilterNotEqual', 'FilterGreater', 'FilterSmaller', 'FilterStartsWith']
+__all__ = [
+    'GenericFilterConverter', 'FilterNotContains', 'FilterEqual',
+    'FilterContains', 'FilterIContains', 'FilterNotEqual', 'FilterGreater',
+    'FilterSmaller', 'FilterStartsWith'
+]
 
 
 class FilterContains(BaseFilter):
@@ -11,6 +13,7 @@ class FilterContains(BaseFilter):
 
     def apply(self, query, value):
         return query.like(self.column_name, value)
+
 
 class FilterIContains(BaseFilter):
     '''
@@ -21,11 +24,13 @@ class FilterIContains(BaseFilter):
     def apply(self, query, value):
         return query.ilike(self.column_name, value)
 
+
 class FilterNotContains(BaseFilter):
     name = lazy_gettext('Not Contains')
 
     def apply(self, query, value):
         return query.not_like(self.column_name, value)
+
 
 class FilterEqual(BaseFilter):
     name = lazy_gettext('Equal to')
@@ -33,11 +38,13 @@ class FilterEqual(BaseFilter):
     def apply(self, query, value):
         return query.equal(self.column_name, value)
 
+
 class FilterNotEqual(BaseFilter):
     name = lazy_gettext('Not Equal to')
 
     def apply(self, query, value):
         return query.not_equal(self.column_name, value)
+
 
 class FilterGreater(BaseFilter):
     name = lazy_gettext('Greater than')
@@ -45,11 +52,13 @@ class FilterGreater(BaseFilter):
     def apply(self, query, value):
         return query.greater(self.column_name, value)
 
+
 class FilterSmaller(BaseFilter):
     name = lazy_gettext('Smaller than')
 
     def apply(self, query, value):
         return query.smaller(self.column_name, value)
+
 
 class FilterStartsWith(BaseFilter):
     name = lazy_gettext('Start with')
@@ -57,33 +66,25 @@ class FilterStartsWith(BaseFilter):
     def apply(self, query, value):
         return query.starts_with(self.column_name, value)
 
+
 class GenericFilterConverter(BaseFilterConverter):
     """
         Class for converting columns into a supported list of filters
         specific for SQLAlchemy.
 
     """
-    conversion_table = (('is_enum', [FilterEqual,
-                                     FilterNotEqual]),
-                        ('is_text', [FilterContains,
-                                     FilterIContains,
-                                     FilterNotContains,
-                                     FilterEqual,
-                                     FilterNotEqual,
-                                     FilterStartsWith]
-                                     ),
-                        ('is_string', [FilterContains,
-                                       FilterIContains,
-                                       FilterNotContains,
-                                       FilterEqual,
-                                       FilterNotEqual,
-                                       FilterStartsWith]),
-                        ('is_integer', [FilterEqual,
-                                        FilterNotEqual,
-                                        FilterGreater,
-                                        FilterSmaller]),
-                        ('is_date', [FilterEqual,
-                                        FilterNotEqual,
-                                        FilterGreater,
-                                        FilterSmaller]),
-                        )
+    conversion_table = (
+        ('is_enum', [FilterEqual, FilterNotEqual]),
+        ('is_text', [
+            FilterContains, FilterIContains, FilterNotContains, FilterEqual,
+            FilterNotEqual, FilterStartsWith
+        ]),
+        ('is_string', [
+            FilterContains, FilterIContains, FilterNotContains, FilterEqual,
+            FilterNotEqual, FilterStartsWith
+        ]),
+        ('is_integer',
+         [FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller]),
+        ('is_date',
+         [FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller]),
+    )

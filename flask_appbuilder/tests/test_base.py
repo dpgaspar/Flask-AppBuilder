@@ -32,8 +32,6 @@ from flask_appbuilder.models.generic import PSModel
 
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 logging.getLogger().setLevel(logging.DEBUG)
-
-
 """
     Constant english display string from framework
 """
@@ -77,7 +75,8 @@ class Model2(Model):
         return str(self.field_string)
 
     def field_method(self):
-       return "field_method_value"
+        return "field_method_value"
+
 
 class Model3(Model):
     pk1 = Column(Integer(), primary_key=True)
@@ -89,15 +88,18 @@ class Model3(Model):
 
 
 if _has_enum:
+
     class TestEnum(enum.Enum):
         e1 = 'a'
         e2 = 2
+
 
 class ModelWithEnums(Model):
     id = Column(Integer, primary_key=True)
     enum1 = Column(Enum('e1', 'e2'))
     if _has_enum:
         enum2 = Column(Enum(TestEnum))
+
 
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):
@@ -124,16 +126,25 @@ class FlaskTestCase(unittest.TestCase):
             list_columns = ['UID', 'C', 'CMD', 'TIME']
             search_columns = ['UID', 'C', 'CMD']
 
-
         class Model2View(ModelView):
             datamodel = SQLAInterface(Model2)
-            list_columns = ['field_integer', 'field_float', 'field_string', 'field_method', 'group.field_string']
-            edit_form_query_rel_fields = {'group':[['field_string', FilterEqual, 'G2']]}
-            add_form_query_rel_fields = {'group':[['field_string', FilterEqual, 'G1']]}
+            list_columns = [
+                'field_integer', 'field_float', 'field_string', 'field_method',
+                'group.field_string'
+            ]
+            edit_form_query_rel_fields = {
+                'group': [['field_string', FilterEqual, 'G2']]
+            }
+            add_form_query_rel_fields = {
+                'group': [['field_string', FilterEqual, 'G1']]
+            }
 
         class Model22View(ModelView):
             datamodel = SQLAInterface(Model2)
-            list_columns = ['field_integer', 'field_float', 'field_string', 'field_method', 'group.field_string']
+            list_columns = [
+                'field_integer', 'field_float', 'field_string', 'field_method',
+                'group.field_string'
+            ]
             add_exclude_columns = ['excluded_string']
             edit_exclude_columns = ['excluded_string']
             show_exclude_columns = ['excluded_string']
@@ -160,59 +171,53 @@ class FlaskTestCase(unittest.TestCase):
             obj_id = 1
 
             def post_add_redirect(self):
-                return redirect('model1viewwithredirects/show/{0}'.format(REDIRECT_OBJ_ID))
+                return redirect(
+                    'model1viewwithredirects/show/{0}'.format(REDIRECT_OBJ_ID))
 
             def post_edit_redirect(self):
-                return redirect('model1viewwithredirects/show/{0}'.format(REDIRECT_OBJ_ID))
+                return redirect(
+                    'model1viewwithredirects/show/{0}'.format(REDIRECT_OBJ_ID))
 
             def post_delete_redirect(self):
-                return redirect('model1viewwithredirects/show/{0}'.format(REDIRECT_OBJ_ID))
+                return redirect(
+                    'model1viewwithredirects/show/{0}'.format(REDIRECT_OBJ_ID))
 
         class Model1Filtered1View(ModelView):
             datamodel = SQLAInterface(Model1)
             base_filters = [['field_string', FilterStartsWith, 'a']]
 
-
         class Model1MasterView(MasterDetailView):
             datamodel = SQLAInterface(Model1)
             related_views = [Model2View]
 
-
         class Model1Filtered2View(ModelView):
             datamodel = SQLAInterface(Model1)
             base_filters = [['field_integer', FilterEqual, 0]]
-
 
         class Model2ChartView(ChartView):
             datamodel = SQLAInterface(Model2)
             chart_title = 'Test Model1 Chart'
             group_by_columns = ['field_string']
 
-
         class Model2GroupByChartView(GroupByChartView):
             datamodel = SQLAInterface(Model2)
             chart_title = 'Test Model1 Chart'
 
-            definitions = [
-                {
-                    'group':'field_string',
-                    'series':[(aggregate_sum,'field_integer',
-                               aggregate_avg, 'field_integer',
-                               aggregate_count,'field_integer')
-                            ]
-                }
-            ]
+            definitions = [{
+                'group':
+                'field_string',
+                'series': [(aggregate_sum, 'field_integer', aggregate_avg,
+                            'field_integer', aggregate_count, 'field_integer')]
+            }]
 
         class Model2DirectByChartView(DirectByChartView):
             datamodel = SQLAInterface(Model2)
             chart_title = 'Test Model1 Chart'
 
-            definitions = [
-                {
-                    'group':'field_string',
-                    'series':['field_integer','field_float']
-                }
-            ]
+            definitions = [{
+                'group': 'field_string',
+                'series': ['field_integer', 'field_float']
+            }]
 
         class Model2TimeChartView(TimeChartView):
             datamodel = SQLAInterface(Model2)
@@ -244,20 +249,34 @@ class FlaskTestCase(unittest.TestCase):
             datamodel = SQLAInterface(ModelWithEnums)
 
         self.appbuilder.add_view(Model1View, "Model1", category='Model1')
-        self.appbuilder.add_view(Model1ViewWithRedirects, "Model1ViewWithRedirects", category='Model1')
-        self.appbuilder.add_view(Model1CompactView, "Model1Compact", category='Model1')
-        self.appbuilder.add_view(Model1MasterView, "Model1Master", category='Model1')
-        self.appbuilder.add_view(Model1MasterChartView, "Model1MasterChart", category='Model1')
-        self.appbuilder.add_view(Model1Filtered1View, "Model1Filtered1", category='Model1')
-        self.appbuilder.add_view(Model1Filtered2View, "Model1Filtered2", category='Model1')
-        self.appbuilder.add_view(Model1FormattedView, "Model1FormattedView", category='Model1FormattedView')
+        self.appbuilder.add_view(
+            Model1ViewWithRedirects,
+            "Model1ViewWithRedirects",
+            category='Model1')
+        self.appbuilder.add_view(
+            Model1CompactView, "Model1Compact", category='Model1')
+        self.appbuilder.add_view(
+            Model1MasterView, "Model1Master", category='Model1')
+        self.appbuilder.add_view(
+            Model1MasterChartView, "Model1MasterChart", category='Model1')
+        self.appbuilder.add_view(
+            Model1Filtered1View, "Model1Filtered1", category='Model1')
+        self.appbuilder.add_view(
+            Model1Filtered2View, "Model1Filtered2", category='Model1')
+        self.appbuilder.add_view(
+            Model1FormattedView,
+            "Model1FormattedView",
+            category='Model1FormattedView')
 
         self.appbuilder.add_view(Model2View, "Model2")
         self.appbuilder.add_view(Model22View, "Model22")
-        self.appbuilder.add_view(Model2View, "Model2 Add", href='/model2view/add')
+        self.appbuilder.add_view(
+            Model2View, "Model2 Add", href='/model2view/add')
         self.appbuilder.add_view(Model2ChartView, "Model2 Chart")
-        self.appbuilder.add_view(Model2GroupByChartView, "Model2 Group By Chart")
-        self.appbuilder.add_view(Model2DirectByChartView, "Model2 Direct By Chart")
+        self.appbuilder.add_view(Model2GroupByChartView,
+                                 "Model2 Group By Chart")
+        self.appbuilder.add_view(Model2DirectByChartView,
+                                 "Model2 Direct By Chart")
         self.appbuilder.add_view(Model2TimeChartView, "Model2 Time Chart")
         self.appbuilder.add_view(Model2DirectChartView, "Model2 Direct Chart")
 
@@ -266,16 +285,17 @@ class FlaskTestCase(unittest.TestCase):
 
         self.appbuilder.add_view(ModelWithEnumsView, "ModelWithEnums")
 
-        self.appbuilder.add_view(PSView, "Generic DS PS View", category='PSView')
+        self.appbuilder.add_view(
+            PSView, "Generic DS PS View", category='PSView')
         role_admin = self.appbuilder.sm.find_role('Admin')
-        self.appbuilder.sm.add_user('admin','admin','user','admin@fab.org',role_admin,'general')
+        self.appbuilder.sm.add_user('admin', 'admin', 'user', 'admin@fab.org',
+                                    role_admin, 'general')
 
     def tearDown(self):
         self.appbuilder = None
         self.app = None
         self.db = None
         log.debug("TEAR DOWN")
-
 
     """ ---------------------------------
             TEST HELPER FUNCTIONS
@@ -284,10 +304,10 @@ class FlaskTestCase(unittest.TestCase):
 
     def login(self, client, username, password):
         # Login with default admin
-        return client.post('/login/', data=dict(
-            username=username,
-            password=password
-        ), follow_redirects=True)
+        return client.post(
+            '/login/',
+            data=dict(username=username, password=password),
+            follow_redirects=True)
 
     def logout(self, client):
         return client.get('/logout/')
@@ -299,18 +319,21 @@ class FlaskTestCase(unittest.TestCase):
             self.db.session.commit()
 
     def insert_data2(self):
-        models1 = [Model1(field_string='G1'),
-                   Model1(field_string='G2'),
-                   Model1(field_string='G3')]
+        models1 = [
+            Model1(field_string='G1'),
+            Model1(field_string='G2'),
+            Model1(field_string='G3')
+        ]
         for model1 in models1:
             try:
                 self.db.session.add(model1)
                 self.db.session.commit()
                 for x, i in zip(string.ascii_letters[:10], range(10)):
-                    model = Model2(field_string="%stest" % (x),
-                                   field_integer=random.randint(1, 10),
-                                   field_float=random.uniform(0.0, 1.0),
-                                   group=model1)
+                    model = Model2(
+                        field_string="%stest" % (x),
+                        field_integer=random.randint(1, 10),
+                        field_float=random.uniform(0.0, 1.0),
+                        group=model1)
                     year = random.choice(range(1900, 2012))
                     month = random.choice(range(1, 12))
                     day = random.choice(range(1, 28))
@@ -323,7 +346,8 @@ class FlaskTestCase(unittest.TestCase):
                 self.db.session.rollback()
 
     def insert_data3(self):
-        model3 = Model3(pk1=3, pk2=datetime.datetime(2017, 3, 3), field_string='foo')
+        model3 = Model3(
+            pk1=3, pk2=datetime.datetime(2017, 3, 3), field_string='foo')
         try:
             self.db.session.add(model3)
             self.db.session.commit()
@@ -412,34 +436,44 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
 
         # Try Reset My password
-        rv = client.get('/users/action/resetmypassword/1', follow_redirects=True)
+        rv = client.get(
+            '/users/action/resetmypassword/1', follow_redirects=True)
         data = rv.data.decode('utf-8')
         ok_(ACCESS_IS_DENIED in data)
 
         #Reset My password
         rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        rv = client.get('/users/action/resetmypassword/1', follow_redirects=True)
+        rv = client.get(
+            '/users/action/resetmypassword/1', follow_redirects=True)
         data = rv.data.decode('utf-8')
         ok_("Reset Password Form" in data)
-        rv = client.post('/resetmypassword/form',
-                         data=dict(password='password', conf_password='password'), follow_redirects=True)
+        rv = client.post(
+            '/resetmypassword/form',
+            data=dict(password='password', conf_password='password'),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
         self.logout(client)
         self.login(client, DEFAULT_ADMIN_USER, 'password')
-        rv = client.post('/resetmypassword/form',
-                         data=dict(password=DEFAULT_ADMIN_PASSWORD, conf_password=DEFAULT_ADMIN_PASSWORD),
-                         follow_redirects=True)
+        rv = client.post(
+            '/resetmypassword/form',
+            data=dict(
+                password=DEFAULT_ADMIN_PASSWORD,
+                conf_password=DEFAULT_ADMIN_PASSWORD),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
 
         #Reset Password Admin
-        rv = client.get('/users/action/resetpasswords/1', follow_redirects=True)
+        rv = client.get(
+            '/users/action/resetpasswords/1', follow_redirects=True)
         data = rv.data.decode('utf-8')
         ok_("Reset Password Form" in data)
-        rv = client.post('/resetmypassword/form',
-                         data=dict(password=DEFAULT_ADMIN_PASSWORD, conf_password=DEFAULT_ADMIN_PASSWORD),
-                         follow_redirects=True)
+        rv = client.post(
+            '/resetmypassword/form',
+            data=dict(
+                password=DEFAULT_ADMIN_PASSWORD,
+                conf_password=DEFAULT_ADMIN_PASSWORD),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
-
 
     def test_generic_interface(self):
         """
@@ -450,7 +484,6 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.get('/psview/list')
         data = rv.data.decode('utf-8')
 
-
     def test_model_crud(self):
         """
             Test Model add, delete, edit
@@ -458,18 +491,24 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
-        rv = client.post('/model1view/add',
-                             data=dict(field_string='test1', field_integer='1',
-                                       field_float='0.12',
-                                       field_date='2014-01-01'), follow_redirects=True)
+        rv = client.post(
+            '/model1view/add',
+            data=dict(
+                field_string='test1',
+                field_integer='1',
+                field_float='0.12',
+                field_date='2014-01-01'),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
 
         model = self.db.session.query(Model1).first()
         eq_(model.field_string, u'test1')
         eq_(model.field_integer, 1)
 
-        rv = client.post('/model1view/edit/1',
-                         data=dict(field_string='test2', field_integer='2'), follow_redirects=True)
+        rv = client.post(
+            '/model1view/edit/1',
+            data=dict(field_string='test2', field_integer='2'),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
 
         model = self.db.session.query(Model1).first()
@@ -494,8 +533,10 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
-        rv = client.post('/model3view/add', data=dict(pk1="1", pk2="2017-01-01 00:00:00", field_string='foo'),
-                         follow_redirects=True)
+        rv = client.post(
+            '/model3view/add',
+            data=dict(pk1="1", pk2="2017-01-01 00:00:00", field_string='foo'),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model3).first()
         eq_(model.pk1, 1)
@@ -506,9 +547,10 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.get('/model3view/show/' + quote(pk), follow_redirects=True)
         eq_(rv.status_code, 200)
 
-        rv = client.post('/model3view/edit/' + quote(pk),
-                         data=dict(pk1='2', pk2='2017-02-02 00:00:00', field_string='bar'),
-                         follow_redirects=True)
+        rv = client.post(
+            '/model3view/edit/' + quote(pk),
+            data=dict(pk1='2', pk2='2017-02-02 00:00:00', field_string='bar'),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model3).first()
         eq_(model.pk1, 2)
@@ -516,7 +558,8 @@ class FlaskTestCase(unittest.TestCase):
         eq_(model.field_string, u'bar')
 
         pk = '[2, {"_type": "datetime", "value": "2017-02-02T00:00:00.000000"}]'
-        rv = client.get('/model3view/delete/' + quote(pk), follow_redirects=True)
+        rv = client.get(
+            '/model3view/delete/' + quote(pk), follow_redirects=True)
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model3).first()
         eq_(model, None)
@@ -531,7 +574,8 @@ class FlaskTestCase(unittest.TestCase):
         data = {'enum1': u'e1'}
         if _has_enum:
             data['enum2'] = 'e1'
-        rv = client.post('/modelwithenumsview/add', data=data, follow_redirects=True)
+        rv = client.post(
+            '/modelwithenumsview/add', data=data, follow_redirects=True)
         eq_(rv.status_code, 200)
 
         model = self.db.session.query(ModelWithEnums).first()
@@ -542,7 +586,8 @@ class FlaskTestCase(unittest.TestCase):
         data = {'enum1': u'e2'}
         if _has_enum:
             data['enum2'] = 'e2'
-        rv = client.post('/modelwithenumsview/edit/1', data=data, follow_redirects=True)
+        rv = client.post(
+            '/modelwithenumsview/edit/1', data=data, follow_redirects=True)
         eq_(rv.status_code, 200)
 
         model = self.db.session.query(ModelWithEnums).first()
@@ -583,24 +628,31 @@ class FlaskTestCase(unittest.TestCase):
         model1.id = REDIRECT_OBJ_ID
         self.db.session.flush()
 
-        rv = client.post('/model1viewwithredirects/add',
-                             data=dict(field_string='test_redirect', field_integer='1',
-                                       field_float='0.12',
-                                       field_date='2014-01-01'), follow_redirects=True)
+        rv = client.post(
+            '/model1viewwithredirects/add',
+            data=dict(
+                field_string='test_redirect',
+                field_integer='1',
+                field_float='0.12',
+                field_date='2014-01-01'),
+            follow_redirects=True)
 
         eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
         ok_('Test Redirects' in data)
 
-        model_id = self.db.session.query(Model1).filter_by(field_string='test_redirect').first().id
-        rv = client.post('/model1viewwithredirects/edit/{0}'.format(model_id),
-                         data=dict(field_string='test_redirect_2', field_integer='2'),
-                         follow_redirects=True)
+        model_id = self.db.session.query(Model1).filter_by(
+            field_string='test_redirect').first().id
+        rv = client.post(
+            '/model1viewwithredirects/edit/{0}'.format(model_id),
+            data=dict(field_string='test_redirect_2', field_integer='2'),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
         ok_('Test Redirects' in data)
 
-        rv = client.get('/model1viewwithredirects/delete/{0}'.format(model_id),
-                        follow_redirects=True)
+        rv = client.get(
+            '/model1viewwithredirects/delete/{0}'.format(model_id),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
         ok_('Test Redirects' in data)
 
@@ -636,7 +688,6 @@ class FlaskTestCase(unittest.TestCase):
         ok_('Field Date' in data)
         ok_('Excluded String' not in data)
 
-
     def test_query_rel_fields(self):
         """
             Test add and edit form related fields filter
@@ -657,7 +708,6 @@ class FlaskTestCase(unittest.TestCase):
         ok_('G2' in data)
         ok_('G1' not in data)
 
-
     def test_model_list_order(self):
         """
             Test Model order on lists
@@ -667,22 +717,22 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
-        rv = client.post('/model1view/list?_oc_Model1View=field_string&_od_Model1View=asc',
-                        follow_redirects=True)
+        rv = client.post(
+            '/model1view/list?_oc_Model1View=field_string&_od_Model1View=asc',
+            follow_redirects=True)
         # TODO: Fix this 405 error
         # eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
         # TODO
         # VALIDATE LIST IS ORDERED
-        rv = client.post('/model1view/list?_oc_Model1View=field_string&_od_Model1View=desc',
-                        follow_redirects=True)
+        rv = client.post(
+            '/model1view/list?_oc_Model1View=field_string&_od_Model1View=desc',
+            follow_redirects=True)
         # TODO: Fix this 405 error
         # eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
         # TODO
         # VALIDATE LIST IS ORDERED
-
-
 
     def test_model_add_validation(self):
         """
@@ -691,12 +741,16 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
-        rv = client.post('/model1view/add',
-                         data=dict(field_string='test1', field_integer='1'), follow_redirects=True)
+        rv = client.post(
+            '/model1view/add',
+            data=dict(field_string='test1', field_integer='1'),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
 
-        rv = client.post('/model1view/add',
-                         data=dict(field_string='test1', field_integer='2'), follow_redirects=True)
+        rv = client.post(
+            '/model1view/add',
+            data=dict(field_string='test1', field_integer='2'),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
         ok_(UNIQUE_VALIDATION_STRING in data)
@@ -704,8 +758,10 @@ class FlaskTestCase(unittest.TestCase):
         model = self.db.session.query(Model1).all()
         eq_(len(model), 1)
 
-        rv = client.post('/model1view/add',
-                         data=dict(field_string='', field_integer='1'), follow_redirects=True)
+        rv = client.post(
+            '/model1view/add',
+            data=dict(field_string='', field_integer='1'),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
         ok_(NOTNULL_VALIDATION_STRING in data)
@@ -720,18 +776,26 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
-        client.post('/model1view/add',
-                    data=dict(field_string='test1', field_integer='1'), follow_redirects=True)
-        client.post('/model1view/add',
-                    data=dict(field_string='test2', field_integer='1'), follow_redirects=True)
-        rv = client.post('/model1view/edit/1',
-                         data=dict(field_string='test2', field_integer='2'), follow_redirects=True)
+        client.post(
+            '/model1view/add',
+            data=dict(field_string='test1', field_integer='1'),
+            follow_redirects=True)
+        client.post(
+            '/model1view/add',
+            data=dict(field_string='test2', field_integer='1'),
+            follow_redirects=True)
+        rv = client.post(
+            '/model1view/edit/1',
+            data=dict(field_string='test2', field_integer='2'),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
         ok_(UNIQUE_VALIDATION_STRING in data)
 
-        rv = client.post('/model1view/edit/1',
-                         data=dict(field_string='', field_integer='2'), follow_redirects=True)
+        rv = client.post(
+            '/model1view/edit/1',
+            data=dict(field_string='', field_integer='2'),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
         data = rv.data.decode('utf-8')
         ok_(NOTNULL_VALIDATION_STRING in data)
@@ -780,7 +844,6 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.get('/model1compactview/list/')
         eq_(rv.status_code, 200)
 
-
         # test with composite pk
         try:
             from urllib import quote
@@ -789,13 +852,16 @@ class FlaskTestCase(unittest.TestCase):
 
         self.insert_data3()
         pk = '[3, {"_type": "datetime", "value": "2017-03-03T00:00:00"}]'
-        rv = client.post('/model3compactview/edit/' + quote(pk),
-                         data=dict(field_string='bar'), follow_redirects=True)
+        rv = client.post(
+            '/model3compactview/edit/' + quote(pk),
+            data=dict(field_string='bar'),
+            follow_redirects=True)
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model3).first()
         eq_(model.field_string, u'bar')
 
-        rv = client.get('/model3compactview/delete/' + quote(pk), follow_redirects=True)
+        rv = client.get(
+            '/model3compactview/delete/' + quote(pk), follow_redirects=True)
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model3).first()
         eq_(model, None)

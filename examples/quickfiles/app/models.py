@@ -4,7 +4,6 @@ from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from flask_appbuilder import Model
 from flask_appbuilder.filemanager import get_file_original_name
-
 """
 
 You can use the extra Flask-AppBuilder fields and Mixin's
@@ -30,8 +29,9 @@ class ProjectFiles(Model):
     description = Column(String(150))
 
     def download(self):
-        return Markup(
-            '<a href="' + url_for('ProjectFilesModelView.download', filename=str(self.file)) + '">Download</a>')
+        return Markup('<a href="' + url_for(
+            'ProjectFilesModelView.download', filename=str(self.file)) +
+                      '">Download</a>')
 
     def file_name(self):
         return get_file_original_name(str(self.file))

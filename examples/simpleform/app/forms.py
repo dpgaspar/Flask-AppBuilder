@@ -5,8 +5,12 @@ from flask_appbuilder.forms import DynamicForm
 
 
 class MyForm(DynamicForm):
-    field1 = StringField(('Field1'),
+    field1 = StringField(
+        ('Field1'),
         description=('Your field number one!'),
-        validators = [DataRequired()], widget=BS3TextFieldWidget())
-    field2 = StringField(('Field2'),
-        description=('Your field number two!'), widget=BS3TextFieldWidget())
+        validators=[DataRequired()],
+        widget=BS3TextFieldWidget())
+    field2 = StringField(
+        ('Field2'),
+        description=('Your field number two!'),
+        widget=BS3TextFieldWidget())

@@ -1,7 +1,6 @@
 import logging
 from flask import Flask
 from flask_appbuilder import SQLA, AppBuilder
-
 """
  Logging configuration
 """
@@ -13,8 +12,6 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLA(app)
 appbuilder = AppBuilder(app, db.session)
-
-
 """
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
@@ -26,7 +23,6 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
-"""    
+"""
 
 from app import views
-

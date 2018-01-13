@@ -7,5 +7,4 @@ class MyUser(User):
             MyUser fields
     '''
     domain = Column(String(32))
-    group  = Column(String(32))
-
+    group = Column(String(32))

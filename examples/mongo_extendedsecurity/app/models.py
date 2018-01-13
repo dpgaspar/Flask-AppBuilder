@@ -31,7 +31,9 @@ class Gender(Document):
 
 
 class Tags(Document):
-    meta = {'allow_inheritance': True,}
+    meta = {
+        'allow_inheritance': True,
+    }
 
     name = StringField(max_length=60, required=True, unique=True)
 

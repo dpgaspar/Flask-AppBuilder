@@ -14,7 +14,7 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 CSRF_ENABLED = True
 
 #------------------------------
-# GLOBALS FOR APP Builder 
+# GLOBALS FOR APP Builder
 #------------------------------
 # Uncomment to setup Your App name
 #APP_NAME = "My App Name"
@@ -32,29 +32,33 @@ CSRF_ENABLED = True
 # AUTH_REMOTE_USER : Is for using REMOTE_USER from web server
 AUTH_TYPE = AUTH_OAUTH
 
-OAUTH_PROVIDERS = [
-    {'name':'twitter', 'icon':'fa-twitter',
-        'remote_app': {
-            'consumer_key': os.environ.get('TWITTER_KEY'),
-            'consumer_secret': os.environ.get('TWITTER_SECRET'),
-            'base_url': 'https://api.twitter.com/1.1/',
-            'request_token_url': 'https://api.twitter.com/oauth/request_token',
-            'access_token_url': 'https://api.twitter.com/oauth/access_token',
-            'authorize_url': 'https://api.twitter.com/oauth/authenticate'}
-    },
-    {'name': 'google', 'icon': 'fa-google', 'token_key': 'access_token',
-        'remote_app': {
-            'consumer_key': os.environ.get('GOOGLE_KEY'),
-            'consumer_secret': os.environ.get('GOOGLE_SECRET'),
-            'base_url': 'https://www.googleapis.com/oauth2/v2/',
-            'request_token_params': {
-              'scope': 'email profile'
-            },
-            'request_token_url': None,
-            'access_token_url': 'https://accounts.google.com/o/oauth2/token',
-            'authorize_url': 'https://accounts.google.com/o/oauth2/auth'}
+OAUTH_PROVIDERS = [{
+    'name': 'twitter',
+    'icon': 'fa-twitter',
+    'remote_app': {
+        'consumer_key': os.environ.get('TWITTER_KEY'),
+        'consumer_secret': os.environ.get('TWITTER_SECRET'),
+        'base_url': 'https://api.twitter.com/1.1/',
+        'request_token_url': 'https://api.twitter.com/oauth/request_token',
+        'access_token_url': 'https://api.twitter.com/oauth/access_token',
+        'authorize_url': 'https://api.twitter.com/oauth/authenticate'
     }
-]
+}, {
+    'name': 'google',
+    'icon': 'fa-google',
+    'token_key': 'access_token',
+    'remote_app': {
+        'consumer_key': os.environ.get('GOOGLE_KEY'),
+        'consumer_secret': os.environ.get('GOOGLE_SECRET'),
+        'base_url': 'https://www.googleapis.com/oauth2/v2/',
+        'request_token_params': {
+            'scope': 'email profile'
+        },
+        'request_token_url': None,
+        'access_token_url': 'https://accounts.google.com/o/oauth2/token',
+        'authorize_url': 'https://accounts.google.com/o/oauth2/auth'
+    }
+}]
 
 # Uncomment to setup Full admin role name
 #AUTH_ROLE_ADMIN = 'Admin'
@@ -88,13 +92,34 @@ BABEL_DEFAULT_LOCALE = 'en'
 BABEL_DEFAULT_FOLDER = 'translations'
 # The allowed translation for you app
 LANGUAGES = {
-    'en': {'flag':'gb', 'name':'English'},
-    'pt': {'flag':'pt', 'name':'Portuguese'},
-    'pt_BR': {'flag':'br', 'name': 'Pt Brazil'},
-    'es': {'flag':'es', 'name':'Spanish'},
-    'de': {'flag':'de', 'name':'German'},
-    'zh': {'flag':'cn', 'name':'Chinese'},
-    'ru': {'flag':'ru', 'name':'Russian'}
+    'en': {
+        'flag': 'gb',
+        'name': 'English'
+    },
+    'pt': {
+        'flag': 'pt',
+        'name': 'Portuguese'
+    },
+    'pt_BR': {
+        'flag': 'br',
+        'name': 'Pt Brazil'
+    },
+    'es': {
+        'flag': 'es',
+        'name': 'Spanish'
+    },
+    'de': {
+        'flag': 'de',
+        'name': 'German'
+    },
+    'zh': {
+        'flag': 'cn',
+        'name': 'Chinese'
+    },
+    'ru': {
+        'flag': 'ru',
+        'name': 'Russian'
+    }
 }
 #---------------------------------------------------
 # Image and file configuration
@@ -117,13 +142,12 @@ IMG_UPLOAD_URL = '/static/uploads/'
 #APP_THEME = "cerulean.css"
 #APP_THEME = "amelia.css"
 #APP_THEME = "cosmo.css"
-#APP_THEME = "cyborg.css"  
+#APP_THEME = "cyborg.css"
 #APP_THEME = "flatly.css"
 #APP_THEME = "journal.css"
 #APP_THEME = "readable.css"
 #APP_THEME = "simplex.css"
-#APP_THEME = "slate.css"   
+#APP_THEME = "slate.css"
 #APP_THEME = "spacelab.css"
 #APP_THEME = "united.css"
 #APP_THEME = "yeti.css"
-

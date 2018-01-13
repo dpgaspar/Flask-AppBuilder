@@ -6,8 +6,12 @@ from datetime import datetime
 
 log = logging.getLogger(__name__)
 
+
 def get_random_name(names_list, size=1):
-    name_lst = [names_list[random.randrange(0, len(names_list))].capitalize() for i in range(0, size)]
+    name_lst = [
+        names_list[random.randrange(0, len(names_list))].capitalize()
+        for i in range(0, size)
+    ]
     return " ".join(name_lst)
 
 
@@ -28,10 +32,13 @@ try:
     db.session.commit()
 
     sub_groups = list()
-    sub_groups.append(ContactSubGroup(name='Close Friends', contact_group=groups[0]))
-    sub_groups.append(ContactSubGroup(name='Long time no see', contact_group=groups[0]))
+    sub_groups.append(
+        ContactSubGroup(name='Close Friends', contact_group=groups[0]))
+    sub_groups.append(
+        ContactSubGroup(name='Long time no see', contact_group=groups[0]))
     sub_groups.append(ContactSubGroup(name='BBIC', contact_group=groups[1]))
-    sub_groups.append(ContactSubGroup(name='Miniclip', contact_group=groups[1]))
+    sub_groups.append(
+        ContactSubGroup(name='Miniclip', contact_group=groups[1]))
     db.session.add(sub_groups[0])
     db.session.add(sub_groups[1])
     db.session.add(sub_groups[2])
@@ -83,5 +90,3 @@ for i in range(1, 1000):
     except Exception, e:
         log.error("Creating Contact: %s", e)
         db.session.rollback()
-    
-

@@ -7,7 +7,10 @@ from app import db
 
 
 def get_random_name(names_list, size=1):
-    name_lst = [names_list[random.randrange(0, len(names_list))].capitalize() for i in range(0, size)]
+    name_lst = [
+        names_list[random.randrange(0, len(names_list))].capitalize()
+        for i in range(0, size)
+    ]
     return " ".join(name_lst)
 
 
@@ -52,4 +55,3 @@ for i in range(1, 50):
 
 #role_admin = appbuilder.sm.find_role(appbuilder.sm.auth_role_admin)
 #appbuilder.sm.add_user('admin', 'Admin', 'User', 'admin@fab.org', role_admin, 'general')
-

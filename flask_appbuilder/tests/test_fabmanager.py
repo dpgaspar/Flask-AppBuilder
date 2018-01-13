@@ -15,7 +15,6 @@ logging.getLogger().setLevel(logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
-
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):
         pass
@@ -34,5 +33,3 @@ class FlaskTestCase(unittest.TestCase):
         result = runner.invoke(create_app, input='myapp\nMongoEngine\n')
         ok_('Downloaded the skeleton app, good coding!' in result.output)
         shutil.rmtree('myapp')
-
-

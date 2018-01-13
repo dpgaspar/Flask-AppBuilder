@@ -4,12 +4,22 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 CSRF_ENABLED = True
 SECRET_KEY = '\2\1thisismyscretkey\1\2\e\y\y\h'
 
-OPENID_PROVIDERS = [
-    { 'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id' },
-    { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
-    { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
-    { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
-    { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }]
+OPENID_PROVIDERS = [{
+    'name': 'Google',
+    'url': 'https://www.google.com/accounts/o8/id'
+}, {
+    'name': 'Yahoo',
+    'url': 'https://me.yahoo.com'
+}, {
+    'name': 'AOL',
+    'url': 'http://openid.aol.com/<username>'
+}, {
+    'name': 'Flickr',
+    'url': 'http://www.flickr.com/<username>'
+}, {
+    'name': 'MyOpenID',
+    'url': 'https://www.myopenid.com'
+}]
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 #SQLALCHEMY_DATABASE_URI = 'mysql://myapp@localhost/myapp'
@@ -25,11 +35,15 @@ MAX_SEARCH_RESULTS = 50
 BABEL_DEFAULT_LOCALE = 'en'
 
 LANGUAGES = {
-    'en': {'flag':'gb', 'name':'English'},
-    'pt': {'flag':'pt', 'name':'Portugal'}
+    'en': {
+        'flag': 'gb',
+        'name': 'English'
+    },
+    'pt': {
+        'flag': 'pt',
+        'name': 'Portugal'
+    }
 }
-
-
 
 #------------------------------
 # GLOBALS FOR GENERAL APP's
@@ -41,7 +55,7 @@ AUTH_TYPE = 1
 AUTH_ROLE_ADMIN = 'Admin'
 AUTH_ROLE_PUBLIC = 'Public'
 APP_NAME = "My App 0.2"
-APP_THEME = ""                  # default
+APP_THEME = ""  # default
 #APP_THEME = "cerulean.css"      # COOL
 #APP_THEME = "amelia.css"
 #APP_THEME = "cosmo.css"

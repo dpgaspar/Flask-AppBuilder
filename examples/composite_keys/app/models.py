@@ -26,7 +26,8 @@ class Datacenter(Model):
 
 class Rack(Model):
     num = Column(Integer, primary_key=True)
-    datacenter_id = Column(Integer, ForeignKey('datacenter.id'), primary_key=True, nullable=False)
+    datacenter_id = Column(
+        Integer, ForeignKey('datacenter.id'), primary_key=True, nullable=False)
     datacenter = relationship("Datacenter")
 
     def __repr__(self):
@@ -34,9 +35,15 @@ class Rack(Model):
 
 
 class Inventory(Model):
-    item_id = Column(Integer, ForeignKey('item.id'), primary_key=True, nullable=False)
+    item_id = Column(
+        Integer, ForeignKey('item.id'), primary_key=True, nullable=False)
     item = relationship("Item")
-    rack_num = Column(Integer, ForeignKey('rack.num'), primary_key=True, nullable=False)
-    rack_datacenter_id = Column(Integer, ForeignKey('rack.datacenter_id'), nullable=False)
-    rack = relationship('Rack',
-                        primaryjoin="and_(Inventory.rack_num==Rack.num, Inventory.rack_datacenter_id==Rack.datacenter_id)")
+    rack_num = Column(
+        Integer, ForeignKey('rack.num'), primary_key=True, nullable=False)
+    rack_datacenter_id = Column(
+        Integer, ForeignKey('rack.datacenter_id'), nullable=False)
+    rack = relationship(
+        'Rack',
+        primaryjoin=
+        "and_(Inventory.rack_num==Rack.num, Inventory.rack_datacenter_id==Rack.datacenter_id)"
+    )

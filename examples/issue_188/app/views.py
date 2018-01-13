@@ -4,7 +4,6 @@ from flask_appbuilder import ModelView
 from flask_appbuilder.actions import action
 from models import Job
 from app import appbuilder, db
-
 """
     Create your Views::
 
@@ -21,16 +20,26 @@ from app import appbuilder, db
 
 db.create_all()
 
+
 class JobModelView(ModelView):
     datamodel = SQLAInterface(Job)
 
-    list_columns = ['name','start_time','PAYLOAD']
+    list_columns = ['name', 'start_time', 'PAYLOAD']
     #add_columns = ['name', 'PAYLOAD']
     add_columns = []
     show_fieldsets = [
-        ('Summary',{'fields':['name','PAYLOAD']}),
-        ('Job Info',{'fields':['module_type', 'start_time','SRVHOST','SRVPORT','LHOST','LPORT'],'expanded':False}),
-        ]
+        ('Summary', {
+            'fields': ['name', 'PAYLOAD']
+        }),
+        ('Job Info', {
+            'fields': [
+                'module_type', 'start_time', 'SRVHOST', 'SRVPORT', 'LHOST',
+                'LPORT'
+            ],
+            'expanded':
+            False
+        }),
+    ]
 
     @action("job_kill", "Kill", "Kill all selected?", "fa-rocket")
     def kill(self, items):
@@ -40,9 +49,9 @@ class JobModelView(ModelView):
                 flash(str(item.id), "info")
                 flash(str(result), "info")
         else:
-                result = "test result"
-                flash(str(items.id), "info")
-                flash(str(result), "info")
+            result = "test result"
+            flash(str(items.id), "info")
+            flash(str(result), "info")
         self.update_redirect()
         return redirect(self.get_redirect())
 
@@ -51,5 +60,10 @@ class JobModelView(ModelView):
         print "stopping"
         return redirect(self.get_redirect())
 
-appbuilder.add_view(JobModelView, "List Jobs",icon = "fa-folder-open-o",category = "Contacts",
-                category_icon = "fa-envelope")
+
+appbuilder.add_view(
+    JobModelView,
+    "List Jobs",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon="fa-envelope")

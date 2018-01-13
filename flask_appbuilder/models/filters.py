@@ -88,7 +88,9 @@ class BaseFilterConverter(object):
     def convert(self, col_name):
         for conversion in self.conversion_table:
             if getattr(self.datamodel, conversion[0])(col_name):
-                return [item(col_name, self.datamodel) for item in conversion[1]]
+                return [
+                    item(col_name, self.datamodel) for item in conversion[1]
+                ]
         log.warning('Filter type not supported for column: %s' % col_name)
 
 
@@ -136,14 +138,16 @@ class Filters(object):
         self.values.append(value)
 
     def add_filter_index(self, column_name, filter_instance_index, value):
-        self._add_filter(self._all_filters[column_name][filter_instance_index], value)
+        self._add_filter(self._all_filters[column_name][filter_instance_index],
+                         value)
 
     def add_filter(self, column_name, filter_class, value):
         self._add_filter(filter_class(column_name, self.datamodel), value)
         return self
 
     def add_filter_related_view(self, column_name, filter_class, value):
-        self._add_filter(filter_class(column_name, self.datamodel, True), value)
+        self._add_filter(
+            filter_class(column_name, self.datamodel, True), value)
         return self
 
     def add_filter_list(self, active_filter_list=None):
@@ -200,7 +204,8 @@ class Filters(object):
                 return value
 
     def get_filters_values_tojson(self):
-        return [(flt.column_name, as_unicode(flt.name), value) for flt, value in zip(self.filters, self.values)]
+        return [(flt.column_name, as_unicode(flt.name), value)
+                for flt, value in zip(self.filters, self.values)]
 
     def apply_all(self, query):
         for flt, value in zip(self.filters, self.values):
@@ -210,5 +215,6 @@ class Filters(object):
     def __repr__(self):
         retstr = "FILTERS \n"
         for flt, value in self.get_filters_values():
-            retstr = retstr + "%s.%s:%s\n" % (flt.model.__table__, str(flt.column_name), str(value))
+            retstr = retstr + "%s.%s:%s\n" % (flt.model.__table__,
+                                              str(flt.column_name), str(value))
         return retstr

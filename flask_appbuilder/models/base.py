@@ -22,16 +22,17 @@ class BaseInterface(object):
 
     filter_converter_class = None
     """ when sub classing override with your own custom filter converter """
-
     """ Messages to display on CRUD Events """
     add_row_message = lazy_gettext('Added Row')
     edit_row_message = lazy_gettext('Changed Row')
     delete_row_message = lazy_gettext('Deleted Row')
-    delete_integrity_error_message = lazy_gettext('Associated data exists, please delete them first')
-    add_integrity_error_message = lazy_gettext('Integrity error, probably unique constraint')
-    edit_integrity_error_message = lazy_gettext('Integrity error, probably unique constraint')
+    delete_integrity_error_message = lazy_gettext(
+        'Associated data exists, please delete them first')
+    add_integrity_error_message = lazy_gettext(
+        'Integrity error, probably unique constraint')
+    edit_integrity_error_message = lazy_gettext(
+        'Integrity error, probably unique constraint')
     general_error_message = lazy_gettext('General Error')
-
     """ Tuple with message and text with severity type ex: ("Added Row", "info") """
     message = ()
 
@@ -121,7 +122,8 @@ class BaseInterface(object):
         result = []
         for item in self.get_values(lst, list_columns):
             for key, value in list(item.items()):
-                if isinstance(value, datetime.datetime) or isinstance(value, datetime.date):
+                if isinstance(value, datetime.datetime) or isinstance(
+                        value, datetime.date):
                     value = value.isoformat()
                     item[key] = value
                 if isinstance(value, list):
@@ -133,6 +135,7 @@ class BaseInterface(object):
         Returns the models class name
         useful for auto title on views
     """
+
     @property
     def model_name(self):
         return self.obj.__class__.__name__
@@ -140,8 +143,13 @@ class BaseInterface(object):
     """
         Next methods must be overridden
     """
-    def query(self, filters=None, order_column='', order_direction='',
-              page=None, page_size=None):
+
+    def query(self,
+              filters=None,
+              order_column='',
+              order_direction='',
+              page=None,
+              page_size=None):
         pass
 
     def is_image(self, col_name):
@@ -327,6 +335,3 @@ class BaseInterface(object):
 
     def get_relation_fk(self, prop):
         pass
-
-
-

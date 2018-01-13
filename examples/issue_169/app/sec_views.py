@@ -9,24 +9,44 @@ class MyUserDBModelView(UserDBModelView):
         Then override userdbmodelview property on SecurityManager
     """
     show_fieldsets = [
-        (lazy_gettext('User info'),
-         {'fields': ['username', 'active', 'roles', 'login_count', 'domain', 'group']}),
-        (lazy_gettext('Personal Info'),
-         {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
-        (lazy_gettext('Audit Info'),
-         {'fields': ['last_login', 'fail_login_count', 'created_on',
-                     'created_by', 'changed_on', 'changed_by'], 'expanded': False}),
+        (lazy_gettext('User info'), {
+            'fields':
+            ['username', 'active', 'roles', 'login_count', 'domain', 'group']
+        }),
+        (lazy_gettext('Personal Info'), {
+            'fields': ['first_name', 'last_name', 'email'],
+            'expanded': True
+        }),
+        (lazy_gettext('Audit Info'), {
+            'fields': [
+                'last_login', 'fail_login_count', 'created_on', 'created_by',
+                'changed_on', 'changed_by'
+            ],
+            'expanded':
+            False
+        }),
     ]
 
     user_show_fieldsets = [
-        (lazy_gettext('User info'),
-         {'fields': ['username', 'active', 'roles', 'login_count', 'domain', 'group']}),
-        (lazy_gettext('Personal Info'),
-         {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
+        (lazy_gettext('User info'), {
+            'fields':
+            ['username', 'active', 'roles', 'login_count', 'domain', 'group']
+        }),
+        (lazy_gettext('Personal Info'), {
+            'fields': ['first_name', 'last_name', 'email'],
+            'expanded': True
+        }),
     ]
 
-    add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'domain', 'group', 'password', 'conf_password']
-    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles', 'domain','group']
-    edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'domain', 'group']
-
-
+    add_columns = [
+        'first_name', 'last_name', 'username', 'active', 'email', 'roles',
+        'domain', 'group', 'password', 'conf_password'
+    ]
+    list_columns = [
+        'first_name', 'last_name', 'username', 'email', 'active', 'roles',
+        'domain', 'group'
+    ]
+    edit_columns = [
+        'first_name', 'last_name', 'username', 'active', 'email', 'roles',
+        'domain', 'group'
+    ]

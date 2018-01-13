@@ -6,5 +6,11 @@ from flask_appbuilder.forms import DynamicForm
 
 
 class TestForm(DynamicForm):
-    TestFieldOne = StringField(lazy_gettext('Test Field One'), validators=[DataRequired()], widget=BS3TextFieldWidget())
-    TestFieldTwo = StringField(lazy_gettext('Test Field One'), validators=[DataRequired()], widget=BS3TextFieldWidget())
+    TestFieldOne = StringField(
+        lazy_gettext('Test Field One'),
+        validators=[DataRequired()],
+        widget=BS3TextFieldWidget())
+    TestFieldTwo = StringField(
+        lazy_gettext('Test Field One'),
+        validators=[DataRequired()],
+        widget=BS3TextFieldWidget())

@@ -8,8 +8,8 @@ class ProjectFilesModelView(ModelView):
     datamodel = SQLAInterface(ProjectFiles)
 
     label_columns = {'file_name': 'File Name', 'download': 'Download'}
-    add_columns = ['file', 'description','project']
-    edit_columns = ['file', 'description','project']
+    add_columns = ['file', 'description', 'project']
+    edit_columns = ['file', 'description', 'project']
     list_columns = ['file_name', 'download']
     show_columns = ['file_name', 'download']
 
@@ -23,13 +23,18 @@ class ProjectModelView(CompactCRUDMixin, ModelView):
 
     add_columns = ['name']
     edit_columns = ['name']
-    list_columns = ['name', 'created_by', 'created_on', 'changed_by', 'changed_on']
-    show_fieldsets = [
-        ('Info', {'fields': ['name']}),
-        ('Audit', {'fields': ['created_by', 'created_on', 'changed_by', 'changed_on'], 'expanded': False})
+    list_columns = [
+        'name', 'created_by', 'created_on', 'changed_by', 'changed_on'
     ]
+    show_fieldsets = [('Info', {
+        'fields': ['name']
+    }), ('Audit', {
+        'fields': ['created_by', 'created_on', 'changed_by', 'changed_on'],
+        'expanded': False
+    })]
 
 
 db.create_all()
-appbuilder.add_view(ProjectModelView, "List Projects", icon="fa-table", category="Projects")
+appbuilder.add_view(
+    ProjectModelView, "List Projects", icon="fa-table", category="Projects")
 appbuilder.add_view_no_menu(ProjectFilesModelView)

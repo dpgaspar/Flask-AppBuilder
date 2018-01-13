@@ -17,16 +17,25 @@ class MyFormView(SimpleFormView):
         # post process form
         flash(self.message, 'info')
 
-appbuilder.add_view(MyFormView, "My form View", icon="fa-group", label=_('My form View'),
-                     category="My Forms", category_icon="fa-cogs")
 
+appbuilder.add_view(
+    MyFormView,
+    "My form View",
+    icon="fa-group",
+    label=_('My form View'),
+    category="My Forms",
+    category_icon="fa-cogs")
 """
     Application wide 404 error handler
 """
+
+
 @appbuilder.app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html', base_template=appbuilder.base_template, appbuilder=appbuilder), 404
+    return render_template(
+        '404.html',
+        base_template=appbuilder.base_template,
+        appbuilder=appbuilder), 404
+
 
 db.create_all()
-
-

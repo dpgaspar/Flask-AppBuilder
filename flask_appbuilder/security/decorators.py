@@ -7,7 +7,7 @@ from ..const import LOGMSG_ERR_SEC_ACCESS_DENIED, FLAMSG_ERR_SEC_ACCESS_DENIED, 
 
 log = logging.getLogger(__name__)
 
-        
+
 def has_access(f):
     """
         Use this decorator to enable granular security permissions to your methods.
@@ -22,12 +22,18 @@ def has_access(f):
 
     def wraps(self, *args, **kwargs):
         permission_str = PERMISSION_PREFIX + f._permission_name
-        if self.appbuilder.sm.has_access(permission_str, self.__class__.__name__):
+        if self.appbuilder.sm.has_access(permission_str,
+                                         self.__class__.__name__):
             return f(self, *args, **kwargs)
         else:
-            log.warning(LOGMSG_ERR_SEC_ACCESS_DENIED.format(permission_str, self.__class__.__name__))
+            log.warning(
+                LOGMSG_ERR_SEC_ACCESS_DENIED.format(permission_str,
+                                                    self.__class__.__name__))
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
-        return redirect(url_for(self.appbuilder.sm.auth_view.__class__.__name__ + ".login"))
+        return redirect(
+            url_for(
+                self.appbuilder.sm.auth_view.__class__.__name__ + ".login"))
+
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
 
@@ -48,15 +54,24 @@ def has_access_api(f):
 
     def wraps(self, *args, **kwargs):
         permission_str = PERMISSION_PREFIX + f._permission_name
-        if self.appbuilder.sm.has_access(permission_str, self.__class__.__name__):
+        if self.appbuilder.sm.has_access(permission_str,
+                                         self.__class__.__name__):
             return f(self, *args, **kwargs)
         else:
-            log.warning(LOGMSG_ERR_SEC_ACCESS_DENIED.format(permission_str, self.__class__.__name__))
-            response = make_response(jsonify({'message': str(FLAMSG_ERR_SEC_ACCESS_DENIED),
-                                              'severity': 'danger'}), 401)
+            log.warning(
+                LOGMSG_ERR_SEC_ACCESS_DENIED.format(permission_str,
+                                                    self.__class__.__name__))
+            response = make_response(
+                jsonify({
+                    'message': str(FLAMSG_ERR_SEC_ACCESS_DENIED),
+                    'severity': 'danger'
+                }), 401)
             response.headers['Content-Type'] = "application/json"
             return response
-        return redirect(url_for(self.appbuilder.sm.auth_view.__class__.__name__ + ".login"))
+        return redirect(
+            url_for(
+                self.appbuilder.sm.auth_view.__class__.__name__ + ".login"))
+
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
 
@@ -96,9 +111,9 @@ def permission_name(name):
         :param name:
             The name of the permission to override
     """
+
     def wraps(f):
         f._permission_name = name
         return f
+
     return wraps
-
-
