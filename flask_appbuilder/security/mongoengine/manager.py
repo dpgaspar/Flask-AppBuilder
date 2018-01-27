@@ -188,11 +188,19 @@ class SecurityManager(BaseSecurityManager):
                 name of the permission: 'can_add','can_edit' etc...
         """
         perm = self.find_permission(name)
-        if perm:
-            try:
-                perm.delete()
-            except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
+        if not perm: return
+
+        # first remove all related PermissionView
+        try:
+            for pv in self.permissionview_model.objects(permission=perm):
+                pv.delete()
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
+
+        try:
+            perm.delete()
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
 
     """
     ----------------------
@@ -232,11 +240,19 @@ class SecurityManager(BaseSecurityManager):
                 name of the ViewMenu
         """
         obj = self.find_view_menu(name)
-        if obj:
-            try:
-                obj.delete()
-            except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
+        if not obj: return
+
+        # first remove all related PermissionView
+        try:
+            for pv in self.find_permissions_view_menu(obj):
+                pv.delete()
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
+
+        try:
+            obj.delete()
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
 
     """
     ----------------------
