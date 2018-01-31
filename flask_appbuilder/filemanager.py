@@ -85,6 +85,7 @@ class ImageManager(FileManager):
     """
 
     keep_image_formats = ('PNG',)
+    max_size=None
 
     def __init__(self, base_path=None,
                  relative_path=None,
