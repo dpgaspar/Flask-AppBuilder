@@ -348,8 +348,7 @@ class SecurityManager(BaseSecurityManager):
             self.get_session.delete(pv)
             self.get_session.commit()
             # if no more permission on permission view, delete permission
-            pv = self.get_session.query(self.permissionview_model).filter_by(permission=pv.permission).all()
-            if not pv:
+            if not self.get_session.query(self.permissionview_model).filter_by(permission=pv.permission).all():
                 self.del_permission(pv.permission.name)
             log.info(c.LOGMSG_INF_SEC_DEL_PERMVIEW.format(permission_name, view_menu_name))
         except Exception as e:
