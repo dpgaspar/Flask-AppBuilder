@@ -492,7 +492,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         user.password = generate_password_hash(password)
         self.update_user(user)
 
-    def update_user_auth_stat(self, user, success=True, logged_out=False):
+    def update_user_auth_stat(self, user, success=True):
         """
             Update authentication successful to user.
 
@@ -509,8 +509,6 @@ class BaseSecurityManager(AbstractSecurityManager):
             user.isOnline = True
             user.login_count += 1
             user.fail_login_count = 0
-        if logged_out:
-            user.isOnline = False
         else:
             user.fail_login_count += 1
         user.last_login = datetime.datetime.now()

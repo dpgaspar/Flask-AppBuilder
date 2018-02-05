@@ -366,6 +366,10 @@ class AuthView(BaseView):
     @expose('/logout/')
     def logout(self):
         logout_user()
+        # Change isOnline to False
+        item = self.appbuilder.sm.get_user_by_id(g.user.id)
+        item.isOnline = False
+        self.appbuilder.sm.update_user(item)
         return redirect(self.appbuilder.get_url_for_index)
 
 
