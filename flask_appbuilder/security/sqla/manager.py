@@ -147,6 +147,7 @@ class SecurityManager(BaseSecurityManager):
             user.username = username
             user.email = email
             user.active = True
+            user.isOnline = False
             user.roles.append(role)
             if hashed_password:
                 user.password = hashed_password

@@ -81,6 +81,7 @@ class User(Model):
     username = Column(String(64), unique=True, nullable=False)
     password = Column(String(256))
     active = Column(Boolean)
+    isOnline = Column(Boolean, nullable=True)
     email = Column(String(64), unique=True, nullable=False)
     last_login = Column(DateTime)
     login_count = Column(Integer)
