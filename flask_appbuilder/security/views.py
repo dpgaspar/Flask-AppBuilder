@@ -374,7 +374,7 @@ class AuthDBView(AuthView):
 
     @expose('/login/', methods=['GET', 'POST'])
     def login(self):
-        if g.user is not None and g.user.is_authenticated:
+        if g.user is not None and g.user.is_authenticated():
             return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_db()
         if form.validate_on_submit():
@@ -395,7 +395,7 @@ class AuthLDAPView(AuthView):
 
     @expose('/login/', methods=['GET', 'POST'])
     def login(self):
-        if g.user is not None and g.user.is_authenticated:
+        if g.user is not None and g.user.is_authenticated():
             return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_db()
         if form.validate_on_submit():
@@ -493,7 +493,7 @@ class AuthOAuthView(AuthView):
     @expose('/login/<provider>/<register>')
     def login(self, provider=None, register=None):
         log.debug('Provider: {0}'.format(provider))
-        if g.user is not None and g.user.is_authenticated:
+        if g.user is not None and g.user.is_authenticated():
             log.debug("Already authenticated {0}".format(g.user))
             return redirect(self.appbuilder.get_url_for_index)
         if provider is None:
@@ -559,7 +559,7 @@ class AuthRemoteUserView(AuthView):
     @expose('/login/')
     def login(self):
         username = request.environ.get('REMOTE_USER')
-        if g.user is not None and g.user.is_authenticated:
+        if g.user is not None and g.user.is_authenticated():
             return redirect(self.appbuilder.get_url_for_index)
         if username:
             user = self.appbuilder.sm.auth_user_remote_user(username)
