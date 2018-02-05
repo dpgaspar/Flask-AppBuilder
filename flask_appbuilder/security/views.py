@@ -365,9 +365,8 @@ class AuthView(BaseView):
 
     @expose('/logout/')
     def logout(self):
-        logout_user()
-        # Change isOnline to False
         item = self.appbuilder.sm.get_user_by_id(g.user.id)
+        logout_user()
         item.isOnline = False
         self.appbuilder.sm.update_user(item)
         return redirect(self.appbuilder.get_url_for_index)
@@ -402,13 +401,15 @@ class AuthLDAPView(AuthView):
         if g.user is not None and g.user.is_authenticated():
             return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_db()
-        if form.validate_on_submit():
-            user = self.appbuilder.sm.auth_user_ldap(form.username.data, form.password.data)
-            if not user:
-                flash(as_unicode(self.invalid_login_message), 'warning')
-                return redirect(self.appbuilder.get_url_for_login)
-            login_user(user, remember=False)
-            return redirect(self.appbuilder.get_url_for_index)
+        online_users_count = self.appbuilder.sm.count_online_users()
+        if online_users_count <= 20:
+            if form.validate_on_submit():
+                user = self.appbuilder.sm.auth_user_ldap(form.username.data, form.password.data)
+                if not user:
+                    flash(as_unicode(self.invalid_login_message), 'warning')
+                    return redirect(self.appbuilder.get_url_for_login)
+                login_user(user, remember=False)
+                return redirect(self.appbuilder.get_url_for_index)
         return self.render_template(self.login_template,
                                title=self.title,
                                form=form,

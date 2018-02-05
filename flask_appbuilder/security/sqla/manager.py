@@ -164,6 +164,9 @@ class SecurityManager(BaseSecurityManager):
     def count_users(self):
         return self.get_session.query(func.count('*')).select_from(self.user_model).scalar()
 
+    def count_online_users(self):
+        return self.get_session.query(func.count('*')).select_from(self.user_model).filter_by(isOnline=True).scalar()
+
     def update_user(self, user):
         try:
             self.get_session.merge(user)
