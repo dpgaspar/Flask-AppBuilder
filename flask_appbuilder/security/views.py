@@ -356,6 +356,7 @@ class AuthView(BaseView):
     login_template = ''
 
     invalid_login_message = lazy_gettext('Invalid login. Please try again.')
+    user_limit_exceeded_message = lazy_gettext('Online users limit exceeded. Please try again later or contact admin.')
 
     title = lazy_gettext('Sign In')
 
@@ -402,14 +403,16 @@ class AuthLDAPView(AuthView):
             return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_db()
         online_users_count = self.appbuilder.sm.count_online_users()
-        if online_users_count <= 20:
-            if form.validate_on_submit():
+        if form.validate_on_submit():
+            if online_users_count <= self.appbuilder.get_app.config['MAXIMUM_ONLINE_USER']:
                 user = self.appbuilder.sm.auth_user_ldap(form.username.data, form.password.data)
                 if not user:
                     flash(as_unicode(self.invalid_login_message), 'warning')
                     return redirect(self.appbuilder.get_url_for_login)
                 login_user(user, remember=False)
                 return redirect(self.appbuilder.get_url_for_index)
+            flash(as_unicode(self.user_limit_exceeded_message), 'warning')
+            return redirect(self.appbuilder.get_url_for_login)
         return self.render_template(self.login_template,
                                title=self.title,
                                form=form,
