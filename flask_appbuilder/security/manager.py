@@ -246,12 +246,12 @@ class BaseSecurityManager(AbstractSecurityManager):
             for key in redis_client.hgetall(app.config['REDIS_KEY']).keys():
                 idle_time = now - int(redis_client.hget(app.config['REDIS_KEY'], key))
                 if idle_time > (app.config['REMEMBER_COOKIE_DURATION'].total_seconds() * 1000):
-                    redis_client.hdel(app.config['REDIS_KEY'], key)
                     user = self.get_user_by_id(key)
-                    log.info('User "' + str(user.email) + '" logged off.')
+                    print('User "' + str(user.email) + '" logged off.')
                     if user.isOnline:
                         user.isOnline = False
                         self.update_user(user)
+                    redis_client.hdel(app.config['REDIS_KEY'], key)
 
         try:
             thread = setInterval(check_online_user, int(app.config['CHACKING_ONLINE_USER_INTERVAL_SEC']), self)
