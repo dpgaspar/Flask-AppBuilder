@@ -180,6 +180,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         app = self.appbuilder.get_app
         # Base Security Config
         app.config.setdefault('MAXIMUM_ONLINE_USER', 20)
+        app.config.setdefault('CHACKING_ONLINE_USER_INTERVAL_SEC', 5)
         app.config.setdefault('REDIS_KEY', 'active_users')
         app.config.setdefault('REDIS_HOST', '127.0.0.1')
         app.config.setdefault('REDIS_PORT', 6379)
@@ -253,7 +254,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                         self.update_user(user)
 
         try:
-            thread = setInterval(check_online_user, 2, self)
+            thread = setInterval(check_online_user, int(app.config['CHACKING_ONLINE_USER_INTERVAL_SEC']), self)
         except KeyboardInterrupt:
             thread.cancel()
 
