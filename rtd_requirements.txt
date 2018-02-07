@@ -2,6 +2,7 @@ sphinxcontrib-blockdiag>=1.5.0
 sphinx-rtd-theme>=0.2.4
 colorama>=0.3
 click>=3.0
+redis==2.10.6
 Flask>=0.10
 Flask-Babel>=0.10
 Flask-Login==0.2.11

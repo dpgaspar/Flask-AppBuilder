@@ -1,5 +1,8 @@
 import datetime
+import time
 import logging
+import redis
+import threading
 from flask import url_for, g, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, current_user
@@ -19,8 +22,18 @@ from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
                     LOGMSG_WAR_SEC_NOLDAP_OBJ, \
                     LOGMSG_WAR_SEC_LOGIN_FAILED
 
+current_time = lambda: int(round(time.time() * 1000))
 log = logging.getLogger(__name__)
+redis_client = None
 
+def setInterval(func, second, self):
+    def funcWrapper():
+        func(self)
+        setInterval(func, second, self)
+    
+    thread = threading.Timer(second, funcWrapper)
+    thread.start()
+    return thread
 
 class AbstractSecurityManager(BaseManager):
     """
@@ -167,6 +180,11 @@ class BaseSecurityManager(AbstractSecurityManager):
         app = self.appbuilder.get_app
         # Base Security Config
         app.config.setdefault('MAXIMUM_ONLINE_USER', 20)
+        app.config.setdefault('REDIS_KEY', 'active_users')
+        app.config.setdefault('REDIS_HOST', '127.0.0.1')
+        app.config.setdefault('REDIS_PORT', 6379)
+        app.config.setdefault('REDIS_DB', 0)
+        app.config.setdefault('REMEMBER_COOKIE_DURATION', datetime.timedelta(minutes=15))
         app.config.setdefault('AUTH_ROLE_ADMIN', 'Admin')
         app.config.setdefault('AUTH_ROLE_PUBLIC', 'Public')
         app.config.setdefault('AUTH_TYPE', AUTH_DB)
@@ -211,6 +229,33 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.lm = LoginManager(app)
         self.lm.login_view = 'login'
         self.lm.user_loader(self.load_user)
+
+        redis_host = self.appbuilder.get_app.config['REDIS_HOST']
+        redis_port = self.appbuilder.get_app.config['REDIS_PORT']
+        redis_db = self.appbuilder.get_app.config['REDIS_DB']
+        redis_client = redis.StrictRedis(host=redis_host, port=redis_port, db=redis_db)
+
+        @app.before_request
+        def before_request():
+            if current_user.is_authenticated():
+                redis_client.hset(app.config['REDIS_KEY'], str(session.get('user_id')), str(current_time()))
+
+        def check_online_user(self):
+            now = current_time()
+            for key in redis_client.hgetall(app.config['REDIS_KEY']).keys():
+                idle_time = now - int(redis_client.hget(app.config['REDIS_KEY'], key))
+                if idle_time > (app.config['REMEMBER_COOKIE_DURATION'].total_seconds() * 1000):
+                    redis_client.hdel(app.config['REDIS_KEY'], key)
+                    user = self.get_user_by_id(key)
+                    log.info('User "' + str(user.email) + '" logged off.')
+                    if user.isOnline:
+                        user.isOnline = False
+                        self.update_user(user)
+
+        try:
+            thread = setInterval(check_online_user, 2, self)
+        except KeyboardInterrupt:
+            thread.cancel()
 
     @property
     def get_url_for_registeruser(self):

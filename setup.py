@@ -36,6 +36,7 @@ setup(
     install_requires=[
         'colorama==0.3.9',
         'click==6.7',
+        'redis==2.10.6',
         'Flask>=0.12.1,<0.12.99',
         'Flask-Babel==0.11.1',  # known issues with 0.11.2
         'Flask-Login==0.2.11',
