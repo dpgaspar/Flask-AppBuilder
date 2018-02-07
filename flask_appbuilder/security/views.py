@@ -1,6 +1,7 @@
 import re
 import datetime
 import logging
+import math
 from flask import flash, redirect, session, url_for, request, g, make_response, jsonify, abort
 from werkzeug.security import generate_password_hash
 from wtforms import validators, PasswordField
@@ -20,6 +21,8 @@ from .decorators import has_access
 
 log = logging.getLogger(__name__)
 
+def coverge_sec_to_min(sec):
+    return int(math.ceil(sec / 60))
 
 class PermissionModelView(ModelView):
     route_base = '/permissions'
@@ -411,7 +414,7 @@ class AuthLDAPView(AuthView):
                     flash(as_unicode(self.invalid_login_message), 'warning')
                     return redirect(self.appbuilder.get_url_for_login)
                 elif user == 'ALREADY_LOGGED_IN':
-                    already_logged_in_message = lazy_gettext('Please login again after logout from other computer or waiting for session expired in ' + str(self.appbuilder.get_app.config['REMEMBER_COOKIE_DURATION']) + '.')
+                    already_logged_in_message = lazy_gettext('Please login again after logout from other computer or waiting for session expired in ' + str(coverge_sec_to_min(self.appbuilder.get_app.config['REMEMBER_COOKIE_DURATION'].total_seconds())) + ' minutes.')
                     flash(as_unicode(already_logged_in_message), 'warning')
                     return redirect(self.appbuilder.get_url_for_login)
                 login_user(user, remember=False)
