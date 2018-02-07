@@ -130,6 +130,7 @@ class UserModelView(ModelView):
                      'active': lazy_gettext('Is Active?'),
                      'email': lazy_gettext('EMail'),
                      'roles': lazy_gettext('Role'),
+                     'isOnline': lazy_gettext('Is Online?'),
                      'last_login': lazy_gettext('Last login'),
                      'login_count': lazy_gettext('Login count'),
                      'fail_login_count': lazy_gettext('Failed login count'),
@@ -150,7 +151,7 @@ class UserModelView(ModelView):
                                'The user role on the application, this will associate with a list of permissions'),
                            'conf_password': lazy_gettext('Please rewrite the user\'s password to confirm')}
 
-    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles']
+    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles', 'isOnline']
 
     show_fieldsets = [
         (lazy_gettext('User info'),
