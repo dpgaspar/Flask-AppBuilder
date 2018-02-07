@@ -366,10 +366,11 @@ class AuthView(BaseView):
 
     @expose('/logout/')
     def logout(self):
-        item = self.appbuilder.sm.get_user_by_id(g.user.id)
+        if g.user.is_authenticated():
+            item = self.appbuilder.sm.get_user_by_id(g.user.id)
+            item.isOnline = False
+            self.appbuilder.sm.update_user(item)
         logout_user()
-        item.isOnline = False
-        self.appbuilder.sm.update_user(item)
         return redirect(self.appbuilder.get_url_for_index)
 
 
@@ -408,6 +409,10 @@ class AuthLDAPView(AuthView):
                 user = self.appbuilder.sm.auth_user_ldap(form.username.data, form.password.data)
                 if not user:
                     flash(as_unicode(self.invalid_login_message), 'warning')
+                    return redirect(self.appbuilder.get_url_for_login)
+                elif user == 'ALREADY_LOGGED_IN':
+                    already_logged_in_message = lazy_gettext('Please login again after logout from other computer or waiting for session expired in ' + str(self.appbuilder.get_app.config['REMEMBER_COOKIE_DURATION']) + '.')
+                    flash(as_unicode(already_logged_in_message), 'warning')
                     return redirect(self.appbuilder.get_url_for_login)
                 login_user(user, remember=False)
                 return redirect(self.appbuilder.get_url_for_index)

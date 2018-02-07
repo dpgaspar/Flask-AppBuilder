@@ -28,9 +28,9 @@ redis_client = None
 
 def setInterval(func, second, self):
     def funcWrapper():
-        func(self)
         setInterval(func, second, self)
-    
+        func(self)
+
     thread = threading.Timer(second, funcWrapper)
     thread.start()
     return thread
@@ -255,7 +255,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         try:
             thread = setInterval(check_online_user, int(app.config['CHACKING_ONLINE_USER_INTERVAL_SEC']), self)
-        except KeyboardInterrupt:
+        except SystemExit:
             thread.cancel()
 
     @property
@@ -669,6 +669,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         user = self.find_user(username=username)
         if user is not None and (not user.is_active()):
             return None
+        if user.isOnline:
+            return 'ALREADY_LOGGED_IN'
         else:
             try:
                 import ldap
