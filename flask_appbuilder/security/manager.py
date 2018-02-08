@@ -178,6 +178,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         super(BaseSecurityManager, self).__init__(appbuilder)
         app = self.appbuilder.get_app
         # Base Security Config
+        app.config.setdefault('MAXIMUM_USER', 50)
         app.config.setdefault('MAXIMUM_ONLINE_USER', 20)
         app.config.setdefault('CHACKING_ONLINE_USER_INTERVAL_SEC', 5)
         app.config.setdefault('REDIS_KEY', 'active_users')
@@ -283,6 +284,10 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_type(self):
         return self.appbuilder.get_app.config['AUTH_TYPE']
+
+    @property
+    def maximum_user():
+        return self.appbuilder.get_app.config['MAXIMUM_USER']
 
     @property
     def maximum_online_user(self):

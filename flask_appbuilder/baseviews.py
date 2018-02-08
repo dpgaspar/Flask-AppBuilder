@@ -1118,11 +1118,9 @@ class BaseCRUDView(BaseModelView):
         pass
 
     def pre_add(self, item):
-        """
-            Override this, will be called before add.
-            If an exception is raised by this method,
-            the message is shown to the user and the add operation is aborted.
-        """
+        if type(item) == self.appbuilder.sm.user_model:
+            if self.appbuilder.sm.count_users() >= self.appbuilder.get_app.config['MAXIMUM_USER']:
+                raise Exception('Add users error. Maximum user exceeded.')
         pass
 
     def post_add(self, item):
