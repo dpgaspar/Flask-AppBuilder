@@ -255,7 +255,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             now = current_time()
             for key in redis_client.hgetall(app.config['REDIS_KEY']).keys():
                 idle_time = now - int(redis_client.hget(app.config['REDIS_KEY'], key))
-                # print_idle_time(key, idle_time)
+                print_idle_time(key, idle_time)
                 if idle_time > (app.config['REMEMBER_COOKIE_DURATION'].total_seconds() * 1000):
                     user = self.get_user_by_id(key)
                     print('User "' + str(user.email) + '" logged off.')
@@ -688,7 +688,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         user = self.find_user(username=username)
         if user is not None and (not user.is_active()):
             return None
-        if user.isOnline:
+        if hasattr(user, 'isOnline') and user.isOnline:
             return 'ALREADY_LOGGED_IN'
         else:
             try:
