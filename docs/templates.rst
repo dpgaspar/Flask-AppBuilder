@@ -362,13 +362,14 @@ Let's make a simple example::
 
     {% block list_header %}
        {{ super() }}
-       <a href="url_for('Class.method for my control')" class="btn btn-sm btn-primary"
+       <a href="url_for('Class.method for my control')" class="btn btn-sm btn-primary">
             <i class="fa fa-rocket"></i>
        </a>
     {% endblock %}
 
     {% block begin_loop_values %}
         {% for item in value_columns %}
+            <div class="list-group-item">
             {% set pk = pks[loop.index-1] %}
             {% if actions %}
                 <input id="{{pk}}" class="action_check" name="rowid" value="{{pk}}" type="checkbox">
@@ -377,9 +378,9 @@ Let's make a simple example::
                 {{ lib.btn_crud(can_show, can_edit, can_delete, pk, modelview_name, filters) }}
             {% endif %}
             </div>
-        
+
             {% for value in include_columns %}
-                <p {{ item[value]|safe }}</p>
+                <p>{{ item[value]|safe }}</p>
             {% endfor %}
         {% endfor %}
     {% endblock %}
