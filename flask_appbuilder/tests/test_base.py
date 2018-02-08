@@ -13,7 +13,7 @@ except ImportError:
     _has_enum = False
 
 from nose.tools import eq_, ok_
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, Enum, DateTime
 from sqlalchemy.orm import relationship
 from flask import redirect, request, session
 
@@ -79,6 +79,15 @@ class Model2(Model):
     def field_method(self):
        return "field_method_value"
 
+class Model3(Model):
+    pk1 = Column(Integer(), primary_key=True)
+    pk2 = Column(DateTime(), primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+
+    def __repr__(self):
+        return str(self.field_string)
+
+
 if _has_enum:
     class TestEnum(enum.Enum):
         e1 = 'a'
@@ -134,8 +143,17 @@ class FlaskTestCase(unittest.TestCase):
             related_views = [Model2View]
             list_columns = ['field_string', 'field_file']
 
+        class Model3View(ModelView):
+            datamodel = SQLAInterface(Model3)
+            list_columns = ['pk1', 'pk2', 'field_string']
+            add_columns = ['pk1', 'pk2', 'field_string']
+            edit_columns = ['pk1', 'pk2', 'field_string']
+
         class Model1CompactView(CompactCRUDMixin, ModelView):
             datamodel = SQLAInterface(Model1)
+
+        class Model3CompactView(CompactCRUDMixin, ModelView):
+            datamodel = SQLAInterface(Model3)
 
         class Model1ViewWithRedirects(ModelView):
             datamodel = SQLAInterface(Model1)
@@ -149,8 +167,6 @@ class FlaskTestCase(unittest.TestCase):
 
             def post_delete_redirect(self):
                 return redirect('model1viewwithredirects/show/{0}'.format(REDIRECT_OBJ_ID))
-
-
 
         class Model1Filtered1View(ModelView):
             datamodel = SQLAInterface(Model1)
@@ -245,6 +261,9 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view(Model2TimeChartView, "Model2 Time Chart")
         self.appbuilder.add_view(Model2DirectChartView, "Model2 Direct Chart")
 
+        self.appbuilder.add_view(Model3View, "Model3")
+        self.appbuilder.add_view(Model3CompactView, "Model3Compact")
+
         self.appbuilder.add_view(ModelWithEnumsView, "ModelWithEnums")
 
         self.appbuilder.add_view(PSView, "Generic DS PS View", category='PSView')
@@ -303,12 +322,20 @@ class FlaskTestCase(unittest.TestCase):
                 print("ERROR {0}".format(str(e)))
                 self.db.session.rollback()
 
+    def insert_data3(self):
+        model3 = Model3(pk1=3, pk2=datetime.datetime(2017, 3, 3), field_string='foo')
+        try:
+            self.db.session.add(model3)
+            self.db.session.commit()
+        except Exception as e:
+            print("Error {0}".format(str(e)))
+            self.db.session.rollback()
 
     def test_fab_views(self):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 30)  # current minimal views are 12
+        eq_(len(self.appbuilder.baseviews), 32)  # current minimal views are 12
 
     def test_back(self):
         """
@@ -333,6 +360,7 @@ class FlaskTestCase(unittest.TestCase):
         # Check if tables exist
         ok_('model1' in inspector.get_table_names())
         ok_('model2' in inspector.get_table_names())
+        ok_('model3' in inspector.get_table_names())
         ok_('model_with_enums' in inspector.get_table_names())
 
     def test_index(self):
@@ -451,6 +479,46 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.get('/model1view/delete/1', follow_redirects=True)
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model1).first()
+        eq_(model, None)
+
+    def test_model_crud_composite_pk(self):
+        """
+            Test Generic Interface for generic-alter datasource where model has composite
+            primary keys
+        """
+        try:
+            from urllib import quote
+        except:
+            from urllib.parse import quote
+
+        client = self.app.test_client()
+        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+
+        rv = client.post('/model3view/add', data=dict(pk1="1", pk2="2017-01-01 00:00:00", field_string='foo'),
+                         follow_redirects=True)
+        eq_(rv.status_code, 200)
+        model = self.db.session.query(Model3).first()
+        eq_(model.pk1, 1)
+        eq_(model.pk2, datetime.datetime(2017, 1, 1))
+        eq_(model.field_string, u'foo')
+
+        pk = '[1, {"_type": "datetime", "value": "2017-01-01T00:00:00.000000"}]'
+        rv = client.get('/model3view/show/' + quote(pk), follow_redirects=True)
+        eq_(rv.status_code, 200)
+
+        rv = client.post('/model3view/edit/' + quote(pk),
+                         data=dict(pk1='2', pk2='2017-02-02 00:00:00', field_string='bar'),
+                         follow_redirects=True)
+        eq_(rv.status_code, 200)
+        model = self.db.session.query(Model3).first()
+        eq_(model.pk1, 2)
+        eq_(model.pk2, datetime.datetime(2017, 2, 2))
+        eq_(model.field_string, u'bar')
+
+        pk = '[2, {"_type": "datetime", "value": "2017-02-02T00:00:00.000000"}]'
+        rv = client.get('/model3view/delete/' + quote(pk), follow_redirects=True)
+        eq_(rv.status_code, 200)
+        model = self.db.session.query(Model3).first()
         eq_(model, None)
 
     def test_model_crud_with_enum(self):
@@ -711,6 +779,26 @@ class FlaskTestCase(unittest.TestCase):
         self.insert_data2()
         rv = client.get('/model1compactview/list/')
         eq_(rv.status_code, 200)
+
+
+        # test with composite pk
+        try:
+            from urllib import quote
+        except:
+            from urllib.parse import quote
+
+        self.insert_data3()
+        pk = '[3, {"_type": "datetime", "value": "2017-03-03T00:00:00"}]'
+        rv = client.post('/model3compactview/edit/' + quote(pk),
+                         data=dict(field_string='bar'), follow_redirects=True)
+        eq_(rv.status_code, 200)
+        model = self.db.session.query(Model3).first()
+        eq_(model.field_string, u'bar')
+
+        rv = client.get('/model3compactview/delete/' + quote(pk), follow_redirects=True)
+        eq_(rv.status_code, 200)
+        model = self.db.session.query(Model3).first()
+        eq_(model, None)
 
     def test_edit_add_form_action_prefix_for_compactCRUDMixin(self):
         """

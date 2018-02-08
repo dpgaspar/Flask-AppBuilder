@@ -1,6 +1,6 @@
 import datetime
 from flask import g
-from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime, ForeignKey, Sequence
+from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime, ForeignKey, Sequence, UniqueConstraint
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declared_attr
 from ... import Model
@@ -35,6 +35,7 @@ class ViewMenu(Model):
 
 class PermissionView(Model):
     __tablename__ = 'ab_permission_view'
+    __table_args__ = (UniqueConstraint('permission_id', 'view_menu_id'),)
     id = Column(Integer, Sequence('ab_permission_view_id_seq'), primary_key=True)
     permission_id = Column(Integer, ForeignKey('ab_permission.id'))
     permission = relationship("Permission")
@@ -48,7 +49,8 @@ class PermissionView(Model):
 assoc_permissionview_role = Table('ab_permission_view_role', Model.metadata,
                                   Column('id', Integer, Sequence('ab_permission_view_role_id_seq'), primary_key=True),
                                   Column('permission_view_id', Integer, ForeignKey('ab_permission_view.id')),
-                                  Column('role_id', Integer, ForeignKey('ab_role.id'))
+                                  Column('role_id', Integer, ForeignKey('ab_role.id')),
+                                  UniqueConstraint('permission_view_id', 'role_id')
 )
 
 
@@ -66,7 +68,8 @@ class Role(Model):
 assoc_user_role = Table('ab_user_role', Model.metadata,
                                   Column('id', Integer, Sequence('ab_user_role_id_seq'), primary_key=True),
                                   Column('user_id', Integer, ForeignKey('ab_user.id')),
-                                  Column('role_id', Integer, ForeignKey('ab_role.id'))
+                                  Column('role_id', Integer, ForeignKey('ab_role.id')),
+                                  UniqueConstraint('user_id', 'role_id')
 )
 
 

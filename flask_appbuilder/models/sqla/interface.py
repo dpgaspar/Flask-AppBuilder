@@ -25,6 +25,10 @@ def _include_filters(obj):
         if not hasattr(obj, key):
             setattr(obj, key, getattr(filters, key))
 
+def _is_sqla_type(obj, sa_type):
+    return isinstance(obj, sa_type) or \
+        isinstance(obj, sa.types.TypeDecorator) and isinstance(obj.impl, sa_type)
+
 
 class SQLAInterface(BaseInterface):
     """
@@ -158,55 +162,61 @@ class SQLAInterface(BaseInterface):
 
     def is_string(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.String)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.String)
         except:
             return False
 
     def is_text(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Text)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Text)
+        except:
+            return False
+
+    def is_binary(self, col_name):
+        try:
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.LargeBinary)
         except:
             return False
 
     def is_integer(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Integer)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Integer)
         except:
             return False
 
     def is_numeric(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Numeric)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Numeric)
         except:
             return False
 
     def is_float(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Float)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Float)
         except:
             return False
 
     def is_boolean(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Boolean)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Boolean)
         except:
             return False
 
     def is_date(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Date)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Date)
         except:
             return False
 
     def is_datetime(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.DateTime)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.DateTime)
         except:
             return False
 
     def is_enum(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Enum)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Enum)
         except:
             return False
 
@@ -264,6 +274,9 @@ class SQLAInterface(BaseInterface):
             return self.list_columns[col_name].primary_key
         except:
             return False
+
+    def is_pk_composite(self):
+         return len(self.obj.__mapper__.primary_key) > 1
 
     def is_fk(self, col_name):
         try:
@@ -504,15 +517,20 @@ class SQLAInterface(BaseInterface):
         if filters:
             query = query = self.session.query(self.obj)
             _filters = filters.copy()
-            _filters.add_filter(self.get_pk_name(), self.FilterEqual, id)
+            pk = self.get_pk_name()
+            if self.is_pk_composite():
+                for _pk, _id in zip(pk, id):
+                    _filters.add_filter(_pk, self.FilterEqual, _id)
+            else:
+                _filters.add_filter(pk, self.FilterEqual, id)
             query = self._get_base_query(query=query, filters=_filters)
             return query.first()
         return self.session.query(self.obj).get(id)
 
     def get_pk_name(self):
-        for col_name in self.list_columns.keys():
-            if self.is_pk(col_name):
-                return col_name
+        pk = [pk.name for pk in self.obj.__mapper__.primary_key]
+        if pk:
+            return pk if self.is_pk_composite() else pk[0]
 
 
 """

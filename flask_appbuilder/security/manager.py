@@ -140,7 +140,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     authoauthview = AuthOAuthView
     """ Override if you want your own Authentication OAuth view """
     authremoteuserview = AuthRemoteUserView
-    """ Override if you want your own Authentication OAuth view """
+    """ Override if you want your own Authentication REMOTE_USER view """
 
     registeruserdbview = RegisterUserDBView
     """ Override if you want your own register user db view """
@@ -717,12 +717,27 @@ class BaseSecurityManager(AbstractSecurityManager):
             :type self: User model
         """
         user = self.find_user(username=username)
-        if user is None or (not user.is_active()):
+
+        # User does not exist, create one if auto user registration.
+        if user is None and self.auth_user_registration:
+            user = self.add_user(
+                # All we have is REMOTE_USER, so we set
+                # the other fields to blank.
+                username=username,
+                first_name=username,
+                last_name='-',
+                email='-',
+                role=self.find_role(self.auth_user_registration_role)
+            )
+
+        # If user does not exist on the DB and not auto user registration,
+        # or user is inactive, go away.
+        elif user is None or (not user.is_active()):
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
-        else:
-            self.update_user_auth_stat(user)
-            return user
+
+        self.update_user_auth_stat(user)
+        return user
 
     def auth_user_oauth(self, userinfo):
         """

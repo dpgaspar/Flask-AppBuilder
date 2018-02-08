@@ -162,6 +162,9 @@ class BaseInterface(object):
     def is_text(self, col_name):
         return False
 
+    def is_binary(self, col_name):
+        return False
+
     def is_integer(self, col_name):
         return False
 
@@ -210,6 +213,9 @@ class BaseInterface(object):
     def is_pk(self, col_name):
         return False
 
+    def is_pk_composite(self):
+        raise False
+
     def is_fk(self, col_name):
         return False
 
@@ -251,7 +257,10 @@ class BaseInterface(object):
             return a list of pk values from object list
         """
         pk_name = self.get_pk_name()
-        return [getattr(item, pk_name) for item in lst]
+        if self.is_pk_composite():
+            return [[getattr(item, pk) for pk in pk_name] for item in lst]
+        else:
+            return [getattr(item, pk_name) for item in lst]
 
     def get_pk_name(self):
         """
@@ -260,7 +269,11 @@ class BaseInterface(object):
         raise NotImplementedError
 
     def get_pk_value(self, item):
-        return getattr(item, self.get_pk_name())
+        pk_name = self.get_pk_name()
+        if self.is_pk_composite():
+            return [getattr(item, pk) for pk in pk_name]
+        else:
+            return getattr(item, pk_name)
 
     def get(self, pk, filter=None):
         """

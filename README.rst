@@ -8,7 +8,7 @@ Flask App Builder
 .. image:: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master/landscape.svg?style=flat
    :target: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master
    :alt: Code Health
-.. image:: https://img.shields.io/badge/pyversions-2.6%2C2.7%2C3.3%2C3.5-blue.svg
+.. image:: https://img.shields.io/badge/pyversions-2.7%2C3.3%2C3.5-blue.svg
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto CRUD generation for your models, google charts and much more.
@@ -24,7 +24,7 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 1.9.4*.
+*New 1.9.6*.
 
 BREAKING CHANGES relative to 1.8.1 when using OAUTH authentication method.
 
@@ -98,12 +98,12 @@ Includes:
 Some pictures
 -------------
 
-Login page (with AUTH_DB) 
+Login page (with AUTH_DB)
 
 .. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_db.png
     :width: 480px
     :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_db.png
-    
+
 
 Login page (with AUTH_OAUTH)
 
@@ -112,7 +112,7 @@ Login page (with AUTH_OAUTH)
     :target: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/login_oauth.png
 
 
-Security 
+Security
 
 .. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/security.png
     :width: 480px
@@ -121,7 +121,7 @@ Security
 
 Lists:
 
-List contacts example 
+List contacts example
 
 .. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/contact_list.png
     :width: 480px
@@ -138,7 +138,7 @@ List Group example with search
 
 Charts:
 
-Group by pie chart 
+Group by pie chart
 
 .. image:: https://raw.github.com/dpgaspar/flask-AppBuilder/master/images/grouped_chart.png
     :width: 480px
