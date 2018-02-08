@@ -24,7 +24,6 @@ from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
 
 current_time = lambda: int(round(time.time() * 1000))
 log = logging.getLogger(__name__)
-redis_client = None
 
 def setInterval(func, second, self):
     def funcWrapper():
@@ -236,15 +235,26 @@ class BaseSecurityManager(AbstractSecurityManager):
         redis_db = self.appbuilder.get_app.config['REDIS_DB']
         redis_client = redis.StrictRedis(host=redis_host, port=redis_port, db=redis_db)
 
+        self.redis_client = redis_client
+
         @app.before_request
         def before_request():
             if current_user.is_authenticated():
                 redis_client.hset(app.config['REDIS_KEY'], str(session.get('user_id')), str(current_time()))
 
+        def print_idle_time(id, idle_time):
+            idle_time_in_seconds = int(idle_time / 1000)
+            if idle_time_in_seconds < 60:
+                print('User id ' + id + ' is idle for ' + str(idle_time_in_seconds) + ' seconds')
+            else:
+                idle_time_in_minutes = int(idle_time_in_seconds / 60)
+                print('User id ' + id + ' is idle for ' + str(idle_time_in_minutes) + ' minutes')
+
         def check_online_user(self):
             now = current_time()
             for key in redis_client.hgetall(app.config['REDIS_KEY']).keys():
                 idle_time = now - int(redis_client.hget(app.config['REDIS_KEY'], key))
+                print_idle_time(key, idle_time)
                 if idle_time > (app.config['REMEMBER_COOKIE_DURATION'].total_seconds() * 1000):
                     user = self.get_user_by_id(key)
                     print('User "' + str(user.email) + '" logged off.')
@@ -652,6 +662,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         if not ldap_dict.get(field):
             return fallback
         return ldap_dict[field][0].decode('utf-8') or fallback
+
+    def remove_session_from_redis(self, userid):
+        if userid:
+            self.redis_client.hdel(self.appbuilder.get_app.config['REDIS_KEY'], userid)
 
     def auth_user_ldap(self, username, password):
         """

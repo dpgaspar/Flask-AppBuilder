@@ -371,6 +371,7 @@ class AuthView(BaseView):
     @expose('/logout/')
     def logout(self):
         if g.user.is_authenticated():
+            self.appbuilder.sm.remove_session_from_redis(g.user.id)
             item = self.appbuilder.sm.get_user_by_id(g.user.id)
             item.isOnline = False
             self.appbuilder.sm.update_user(item)
