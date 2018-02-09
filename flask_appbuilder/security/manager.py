@@ -854,7 +854,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         for viewmenu in viewsmenus:
             found = False
             for baseview in baseviews:
-                if viewmenu.name == baseview.__class__.__name__:
+                if viewmenu.name == baseview.endpoint:
                     found = True
                     break
             if menus.find(viewmenu.name):

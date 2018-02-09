@@ -349,14 +349,14 @@ class AppBuilder(object):
             appbuilder.add_link("google", href="www.google.com", icon = "fa-google-plus")
         """
         baseview = self._check_and_init(baseview)
-        log.info(LOGMSG_INF_FAB_ADD_VIEW.format(baseview.__class__.__name__, name))
+        log.info(LOGMSG_INF_FAB_ADD_VIEW.format(baseview.endpoint, name))
 
         if not self._view_exists(baseview):
             baseview.appbuilder = self
             self.baseviews.append(baseview)
             self._process_inner_views()
             if self.app:
-                self.register_blueprint(baseview)
+                self.register_blueprint(baseview, baseview.endpoint)
                 self._add_permission(baseview)
         self.add_link(name=name, href=href, icon=icon, label=label,
                       category=category, category_icon=category_icon,
@@ -415,7 +415,7 @@ class AppBuilder(object):
 
         """
         baseview = self._check_and_init(baseview)
-        log.info(LOGMSG_INF_FAB_ADD_VIEW.format(baseview.__class__.__name__, ""))
+        log.info(LOGMSG_INF_FAB_ADD_VIEW.format(baseview.endpoint, ""))
 
         if not self._view_exists(baseview):
             baseview.appbuilder = self
@@ -426,7 +426,7 @@ class AppBuilder(object):
                      endpoint=endpoint, static_folder=static_folder)
                 self._add_permission(baseview)
         else:
-            log.warning(LOGMSG_WAR_FAB_VIEW_EXISTS.format(baseview.__class__.__name__))
+            log.warning(LOGMSG_WAR_FAB_VIEW_EXISTS.format(baseview.endpoint))
         return baseview
 
     def security_cleanup(self):
@@ -466,7 +466,7 @@ class AppBuilder(object):
     def _add_permission(self, baseview):
         if self.update_perms:
             try:
-                self.sm.add_permissions_view(baseview.base_permissions, baseview.__class__.__name__)
+                self.sm.add_permissions_view(baseview.base_permissions, baseview.endpoint)
             except Exception as e:
                 log.exception(e)
                 log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW.format(str(e)))
@@ -476,7 +476,7 @@ class AppBuilder(object):
 
     def _view_exists(self, view):
         for baseview in self.baseviews:
-            if baseview.__class__ == view.__class__:
+            if baseview.endpoint == view.endpoint:
                 return True
         return False
 

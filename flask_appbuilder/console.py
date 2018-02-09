@@ -168,7 +168,7 @@ def list_users(app, appbuilder):
     _appbuilder = import_application(app, appbuilder)
     echo_header('List of registered views')
     for view in _appbuilder.baseviews:
-        click.echo('View:{0} | Route:{1} | Perms:{2}'.format(view.__class__.__name__, view.route_base, view.base_permissions))
+        click.echo('View:{0} | Route:{1} | Perms:{2}'.format(view.endpoint, view.route_base, view.base_permissions))
 
 
 @cli_app.command("list-users")

@@ -119,9 +119,8 @@ class BaseView(object):
 
         # If endpoint name is not provided, get it from the class name
         self.endpoint = endpoint or self.__class__.__name__
-
         if self.route_base is None:
-            self.route_base = '/' + self.__class__.__name__.lower()
+            self.route_base = '/' + self.endpoint.lower()
 
         self.static_folder = static_folder
         if not static_folder:
@@ -756,15 +755,15 @@ class BaseCRUDView(BaseModelView):
         widgets = widgets or {}
         widgets['related_views'] = []
         for view in self._related_views:
-            if orders.get(view.__class__.__name__):
-                order_column, order_direction = orders.get(view.__class__.__name__)
+            if orders.get(view.endpoint):
+                order_column, order_direction = orders.get(view.endpoint)
             else:
                 order_column, order_direction = '', ''
             widgets['related_views'].append(self._get_related_view_widget(item, view,
                                                                           order_column, order_direction,
-                                                                          page=pages.get(view.__class__.__name__),
+                                                                          page=pages.get(view.endpoint),
                                                                           page_size=page_sizes.get(
-                                                                              view.__class__.__name__)))
+                                                                              view.endpoint)))
         return widgets
 
     def _get_view_widget(self, **kwargs):
@@ -807,7 +806,7 @@ class BaseCRUDView(BaseModelView):
                                            pks=pks,
                                            actions=actions,
                                            filters=filters,
-                                           modelview_name=self.__class__.__name__)
+                                           modelview_name=self.endpoint)
         return widgets
 
     def _get_show_widget(self, pk, item, widgets=None, actions=None, show_fieldsets=None):
@@ -821,7 +820,7 @@ class BaseCRUDView(BaseModelView):
                                            formatters_columns=self.formatters_columns,
                                            actions=actions,
                                            fieldsets=show_fieldsets,
-                                           modelview_name=self.__class__.__name__
+                                           modelview_name=self.endpoint
         )
         return widgets
 
@@ -869,12 +868,12 @@ class BaseCRUDView(BaseModelView):
             list function logic, override to implement different logic
             returns list and search widget
         """
-        if get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+        if get_order_args().get(self.endpoint):
+            order_column, order_direction = get_order_args().get(self.endpoint)
         else:
             order_column, order_direction = '', ''
-        page = get_page_args().get(self.__class__.__name__)
-        page_size = get_page_size_args().get(self.__class__.__name__)
+        page = get_page_args().get(self.endpoint)
+        page_size = get_page_size_args().get(self.endpoint)
         get_filter_args(self._filters)
         widgets = self._get_list_widget(filters=self._filters,
                                         order_column=order_column,

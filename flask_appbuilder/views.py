@@ -143,7 +143,7 @@ class RestCRUDView(BaseCRUDView):
         :param api_urls: A dict with the urls {'<FUNCTION>':'<URL>',...}
         :return: A dict with the CRUD urls of the base API.
         """
-        view_name = self.__class__.__name__
+        view_name = self.endpoint
         api_urls = api_urls or {}
         api_urls['read'] = url_for(view_name + ".api_read")
         api_urls['delete'] = url_for(view_name + ".api_delete", pk="")
@@ -152,7 +152,7 @@ class RestCRUDView(BaseCRUDView):
         return api_urls
 
     def _get_modelview_urls(self, modelview_urls=None):
-        view_name = self.__class__.__name__
+        view_name = self.endpoint
         modelview_urls = modelview_urls or {}
         modelview_urls['show'] = url_for(view_name + ".show", pk="")
         modelview_urls['add'] = url_for(view_name + ".add")
@@ -164,7 +164,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name('list')
     def api(self):
-        view_name = self.__class__.__name__
+        view_name = self.endpoint
         api_urls = self._get_api_urls()
         modelview_urls = self._get_modelview_urls()
         #
@@ -207,12 +207,12 @@ class RestCRUDView(BaseCRUDView):
         """
         """
         # Get arguments for ordering
-        if get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+        if get_order_args().get(self.endpoint):
+            order_column, order_direction = get_order_args().get(self.endpoint)
         else:
             order_column, order_direction = '', ''
-        page = get_page_args().get(self.__class__.__name__)
-        page_size = get_page_size_args().get(self.__class__.__name__)
+        page = get_page_args().get(self.endpoint)
+        page_size = get_page_size_args().get(self.endpoint)
         get_filter_args(self._filters)
         joined_filters = self._filters.get_joined_filters(self._base_filters)
         count, lst = self.datamodel.query(joined_filters, order_column, order_direction, page=page, page_size=page_size)
@@ -224,7 +224,7 @@ class RestCRUDView(BaseCRUDView):
                            page=page,
                            page_size=page_size,
                            count=count,
-                           modelview_name=self.__class__.__name__,
+                           modelview_name=self.endpoint,
                            pks=pks,
                            result=result)
         response = make_response(ret_json, 200)
@@ -254,7 +254,7 @@ class RestCRUDView(BaseCRUDView):
         ret_json = jsonify(pk=pk,
                            label_columns=self._label_columns_json(),
                            include_columns=self.show_columns,
-                           modelview_name=self.__class__.__name__,
+                           modelview_name=self.endpoint,
                            result=self.show_item_dict(item))
         response = make_response(ret_json, 200)
         response.headers['Content-Type'] = "application/json"
@@ -417,8 +417,8 @@ class RestCRUDView(BaseCRUDView):
         """
         """
         # Get arguments for ordering
-        if get_order_args().get(self.__class__.__name__):
-            order_column, order_direction = get_order_args().get(self.__class__.__name__)
+        if get_order_args().get(self.endpoint):
+            order_column, order_direction = get_order_args().get(self.endpoint)
         else:
             order_column, order_direction = '', ''
         get_filter_args(self._filters)
@@ -557,7 +557,7 @@ class ModelView(RestCRUDView):
             Action method to handle actions from a show view
         """
         pk = self._deserialize_pk_if_composite(pk)
-        if self.appbuilder.sm.has_access(name, self.__class__.__name__):
+        if self.appbuilder.sm.has_access(name, self.endpoint):
             action = self.actions.get(name)
             return action.func(self.datamodel.get(pk))
         else:
@@ -572,7 +572,7 @@ class ModelView(RestCRUDView):
         """
         name = request.form['action']
         pks = request.form.getlist('rowid')
-        if self.appbuilder.sm.has_access(name, self.__class__.__name__):
+        if self.appbuilder.sm.has_access(name, self.endpoint):
             action = self.actions.get(name)
             items = [self.datamodel.get(self._deserialize_pk_if_composite(pk)) for pk in pks]
             return action.func(items)
@@ -665,12 +665,12 @@ class MultipleView(BaseView):
         orders = get_order_args()
         views_widgets = list()
         for view in self._views:
-            if orders.get(view.__class__.__name__):
-                order_column, order_direction = orders.get(view.__class__.__name__)
+            if orders.get(view.endpoint):
+                order_column, order_direction = orders.get(view.endpoint)
             else:
                 order_column, order_direction = '', ''
-            page = pages.get(view.__class__.__name__)
-            page_size = page_sizes.get(view.__class__.__name__)
+            page = pages.get(view.endpoint)
+            page_size = page_sizes.get(view.endpoint)
             views_widgets.append(view._get_view_widget(filters=view._base_filters,
                                                        order_column=order_column,
                                                        order_direction=order_direction,
