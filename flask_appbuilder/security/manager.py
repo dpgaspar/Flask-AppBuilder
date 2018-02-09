@@ -178,6 +178,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         super(BaseSecurityManager, self).__init__(appbuilder)
         app = self.appbuilder.get_app
         # Base Security Config
+        app.config.setdefault('DEV_MODE', False)
         app.config.setdefault('MAXIMUM_USER', 50)
         app.config.setdefault('MAXIMUM_ONLINE_USER', 20)
         app.config.setdefault('CHACKING_ONLINE_USER_INTERVAL_SEC', 5)
@@ -255,10 +256,12 @@ class BaseSecurityManager(AbstractSecurityManager):
             now = current_time()
             for key in redis_client.hgetall(app.config['REDIS_KEY']).keys():
                 idle_time = now - int(redis_client.hget(app.config['REDIS_KEY'], key))
-                print_idle_time(key, idle_time)
+                if app.config['DEV_MODE']:
+                    print_idle_time(key, idle_time)
                 if idle_time > (app.config['REMEMBER_COOKIE_DURATION'].total_seconds() * 1000):
                     user = self.get_user_by_id(key)
-                    print('User "' + str(user.email) + '" logged off.')
+                    if app.config['DEV_MODE']:
+                        print('User "' + str(user.email) + '" logged off.')
                     if user.isOnline:
                         user.isOnline = False
                         self.update_user(user)
