@@ -366,7 +366,7 @@ class RestCRUDView(BaseCRUDView):
         ret_list = list()
         for item in result:
             pk = rel_datamodel.get_pk_value(item)
-            ret_list.append({'id': int(pk), 'text': str(item)})
+            ret_list.append({'id': int(pk), 'text': unicode(item)})
         ret_json = json.dumps(ret_list)
         return ret_json
 
