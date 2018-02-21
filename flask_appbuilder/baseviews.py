@@ -126,11 +126,11 @@ class BaseView(object):
         self.static_folder = static_folder
         if not static_folder:
             # Create blueprint and register rules
-            self.blueprint = Blueprint(self.endpoint, __name__,
+            self.blueprint = Blueprint(self.endpoint, self.__module__,
                                        url_prefix=self.route_base,
                                        template_folder=self.template_folder)
         else:
-            self.blueprint = Blueprint(self.endpoint, __name__,
+            self.blueprint = Blueprint(self.endpoint, self.__module__,
                                        url_prefix=self.route_base,
                                        template_folder=self.template_folder,
                                        static_folder=static_folder)
