@@ -486,5 +486,3 @@ class AppBuilder(object):
                 for v in self.baseviews:
                     if isinstance(v, inner_class) and v not in view.get_init_inner_views():
                         view.get_init_inner_views().append(v)
-
-
