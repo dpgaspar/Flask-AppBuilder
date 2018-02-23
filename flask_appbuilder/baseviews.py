@@ -63,6 +63,7 @@ class BaseView(object):
     """ The template folder relative location """
     static_folder = 'static'
     """  The static folder relative location """
+    static_url_path = '/static'
     base_permissions = None
     """
         List with allowed base permission.
@@ -103,7 +104,8 @@ class BaseView(object):
 
     def create_blueprint(self, appbuilder,
                          endpoint=None,
-                         static_folder=None):
+                         static_folder=None,
+						 static_url_path=None):
         """
             Create Flask blueprint. You will generally not use it
 
@@ -122,18 +124,22 @@ class BaseView(object):
 
         if self.route_base is None:
             self.route_base = '/' + self.__class__.__name__.lower()
-
-        self.static_folder = static_folder
+        if static_url_path:
+            self.static_url_path=static_url_path
+        #self.static_folder = static_folder
         if not static_folder:
             # Create blueprint and register rules
             self.blueprint = Blueprint(self.endpoint, self.__module__,
                                        url_prefix=self.route_base,
-                                       template_folder=self.template_folder)
+                                       template_folder=self.template_folder,
+									   static_folder=self.static_folder,
+									   static_url_path=self.static_url_path)
         else:
             self.blueprint = Blueprint(self.endpoint, self.__module__,
                                        url_prefix=self.route_base,
                                        template_folder=self.template_folder,
-                                       static_folder=static_folder)
+                                       static_folder=static_folder,
+									   static_url_path=self.static_url_path)
         self._register_urls()
         return self.blueprint
 
