@@ -5,11 +5,13 @@
         {% include 'appbuilder/general/confirm.html' %}
         {% include 'appbuilder/general/alert.html' %}
 
-    <!-- {% block navbar %}
-        <header class="top" role="header">
-        {% include 'appbuilder/navbar.html' %}
-        </header>
-    {% endblock %} -->
+    {% if request.path != '/login/' %}
+      {% block navbar %}
+          <header class="top" role="header">
+            {% include 'appbuilder/navbar.html' %}
+          </header>
+      {% endblock %}
+    {% endif %}
 
     <div class="container">
       <div class="row">
