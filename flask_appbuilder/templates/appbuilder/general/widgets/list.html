@@ -60,7 +60,17 @@
                     {% if formatter %}
                         <td>{{ formatter(item[value]) }}</td>
                     {% else %}
-                        <td>{{ item[value]|safe }}</td>
+                        <td>
+                          {% if value == 'status'%}
+                            {% if item['status'] == 'online' %}
+                            <span class = 'green-status'>Online</span>
+                            {% else %}
+                            <span class = 'grey-status'>Offline</span>
+                            {% endif %}
+                          {% else %}
+                            {{ item[value]|safe }}
+                          {% endif %}
+                        </td>
                     {% endif %}
                 {% endfor %}
             </tr>
@@ -71,4 +81,3 @@
         </table>
         </div>
     {% endblock %}
-

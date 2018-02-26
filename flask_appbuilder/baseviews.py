@@ -795,7 +795,6 @@ class BaseCRUDView(BaseModelView):
 
         # serialize composite pks
         pks = [self._serialize_pk_if_composite(pk) for pk in pks]
-
         widgets['list'] = self.list_widget(label_columns=self.label_columns,
                                            include_columns=self.list_columns,
                                            value_columns=self.datamodel.get_values(lst, self.list_columns),
