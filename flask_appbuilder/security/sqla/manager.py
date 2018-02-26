@@ -147,7 +147,7 @@ class SecurityManager(BaseSecurityManager):
             user.username = username
             user.email = email
             user.active = True
-            user.isOnline = False
+            user.status = 'offline'
             user.roles.append(role)
             if hashed_password:
                 user.password = hashed_password
@@ -165,7 +165,7 @@ class SecurityManager(BaseSecurityManager):
         return self.get_session.query(func.count('*')).select_from(self.user_model).scalar()
 
     def count_online_users(self):
-        return self.get_session.query(func.count('*')).select_from(self.user_model).filter_by(isOnline=True).scalar()
+        return self.get_session.query(func.count('*')).select_from(self.user_model).filter_by(status='online').scalar()
 
     def update_user(self, user):
         try:

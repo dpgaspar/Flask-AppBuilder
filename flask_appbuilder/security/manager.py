@@ -263,8 +263,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                         user = self.get_user_by_id(key)
                         if app.config['DEV_MODE']:
                             print('User "' + str(user.email) + '" logged off.')
-                        if user is not None and user.isOnline:
-                            user.isOnline = False
+                        if user is not None and user.status == 'online':
+                            user.status = 'offline'
                             self.update_user(user)
                         else: 
                             redis_client.hdel(app.config['REDIS_KEY'], key)
@@ -576,10 +576,10 @@ class BaseSecurityManager(AbstractSecurityManager):
             user.login_count = 0
         if not user.fail_login_count:
             user.fail_login_count = 0
-        if not user.isOnline:
-            user.isOnline = False
+        if not user.status:
+            user.status = 'offline'
         if success:
-            user.isOnline = True
+            user.status = 'online'
             user.login_count += 1
             user.fail_login_count = 0
         else:
@@ -695,7 +695,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         user = self.find_user(username=username)
         if user is not None and (not user.is_active()):
             return None
-        if hasattr(user, 'isOnline') and user.isOnline:
+        if hasattr(user, 'status') and user.status == 'online':
             return 'ALREADY_LOGGED_IN'
         else:
             try:

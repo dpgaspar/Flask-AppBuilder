@@ -130,7 +130,7 @@ class UserModelView(ModelView):
                      'active': lazy_gettext('Is Active?'),
                      'email': lazy_gettext('EMail'),
                      'roles': lazy_gettext('Role'),
-                     'isOnline': lazy_gettext('Is Online?'),
+                     'status': lazy_gettext('Status'),
                      'last_login': lazy_gettext('Last login'),
                      'login_count': lazy_gettext('Login count'),
                      'fail_login_count': lazy_gettext('Failed login count'),
@@ -151,7 +151,7 @@ class UserModelView(ModelView):
                                'The user role on the application, this will associate with a list of permissions'),
                            'conf_password': lazy_gettext('Please rewrite the user\'s password to confirm')}
 
-    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles', 'isOnline']
+    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles', 'status']
 
     show_fieldsets = [
         (lazy_gettext('User info'),
@@ -373,7 +373,7 @@ class AuthView(BaseView):
         if g.user.is_authenticated():
             self.appbuilder.sm.remove_session_from_redis(g.user.id)
             item = self.appbuilder.sm.get_user_by_id(g.user.id)
-            item.isOnline = False
+            item.status = 'offline'
             self.appbuilder.sm.update_user(item)
         logout_user()
         return redirect(self.appbuilder.get_url_for_index)

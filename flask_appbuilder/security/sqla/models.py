@@ -1,6 +1,7 @@
 import datetime
+import enum
 from flask import g
-from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime, ForeignKey, Sequence, UniqueConstraint
+from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime, ForeignKey, Sequence, UniqueConstraint, Enum
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declared_attr
 from ... import Model
@@ -8,6 +9,10 @@ from ..._compat import as_unicode
 
 _dont_audit = False
 
+
+class status(enum.Enum):
+    online = 'online'
+    offline = 'offline'
 
 class Permission(Model):
     __tablename__ = 'ab_permission'
@@ -81,7 +86,7 @@ class User(Model):
     username = Column(String(64), unique=True, nullable=False)
     password = Column(String(256))
     active = Column(Boolean)
-    isOnline = Column(Boolean, nullable=True, default=False)
+    status = Column(Enum(status), default=status.offline)
     email = Column(String(64), unique=True, nullable=False)
     last_login = Column(DateTime)
     login_count = Column(Integer)
