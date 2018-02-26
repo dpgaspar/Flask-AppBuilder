@@ -7,21 +7,25 @@
 
     {% if request.path != '/login/' %}
       {% block navbar %}
-          <header class="top" role="header">
+          <header class="top" role= "header">
             {% include 'appbuilder/navbar.html' %}
           </header>
       {% endblock %}
     {% endif %}
 
-    <div class="container">
-      <div class="row">
-          {% block messages %}
-            {% include 'appbuilder/flash.html' %}
-          {% endblock %}
-          {% block content %}
-          {% endblock %}
+    {% if request.path == '/login/' %}
+      <div class= "container" >
+    {% else %}
+      <div class= "container login-height" >
+    {% endif %}
+        <div class="row">
+            {% block messages %}
+              {% include 'appbuilder/flash.html' %}
+            {% endblock %}
+            {% block content %}
+            {% endblock %}
+        </div>
       </div>
-    </div>
     <!-- {% block footer %}
         <footer style="display: none;">
         <div class="img-rounded nav-fixed-bottom">
