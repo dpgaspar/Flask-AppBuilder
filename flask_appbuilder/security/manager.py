@@ -2,6 +2,7 @@ import datetime
 import time
 import logging
 import redis
+import signal
 import threading
 from flask import url_for, g, session
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -24,15 +25,16 @@ from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
 
 current_time = lambda: int(round(time.time() * 1000))
 log = logging.getLogger(__name__)
+thread = None
 
 def setInterval(func, second, self):
+    global thread
     def funcWrapper():
-        setInterval(func, second, self)
         func(self)
+        setInterval(func, second, self)
 
     thread = threading.Timer(second, funcWrapper)
     thread.start()
-    return thread
 
 class AbstractSecurityManager(BaseManager):
     """
@@ -267,11 +269,14 @@ class BaseSecurityManager(AbstractSecurityManager):
                         self.update_user(user)
                     else: 
                         redis_client.hdel(app.config['REDIS_KEY'], key)
+        
+        def signal_handler(signal, frame):
+            global thread
+            if thread is not None:
+                thread.cancel()
 
-        try:
-            thread = setInterval(check_online_user, int(app.config['CHACKING_ONLINE_USER_INTERVAL_SEC']), self)
-        except SystemExit:
-            thread.cancel()
+        setInterval(check_online_user, int(app.config['CHACKING_ONLINE_USER_INTERVAL_SEC']), self)
+        signal.signal(signal.SIGINT, signal_handler)
 
     @property
     def get_url_for_registeruser(self):
