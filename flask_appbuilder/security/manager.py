@@ -259,17 +259,14 @@ class BaseSecurityManager(AbstractSecurityManager):
                 if app.config['DEV_MODE']:
                     print_idle_time(key, idle_time)
                 if idle_time > (app.config['REMEMBER_COOKIE_DURATION'].total_seconds() * 1000):
-                    try:
-                        user = self.get_user_by_id(key)
-                        if app.config['DEV_MODE']:
-                            print('User "' + str(user.email) + '" logged off.')
-                        if user is not None and user.status == 'online':
-                            user.status = 'offline'
-                            self.update_user(user)
-                        else: 
-                            redis_client.hdel(app.config['REDIS_KEY'], key)
-                    except Exception:
-                        print('ERROR OCCUR')
+                    user = self.get_user_by_id(key)
+                    if app.config['DEV_MODE']:
+                        print('User "' + str(user.email) + '" logged off.')
+                    if user is not None and user.status == 'online':
+                        user.status = 'offline'
+                        self.update_user(user)
+                    else: 
+                        redis_client.hdel(app.config['REDIS_KEY'], key)
 
         try:
             thread = setInterval(check_online_user, int(app.config['CHACKING_ONLINE_USER_INTERVAL_SEC']), self)
