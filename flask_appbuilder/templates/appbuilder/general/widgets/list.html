@@ -63,9 +63,11 @@
                         <td>
                           {% if value == 'status'%}
                             {% if item['status'] == 'online' %}
-                            <span class = 'green-status'>Online</span>
+                              <span class = 'green-status'>Online</span>
+                            {% elif item['status'] == 'offline' %}
+                              <span class = 'grey-status'>Offline</span>
                             {% else %}
-                            <span class = 'grey-status'>Offline</span>
+                              {{ item[value]|safe }}
                             {% endif %}
                           {% else %}
                             {{ item[value]|safe }}
