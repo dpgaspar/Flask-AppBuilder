@@ -268,6 +268,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                         user.status = 'offline'
                         self.update_user(user)
                         redis_client.hdel(app.config['REDIS_KEY'], key)
+                    elif user is not None and user.status.value == 'offline':
+                        redis_client.hdel(app.config['REDIS_KEY'], key)
         
         def signal_handler(signal, frame):
             global thread
