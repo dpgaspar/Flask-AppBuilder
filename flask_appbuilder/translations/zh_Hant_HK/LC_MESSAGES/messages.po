@@ -1,4 +1,4 @@
-# Chinese translations for PROJECT.
+# Chinese (Traditional, Hong Kong SAR China) translations for PROJECT.
 # Copyright (C) 2014 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
@@ -10,8 +10,8 @@ msgstr ""
 "POT-Creation-Date: 2015-09-17 13:23+0100\n"
 "PO-Revision-Date: 2014-04-21 15:20+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: zh\n"
-"Language-Team: zh <LL@li.org>\n"
+"Language: zh_Hant_HK\n"
+"Language-Team: zh_Hant_HK <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
