@@ -267,7 +267,6 @@ class BaseSecurityManager(AbstractSecurityManager):
                             print('User "' + str(user.email) + '" logged off.')
                         user.status = 'offline'
                         self.update_user(user)
-                        redis_client.hdel(app.config['REDIS_KEY'], key)
                     elif user is not None and user.status.value == 'offline':
                         redis_client.hdel(app.config['REDIS_KEY'], key)
         
