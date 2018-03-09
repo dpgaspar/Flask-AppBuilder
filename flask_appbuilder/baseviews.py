@@ -918,18 +918,22 @@ class BaseCRUDView(BaseModelView):
             if form.validate():
                 self.process_form(form, True)
                 item = self.datamodel.obj()
-                form.populate_obj(item)
-
                 try:
-                    self.pre_add(item)
+                    form.populate_obj(item)
                 except Exception as e:
+                    is_valid_form = False
                     flash(str(e), "danger")
                 else:
-                    if self.datamodel.add(item):
-                        self.post_add(item)
-                    flash(*self.datamodel.message)
-                finally:
-                    return None
+                    try:
+                        self.pre_add(item)
+                    except Exception as e:
+                        flash(str(e), "danger")
+                    else:
+                        if self.datamodel.add(item):
+                            self.post_add(item)
+                        flash(*self.datamodel.message)
+                    finally:
+                        return None
             else:
                 is_valid_form = False
         if is_valid_form:
@@ -962,17 +966,22 @@ class BaseCRUDView(BaseModelView):
             form._id = pk
             if form.validate():
                 self.process_form(form, False)
-                form.populate_obj(item)
                 try:
-                    self.pre_update(item)
+                    form.populate_obj(item)
                 except Exception as e:
+                    is_valid_form = False
                     flash(str(e), "danger")
                 else:
-                    if self.datamodel.edit(item):
-                        self.post_update(item)
-                    flash(*self.datamodel.message)
-                finally:
-                    return None
+                    try:
+                        self.pre_update(item)
+                    except Exception as e:
+                        flash(str(e), "danger")
+                    else:
+                        if self.datamodel.edit(item):
+                            self.post_update(item)
+                        flash(*self.datamodel.message)
+                    finally:
+                        return None
             else:
                 is_valid_form = False
         else:
@@ -987,7 +996,7 @@ class BaseCRUDView(BaseModelView):
         if is_valid_form:
             self.update_redirect()
         return widgets
-
+    
     def _delete(self, pk):
         """
             Delete function logic, override to implement different logic
