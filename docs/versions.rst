@@ -1,6 +1,14 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.10.0
+------------------------------------
+
+- Fix, #712 improvement on parsing timezone dates
+- Fix, #701 permission deletion
+- Fix, #700 Non unique associations on security models
+- New, #694 Accept SQLAlchemy custom types defined by TypeDecorator
+- New, #686 Removed support for python 2.6
 
 Improvements and Bug fixes on 1.9.6
 -----------------------------------
