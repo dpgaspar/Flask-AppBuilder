@@ -189,7 +189,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         app.config.setdefault('REDIS_HOST', '127.0.0.1')
         app.config.setdefault('REDIS_PORT', 6379)
         app.config.setdefault('REDIS_DB', 0)
-        app.config.setdefault('REMEMBER_COOKIE_DURATION', datetime.timedelta(minutes=15))
+        app.config.setdefault('PERMANENT_SESSION_LIFETIME', datetime.timedelta(minutes=15))
         app.config.setdefault('AUTH_ROLE_ADMIN', 'Admin')
         app.config.setdefault('AUTH_ROLE_PUBLIC', 'Public')
         app.config.setdefault('AUTH_TYPE', AUTH_DB)
@@ -265,7 +265,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 idle_time = now - int(redis_client.hget(app.config['REDIS_KEY'], key))
                 # if app.config['DEV_MODE']:
                 print_idle_time(key, idle_time)
-                if idle_time > (app.config['REMEMBER_COOKIE_DURATION'].total_seconds() * 1000):
+                if idle_time > (app.config['PERMANENT_SESSION_LIFETIME'].total_seconds() * 1000):
                     user = self.get_user_by_id(key)
                     if user is not None and user.status.value == 'online':
                         # if app.config['DEV_MODE']:
