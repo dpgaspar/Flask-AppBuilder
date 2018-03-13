@@ -267,9 +267,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                     if user is not None and user.status == 'online':
                         user.status = 'offline'
                         self.update_user(user)
-                    else: 
+                    else:
                         redis_client.hdel(app.config['REDIS_KEY'], key)
-        
+
         def signal_handler(signal, frame):
             global thread
             if thread is not None:
@@ -955,7 +955,7 @@ class BaseSecurityManager(AbstractSecurityManager):
      ---------------------------
      INTERFACE ABSTRACT METHODS
      ---------------------------
-     
+
      ---------------------
      PRIMITIVES FOR USERS
     ----------------------
@@ -1164,4 +1164,3 @@ class BaseSecurityManager(AbstractSecurityManager):
     @staticmethod
     def before_request():
         g.user = current_user
-
