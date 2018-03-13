@@ -25,6 +25,7 @@ from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
 
 current_time = lambda: int(round(time.time() * 1000))
 log = logging.getLogger(__name__)
+isSetInterval = False
 thread = None
 
 def setInterval(func, second, self):
@@ -243,6 +244,10 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         @app.before_request
         def before_request():
+            global isSetInterval
+            if not isSetInterval:
+                setInterval(check_online_user, int(app.config['CHACKING_ONLINE_USER_INTERVAL_SEC']), self)
+                isSetInterval = True
             if current_user.is_authenticated():
                 redis_client.hset(app.config['REDIS_KEY'], str(session.get('user_id')), str(current_time()))
 
@@ -258,16 +263,17 @@ class BaseSecurityManager(AbstractSecurityManager):
             now = current_time()
             for key in redis_client.hgetall(app.config['REDIS_KEY']).keys():
                 idle_time = now - int(redis_client.hget(app.config['REDIS_KEY'], key))
-                if app.config['DEV_MODE']:
-                    print_idle_time(key, idle_time)
+                # if app.config['DEV_MODE']:
+                print_idle_time(key, idle_time)
                 if idle_time > (app.config['REMEMBER_COOKIE_DURATION'].total_seconds() * 1000):
                     user = self.get_user_by_id(key)
                     if user is not None and user.status.value == 'online':
-                        if app.config['DEV_MODE']:
-                            print('User "' + str(user.email) + '" logged off.')
+                        # if app.config['DEV_MODE']:
+                        print('User "' + str(user.email) + '" logged off.')
                         user.status = 'offline'
                         self.update_user(user)
                     elif user is not None and user.status.value == 'offline':
+                        print('User "' + str(user.email) + '"\'s session removed.')
                         redis_client.hdel(app.config['REDIS_KEY'], key)
         
         def signal_handler(signal, frame):
@@ -275,7 +281,6 @@ class BaseSecurityManager(AbstractSecurityManager):
             if thread is not None:
                 thread.cancel()
 
-        setInterval(check_online_user, int(app.config['CHACKING_ONLINE_USER_INTERVAL_SEC']), self)
         signal.signal(signal.SIGINT, signal_handler)
 
     @property
