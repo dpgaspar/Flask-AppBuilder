@@ -275,10 +275,15 @@ class BaseSecurityManager(AbstractSecurityManager):
                     elif user is not None and user.status.value == 'offline':
                         print('User "' + str(user.email) + '"\'s session removed.')
                         redis_client.hdel(app.config['REDIS_KEY'], key)
+                    elif user is None:
+                        print('User id ' + key + ' not found')
+                    else:
+                        print('Something went wrong')
         
         def signal_handler(signal, frame):
-            global thread
+            global thread, isSetInterval
             if thread is not None:
+                isSetInterval = False
                 thread.cancel()
 
         signal.signal(signal.SIGINT, signal_handler)
