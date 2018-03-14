@@ -396,6 +396,14 @@ class BaseSecurityManager(AbstractSecurityManager):
                 'first_name': me.data.get('given_name', ''),
                 'last_name': me.data.get('family_name', ''),
                 'email': me.data.get('email', '')}
+        # for weixin
+        if provider == 'weixin':
+            me = self.appbuilder.sm.oauth_remotes[provider].get('userinfo')
+            log.debug("User info from wechat: {0}".format(me.data))
+            return {'username': me.data.get('username', ''),
+                'first_name': me.data.get('first_name', ''),
+                'last_name': me.data.get('last_name', ''),
+                'email': me.data.get('email', '')}
         else:
             return {}
 
