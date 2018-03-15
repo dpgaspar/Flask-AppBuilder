@@ -25,6 +25,7 @@ from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
 
 current_time = lambda: int(round(time.time() * 1000))
 log = logging.getLogger(__name__)
+isSetInterval = False
 thread = None
 
 def setInterval(func, second, self):
@@ -188,7 +189,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         app.config.setdefault('REDIS_HOST', '127.0.0.1')
         app.config.setdefault('REDIS_PORT', 6379)
         app.config.setdefault('REDIS_DB', 0)
-        app.config.setdefault('REMEMBER_COOKIE_DURATION', datetime.timedelta(minutes=15))
+        app.config.setdefault('PERMANENT_SESSION_LIFETIME', datetime.timedelta(minutes=15))
         app.config.setdefault('AUTH_ROLE_ADMIN', 'Admin')
         app.config.setdefault('AUTH_ROLE_PUBLIC', 'Public')
         app.config.setdefault('AUTH_TYPE', AUTH_DB)
@@ -243,6 +244,10 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         @app.before_request
         def before_request():
+            global isSetInterval
+            if not isSetInterval:
+                setInterval(check_online_user, int(app.config['CHACKING_ONLINE_USER_INTERVAL_SEC']), self)
+                isSetInterval = True
             if current_user.is_authenticated():
                 redis_client.hset(app.config['REDIS_KEY'], str(session.get('user_id')), str(current_time()))
 
@@ -258,24 +263,29 @@ class BaseSecurityManager(AbstractSecurityManager):
             now = current_time()
             for key in redis_client.hgetall(app.config['REDIS_KEY']).keys():
                 idle_time = now - int(redis_client.hget(app.config['REDIS_KEY'], key))
-                if app.config['DEV_MODE']:
-                    print_idle_time(key, idle_time)
-                if idle_time > (app.config['REMEMBER_COOKIE_DURATION'].total_seconds() * 1000):
+                # if app.config['DEV_MODE']:
+                print_idle_time(key, idle_time)
+                if idle_time > (app.config['PERMANENT_SESSION_LIFETIME'].total_seconds() * 1000):
                     user = self.get_user_by_id(key)
                     if user is not None and user.status.value == 'online':
-                        if app.config['DEV_MODE']:
-                            print('User "' + str(user.email) + '" logged off.')
+                        # if app.config['DEV_MODE']:
+                        print('User "' + str(user.email) + '" logged off.')
                         user.status = 'offline'
                         self.update_user(user)
                     elif user is not None and user.status.value == 'offline':
+                        print('User "' + str(user.email) + '"\'s session removed.')
                         redis_client.hdel(app.config['REDIS_KEY'], key)
+                    elif user is None:
+                        print('User id ' + key + ' not found')
+                    else:
+                        print('Something went wrong')
 
         def signal_handler(signal, frame):
-            global thread
+            global thread, isSetInterval
             if thread is not None:
+                isSetInterval = False
                 thread.cancel()
 
-        setInterval(check_online_user, int(app.config['CHACKING_ONLINE_USER_INTERVAL_SEC']), self)
         signal.signal(signal.SIGINT, signal_handler)
 
     @property
