@@ -226,13 +226,13 @@
 {% endmacro %}
 
 {% macro panel_begin(title) %}
-<div class="panel panel-primary">
-	<div class="panel-heading">
-	<h4 class="panel-title">{{title}}</h4>
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h4 class="panel-title">{{title}}</h4>
+		</div>
+	{% endmacro %}
+	{% macro panel_end() %}
 	</div>
-{% endmacro %}
-{% macro panel_end() %}
-</div>
 {% endmacro %}
 
 
@@ -256,6 +256,7 @@
             </div>
         </div>
     </div>
+	</div>
 {% endmacro %}
 
 {% macro render_form_controls() %}
@@ -314,9 +315,10 @@
 
 
 {% macro lnk_add(my_href) %}
-    <a href="{{my_href}}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
+    <a href="{{my_href}}" class="" data-toggle="tooltip" rel="tooltip"
        title="{{_('Add a new record')}}">
         <i class="fa fa-plus"></i>
+				<span>Add new record</span>
     </a>
 {% endmacro %}
 
@@ -340,4 +342,3 @@
         <i class="fa fa-trash"></i>
     </a>
 {% endmacro %}
-

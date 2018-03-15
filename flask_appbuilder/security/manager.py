@@ -262,12 +262,12 @@ class BaseSecurityManager(AbstractSecurityManager):
                     print_idle_time(key, idle_time)
                 if idle_time > (app.config['REMEMBER_COOKIE_DURATION'].total_seconds() * 1000):
                     user = self.get_user_by_id(key)
-                    if app.config['DEV_MODE']:
-                        print('User "' + str(user.email) + '" logged off.')
-                    if user is not None and user.status == 'online':
+                    if user is not None and user.status.value == 'online':
+                        if app.config['DEV_MODE']:
+                            print('User "' + str(user.email) + '" logged off.')
                         user.status = 'offline'
                         self.update_user(user)
-                    else:
+                    elif user is not None and user.status.value == 'offline':
                         redis_client.hdel(app.config['REDIS_KEY'], key)
 
         def signal_handler(signal, frame):
@@ -697,7 +697,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         user = self.find_user(username=username)
         if user is not None and (not user.is_active()):
             return None
-        if hasattr(user, 'status') and user.status == 'online':
+        if hasattr(user, 'status') and user.status.value == 'online':
             return 'ALREADY_LOGGED_IN'
         else:
             try:
