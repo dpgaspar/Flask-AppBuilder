@@ -555,15 +555,15 @@ class BaseSecurityManager(AbstractSecurityManager):
                                  category="Security")
 
         self.appbuilder.menu.add_separator("Security")
-        self.appbuilder.add_view(self.permissionmodelview,
-                                 "Base Permissions", icon="fa-lock",
-                                 label=_("Base Permissions"), category="Security")
-        self.appbuilder.add_view(self.viewmenumodelview,
-                                 "Views/Menus", icon="fa-list-alt",
-                                 label=_('Views/Menus'), category="Security")
-        self.appbuilder.add_view(self.permissionviewmodelview,
-                                 "Permission on Views/Menus", icon="fa-link",
-                                 label=_('Permission on Views/Menus'), category="Security")
+        # self.appbuilder.add_view(self.permissionmodelview,
+        #                          "Base Permissions", icon="fa-lock",
+        #                          label=_("Base Permissions"), category="Security")
+        # self.appbuilder.add_view(self.viewmenumodelview,
+        #                          "Views/Menus", icon="fa-list-alt",
+        #                          label=_('Views/Menus'), category="Security")
+        # self.appbuilder.add_view(self.permissionviewmodelview,
+        #                          "Permission on Views/Menus", icon="fa-link",
+        #                          label=_('Permission on Views/Menus'), category="Security")
 
     def create_db(self):
         """
