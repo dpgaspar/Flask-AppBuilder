@@ -274,7 +274,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                         user.status = 'offline'
                         self.update_user(user)
                     elif user is not None and user.status.value == 'offline':
-                        print('User "' + str(user.email) + '"\'s session removed.')
+                        print('User "' + str(user.email) + '" session removed.')
                         redis_client.hdel(app.config['REDIS_KEY'], key)
                     elif user is None:
                         print('User id ' + key + ' not found')
