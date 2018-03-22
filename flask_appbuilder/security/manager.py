@@ -4,6 +4,7 @@ import logging
 import redis
 import signal
 import threading
+import atexit
 from flask import url_for, g, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, current_user
@@ -285,8 +286,18 @@ class BaseSecurityManager(AbstractSecurityManager):
             if thread is not None:
                 isSetInterval = False
                 thread.cancel()
+                thread = None
+
+        def on_exit():
+            global thread, isSetInterval
+            if thread is not None:
+                isSetInterval = False
+                thread.cancel()
+                thread = None
 
         signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGTERM, signal_handler)
+        atexit.register(on_exit)
 
     @property
     def get_url_for_registeruser(self):
