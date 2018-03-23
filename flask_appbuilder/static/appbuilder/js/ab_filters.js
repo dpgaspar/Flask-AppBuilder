@@ -10,6 +10,13 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
     var lastCount = 0;
 
     function removeFilter() {
+        if ($(this).closest('tbody').children('tr').length <= 1) {
+            if (window.location.toString().includes('?')) {
+                const url = window.location.toString()
+                const redirectURL = url.substring(0, url.indexOf('?'))
+                window.location.replace(redirectURL)
+            }
+        }
         $(this).closest('tr').remove();
         $('button', $root).show();
 
