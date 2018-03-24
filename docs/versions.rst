@@ -1,6 +1,13 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.11.0
+------------------------------------
+
+- New, #615 Azure AD as Oauth provider
+- New, #678 fabmanager create-user command
+- Fix, #628, Remove double-instantiation of declarative base, problem with flask-migrate
+
 Improvements and Bug fixes on 1.10.0
 ------------------------------------
 
