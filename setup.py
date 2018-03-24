@@ -42,6 +42,7 @@ setup(
         'Flask-OpenID==1.2.5',
         'Flask-SQLAlchemy==2.1',
         'Flask-WTF==0.14.2',
+        'python-dateutil>=2.3, <3',
     ],
     tests_require=[
         'nose>=1.0',

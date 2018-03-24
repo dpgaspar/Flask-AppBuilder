@@ -15,6 +15,8 @@ Take a quick look to the current possibilities. The bold ones require to import 
 
   - **create-admin** - Creates an admin user
 
+  - **create-user** - Create user with arbitrary role
+
   - create-app - Create a Skeleton application (SQLAlchemy or MongoEngine).
 
   - create-addon - Create a Skeleton AddOn.
