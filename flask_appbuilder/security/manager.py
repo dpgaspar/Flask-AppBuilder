@@ -1,5 +1,8 @@
 import datetime
 import logging
+import re
+import base64
+import json
 from flask import url_for, g, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, current_user
@@ -365,7 +368,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         session['oauth_provider'] = provider
 
-    def get_oauth_user_info(self, provider, resp=None):
+    def get_oauth_user_info(self, provider, resp):
         """
             Since there are different OAuth API's with different ways to
             retrieve user info
@@ -396,8 +399,51 @@ class BaseSecurityManager(AbstractSecurityManager):
                 'first_name': me.data.get('given_name', ''),
                 'last_name': me.data.get('family_name', ''),
                 'email': me.data.get('email', '')}
+        # for Azure AD Tenant. Azure OAuth response contains JWT token which has user info.
+        # JWT token needs to be base64 decoded.
+        # https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
+        if provider == 'azure':
+            log.debug("Azure response received : {0}".format(resp))
+            id_token=resp['id_token']
+            log.debug(str(id_token))
+            me=self._azure_jwt_token_parse(id_token)
+            log.debug("Parse JWT token : {0}".format(me))
+            return { 'name' : me['name'] , 'email' : me['upn'], 'first_name' : me['given_name'], 'last_name' : me['family_name'], 'id' : me['oid'], 'username' : me['oid'] }
         else:
             return {}
+
+    def _azure_parse_jwt(self, id_token):
+        jwt_token_parts = r"^([^\.\s]*)\.([^\.\s]+)\.([^\.\s]*)$"
+        matches = re.search(jwt_token_parts, id_token)
+        if not matches or len(matches.groups()) < 3:
+            log.error( 'Unable to parse token.')
+            return {}
+
+        return {
+            'header': matches.group(1),
+            'Payload': matches.group(2),
+            'Sig': matches.group(3)
+             }
+
+    def _azure_jwt_token_parse(self, id_token):
+        jwt_split_token = self._azure_parse_jwt(id_token)
+        if not jwt_split_token:
+            return
+
+        jwt_payload = jwt_split_token['Payload']
+        # Prepare for base64 decoding
+        payload_b64_string = jwt_payload
+        payload_b64_string += '=' * (4 - ((len(jwt_payload) % 4)))
+        decoded_payload = base64.urlsafe_b64decode(payload_b64_string.encode('ascii'))
+
+        if not decoded_payload:
+            log.error( 'Payload of id_token could not be base64 url decoded.')
+            return
+
+        jwt_decoded_payload = json.loads(decoded_payload.decode('utf-8'))
+
+        return jwt_decoded_payload
+
 
     def register_views(self):
         if self.auth_user_registration:
@@ -871,7 +917,7 @@ class BaseSecurityManager(AbstractSecurityManager):
      ---------------------------
      INTERFACE ABSTRACT METHODS
      ---------------------------
-     
+
      ---------------------
      PRIMITIVES FOR USERS
     ----------------------
@@ -1080,4 +1126,3 @@ class BaseSecurityManager(AbstractSecurityManager):
     @staticmethod
     def before_request():
         g.user = current_user
-

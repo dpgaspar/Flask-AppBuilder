@@ -14,7 +14,7 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 CSRF_ENABLED = True
 
 #------------------------------
-# GLOBALS FOR APP Builder 
+# GLOBALS FOR APP Builder
 #------------------------------
 # Uncomment to setup Your App name
 #APP_NAME = "My App Name"
@@ -53,6 +53,19 @@ OAUTH_PROVIDERS = [
             'request_token_url': None,
             'access_token_url': 'https://accounts.google.com/o/oauth2/token',
             'authorize_url': 'https://accounts.google.com/o/oauth2/auth'}
+    },
+    {'name': 'azure', 'icon': 'fa-windows', 'token_key': 'access_token',
+        'remote_app': {
+            'consumer_key': os.environ.get('AZURE_APPLICATION_ID'),
+            'consumer_secret': os.environ.get('AZURE_SECRET'),
+            'base_url': 'https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2',
+            'request_token_params': {
+              'scope': 'User.read name preferred_username email profile',
+              'resource' : os.environ.get('AZURE_APPLICATION_ID'),
+            },
+            'request_token_url': None,
+            'access_token_url':'https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/token',
+    'authorize_url':'https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/authorize'}
     }
 ]
 
@@ -117,13 +130,12 @@ IMG_UPLOAD_URL = '/static/uploads/'
 #APP_THEME = "cerulean.css"
 #APP_THEME = "amelia.css"
 #APP_THEME = "cosmo.css"
-#APP_THEME = "cyborg.css"  
+#APP_THEME = "cyborg.css"
 #APP_THEME = "flatly.css"
 #APP_THEME = "journal.css"
 #APP_THEME = "readable.css"
 #APP_THEME = "simplex.css"
-#APP_THEME = "slate.css"   
+#APP_THEME = "slate.css"
 #APP_THEME = "spacelab.css"
 #APP_THEME = "united.css"
 #APP_THEME = "yeti.css"
-
