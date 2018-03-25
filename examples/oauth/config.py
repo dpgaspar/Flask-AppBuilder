@@ -32,6 +32,12 @@ CSRF_ENABLED = True
 # AUTH_REMOTE_USER : Is for using REMOTE_USER from web server
 AUTH_TYPE = AUTH_OAUTH
 
+def to_user_from_response(res):
+    return {'username': res.data.get('preferred_username', ''),
+            'first_name': res.data.get('given_name', ''),
+            'last_name': res.data.get('family_name', ''),
+            'email': res.data.get('email', '')}
+
 OAUTH_PROVIDERS = [
     {'name':'twitter', 'icon':'fa-twitter',
         'remote_app': {
@@ -54,6 +60,20 @@ OAUTH_PROVIDERS = [
             'access_token_url': 'https://accounts.google.com/o/oauth2/token',
             'authorize_url': 'https://accounts.google.com/o/oauth2/auth'}
     },
+    # {'name': 'keycloak', 'icon': 'fa-key', 'token_key': 'access_token',
+    #      'user_query': 'userinfo',
+    #      'user_resolver': to_user_from_response,
+    #      'remote_app': {
+    #          'consumer_key': os.environ.get('SUPERSET_KEY'),
+    #          'consumer_secret': os.environ.get('SUPERSET_SECRET'),
+    #          'base_url': 'http://keycloak-endpoint/auth/realms/realm-name/protocol/openid-connect/',
+    #          'request_token_params': {
+    #              'scope': 'email profile'
+    #          },
+    #          'request_token_url': None,
+    #          'authorize_url': 'http://keycloak-endpoint/auth/realms/realm-name/protocol/openid-connect/auth',
+    #          'access_token_url': 'http://keycloak-endpoint/auth/realms/realm-name/protocol/openid-connect/token'
+    #  },
     {'name': 'azure', 'icon': 'fa-windows', 'token_key': 'access_token',
         'remote_app': {
             'consumer_key': os.environ.get('AZURE_APPLICATION_ID'),

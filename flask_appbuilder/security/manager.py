@@ -368,7 +368,26 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         session['oauth_provider'] = provider
 
-    def get_oauth_user_info(self, provider, resp):
+    def get_oauth_user_endpoint(self, provider):
+        """
+           Returns the user_query endpoint parameter for the
+           oauth provider. If none is configured, the dynamic user get
+           functionality is not used
+       """
+        for _provider in self.oauth_providers:
+            if _provider['name'] == provider:
+                return _provider.get('user_query', None)
+
+    def get_oauth_user_response_resolver(self, provider):
+        """
+           Returns the user_resolver function for the oauth provider.
+           If none is configured, the dynamic user get functionality is not used
+       """
+        for _provider in self.oauth_providers:
+            if _provider['name'] == provider:
+                return _provider.get('user_resolver', None)
+
+    def get_oauth_user_info(self, provider, resp=None):
         """
             Since there are different OAuth API's with different ways to
             retrieve user info
@@ -410,7 +429,17 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.debug("Parse JWT token : {0}".format(me))
             return { 'name' : me['name'] , 'email' : me['upn'], 'first_name' : me['given_name'], 'last_name' : me['family_name'], 'id' : me['oid'], 'username' : me['oid'] }
         else:
-            return {}
+            user_query = self.get_oauth_user_endpoint(provider)
+            user_resolver = self.get_oauth_user_response_resolver(provider)
+            if user_query is not None and user_resolver is not None:
+                me = self.appbuilder.sm.oauth_remotes[provider].get(user_query)
+                log.debug("User info from {0}: {1}".format(provider, me.data))
+                user = user_resolver(me)
+                user['username'] = provider + '_' + user['username']
+                return user
+            else:
+                return {}
+
 
     def _azure_parse_jwt(self, id_token):
         jwt_token_parts = r"^([^\.\s]*)\.([^\.\s]+)\.([^\.\s]*)$"
