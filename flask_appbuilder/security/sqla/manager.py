@@ -179,8 +179,7 @@ class SecurityManager(BaseSecurityManager):
 
     def get_user_by_id(self, pk):
         try:
-            user = self.get_session.query(self.user_model).get(pk)
-            return user
+            return self.get_session.query(self.user_model).get(pk)
         except Exception as e:
             self.get_session.rollback()
             return None

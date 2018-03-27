@@ -264,12 +264,10 @@ class BaseSecurityManager(AbstractSecurityManager):
             now = current_time()
             for key in redis_client.hgetall(app.config['REDIS_KEY']).keys():
                 idle_time = now - int(redis_client.hget(app.config['REDIS_KEY'], key))
-                # if app.config['DEV_MODE']:
                 print_idle_time(key, idle_time)
                 if idle_time > (app.config['PERMANENT_SESSION_LIFETIME'].total_seconds() * 1000):
                     user = self.get_user_by_id(key)
                     if user is not None and user.status.value == 'online':
-                        # if app.config['DEV_MODE']:
                         print('User "' + str(user.email) + '" logged off.')
                         user.status = 'offline'
                         self.update_user(user)
