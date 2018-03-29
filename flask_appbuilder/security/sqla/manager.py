@@ -177,6 +177,15 @@ class SecurityManager(BaseSecurityManager):
             self.get_session.rollback()
             return False
 
+    def get_user_filter_by_id(self, id): 
+        """Clear SALAlchemy caching before select data"""
+        try:
+            self.get_session.commit()
+            return self.get_session.query(self.user_model).filter_by(id=id).scalar()
+        except Exception as e:
+            self.get_session.rollback()
+            return None
+
     def get_user_by_id(self, pk):
         try:
             return self.get_session.query(self.user_model).get(pk)

@@ -266,7 +266,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 idle_time = now - int(redis_client.hget(app.config['REDIS_KEY'], key))
                 print_idle_time(key, idle_time)
                 if idle_time > (app.config['PERMANENT_SESSION_LIFETIME'].total_seconds() * 1000):
-                    user = self.get_user_by_id(key)
+                    user = self.get_user_filter_by_id(int(key))
                     if user is not None and user.status.value == 'online':
                         print('User "' + str(user.email) + '" logged off.')
                         user.status = 'offline'
@@ -274,10 +274,6 @@ class BaseSecurityManager(AbstractSecurityManager):
                     elif user is not None and user.status.value == 'offline':
                         print('User "' + str(user.email) + '" session removed.')
                         redis_client.hdel(app.config['REDIS_KEY'], key)
-                    elif user is None:
-                        print('User id ' + key + ' not found')
-                    else:
-                        print('Something went wrong')
 
         def signal_handler(signal, frame):
             global thread, isSetInterval
