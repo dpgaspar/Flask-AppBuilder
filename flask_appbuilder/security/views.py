@@ -18,6 +18,7 @@ from .._compat import as_unicode
 from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm, UserInfoEdit
 from .decorators import has_access
 
+from sqlalchemy.exc import OperationalError
 
 log = logging.getLogger(__name__)
 
@@ -409,20 +410,28 @@ class AuthLDAPView(AuthView):
             return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_db()
         online_users_count = self.appbuilder.sm.count_online_users()
-        if form.validate_on_submit():
-            if online_users_count <= self.appbuilder.get_app.config['MAXIMUM_ONLINE_USER']:
-                user = self.appbuilder.sm.auth_user_ldap(form.username.data, form.password.data)
-                if not user:
-                    flash(as_unicode(self.invalid_login_message), 'warning')
-                    return redirect(self.appbuilder.get_url_for_login)
-                elif user == 'ALREADY_LOGGED_IN':
-                    already_logged_in_message = lazy_gettext('Please login again after logout from other computer or waiting for session expired in ' + str(coverge_sec_to_min(self.appbuilder.get_app.config['PERMANENT_SESSION_LIFETIME'].total_seconds())) + ' minutes.')
-                    flash(as_unicode(already_logged_in_message), 'warning')
-                    return redirect(self.appbuilder.get_url_for_login)
-                login_user(user, remember=False)
-                return redirect(self.appbuilder.get_url_for_index)
-            flash(as_unicode(self.user_limit_exceeded_message), 'warning')
-            return redirect(self.appbuilder.get_url_for_login)
+
+        try:
+            if form.validate_on_submit():
+                if online_users_count <= self.appbuilder.get_app.config['MAXIMUM_ONLINE_USER']:
+                    user = self.appbuilder.sm.auth_user_ldap(form.username.data, form.password.data)
+                    if not user:
+                        flash(as_unicode(self.invalid_login_message), 'warning')
+                        return redirect(self.appbuilder.get_url_for_login)
+                    elif user == 'ALREADY_LOGGED_IN':
+                        already_logged_in_message = lazy_gettext('Please login again after logout from other computer or waiting for session expired in ' + str(coverge_sec_to_min(self.appbuilder.get_app.config['PERMANENT_SESSION_LIFETIME'].total_seconds())) + ' minutes.')
+                        flash(as_unicode(already_logged_in_message), 'warning')
+                        return redirect(self.appbuilder.get_url_for_login)
+                    login_user(user, remember=False)
+                    return redirect(self.appbuilder.get_url_for_index)
+                flash(as_unicode(self.user_limit_exceeded_message), 'warning')
+                return redirect(self.appbuilder.get_url_for_login)
+
+        except OperationalError:
+                message = u"Please check you keyboard language"
+                flash(message, 'warning')
+                redirect('/login')
+
         return self.render_template(self.login_template,
                                title=self.title,
                                form=form,
