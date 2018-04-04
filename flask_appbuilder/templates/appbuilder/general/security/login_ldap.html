@@ -1,6 +1,20 @@
 <!-- extend base layout -->
 {% extends "appbuilder/base.html" %} {% block content %}
-
+<script>
+  $(document).ready(function() {
+    function onChange() {
+      let username = $('#username').val()
+      let password = $('#password').val()
+      if (username.length > 0 && password.length > 0) {
+        $('#submit-login').prop('disabled', false)
+      } else {
+        $('#submit-login').prop('disabled', true)
+      }
+    }
+    $('#username').keypress(onChange)
+    $('#password').keypress(onChange)
+  })
+</script>
 <div class="container login-box">
   <div class = "bg-custom"></div>
   <div id="loginbox" class="mainbox col-md-6 col-sm-8">
@@ -28,7 +42,7 @@
           <div class="control-group">
             <div class="controls">
               <br>
-              <input class="btn btn-primary-explorer btn-block" type="submit" value="{{_('Sign In')}}">
+              <input id="submit-login" class="btn btn-primary-explorer btn-block" type="submit" value="{{_('Sign In')}}" disabled>
             </div>
           </div>
         </form>

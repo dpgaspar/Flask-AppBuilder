@@ -428,9 +428,9 @@ class AuthLDAPView(AuthView):
                 return redirect(self.appbuilder.get_url_for_login)
 
         except OperationalError:
-                message = u"Please check you keyboard language"
+                message = lazy_gettext('Please check you keyboard language')
                 flash(message, 'warning')
-                redirect('/login')
+                redirect(self.appbuilder.get_url_for_login)
 
         return self.render_template(self.login_template,
                                title=self.title,
