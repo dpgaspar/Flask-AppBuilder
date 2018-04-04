@@ -8,6 +8,8 @@ from .widgets import FormWidget, ShowWidget, ListWidget, SearchWidget
 from .actions import ActionItem
 from .urltools import *
 
+from sqlalchemy.exc import OperationalError
+
 log = logging.getLogger(__name__)
 
 
@@ -282,7 +284,6 @@ class BaseFormView(BaseView):
                                            fieldsets=self.form_fieldsets
         )
         return widgets
-
 
 class BaseModelView(BaseView):
     """
@@ -912,25 +913,33 @@ class BaseCRUDView(BaseModelView):
         exclude_cols = self._filters.get_relation_cols()
         form = self.add_form.refresh()
 
+        
         if request.method == 'POST':
             self._fill_form_exclude_cols(exclude_cols, form)
-            if form.validate():
-                self.process_form(form, True)
-                item = self.datamodel.obj()
-                form.populate_obj(item)
 
-                try:
-                    self.pre_add(item)
-                except Exception as e:
-                    flash(str(e), "danger")
+            try:
+                if form.validate():
+                    self.process_form(form, True)
+                    item = self.datamodel.obj()
+                    form.populate_obj(item)
+
+                    try:
+                        self.pre_add(item)
+                    except Exception as e:
+                        flash(str(e), "danger")
+                    else:
+                        if self.datamodel.add(item):
+                            self.post_add(item)
+                        flash(*self.datamodel.message)
+                    finally:
+                        return None
+
                 else:
-                    if self.datamodel.add(item):
-                        self.post_add(item)
-                    flash(*self.datamodel.message)
-                finally:
-                    return None
-            else:
-                is_valid_form = False
+                    is_valid_form = False
+
+            except OperationalError:
+                    flash('Cannot add input with Thai language', 'warning')            
+            
         if is_valid_form:
             self.update_redirect()
         return self._get_add_widget(form=form, exclude_cols=exclude_cols)
@@ -959,21 +968,26 @@ class BaseCRUDView(BaseModelView):
             self._fill_form_exclude_cols(exclude_cols, form)
             # trick to pass unique validation
             form._id = pk
-            if form.validate():
-                self.process_form(form, False)
-                form.populate_obj(item)
-                try:
-                    self.pre_update(item)
-                except Exception as e:
-                    flash(str(e), "danger")
+
+            try:
+                if form.validate():
+                    self.process_form(form, False)
+                    form.populate_obj(item)
+                    try:
+                        self.pre_update(item)
+                    except Exception as e:
+                        flash(str(e), "danger")
+                    else:
+                        if self.datamodel.edit(item):
+                            self.post_update(item)
+                        flash(*self.datamodel.message)
+                    finally:
+                        return None
                 else:
-                    if self.datamodel.edit(item):
-                        self.post_update(item)
-                    flash(*self.datamodel.message)
-                finally:
-                    return None
-            else:
-                is_valid_form = False
+                    is_valid_form = False
+                    
+            except OperationalError:
+                flash('Cannot edit input with Thai language', 'warning')
         else:
             # Only force form refresh for select cascade events
             form = self.edit_form.refresh(obj=item)

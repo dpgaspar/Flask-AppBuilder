@@ -428,7 +428,7 @@ class AuthLDAPView(AuthView):
                 return redirect(self.appbuilder.get_url_for_login)
 
         except OperationalError:
-                message = u"Please check you keyboard language"
+                message = u"Please check your keyboard language"
                 flash(message, 'warning')
                 redirect('/login')
 
