@@ -6,13 +6,13 @@
       let username = $('#username').val()
       let password = $('#password').val()
       if (username.length > 0 && password.length > 0) {
-        $('#submit-login').prop('disabled', false)
+        $('#submit-login').removeAttr('disabled')
       } else {
-        $('#submit-login').prop('disabled', true)
+        $('#submit-login').attr('disabled', 'disabled')
       }
     }
-    $('#username').keypress(onChange)
-    $('#password').keypress(onChange)
+    $('#username').keyup(onChange)
+    $('#password').keyup(onChange)
   })
 </script>
 <div class="container login-box">
@@ -42,7 +42,7 @@
           <div class="control-group">
             <div class="controls">
               <br>
-              <input id="submit-login" class="btn btn-primary-explorer btn-block" type="submit" value="{{_('Sign In')}}" disabled>
+              <input id="submit-login" class="btn btn-primary-explorer btn-block" type="submit" value="{{_('Sign In')}}" disabled="disabled">
             </div>
           </div>
         </form>
