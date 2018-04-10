@@ -184,20 +184,25 @@ class GeneralModelConverter(object):
                      lst_validators, filter_rel_fields,
                      form_props):
         if self.datamodel.is_relation(col_name):
-            if self.datamodel.is_relation_many_to_one(col_name) or \
-                    self.datamodel.is_relation_one_to_one(col_name):
+            if self.datamodel.is_relation_many_to_one(col_name) or self.datamodel.is_relation_one_to_one(col_name):
                 return self._convert_many_to_one(col_name, label,
                                                  description,
                                                  lst_validators,
                                                  filter_rel_fields,
                                                  form_props)
-            elif self.datamodel.is_relation_many_to_many(col_name) or \
-                    self.datamodel.is_relation_one_to_many(col_name):
-                return self._convert_many_to_many(col_name, label,
-                                                  description,
-                                                  lst_validators,
-                                                  filter_rel_fields,
-                                                  form_props)
+            elif self.datamodel.is_relation_many_to_many(col_name) or self.datamodel.is_relation_one_to_many(col_name):
+                if col_name == 'roles':
+                    return self._convert_many_to_one(col_name, label,
+                                                      description,
+                                                      lst_validators,
+                                                      filter_rel_fields,
+                                                      form_props)
+                else:
+                    return self._convert_many_to_many(col_name, label,
+                                                      description,
+                                                      lst_validators,
+                                                      filter_rel_fields,
+                                                      form_props)
             else:
                 log.warning("Relation {0} not supported".format(col_name))
         else:
@@ -256,5 +261,3 @@ class DynamicForm(FlaskForm):
     def refresh(self, obj=None):
         form = self(obj=obj)
         return form
-
-

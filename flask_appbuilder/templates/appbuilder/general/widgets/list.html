@@ -70,7 +70,9 @@
                               {{ item[value]|safe }}
                             {% endif %}
                           {% else %}
-                            {{ item[value]|safe }}
+                            <div class = 'permissions-box'>
+                              {{ item[value]|safe }}
+                            </div>
                           {% endif %}
                         </td>
                     {% endif %}

@@ -86,7 +86,7 @@ class Select2AJAXWidget(object):
     def __init__(self, endpoint, extra_classes=None, style=None):
         self.endpoint = endpoint
         self.extra_classes = extra_classes
-        self.style = style or u'width:250px'
+        self.style = style
 
     def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
@@ -142,7 +142,7 @@ class Select2Widget(widgets.Select):
 
     def __init__(self, extra_classes=None, style=None):
         self.extra_classes = extra_classes
-        self.style = style or u'width:250px'
+        self.style = style
         return super(Select2Widget, self).__init__()
 
     def __call__(self, field, **kwargs):
@@ -161,7 +161,7 @@ class Select2ManyWidget(widgets.Select):
 
     def __init__(self, extra_classes=None, style=None):
         self.extra_classes = extra_classes
-        self.style = style or u'width:250px'
+        self.style = style
         return super(Select2ManyWidget, self).__init__()
 
     def __call__(self, field, **kwargs):
