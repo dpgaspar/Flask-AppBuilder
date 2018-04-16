@@ -7,7 +7,7 @@ from datetime import datetime
 log = logging.getLogger(__name__)
 
 def get_random_name(names_list, size=1):
-    name_lst = [names_list[random.randrange(0, len(names_list))].capitalize() for i in range(0, size)]
+    name_lst = [names_list[random.randrange(0, len(names_list))].decode("utf-8").capitalize() for i in range(0, size)]
     return " ".join(name_lst)
 
 
@@ -27,20 +27,20 @@ try:
     db.session.add(groups[0])
     db.session.add(groups[1])
     db.session.add(groups[2])
-    print groups[0].id
+    print(groups[0].id)
     db.session.commit()
-except Exception, e:
+except Exception as e:
     log.error("Creating Groups: %s", e)
     db.session.rollback()
 
 try:
-    genders = []
+    genders = list()
     genders.append(Gender(name='Male'))
     genders.append(Gender(name='Female'))
     db.session.add(genders[0])
     db.session.add(genders[1])
     db.session.commit()
-except Exception, e:
+except Exception as e:
     log.error("Creating Genders: %s", e)
     db.session.rollback()
 
@@ -52,7 +52,7 @@ f.close()
 for i in range(1, 1000):
     c = Contact()
     c.name = get_random_name(names_list, random.randrange(2, 6))
-    c.address = 'Street ' + names_list[random.randrange(0, len(names_list))]
+    c.address = 'Street ' + names_list[random.randrange(0, len(names_list))].decode("utf-8")
     c.personal_phone = random.randrange(1111111, 9999999)
     c.personal_celphone = random.randrange(1111111, 9999999)
     c.contact_group = groups[random.randrange(0, 3)]
@@ -64,8 +64,8 @@ for i in range(1, 1000):
     db.session.add(c)
     try:
         db.session.commit()
-        print "inserted", c
-    except Exception, e:
+        print("inserted", c)
+    except Exception as e:
         log.error("Creating Contact: %s", e)
         db.session.rollback()
     
