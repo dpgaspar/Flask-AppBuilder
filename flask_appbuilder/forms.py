@@ -107,8 +107,6 @@ class GeneralModelConverter(object):
         return label_columns.get(col_name, "")
 
     def _datana_role_scope(self, lst):
-        print('$$$$$$$$$')
-        # list_name = map(lambda x: x.name ,lst)
         scope_list = ['Admin', 'Gamma', 'Viewer']
         result = filter(lambda x: x.name in scope_list, lst)
         print(list(result))
@@ -122,8 +120,6 @@ class GeneralModelConverter(object):
                 return lambda: datamodel.query(filters)[1]
         if col_name == 'roles':
             testFunc = self._datana_role_scope(self.datamodel.get_related_interface(col_name).query()[1])
-            # print('$$$$$$$$')
-            # print(testFunc)
             return (lambda: testFunc)
         return lambda: self.datamodel.get_related_interface(col_name).query()[1]
 
