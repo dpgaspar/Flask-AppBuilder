@@ -913,7 +913,7 @@ class BaseCRUDView(BaseModelView):
         exclude_cols = self._filters.get_relation_cols()
         form = self.add_form.refresh()
 
-        
+
         if request.method == 'POST':
             self._fill_form_exclude_cols(exclude_cols, form)
 
@@ -938,8 +938,8 @@ class BaseCRUDView(BaseModelView):
                     is_valid_form = False
 
             except OperationalError:
-                    flash('Cannot add input with Thai language', 'warning')            
-            
+                    flash('Cannot add input with Thai language', 'warning')
+
         if is_valid_form:
             self.update_redirect()
         return self._get_add_widget(form=form, exclude_cols=exclude_cols)
@@ -985,12 +985,13 @@ class BaseCRUDView(BaseModelView):
                         return None
                 else:
                     is_valid_form = False
-                    
+
             except OperationalError:
                 flash('Cannot edit input with Thai language', 'warning')
         else:
             # Only force form refresh for select cascade events
             form = self.edit_form.refresh(obj=item)
+
             # Perform additional actions to pre-fill the edit form.
             self.prefill_form(form, pk)
 

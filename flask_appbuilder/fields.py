@@ -198,7 +198,7 @@ class EnumField(SelectField):
     The meaning of enum_class and enums is the same as for attributes on sqlalchemy.types.Enum:
 
     :param enum_class: either None or a subclass of Python enum.Enum
-    :param enums: a sequence of strings, if enum_class is not Null than it should be 
+    :param enums: a sequence of strings, if enum_class is not Null than it should be
                   `list(enum_class.__members__)`
     """
 
