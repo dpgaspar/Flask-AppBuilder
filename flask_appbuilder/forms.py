@@ -109,7 +109,6 @@ class GeneralModelConverter(object):
     def _datana_role_scope(self, lst):
         scope_list = ['Admin', 'Gamma', 'Viewer']
         result = filter(lambda x: x.name in scope_list, lst)
-        print(list(result))
         return result
 
     def _get_related_query_func(self, col_name, filter_rel_fields):
