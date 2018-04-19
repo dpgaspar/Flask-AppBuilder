@@ -93,6 +93,7 @@ var AdminActions = function() {
         if (single) {
             window.location.href = action_url;
         }
+        $('#modal-confirm').modal('hide');
     });
 
     //------------------------------------------
