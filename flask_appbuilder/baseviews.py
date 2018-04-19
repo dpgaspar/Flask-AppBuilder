@@ -957,6 +957,10 @@ class BaseCRUDView(BaseModelView):
         exclude_cols = self._filters.get_relation_cols()
 
         item = self.datamodel.get(pk, self._base_filters)
+        print('##########')
+        print(dir(item))
+        print(type(item.roles))
+        print(dir(item.roles))
         if not item:
             abort(404)
         # convert pk to correct type, if pk is non string type.

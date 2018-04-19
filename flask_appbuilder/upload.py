@@ -130,23 +130,23 @@ class FileUploadField(fields.TextField):
         super(FileUploadField, self).__init__(label, validators, **kwargs)
 
     def process_on_delete(self, obj):
-        """Override this method to make customised updates to the object 
+        """Override this method to make customised updates to the object
         when the stored file is going to be deleted."""
         pass
 
     def process_on_store(self, obj, byte_stream):
-        """Override this method to make customised updates to the object 
+        """Override this method to make customised updates to the object
         when a file is going to be stored.
-        
-        This may be used to parse file content and extract values for 
+
+        This may be used to parse file content and extract values for
         additional fields.
-        
+
         Note: as populate_obj() on form fields my be called in an arbitrary
         order, do not assume that other fields in obj have been correctly set.
         If an extra information (from other fields) is necessary for parsing
         the supplied file content, a form-field validator may be used to copy
         it directly from the form to this field.
-        
+
         :param obj: model object
         :param byte_stream: file contents
         """
@@ -236,4 +236,3 @@ class ImageUploadField(fields.StringField):
             filename = self.imagemanager.save_file(self.data, filename, size, thumbnail_size)
 
             setattr(obj, name, filename)
-

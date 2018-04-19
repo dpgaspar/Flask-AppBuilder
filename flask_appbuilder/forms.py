@@ -117,9 +117,9 @@ class GeneralModelConverter(object):
                 datamodel = self.datamodel.get_related_interface(col_name)
                 filters = datamodel.get_filters().add_filter_list(filter_rel_fields[col_name])
                 return lambda: datamodel.query(filters)[1]
-        if col_name == 'roles':
-            testFunc = self._datana_role_scope(self.datamodel.get_related_interface(col_name).query()[1])
-            return (lambda: testFunc)
+        # if col_name == 'roles':
+        #     testFunc = self._datana_role_scope(self.datamodel.get_related_interface(col_name).query()[1])
+        #     return (lambda: testFunc)
         return lambda: self.datamodel.get_related_interface(col_name).query()[1]
 
 
@@ -193,18 +193,32 @@ class GeneralModelConverter(object):
                      lst_validators, filter_rel_fields,
                      form_props):
         if self.datamodel.is_relation(col_name):
-            if self.datamodel.is_relation_many_to_one(col_name) or self.datamodel.is_relation_one_to_one(col_name) or col_name == 'roles':
+            if self.datamodel.is_relation_many_to_one(col_name) or \
+                    self.datamodel.is_relation_one_to_one(col_name):
                 return self._convert_many_to_one(col_name, label,
                                                  description,
                                                  lst_validators,
                                                  filter_rel_fields,
                                                  form_props)
-            elif self.datamodel.is_relation_many_to_many(col_name) or self.datamodel.is_relation_one_to_many(col_name):
-                return self._convert_many_to_many(col_name, label,
-                                                  description,
-                                                  lst_validators,
-                                                  filter_rel_fields,
-                                                  form_props)
+            elif self.datamodel.is_relation_many_to_many(col_name) or \
+                    self.datamodel.is_relation_one_to_many(col_name):
+                    # if col_name == 'roles':
+                    #     return self._convert_many_to_one(col_name, label,
+                    #                                      description,
+                    #                                      lst_validators,
+                    #                                      filter_rel_fields,
+                    #                                      form_props)
+                    # else:
+                    #     return self._convert_many_to_many(col_name, label,
+                    #                                       description,
+                    #                                       lst_validators,
+                    #                                       filter_rel_fields,
+                    #                                       form_props)
+                    return self._convert_many_to_many(col_name, label,
+                                                      description,
+                                                      lst_validators,
+                                                      filter_rel_fields,
+                                                      form_props)
             else:
                 log.warning("Relation {0} not supported".format(col_name))
         else:
@@ -246,16 +260,11 @@ class GeneralModelConverter(object):
         for col_name in inc_columns:
             if col_name in extra_fields:
                 form_props[col_name] = extra_fields.get(col_name)
-                print('!!!!!!!!!')
-                print(extra_fields.get(col_name))
             else:
                 self._convert_col(col_name, self._get_label(col_name, label_columns),
                                   self._get_description(col_name, description_columns),
                                   self._get_validators(col_name, validators_columns),
                                   filter_rel_fields, form_props)
-            # if inc_columns == ['first_name', 'last_name', 'username', 'active', 'email', 'roles'] and col_name == 'roles':
-            #     print('#######')
-            #     print(form_props['roles'])
         return type('DynamicForm', (DynamicForm,), form_props)
 
 
