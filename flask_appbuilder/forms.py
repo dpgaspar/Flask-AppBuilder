@@ -107,7 +107,7 @@ class GeneralModelConverter(object):
         return label_columns.get(col_name, "")
 
     def _datana_role_scope(self, lst):
-        scope_list = ['Admin', 'Gamma', 'Viewer']
+        scope_list = ['Admin', 'Creator', 'Viewer']
         result = filter(lambda x: x.name in scope_list, lst)
         return result
 
@@ -120,7 +120,11 @@ class GeneralModelConverter(object):
         # if col_name == 'roles':
         #     testFunc = self._datana_role_scope(self.datamodel.get_related_interface(col_name).query()[1])
         #     return (lambda: testFunc)
-        return lambda: self.datamodel.get_related_interface(col_name).query()[1]
+        if col_name == 'roles':
+            result = lambda: self._datana_role_scope(self.datamodel.get_related_interface(col_name).query()[1])
+        else:
+            result = lambda: self.datamodel.get_related_interface(col_name).query()[1]
+        return result
 
 
     def _get_related_pk_func(self, col_name):
@@ -145,6 +149,28 @@ class GeneralModelConverter(object):
             lst_validators.append(validators.Optional())
         form_props[col_name] = \
             QuerySelectField(label,
+                             description=description,
+                             query_func=query_func,
+                             get_pk_func=get_pk_func,
+                             allow_blank=allow_blank,
+                             validators=lst_validators,
+                             widget=Select2Widget(extra_classes=extra_classes))
+        return form_props
+
+    def _convert_many_to_one_role(self, col_name, label, description,
+                              lst_validators, filter_rel_fields,
+                              form_props):
+        query_func = self._get_related_query_func(col_name, filter_rel_fields)
+        get_pk_func = self._get_related_pk_func(col_name)
+        extra_classes = None
+        allow_blank = True
+        if not self.datamodel.is_nullable(col_name):
+            lst_validators.append(validators.DataRequired())
+            allow_blank = False
+        else:
+            lst_validators.append(validators.Optional())
+        form_props[col_name] = \
+            QuerySelectMultipleField(label,
                              description=description,
                              query_func=query_func,
                              get_pk_func=get_pk_func,
@@ -202,23 +228,23 @@ class GeneralModelConverter(object):
                                                  form_props)
             elif self.datamodel.is_relation_many_to_many(col_name) or \
                     self.datamodel.is_relation_one_to_many(col_name):
-                    # if col_name == 'roles':
-                    #     return self._convert_many_to_one(col_name, label,
-                    #                                      description,
-                    #                                      lst_validators,
-                    #                                      filter_rel_fields,
-                    #                                      form_props)
-                    # else:
-                    #     return self._convert_many_to_many(col_name, label,
-                    #                                       description,
-                    #                                       lst_validators,
-                    #                                       filter_rel_fields,
-                    #                                       form_props)
-                    return self._convert_many_to_many(col_name, label,
-                                                      description,
-                                                      lst_validators,
-                                                      filter_rel_fields,
-                                                      form_props)
+                    if col_name == 'roles':
+                        return self._convert_many_to_one_role(col_name, label,
+                                                         description,
+                                                         lst_validators,
+                                                         filter_rel_fields,
+                                                         form_props)
+                    else:
+                        return self._convert_many_to_many(col_name, label,
+                                                          description,
+                                                          lst_validators,
+                                                          filter_rel_fields,
+                                                          form_props)
+                    # return self._convert_many_to_many(col_name, label,
+                    #                                   description,
+                    #                                   lst_validators,
+                    #                                   filter_rel_fields,
+                    #                                   form_props)
             else:
                 log.warning("Relation {0} not supported".format(col_name))
         else:
