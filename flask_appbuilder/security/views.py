@@ -373,7 +373,7 @@ class AuthView(BaseView):
     def logout(self):
         if g.user.is_authenticated():
             self.appbuilder.sm.remove_session_from_redis(g.user.id)
-            item = self.appbuilder.sm.get_user_by_id(g.user.id)
+            item = self.appbuilder.sm.get_user_filter_by_id(g.user.id)
             item.status = 'offline'
             self.appbuilder.sm.update_user(item)
         logout_user()
