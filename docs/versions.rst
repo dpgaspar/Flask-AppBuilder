@@ -6,7 +6,9 @@ Improvements and Bug fixes on 1.11.0
 
 - New, #615 Azure AD as Oauth provider
 - New, #678 fabmanager create-user command
-- Fix, #628, Remove double-instantiation of declarative base, problem with flask-migrate
+- Fix, #628 Remove double-instantiation of declarative base, problem with flask-migrate
+- New, #735 Added french translations
+- Fix, minor typo EMail to Email
 
 Improvements and Bug fixes on 1.10.0
 ------------------------------------
