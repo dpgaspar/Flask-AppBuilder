@@ -125,7 +125,7 @@ class UserModelView(ModelView):
                      'username': lazy_gettext('User Name'),
                      'password': lazy_gettext('Password'),
                      'active': lazy_gettext('Is Active?'),
-                     'email': lazy_gettext('EMail'),
+                     'email': lazy_gettext('Email'),
                      'roles': lazy_gettext('Role'),
                      'last_login': lazy_gettext('Last login'),
                      'login_count': lazy_gettext('Login count'),
