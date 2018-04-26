@@ -1,6 +1,5 @@
 from wtforms import ValidationError
 
-
 class Unique(object):
     """
         Checks field value unicity against specified table field.

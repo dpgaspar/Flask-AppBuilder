@@ -2,6 +2,15 @@
 {% extends "appbuilder/base.html" %} {% block content %}
 <script>
   $(document).ready(function() {
+    function onFocus(e) {
+      let username = $('#username').val()
+      let password = $('#password').val()
+      if (username.length > 0 && password.length > 0) {
+        $('#submit-login').removeAttr('disabled')
+      } else {
+        $('#submit-login').attr('disabled', 'disabled')
+      }
+    }
     function onChange() {
       let username = $('#username').val()
       let password = $('#password').val()
@@ -11,6 +20,8 @@
         $('#submit-login').attr('disabled', 'disabled')
       }
     }
+    $('#username').bind('input', onFocus)
+    $('#password').bind('input', onFocus)
     $('#username').keyup(onChange)
     $('#password').keyup(onChange)
   })
