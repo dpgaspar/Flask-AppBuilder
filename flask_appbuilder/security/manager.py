@@ -532,10 +532,10 @@ class BaseSecurityManager(AbstractSecurityManager):
                                                   category="Security", category_icon="fa-lock",
                                                   category_label=_('Security'))
 
-        # role_view = self.appbuilder.add_view(self.rolemodelview, "List Roles",
-        #                                      icon="fa-group", label=_('List Roles'),
-        #                                      category="Security", category_icon="fa-lock")
-        role_view = self.appbuilder.add_view_no_menu(self.rolemodelview)
+        role_view = self.appbuilder.add_view(self.rolemodelview, "List Roles",
+                                             icon="fa-group", label=_('List Roles'),
+                                             category="Security", category_icon="fa-lock")
+        # role_view = self.appbuilder.add_view_no_menu(self.rolemodelview)
         role_view.related_views = [self.user_view.__class__]
 
         self.appbuilder.add_view(self.userstatschartview,

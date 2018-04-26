@@ -118,12 +118,9 @@ class GeneralModelConverter(object):
                 filters = datamodel.get_filters().add_filter_list(filter_rel_fields[col_name])
                 return lambda: datamodel.query(filters)[1]
         # if col_name == 'roles':
-        #     testFunc = self._datana_role_scope(self.datamodel.get_related_interface(col_name).query()[1])
-        #     return (lambda: testFunc)
-        if col_name == 'roles':
-            result = lambda: self._datana_role_scope(self.datamodel.get_related_interface(col_name).query()[1])
-        else:
-            result = lambda: self.datamodel.get_related_interface(col_name).query()[1]
+        #     result = lambda: self._datana_role_scope(self.datamodel.get_related_interface(col_name).query()[1])
+        # else:
+        result = lambda: self.datamodel.get_related_interface(col_name).query()[1]
         return result
 
 
