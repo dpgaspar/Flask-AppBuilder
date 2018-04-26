@@ -25,6 +25,7 @@ LANGUAGES = {
     'pt': {'flag': 'pt', 'name': 'Portuguese'},
     'pt_BR': {'flag':'br', 'name': 'Pt Brazil'},
     'es': {'flag': 'es', 'name': 'Spanish'},
+    'fr': {'flag': 'fr', 'name': 'French'},
     'de': {'flag': 'de', 'name': 'German'},
     'zh': {'flag': 'cn', 'name': 'Chinese'},
     'ru': {'flag': 'ru', 'name': 'Russian'},

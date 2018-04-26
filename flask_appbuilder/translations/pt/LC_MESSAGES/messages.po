@@ -243,7 +243,7 @@ msgstr "Último Nome"
 
 #: flask_appbuilder/security/forms.py:36 flask_appbuilder/security/forms.py:53
 msgid "Email"
-msgstr "EMail"
+msgstr "Email"
 
 #: flask_appbuilder/security/manager.py:417
 #: flask_appbuilder/security/views.py:95
