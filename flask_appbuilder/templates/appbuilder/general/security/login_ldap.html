@@ -17,10 +17,8 @@
 
       else if(navigator.userAgent.search("Firefox") !== -1){
         if (username.length > 0 && password.length > 0) {
-          console.log('firefox onfocus case1')
           $('#submit-login').removeAttr('disabled')
         } else {
-          console.log('firefox onfocus case2')
           $('#submit-login').attr('disabled', 'disabled')
         }  
       }
@@ -38,12 +36,9 @@
       }
 
       else if(navigator.userAgent.search("Firefox") !== -1){
-
         if (username.length > 0 && password.length > 0) {
-          console.log('firefox onchange case1')
           $('#submit-login').removeAttr('disabled')
         } else {
-          console.log('firefox onchange case2')
           $('#submit-login').attr('disabled', 'disabled')
         }  
       }
