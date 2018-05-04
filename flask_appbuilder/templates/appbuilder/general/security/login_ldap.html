@@ -2,28 +2,62 @@
 {% extends "appbuilder/base.html" %} {% block content %}
 <script>
   $(document).ready(function() {
+
     function onFocus(e) {
       let username = $('#username').val()
       let password = $('#password').val()
-      if (username.length > 0 && password.length > 0) {
-        $('#submit-login').removeAttr('disabled')
-      } else {
-        $('#submit-login').attr('disabled', 'disabled')
+      
+      if(navigator.userAgent.search("Chrome") !== -1){
+        if (username.length > 0 && password.length > 0 || $('#username:-webkit-autofill').length > 0 && $('#password:-webkit-autofill').length > 0) {
+          $('#submit-login').removeAttr('disabled')
+        } else {
+          $('#submit-login').attr('disabled', 'disabled')
+        }  
+      }
+
+      else if(navigator.userAgent.search("Firefox") !== -1){
+        if (username.length > 0 && password.length > 0) {
+          console.log('firefox onfocus case1')
+          $('#submit-login').removeAttr('disabled')
+        } else {
+          console.log('firefox onfocus case2')
+          $('#submit-login').attr('disabled', 'disabled')
+        }  
       }
     }
     function onChange() {
       let username = $('#username').val()
       let password = $('#password').val()
-      if (username.length > 0 && password.length > 0) {
-        $('#submit-login').removeAttr('disabled')
-      } else {
-        $('#submit-login').attr('disabled', 'disabled')
+      if(navigator.userAgent.search("Chrome") !== -1){
+
+        if (username.length > 0 && password.length > 0 || $('#username:-webkit-autofill').length > 0 && $('#password:-webkit-autofill').length > 0) {
+          $('#submit-login').removeAttr('disabled')
+        } else {
+          $('#submit-login').attr('disabled', 'disabled')
+        }  
+      }
+
+      else if(navigator.userAgent.search("Firefox") !== -1){
+
+        if (username.length > 0 && password.length > 0) {
+          console.log('firefox onchange case1')
+          $('#submit-login').removeAttr('disabled')
+        } else {
+          console.log('firefox onchange case2')
+          $('#submit-login').attr('disabled', 'disabled')
+        }  
       }
     }
     $('#username').bind('input', onFocus)
     $('#password').bind('input', onFocus)
-    $('#username').keyup(onChange)
-    $('#password').keyup(onChange)
+    $('#username').bind('input', onChange)
+    $('#password').bind('input', onChange)
+    $('#username').keydown(onChange)
+    $('#username').mouseenter(onChange)
+    $('#password').keydown(onChange)
+    $('#password').mouseenter(onChange)
+
+
   })
 </script>
 <div class="container login-box">
