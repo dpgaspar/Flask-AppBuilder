@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.11.1
+------------------------------------
+
+- Fix, Unlock flask required version, new 0.12.4. does not cause issues anymore
+
 Improvements and Bug fixes on 1.11.0
 ------------------------------------
 
