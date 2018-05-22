@@ -66,6 +66,19 @@ OAUTH_PROVIDERS = [
             'request_token_url': None,
             'access_token_url':'https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/token',
     'authorize_url':'https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/authorize'}
+    },
+    {'name': 'mitreid', 'icon': 'fa-user-circle', 'token_key': 'access_token',
+        'remote_app': {
+            'base_url': 'https://some-mitreid-host/openid-connect/userinfo',
+            'consumer_key': os.environ.get('MITREID_KEY'),
+            'consumer_secret': os.environ.get('MITREID_SECRET'),
+            'request_token_params': {
+                'scope': 'email profile'
+            },
+            'request_token_url': None,
+            'access_token_url': 'https://some-mitreid-host/openid-connect/token',
+            'authorize_url': 'https://some-mitreid-host/openid-connect/authorize'
+        }
     }
 ]
 

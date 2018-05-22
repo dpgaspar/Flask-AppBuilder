@@ -409,6 +409,17 @@ class BaseSecurityManager(AbstractSecurityManager):
             me=self._azure_jwt_token_parse(id_token)
             log.debug("Parse JWT token : {0}".format(me))
             return { 'name' : me['name'] , 'email' : me['upn'], 'first_name' : me['given_name'], 'last_name' : me['family_name'], 'id' : me['oid'], 'username' : me['oid'] }
+        # for MITREid https://github.com/mitreid-connect/
+        if provider == 'mitreid':
+            me = self.appbuilder.sm.oauth_remotes[provider].get('userinfo')
+            log.debug("User info from MITREid: {0}".format(me.data))
+            return {
+                'name' : me.data.get('name', ''),
+                'email' : me.data.get('email', ''),
+                'username': me.data.get('email', ''),
+                'first_name' : me.data.get('given_name', ''),
+                'last_name' : me.data.get('family_name', '')
+            }
         else:
             return {}
 
