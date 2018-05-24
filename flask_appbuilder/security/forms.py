@@ -19,9 +19,9 @@ class LoginForm_db(DynamicForm):
 
 class UserInfoEdit(DynamicForm):
     first_name = StringField(lazy_gettext('First Name'), validators=[DataRequired()], widget=BS3TextFieldWidget(),
-                             description=lazy_gettext('Write the user first name or names'))
+                             description=lazy_gettext('Write the user\'s first name or names'))
     last_name = StringField(lazy_gettext('Last Name'), validators=[DataRequired()], widget=BS3TextFieldWidget(),
-                            description=lazy_gettext('Write the user last name'))
+                            description=lazy_gettext('Write the user\'s last name'))
 
 
 class ResetPasswordForm(DynamicForm):
