@@ -157,7 +157,7 @@ class AppBuilder(object):
         self.bm = BabelManager(self)
         self._add_global_static()
         self._add_global_filters()
-        app.before_request(self.sm.before_request)
+        # app.before_request(self.sm.before_request)
         self._add_admin_views()
         self._add_addon_views()
         self._add_menu_permissions()

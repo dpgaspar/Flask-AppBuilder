@@ -245,8 +245,8 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         @app.before_request
         def before_request():
-            g.user = current_user
             global isSetInterval
+            g.user = current_user
             if not isSetInterval:
                 setInterval(check_online_user, int(app.config['CHACKING_ONLINE_USER_INTERVAL_SEC']), self)
                 isSetInterval = True
