@@ -41,7 +41,7 @@ setup(
         'Flask-Babel==0.11.1',  # known issues with 0.11.2
         'Flask-Login==0.2.11',
         'Flask-OpenID==1.2.5',
-        'Flask-SQLAlchemy==2.1',
+        'Flask-SQLAlchemy==2.3.2',
         'Flask-WTF==0.14.2',
     ],
     tests_require=[
