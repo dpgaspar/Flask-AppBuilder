@@ -52,12 +52,12 @@ var AdminActions = function() {
         // Update hidden form and submit it
             var form = $('#action_form');
             $('#action', form).val(action_name);
-            
+
             $('input.action_check', form).remove();
-            $('input.action_check:checked').each(function() {   
+            $('input.action_check:checked').each(function() {
                 form.append($(this).clone());
             });
-            
+
             form.submit();
 
             return false;
@@ -68,7 +68,7 @@ var AdminActions = function() {
     // will check all checkboxes with class "action_check
     //----------------------------------------------------
     $('.action_check_all').click(function() {
-        $('.action_check').prop('checked', chkAllFlag).trigger("change");
+        $(this).closest('table').find('.action_check').prop('checked', chkAllFlag).trigger("change");
         chkAllFlag = !chkAllFlag;
     });
 
