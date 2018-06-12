@@ -44,13 +44,23 @@
             {% set action = actions.get(action_key) %}
                 <li>
                     <a href="javascript:void(0)"
-                       onclick="return modelActions.execute_multiple('{{action.name}}','{{action.confirmation}}');">
+                        class="{{action.name}}_menu_item">
                         <i class="fa {{action.icon}}"></i>
                         {{ _(action.text) }}
                     </a>
                 </li>
         {% endfor %}
     </ul>
+		<script type="text/javascript">
+		$(document).ready(function() {
+		{% for action_key in actions %}
+        {% set action = actions.get(action_key) %}
+				$('.{{action.name}}_menu_item').on('click', function(){
+				    return modelActions.execute_multiple('{{action.name}}','{{action.confirmation}}');
+				})
+		{% endfor %}
+		});
+		</script>
 </div>
 {% endif %}
 {% endmacro %}
@@ -340,4 +350,3 @@
         <i class="fa fa-eraser"></i>
     </a>
 {% endmacro %}
-
