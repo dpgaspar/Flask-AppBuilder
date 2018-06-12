@@ -22,14 +22,16 @@
 
     {% block begin_loop_values %}
     {% endblock %}
-    
+
     {% block end_content scoped %}
     {% endblock %}
 
     {{ lib.action_form(actions,modelview_name) }}
 
     <script language="javascript">
-        var modelActions = new AdminActions();
+        $(document).ready(function() {
+            window.modelActions = new AdminActions();
+        });
     </script>
 
 {% else %}
