@@ -251,7 +251,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 setInterval(check_online_user, int(app.config['CHACKING_ONLINE_USER_INTERVAL_SEC']), self)
                 isSetInterval = True
             if current_user.is_authenticated():
-                redis_client.hset(app.config['REDIS_KEY'], str(session.get('user_id')), str(current_time()))
+                redis_client.hset(app.config['REDIS_KEY'], str(current_user.get_user_id()), str(current_time()))
 
         def print_idle_time(id, idle_time):
             idle_time_in_seconds = int(idle_time / 1000)
