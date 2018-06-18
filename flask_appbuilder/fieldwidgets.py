@@ -81,7 +81,7 @@ class BS3PasswordFieldWidget(widgets.PasswordInput):
 
 
 class Select2AJAXWidget(object):
-    data_template = ('<input %(text)s"></input>')
+    data_template = ('<input %(text)s />')
 
     def __init__(self, endpoint, extra_classes=None, style=None):
         self.endpoint = endpoint
