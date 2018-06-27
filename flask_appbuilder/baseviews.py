@@ -65,6 +65,7 @@ class BaseView(object):
     """  The static folder relative location """
     static_url_path = '/static'
     base_permissions = None
+    base_permissions_inclusive = ['menu_access']
     """
         List with allowed base permission.
         Use it like this if you want to restrict your view to readonly::
@@ -94,6 +95,8 @@ class BaseView(object):
                     permission_name = getattr(getattr(self, attr_name), '_permission_name')
                     self.base_permissions.add('can_' + permission_name)
             self.base_permissions = list(self.base_permissions)
+        if self.base_permissions_inclusive:
+            self.base_permissions.extend(self.base_permissions_inclusive)
         if not self.extra_args:
             self.extra_args = dict()
         self._apis = dict()
