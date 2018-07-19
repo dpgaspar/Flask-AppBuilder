@@ -131,12 +131,14 @@ class Filters(object):
         self.filters = []
         self.values = []
 
-    def _add_filter(self, filter_instance, value):
+    def _add_filter(self, filter_instance, values):
         self.filters.append(filter_instance)
-        self.values.append(value)
+        self.values.append(values)
 
-    def add_filter_index(self, column_name, filter_instance_index, value):
-        self._add_filter(self._all_filters[column_name][filter_instance_index], value)
+    def add_filter_index(self, column_name, filter_instance_index, values):
+        self._add_filter(
+            self._all_filters[column_name][filter_instance_index], values
+        )
 
     def add_filter(self, column_name, filter_class, value):
         self._add_filter(filter_class(column_name, self.datamodel), value)
@@ -203,8 +205,12 @@ class Filters(object):
         return [(flt.column_name, as_unicode(flt.name), value) for flt, value in zip(self.filters, self.values)]
 
     def apply_all(self, query):
-        for flt, value in zip(self.filters, self.values):
-            query = flt.apply(query, value)
+        for flt, values in zip(self.filters, self.values):
+            if isinstance(values, list):
+                for value in values:
+                    query = flt.apply(query, value)
+            else:
+                query = flt.apply(query, values)
         return query
 
     def __repr__(self):
