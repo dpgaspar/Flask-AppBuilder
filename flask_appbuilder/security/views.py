@@ -434,6 +434,7 @@ class AuthLDAPView(AuthView):
 
         return self.render_template(self.login_template,
                                title=self.title,
+                               version=self.appbuilder.get_app.config['VERSION_CODE_NAME'],
                                form=form,
                                appbuilder=self.appbuilder)
 
