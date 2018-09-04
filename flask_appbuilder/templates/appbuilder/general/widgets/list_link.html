@@ -59,9 +59,9 @@
                         <td>
                             {% if loop.index == 1 and can_show %}
                                 <a href="{{url_for(modelview_name + '.show',pk=pk)}}">
-                                {{ item[value]|safe }}</a>
+                                {{ item[value] }}</a>
                             {% else %}
-                                {{ item[value]|safe }}
+                                {{ item[value] }}
                             {% endif %}
                         </td>
                 {% endfor %}

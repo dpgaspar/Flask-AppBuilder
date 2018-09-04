@@ -27,10 +27,10 @@
 	(function($) {
 	var filter = new AdminFilters(
                     '#filter_form',
-                    {{ label_columns | tojson | safe }},
-                    {{ form_fields | tojson | safe }},
-                    {{ search_filters | tojson | safe }},
-                    {{ active_filters | tojson | safe }}                                        
+                    {{ label_columns | tojson }},
+                    {{ form_fields | tojson }},
+                    {{ search_filters | tojson }},
+                    {{ active_filters | tojson }}
                 );
 	})(jQuery);
 	

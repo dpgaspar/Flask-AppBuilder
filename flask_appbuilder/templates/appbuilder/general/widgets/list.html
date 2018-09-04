@@ -60,7 +60,7 @@
                     {% if formatter %}
                         <td>{{ formatter(item[value]) }}</td>
                     {% else %}
-                        <td>{{ item[value]|safe }}</td>
+                        <td>{{ item[value] }}</td>
                     {% endif %}
                 {% endfor %}
             </tr>
