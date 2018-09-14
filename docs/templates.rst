@@ -34,7 +34,7 @@ templates, making it easy to change the UI, without having to develop your own f
 
     {% block head_css %}
         {{ super() }}
-        <script src="{{url_for('static',filename='css/your_css_file.css')}}"></script>
+        <link rel="stylesheet" href="{{url_for('static',filename='css/your_css_file.css')}}"></link>
     {% endblock %}
 
     {% block head_js %}

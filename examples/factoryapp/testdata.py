@@ -7,7 +7,7 @@ from app import db
 
 
 def get_random_name(names_list, size=1):
-    name_lst = [names_list[random.randrange(0, len(names_list))].capitalize() for i in range(0, size)]
+    name_lst = [names_list[random.randrange(0, len(names_list))].decode("utf-8").capitalize() for i in range(0, size)]
     return " ".join(name_lst)
 
 
@@ -34,7 +34,7 @@ f.close()
 for i in range(1, 50):
     c = Contact()
     c.name = get_random_name(names_list, random.randrange(2, 6))
-    c.address = 'Street ' + names_list[random.randrange(0, len(names_list))]
+    c.address = 'Street ' + names_list[random.randrange(0, len(names_list))].decode("utf-8")
     c.personal_phone = random.randrange(1111111, 9999999)
     c.personal_celphone = random.randrange(1111111, 9999999)
     c.contact_group_id = random.randrange(1, 4)
@@ -47,9 +47,7 @@ for i in range(1, 50):
     try:
         db.session.commit()
         print("inserted {0}".format(c))
-    except:
+    except Exception as e:
         db.session.rollback()
 
-#role_admin = appbuilder.sm.find_role(appbuilder.sm.auth_role_admin)
-#appbuilder.sm.add_user('admin', 'Admin', 'User', 'admin@fab.org', role_admin, 'general')
 

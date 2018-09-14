@@ -1,6 +1,44 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.11.1
+------------------------------------
+
+- Fix, Unlock flask required version, new 0.12.4. does not cause issues anymore
+
+Improvements and Bug fixes on 1.11.0
+------------------------------------
+
+- New, #615 Azure AD as Oauth provider
+- New, #678 fabmanager create-user command
+- Fix, #628 Remove double-instantiation of declarative base, problem with flask-migrate
+- New, #735 Added french translations
+- Fix, minor typo EMail to Email
+
+Improvements and Bug fixes on 1.10.0
+------------------------------------
+
+- Fix, #712 improvement on parsing timezone dates
+- Fix, #701 permission deletion
+- Fix, #700 Non unique associations on security models
+- New, #694 Accept SQLAlchemy custom types defined by TypeDecorator
+- New, #686 Removed support for python 2.6
+
+Improvements and Bug fixes on 1.9.6
+-----------------------------------
+
+- Fix, #663 Allow remote user to be auto registered.
+- New, #639 Composite key support for SQLAlchemy.
+- New, #661 Add feature to allow form to be processed prior to populating model.
+
+Improvements and Bug fixes on 1.9.5
+-----------------------------------
+
+- New, #655 add feature to allow form prefill.
+- New, #631 add sqlalchemy support for binary types.
+- New, #626 support for traditional Chinese.
+- New, #626 possible to disable update permissions on startup.
+
 Improvements and Bug fixes on 1.9.4
 -----------------------------------
 

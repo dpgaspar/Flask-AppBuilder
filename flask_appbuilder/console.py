@@ -51,13 +51,13 @@ def cli_app():
         of your flask-appbuilder applications.
 
         All commands that import your app will assume by default that
-        your running on your projects directory just before the app directory.
-        will assume also that on the __init__.py your initializing AppBuilder
+        you're running on your projects directory just before the app directory.
+        They will also assume that __init__.py initializes AppBuilder
         like this (using a var named appbuilder) just like the skeleton app::
 
         appbuilder = AppBuilder(......)
 
-        If your using different namings use app and appbuilder parameters.
+        If you're using different namings use app and appbuilder parameters.
     """
     pass
 
@@ -104,6 +104,28 @@ def create_admin(app, appbuilder, username, firstname, lastname, email, password
         click.echo(click.style('Admin User {0} created.'.format(username), fg='green'))
     else:
         click.echo(click.style('No user created an error occured', fg='red'))
+
+
+@cli_app.command("create-user")
+@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
+@click.option('--role', default='Public', prompt='Role')
+@click.option('--username', prompt='Username')
+@click.option('--firstname', prompt='User first name')
+@click.option('--lastname', prompt='User last name')
+@click.option('--email', prompt='Email')
+@click.password_option()
+def create_user(app, appbuilder, role, username, firstname, lastname, email, password):
+    """
+        Create a user
+    """
+    _appbuilder = import_application(app, appbuilder)
+    role_object = _appbuilder.sm.find_role(role)
+    user = _appbuilder.sm.add_user(username, firstname, lastname, email, role_object, password)
+    if user:
+        click.echo(click.style('User {0} created.'.format(username), fg='green'))
+    else:
+        click.echo(click.style('Error!! No user created', fg='red'))
 
 
 @cli_app.command("run")

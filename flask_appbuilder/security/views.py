@@ -56,7 +56,7 @@ class PermissionViewModelView(ModelView):
 
     label_columns = {'permission': lazy_gettext('Permission'), 'view_menu': lazy_gettext('View/Menu')}
     list_columns = ['permission', 'view_menu']
-    
+
 
 class ResetMyPasswordView(SimpleFormView):
     """
@@ -125,7 +125,7 @@ class UserModelView(ModelView):
                      'username': lazy_gettext('User Name'),
                      'password': lazy_gettext('Password'),
                      'active': lazy_gettext('Is Active?'),
-                     'email': lazy_gettext('EMail'),
+                     'email': lazy_gettext('Email'),
                      'roles': lazy_gettext('Role'),
                      'last_login': lazy_gettext('Last login'),
                      'login_count': lazy_gettext('Login count'),
@@ -328,7 +328,7 @@ class RoleModelView(ModelView):
     label_columns = {'name': lazy_gettext('Name'), 'permissions': lazy_gettext('Permissions')}
     list_columns = ['name', 'permissions']
     order_columns = ['name']
-    
+
     @action("Copy Role", lazy_gettext('Copy Role'), lazy_gettext('Copy the selected roles?'), icon='fa-copy', single=False)
     def copy_role(self, items):
         self.update_redirect()
@@ -413,7 +413,7 @@ class AuthLDAPView(AuthView):
     """
         For Future Use, API Auth, must check howto keep REST stateless
     """
-    
+
     """
     @expose_api(name='auth',url='/api/auth')
     def auth(self):
@@ -427,14 +427,14 @@ class AuthLDAPView(AuthView):
         if not user:
             http_return_code = 401
             response = make_response(jsonify({'message': 'Login Failed',
-                                              'severity': 'critical'}), http_return_code)            
+                                              'severity': 'critical'}), http_return_code)
         else:
             login_user(user, remember=False)
             http_return_code = 201
             response = make_response(jsonify({'message': 'Login Success',
-                                              'severity': 'info'}), http_return_code)            
-        
-        return response     
+                                              'severity': 'info'}), http_return_code)
+
+        return response
     """
 
 
@@ -486,8 +486,8 @@ class AuthOIDView(AuthView):
 
 class AuthOAuthView(AuthView):
     login_template = 'appbuilder/general/security/login_oauth.html'
-    
-    
+
+
     @expose('/login/')
     @expose('/login/<provider>')
     @expose('/login/<provider>/<register>')
@@ -512,7 +512,7 @@ class AuthOAuthView(AuthView):
                 log.error("Error on OAuth authorize: {0}".format(e))
                 flash(as_unicode(self.invalid_login_message), 'warning')
                 return redirect(self.appbuilder.get_url_for_index)
-            
+
     @expose('/oauth-authorized/<provider>')
     def oauth_authorized(self, provider):
         log.debug("Authorized init")
@@ -524,7 +524,7 @@ class AuthOAuthView(AuthView):
         # Retrieves specific user info from the provider
         try:
             self.appbuilder.sm.set_oauth_session(provider, resp)
-            userinfo = self.appbuilder.sm.oauth_user_info(provider)
+            userinfo = self.appbuilder.sm.oauth_user_info(provider, resp)
         except Exception as e:
             log.error("Error returning OAuth user info: {0}".format(e))
             user = None
@@ -551,8 +551,8 @@ class AuthOAuthView(AuthView):
         else:
             login_user(user)
             return redirect(self.appbuilder.get_url_for_index)
-        
-        
+
+
 class AuthRemoteUserView(AuthView):
     login_template = ''
 
@@ -570,4 +570,3 @@ class AuthRemoteUserView(AuthView):
         else:
             flash(as_unicode(self.invalid_login_message), 'warning')
         return redirect(self.appbuilder.get_url_for_index)
-

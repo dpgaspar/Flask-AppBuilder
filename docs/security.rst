@@ -115,7 +115,7 @@ On the show detail for each user you can check who created the user and when and
 You can check also, a total login count (successful login), and the last failed logins
 (these are reset if a successful login occurred).
 
-If your using SQLAlchemy you can mix auditing to your models in a simple way. Mix AuditMixin class to your models::
+If you're using SQLAlchemy you can mix auditing to your models in a simple way. Mix AuditMixin class to your models::
 
     from flask_appbuilder.models.mixins import AuditMixin
     from flask_appbuilder import Model
@@ -145,8 +145,8 @@ Authentication Methods
 ----------------------
 
 We are now looking at the authentication methods, and how you can configure them and customize them.
-The framework as 5 authentication methods and you choose one of them, you configure the method to be used
-on the **config.py** (when using the create-app, or following the propused app structure). First the
+The framework has 5 authentication methods and you choose one of them, you configure the method to be used
+on the **config.py** (when using the create-app, or following the proposed app structure). First the
 configuration imports the constants for the authentication methods::
 
     from flask_appbuilder.security.manager import AUTH_OID, \ 
@@ -237,7 +237,7 @@ When using self user registration, you can use the following to config further:
 Authentication: OAuth
 ---------------------
 
-By using this method it will be possible to use the provider API, this is because your requesting the user to give
+By using this method it will be possible to use the provider API, this is because you're requesting the user to give
 permission to your app to access or manage the user's account on the provider.
 
 So you can send tweets, post on the users facebook, retrieve the user's linkedin profile etc.
@@ -373,7 +373,7 @@ First extend the User Model (create a sec_models.py file)::
 
 
 Next define a new User view, just like the default User view but with the extra column (create a sec_view.py)
-If your using:
+If you're using:
 
 - AUTH_DB extend UserDBModelView
 - AUTH_LDAP extend UserLDAPModelView
@@ -424,7 +424,7 @@ Next create your own SecurityManager class, overriding your model and view for U
         user_model = MyUser
         userdbmodelview = MyUserDBModelView
 
-Note that this is for AUTH_DB, so if your using:
+Note that this is for AUTH_DB, so if you're using:
 
 - AUTH_DB override userdbmodelview
 - AUTH_LDAP override userldapmodelview
