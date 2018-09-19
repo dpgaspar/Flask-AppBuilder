@@ -25,6 +25,7 @@ setup(
     author_email='danielvazgaspar@gmail.com',
     description='Simple and rapid application development framework, built on top of Flask. includes detailed security, auto CRUD generation for your models, google charts and much more.',
     long_description=desc(),
+    long_description_content_type="text/x-rst",
     packages=find_packages(),
     package_data={'': ['LICENSE']},
     entry_points={'console_scripts': [
