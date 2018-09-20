@@ -571,7 +571,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         user = self.find_user(username=username)
         if user is None:
             user = self.find_user(email=username)
-        if user is None or (not user.is_active()):
+        if user is None or (not user.is_active):
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
         elif check_password_hash(user.password, password):
@@ -659,7 +659,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if username is None or username == "":
             return None
         user = self.find_user(username=username)
-        if user is not None and (not user.is_active()):
+        if user is not None and (not user.is_active):
             return None
         else:
             try:
@@ -720,7 +720,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             :type self: User model
         """
         user = self.find_user(email=email)
-        if user is None or (not user.is_active()):
+        if user is None or (not user.is_active):
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(email))
             return None
         else:
@@ -749,7 +749,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         # If user does not exist on the DB and not auto user registration,
         # or user is inactive, go away.
-        elif user is None or (not user.is_active()):
+        elif user is None or (not user.is_active):
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
 
@@ -771,7 +771,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.error('User info does not have username or email {0}'.format(userinfo))
             return None
         # User is disabled
-        if user and not user.is_active():
+        if user and not user.is_active:
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(userinfo))
             return None
         # If user does not exist on the DB and not self user registration, go away
@@ -830,7 +830,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
             Check if current user or public has access to view or menu
         """
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             return self._has_view_access(g.user, permission_name, view_name)
         else:
             return self.is_item_public(permission_name, view_name)
