@@ -763,13 +763,15 @@ class BaseSecurityManager(AbstractSecurityManager):
             :userinfo: dict with user information the keys have the same name
             as User model columns.
         """
-        if 'username' in userinfo:
-            user = self.find_user(username=userinfo['username'])
-        elif 'email' in userinfo:
-            user = self.find_user(email=userinfo['email'])
-        else:
+        if 'username' not in userinfo and 'email' not in userinfo:
             log.error('User info does not have username or email {0}'.format(userinfo))
             return None
+
+        if 'username' in userinfo:
+            user = self.find_user(username=userinfo['username'])
+        if not user and 'email' in userinfo:
+            user = self.find_user(email=userinfo['email'])
+
         # User is disabled
         if user and not user.is_active():
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(userinfo))
