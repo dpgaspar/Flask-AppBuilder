@@ -134,14 +134,4 @@ or::
 Python 2 and 3 Compatibility
 ----------------------------
 
-The framework itself is compatible and has been tested for Python 2.7 and 3.3.
-But there is still one problem in Python 3.3, the framework internationalization feature
-uses the excellent package Babel, but i've found an incompatibility on it for python 3.3.
-While this problem is not solved there is a limitation for Py3.3 on F.A.B. you can't use
-Babel's features, so on config you must only setup english::
-
-    BABEL_DEFAULT_LOCALE = 'en'
-    BABEL_DEFAULT_FOLDER = 'translations'
-    LANGUAGES = {
-        'en':{'flag':'gb','name':'English'}
-    }
+The framework itself is compatible and has been tested for Python 2.7 and 3.6.
