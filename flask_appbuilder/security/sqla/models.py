@@ -111,12 +111,15 @@ class User(Model):
         except Exception as e:
             return None
 
+    @property
     def is_authenticated(self):
         return True
 
+    @property
     def is_active(self):
         return self.active
 
+    @property
     def is_anonymous(self):
         return False
 
