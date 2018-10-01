@@ -82,6 +82,57 @@ How can you or someone use your AddOn? On the app config.py add this key::
 
    ADDON_MANAGERS = ['fab_addon_first.manager.FirstAddOnManager']
 
+
+Adding js/css to the html head in the main templates
+----------------------------------------------------
+
+If you need to add css or js files to the head_js or head_css blocks of the main template, you can
+do this with the self.addon_js and self.addon_css attributes of the manager. Both are lists of tuples,
+where the first item in the tuple is the endpoint argument to url_for and the second item is the filename
+of the css/js file.
+
+To make those files availble to you app, you need to register a new blueprint that adds a static endpoint
+to your app. This is the same way the appbuilder.static endpoint works besides your app specific static
+folder.
+Assuming you addon's name is first_addon, this will create the fab_addon_first_addon.static endpoint
+and add some javascript and css files to the head_css and head_js block of the init template.::
+
+
+   from flask import Blueprint
+
+   class FirstAddOnManager(BaseManager):
+
+       def __init__(self, appbuilder):
+           """
+                Use the constructor to setup any config keys specific for your app.
+           """
+           super(FirstAddOnManager, self).__init__(appbuilder)
+           self.static_bp = Blueprint('fab_addon_first_addon', __name__, url_prefix=static,
+                                      template_folder='templates',
+                                      static_folder='static/fab_addon_first_addon',
+                                      static_url_path='/fab_addon_first_addon')
+            self.addon_js = [('fab_addon_first_addon.static', 'js/my.js')]
+            self.addon_cdd = [('fab_addon_first_addon.static', 'css/my.css')]
+
+       def register_views(self):
+           """
+               This method is called by AppBuilder when initializing, use it to add you views
+           """
+           self.appbuilder.add_view(FirstModelView1, "First View1",icon = "fa-user",category = "First AddOn")
+
+       def pre_process(self):
+           self.appbuilder.get_app.register_blueprint(self.static_bp)
+           stuff = self.appbuilder.get_session.query(MyModel).filter(name == 'something').all()
+           # process stuff
+
+       def post_process(self):
+           pass
+
+
+You should now be able to add your js/css content to your package in fab_addon_first_addon/static/fab_addon_first_addon folder
+
+Example
+-------
 And thats it.
 
 I've just added a simple audit modelViews's addon to start contributions and to serve as an example.

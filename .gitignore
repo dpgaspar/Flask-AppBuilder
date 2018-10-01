@@ -1,4 +1,6 @@
 .coverage
+.pytest_cache
+.*.swp
 *.egg-info
 .eggs/
 *.pyc
