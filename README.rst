@@ -17,19 +17,28 @@ Extensive configuration of all functionality, easily integrate with normal Flask
 
 Take a look at installation, quick how to tutorials, API reference etc: `Documentation <http://flask-appbuilder.readthedocs.org/en/latest/>`_
 
-Checkout installation video on `YouTube <http://youtu.be/xvum4vfwldg>`_ for 1.2.0 and prior `YouTube <http://youtu.be/ZrqFDroqqWE>`_
+Checkout installation video on `YouTube <http://youtu.be/xvum4vfwldg>`_
 
 Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples>`_ and a live quick how to `Demo from the docs <http://flaskappbuilder.pythonanywhere.com/>`_ (login has guest/welcome).
 
 Package Version
 ---------------
 
-*New 1.11.0*.
+*New 1.12.0*.
 
-BREAKING CHANGES relative to 1.8.1 when using OAUTH authentication method.
+BREAKING CHANGES relative to 1.12.0: we have bumped flask-login version, this causes breaking changes on the API relative to this package.
 
-If you're already using F.A.B.
-read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.
+- Flask-AppBuilder version <= 1.11.1 was using Flask-Login 0.2.X.
+
+- Flask-AppBuilder version > 1.12.0 is using Flask-Login > 0.3.X.
+
+The following methods from Flask-Login changed to properties:
+
+is_anonymous() -> is_anonymous
+is_active() -> is_active
+is_authenticated() -> is_authenticated
+
+Take at look at: https://github.com/maxcountryman/flask-login/blob/master/CHANGES#L49
 
 Also read the `Versions <http://flask-appbuilder.readthedocs.org/en/latest/versions.html>`_ for further detail on what changed.
 
