@@ -40,9 +40,9 @@ setup(
         'Flask>=0.10.0,<0.12.99',
         'Flask-Babel==0.11.1',  # known issues with 0.11.2
         'Flask-Login>=0.3,<0.5',
-        'Flask-OpenID==1.2.5',
-        'Flask-SQLAlchemy==2.1',
-        'Flask-WTF==0.14.2',
+        'Flask-OpenID>=1.2.5',
+        'Flask-SQLAlchemy>=2.1',
+        'Flask-WTF>=0.14.2',
         'python-dateutil>=2.3, <3',
     ],
     tests_require=[
