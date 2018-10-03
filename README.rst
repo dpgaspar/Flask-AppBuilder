@@ -34,9 +34,11 @@ BREAKING CHANGES relative to 1.12.0: we have bumped flask-login version, this ca
 
 The following methods from Flask-Login changed to properties:
 
-is_anonymous() -> is_anonymous
-is_active() -> is_active
-is_authenticated() -> is_authenticated
+- is_anonymous() -> is_anonymous
+
+- is_active() -> is_active
+
+- is_authenticated() -> is_authenticated
 
 Take at look at: https://github.com/maxcountryman/flask-login/blob/master/CHANGES#L49
 
