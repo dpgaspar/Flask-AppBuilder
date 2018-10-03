@@ -9,7 +9,7 @@
     google.setOnLoadCallback (createChart);
     // playground http://code.google.com/apis/ajax/playground/?type=visualization#line_chart
 
-    var jsonData{{ modelview_name }} = {{ value_columns | tojson | safe }}
+    var jsonData{{ modelview_name }} = {{ value_columns | tojson }}
 
 
     //-----------------------------------

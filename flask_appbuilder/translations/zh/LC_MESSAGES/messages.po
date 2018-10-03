@@ -240,7 +240,6 @@ msgid "Last Name"
 msgstr "姓"
 
 #: flask_appbuilder/security/forms.py:36 flask_appbuilder/security/forms.py:53
-#, fuzzy
 msgid "Email"
 msgstr "电子邮箱"
 
@@ -386,10 +385,6 @@ msgstr "全名"
 #: flask_appbuilder/security/views.py:105
 msgid "Is Active?"
 msgstr "是否激活？"
-
-#: flask_appbuilder/security/views.py:106
-msgid "EMail"
-msgstr "电子邮箱"
 
 #: flask_appbuilder/security/views.py:107
 msgid "Role"

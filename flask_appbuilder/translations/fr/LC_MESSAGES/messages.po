@@ -1,0 +1,656 @@
+# French translations for PROJECT.
+# Copyright (C) 2013 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-09-17 13:23+0100\n"
+"PO-Revision-Date: 2013-12-07 19:49+0000\n"
+"Last-Translator: \n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: flask_appbuilder/const.py:100
+msgid "Access is Denied"
+msgstr "Accès refusé"
+
+#: flask_appbuilder/fields.py:77 flask_appbuilder/fields.py:79
+#: flask_appbuilder/fields.py:131 flask_appbuilder/fields.py:138
+#, fuzzy
+msgid "Not a valid choice"
+msgstr "Choix non valid"
+
+#: flask_appbuilder/messages.py:9
+#: flask_appbuilder/templates/appbuilder/general/charts/chart.html:8
+#: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:10
+#: flask_appbuilder/templates/appbuilder/general/charts/jsonchart.html:8
+#: flask_appbuilder/templates/appbuilder/general/lib.html:305
+#: flask_appbuilder/templates/appbuilder/general/model/list.html:8
+msgid "Search"
+msgstr "Rechercher"
+
+#: flask_appbuilder/messages.py:10
+#: flask_appbuilder/templates/appbuilder/general/lib.html:312
+msgid "Back"
+msgstr "Précédent"
+
+#: flask_appbuilder/messages.py:11
+#: flask_appbuilder/templates/appbuilder/general/lib.html:265
+msgid "Save"
+msgstr "Sauvegarder"
+
+#: flask_appbuilder/messages.py:12
+msgid "This field is required."
+msgstr "Ce champ est requis."
+
+#: flask_appbuilder/messages.py:13
+msgid "Not a valid date value"
+msgstr "Valeure invalide"
+
+#: flask_appbuilder/messages.py:14
+#: flask_appbuilder/templates/appbuilder/general/widgets/base_list.html:36
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_carousel.html:50
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_master.html:17
+msgid "No records found"
+msgstr "Aucun résultat"
+
+#: flask_appbuilder/upload.py:136 flask_appbuilder/upload.py:182
+msgid "Invalid file extension"
+msgstr "Extension du fichier invalide"
+
+#: flask_appbuilder/validators.py:31
+msgid "Already exists."
+msgstr "Existe déjà"
+
+#: flask_appbuilder/charts/views.py:32
+msgid "Group by"
+msgstr "Grouper par"
+
+#: flask_appbuilder/models/base.py:21
+msgid "Added Row"
+msgstr "Ligne ajoutée"
+
+#: flask_appbuilder/models/base.py:22
+msgid "Changed Row"
+msgstr "Ligne modifiée"
+
+#: flask_appbuilder/models/base.py:23
+msgid "Deleted Row"
+msgstr "Ligne supprimée"
+
+#: flask_appbuilder/models/base.py:24
+msgid "Associated data exists, please delete them first"
+msgstr "Données associées présentes, supprimez-les svp"
+
+#: flask_appbuilder/models/base.py:25 flask_appbuilder/models/base.py:26
+msgid "Integrity error, probably unique constraint"
+msgstr "Erreur d'integrité, probablement une contrainte d'unicité"
+
+#: flask_appbuilder/models/base.py:27
+msgid "General Error"
+msgstr "Erreur générale"
+
+#: flask_appbuilder/models/group.py:25
+msgid "Count of"
+msgstr "Nombre de"
+
+#: flask_appbuilder/models/group.py:34
+msgid "Sum of"
+msgstr "Somme de"
+
+#: flask_appbuilder/models/group.py:42
+msgid "Avg. of"
+msgstr "Moyenne de"
+
+#: flask_appbuilder/models/generic/filters.py:10
+#: flask_appbuilder/models/generic/filters.py:19
+#: flask_appbuilder/models/mongoengine/filters.py:66
+#: flask_appbuilder/models/sqla/filters.py:43
+msgid "Contains"
+msgstr "Contient"
+
+#: flask_appbuilder/models/generic/filters.py:25
+#: flask_appbuilder/models/mongoengine/filters.py:74
+#: flask_appbuilder/models/sqla/filters.py:50
+msgid "Not Contains"
+msgstr "Pas de contenu"
+
+#: flask_appbuilder/models/generic/filters.py:31
+#: flask_appbuilder/models/mongoengine/filters.py:12
+#: flask_appbuilder/models/sqla/filters.py:57
+msgid "Equal to"
+msgstr "Egal à"
+
+#: flask_appbuilder/models/generic/filters.py:37
+#: flask_appbuilder/models/mongoengine/filters.py:23
+#: flask_appbuilder/models/sqla/filters.py:67
+msgid "Not Equal to"
+msgstr "Different de"
+
+#: flask_appbuilder/models/generic/filters.py:43
+#: flask_appbuilder/models/mongoengine/filters.py:34
+#: flask_appbuilder/models/sqla/filters.py:77
+msgid "Greater than"
+msgstr "Supérieur à"
+
+#: flask_appbuilder/models/generic/filters.py:49
+#: flask_appbuilder/models/mongoengine/filters.py:42
+#: flask_appbuilder/models/sqla/filters.py:84
+msgid "Smaller than"
+msgstr "Inferieur à"
+
+#: flask_appbuilder/models/generic/filters.py:55
+#, fuzzy
+msgid "Start with"
+msgstr "Commence par"
+
+#: flask_appbuilder/models/mongoengine/filters.py:50
+#: flask_appbuilder/models/sqla/filters.py:15
+msgid "Starts with"
+msgstr "Commence par"
+
+#: flask_appbuilder/models/mongoengine/filters.py:58
+#: flask_appbuilder/models/sqla/filters.py:22
+msgid "Not Starts with"
+msgstr "Ne commence pas par"
+
+#: flask_appbuilder/models/mongoengine/filters.py:82
+#: flask_appbuilder/models/sqla/filters.py:91
+msgid "Relation"
+msgstr "Relation"
+
+#: flask_appbuilder/models/mongoengine/filters.py:91
+#: flask_appbuilder/models/sqla/filters.py:107
+msgid "Relation as Many"
+msgstr "Relation multiple"
+
+#: flask_appbuilder/models/sqla/filters.py:29
+msgid "Ends with"
+msgstr "Fini par"
+
+#: flask_appbuilder/models/sqla/filters.py:36
+msgid "Not Ends with"
+msgstr "Ne finis pas par"
+
+#: flask_appbuilder/models/sqla/filters.py:99
+msgid "No Relation"
+msgstr "Sans relation"
+
+#: flask_appbuilder/security/forms.py:10
+msgid "OpenID"
+msgstr "OpenID"
+
+#: flask_appbuilder/security/forms.py:11 flask_appbuilder/security/forms.py:16
+#: flask_appbuilder/security/forms.py:33 flask_appbuilder/security/forms.py:50
+#: flask_appbuilder/security/views.py:103
+#: flask_appbuilder/security/views.py:268
+msgid "User Name"
+msgstr "Nom d'utilisateur"
+
+#: flask_appbuilder/security/forms.py:12
+msgid "Remember me"
+msgstr "Se souvenir de moi"
+
+#: flask_appbuilder/security/forms.py:17 flask_appbuilder/security/forms.py:21
+#: flask_appbuilder/security/forms.py:37 flask_appbuilder/security/views.py:104
+#: flask_appbuilder/security/views.py:207
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:31
+#: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:27
+msgid "Password"
+msgstr "Mot de passe"
+
+#: flask_appbuilder/security/forms.py:22 flask_appbuilder/security/forms.py:38
+#: flask_appbuilder/security/views.py:120
+#: flask_appbuilder/security/views.py:208
+msgid ""
+"Please use a good password policy, this application does not check this "
+"for you"
+msgstr ""
+"Svp Utilisez un bon mot de passe, l'application ne verifie "
+"pour vous"
+
+#: flask_appbuilder/security/forms.py:26 flask_appbuilder/security/forms.py:42
+#: flask_appbuilder/security/views.py:212
+msgid "Confirm Password"
+msgstr "Confirmez votre mot de passe"
+
+#: flask_appbuilder/security/forms.py:27 flask_appbuilder/security/forms.py:43
+msgid "Please rewrite the password to confirm"
+msgstr "S'il vous plaît, confirmez votre mot de passe"
+
+#: flask_appbuilder/security/forms.py:28 flask_appbuilder/security/forms.py:44
+#: flask_appbuilder/security/views.py:215
+msgid "Passwords must match"
+msgstr "Las mots de passe doivent correspondre"
+
+#: flask_appbuilder/security/forms.py:34 flask_appbuilder/security/forms.py:51
+#: flask_appbuilder/security/views.py:101
+msgid "First Name"
+msgstr "Prénom"
+
+#: flask_appbuilder/security/forms.py:35 flask_appbuilder/security/forms.py:52
+#: flask_appbuilder/security/views.py:102
+msgid "Last Name"
+msgstr "Nom de famille"
+
+#: flask_appbuilder/security/forms.py:36 flask_appbuilder/security/forms.py:53
+msgid "Email"
+msgstr "Email"
+
+#: flask_appbuilder/security/manager.py:417
+#: flask_appbuilder/security/views.py:95
+msgid "List Users"
+msgstr "Listez les utilisateurs"
+
+#: flask_appbuilder/security/manager.py:419
+msgid "Security"
+msgstr "Sécurité"
+
+#: flask_appbuilder/security/manager.py:422
+#: flask_appbuilder/security/views.py:293
+msgid "List Roles"
+msgstr "Listez les rôles"
+
+#: flask_appbuilder/security/manager.py:428
+msgid "User's Statistics"
+msgstr "Statistiques utilisateurs"
+
+#: flask_appbuilder/security/manager.py:434
+msgid "User Registrations"
+msgstr "Enregistrement des utilisateurs"
+
+#: flask_appbuilder/security/manager.py:440
+msgid "Base Permissions"
+msgstr "Permissions de base"
+
+#: flask_appbuilder/security/manager.py:443
+msgid "Views/Menus"
+msgstr "Vues/Menus"
+
+#: flask_appbuilder/security/manager.py:446
+msgid "Permission on Views/Menus"
+msgstr "Permission des vues/menus"
+
+#: flask_appbuilder/security/registerviews.py:55
+msgid "Account activation"
+msgstr "Activation du compte"
+
+#: flask_appbuilder/security/registerviews.py:59
+msgid "Registration sent to your email"
+msgstr "Enregistrement envoyé par email"
+
+#: flask_appbuilder/security/registerviews.py:61
+msgid "Not possible to register you at the moment, try again later"
+msgstr "Impossible de s'enregistrer pour le moment, essayez plus tard"
+
+#: flask_appbuilder/security/registerviews.py:63
+msgid "Registration not found"
+msgstr "Enregistrement non trouvé"
+
+#: flask_appbuilder/security/registerviews.py:65
+msgid "Fill out the registration form"
+msgstr "Completer le formulaire d'inscription"
+
+#: flask_appbuilder/security/views.py:28
+msgid "List Base Permissions"
+msgstr "Lister les permissions de base"
+
+#: flask_appbuilder/security/views.py:29
+msgid "Show Base Permission"
+msgstr "Montre la permission de base"
+
+#: flask_appbuilder/security/views.py:30
+msgid "Add Base Permission"
+msgstr "Ajouter une permission base"
+
+#: flask_appbuilder/security/views.py:31
+msgid "Edit Base Permission"
+msgstr "Editer la permission de base"
+
+#: flask_appbuilder/security/views.py:33 flask_appbuilder/security/views.py:45
+#: flask_appbuilder/security/views.py:298
+msgid "Name"
+msgstr "Nom"
+
+#: flask_appbuilder/security/views.py:40
+msgid "List View Menus"
+msgstr "Lister les Vues Menus"
+
+#: flask_appbuilder/security/views.py:41
+msgid "Show View Menu"
+msgstr "Afficher Vue Menus"
+
+#: flask_appbuilder/security/views.py:42
+msgid "Add View Menu"
+msgstr "Ajouter Vue Menu"
+
+#: flask_appbuilder/security/views.py:43
+msgid "Edit View Menu"
+msgstr "Editer la vue du Menu"
+
+#: flask_appbuilder/security/views.py:52
+msgid "List Permissions on Views/Menus"
+msgstr "Listez les permissions des vues/menus"
+
+#: flask_appbuilder/security/views.py:53
+msgid "Show Permission on Views/Menus"
+msgstr "Afficher les permissions des vues/menus"
+
+#: flask_appbuilder/security/views.py:54
+msgid "Add Permission on Views/Menus"
+msgstr "Ajouter une autorisation sur les vues / menus"
+
+#: flask_appbuilder/security/views.py:55
+msgid "Edit Permission on Views/Menus"
+msgstr "Modifier l'autorisation sur les vues / menus"
+
+#: flask_appbuilder/security/views.py:57
+msgid "Permission"
+msgstr "Permission"
+
+#: flask_appbuilder/security/views.py:57
+msgid "View/Menu"
+msgstr "Vue/Menu"
+
+#: flask_appbuilder/security/views.py:67 flask_appbuilder/security/views.py:82
+msgid "Reset Password Form"
+msgstr "Mot de passe réinitialisé"
+
+#: flask_appbuilder/security/views.py:69 flask_appbuilder/security/views.py:84
+msgid "Password Changed"
+msgstr "Contraseña modificada"
+
+#: flask_appbuilder/security/views.py:96
+msgid "Show User"
+msgstr "Afficher l'utilisateur"
+
+#: flask_appbuilder/security/views.py:97
+msgid "Add User"
+msgstr "Ajouter un utilisateur"
+
+#: flask_appbuilder/security/views.py:98
+msgid "Edit User"
+msgstr "Editer un utilisateur"
+
+#: flask_appbuilder/security/views.py:100
+msgid "Full Name"
+msgstr "Nom complet "
+
+#: flask_appbuilder/security/views.py:105
+msgid "Is Active?"
+msgstr "Actif?"
+
+#: flask_appbuilder/security/views.py:107
+msgid "Role"
+msgstr "Rôle"
+
+#: flask_appbuilder/security/views.py:108
+msgid "Last login"
+msgstr "Dernière session"
+
+#: flask_appbuilder/security/views.py:109
+#: flask_appbuilder/security/views.py:269
+msgid "Login count"
+msgstr "Nombre de session"
+
+#: flask_appbuilder/security/views.py:110
+#: flask_appbuilder/security/views.py:270
+msgid "Failed login count"
+msgstr "Nombre de connexions ayant échouées"
+
+#: flask_appbuilder/security/views.py:111
+msgid "Created on"
+msgstr "Créé le"
+
+#: flask_appbuilder/security/views.py:112
+msgid "Created by"
+msgstr "Créé par"
+
+#: flask_appbuilder/security/views.py:113
+msgid "Changed on"
+msgstr "Modifié le"
+
+#: flask_appbuilder/security/views.py:114
+msgid "Changed by"
+msgstr "Modifié par"
+
+#: flask_appbuilder/security/views.py:116
+msgid "Write the user first name or names"
+msgstr "Écrivez le ou les prénoms de l'utilisateur"
+
+#: flask_appbuilder/security/views.py:117
+msgid "Write the user last name"
+msgstr "Ecrire le nom de famille de l'utilisateur"
+
+#: flask_appbuilder/security/views.py:118
+msgid "Username valid for authentication on DB or LDAP, unused for OID auth"
+msgstr ""
+"Nom d'utilisateur valide pour l'authentification sur DB ou LDAP, non utilisé "
+" pour l'authentification OID"
+
+#: flask_appbuilder/security/views.py:122
+msgid "Ce n'est pas une bonne politique pour supprimer un utilisateur, il suffit de le rendre inactif"
+msgstr "Eliminar un usuario no es una buena práctica, solo inactívelo"
+
+#: flask_appbuilder/security/views.py:123
+msgid "The user's email, this will also be used for OID auth"
+msgstr ""
+"L'email de l'utilisateur, celui-ci sera également "
+"utilisé pour l'authentification OID""
+
+#: flask_appbuilder/security/views.py:124
+msgid ""
+"Le rôle de l'utilisateur sur l'application, cela s'associera à une liste "
+"d'autorisations"
+
+msgstr ""
+"El rol del usuario en la aplicación, esto se asociará con una lista de "
+"permisos"
+
+#: flask_appbuilder/security/views.py:126
+#: flask_appbuilder/security/views.py:213
+msgid "Veuillez réécrire le mot de passe de l'utilisateur pour confirmer"
+msgstr "S'il vous plaît, reo"
+
+#: flask_appbuilder/security/views.py:131
+#: flask_appbuilder/security/views.py:141
+msgid "User info"
+msgstr "Information utilisateur"
+
+#: flask_appbuilder/security/views.py:133
+#: flask_appbuilder/security/views.py:143
+msgid "Personal Info"
+msgstr "Informations personnelles"
+
+#: flask_appbuilder/security/views.py:135
+msgid "Audit Info"
+msgstr "Informations d'audit"
+
+#: flask_appbuilder/security/views.py:151
+msgid "Your user information"
+msgstr "Vos intformations d'utilisateur"
+
+#: flask_appbuilder/security/views.py:250
+msgid "Reset my password"
+msgstr "Réinitialiser mon mot de pass"
+
+#: flask_appbuilder/security/views.py:254
+msgid "Reset Password"
+msgstr "Réinitialiser le mot de passe"
+
+#: flask_appbuilder/security/views.py:267
+msgid "User Statistics"
+msgstr "Statistiques utilisateur"
+
+#: flask_appbuilder/security/views.py:294
+msgid "Show Role"
+msgstr "Afficher un rôle"
+
+#: flask_appbuilder/security/views.py:295
+msgid "Add Role"
+msgstr "Ajouter un Rôle"
+
+#: flask_appbuilder/security/views.py:296
+msgid "Edit Role"
+msgstr "Editer rôle"
+
+#: flask_appbuilder/security/views.py:298
+msgid "Permissions"
+msgstr "Permissions"
+
+#: flask_appbuilder/security/views.py:302
+msgid "Copy Role"
+msgstr "Copiez le rôle"
+
+#: flask_appbuilder/security/views.py:302
+msgid "Copy the selected roles?"
+msgstr "Copiez les rôles selectionnés ?"
+
+#: flask_appbuilder/security/views.py:317
+msgid "List des demandes d'inscription"
+msgstr "Liste de"
+
+#: flask_appbuilder/security/views.py:318
+msgid "Show Registration"
+msgstr "Afficher l'inscription"
+
+#: flask_appbuilder/security/views.py:327
+msgid "Invalid login. Please try again."
+msgstr "Login invalide. Essayez de nouveau."
+
+#: flask_appbuilder/security/views.py:329
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:46
+#: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:40
+#: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:56
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:118
+msgid "Sign In"
+msgstr "S'enregistrer"
+
+#: flask_appbuilder/templates/appbuilder/baselib.html:115
+#: flask_appbuilder/templates/appbuilder/navbar_right.html:37
+msgid "Profile"
+msgstr "Profil"
+
+#: flask_appbuilder/templates/appbuilder/baselib.html:116
+#: flask_appbuilder/templates/appbuilder/navbar_right.html:38
+msgid "Logout"
+msgstr "Se deconnecter"
+
+#: flask_appbuilder/templates/appbuilder/baselib.html:122
+#: flask_appbuilder/templates/appbuilder/navbar_right.html:43
+msgid "Login"
+msgstr "Se connecter"
+
+#: flask_appbuilder/templates/appbuilder/general/security/activation.html:5
+#: flask_appbuilder/templates/appbuilder/index.html:4
+msgid "Welcome"
+msgstr "Bienvenue"
+
+#: flask_appbuilder/templates/appbuilder/general/confirm.html:6
+#, fuzzy
+msgid "User confirmation needed"
+msgstr "Confirmation d'utilisateur requise"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:40
+msgid "Actions"
+msgstr "Actions"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:65
+msgid "Page size"
+msgstr "Taille de page"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:83
+msgid "Order by"
+msgstr "Ordonner par"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:282
+msgid "Record Count"
+msgstr "Nombre de record"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:320
+msgid "Add a new record"
+msgstr "Ajouter un nouvel article"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:327
+msgid "Edit record"
+msgstr "Editer le registre"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:334
+msgid "Show record"
+msgstr "Afficer le record"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:340
+msgid "You sure you want to delete this item?"
+msgstr "Etes vous sûr de vouloir supprimez cet article"
+
+#: flask_appbuilder/templates/appbuilder/general/lib.html:341
+msgid "Delete record"
+msgstr "Supprimer le record"
+
+#: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:17
+msgid "Group by fields"
+msgstr "Groupe par champs"
+
+#: flask_appbuilder/templates/appbuilder/general/security/activation.html:7
+msgid "Your user is activated you can now proceed to login"
+msgstr "Votre utilisateur est activé, vous pouvez vous connecter"
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:19
+#: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:16
+msgid "Enter your login and password below"
+msgstr "Entrez votre login et mot de passe"
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:21
+#: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:18
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:49
+#: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:59
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:121
+msgid "If you are not already a user, please register"
+msgstr "Si vous n'êtes pas inscrit, inscrivez-vous"
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_db.html:50
+#: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:60
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:122
+msgid "Register"
+msgstr "S'inscrire"
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:44
+msgid "Please choose one of the following providers:"
+msgstr "S'il vous plaît, choisissez un des fournisseurs:"
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:89
+msgid "Click on your OpenID provider below"
+msgstr "Selectionnez votre fournisseur OpenID ci-dessous"
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:101
+msgid "Or enter your OpenID here"
+msgstr "Entrez votre OpenID ici"
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:105
+msgid "Please choose a provider"
+msgstr "S'il vous plaît, choisissez un fournisseur "
+
+#: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:107
+#, fuzzy
+msgid "Enter your OpenID Username"
+msgstr "Entrez votre nom d'utilisateur OpenID"
+
+#: flask_appbuilder/templates/appbuilder/general/security/register_oauth.html:15
+msgid "Sign in using:"
+msgstr "Connectez-vous en utilisant"
+
+#: flask_appbuilder/templates/appbuilder/general/widgets/search.html:7
+msgid "Add Filter"
+msgstr "Ajouter un filter"
+

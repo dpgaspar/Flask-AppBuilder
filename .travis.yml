@@ -3,7 +3,6 @@ python:
   - "3.5"
   - "3.3"
   - "2.7"
-  - "2.6"
 install:
   - "pip install --upgrade 'pip>=9.0.1,<9.99'"
   - "pip -V"
@@ -16,6 +15,6 @@ install:
 services:
   - mongodb
 script:
-  - coverage run --source=flask_appbuilder --omit=*messages.py*,*baseapp.py* setup.py test
+  - nosetests --with-coverage --cover-package flask_appbuilder
 after_success:
   coveralls
