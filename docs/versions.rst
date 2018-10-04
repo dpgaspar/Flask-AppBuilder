@@ -1,6 +1,12 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.12.0
+------------------------------------
+
+- Fix, #797 Remove safe filter from template
+- New, #911 BREAKING CHANGES, bumped Flask-Login dependency to >=0.3,<0.5
+
 Improvements and Bug fixes on 1.11.1
 ------------------------------------
 
