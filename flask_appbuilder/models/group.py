@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 import datetime
+from functools import reduce
 import calendar
 import logging
 from itertools import groupby

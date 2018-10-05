@@ -37,7 +37,7 @@
                     <div class="navbar-collapse collapse">
                        <ul class="nav navbar-nav navbar-right">
                         {{ baselib.locale_menu(languages) }}
-                        {% if not current_user.is_anonymous() %}
+                        {% if not current_user.is_anonymous %}
                             <li><a href="{{appbuilder.get_url_for_logout}}">
                             <i class="fa fa-sign-out"></i>{{_("Logout")}}</a></li>
                             <li><a class="pull-right" href="{{appbuilder.get_url_for_userinfo}}">
@@ -51,14 +51,14 @@
            </div>
         </div>
     {% endblock %}
-    {% if not current_user.is_anonymous() %}
+    {% if not current_user.is_anonymous %}
     <div class="col-md-2" role="navigation">
         <ul class="nav nav-pills nav-stacked">
             {{ baselib.menu_block(menu)}}
         </ul>
     </div>
     {% endif %}
-    {% if not current_user.is_anonymous() %}
+    {% if not current_user.is_anonymous %}
         <div class="col-md-10" role="container">
     {% else %}
         <div class="col-md-12" role="container">

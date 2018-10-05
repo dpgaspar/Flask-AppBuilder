@@ -1039,13 +1039,12 @@ class BaseCRUDView(BaseModelView):
         def date_deserializer(obj):
             if '_type' not in obj:
                 return obj
-            type = obj['_type']
-            if type == 'datetime' and '.' in obj['value']:
-                return datetime.strptime(obj['value'], "%Y-%m-%dT%H:%M:%S.%f")
-            elif type == 'datetime':
-                return datetime.strptime(obj['value'], "%Y-%m-%dT%H:%M:%S")
-            elif type == 'date':
-                return  datetime.strptime(obj['value'], "%Y-%m-%d").date()
+
+            from dateutil import parser
+            if obj['_type'] == 'datetime':
+                return parser.parse(obj['value'])
+            elif obj['_type'] == 'date':
+                return parser.parse(obj['value']).date()
             return obj
 
         if self.datamodel.is_pk_composite():

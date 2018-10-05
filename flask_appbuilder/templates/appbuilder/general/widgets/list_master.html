@@ -9,7 +9,7 @@
             {% set path = url_for(modelview_name + '.list',pk=pk,next=request.path) %}
             {% set path = path | set_link_filters(filters) %}
             <a class="list-group-item"  href="{{path}}">
-            {{ item[value]|safe }}</a>
+            {{ item[value] }}</a>
         {% endfor %}
     {% endfor %}
     </div>
