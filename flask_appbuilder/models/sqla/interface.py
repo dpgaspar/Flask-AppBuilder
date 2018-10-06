@@ -229,7 +229,9 @@ class SQLAInterface(BaseInterface):
     def is_relation_many_to_one(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'MANYTOONE'
+                prop = self.list_properties[col_name]
+                direction = prop.direction.name
+                return direction == 'MANYTOONE'
         except:
             return False
 
@@ -243,14 +245,18 @@ class SQLAInterface(BaseInterface):
     def is_relation_one_to_one(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'ONETOONE'
+                prop = self.list_properties[col_name]
+                direction = prop.direction.name
+                return direction == 'ONETOMANY' and prop.uselist is False
         except:
             return False
 
     def is_relation_one_to_many(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'ONETOMANY'
+                prop = self.list_properties[col_name]
+                direction = prop.direction.name
+                return direction == 'ONETOMANY' and prop.uselist is True
         except:
             return False
 
