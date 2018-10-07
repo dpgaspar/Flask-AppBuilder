@@ -25,6 +25,10 @@ def _include_filters(obj):
         if not hasattr(obj, key):
             setattr(obj, key, getattr(filters, key))
 
+def _is_sqla_type(obj, sa_type):
+    return isinstance(obj, sa_type) or \
+        isinstance(obj, sa.types.TypeDecorator) and isinstance(obj.impl, sa_type)
+
 
 class SQLAInterface(BaseInterface):
     """
@@ -158,61 +162,61 @@ class SQLAInterface(BaseInterface):
 
     def is_string(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.String)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.String)
         except:
             return False
 
     def is_text(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Text)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Text)
         except:
             return False
 
     def is_binary(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.LargeBinary)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.LargeBinary)
         except:
             return False
 
     def is_integer(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Integer)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Integer)
         except:
             return False
 
     def is_numeric(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Numeric)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Numeric)
         except:
             return False
 
     def is_float(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Float)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Float)
         except:
             return False
 
     def is_boolean(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Boolean)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Boolean)
         except:
             return False
 
     def is_date(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Date)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Date)
         except:
             return False
 
     def is_datetime(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.DateTime)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.DateTime)
         except:
             return False
 
     def is_enum(self, col_name):
         try:
-            return isinstance(self.list_columns[col_name].type, sa.types.Enum)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.Enum)
         except:
             return False
 
@@ -225,7 +229,9 @@ class SQLAInterface(BaseInterface):
     def is_relation_many_to_one(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'MANYTOONE'
+                prop = self.list_properties[col_name]
+                direction = prop.direction.name
+                return direction == 'MANYTOONE'
         except:
             return False
 
@@ -239,14 +245,18 @@ class SQLAInterface(BaseInterface):
     def is_relation_one_to_one(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'ONETOONE'
+                prop = self.list_properties[col_name]
+                direction = prop.direction.name
+                return direction == 'ONETOMANY' and prop.uselist is False
         except:
             return False
 
     def is_relation_one_to_many(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'ONETOMANY'
+                prop = self.list_properties[col_name]
+                direction = prop.direction.name
+                return direction == 'ONETOMANY' and prop.uselist is True
         except:
             return False
 

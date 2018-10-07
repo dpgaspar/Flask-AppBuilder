@@ -387,10 +387,6 @@ msgstr "全名"
 msgid "Is Active?"
 msgstr "是否激活？"
 
-#: flask_appbuilder/security/views.py:106
-msgid "EMail"
-msgstr "電子郵箱"
-
 #: flask_appbuilder/security/views.py:107
 msgid "Role"
 msgstr "角色"

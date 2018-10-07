@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 def get_random_name(names_list, size=1):
-    name_lst = [names_list[random.randrange(0, len(names_list))].capitalize() for i in range(0, size)]
+    name_lst = [names_list[random.randrange(0, len(names_list))].decode("utf-8").capitalize() for i in range(0, size)]
     return " ".join(name_lst)
 
 
@@ -19,7 +19,7 @@ try:
     db.session.add(company1)
     db.session.add(company2)
     db.session.commit()
-except Exception, e:
+except Exception as e:
     log.error('Group creation error: %s', e)
     db.session.rollback()
     exit(1)
@@ -30,8 +30,6 @@ role_admin = appbuilder.sm.find_role(appbuilder.sm.auth_role_admin)
 user1 = appbuilder.sm.add_user('user1_company1', 'user1', 'test', 'user1@company1.com', role_admin, 'password')
 user2 = appbuilder.sm.add_user('user1_company2', 'user1', 'test', 'user1@company2.com', role_admin, 'password')
 user3 = appbuilder.sm.add_user('user2_company2', 'user2', 'test', 'user2@company2.com', role_admin, 'password')
-print user1.__class__
-i = raw_input('')
 user1.company = company1
 user2.company = company2
 user3.company = company2
@@ -45,7 +43,7 @@ try:
     db.session.add(ContactGroup(name='Family'))
     db.session.add(ContactGroup(name='Work'))
     db.session.commit()
-except Exception, e:
+except Exception as e:
     log.error('Group creation error: %s', e)
     db.session.rollback()
     exit(1)
@@ -54,7 +52,7 @@ try:
     db.session.add(Gender(name='Male'))
     db.session.add(Gender(name='Female'))
     db.session.commit()
-except Exception, e:
+except Exception as e:
     log.error('Gender creation error: %s', e)
     db.session.rollback()
     exit(1)
@@ -68,7 +66,7 @@ j = 1
 for i in range(1, 100):
     c = Contact()
     c.name = get_random_name(names_list, random.randrange(2, 6))
-    c.address = 'Street ' + names_list[random.randrange(0, len(names_list))]
+    c.address = 'Street ' + names_list[random.randrange(0, len(names_list))].decode("utf-8")
     c.personal_phone = random.randrange(1111111, 9999999)
     c.personal_celphone = random.randrange(1111111, 9999999)
     c.contact_group_id = random.randrange(1, 4)
@@ -95,8 +93,8 @@ for i in range(1, 100):
     db.session.add(c)
     try:
         db.session.commit()
-        print "inserted", c
-    except Exception, e:
+        print("inserted", c)
+    except Exception as e:
         log.error('Contact creation error: %s', e)
         db.session.rollback()
     
