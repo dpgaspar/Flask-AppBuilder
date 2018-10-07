@@ -60,13 +60,20 @@ Or, if you have mongodb and the requirements installed locally-
 `setup.py test`
 
 
-Projects using FAB
-------------------
+Projects/Organizations using FAB
+--------------------------------
 
-If you would like to share your projects and join the list, just send me the link.
+If you would like to share your project, or let everyone know that you're using FAB on your organization please submit a PR or send me an email with the details. 
+
+Projects:
 
 - `Superset <https://github.com/airbnb/superset>`_ - a data exploration platform designed to be visual, intuitive, and interactive
-- `Flog <http://demo-ninmesara.rhcloud.com/category/about>`_
+
+Organizations:
+
+- Airbnb
+- Miniclip
+- EuroBIC
 
 Includes:
 ---------
