@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.12.1
+------------------------------------
+
+- New, #826 Greek support i18n
+
 Improvements and Bug fixes on 1.12.0
 ------------------------------------
 
