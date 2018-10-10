@@ -5,6 +5,7 @@ Improvements and Bug fixes on 1.12.1
 ------------------------------------
 
 - New, #826 Greek support i18n
+- New, #813 Dependencies unpinned
 
 Improvements and Bug fixes on 1.12.0
 ------------------------------------
