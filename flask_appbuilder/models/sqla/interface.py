@@ -247,7 +247,8 @@ class SQLAInterface(BaseInterface):
             if self.is_relation(col_name):
                 prop = self.list_properties[col_name]
                 direction = prop.direction.name
-                return direction == 'ONETOMANY' and prop.uselist is False
+                return ((direction == 'ONETOMANY' and prop.uselist is False) or
+                        (direction == 'MANYTOONE' and prop.uselist is False))
         except:
             return False
 

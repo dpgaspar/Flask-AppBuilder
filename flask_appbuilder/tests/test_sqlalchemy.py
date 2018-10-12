@@ -41,13 +41,15 @@ class NotSqlaType():
 class FlaskTestCase(unittest.TestCase):
     def test_is_one_to_one(self):
         interf = SQLAInterface(Parent)
-        eq_(True,  interf.is_relation_one_to_one('favorite_child'))
-        eq_(False,  interf.is_relation_one_to_many('favorite_child'))
+        eq_(True, interf.is_relation_one_to_one('favorite_child'))
+        eq_(False, interf.is_relation_one_to_many('favorite_child'))
+        interf = SQLAInterface(FavoriteChild)
+        eq_(True, interf.is_relation_one_to_one('parent'))
 
     def test_is_one_to_many(self):
         interf = SQLAInterface(Parent)
-        eq_(True,  interf.is_relation_one_to_many('children'))
-        eq_(False,  interf.is_relation_one_to_one('children'))
+        eq_(True, interf.is_relation_one_to_many('children'))
+        eq_(False, interf.is_relation_one_to_one('children'))
 
     def test_is_sqla_type(self):
         t1 = sa.types.DateTime(timezone=True)
