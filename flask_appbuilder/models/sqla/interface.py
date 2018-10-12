@@ -223,7 +223,9 @@ class SQLAInterface(BaseInterface):
     def is_relation(self, col_name):
         try:
             return isinstance(self.list_properties[col_name], sa.orm.properties.RelationshipProperty)
-        except:
+        except Exception as e:
+            log.warning("An error occured when determining the relation")
+            log.exception(e)
             return False
 
     def is_relation_many_to_one(self, col_name):

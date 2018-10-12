@@ -75,11 +75,13 @@ class FlaskTestCase(unittest.TestCase):
 
     def test_is_many_to_many(self):
         interf = SQLAInterface(Parent)
+        eq_(True, interf.is_relation('neighbours'))
         eq_(False, interf.is_relation_one_to_many('neighbours'))
         eq_(False, interf.is_relation_one_to_one('neighbours'))
         eq_(False, interf.is_relation_many_to_one('neighbours'))
         eq_(True, interf.is_relation_many_to_many('neighbours'))
         interf = SQLAInterface(Neighbour)
+        eq_(True, interf.is_relation('parents'))
         eq_(False, interf.is_relation_one_to_many('parents'))
         eq_(False, interf.is_relation_one_to_one('parents'))
         eq_(False, interf.is_relation_many_to_one('parents'))
@@ -87,6 +89,7 @@ class FlaskTestCase(unittest.TestCase):
 
     def test_is_many_to_one_no_backref(self):
         interf = SQLAInterface(Headache)
+        eq_(True, interf.is_relation('parent'))
         eq_(False, interf.is_relation_one_to_many('parent'))
         eq_(False, interf.is_relation_one_to_one('parent'))
         eq_(True, interf.is_relation_many_to_one('parent'))
@@ -94,6 +97,7 @@ class FlaskTestCase(unittest.TestCase):
 
     def test_is_one_to_many(self):
         interf = SQLAInterface(Parent)
+        eq_(True, interf.is_relation('children'))
         eq_(True, interf.is_relation_one_to_many('children'))
         eq_(False, interf.is_relation_one_to_one('children'))
         eq_(False, interf.is_relation_many_to_one('children'))
@@ -101,6 +105,7 @@ class FlaskTestCase(unittest.TestCase):
 
     def test_is_many_to_one(self):
         interf = SQLAInterface(Child)
+        eq_(True, interf.is_relation('parent'))
         eq_(False, interf.is_relation_one_to_many('parent'))
         eq_(False, interf.is_relation_one_to_one('parent'))
         eq_(True, interf.is_relation_many_to_one('parent'))
