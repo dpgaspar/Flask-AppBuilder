@@ -231,14 +231,16 @@ class SQLAInterface(BaseInterface):
             if self.is_relation(col_name):
                 prop = self.list_properties[col_name]
                 direction = prop.direction.name
-                return direction == 'MANYTOONE'
+                return direction == 'MANYTOONE' and prop.uselist is True
         except:
             return False
 
     def is_relation_many_to_many(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'MANYTOMANY'
+                prop = self.list_properties[col_name]
+                direction = prop.direction.name
+                return direction == 'MANYTOMANY' and prop.uselist is True
         except:
             return False
 
