@@ -599,7 +599,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_ldap_append_domain:
             username = username + '@' + self.auth_ldap_append_domain
         if self.auth_ldap_search_filter:
-            filter_str = "(%s(%s=%s))" % (self.auth_ldap_search_filter, self.auth_ldap_uid_field, username)
             filter_str = "(&%s(%s=%s))" % (self.auth_ldap_search_filter, 'sAMAccountName', username)
         else:
             filter_str = "%s=%s" % (self.auth_ldap_uid_field, username)
