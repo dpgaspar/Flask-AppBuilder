@@ -291,6 +291,8 @@ class SQLAInterface(BaseInterface):
                 prop = self.list_properties[col_name]
                 direction = prop.direction.name
                 return direction == 'ONETOMANY' and prop.uselist is True
+        except KeyError:
+            return False
         except Exception as e:
             log.warning("An error occured when determining the relation")
             log.exception(e)
