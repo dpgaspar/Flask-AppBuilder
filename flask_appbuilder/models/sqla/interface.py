@@ -223,6 +223,8 @@ class SQLAInterface(BaseInterface):
     def is_relation(self, col_name):
         try:
             return isinstance(self.list_properties[col_name], sa.orm.properties.RelationshipProperty)
+        except KeyError:
+            return False
         except Exception as e:
             log.warning("An error occured when determining the relation")
             log.exception(e)
@@ -241,6 +243,8 @@ class SQLAInterface(BaseInterface):
                     rem_interf.obj,
                     rem_fk).property.uselist
                 return direction == 'MANYTOONE' and rem_uselist is True
+        except KeyError:
+            return False
         except Exception as e:
             log.warning("An error occured when determining the relation")
             log.exception(e)
@@ -252,6 +256,8 @@ class SQLAInterface(BaseInterface):
                 prop = self.list_properties[col_name]
                 direction = prop.direction.name
                 return direction == 'MANYTOMANY'
+        except KeyError:
+            return False
         except Exception as e:
             log.warning("An error occured when determining the relation")
             log.exception(e)
@@ -272,6 +278,8 @@ class SQLAInterface(BaseInterface):
                     rem_fk).property.uselist
                 return ((direction == 'ONETOMANY' and prop.uselist is False) or
                         (direction == 'MANYTOONE' and rem_uselist is False))
+        except KeyError:
+            return False
         except Exception as e:
             log.warning("An error occured when determining the relation")
             log.exception(e)
