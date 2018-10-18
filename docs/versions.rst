@@ -6,6 +6,7 @@ Improvements and Bug fixes on 1.12.1
 
 - New, #826 Greek support i18n
 - New, #813 Dependencies unpinned
+- Fix, #828 list and form widget rendering html InLine, regression from #797
 
 Improvements and Bug fixes on 1.12.0
 ------------------------------------
