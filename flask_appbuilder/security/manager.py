@@ -601,7 +601,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_ldap_search_filter:
             filter_str = "(&%s(%s=%s))" % (self.auth_ldap_search_filter, self.auth_ldap_uid_field, username)
         else:
-            filter_str = "%s=%s" % (self.auth_ldap_uid_field, username)
+            filter_str = "(%s=%s)" % (self.auth_ldap_uid_field, username)
         user = con.search_s(self.auth_ldap_search,
                             ldap.SCOPE_SUBTREE,
                             filter_str,

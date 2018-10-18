@@ -47,6 +47,7 @@ setup(
     ],
     tests_require=[
         'nose>=1.0',
+        'mockldap>=0.3.0'
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
