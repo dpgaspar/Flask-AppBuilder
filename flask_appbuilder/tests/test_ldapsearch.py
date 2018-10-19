@@ -68,7 +68,12 @@ class LDAPSearchTestCase(unittest.TestCase):
 		self.app.config['AUTH_LDAP_SEARCH_FILTER'] = ''
 		self.appbuilder = AppBuilder(self.app, self.db.session)
 
+		initialize_call = ('initialize', ('ldap://localhost/',), {})
+		simple_bind_s_call = ('simple_bind_s', ('cn=manager,ou=example,o=test', 'ldaptest'), {})
+		search_s_call = ('search_s', ('ou=example,o=test', 2, '(cn=alice)', [None, None, None]), {})
+
 		user = self.appbuilder.sm._search_ldap(ldap, con, 'alice')
+		self.assertEqual(self.ldapobj.methods_called(with_args=True), [initialize_call, simple_bind_s_call, search_s_call])
 		self.assertEqual(user[0][0], self.alice[0])
 
 	def test_ldapsearchfilter(self):
@@ -78,5 +83,10 @@ class LDAPSearchTestCase(unittest.TestCase):
 		self.app.config['AUTH_LDAP_SEARCH_FILTER'] = '(memberOf=cn=group,ou=groups,o=test)'
 		self.appbuilder = AppBuilder(self.app, self.db.session)
 
+		initialize_call = ('initialize', ('ldap://localhost/',), {})
+		simple_bind_s_call = ('simple_bind_s', ('cn=manager,ou=example,o=test', 'ldaptest'), {})
+		search_s_call = ('search_s', ('ou=example,o=test', 2, '(&(memberOf=cn=group,ou=groups,o=test)(cn=alice))', [None, None, None]), {})
+
 		user = self.appbuilder.sm._search_ldap(ldap, con, 'alice')
+		self.assertEqual(self.ldapobj.methods_called(with_args=True), [initialize_call, simple_bind_s_call, search_s_call])
 		self.assertEqual(user[0][0], self.alice[0])
