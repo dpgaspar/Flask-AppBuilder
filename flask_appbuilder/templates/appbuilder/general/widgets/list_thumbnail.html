@@ -23,7 +23,7 @@
             {% set col_label = label_columns.get(include_columns[loop.index -1]) %}
             {% set value = item[col_name] %}
             <dt>{{col_label}}</dt>
-            <dd>{{ item[col_name]|safe }}</dd>
+            <dd>{{ item[col_name] }}</dd>
         {% endfor %}
         </dl>
         </div>
