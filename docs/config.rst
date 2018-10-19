@@ -49,6 +49,20 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_BIND_PASSWORD           | Define password for the bind user.         |   No      |
 +-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_TLS_DEMAND              | Demands TLS peer certificate checking      |   No      |
+|                                   | (Bool)                                     |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_TLS_CACERTDIR           | CA Certificate directory to check peer     |   No      |
+|                                   | certificate                                |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_TLS_CACERTFILE          | CA Certificate file to check peer          |   No      |
+|                                   | certificate                                |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_TLS_CERTFILE            | Certificate file for client auth           |   No      |
+|                                   | use with AUTH_LDAP_TLS_KEYFILE             |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_TLS_KEYFILE             | Certificate key file for client aut        |   No      |
++-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_SEARCH                  | Use search with self user                  |   No      |
 |                                   | registration or when using                 |           |
 |                                   | AUTH_LDAP_BIND_USER.                       |           |
@@ -117,7 +131,7 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | AUTH_LDAP_EMAIL_FIELD = "mail"             |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_ALLOW_SELF_SIGNED       | Allow LDAP authentication to use self      |   No      |
-|                                   | signed certificates                        |           |
+|                                   | signed certificates (LDAPS)                |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_APPEND_DOMAIN           | Append a domain to all logins. No need to  |   No      |
 |                                   | use john@domain.local. Set it like:        |           |
