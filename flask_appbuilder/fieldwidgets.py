@@ -11,7 +11,7 @@ class DatePickerWidget(object):
     data_template = ('<div class="input-group date appbuilder_date" id="datepicker">'
                     '<span class="input-group-addon"><i class="fa fa-calendar cursor-hand"></i>'
                     '</span>'
-                    '<input class="form-control" data-format="yyyy-MM-dd" %(text)s/>'
+                    '<input class="form-control" data-format="yyyy-MM-dd" %(text)s />'
                     '</div>'
                     )
 
@@ -36,7 +36,7 @@ class DateTimePickerWidget(object):
     data_template = ('<div class="input-group date appbuilder_datetime" id="datetimepicker">'
                     '<span class="input-group-addon"><i class="fa fa-calendar cursor-hand"></i>'
                     '</span>'
-                    '<input class="form-control" data-format="yyyy-MM-dd hh:mm:ss" %(text)s/>'
+                    '<input class="form-control" data-format="yyyy-MM-dd hh:mm:ss" %(text)s />'
         '</div>'
         )
 
@@ -81,7 +81,7 @@ class BS3PasswordFieldWidget(widgets.PasswordInput):
 
 
 class Select2AJAXWidget(object):
-    data_template = ('<input %(text)s"></input>')
+    data_template = ('<input %(text)s />')
 
     def __init__(self, endpoint, extra_classes=None, style=None):
         self.endpoint = endpoint
@@ -108,7 +108,7 @@ class Select2AJAXWidget(object):
 
 
 class Select2SlaveAJAXWidget(object):
-    data_template = ('<input class="input-group my_select2_ajax_slave" %(text)s"></input>')
+    data_template = ('<input class="input-group my_select2_ajax_slave" %(text)s />')
 
     def __init__(self, master_id, endpoint, extra_classes=None, style=None):
         self.endpoint = endpoint
