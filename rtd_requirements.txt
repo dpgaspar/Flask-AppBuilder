@@ -2,11 +2,9 @@ sphinxcontrib-blockdiag>=1.5.0
 sphinx-rtd-theme>=0.2.4
 colorama>=0.3
 click>=3.0
-Flask>=0.10,<0.12.99
-Flask-Babel>=0.10,<0.12.2
-Flask-Login>=0.2.0
-Flask-OpenID>=1.2.0
-Flask-SQLAlchemy>=2.0,<2.1.99
-Flask-WTF>=0.9.1
-
-
+Flask>=0.12,<2
+Flask-Babel>=0.11.1,<1
+Flask-Login>=0.3,<0.5
+Flask-OpenID>=1.2.5,<2
+Flask-SQLAlchemy>=2.3,<3
+Flask-WTF>=0.14.2,<1

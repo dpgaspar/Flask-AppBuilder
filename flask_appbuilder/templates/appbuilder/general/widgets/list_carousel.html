@@ -30,7 +30,7 @@
                 <img src="{{item[include_columns[0]]}}" alt="">
                 <div class="carousel-caption">
                     {% for value in include_columns[1:] %}
-                        {{ item[value]|safe }} 
+                        {{ item[value] }}
                     {% endfor %}
                 </div>
             </div>
