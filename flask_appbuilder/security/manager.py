@@ -606,6 +606,19 @@ class BaseSecurityManager(AbstractSecurityManager):
                 return None
         return user
 
+    def _bind_indirect_user(self, ldap, con):
+        """
+            If using AUTH_LDAP_BIND_USER bind this user before performing search
+            :param ldap: The ldap module reference
+            :param con: The ldap connection
+        """
+        indirect_user = self.auth_ldap_bind_user
+        if indirect_user:
+            indirect_password = self.auth_ldap_bind_password
+            log.debug("LDAP indirect bind with: {0}".format(indirect_user))
+            con.bind_s(indirect_user, indirect_password)
+            log.debug("LDAP BIND indirect OK")
+
     def _bind_ldap(self, ldap, con, username, password):
         """
             Private to bind/Authenticate a user.
@@ -615,12 +628,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             If AUTH_LDAP_BIND_USER does not exit, will bind with username/password
         """
         try:
-            indirect_user = self.auth_ldap_bind_user
-            if indirect_user:
-                indirect_password = self.auth_ldap_bind_password
-                log.debug("LDAP indirect bind with: {0}".format(indirect_user))
-                con.bind_s(indirect_user, indirect_password)
-                log.debug("LDAP BIND indirect OK")
+            if self.auth_ldap_bind_user:
+                self._bind_indirect_user(ldap, con)
                 user = self._search_ldap(ldap, con, username)
                 if user:
                     log.debug("LDAP got User {0}".format(user))
@@ -688,6 +697,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                     return None
                 # User does not exist, create one if self registration.
                 elif not user and self.auth_user_registration:
+                    self._bind_indirect_user(ldap, con)
                     new_user = self._search_ldap(ldap, con, username)
                     if not new_user:
                         log.warning(LOGMSG_WAR_SEC_NOLDAP_OBJ.format(username))
