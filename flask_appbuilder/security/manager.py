@@ -571,7 +571,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         user = self.find_user(username=username)
         if user is None:
             user = self.find_user(email=username)
-        if user is None or (not user.is_active()):
+        if user is None or (not user.is_active):
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
         elif check_password_hash(user.password, password):
@@ -606,6 +606,19 @@ class BaseSecurityManager(AbstractSecurityManager):
                 return None
         return user
 
+    def _bind_indirect_user(self, ldap, con):
+        """
+            If using AUTH_LDAP_BIND_USER bind this user before performing search
+            :param ldap: The ldap module reference
+            :param con: The ldap connection
+        """
+        indirect_user = self.auth_ldap_bind_user
+        if indirect_user:
+            indirect_password = self.auth_ldap_bind_password
+            log.debug("LDAP indirect bind with: {0}".format(indirect_user))
+            con.bind_s(indirect_user, indirect_password)
+            log.debug("LDAP BIND indirect OK")
+
     def _bind_ldap(self, ldap, con, username, password):
         """
             Private to bind/Authenticate a user.
@@ -615,12 +628,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             If AUTH_LDAP_BIND_USER does not exit, will bind with username/password
         """
         try:
-            indirect_user = self.auth_ldap_bind_user
-            if indirect_user:
-                indirect_password = self.auth_ldap_bind_password
-                log.debug("LDAP indirect bind with: {0}".format(indirect_user))
-                con.bind_s(indirect_user, indirect_password)
-                log.debug("LDAP BIND indirect OK")
+            if self.auth_ldap_bind_user:
+                self._bind_indirect_user(ldap, con)
                 user = self._search_ldap(ldap, con, username)
                 if user:
                     log.debug("LDAP got User {0}".format(user))
@@ -659,7 +668,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if username is None or username == "":
             return None
         user = self.find_user(username=username)
-        if user is not None and (not user.is_active()):
+        if user is not None and (not user.is_active):
             return None
         else:
             try:
@@ -688,6 +697,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                     return None
                 # User does not exist, create one if self registration.
                 elif not user and self.auth_user_registration:
+                    self._bind_indirect_user(ldap, con)
                     new_user = self._search_ldap(ldap, con, username)
                     if not new_user:
                         log.warning(LOGMSG_WAR_SEC_NOLDAP_OBJ.format(username))
@@ -720,7 +730,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             :type self: User model
         """
         user = self.find_user(email=email)
-        if user is None or (not user.is_active()):
+        if user is None or (not user.is_active):
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(email))
             return None
         else:
@@ -749,7 +759,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         # If user does not exist on the DB and not auto user registration,
         # or user is inactive, go away.
-        elif user is None or (not user.is_active()):
+        elif user is None or (not user.is_active):
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
             return None
 
@@ -771,7 +781,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.error('User info does not have username or email {0}'.format(userinfo))
             return None
         # User is disabled
-        if user and not user.is_active():
+        if user and not user.is_active:
             log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(userinfo))
             return None
         # If user does not exist on the DB and not self user registration, go away
@@ -830,7 +840,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
             Check if current user or public has access to view or menu
         """
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             return self._has_view_access(g.user, permission_name, view_name)
         else:
             return self.is_item_public(permission_name, view_name)

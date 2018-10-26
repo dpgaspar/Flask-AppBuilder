@@ -15,6 +15,7 @@ F.A.B. has support for seven languages (planning for some more):
  - Portuguese Brazil
  - Russian
  - Spanish
+ - Greek
 
 This means that all messages, builtin on the framework are translated to these languages.
 
