@@ -738,7 +738,7 @@ class BaseCRUDView(BaseModelView):
             filters.add_filter_related_view(fk, self.datamodel.FilterRelationManyToManyEqual,
                                         self.datamodel.get_pk_value(item))
         else:
-            log.error("Can't find relation on related view {0}".format(related_view.name))
+            log.error("Can't find relation on related view {0}".format(related_view.__class__.__name__))
             return None
         return related_view._get_view_widget(filters=filters,
                                              order_column=order_column,
