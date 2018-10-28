@@ -2,7 +2,7 @@ import logging
 import re
 import datetime
 from sqlalchemy.ext.declarative import declarative_base
-from flask_sqlalchemy import SQLAlchemy, _BoundDeclarativeMeta, _QueryProperty
+from flask_sqlalchemy import SQLAlchemy, DefaultMeta, _QueryProperty
 
 try:
     from sqlalchemy.ext.declarative import as_declarative
@@ -30,8 +30,7 @@ class SQLA(SQLAlchemy):
 
         Use it and configure it just like flask_SQLAlchemy
     """
-    def make_declarative_base(self, metadata=None):
-        """Creates the declarative base."""
+    def make_declarative_base(self, model, metadata=None):
         base = Model
         base.query = _QueryProperty(self)
         return base
@@ -46,7 +45,7 @@ class SQLA(SQLAlchemy):
         return result
 
 
-class ModelDeclarativeMeta(_BoundDeclarativeMeta):
+class ModelDeclarativeMeta(DefaultMeta):
     """
         Base Model declarative meta for all Models definitions.
         Setups bind_keys to support multiple databases.
