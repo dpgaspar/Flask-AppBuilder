@@ -181,6 +181,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             if 'AUTH_LDAP_SERVER' not in app.config:
                 raise Exception("No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type.")
             app.config.setdefault('AUTH_LDAP_SEARCH', '')
+            app.config.setdefault('AUTH_LDAP_SEARCH_FILTER', '')
             app.config.setdefault('AUTH_LDAP_BIND_USER', '')
             app.config.setdefault('AUTH_LDAP_APPEND_DOMAIN', '')
             app.config.setdefault('AUTH_LDAP_USERNAME_FORMAT', '')
@@ -264,6 +265,10 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_search(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_SEARCH']
+    
+    @property
+    def auth_ldap_search_filter(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_SEARCH_FILTER']
 
     @property
     def auth_ldap_bind_user(self):
@@ -622,7 +627,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         if self.auth_ldap_append_domain:
             username = username + '@' + self.auth_ldap_append_domain
-        filter_str = "%s=%s" % (self.auth_ldap_uid_field, username)
+        if self.auth_ldap_search_filter:
+            filter_str = "(&%s(%s=%s))" % (self.auth_ldap_search_filter, self.auth_ldap_uid_field, username)
+        else:
+            filter_str = "(%s=%s)" % (self.auth_ldap_uid_field, username)
         user = con.search_s(self.auth_ldap_search,
                             ldap.SCOPE_SUBTREE,
                             filter_str,
