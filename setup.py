@@ -35,19 +35,18 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        'colorama>=0.3.9,<1',
-        'click>=6.7,<8',
-        'Flask>=0.12,<2',
-        'Flask-Babel>=0.11.1,<1',
+        'colorama==0.3.9',
+        'click==6.7',
+        'Flask>=0.10.0,<0.12.99',
+        'Flask-Babel==0.11.1',  # known issues with 0.11.2
         'Flask-Login>=0.3,<0.5',
-        'Flask-OpenID>=1.2.5,<2',
-        'Flask-SQLAlchemy>=2.3,<3',
-        'Flask-WTF>=0.14.2,<1',
-        'python-dateutil>=2.3,<3',
+        'Flask-OpenID==1.2.5',
+        'Flask-SQLAlchemy==2.1',
+        'Flask-WTF==0.14.2',
+        'python-dateutil>=2.3, <3',
     ],
     tests_require=[
         'nose>=1.0',
-        'mockldap>=0.3.0'
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',

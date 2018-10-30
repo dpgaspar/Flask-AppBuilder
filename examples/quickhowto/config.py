@@ -30,7 +30,6 @@ LANGUAGES = {
     'zh': {'flag': 'cn', 'name': 'Chinese'},
     'ru': {'flag': 'ru', 'name': 'Russian'},
     'pl': {'flag': 'pl', 'name': 'Polish'},
-    'el': {'flag': 'gr', 'name': 'Greek'},
     'ja_JP': {'flag': 'jp', 'name': 'Japanese'}
 }
 
