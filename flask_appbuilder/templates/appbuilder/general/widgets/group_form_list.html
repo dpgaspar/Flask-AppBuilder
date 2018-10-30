@@ -2,7 +2,7 @@
 
 {% if form_widget %}
         {{ lib.panel_begin(form_title) }}
-            {{ form_widget(form_action = form_action) }}
+            {{ form_widget(form_action = form_action) | safe }}
         {{ lib.panel_end() }}
 {% endif %}
-{{ list_widget() }}
+{{ list_widget() | safe }}

@@ -8,7 +8,7 @@ Flask App Builder
 .. image:: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master/landscape.svg?style=flat
    :target: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master
    :alt: Code Health
-.. image:: https://img.shields.io/badge/pyversions-2.7%2C3.3%2C3.5-blue.svg
+.. image:: https://img.shields.io/badge/pyversions-2.7%2C3.6-blue.svg
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto CRUD generation for your models, google charts and much more.
@@ -24,7 +24,7 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 1.12.0*.
+*New 1.12.1*.
 
 BREAKING CHANGES relative to 1.12.0: we have bumped flask-login version, this causes breaking changes on the API relative to this package.
 
@@ -60,13 +60,20 @@ Or, if you have mongodb and the requirements installed locally-
 `setup.py test`
 
 
-Projects using FAB
-------------------
+Projects/Organizations using FAB
+--------------------------------
 
-If you would like to share your projects and join the list, just send me the link.
+If you would like to share your project, or let everyone know that you're using FAB on your organization please submit a PR or send me an email with the details. 
+
+Projects:
 
 - `Superset <https://github.com/airbnb/superset>`_ - a data exploration platform designed to be visual, intuitive, and interactive
-- `Flog <http://demo-ninmesara.rhcloud.com/category/about>`_
+
+Organizations:
+
+- Airbnb
+- Miniclip
+- EuroBIC
 
 Includes:
 ---------
