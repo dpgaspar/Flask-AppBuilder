@@ -1,6 +1,7 @@
 import logging
 
 from flask import Blueprint, url_for, current_app
+from functools import reduce
 from .views import IndexView, UtilView
 from .filters import TemplateFilters
 from .menu import Menu

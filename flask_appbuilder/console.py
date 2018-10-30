@@ -11,6 +11,7 @@ import os
 import shutil
 import sys
 from zipfile import ZipFile
+from jinja2 import Template
 from . import const as c
 
 try:
@@ -23,7 +24,8 @@ from io import BytesIO
 
 SQLA_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip'
 MONGOENGIE_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-me/archive/master.zip'
-ADDON_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-AddOn/archive/master.zip'
+# ADDON_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-AddOn/archive/master.zip'
+ADDON_REPO_URL = 'https://github.com/dolfandringa/Flask-AppBuilder-Skeleton-AddOn/archive/master.zip'
 
 def import_application(app_package, appbuilder):
     sys.path.append(os.getcwd())
@@ -243,10 +245,10 @@ def create_app(name, engine):
         Create a Skeleton application (needs internet connection to github)
     """
     try:
-        if engine.lower() =='sqlalchemy':
+        if engine.lower() == 'sqlalchemy':
             url = urlopen(SQLA_REPO_URL)
             dirname = "Flask-AppBuilder-Skeleton-master"
-        elif engine.lower() =='mongoengine':
+        elif engine.lower() == 'mongoengine':
             url = urlopen(MONGOENGIE_REPO_URL)
             dirname = "Flask-AppBuilder-Skeleton-me-master"
         zipfile = ZipFile(BytesIO(url.read()))
@@ -276,13 +278,30 @@ def create_addon(name):
         zipfile = ZipFile(BytesIO(url.read()))
         zipfile.extractall()
         os.rename(dirname, full_name)
-        addon_path =  os.path.join(full_name,full_name)
+        template_fname = os.path.join(full_name, 'MANIFEST.in.j2')
+        click.echo("Opening manifest file {}".format(template_fname))
+        with open(template_fname, 'r')as f:
+            template = Template(f.read())
+        addon_path = os.path.join(full_name, full_name)
+        click.echo(click.style("Addon path {} created".format(addon_path),
+                               fg="green"))
         os.rename(os.path.join(full_name, 'fab_addon'), addon_path)
         f = open(os.path.join(full_name, 'config.py'), 'w')
+        click.echo(click.style("Created config file", fg="green"))
         f.write("ADDON_NAME='" + name + "'\n")
         f.write("FULL_ADDON_NAME='fab_addon_' + ADDON_NAME\n")
         f.close()
-        click.echo(click.style('Downloaded the skeleton addon, good coding!', fg='green'))
+        click.echo(click.style("Created config file", fg="green"))
+        manifest_fname = os.path.join(full_name, 'MANIFEST.in')
+        click.echo("Creating manifest file")
+        with open(manifest_fname, 'w') as f:
+            txt = template.render(addon_name=full_name)
+            click.echo("Writing the following to manifest file: {}"
+                       .format(txt))
+            f.write(txt)
+        os.remove(template_fname)
+        click.echo(click.style('Downloaded the skeleton addon, good coding!',
+                               fg='green'))
         return True
     except Exception as e:
         click.echo(click.style('Something went wrong {0}'.format(e), fg='red'))
