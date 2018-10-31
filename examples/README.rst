@@ -17,6 +17,8 @@ Examples of simple applications for Flask-AppBuilder
 
 :oauth: OAuth authentication with twitter or google, sending tweets on behalf of their user.
 
+:jwt: Authentication with JWT providers like Cloudflare Access or Google IAP
+
 :productsale: Just another simple app.
 
 :quickactions: Show how to setup actions for list views.
