@@ -95,7 +95,8 @@ def create_admin(app, appbuilder, username, firstname, lastname, email, password
                 c.AUTH_OID:"OpenID Authentication",
                 c.AUTH_LDAP:"LDAP Authentication",
                 c.AUTH_REMOTE_USER:"WebServer REMOTE_USER Authentication",
-                c.AUTH_OAUTH:"OAuth Authentication"}
+                c.AUTH_OAUTH:"OAuth Authentication",
+                c.AUTH_JWT: "Authentication via JWT token"}
     _appbuilder = import_application(app, appbuilder)
     click.echo(click.style('Recognized {0}.'.format(auth_type.get(_appbuilder.sm.auth_type,'No Auth method')), fg='green'))
     role_admin = _appbuilder.sm.find_role(_appbuilder.sm.auth_role_admin)

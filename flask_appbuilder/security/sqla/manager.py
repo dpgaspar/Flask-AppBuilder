@@ -38,7 +38,7 @@ class SecurityManager(BaseSecurityManager):
         """
         super(SecurityManager, self).__init__(appbuilder)
         user_datamodel = SQLAInterface(self.user_model)
-        if self.auth_type == c.AUTH_DB:
+        if self.auth_type == c.AUTH_DB or self.auth_type == c.AUTH_JWT:
             self.userdbmodelview.datamodel = user_datamodel
         elif self.auth_type == c.AUTH_LDAP:
             self.userldapmodelview.datamodel = user_datamodel

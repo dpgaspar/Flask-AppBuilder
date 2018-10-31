@@ -15,7 +15,7 @@ from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, A
 from .registerviews import RegisterUserDBView, RegisterUserOIDView, RegisterUserOAuthView
 from ..basemanager import BaseManager
 from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
-                    AUTH_REMOTE_USER, AUTH_OAUTH, \
+                    AUTH_REMOTE_USER, AUTH_OAUTH, AUTH_JWT, \
                     LOGMSG_ERR_SEC_AUTH_LDAP, \
                     LOGMSG_ERR_SEC_AUTH_LDAP_TLS, \
                     LOGMSG_WAR_SEC_NO_USER, \
@@ -192,6 +192,19 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault('AUTH_LDAP_LASTNAME_FIELD', 'sn')
             app.config.setdefault('AUTH_LDAP_EMAIL_FIELD', 'mail')
 
+        if self.auth_type == AUTH_JWT:
+            app.config.setdefault('AUTH_JWT_ALGORITHMS', ['HS256', 'RS256', 'ES256'])
+            if not any([app.config.get('AUTH_JWT_COOKIE_NAME'),
+                        app.config.get('AUTH_JWT_HEADER_NAME')]):
+                raise Exception('No AUTH_JWT_COOKIE_NAME or AUTH_JWT_HEADER_NAME')
+            empty_jwt_values = [
+                k for k in ['AUTH_JWT_PUBLIC_CERTS_URL', 'AUTH_JWT_AUDIENCE',
+                            'AUTH_JWT_ISSUER', 'AUTH_JWT_ALGORITHMS']
+                if not app.config.get(k)
+            ]
+            if empty_jwt_values:
+                raise Exception('No JWT config {0}'.format(empty_jwt_values))
+
         if self.auth_type == AUTH_OID:
             self.oid = OpenID(app)
         if self.auth_type == AUTH_OAUTH:
@@ -213,6 +226,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.lm = LoginManager(app)
         self.lm.login_view = 'login'
         self.lm.user_loader(self.load_user)
+        if self.auth_type == AUTH_JWT:
+            self.lm.request_loader(self.load_user_from_jwt_token)
 
     @property
     def get_url_for_registeruser(self):
@@ -444,10 +459,74 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         return jwt_decoded_payload
 
+    def auth_user_jwt(self, payload):
+        if 'email' in payload:
+            user = self.find_user(email=payload['email'])
+        else:
+            log.error('User info does not have email {0}'.format(payload))
+            return None
+
+        # User is disabled
+        if user and not user.is_active:
+            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(payload))
+            return None
+        # If user does not exist on the DB and not self user registration, go away
+        if not user and not self.auth_user_registration:
+            return None
+        # User does not exist, create one if self registration.
+        if not user:
+            user = self.add_user(
+                username=payload['email'].replace('@', '_'),
+                first_name=payload.get('first_name', ''),
+                last_name=payload.get('last_name', ''),
+                email=payload['email'],
+                role=self.find_role(self.auth_user_registration_role),
+            )
+
+            if not user:
+                log.error('Error creating a new JWT user {0}'.format(payload))
+                return None
+        return user
+
+    def jwt_token_load_user_from_request(self, request):
+        from werkzeug.exceptions import Unauthorized
+        from flask_appbuilder.security.jwt_auth import verify_jwt_token
+        app = self.appbuilder.get_app
+
+        payload = None
+
+        if app.config['AUTH_JWT_COOKIE_NAME']:
+            jwt_token = request.cookies.get(app.config['AUTH_JWT_COOKIE_NAME'], None)
+        elif app.config['AUTH_JWT_HEADER_NAME']:
+            jwt_token = request.headers.get(app.config['AUTH_JWT_HEADER_NAME'], None)
+        else:
+            return None
+
+        if jwt_token:
+            payload, token_is_valid = verify_jwt_token(
+                jwt_token,
+                expected_issuer=app.config['AUTH_JWT_ISSUER'],
+                expected_audience=app.config['AUTH_JWT_AUDIENCE'],
+                algorithms=app.config['AUTH_JWT_ALGORITHMS'],
+                public_certs_url=app.config['AUTH_JWT_PUBLIC_CERTS_URL'],
+            )
+            if not token_is_valid:
+                raise Unauthorized('Invalid JWT token')
+
+        if payload:
+            return self.auth_user_jwt(payload)
+
+    def load_user_from_jwt_token(self, request):
+        if self.auth_type == AUTH_JWT and \
+                not getattr(request, '_load_user_from_jwt_token_lock', False):
+            request._load_user_from_jwt_token_lock = True
+            user = self.jwt_token_load_user_from_request(request)
+            request._load_user_from_jwt_token_lock = False
+            return user
 
     def register_views(self):
         if self.auth_user_registration:
-            if self.auth_type == AUTH_DB:
+            if self.auth_type == AUTH_DB or self.auth_type == AUTH_JWT:
                 self.registeruser_view = self.registeruserdbview()
             elif self.auth_type == AUTH_OID:
                 self.registeruser_view = self.registeruseroidview()
@@ -460,7 +539,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.appbuilder.add_view_no_menu(self.resetmypasswordview())
         self.appbuilder.add_view_no_menu(self.userinfoeditview())
 
-        if self.auth_type == AUTH_DB:
+        if self.auth_type == AUTH_DB or self.auth_type == AUTH_JWT:
             self.user_view = self.userdbmodelview
             self.auth_view = self.authdbview()
 
