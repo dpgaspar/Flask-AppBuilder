@@ -209,7 +209,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             for _provider in self.oauth_providers:
                 provider_name = _provider['name']
                 log.debug("OAuth providers init {0}".format(provider_name))
-                obj_provider = self.oauth.remote_app(provider_name, **_provider['remote_app'])
+                obj_provider = self.oauth_remote_app(self, provider_name, **_provider['remote_app'])
+                #obj_provider = self.oauth.remote_app(provider_name, **_provider['remote_app'])
                 obj_provider._tokengetter = self.oauth_tokengetter
                 if not self.oauth_user_info:
                     self.oauth_user_info = self.get_oauth_user_info
@@ -338,6 +339,13 @@ class BaseSecurityManager(AbstractSecurityManager):
     def oauth_providers(self):
         return self.appbuilder.get_app.config['OAUTH_PROVIDERS']
 
+    def oauth_remote_app(self,provider_name,remote_app):
+        """
+            some times,need inherit OAuthRemoteApp class just like 
+            https://github.com/lepture/flask-oauthlib/blob/3735210211ac0e50c4d32b887bbd61722dd175c7/example/reddit.py
+        """
+        return self.oauth.remote_app(provider_name, remote_app)
+    
     def oauth_user_info_getter(self, f):
         """
             Decorator function to be the OAuth user info getter
