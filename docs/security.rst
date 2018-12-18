@@ -369,6 +369,7 @@ First extend the User Model (create a sec_models.py file)::
     from flask_appbuilder import Model
 
     class MyUser(User):
+    	__tablename__ = 'ab_user'
         extra = Column(String(256))
 
 
