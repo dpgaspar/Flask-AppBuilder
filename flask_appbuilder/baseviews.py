@@ -455,7 +455,6 @@ class BaseModelView(BaseView):
         return ret
 
 
-
 class BaseCRUDView(BaseModelView):
     """
         The base class for ModelView, all properties are inherited

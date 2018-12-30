@@ -5,6 +5,7 @@ import logging
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
 from mockldap import MockLdap
+import jinja2
 
 from flask_appbuilder.const import AUTH_LDAP
 
@@ -39,6 +40,7 @@ class LDAPSearchTestCase(unittest.TestCase):
 		self.ldapobj = self.mockldap['ldap://localhost/']
 
 		self.app = Flask(__name__)
+		self.app.jinja_env.undefined = jinja2.StrictUndefined
 		self.db = SQLA(self.app)
 
 		self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
