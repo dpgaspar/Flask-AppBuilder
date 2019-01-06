@@ -1,3 +1,4 @@
+from inspect import isclass
 import json
 import logging
 from datetime import datetime, date
@@ -747,7 +748,11 @@ class BaseCRUDView(BaseModelView):
             filters.add_filter_related_view(fk, self.datamodel.FilterRelationManyToManyEqual,
                                         self.datamodel.get_pk_value(item))
         else:
-            log.error("Can't find relation on related view {0}".format(related_view.name))
+            if isclass(related_view) and issubclass(related_view, BaseView):
+                name = related_view.__name__
+            else:
+                name = related_view.__class__.__name__
+            log.error("Can't find relation on related view {0}".format(name))
             return None
         return related_view._get_view_widget(filters=filters,
                                              order_column=order_column,
@@ -1048,13 +1053,12 @@ class BaseCRUDView(BaseModelView):
         def date_deserializer(obj):
             if '_type' not in obj:
                 return obj
-            type = obj['_type']
-            if type == 'datetime' and '.' in obj['value']:
-                return datetime.strptime(obj['value'], "%Y-%m-%dT%H:%M:%S.%f")
-            elif type == 'datetime':
-                return datetime.strptime(obj['value'], "%Y-%m-%dT%H:%M:%S")
-            elif type == 'date':
-                return  datetime.strptime(obj['value'], "%Y-%m-%d").date()
+
+            from dateutil import parser
+            if obj['_type'] == 'datetime':
+                return parser.parse(obj['value'])
+            elif obj['_type'] == 'date':
+                return parser.parse(obj['value']).date()
             return obj
 
         if self.datamodel.is_pk_composite():

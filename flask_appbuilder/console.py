@@ -32,7 +32,7 @@ def import_application(app_package, appbuilder):
     except Exception as e:
         click.echo(click.style('Was unable to import {0} Error: {1}'.format(app_package, e), fg='red'))
         exit(3)
-    if hasattr(_app, 'appbuilder'):
+    if hasattr(_app, appbuilder):
         return getattr(_app, appbuilder)
     else:
         click.echo(click.style('There in no appbuilder var on your package, you can use appbuilder parameter to config', fg='red'))
@@ -104,6 +104,28 @@ def create_admin(app, appbuilder, username, firstname, lastname, email, password
         click.echo(click.style('Admin User {0} created.'.format(username), fg='green'))
     else:
         click.echo(click.style('No user created an error occured', fg='red'))
+
+
+@cli_app.command("create-user")
+@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
+@click.option('--role', default='Public', prompt='Role')
+@click.option('--username', prompt='Username')
+@click.option('--firstname', prompt='User first name')
+@click.option('--lastname', prompt='User last name')
+@click.option('--email', prompt='Email')
+@click.password_option()
+def create_user(app, appbuilder, role, username, firstname, lastname, email, password):
+    """
+        Create a user
+    """
+    _appbuilder = import_application(app, appbuilder)
+    role_object = _appbuilder.sm.find_role(role)
+    user = _appbuilder.sm.add_user(username, firstname, lastname, email, role_object, password)
+    if user:
+        click.echo(click.style('User {0} created.'.format(username), fg='green'))
+    else:
+        click.echo(click.style('Error!! No user created', fg='red'))
 
 
 @cli_app.command("run")

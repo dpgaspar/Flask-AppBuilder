@@ -388,10 +388,6 @@ msgstr "Полное имя"
 msgid "Is Active?"
 msgstr "Активен?"
 
-#: flask_appbuilder/security/views.py:106
-msgid "EMail"
-msgstr "Email"
-
 #: flask_appbuilder/security/views.py:107
 msgid "Role"
 msgstr "Роль"

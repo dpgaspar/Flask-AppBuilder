@@ -242,9 +242,8 @@ msgid "Last Name"
 msgstr "Nachname"
 
 #: flask_appbuilder/security/forms.py:36 flask_appbuilder/security/forms.py:53
-#, fuzzy
 msgid "Email"
-msgstr "EMail"
+msgstr "Email"
 
 #: flask_appbuilder/security/manager.py:417
 #: flask_appbuilder/security/views.py:95
@@ -390,10 +389,6 @@ msgstr "Vollständiger Name"
 #: flask_appbuilder/security/views.py:105
 msgid "Is Active?"
 msgstr "Ist aktiv?"
-
-#: flask_appbuilder/security/views.py:106
-msgid "EMail"
-msgstr "EMail"
 
 #: flask_appbuilder/security/views.py:107
 msgid "Role"

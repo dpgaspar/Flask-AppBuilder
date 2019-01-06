@@ -1,20 +1,20 @@
 language: python
 python:
-  - "3.5"
-  - "3.3"
+  - "3.6"
   - "2.7"
 install:
-  - "pip install --upgrade 'pip>=9.0.1,<9.99'"
-  - "pip -V"
-  - "pip install -r requirements.txt"
-  - "pip install coveralls"
-  - "pip install 'mongoengine>=0.7.10,<0.7.99'"
-  - "pip install 'flask-mongoengine==0.7.1'"
-  - "pip install 'pymongo>=2.8.1,<2.8.99'"
-  - "pip install 'Pillow>=3.4.2,<3.99'"
+  - pip install --upgrade 'pip>=9.0.1,<9.99'
+  - pip -V
+  - python setup.py install
+  - pip install coveralls
+  - pip install 'mongoengine>=0.7.10,<0.7.99'
+  - pip install 'flask-mongoengine==0.7.1'
+  - pip install 'pymongo>=2.8.1,<2.8.99'
+  - pip install 'Pillow>=3.4.2,<3.99'
+  - pip install 'mockldap>=0.3.0'
 services:
   - mongodb
 script:
-  - coverage run --source=flask_appbuilder --omit=*messages.py*,*baseapp.py* setup.py test
+  - nosetests --with-coverage --cover-package flask_appbuilder
 after_success:
   coveralls

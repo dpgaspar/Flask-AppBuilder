@@ -1,6 +1,49 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.12.2
+------------------------------------
+
+- Fix, #832 don't install examples as a package with flask-appbuilder
+- Fix, #760 Select all checkbox, in related view, selects checkboxes from all related views
+- New, #833 LDAPS TLS config options
+- New, #829 Aditional filtering in LDAP search
+
+Improvements and Bug fixes on 1.12.1
+------------------------------------
+
+- New, #826 Greek support i18n
+- New, #813 Dependencies unpinned
+- Fix, #828 list and form widget rendering html InLine, regression from #797
+
+Improvements and Bug fixes on 1.12.0
+------------------------------------
+
+- Fix, #797 Remove safe filter from template
+- New, #911 BREAKING CHANGES, bumped Flask-Login dependency to >=0.3,<0.5
+
+Improvements and Bug fixes on 1.11.1
+------------------------------------
+
+- Fix, Unlock flask required version, new 0.12.4. does not cause issues anymore
+
+Improvements and Bug fixes on 1.11.0
+------------------------------------
+
+- New, #615 Azure AD as Oauth provider
+- New, #678 fabmanager create-user command
+- Fix, #628 Remove double-instantiation of declarative base, problem with flask-migrate
+- New, #735 Added french translations
+- Fix, minor typo EMail to Email
+
+Improvements and Bug fixes on 1.10.0
+------------------------------------
+
+- Fix, #712 improvement on parsing timezone dates
+- Fix, #701 permission deletion
+- Fix, #700 Non unique associations on security models
+- New, #694 Accept SQLAlchemy custom types defined by TypeDecorator
+- New, #686 Removed support for python 2.6
 
 Improvements and Bug fixes on 1.9.6
 -----------------------------------
