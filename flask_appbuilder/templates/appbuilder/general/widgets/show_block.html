@@ -18,13 +18,13 @@
 
                 {% if loop.index == 1 %}
                     <h4 class="list-group-item-heading">
-                    <span style="white-space: pre-line">
+                    <span>
                         {{value_columns[include_columns.index(item)]}}
                     </span>
                     </h4>
                 {% else %}
                     <p class="list-group-item-text">
-                    <span style="white-space: pre-line">
+                    <span>
                         {{value_columns[include_columns.index(item)]}}
                     </span>
                     </p>
@@ -40,7 +40,7 @@
                 <h4 class="list-group-item-heading">{{value_columns[loop.index-1]}}</h4>
             {% else %}
                 <p class="list-group-item-text">
-                <span style="white-space: pre-line">
+                <span>
                       {{value_columns[loop.index-1]}}
                 </span>
                 </p>
