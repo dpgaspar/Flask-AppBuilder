@@ -408,7 +408,11 @@ class SQLAInterface(BaseInterface):
     """
 
     def get_col_default(self, col_name):
-        default = getattr(self.list_columns[col_name], 'default', None)
+        try:
+            default = getattr(self.list_columns[col_name], 'default', None)
+        except KeyError:
+            default = None
+        
         if default is not None:
             value = getattr(default, 'arg', None)
             if value is not None:
