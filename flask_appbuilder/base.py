@@ -13,6 +13,7 @@ from .const import LOGMSG_WAR_FAB_VIEW_EXISTS, \
                    LOGMSG_INF_FAB_ADDON_ADDED, \
                    LOGMSG_ERR_FAB_ADDON_IMPORT, \
                    LOGMSG_ERR_FAB_ADDON_PROCESS
+from functools import reduce
 
 log = logging.getLogger(__name__)
 
