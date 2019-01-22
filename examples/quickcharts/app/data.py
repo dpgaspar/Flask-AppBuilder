@@ -2,7 +2,7 @@ import logging
 import datetime
 import random
 from app import db
-from models import CountryStats, Country, PoliticalType
+from .models import CountryStats, Country, PoliticalType
 
 log = logging.getLogger(__name__)
 
