@@ -32,7 +32,7 @@ def import_application(app_package, appbuilder):
     except Exception as e:
         click.echo(click.style('Was unable to import {0} Error: {1}'.format(app_package, e), fg='red'))
         exit(3)
-    if hasattr(_app, 'appbuilder'):
+    if hasattr(_app, appbuilder):
         return getattr(_app, appbuilder)
     else:
         click.echo(click.style('There in no appbuilder var on your package, you can use appbuilder parameter to config', fg='red'))
