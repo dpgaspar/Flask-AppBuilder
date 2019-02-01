@@ -1,4 +1,4 @@
-from models import Product, ProductType
+from .models import Product, ProductType
 from flask_appbuilder.views import ModelView, BaseView
 from flask_appbuilder.charts.views import ChartView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
