@@ -1,5 +1,5 @@
 import os
-from flask import session, has_request_context
+from flask import session, has_request_context, request
 from flask_babel import Babel
 from ..basemanager import BaseManager
 from .views import LocaleView
@@ -35,6 +35,10 @@ class BabelManager(BaseManager):
 
     def get_locale(self):
         if has_request_context():
+            # locale selector for API searches for request args
+            for arg, value in request.args.items():
+                if arg=="_l_":
+                    return value
             locale = session.get('locale')
             if locale:
                 return locale

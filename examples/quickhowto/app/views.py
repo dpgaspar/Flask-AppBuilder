@@ -3,12 +3,12 @@ from flask_appbuilder import ModelView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.charts.views import GroupByChartView
 from flask_appbuilder.models.group import aggregate_count
-from flask_appbuilder.widgets import FormHorizontalWidget, FormInlineWidget, FormVerticalWidget
 from flask_babel import lazy_gettext as _
-
+from flask_appbuilder.api import ModelApi
+from flask_appbuilder.security.sqla.models import User
 
 from app import db, appbuilder
-from .models import ContactGroup, Gender, Contact
+from .models import ContactGroup, Gender, Contact, ContactGroupSchema, ContactSchema
 
 
 def fill_gender():
@@ -18,6 +18,7 @@ def fill_gender():
         db.session.commit()
     except:
         db.session.rollback()
+
 
 
 class ContactModelView(ModelView):
@@ -51,6 +52,17 @@ class ContactModelView(ModelView):
 class GroupModelView(ModelView):
     datamodel = SQLAInterface(ContactGroup)
     related_views = [ContactModelView]
+
+class GroupModelApi(ModelApi):
+    datamodel = SQLAInterface(ContactGroup)
+
+class ContactModelApi(ModelApi):
+    datamodel = SQLAInterface(Contact)
+    #show_columns = ['name']
+    #list_model_schema = ContactSchema()
+
+class UserModelApi(ModelApi):
+    datamodel = SQLAInterface(User)
 
 
 class ContactChartView(GroupByChartView):
@@ -100,6 +112,10 @@ class ContactTimeChartView(GroupByChartView):
 
 db.create_all()
 fill_gender()
+appbuilder.add_view_no_menu(GroupModelApi)
+appbuilder.add_view_no_menu(UserModelApi)
+appbuilder.add_view_no_menu(ContactModelApi)
+
 appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
 appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
 appbuilder.add_separator("Contacts")

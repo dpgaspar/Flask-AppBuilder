@@ -7,7 +7,7 @@ from ..const import LOGMSG_ERR_SEC_ACCESS_DENIED, FLAMSG_ERR_SEC_ACCESS_DENIED, 
 
 log = logging.getLogger(__name__)
 
-        
+
 def has_access(f):
     """
         Use this decorator to enable granular security permissions to your methods.

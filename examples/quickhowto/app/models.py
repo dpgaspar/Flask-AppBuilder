@@ -2,6 +2,7 @@ import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from flask_appbuilder import Model
+from marshmallow import Schema, fields
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
@@ -12,6 +13,9 @@ class ContactGroup(Model):
 
     def __repr__(self):
         return self.name
+
+class ContactGroupSchema(Schema):
+    name = fields.Str(required=True)
 
 
 class Gender(Model):
@@ -44,4 +48,12 @@ class Contact(Model):
     def year(self):
         date = self.birthday or mindate
         return datetime.datetime(date.year, 1, 1)
-        
+
+class ContactSchema(Schema):
+    name = fields.Str(required=True)
+    address = fields.Str()
+    birthday = fields.Date()
+    personal_phone = fields.Str()
+    personal_celphone = fields.Str()
+    contact_group = fields.Nested("ContactGroupSchema", required=True)
+    gender = relationship("Gender")

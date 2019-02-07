@@ -44,6 +44,9 @@ setup(
         'Flask-SQLAlchemy>=2.3,<3',
         'Flask-WTF>=0.14.2,<1',
         'python-dateutil>=2.3,<3',
+        'flask-marshmallow==0.9.0',
+        'marshmallow==2.18.0',
+        'marshmallow-sqlalchemy==0.15.0'
     ],
     tests_require=[
         'nose>=1.0',
