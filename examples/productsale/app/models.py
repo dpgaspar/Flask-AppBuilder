@@ -42,6 +42,7 @@ class Product(Model):
 
 
 class Client(User):
+    __tablename__ = 'ab_user'
     extra = Column(String(50), unique=True, nullable=False)
 
 

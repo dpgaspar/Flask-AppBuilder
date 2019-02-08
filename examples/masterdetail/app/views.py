@@ -5,7 +5,7 @@ from flask_appbuilder.charts.views import ChartView, TimeChartView
 from flask_babel import lazy_gettext as _
 
 from app import db, appbuilder
-from models import ContactGroup, Gender, Contact
+from .models import ContactGroup, Gender, Contact
 
 
 def fill_gender():
