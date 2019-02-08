@@ -16,7 +16,7 @@
                 <form class="form" action="" method="post" name="login">
                     {{form.hidden_tag()}}
                     <div class="help-block">{{_("Enter your login and password below")}}:</div>
-                    <div class="control-group{% if form.errors.openid %} error{% endif %}">
+                    <div class="control-group{% if form.errors.openid is defined %} error{% endif %}">
                         <label class="control-label" for="openid">{{_("Username")}}:</label>
 
                         <div class="controls">
@@ -24,7 +24,7 @@
                                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
                                 {{ form.username(size = 80, class = "form-control") }}
                             </div>
-                            {% for error in form.errors.openid %}
+                            {% for error in form.errors.get('openid', []) %}
                             <span class="help-inline">[{{error}}]</span><br>
                             {% endfor %}
                             <label class="control-label" for="openid">{{_("Password")}}:</label>
@@ -33,7 +33,7 @@
                                 <span class="input-group-addon"><i class="fa fa-key"></i></span>
                                 {{ form.password(size = 80, class = "form-control") }}
                             </div>
-                            {% for error in form.errors.openid %}
+                            {% for error in form.errors.get('openid', []) %}
                             <span class="help-inline">[{{error}}]</span><br>
                             {% endfor %}
                         </div>
