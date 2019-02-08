@@ -12,3 +12,5 @@ docs/_build/
 env
 venv
 *.sublime*
+.vscode/
+

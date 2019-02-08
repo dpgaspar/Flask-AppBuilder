@@ -1,3 +1,4 @@
+from inspect import isclass
 import json
 import logging
 from datetime import datetime, date
@@ -454,7 +455,6 @@ class BaseModelView(BaseView):
         return ret
 
 
-
 class BaseCRUDView(BaseModelView):
     """
         The base class for ModelView, all properties are inherited
@@ -738,7 +738,11 @@ class BaseCRUDView(BaseModelView):
             filters.add_filter_related_view(fk, self.datamodel.FilterRelationManyToManyEqual,
                                         self.datamodel.get_pk_value(item))
         else:
-            log.error("Can't find relation on related view {0}".format(related_view.name))
+            if isclass(related_view) and issubclass(related_view, BaseView):
+                name = related_view.__name__
+            else:
+                name = related_view.__class__.__name__
+            log.error("Can't find relation on related view {0}".format(name))
             return None
         return related_view._get_view_widget(filters=filters,
                                              order_column=order_column,

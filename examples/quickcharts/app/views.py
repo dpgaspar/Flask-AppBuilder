@@ -5,7 +5,7 @@ import calendar
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import ModelView
 from flask_appbuilder.charts.views import DirectChartView, DirectByChartView, GroupByChartView
-from models import CountryStats, Country, PoliticalType
+from .models import CountryStats, Country, PoliticalType
 from app import appbuilder, db
 from flask_appbuilder.models.group import aggregate_count, aggregate_sum, aggregate_avg
 
