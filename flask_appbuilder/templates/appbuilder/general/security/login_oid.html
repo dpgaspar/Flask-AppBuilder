@@ -97,11 +97,11 @@ function registerUser() {
             {% endfor %}
         </div>
         </center>
-        <div class="control-group{% if form.errors.openid %} error{% endif %}">
+        <div class="control-group{% if form.errors.openid is defined %} error{% endif %}">
             <label class="hidden control-label" id="label-openid" for="openid">{{_("Or enter your OpenID here")}}:</label>
             <div class="controls">
                 {{ form.openid(size = 80, class = "hidden form-control") }}
-                {% for error in form.errors.openid %}
+                {% for error in form.errors.get('openid', []) %}
                     <span class="help-inline">{{_('Please choose a provider')}}</span><br>
                 {% endfor %}
                 <label class="hidden control-label" id="label-username" for="username">{{_("Enter your OpenID Username")}}:</label>

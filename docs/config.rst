@@ -49,6 +49,20 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_BIND_PASSWORD           | Define password for the bind user.         |   No      |
 +-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_TLS_DEMAND              | Demands TLS peer certificate checking      |   No      |
+|                                   | (Bool)                                     |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_TLS_CACERTDIR           | CA Certificate directory to check peer     |   No      |
+|                                   | certificate                                |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_TLS_CACERTFILE          | CA Certificate file to check peer          |   No      |
+|                                   | certificate                                |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_TLS_CERTFILE            | Certificate file for client auth           |   No      |
+|                                   | use with AUTH_LDAP_TLS_KEYFILE             |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_TLS_KEYFILE             | Certificate key file for client aut        |   No      |
++-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_SEARCH                  | Use search with self user                  |   No      |
 |                                   | registration or when using                 |           |
 |                                   | AUTH_LDAP_BIND_USER.                       |           |
@@ -56,6 +70,14 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | AUTH_LDAP_SERVER = "ldap://ldapserver.new" |           |
 |                                   |                                            |           |
 |                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_SEARCH_FILTER           | Filter or limit allowable users from       |   No      |
+|                                   | the LDAP server, e.g., only the people     |           |
+|                                   | on your team.                              |           |
+|                                   |                                            |           |
+|                                   | AUTH_LDAP_SEARCH_FILTER =                  |           |
+|                                   | "(memberOf=cn=group name,OU=type,dc=ex     |           |
+|                                   | ,cn=com)"                                  |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_UID_FIELD               | if doing an indirect bind to ldap, this    |   No      |
 |                                   | is the field that matches the username     |           |
@@ -117,7 +139,7 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | AUTH_LDAP_EMAIL_FIELD = "mail"             |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_ALLOW_SELF_SIGNED       | Allow LDAP authentication to use self      |   No      |
-|                                   | signed certificates                        |           |
+|                                   | signed certificates (LDAPS)                |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_APPEND_DOMAIN           | Append a domain to all logins. No need to  |   No      |
 |                                   | use john@domain.local. Set it like:        |           |
@@ -177,10 +199,10 @@ Use config.py to configure the following parameters. By default it will use SQLL
 Using config.py
 ---------------
  
-My favorite way, and the one i advise if you are building a medium to large size application
+My favorite way, and the one I advise if you are building a medium to large size application
 is to place all your configuration keys on a config.py file
  
-next you only have to import them to the Flask app object, like this
+Next you only have to import them to the Flask app object, like this
 ::
 
     app = Flask(__name__)

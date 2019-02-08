@@ -11,6 +11,7 @@ install:
   - pip install 'flask-mongoengine==0.7.1'
   - pip install 'pymongo>=2.8.1,<2.8.99'
   - pip install 'Pillow>=3.4.2,<3.99'
+  - pip install 'mockldap>=0.3.0'
 services:
   - mongodb
 script:
