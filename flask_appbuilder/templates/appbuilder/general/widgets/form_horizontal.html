@@ -2,7 +2,7 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 
 
-{% if form_action %}
+{% if form_action is defined %}
     <form class="form-horizontal" role="form" action="{{form_action}}" method="post" enctype="multipart/form-data">
 {% else %}
     <form class="form-horizontal" role="form" id="model_form" action="" method="post" enctype="multipart/form-data">

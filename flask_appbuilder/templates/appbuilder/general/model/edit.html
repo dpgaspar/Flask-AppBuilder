@@ -4,7 +4,7 @@
 {% block content %}
 {{ lib.panel_begin(title) }}
 
-{% if related_views %}
+{% if related_views is defined %}
     <ul class="nav nav-tabs">
     <li class="active"><a href="#Home" data-toggle="tab">{{ _("Detail") }}</a> </li>
         {% for view in related_views %}
@@ -27,7 +27,7 @@
 
 {% endblock %}
 
-    {% if related_views %} </div> {% endif %}
+    {% if related_views is defined %} </div> {% endif %}
 
 {{ lib.panel_end() }}
 {% endblock %}
