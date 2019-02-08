@@ -18,6 +18,7 @@ class Company(Model):
         return self.name
 
 class MyUser(User):
+    __tablename__ = 'ab_user'
     emp_number =  Column(String(150))
     company_id = Column(Integer, ForeignKey('company.id'), nullable=True)
     company = relationship("Company")
