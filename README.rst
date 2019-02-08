@@ -9,6 +9,9 @@ Flask App Builder
    :target: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master
    :alt: Code Health
 .. image:: https://img.shields.io/badge/pyversions-2.7%2C3.6-blue.svg
+.. image:: https://badges.gitter.im/Flask-Appbuilder/Lobby.svg
+   :target: https://gitter.im/dpgaspar/Flask-AppBuilder
+   :alt: Join the chat at
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto CRUD generation for your models, google charts and much more.
@@ -24,7 +27,7 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 1.12.1*.
+*New 1.12.2*.
 
 BREAKING CHANGES relative to 1.12.0: we have bumped flask-login version, this causes breaking changes on the API relative to this package.
 

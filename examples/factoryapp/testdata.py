@@ -3,8 +3,10 @@ from flask_appbuilder import SQLA
 from app.models import ContactGroup, Gender, Contact
 import random
 from datetime import datetime
-from app import db
+from app import db, create_app
 
+app = create_app('config')
+app.app_context().push()
 
 def get_random_name(names_list, size=1):
     name_lst = [names_list[random.randrange(0, len(names_list))].decode("utf-8").capitalize() for i in range(0, size)]

@@ -1,4 +1,4 @@
-from models import Person, PersonGroup
+from .models import Person, PersonGroup
 from flask_appbuilder.views import ModelView, BaseView
 from flask_appbuilder.charts.views import GroupByChartView
 from flask_appbuilder.models.group import aggregate_count

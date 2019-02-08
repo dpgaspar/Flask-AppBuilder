@@ -180,13 +180,21 @@ class BaseSecurityManager(AbstractSecurityManager):
         if self.auth_type == AUTH_LDAP:
             if 'AUTH_LDAP_SERVER' not in app.config:
                 raise Exception("No AUTH_LDAP_SERVER defined on config with AUTH_LDAP authentication type.")
-            app.config.setdefault('AUTH_LDAP_USE_TLS', False)
             app.config.setdefault('AUTH_LDAP_SEARCH', '')
+            app.config.setdefault('AUTH_LDAP_SEARCH_FILTER', '')
             app.config.setdefault('AUTH_LDAP_BIND_USER', '')
             app.config.setdefault('AUTH_LDAP_APPEND_DOMAIN', '')
             app.config.setdefault('AUTH_LDAP_USERNAME_FORMAT', '')
             app.config.setdefault('AUTH_LDAP_BIND_PASSWORD', '')
+            # TLS options
+            app.config.setdefault('AUTH_LDAP_USE_TLS', False)
             app.config.setdefault('AUTH_LDAP_ALLOW_SELF_SIGNED', False)
+            app.config.setdefault('AUTH_LDAP_TLS_DEMAND', False)
+            app.config.setdefault('AUTH_LDAP_TLS_CACERTDIR', '')
+            app.config.setdefault('AUTH_LDAP_TLS_CACERTFILE', '')
+            app.config.setdefault('AUTH_LDAP_TLS_CERTFILE', '')
+            app.config.setdefault('AUTH_LDAP_TLS_KEYFILE', '')
+            # Mapping options
             app.config.setdefault('AUTH_LDAP_UID_FIELD', 'uid')
             app.config.setdefault('AUTH_LDAP_FIRSTNAME_FIELD', 'givenName')
             app.config.setdefault('AUTH_LDAP_LASTNAME_FIELD', 'sn')
@@ -257,6 +265,10 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_search(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_SEARCH']
+    
+    @property
+    def auth_ldap_search_filter(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_SEARCH_FILTER']
 
     @property
     def auth_ldap_bind_user(self):
@@ -297,6 +309,26 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_allow_self_signed(self):
         return self.appbuilder.get_app.config['AUTH_LDAP_ALLOW_SELF_SIGNED']
+
+    @property
+    def auth_ldap_tls_demand(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_TLS_DEMAND']
+
+    @property
+    def auth_ldap_tls_cacertdir(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_TLS_CACERTDIR']
+
+    @property
+    def auth_ldap_tls_cacertfile(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_TLS_CACERTFILE']
+
+    @property
+    def auth_ldap_tls_certfile(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_TLS_CERTFILE']
+
+    @property
+    def auth_ldap_tls_keyfile(self):
+        return self.appbuilder.get_app.config['AUTH_LDAP_TLS_KEYFILE']
 
     @property
     def openid_providers(self):
@@ -544,6 +576,8 @@ class BaseSecurityManager(AbstractSecurityManager):
 
             :param user:
                 The authenticated user model
+            :param success:
+                Default to true, if false increments fail_login_count on user model
         """
         if not user.login_count:
             user.login_count = 0
@@ -593,7 +627,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         if self.auth_ldap_append_domain:
             username = username + '@' + self.auth_ldap_append_domain
-        filter_str = "%s=%s" % (self.auth_ldap_uid_field, username)
+        if self.auth_ldap_search_filter:
+            filter_str = "(&%s(%s=%s))" % (self.auth_ldap_search_filter, self.auth_ldap_uid_field, username)
+        else:
+            filter_str = "(%s=%s)" % (self.auth_ldap_uid_field, username)
         user = con.search_s(self.auth_ldap_search,
                             ldap.SCOPE_SUBTREE,
                             filter_str,
@@ -678,6 +715,17 @@ class BaseSecurityManager(AbstractSecurityManager):
             try:
                 if self.auth_ldap_allow_self_signed:
                     ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
+                    ldap.set_option(ldap.OPT_X_TLS_NEWCTX,0)
+                elif self.auth_ldap_tls_demand:
+                    ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
+                    ldap.set_option(ldap.OPT_X_TLS_NEWCTX,0)
+                if self.auth_ldap_tls_cacertdir:
+                    ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, self.auth_ldap_tls_cacertdir)
+                if self.auth_ldap_tls_cacertfile:
+                    ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.auth_ldap_tls_cacertfile)
+                if self.auth_ldap_tls_certfile and self.auth_ldap_tls_keyfile:
+                    ldap.set_option(ldap.OPT_X_TLS_CERTFILE, self.auth_ldap_tls_certfile)
+                    ldap.set_option(ldap.OPT_X_TLS_KEYFILE, self.auth_ldap_tls_keyfile)
                 con = ldap.initialize(self.auth_ldap_server)
                 con.set_option(ldap.OPT_REFERRALS, 0)
                 if self.auth_ldap_use_tls:
