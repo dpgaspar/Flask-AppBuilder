@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
-import Api from '../api/Api'
-//import axios from 'axios';
+import { FaAngleUp } from "react-icons/fa";
+import { IconContext } from "react-icons";
+import Api from '../api/Api';
 
 
 class TableHeader extends Component {
 
     render() {
         const row = this.props.listColumns.map(key =>
-                                            <th>{this.props.labelColumns[key]}</th>)
-        return (<thead><tr>{row}</tr></thead>);
+                                            <th>{this.props.labelColumns[key]}<FaAngleUp/></th>)
+        return (
+            <thead><tr>{row}</tr></thead>
+            );
     }
 }
 
@@ -54,7 +57,7 @@ class Table extends Component {
 
     render() {
         return (
-            <table className="table">
+            <table className="table table-bordered table-hover">
                 <TableHeader
                     listColumns={this.state.listColumns}
                     labelColumns={this.state.labelColumns}
