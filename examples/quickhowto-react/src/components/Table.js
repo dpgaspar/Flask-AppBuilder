@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import Api from '../api/Api'
+//import axios from 'axios';
+
 
 class TableHeader extends Component {
 
@@ -25,13 +27,14 @@ class Table extends Component {
 
     constructor(props) {
           super(props);
+          this.api = new Api();
           this.state = {data: [],
                         listColumns: [],
                         labelColumns: []};
     }
 
     componentDidMount(){
-        axios.get('http://localhost:8080/api/v1/' + this.props.resource + '/')
+        this.api.get(this.props.resource)
               .then(response => {
                     this.setState({ data: response.data.result,
                                 listColumns: response.data.list_columns,
