@@ -60,10 +60,10 @@ class ContactModelApi(ModelApi):
     datamodel = SQLAInterface(Contact)
     #show_columns = ['name']
     #list_model_schema = ContactSchema()
+    list_columns = ['name', 'address', 'personal_celphone']
 
 class UserModelApi(ModelApi):
     datamodel = SQLAInterface(User)
-
 
 class ContactChartView(GroupByChartView):
     datamodel = SQLAInterface(Contact)

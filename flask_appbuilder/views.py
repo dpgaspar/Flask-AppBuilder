@@ -444,7 +444,7 @@ class ModelView(RestCRUDView):
         delete, show, and list from your database tables, inherit your views from this class.
 
         Notice that this class inherits from BaseCRUDView and BaseModelView
-        so all properties from the parent class can be overriden.
+        so all properties from the parent class can be overridden.
     """
 
     def __init__(self, **kwargs):
