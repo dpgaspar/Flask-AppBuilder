@@ -7,7 +7,7 @@ from flask_babel import lazy_gettext as _
 from flask_appbuilder.api import ModelApi
 from flask_appbuilder.security.sqla.models import User
 
-from app import db, appbuilder
+from app import db, appbuilder, app
 from .models import ContactGroup, Gender, Contact, ContactGroupSchema, ContactSchema
 
 
@@ -121,3 +121,11 @@ appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", categ
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
 appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
+
+@app.after_request
+def after_request(response):
+  response.headers.add('Access-Control-Allow-Origin', '*')
+  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+  return response
+
