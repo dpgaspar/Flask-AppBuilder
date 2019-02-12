@@ -7,6 +7,7 @@ from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
+import jwt
 
 from ..views import ModelView, SimpleFormView, expose
 from ..baseviews import BaseView
@@ -503,11 +504,18 @@ class AuthOAuthView(AuthView):
                                appbuilder=self.appbuilder)
         else:
             log.debug("Going to call authorize for: {0}".format(provider))
+            state = jwt.encode(
+                request.args.to_dict(flat=False),
+                self.appbuilder.app.config['SECRET_KEY'],
+                algorithm='HS256')
             try:
                 if register:
                     log.debug('Login to Register')
                     session['register'] = True
-                return self.appbuilder.sm.oauth_remotes[provider].authorize(callback=url_for('.oauth_authorized',provider=provider, _external=True))
+                return self.appbuilder.sm.oauth_remotes[provider].authorize(
+                    callback=url_for
+                        ('.oauth_authorized', provider=provider, _external=True),
+                        state=state)
             except Exception as e:
                 log.error("Error on OAuth authorize: {0}".format(e))
                 flash(as_unicode(self.invalid_login_message), 'warning')
@@ -550,7 +558,20 @@ class AuthOAuthView(AuthView):
             return redirect('login')
         else:
             login_user(user)
-            return redirect(self.appbuilder.get_url_for_index)
+            try:
+                state = jwt.decode(
+                    request.args['state'],
+                    self.appbuilder.app.config['SECRET_KEY'],
+                    algorithms=['HS256'])
+            except jwt.InvalidTokenError:
+                raise AuthenticationError('State signature is not valid!')
+
+            try:
+                next_url = state['next'][0]
+            except (KeyError, IndexError):
+                next_url = self.appbuilder.get_url_for_index
+
+            return redirect(next_url)
 
 
 class AuthRemoteUserView(AuthView):
