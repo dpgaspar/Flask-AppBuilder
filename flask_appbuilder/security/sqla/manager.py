@@ -158,6 +158,7 @@ class SecurityManager(BaseSecurityManager):
             return user
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_ADD_USER.format(str(e)))
+            self.get_session.rollback()
             return False
 
     def count_users(self):
