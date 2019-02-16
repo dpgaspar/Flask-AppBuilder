@@ -15,6 +15,7 @@ from .sqla.models import Model1, insert_data
 MODEL1_DATA_SIZE = 10
 
 class FlaskTestCase(unittest.TestCase):
+
     def setUp(self):
         from flask import Flask
         from flask_appbuilder import AppBuilder
@@ -56,24 +57,23 @@ class FlaskTestCase(unittest.TestCase):
         """
             REST Api: Test get item
         """
-        #insert_data(self.db.session, Model1)
         client = self.app.test_client()
 
-        # Check for Welcome Message
         for i in range(1, MODEL1_DATA_SIZE):
             rv = client.get('api/v1/model1api/{}/'.format(i))
             data = json.loads(rv.data.decode('utf-8'))
-            return self.assert_get_item(rv, data, i-1)
+            self.assert_get_item(rv, data, i-1)
 
     def assert_get_item(self, rv, data, value):
+        log.info("assert_get_item: {} {}".format(data, value))
         # test result
-        log.info("get_item:{} {}".format(data, value))
         eq_(data['result'], {'field_date':None,
                              'field_float':float(value),
                              'field_integer':value,
                              'field_string':"test{}".format(value)})
         # test descriptions
         eq_(data['description_columns'], self.model1api.description_columns)
+        # test labels
         eq_(data['label_columns'], {'field_date':'Field Date',
                                     'field_float':'Field Float',
                                     'field_integer':'Field Integer',
@@ -85,21 +85,20 @@ class FlaskTestCase(unittest.TestCase):
         """
             REST Api: Test get list
         """
-        #insert_data(self.db.session, Model1)
         client = self.app.test_client()
 
-        # Check for Welcome Message
         rv = client.get('api/v1/model1api/')
         data = json.loads(rv.data.decode('utf-8'))
         for i in range(1, MODEL1_DATA_SIZE):
-            return self.assert_get_list(rv, data['result'][i-1], i-1)
+            self.assert_get_list(rv, data['result'][i-1], i-1)
 
     def assert_get_list(self, rv, data, value):
+        log.info("assert_get_list: {} {}".format(data, value))
         # test result
-
-        log.error("get list:{} {}".format(data, value))
         eq_(data, {'field_date':None,
                              'field_float':float(value),
                              'field_integer':value,
                              'field_string':"test{}".format(value)})
         eq_(rv.status_code, 200)
+
+
