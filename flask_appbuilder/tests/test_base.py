@@ -5,33 +5,24 @@ import random
 import datetime
 import json
 import logging
-
-try:
-    import enum
-    _has_enum = True
-except ImportError:
-    _has_enum = False
-
 from nose.tools import eq_, ok_
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, Enum, DateTime
-from sqlalchemy.orm import relationship
 from flask import redirect, request, session
-
-from flask_appbuilder import Model, SQLA
+from flask_appbuilder import SQLA
 from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqual
-from flask_appbuilder.models.mixins import FileColumn, ImageColumn
 from flask_appbuilder.views import MasterDetailView, CompactCRUDMixin
 from flask_appbuilder.charts.views import (ChartView, TimeChartView,
                                            DirectChartView, GroupByChartView,
                                            DirectByChartView)
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
-
 from flask_appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.generic import PSModel
+from .sqla.models import Model1, Model2, Model3, ModelWithEnums, TmpEnum
+
 
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 logging.getLogger().setLevel(logging.DEBUG)
+
 
 
 """
@@ -49,55 +40,6 @@ REDIRECT_OBJ_ID = 99999
 log = logging.getLogger(__name__)
 
 
-class Model1(Model):
-    id = Column(Integer, primary_key=True)
-    field_string = Column(String(50), unique=True, nullable=False)
-    field_integer = Column(Integer())
-    field_float = Column(Float())
-    field_date = Column(Date())
-    field_file = FileColumn()
-    field_image = ImageColumn()
-
-    def __repr__(self):
-        return str(self.field_string)
-
-
-class Model2(Model):
-    id = Column(Integer, primary_key=True)
-    field_string = Column(String(50), unique=True, nullable=False)
-    field_integer = Column(Integer())
-    field_float = Column(Float())
-    field_date = Column(Date())
-    excluded_string = Column(String(50), default='EXCLUDED')
-    default_string = Column(String(50), default='DEFAULT')
-    group_id = Column(Integer, ForeignKey('model1.id'), nullable=False)
-    group = relationship("Model1")
-
-    def __repr__(self):
-        return str(self.field_string)
-
-    def field_method(self):
-       return "field_method_value"
-
-class Model3(Model):
-    pk1 = Column(Integer(), primary_key=True)
-    pk2 = Column(DateTime(), primary_key=True)
-    field_string = Column(String(50), unique=True, nullable=False)
-
-    def __repr__(self):
-        return str(self.field_string)
-
-
-if _has_enum:
-    class TestEnum(enum.Enum):
-        e1 = 'a'
-        e2 = 2
-
-class ModelWithEnums(Model):
-    id = Column(Integer, primary_key=True)
-    enum1 = Column(Enum('e1', 'e2'))
-    if _has_enum:
-        enum2 = Column(Enum(TestEnum))
 
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):
@@ -112,6 +54,7 @@ class FlaskTestCase(unittest.TestCase):
         self.app.config['CSRF_ENABLED'] = False
         self.app.config['SECRET_KEY'] = 'thisismyscretkey'
         self.app.config['WTF_CSRF_ENABLED'] = False
+        self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -528,27 +471,21 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
-        data = {'enum1': u'e1'}
-        if _has_enum:
-            data['enum2'] = 'e1'
+        data = {'enum1': u'e1', 'enum2': 'e1'}
         rv = client.post('/modelwithenumsview/add', data=data, follow_redirects=True)
         eq_(rv.status_code, 200)
 
         model = self.db.session.query(ModelWithEnums).first()
         eq_(model.enum1, u'e1')
-        if _has_enum:
-            eq_(model.enum2, TestEnum.e1)
+        eq_(model.enum2, TmpEnum.e1)
 
-        data = {'enum1': u'e2'}
-        if _has_enum:
-            data['enum2'] = 'e2'
+        data = {'enum1': u'e2', 'enum2': 'e2'}
         rv = client.post('/modelwithenumsview/edit/1', data=data, follow_redirects=True)
         eq_(rv.status_code, 200)
 
         model = self.db.session.query(ModelWithEnums).first()
         eq_(model.enum1, u'e2')
-        if _has_enum:
-            eq_(model.enum2, TestEnum.e2)
+        eq_(model.enum2, TmpEnum.e2)
 
         rv = client.get('/modelwithenumsview/delete/1', follow_redirects=True)
         eq_(rv.status_code, 200)

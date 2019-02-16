@@ -603,6 +603,7 @@ class ModelApi(BaseModelApi):
                                        label_columns=self._label_columns_json(),
                                        list_columns=self.list_columns,
                                        description_columns=self._description_columns_json(),
+                                       order_columns=self.order_columns,
                                        modelview_name=self.__class__.__name__,
                                        count=count,
                                        ids=pks,
