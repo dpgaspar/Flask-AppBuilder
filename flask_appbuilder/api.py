@@ -598,7 +598,6 @@ class ModelApi(BaseModelApi):
         count, lst = self.datamodel.query(self._filters, order_column, order_direction,
                                           page=page_index, page_size=page_size)
         pks = self.datamodel.get_keys(lst)
-        print("DESC {}".format(self._description_columns_json()))
         return self._api_json_response(200,
                                        label_columns=self._label_columns_json(),
                                        list_columns=self.list_columns,
@@ -609,68 +608,17 @@ class ModelApi(BaseModelApi):
                                        ids=pks,
                                        result=self.list_model_schema.dump(lst, many=True).data
                                        )
-
+    """
+    ------------------------------------------------
+                HELPER FUNCTIONS
+    ------------------------------------------------
+    """
     @staticmethod
     def _api_json_response(code, **kwargs):
         _ret_json = jsonify(kwargs)
         response = make_response(_ret_json, code)
         response.headers['Content-Type'] = "application/json; charset=utf-8"
         return response
-
-    """
-    ------------------------------------------------
-                HELPER FUNCTIONS
-    ------------------------------------------------
-    """
-    def show_item_dict(self, item):
-        """Returns a json-able dict for show"""
-        d = {}
-        for col in self.show_columns:
-            v = getattr(item, col)
-            if not isinstance(v, (int, float, string_types)):
-                v = str(v)
-            d[col] = v
-        return d
-
-
-    def _serialize_pk_if_composite(self, pk):
-        def date_serializer(obj):
-            if isinstance(obj, datetime):
-                return {
-                    "_type": "datetime",
-                    "value": obj.isoformat()
-                }
-            elif isinstance(obj, date):
-                return {
-                    "_type": "date",
-                    "value": obj.isoformat()
-                }
-
-        if self.datamodel.is_pk_composite():
-            try:
-                pk = json.dumps(pk, default=date_serializer)
-            except:
-                pass
-        return pk
-
-    def _deserialize_pk_if_composite(self, pk):
-        def date_deserializer(obj):
-            if '_type' not in obj:
-                return obj
-
-            from dateutil import parser
-            if obj['_type'] == 'datetime':
-                return parser.parse(obj['value'])
-            elif obj['_type'] == 'date':
-                return parser.parse(obj['value']).date()
-            return obj
-
-        if self.datamodel.is_pk_composite():
-            try:
-                pk = json.loads(pk, object_hook=date_deserializer)
-            except:
-                pass
-        return pk
 
     def pre_update(self, item):
         """
