@@ -40,7 +40,9 @@ def order_args(f):
             order_column, order_direction = '', ''
         kwargs['order_column'] = order_column
         kwargs['order_direction'] = order_direction
-        return f(self, *args, order_column=order_column, order_direction=order_direction)
+        return f(self, *args,
+                 order_column=order_column,
+                 order_direction=order_direction)
     return functools.update_wrapper(wraps, f)
 
 
@@ -64,7 +66,8 @@ def page_args(f):
                             kwargs['page_index'] = int(_item_re_match[1])
                             return f(self, *args, **kwargs)
                         except ValueError as e:
-                            log.warn("Bad page args {}, {}".format(_item_re_match[0], _item_re_match[1]))
+                            log.warn("Bad page args {}, {}".format(_item_re_match[0],
+                                                                   _item_re_match[1]))
         kwargs['page_size'] = self.page_size
         kwargs['page_index'] = 0
         return f(self, *args, **kwargs)
@@ -128,9 +131,11 @@ def expose(url='/', methods=('GET',)):
 class BaseApi:
     """
         All apis inherit from this class.
-        it's constructor will register your exposed urls on flask as a Blueprint.
+        it's constructor will register your exposed urls on flask
+        as a Blueprint.
 
-        This class does not expose any urls, but provides a common base for all apis.
+        This class does not expose any urls, 
+        but provides a common base for all apis.
     """
 
     appbuilder = None
@@ -154,7 +159,8 @@ class BaseApi:
             self.base_permissions = set()
             for attr_name in dir(self):
                 if hasattr(getattr(self, attr_name), '_permission_name'):
-                    permission_name = getattr(getattr(self, attr_name), '_permission_name')
+                    permission_name = \
+                        getattr(getattr(self, attr_name), '_permission_name')
                     self.base_permissions.add('can_' + permission_name)
             self.base_permissions = list(self.base_permissions)
         if not self.extra_args:
@@ -175,7 +181,8 @@ class BaseApi:
 
         if self.route_base is None:
             self.route_base = \
-                "/api/{}/{}".format(self.version, self.__class__.__name__.lower())
+                "/api/{}/{}".format(self.version,
+                                    self.__class__.__name__.lower())
         self.blueprint = Blueprint(self.endpoint, __name__,
                                        url_prefix=self.route_base)
 
@@ -239,21 +246,24 @@ class BaseModelApi(BaseApi):
     """
     search_columns = None
     """
-        List with allowed search columns, if not provided all possible search columns will be used
-        If you want to limit the search (*filter*) columns possibilities, define it with a list of column names from your model::
+        List with allowed search columns, if not provided all possible search 
+        columns will be used. If you want to limit the search (*filter*) columns
+         possibilities, define it with a list of column names from your model::
 
             class MyView(ModelView):
                 datamodel = SQLAInterface(MyTable)
-                search_columns = ['name','address']
+                search_columns = ['name', 'address']
 
     """
     search_exclude_columns = None
     """
-        List with columns to exclude from search. Search includes all possible columns by default
+        List with columns to exclude from search. Search includes all possible 
+        columns by default
     """
     label_columns = None
     """
-        Dictionary of labels for your columns, override this if you want different pretify labels
+        Dictionary of labels for your columns, override this if you want
+         different pretify labels
 
         example (will just override the label for name column)::
 
@@ -280,7 +290,8 @@ class BaseModelApi(BaseApi):
 
     base_order = None
     """
-        Use this property to set default ordering for lists ('col_name','asc|desc')::
+        Use this property to set default ordering for lists
+         ('col_name','asc|desc')::
 
             class MyView(ModelApi):
                 datamodel = SQLAInterface(MyTable)
@@ -290,7 +301,10 @@ class BaseModelApi(BaseApi):
     _base_filters = None
     """ Internal base Filter from class Filters will always filter view """
     _filters = None
-    """ Filters object will calculate all possible filter types based on search_columns """
+    """ 
+        Filters object will calculate all possible filter types 
+        based on search_columns 
+    """
     list_model_schema = None
     add_model_schema = None
     edit_model_schema = None
@@ -339,11 +353,13 @@ class BaseModelApi(BaseApi):
         self.search_exclude_columns = self.search_exclude_columns or []
         self.search_columns = self.search_columns or []
 
-        self._base_filters = self.datamodel.get_filters().add_filter_list(self.base_filters)
+        self._base_filters = self.datamodel.get_filters()\
+                                .add_filter_list(self.base_filters)
         list_cols = self.datamodel.get_columns_list()
         search_columns = self.datamodel.get_search_columns_list()
         if not self.search_columns:
-            self.search_columns = [x for x in search_columns if x not in self.search_exclude_columns]
+            self.search_columns = \
+                [x for x in search_columns if x not in self.search_exclude_columns]
 
         self._gen_labels_columns(list_cols)
         self._filters = self.datamodel.get_filters(self.search_columns)
@@ -353,13 +369,25 @@ class BaseModelApi(BaseApi):
 
 class ModelApi(BaseModelApi):
     list_title = ""
-    """ List Title, if not configured the default is 'List ' with pretty model name """
+    """ 
+        List Title, if not configured the default is 
+        'List ' with pretty model name 
+    """
     show_title = ""
-    """ Show Title , if not configured the default is 'Show ' with pretty model name """
+    """
+        Show Title , if not configured the default is 
+        'Show ' with pretty model name 
+    """
     add_title = ""
-    """ Add Title , if not configured the default is 'Add ' with pretty model name """
+    """ 
+        Add Title , if not configured the default is 
+        'Add ' with pretty model name
+    """
     edit_title = ""
-    """ Edit Title , if not configured the default is 'Edit ' with pretty model name """
+    """ 
+        Edit Title , if not configured the default is 
+        'Edit ' with pretty model name
+    """
 
     list_columns = None
     """
@@ -373,25 +401,28 @@ class ModelApi(BaseModelApi):
     """
     add_columns = None
     """
-        A list of columns (or model's methods) to be displayed on the add form view.
-        Use it to control the order of the display
+        A list of columns (or model's methods) to be displayed 
+        on the add form view. Use it to control the order of the display
     """
     edit_columns = None
     """
-        A list of columns (or model's methods) to be displayed on the edit form view.
-        Use it to control the order of the display
+        A list of columns (or model's methods) to be displayed 
+        on the edit form view. Use it to control the order of the display
     """
     show_exclude_columns = None
     """
-       A list of columns to exclude from the show view. By default all columns are included.
+        A list of columns to exclude from the show view. 
+        By default all columns are included.
     """
     add_exclude_columns = None
     """
-       A list of columns to exclude from the add form. By default all columns are included.
+        A list of columns to exclude from the add form.
+        By default all columns are included.
     """
     edit_exclude_columns = None
     """
-       A list of columns to exclude from the edit form. By default all columns are included.
+        A list of columns to exclude from the edit form.
+        By default all columns are included.
     """
     order_columns = None
     """ Allowed order columns """
@@ -406,7 +437,8 @@ class ModelApi(BaseModelApi):
             class MyView(ModelView):
                 datamodel = SQLAModel(MyTable, db.session)
 
-                description_columns = {'name':'your models name column','address':'the address column'}
+                description_columns = {'name':'your models name column',
+                                        'address':'the address column'}
     """
     formatters_columns = None
     """ Dictionary of formatter used to format the display of columns
@@ -415,7 +447,8 @@ class ModelApi(BaseModelApi):
     """
     def create_blueprint(self, appbuilder, *args, **kwargs):
         self._init_model_schemas()
-        return super(ModelApi, self).create_blueprint(appbuilder, *args, **kwargs)
+        return super(ModelApi, self).create_blueprint(appbuilder,
+                                                      *args, **kwargs)
 
     def _init_model_schemas(self):
         class ListMetaSchema(self.appbuilder.marshmallow.ModelSchema):
@@ -479,18 +512,24 @@ class ModelApi(BaseModelApi):
         # Generate base props
         list_cols = self.datamodel.get_user_columns_list()
         if not self.list_columns and self.list_model_schema:
-            self.list_columns = list(self.list_model_schema._declared_fields.keys())
+            self.list_columns =\
+                list(self.list_model_schema._declared_fields.keys())
         else:
-            self.list_columns = self.list_columns or self.datamodel.get_columns_list()
+            self.list_columns = self.list_columns or \
+                                self.datamodel.get_columns_list()
         self._gen_labels_columns(self.list_columns)
-        self.order_columns = self.order_columns or self.datamodel.get_order_columns_list(list_columns=self.list_columns)
+        self.order_columns = self.order_columns or \
+            self.datamodel.get_order_columns_list(list_columns=self.list_columns)
         # Process excluded columns
         if not self.show_columns:
-            self.show_columns = [x for x in list_cols if x not in self.show_exclude_columns]
+            self.show_columns = \
+                [x for x in list_cols if x not in self.show_exclude_columns]
         if not self.add_columns:
-            self.add_columns = [x for x in list_cols if x not in self.add_exclude_columns]
+            self.add_columns = \
+                [x for x in list_cols if x not in self.add_exclude_columns]
         if not self.edit_columns:
-            self.edit_columns = [x for x in list_cols if x not in self.edit_exclude_columns]
+            self.edit_columns = \
+                [x for x in list_cols if x not in self.edit_exclude_columns]
         self._filters = self.datamodel.get_filters(self.search_columns)
 
     @expose('/info', methods=['GET'])
@@ -526,7 +565,9 @@ class ModelApi(BaseModelApi):
             if self.datamodel.add(item.data):
                 self.post_add(item.data)
                 ret_code = 201
-                response = {'result': self.add_model_schema.dump(item.data, many=False).data}
+                response = \
+                    {'result': self.add_model_schema.dump(item.data,
+                                                          many=False).data}
             else:
                 ret_code = 500
                 response = {'message': "Internal error"}
@@ -550,7 +591,9 @@ class ModelApi(BaseModelApi):
                 if self.datamodel.edit(item.data):
                     self.post_add(item)
                     ret_code = 200
-                    response = {'result': self.edit_model_schema.dump(item.data, many=False).data}
+                    response = \
+                        {'result': self.edit_model_schema.dump(item.data,
+                                                               many=False).data}
                     self.post_update(item)
                 else:
                     ret_code = 500
@@ -580,11 +623,12 @@ class ModelApi(BaseModelApi):
         if not item:
             abort(404)
         return self._api_json_response(200, pk=pk,
-                                       label_columns=self._label_columns_json(),
-                                       include_columns=self.show_columns,
-                                       description_columns=self._description_columns_json(),
-                                       modelview_name=self.__class__.__name__,
-                                       result=self.show_model_schema.dump(item, many=False).data)
+                           label_columns=self._label_columns_json(),
+                           include_columns=self.show_columns,
+                           description_columns=self._description_columns_json(),
+                           modelview_name=self.__class__.__name__,
+                           result=self.show_model_schema.dump(item,
+                                                              many=False).data)
 
     @order_args
     @page_args
@@ -599,15 +643,15 @@ class ModelApi(BaseModelApi):
                                           page=page_index, page_size=page_size)
         pks = self.datamodel.get_keys(lst)
         return self._api_json_response(200,
-                                       label_columns=self._label_columns_json(),
-                                       list_columns=self.list_columns,
-                                       description_columns=self._description_columns_json(),
-                                       order_columns=self.order_columns,
-                                       modelview_name=self.__class__.__name__,
-                                       count=count,
-                                       ids=pks,
-                                       result=self.list_model_schema.dump(lst, many=True).data
-                                       )
+                           label_columns=self._label_columns_json(),
+                           list_columns=self.list_columns,
+                           description_columns=self._description_columns_json(),
+                           order_columns=self.order_columns,
+                           modelview_name=self.__class__.__name__,
+                           count=count,
+                           ids=pks,
+                           result=self.list_model_schema.dump(lst, many=True).data
+                           )
     """
     ------------------------------------------------
                 HELPER FUNCTIONS
