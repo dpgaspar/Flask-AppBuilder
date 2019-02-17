@@ -520,17 +520,17 @@ class ModelApi(BaseModelApi):
             item = self.add_model_schema.load(request.json)
         except ValidationError as err:
             ret_code = 400
-            message = err.messages
+            response = {'message': err.messages}
         else:
             self.pre_add(item.data)
             if self.datamodel.add(item.data):
                 self.post_add(item.data)
-                ret_code = 200
-                message = 'OK'
+                ret_code = 201
+                response = {'result': self.add_model_schema.dump(item.data, many=False).data}
             else:
                 ret_code = 500
-                message = 'NOTOK'
-        return self._api_json_response(ret_code, message=message)
+                response = {'message': "Internal error"}
+        return self._api_json_response(ret_code, **response)
 
     @expose('/<pk>', methods=['PUT'])
     @permission_name('put')
@@ -538,24 +538,24 @@ class ModelApi(BaseModelApi):
         item = self.datamodel.get(pk)
         if not item:
             ret_code = 404
-            message = 'Not found'
+            response = {'message': 'Not found'}
         else:
             try:
                 item = self.edit_model_schema.load(request.json, instance=item)
             except ValidationError as err:
                 ret_code = 400
-                message = err.messages
+                response = {'message': err.messages}
             else:
                 self.pre_update(item.data)
                 if self.datamodel.edit(item.data):
                     self.post_add(item)
                     ret_code = 200
-                    message = 'OK'
+                    response = {'result': self.edit_model_schema.dump(item.data, many=False).data}
                     self.post_update(item)
                 else:
                     ret_code = 500
-                    message = 'NOTOK'
-        return self._api_json_response(ret_code, message=message)
+                    response = {'message': "Internal error"}
+        return self._api_json_response(ret_code, **response)
 
     @expose('/<pk>', methods=['DELETE'])
     @permission_name('delete')
@@ -563,17 +563,17 @@ class ModelApi(BaseModelApi):
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
             ret_code = 404
-            message = "Not found"
+            response = {'message': 'Not found'}
         else:
             self.pre_delete(item)
             if self.datamodel.delete(item):
                 self.post_delete(item)
                 ret_code = 200
-                message = 'OK'
+                response = {'message': 'OK'}
             else:
                 ret_code = 500
-                message = 'NOTOK'
-        return self._api_json_response(ret_code, message=message)
+                response = {'message': "Internal error"}
+        return self._api_json_response(ret_code, **response)
 
     def _get_item(self, pk):
         item = self.datamodel.get(pk)

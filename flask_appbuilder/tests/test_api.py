@@ -316,7 +316,7 @@ class FlaskTestCase(unittest.TestCase):
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_string'][0], 'Not a valid string.')
 
-    def test_get_create_item(self):
+    def test_create_item(self):
         """
             REST Api: Test create item
         """
@@ -325,16 +325,19 @@ class FlaskTestCase(unittest.TestCase):
         item = dict(
             field_string="test11",
             field_integer=11,
-            field_float=11.0
+            field_float=11.0,
+            field_date=None
         )
         rv = client.post('api/v1/model1api/', json=item)
-        eq_(rv.status_code, 200)
+        data = json.loads(rv.data.decode('utf-8'))
+        eq_(rv.status_code, 201)
+        eq_(data['result'], item)
         model = self.db.session.query(Model1).filter_by(field_string='test11').first()
         eq_(model.field_string, "test11")
         eq_(model.field_integer, 11)
         eq_(model.field_float, 11.0)
 
-    def test_get_create_item_val_size(self):
+    def test_create_item_val_size(self):
         """
             REST Api: Test create validate size
         """
