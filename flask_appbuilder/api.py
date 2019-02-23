@@ -451,36 +451,32 @@ class ModelApi(BaseModelApi):
                                                       *args, **kwargs)
 
     def _init_model_schemas(self):
-        class ListMetaSchema(self.appbuilder.marshmallow.ModelSchema):
-            class Meta:
-                model = self.datamodel.obj
-                fields = self.list_columns
-                strict = True
-        class AddMetaSchema(self.appbuilder.marshmallow.ModelSchema):
-            class Meta:
-                model = self.datamodel.obj
-                fields = self.add_columns
-                strict = True
-        class EditMetaSchema(self.appbuilder.marshmallow.ModelSchema):
-            class Meta:
-                model = self.datamodel.obj
-                fields = self.edit_columns
-                strict = True
-        class ShowMetaSchema(self.appbuilder.marshmallow.ModelSchema):
-            class Meta:
-                model = self.datamodel.obj
-                fields = self.show_columns
-                strict = True
-
         # Create Marshmalow schemas if one is not specified
         if self.list_model_schema is None:
-            self.list_model_schema = ListMetaSchema()
+            self.list_model_schema = \
+                self._model_schema_factory(self.list_columns)
         if self.add_model_schema is None:
-            self.add_model_schema = AddMetaSchema()
+            self.add_model_schema = \
+                self._model_schema_factory(self.add_columns)
         if self.edit_model_schema is None:
-            self.edit_model_schema = EditMetaSchema()
+            self.edit_model_schema = \
+                self._model_schema_factory(self.edit_columns)
         if self.show_model_schema is None:
-            self.show_model_schema = ShowMetaSchema()
+            self.show_model_schema = \
+                self._model_schema_factory(self.show_columns)
+
+    def _model_schema_factory(self, columns):
+        """
+            Will create a Marshmallow SQLAlchemy schema class
+        :param columns: List with columns to include
+        :return: ModelSchema object
+        """
+        class MetaSchema(self.appbuilder.marshmallow.ModelSchema):
+            class Meta:
+                model = self.datamodel.obj
+                fields = columns
+                strict = True
+        return MetaSchema()
 
     def _init_titles(self):
         """
@@ -638,9 +634,12 @@ class ModelApi(BaseModelApi):
 
         self._filters.clear_filters()
         self._filters.rest_add_filters(filters)
-        # Make query
-        count, lst = self.datamodel.query(self._filters, order_column, order_direction,
-                                          page=page_index, page_size=page_size)
+        # Make the query
+        count, lst = self.datamodel.query(self._filters,
+                                          order_column,
+                                          order_direction,
+                                          page=page_index,
+                                          page_size=page_size)
         pks = self.datamodel.get_keys(lst)
         return self._api_json_response(200,
                            label_columns=self._label_columns_json(),
