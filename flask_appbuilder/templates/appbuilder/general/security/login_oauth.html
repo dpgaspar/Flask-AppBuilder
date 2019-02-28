@@ -7,7 +7,7 @@
 
 var baseLoginUrl = "{{url_for('AuthOAuthView.login')}}";
 var baseRegisterUrl = "{{url_for('AuthOAuthView.login')}}";
-var next = "?next={{request.args.get('next')}}"
+var next = "?next={{request.args.get('next', '')}}"
 
 var currentSelection = "";
 
