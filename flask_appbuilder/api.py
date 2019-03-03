@@ -1,20 +1,18 @@
 import re
-import json
 import logging
 import functools
-from flask import Blueprint, session, flash, \
-    render_template, url_for, abort, make_response, jsonify, request
+from flask import Blueprint, abort, make_response, jsonify, request
 from flask_babel import lazy_gettext as _
-from datetime import datetime, date
-from .security.decorators import has_access, permission_name, has_access_api
+from .security.decorators import permission_name
 from marshmallow import ValidationError
-from ._compat import as_unicode, string_types
+from ._compat import as_unicode
 
 log = logging.getLogger(__name__)
 
-URI_ORDER_BY_PREFIX="_o_"
-URI_PAGE_PREFIX="_p_"
-URI_FILTER_PREFIX="_f_"
+URI_ORDER_BY_PREFIX = "_o_"
+URI_PAGE_PREFIX = "_p_"
+URI_FILTER_PREFIX = "_f_"
+
 
 def order_args(f):
     """
@@ -66,8 +64,10 @@ def page_args(f):
                             kwargs['page_index'] = int(_item_re_match[1])
                             return f(self, *args, **kwargs)
                         except ValueError as e:
-                            log.warn("Bad page args {}, {}".format(_item_re_match[0],
-                                                                   _item_re_match[1]))
+                            log.warning("Bad page args {}, {}".format(
+                                _item_re_match[0],
+                                _item_re_match[1])
+                            )
         kwargs['page_size'] = self.page_size
         kwargs['page_index'] = 0
         return f(self, *args, **kwargs)
@@ -94,7 +94,6 @@ def filter_args(f):
         for arg, value in request.args.items():
             key_match = re.match("{}(\d)".format(URI_FILTER_PREFIX), arg)
             if key_match:
-                key_index = key_match[0]
                 re_match = re.findall('(.*):(.*):(.*)', value)
                 for _item_re_match in re_match:
                     if _item_re_match and len(_item_re_match) == 3:
@@ -103,11 +102,10 @@ def filter_args(f):
                                         "value": _item_re_match[2],
                                         })
                     else:
-                        log.warn("Bar filter args {} ".format(_item_re_match))
+                        log.warning("Bar filter args {} ".format(_item_re_match))
         kwargs['filters'] = filters
         return f(self, *args, **kwargs)
     return functools.update_wrapper(wraps, f)
-
 
 
 def expose(url='/', methods=('GET',)):
@@ -159,9 +157,9 @@ class BaseApi:
             self.base_permissions = set()
             for attr_name in dir(self):
                 if hasattr(getattr(self, attr_name), '_permission_name'):
-                    permission_name = \
+                    _permission_name = \
                         getattr(getattr(self, attr_name), '_permission_name')
-                    self.base_permissions.add('can_' + permission_name)
+                    self.base_permissions.add('can_' + _permission_name)
             self.base_permissions = list(self.base_permissions)
         if not self.extra_args:
             self.extra_args = dict()
@@ -184,11 +182,10 @@ class BaseApi:
                 "/api/{}/{}".format(self.version,
                                     self.__class__.__name__.lower())
         self.blueprint = Blueprint(self.endpoint, __name__,
-                                       url_prefix=self.route_base)
+                                   url_prefix=self.route_base)
 
         self._register_urls()
         return self.blueprint
-
 
     def _register_urls(self):
         for attr_name in dir(self):
@@ -200,7 +197,8 @@ class BaseApi:
                                                 attr,
                                                 methods=methods)
 
-    def _prettify_name(self, name):
+    @staticmethod
+    def _prettify_name(name):
         """
             Prettify pythonic variable name.
 
@@ -211,7 +209,8 @@ class BaseApi:
         """
         return re.sub(r'(?<=.)([A-Z])', r' \1', name)
 
-    def _prettify_column(self, name):
+    @staticmethod
+    def _prettify_column(name):
         """
             Prettify pythonic variable name.
 
@@ -338,23 +337,13 @@ class BaseModelApi(BaseApi):
             ret[key] = as_unicode(_(value).encode('UTF-8'))
         return ret
 
-    def _description_columns_json(self):
-        """
-            Prepares dict with col descriptions to be JSON serializable
-        """
-        ret = {}
-        for key, value in list(self.description_columns.items()):
-            ret[key] = as_unicode(_(value).encode('UTF-8'))
-        return ret
-
     def _init_properties(self):
         self.label_columns = self.label_columns or {}
         self.base_filters = self.base_filters or []
         self.search_exclude_columns = self.search_exclude_columns or []
         self.search_columns = self.search_columns or []
 
-        self._base_filters = self.datamodel.get_filters()\
-                                .add_filter_list(self.base_filters)
+        self._base_filters = self.datamodel.get_filters().add_filter_list(self.base_filters)
         list_cols = self.datamodel.get_columns_list()
         search_columns = self.datamodel.get_search_columns_list()
         if not self.search_columns:
@@ -366,6 +355,7 @@ class BaseModelApi(BaseApi):
 
     def _init_titles(self):
         pass
+
 
 class ModelApi(BaseModelApi):
     list_title = ""
@@ -536,7 +526,7 @@ class ModelApi(BaseModelApi):
         for col in self.search_columns:
             search_filters[col] = [
                 {'name': as_unicode(flt.name),
-                 'operator' : flt.arg_name} for flt in dict_filters[col]
+                 'operator': flt.arg_name} for flt in dict_filters[col]
             ]
         return self._api_json_response(200, filters=search_filters)
 
@@ -618,13 +608,14 @@ class ModelApi(BaseModelApi):
         item = self.datamodel.get(pk)
         if not item:
             abort(404)
-        return self._api_json_response(200, pk=pk,
-                           label_columns=self._label_columns_json(),
-                           include_columns=self.show_columns,
-                           description_columns=self._description_columns_json(),
-                           modelview_name=self.__class__.__name__,
-                           result=self.show_model_schema.dump(item,
-                                                              many=False).data)
+        return self._api_json_response(
+            200, pk=pk,
+            label_columns=self._label_columns_json(),
+            include_columns=self.show_columns,
+            description_columns=self._description_columns_json(),
+            modelview_name=self.__class__.__name__,
+            result=self.show_model_schema.dump(item, many=False).data
+        )
 
     @order_args
     @page_args
@@ -641,16 +632,17 @@ class ModelApi(BaseModelApi):
                                           page=page_index,
                                           page_size=page_size)
         pks = self.datamodel.get_keys(lst)
-        return self._api_json_response(200,
-                           label_columns=self._label_columns_json(),
-                           list_columns=self.list_columns,
-                           description_columns=self._description_columns_json(),
-                           order_columns=self.order_columns,
-                           modelview_name=self.__class__.__name__,
-                           count=count,
-                           ids=pks,
-                           result=self.list_model_schema.dump(lst, many=True).data
-                           )
+        return self._api_json_response(
+            200,
+            label_columns=self._label_columns_json(),
+            list_columns=self.list_columns,
+            description_columns=self._description_columns_json(),
+            order_columns=self.order_columns,
+            modelview_name=self.__class__.__name__,
+            count=count,
+            ids=pks,
+            result=self.list_model_schema.dump(lst, many=True).data
+        )
     """
     ------------------------------------------------
                 HELPER FUNCTIONS
@@ -662,6 +654,15 @@ class ModelApi(BaseModelApi):
         response = make_response(_ret_json, code)
         response.headers['Content-Type'] = "application/json; charset=utf-8"
         return response
+
+    def _description_columns_json(self):
+        """
+            Prepares dict with col descriptions to be JSON serializable
+        """
+        ret = {}
+        for key, value in list(self.description_columns.items()):
+            ret[key] = as_unicode(_(value).encode('UTF-8'))
+        return ret
 
     def pre_update(self, item):
         """
