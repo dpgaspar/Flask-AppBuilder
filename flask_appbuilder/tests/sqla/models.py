@@ -1,4 +1,3 @@
-import string
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, Enum, DateTime
 from sqlalchemy.orm import relationship
 from flask_appbuilder import Model, SQLA
@@ -15,6 +14,14 @@ class Model1(Model):
 
     def __repr__(self):
         return str(self.field_string)
+
+    def full_concat(self):
+        return "{}.{}.{}.{}".format(
+            self.field_string,
+            self.field_integer,
+            self.field_float,
+            self.field_date
+        )
 
 
 class Model2(Model):
@@ -34,6 +41,7 @@ class Model2(Model):
     def field_method(self):
         return "field_method_value"
 
+
 class Model3(Model):
     pk1 = Column(Integer(), primary_key=True)
     pk2 = Column(DateTime(), primary_key=True)
@@ -42,9 +50,11 @@ class Model3(Model):
     def __repr__(self):
         return str(self.field_string)
 
+
 class TmpEnum(enum.Enum):
     e1 = 'a'
     e2 = 2
+
 
 class ModelWithEnums(Model):
     id = Column(Integer, primary_key=True)
@@ -52,15 +62,15 @@ class ModelWithEnums(Model):
     enum2 = Column(Enum(TmpEnum))
 
 
-
     """ ---------------------------------
             TEST HELPER FUNCTIONS
         ---------------------------------
     """
 
-def insert_data(session, Model1, count):
+
+def insert_data(session, model1, count):
     for i in range(count):
-        model = Model1(field_string="test{}".format(i),
+        model = model1(field_string="test{}".format(i),
                        field_integer=i,
                        field_float=float(i))
         session.add(model)
