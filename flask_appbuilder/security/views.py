@@ -512,10 +512,15 @@ class AuthOAuthView(AuthView):
                 if register:
                     log.debug('Login to Register')
                     session['register'] = True
-                return self.appbuilder.sm.oauth_remotes[provider].authorize(
-                    callback=url_for
-                        ('.oauth_authorized', provider=provider, _external=True),
-                        state=state)
+                if provider == 'twitter':
+                    return self.appbuilder.sm.oauth_remotes[provider].authorize(
+                        callback=url_for
+                            ('.oauth_authorized', provider=provider, _external=True, state=state))
+                else:
+                    return self.appbuilder.sm.oauth_remotes[provider].authorize(
+                        callback=url_for
+                            ('.oauth_authorized', provider=provider, _external=True),
+                            state=state)
             except Exception as e:
                 log.error("Error on OAuth authorize: {0}".format(e))
                 flash(as_unicode(self.invalid_login_message), 'warning')
