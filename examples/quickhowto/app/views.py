@@ -20,7 +20,6 @@ def fill_gender():
         db.session.rollback()
 
 
-
 class ContactModelView(ModelView):
     datamodel = SQLAInterface(Contact)
 
@@ -53,8 +52,10 @@ class GroupModelView(ModelView):
     datamodel = SQLAInterface(ContactGroup)
     related_views = [ContactModelView]
 
+
 class GroupModelApi(ModelApi):
     datamodel = SQLAInterface(ContactGroup)
+
 
 class ContactModelApi(ModelApi):
     datamodel = SQLAInterface(Contact)
@@ -62,8 +63,10 @@ class ContactModelApi(ModelApi):
     #list_model_schema = ContactSchema()
     list_columns = ['name', 'address', 'personal_celphone']
 
+
 class UserModelApi(ModelApi):
     datamodel = SQLAInterface(User)
+
 
 class ContactChartView(GroupByChartView):
     datamodel = SQLAInterface(Contact)
@@ -85,6 +88,7 @@ class ContactChartView(GroupByChartView):
 
 def pretty_month_year(value):
     return calendar.month_name[value.month] + ' ' + str(value.year)
+
 
 def pretty_year(value):
     return str(value.year)
@@ -121,6 +125,7 @@ appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", categ
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
 appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
+
 
 @app.after_request
 def after_request(response):

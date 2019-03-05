@@ -14,6 +14,7 @@ class ContactGroup(Model):
     def __repr__(self):
         return self.name
 
+
 class ContactGroupSchema(Schema):
     name = fields.Str(required=True)
 
@@ -28,7 +29,7 @@ class Gender(Model):
 
 class Contact(Model):
     id = Column(Integer, primary_key=True)
-    name =  Column(String(150), unique = True, nullable=False)
+    name = Column(String(150), unique = True, nullable=False)
     address = Column(String(564))
     birthday = Column(Date, nullable=True)
     personal_phone = Column(String(20))
@@ -48,6 +49,7 @@ class Contact(Model):
     def year(self):
         date = self.birthday or mindate
         return datetime.datetime(date.year, 1, 1)
+
 
 class ContactSchema(Schema):
     name = fields.Str(required=True)
