@@ -86,21 +86,40 @@ class FlaskTestCase(unittest.TestCase):
             self.assert_get_item(rv, data, i - 1)
 
     def assert_get_item(self, rv, data, value):
-        log.info("assert_get_item: {} {}".format(data, value))
-        # test result
-        eq_(data['result'], {'field_date': None,
-                             'field_float': float(value),
-                             'field_integer': value,
-                             'field_string': "test{}".format(value)})
+        eq_(data['result'], {
+            'field_date': None,
+            'field_float': float(value),
+            'field_integer': value,
+            'field_string': "test{}".format(value)
+        })
         # test descriptions
         eq_(data['description_columns'], self.model1api.description_columns)
         # test labels
-        eq_(data['label_columns'], {'field_date': 'Field Date',
-                                    'field_float': 'Field Float',
-                                    'field_integer': 'Field Integer',
-                                    'field_string': 'Field String',
-                                    'id': 'Id'})
+        eq_(data['label_columns'], {
+            'field_date': 'Field Date',
+            'field_float': 'Field Float',
+            'field_integer': 'Field Integer',
+            'field_string': 'Field String'
+        })
         eq_(rv.status_code, 200)
+
+    def test_get_item_select_cols(self):
+        """
+            REST Api: Test get item with select columns
+        """
+        client = self.app.test_client()
+
+        for i in range(1, MODEL1_DATA_SIZE):
+            rv = client.get('api/v1/model1api/{}/?_c_=field_integer'.format(i))
+            data = json.loads(rv.data.decode('utf-8'))
+            eq_(data['result'], {'field_integer': i - 1})
+            eq_(data['description_columns'], {
+                'field_integer': 'Field Integer'
+            })
+            eq_(data['label_columns'], {
+                'field_integer': 'Field Integer'
+            })
+            eq_(rv.status_code, 200)
 
     def test_get_item_not_found(self):
         """
@@ -135,8 +154,7 @@ class FlaskTestCase(unittest.TestCase):
             'field_float': float(value),
             'field_integer': value,
             'field_string': "test{}".format(value)
-        }
-            )
+        })
         eq_(rv.status_code, 200)
 
     def test_get_list_order(self):
@@ -152,8 +170,8 @@ class FlaskTestCase(unittest.TestCase):
             'field_date': None,
             'field_float': 0.0,
             'field_integer': 0,
-            'field_string': "test0"}
-            )
+            'field_string': "test0"
+        })
         eq_(rv.status_code, 200)
         # test string order desc
         rv = client.get('api/v1/model1api/?_o_=field_string:desc')
@@ -163,8 +181,7 @@ class FlaskTestCase(unittest.TestCase):
             'field_float': float(MODEL1_DATA_SIZE - 1),
             'field_integer': MODEL1_DATA_SIZE - 1,
             'field_string': "test{}".format(MODEL1_DATA_SIZE - 1)
-        }
-            )
+        })
         eq_(rv.status_code, 200)
 
     def test_get_list_page(self):
@@ -183,18 +200,19 @@ class FlaskTestCase(unittest.TestCase):
             'field_float': 0.0,
             'field_integer': 0,
             'field_string': "test0"
-            }
-            )
+        })
         eq_(rv.status_code, 200)
         eq_(len(data['result']), page_size)
         # test page zero
         uri = 'api/v1/model1api/?_p_={}:1&_o_=field_integer:asc'.format(page_size)
         rv = client.get(uri)
         data = json.loads(rv.data.decode('utf-8'))
-        eq_(data['result'][0], {'field_date': None,
-                                'field_float': float(page_size),
-                                'field_integer': page_size,
-                                'field_string': "test{}".format(page_size)})
+        eq_(data['result'][0], {
+            'field_date': None,
+            'field_float': float(page_size),
+            'field_integer': page_size,
+            'field_string': "test{}".format(page_size)
+        })
         eq_(rv.status_code, 200)
         eq_(len(data['result']), page_size)
 
@@ -208,10 +226,34 @@ class FlaskTestCase(unittest.TestCase):
         uri = 'api/v1/model1api/?_f_0=field_integer:gt:{}&_o_=field_integer:asc'.format(filter_value)
         rv = client.get(uri)
         data = json.loads(rv.data.decode('utf-8'))
-        eq_(data['result'][0], {'field_date': None,
-                                'field_float': float(filter_value + 1),
-                                'field_integer': filter_value + 1,
-                                'field_string': "test{}".format(filter_value + 1)})
+        eq_(data['result'][0], {
+            'field_date': None,
+            'field_float': float(filter_value + 1),
+            'field_integer': filter_value + 1,
+            'field_string': "test{}".format(filter_value + 1)
+        })
+        eq_(rv.status_code, 200)
+
+    def test_get_list_select_cols(self):
+        """
+            REST Api: Test get list with selected columns
+        """
+        client = self.app.test_client()
+        uri = 'api/v1/model1api/?_c_=field_integer&_o_=field_integer:asc'
+        rv = client.get(uri)
+        data = json.loads(rv.data.decode('utf-8'))
+        eq_(data['result'][0], {
+            'field_integer': 0,
+        })
+        eq_(data['label_columns'], {
+            'field_integer': 'Field Integer'
+        })
+        eq_(data['description_columns'], {
+            'field_integer': 'Field Integer'
+        })
+        eq_(data['list_columns'], [
+            'field_integer'
+        ])
         eq_(rv.status_code, 200)
 
     def test_info_filters(self):
@@ -254,7 +296,7 @@ class FlaskTestCase(unittest.TestCase):
         }
         eq_(data['filters'], expected_filters)
 
-    def test_get_delete_item(self):
+    def test_delete_item(self):
         """
             REST Api: Test delete item
         """
@@ -265,7 +307,7 @@ class FlaskTestCase(unittest.TestCase):
         model = self.db.session.query(Model1).get(pk)
         eq_(model, None)
 
-    def test_get_delete_item_not_found(self):
+    def test_delete_item_not_found(self):
         """
             REST Api: Test delete item not found
         """
@@ -274,7 +316,7 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.delete('api/v1/model1api/{}'.format(pk))
         eq_(rv.status_code, 404)
 
-    def test_get_update_item(self):
+    def test_update_item(self):
         """
             REST Api: Test update item
         """
@@ -292,7 +334,7 @@ class FlaskTestCase(unittest.TestCase):
         eq_(model.field_integer, 0)
         eq_(model.field_float, 0.0)
 
-    def test_get_update_item_not_found(self):
+    def test_update_item_not_found(self):
         """
             REST Api: Test update item not found
         """
@@ -306,7 +348,7 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.put('api/v1/model1api/{}'.format(pk), json=item)
         eq_(rv.status_code, 404)
 
-    def test_get_update_val_size(self):
+    def test_update_val_size(self):
         """
             REST Api: Test update validate size
         """

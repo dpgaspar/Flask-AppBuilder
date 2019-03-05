@@ -12,12 +12,12 @@ log = logging.getLogger(__name__)
 URI_ORDER_BY_PREFIX = "_o_"
 URI_PAGE_PREFIX = "_p_"
 URI_FILTER_PREFIX = "_f_"
+URI_SELECT_COL_PREFIX = "_c_"
 
 
 def order_args(f):
     """
         Get order arguments decorator
-        { <VIEW_NAME>: (ORDER_COL, ORDER_DIRECTION) }
 
         Arguments are passed like: _o_=<COL_NAME>:'<asc|desc>'
         
@@ -26,7 +26,7 @@ def order_args(f):
     def wraps(self, *args, **kwargs):
         orders = {}
         for arg, value in request.args.items():
-            if arg==URI_ORDER_BY_PREFIX:
+            if arg == URI_ORDER_BY_PREFIX:
                 re_match = re.findall('(.*):(.*)', value)
                 for _item_re_match in re_match:
                     if _item_re_match and _item_re_match[1] in ('asc', 'desc'):
@@ -47,7 +47,6 @@ def order_args(f):
 def page_args(f):
     """
         Get page arguments decorator
-        { <VIEW_NAME>: (ORDER_COL, ORDER_DIRECTION) }
 
         Arguments are passed like: _p_=<SIZE>:'<INDEX>'
 
@@ -55,7 +54,7 @@ def page_args(f):
     """
     def wraps(self, *args, **kwargs):
         for arg, value in request.args.items():
-            if arg==URI_PAGE_PREFIX:
+            if arg == URI_PAGE_PREFIX:
                 re_match = re.findall('(.*):(.*)', value)
                 for _item_re_match in re_match:
                     if _item_re_match and len(_item_re_match) == 2:
@@ -70,6 +69,23 @@ def page_args(f):
                             )
         kwargs['page_size'] = self.page_size
         kwargs['page_index'] = 0
+        return f(self, *args, **kwargs)
+    return functools.update_wrapper(wraps, f)
+
+
+def select_col_args(f):
+    """
+        Get selectable columns on the fly
+
+        Arguments are passed like: _c_=<COL_NAME>,<COL_NAME>, ...
+
+        function is called with named args: page_size, page_index
+    """
+    def wraps(self, *args, **kwargs):
+        for arg, value in request.args.items():
+            if arg == URI_SELECT_COL_PREFIX:
+                re_match = re.findall('(\w+),*', value)
+                kwargs['select_cols'] = [i for i in re_match]
         return f(self, *args, **kwargs)
     return functools.update_wrapper(wraps, f)
 
@@ -92,7 +108,7 @@ def filter_args(f):
     def wraps(self, *args, **kwargs):
         filters = list()
         for arg, value in request.args.items():
-            key_match = re.match("{}(\d)".format(URI_FILTER_PREFIX), arg)
+            key_match = re.match(r"{}(\d)".format(URI_FILTER_PREFIX), arg)
             if key_match:
                 re_match = re.findall('(.*):(.*):(.*)', value)
                 for _item_re_match in re_match:
@@ -328,12 +344,14 @@ class BaseModelApi(BaseApi):
             if not self.label_columns.get(col):
                 self.label_columns[col] = self._prettify_column(col)
 
-    def _label_columns_json(self):
+    def _label_columns_json(self, cols=None):
         """
             Prepares dict with labels to be JSON serializable
         """
         ret = {}
-        for key, value in list(self.label_columns.items()):
+        cols = cols or []
+        d = {k: v for (k, v) in self.label_columns.items() if k in cols}
+        for key, value in d.items():
             ret[key] = as_unicode(_(value).encode('UTF-8'))
         return ret
 
@@ -544,85 +562,94 @@ class ModelApi(BaseModelApi):
         try:
             item = self.add_model_schema.load(request.json)
         except ValidationError as err:
-            ret_code = 400
-            response = {'message': err.messages}
+            return self._api_json_response(400, **{'message': err.messages})
         else:
             self.pre_add(item.data)
             if self.datamodel.add(item.data):
                 self.post_add(item.data)
-                ret_code = 201
-                response = \
-                    {'result': self.add_model_schema.dump(item.data,
-                                                          many=False).data}
+                return self._api_json_response(
+                    201,
+                    **{'result': self.add_model_schema.dump(item.data, many=False).data}
+                )
             else:
-                ret_code = 500
-                response = {'message': "Internal error"}
-        return self._api_json_response(ret_code, **response)
+                return self._api_json_500()
 
     @expose('/<pk>', methods=['PUT'])
     @permission_name('put')
     def put(self, pk):
         item = self.datamodel.get(pk)
         if not item:
-            ret_code = 404
-            response = {'message': 'Not found'}
+            return self._api_json_404()
         else:
             try:
                 item = self.edit_model_schema.load(request.json, instance=item)
             except ValidationError as err:
-                ret_code = 400
-                response = {'message': err.messages}
+                return self._api_json_response(400, **{'message': err.messages})
             else:
                 self.pre_update(item.data)
                 if self.datamodel.edit(item.data):
                     self.post_add(item)
-                    ret_code = 200
-                    response = \
-                        {'result': self.edit_model_schema.dump(item.data,
-                                                               many=False).data}
                     self.post_update(item)
+                    return self._api_json_response(
+                        200,
+                        **{'result': self.edit_model_schema.dump(item.data, many=False).data}
+                    )
                 else:
-                    ret_code = 500
-                    response = {'message': "Internal error"}
-        return self._api_json_response(ret_code, **response)
+                    return self._api_json_500()
 
     @expose('/<pk>', methods=['DELETE'])
     @permission_name('delete')
     def delete(self, pk):
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
-            ret_code = 404
-            response = {'message': 'Not found'}
+            return self._api_json_404()
         else:
             self.pre_delete(item)
             if self.datamodel.delete(item):
                 self.post_delete(item)
-                ret_code = 200
-                response = {'message': 'OK'}
+                return self._api_json_response(200, **{'message': 'OK'})
             else:
-                ret_code = 500
-                response = {'message': "Internal error"}
-        return self._api_json_response(ret_code, **response)
+                return self._api_json_500()
 
-    def _get_item(self, pk):
+    @select_col_args
+    def _get_item(self, pk, select_cols=None):
         item = self.datamodel.get(pk)
         if not item:
-            abort(404)
+            return self._api_json_404()
+        select_cols = select_cols or []
+        _pruned_select_cols = [col for col in select_cols if col in self.show_columns]
+        if _pruned_select_cols:
+            _show_columns = _pruned_select_cols
+            _show_model_schema = self._model_schema_factory(_pruned_select_cols)
+        else:
+            _show_columns = self.show_columns
+            _show_model_schema = self.show_model_schema
         return self._api_json_response(
             200, pk=pk,
-            label_columns=self._label_columns_json(),
-            include_columns=self.show_columns,
-            description_columns=self._description_columns_json(),
+            label_columns=self._label_columns_json(_show_columns),
+            include_columns=_show_columns,
+            description_columns=self._description_columns_json(_show_columns),
             modelview_name=self.__class__.__name__,
-            result=self.show_model_schema.dump(item, many=False).data
+            result=_show_model_schema.dump(item, many=False).data
         )
 
     @order_args
     @page_args
     @filter_args
+    @select_col_args
     def _get_list(self, filters=None, order_column=None, order_direction=None,
-                  page_size=0, page_index=0):
+                  page_size=0, page_index=0, select_cols=None):
 
+        # handle select columns
+        select_cols = select_cols or []
+        _pruned_select_cols = [col for col in select_cols if col in self.list_columns]
+        if _pruned_select_cols:
+            _list_columns = _pruned_select_cols
+            _list_model_schema = self._model_schema_factory(_pruned_select_cols)
+        else:
+            _list_columns = self.list_columns
+            _list_model_schema = self.list_model_schema
+        # handle filters
         self._filters.clear_filters()
         self._filters.rest_add_filters(filters)
         # Make the query
@@ -634,14 +661,14 @@ class ModelApi(BaseModelApi):
         pks = self.datamodel.get_keys(lst)
         return self._api_json_response(
             200,
-            label_columns=self._label_columns_json(),
-            list_columns=self.list_columns,
-            description_columns=self._description_columns_json(),
-            order_columns=self.order_columns,
+            label_columns=self._label_columns_json(_list_columns),
+            list_columns=_list_columns,
+            description_columns=self._description_columns_json(_list_columns),
+            order_columns=[order_col for order_col in self.order_columns if order_col in _list_columns],
             modelview_name=self.__class__.__name__,
             count=count,
             ids=pks,
-            result=self.list_model_schema.dump(lst, many=True).data
+            result=_list_model_schema.dump(lst, many=True).data
         )
     """
     ------------------------------------------------
@@ -655,12 +682,22 @@ class ModelApi(BaseModelApi):
         response.headers['Content-Type'] = "application/json; charset=utf-8"
         return response
 
-    def _description_columns_json(self):
+    def _api_json_404(self):
+        return self._api_json_response(404, **{"message": "Not found"})
+
+    def _api_json_500(self, message=None):
+        message = message or "Internal error"
+        return self._api_json_response(500, **{"message": message})
+
+
+    def _description_columns_json(self, cols=None):
         """
             Prepares dict with col descriptions to be JSON serializable
         """
         ret = {}
-        for key, value in list(self.description_columns.items()):
+        cols = cols or []
+        d = {k: v for (k, v) in self.description_columns.items() if k in cols}
+        for key, value in d.items():
             ret[key] = as_unicode(_(value).encode('UTF-8'))
         return ret
 
