@@ -1,0 +1,25 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "7e434f2b10f53759ea2533489b7180e901d0df7bc0f5cf1939e426dd0183d1f8"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.6"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "flask-appbuilder": {
+            "git": "https://github.com/nachtkinder/Flask-AppBuilder.git",
+            "ref": "6ecf4a5f5f964405a2d5717aa3965816f2bc8770"
+        }
+    },
+    "develop": {}
+}
