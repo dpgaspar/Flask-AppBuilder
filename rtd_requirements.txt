@@ -8,3 +8,4 @@ Flask-Login>=0.3,<0.5
 Flask-OpenID>=1.2.5,<2
 Flask-SQLAlchemy>=2.3,<3
 Flask-WTF>=0.14.2,<1
+PyJWT>=1.7.1
