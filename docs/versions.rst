@@ -1,6 +1,12 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.12.4
+------------------------------------
+
+- Fix, #911 fabmanager missing session rollback() when user add fails
+- Fix, #910 Next page on OAuth
+
 Improvements and Bug fixes on 1.12.3
 ------------------------------------
 
