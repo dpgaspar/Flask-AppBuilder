@@ -7,10 +7,13 @@ import json
 import logging
 
 from nose.tools import eq_, ok_
-
-log = logging.getLogger(__name__)
 from flask_appbuilder import SQLA
 from .sqla.models import Model1, insert_data
+from flask_appbuilder.models.sqla.filters import \
+    FilterGreater, FilterSmaller
+
+
+log = logging.getLogger(__name__)
 
 MODEL1_DATA_SIZE = 10
 
@@ -48,6 +51,19 @@ class FlaskTestCase(unittest.TestCase):
                 'field_string': 'Field String'
             }
 
+        class Model1ApiFieldsInfo(Model1Api):
+            datamodel = SQLAInterface(Model1)
+            add_columns = [
+                'field_integer',
+                'field_float',
+                'field_string',
+                'field_date'
+            ]
+            edit_columns = [
+                'field_string',
+                'field_integer'
+            ]
+
         class Model1FuncApi(ModelApi):
             datamodel = SQLAInterface(Model1)
             list_columns = [
@@ -63,10 +79,20 @@ class FlaskTestCase(unittest.TestCase):
                 'field_string': 'Field String'
             }
 
+        class Model1ApiFiltered(ModelApi):
+            datamodel = SQLAInterface(Model1)
+            base_filters = [
+                ['field_integer', FilterGreater, 2],
+                ['field_integer', FilterSmaller, 4],
+            ]
+
         self.model1api = Model1Api
         self.appbuilder.add_view_no_menu(Model1Api)
         self.model1funcapi = Model1Api
         self.appbuilder.add_view_no_menu(Model1FuncApi)
+        self.model1apifieldsinfo = Model1ApiFieldsInfo
+        self.appbuilder.add_view_no_menu(Model1ApiFieldsInfo)
+        self.appbuilder.add_view_no_menu(Model1ApiFiltered)
 
     def tearDown(self):
         self.appbuilder = None
@@ -130,6 +156,21 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.get('api/v1/model1api/{}/'.format(pk))
         eq_(rv.status_code, 404)
 
+    def test_get_item_base_filters(self):
+        """
+            REST Api: Test get item with base filters
+        """
+        client = self.app.test_client()
+        # We can't get a base filtered item
+        pk = 1
+        rv = client.get('api/v1/model1apifiltered/{}/'.format(pk))
+        eq_(rv.status_code, 404)
+        client = self.app.test_client()
+        # This one is ok pk=4 field_integer=3 2>3<4
+        pk = 4
+        rv = client.get('api/v1/model1apifiltered/{}/'.format(pk))
+        eq_(rv.status_code, 200)
+
     def test_get_list(self):
         """
             REST Api: Test get list
@@ -147,8 +188,6 @@ class FlaskTestCase(unittest.TestCase):
 
     @staticmethod
     def assert_get_list(rv, data, value):
-        log.info("assert_get_list: {} {}".format(data, value))
-        # test result
         eq_(data, {
             'field_date': None,
             'field_float': float(value),
@@ -256,6 +295,25 @@ class FlaskTestCase(unittest.TestCase):
         ])
         eq_(rv.status_code, 200)
 
+    def test_get_list_base_filters(self):
+        """
+            REST Api: Test get list with base filters
+        """
+        client = self.app.test_client()
+        uri = 'api/v1/model1apifiltered/?_o_=field_integer:asc'
+        rv = client.get(uri)
+        data = json.loads(rv.data.decode('utf-8'))
+        expected_result = [
+            {
+                'field_date': None,
+                'field_float': 3.0,
+                'field_integer': 3,
+                'field_string': 'test3',
+                'id': 4
+            }
+        ]
+        eq_(data['result'], expected_result)
+
     def test_info_filters(self):
         """
             REST Api: Test info filters
@@ -296,6 +354,52 @@ class FlaskTestCase(unittest.TestCase):
         }
         eq_(data['filters'], expected_filters)
 
+    def test_info_fields(self):
+        """
+            REST Api: Test info fields (add, edit)
+        """
+        client = self.app.test_client()
+        uri = 'api/v1/model1apifieldsinfo/info'
+        rv = client.get(uri)
+        data = json.loads(rv.data.decode('utf-8'))
+        expect_add_fields = [
+            {
+                'description': 'Field Integer',
+                'label': 'Field Integer',
+                'name': 'field_integer',
+                'required': False, 'type': 'Integer'
+            },
+            {
+                'description': 'Field Float',
+                'label': 'Field Float',
+                'name': 'field_float',
+                'required': False,
+                'type': 'Float'
+            },
+            {
+                'description': 'Field String',
+                'label': 'Field String',
+                'name': 'field_string',
+                'required': True,
+                'type': 'String',
+                'validate': ['<Length(min=None, max=50, equal=None, error=None)>']
+            },
+            {
+                'description': '',
+                'label': 'Field Date',
+                'name': 'field_date',
+                'required': False,
+                'type': 'Date'
+            }
+        ]
+        expect_edit_fields = list()
+        for edit_col in self.model1apifieldsinfo.edit_columns:
+            for item in expect_add_fields:
+                if item['name'] == edit_col:
+                    expect_edit_fields.append(item)
+        eq_(data['add_fields'], expect_add_fields)
+        eq_(data['edit_fields'], expect_edit_fields)
+
     def test_delete_item(self):
         """
             REST Api: Test delete item
@@ -316,6 +420,16 @@ class FlaskTestCase(unittest.TestCase):
         rv = client.delete('api/v1/model1api/{}'.format(pk))
         eq_(rv.status_code, 404)
 
+    def test_delete_item_base_filters(self):
+        """
+            REST Api: Test delete item with base filters
+        """
+        client = self.app.test_client()
+        # Try to delete a filtered item
+        pk = 1
+        rv = client.delete('api/v1/model1apifiltered/{}'.format(pk))
+        eq_(rv.status_code, 404)
+
     def test_update_item(self):
         """
             REST Api: Test update item
@@ -333,6 +447,29 @@ class FlaskTestCase(unittest.TestCase):
         eq_(model.field_string, "test_Put")
         eq_(model.field_integer, 0)
         eq_(model.field_float, 0.0)
+
+    def test_update_item_base_filters(self):
+        """
+            REST Api: Test update item with base filters
+        """
+        client = self.app.test_client()
+        pk = 4
+        item = dict(
+            field_string="test_Put",
+            field_integer=3,
+            field_float=3.0
+        )
+        rv = client.put('api/v1/model1apifiltered/{}'.format(pk), json=item)
+        eq_(rv.status_code, 200)
+        model = self.db.session.query(Model1).get(pk)
+        eq_(model.field_string, "test_Put")
+        eq_(model.field_integer, 3)
+        eq_(model.field_float, 3.0)
+        # We can't update an item that is base filtered
+        client = self.app.test_client()
+        pk = 1
+        rv = client.put('api/v1/model1apifiltered/{}'.format(pk), json=item)
+        eq_(rv.status_code, 404)
 
     def test_update_item_not_found(self):
         """
@@ -365,7 +502,7 @@ class FlaskTestCase(unittest.TestCase):
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_string'][0], 'Longer than maximum length 50.')
 
-    def test_get_update_item_val_type(self):
+    def test_update_item_val_type(self):
         """
             REST Api: Test update validate type
         """
@@ -427,7 +564,7 @@ class FlaskTestCase(unittest.TestCase):
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_string'][0], 'Longer than maximum length 50.')
 
-    def test_get_create_item_val_type(self):
+    def test_create_item_val_type(self):
         """
             REST Api: Test create validate type
         """
