@@ -44,6 +44,11 @@ class SQLA(SQLAlchemy):
                 result.append(tables[key])
         return result
 
+    def apply_pool_defaults(self, app, options):
+        """Apply the connection pool defaults enabling the 'pre-ping' feature."""
+        super(SQLA, self).apply_pool_defaults(app, options)
+        options['pool_pre_ping'] = True
+
 
 class ModelDeclarativeMeta(DefaultMeta):
     """
@@ -87,4 +92,3 @@ class Model(object):
     This is for retro compatibility
 """
 Base = Model
-
