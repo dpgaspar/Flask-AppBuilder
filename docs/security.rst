@@ -59,7 +59,7 @@ If you extend your view with some exposed method via the @expose decorator and y
 use the @has_access decorator::
 
     class MyModelView(ModelView):
-        datamodel = SQLAInterdace(Group)
+        datamodel = SQLAInterface(Group)
     	
         @has_access
         @expose('/mymethod/')

@@ -1,6 +1,20 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.12.4
+------------------------------------
+
+- Fix, #911 fabmanager missing session rollback() when user add fails
+- Fix, #910 Next page on OAuth
+
+Improvements and Bug fixes on 1.12.3
+------------------------------------
+
+- Fix, #762 Instantiate AdminActions only after DOM finishes loading
+- New, #883 Changed templates so that is possible to use Jinja2 StrictUndefined
+- Fix, #891 Missing import reduce python3 compatibility
+- Fix, #862 fabmanager appbuilder parameter is now working
+
 Improvements and Bug fixes on 1.12.2
 ------------------------------------
 

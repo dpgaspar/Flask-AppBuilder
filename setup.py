@@ -44,6 +44,7 @@ setup(
         'Flask-SQLAlchemy>=2.3,<3',
         'Flask-WTF>=0.14.2,<1',
         'python-dateutil>=2.3,<3',
+        'PyJWT>=1.7.1',
     ],
     tests_require=[
         'nose>=1.0',
