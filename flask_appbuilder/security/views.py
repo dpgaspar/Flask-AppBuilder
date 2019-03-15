@@ -1,13 +1,12 @@
 import re
 import datetime
 import logging
-from flask import flash, redirect, session, url_for, request, g, make_response, jsonify, abort
+from flask import flash, redirect, session, url_for, request, g, abort
 from werkzeug.security import generate_password_hash
 from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
-
 from ..views import ModelView, SimpleFormView, expose
 from ..baseviews import BaseView
 from ..charts.views import DirectByChartView
@@ -54,7 +53,10 @@ class PermissionViewModelView(ModelView):
     add_title = lazy_gettext('Add Permission on Views/Menus')
     edit_title = lazy_gettext('Edit Permission on Views/Menus')
 
-    label_columns = {'permission': lazy_gettext('Permission'), 'view_menu': lazy_gettext('View/Menu')}
+    label_columns = {
+        'permission': lazy_gettext('Permission'),
+        'view_menu': lazy_gettext('View/Menu')
+    }
     list_columns = ['permission', 'view_menu']
 
 
@@ -98,8 +100,9 @@ class UserInfoEditView(SimpleFormView):
     def form_get(self, form):
         item = self.appbuilder.sm.get_user_by_id(g.user.id)
         # fills the form generic solution
-        for key, value in  form.data.items():
-            if key == 'csrf_token': continue
+        for key, value in form.data.items():
+            if key == 'csrf_token':
+                continue
             form_field = getattr(form, key)
             form_field.data = getattr(item, key)
 
@@ -119,35 +122,43 @@ class UserModelView(ModelView):
     add_title = lazy_gettext('Add User')
     edit_title = lazy_gettext('Edit User')
 
-    label_columns = {'get_full_name': lazy_gettext('Full Name'),
-                     'first_name': lazy_gettext('First Name'),
-                     'last_name': lazy_gettext('Last Name'),
-                     'username': lazy_gettext('User Name'),
-                     'password': lazy_gettext('Password'),
-                     'active': lazy_gettext('Is Active?'),
-                     'email': lazy_gettext('Email'),
-                     'roles': lazy_gettext('Role'),
-                     'last_login': lazy_gettext('Last login'),
-                     'login_count': lazy_gettext('Login count'),
-                     'fail_login_count': lazy_gettext('Failed login count'),
-                     'created_on': lazy_gettext('Created on'),
-                     'created_by': lazy_gettext('Created by'),
-                     'changed_on': lazy_gettext('Changed on'),
-                     'changed_by': lazy_gettext('Changed by')}
+    label_columns = {
+        'get_full_name': lazy_gettext('Full Name'),
+        'first_name': lazy_gettext('First Name'),
+        'last_name': lazy_gettext('Last Name'),
+        'username': lazy_gettext('User Name'),
+        'password': lazy_gettext('Password'),
+        'active': lazy_gettext('Is Active?'),
+        'email': lazy_gettext('Email'),
+        'roles': lazy_gettext('Role'),
+        'last_login': lazy_gettext('Last login'),
+        'login_count': lazy_gettext('Login count'),
+        'fail_login_count': lazy_gettext('Failed login count'),
+        'created_on': lazy_gettext('Created on'),
+        'created_by': lazy_gettext('Created by'),
+        'changed_on': lazy_gettext('Changed on'),
+        'changed_by': lazy_gettext('Changed by')
+    }
 
-    description_columns = {'first_name': lazy_gettext('Write the user first name or names'),
-                           'last_name': lazy_gettext('Write the user last name'),
-                           'username': lazy_gettext(
-                               'Username valid for authentication on DB or LDAP, unused for OID auth'),
-                           'password': lazy_gettext(
-                               'Please use a good password policy, this application does not check this for you'),
-                           'active': lazy_gettext('It\'s not a good policy to remove a user, just make it inactive'),
-                           'email': lazy_gettext('The user\'s email, this will also be used for OID auth'),
-                           'roles': lazy_gettext(
-                               'The user role on the application, this will associate with a list of permissions'),
-                           'conf_password': lazy_gettext('Please rewrite the user\'s password to confirm')}
+    description_columns = {
+        'first_name': lazy_gettext('Write the user first name or names'),
+        'last_name': lazy_gettext('Write the user last name'),
+        'username': lazy_gettext('Username valid for authentication on DB or LDAP, unused for OID auth'),
+        'password': lazy_gettext('Please use a good password policy, this application does not check this for you'),
+        'active': lazy_gettext('It\'s not a good policy to remove a user, just make it inactive'),
+        'email': lazy_gettext('The user\'s email, this will also be used for OID auth'),
+        'roles': lazy_gettext('The user role on the application, this will associate with a list of permissions'),
+        'conf_password': lazy_gettext('Please rewrite the user\'s password to confirm')
+    }
 
-    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles']
+    list_columns = [
+        'first_name',
+        'last_name',
+        'username',
+        'email',
+        'active',
+        'roles'
+    ]
 
     show_fieldsets = [
         (lazy_gettext('User info'),
@@ -168,22 +179,46 @@ class UserModelView(ModelView):
 
     search_exclude_columns = ['password']
 
-    add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles']
-    edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles']
+    add_columns = [
+        'first_name',
+        'last_name',
+        'username',
+        'active',
+        'email',
+        'roles']
+    edit_columns = [
+        'first_name',
+        'last_name',
+        'username',
+        'active',
+        'email',
+        'roles'
+    ]
     user_info_title = lazy_gettext("Your user information")
 
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
         item = self.datamodel.get(g.user.id, self._base_filters)
-        widgets = self._get_show_widget(g.user.id, item, show_fieldsets=self.user_show_fieldsets)
+        widgets = self._get_show_widget(
+            g.user.id,
+            item,
+            show_fieldsets=self.user_show_fieldsets
+        )
         self.update_redirect()
-        return self.render_template(self.show_template,
-                               title=self.user_info_title,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder)
+        return self.render_template(
+            self.show_template,
+            title=self.user_info_title,
+            widgets=widgets,
+            appbuilder=self.appbuilder
+        )
 
-    @action('userinfoedit', lazy_gettext("Edit User"), "", "fa-edit", multiple=False)
+    @action(
+        'userinfoedit',
+        lazy_gettext("Edit User"),
+        "",
+        "fa-edit",
+        multiple=False)
     def userinfoedit(self, item):
         return redirect(url_for(self.appbuilder.sm.userinfoeditview.__name__ + '.this_form_get'))
 
@@ -230,60 +265,101 @@ class UserDBModelView(UserModelView):
         Override to implement your own custom view.
         Then override userdbmodelview property on SecurityManager
     """
-    add_form_extra_fields = {'password': PasswordField(lazy_gettext('Password'),
-                                                       description=lazy_gettext(
-                                                           'Please use a good password policy, this application does not check this for you'),
-                                                       validators=[validators.DataRequired()],
-                                                       widget=BS3PasswordFieldWidget()),
-                             'conf_password': PasswordField(lazy_gettext('Confirm Password'),
-                                                            description=lazy_gettext(
-                                                                'Please rewrite the user\'s password to confirm'),
-                                                            validators=[EqualTo('password', message=lazy_gettext(
-                                                                'Passwords must match'))],
-                                                            widget=BS3PasswordFieldWidget())}
+    add_form_extra_fields = {
+        'password': PasswordField(
+            lazy_gettext('Password'),
+            description=lazy_gettext('Please use a good password policy, this application does not check this for you'),
+            validators=[validators.DataRequired()],
+            widget=BS3PasswordFieldWidget()
+        ),
+        'conf_password': PasswordField(
+            lazy_gettext('Confirm Password'),
+            description=lazy_gettext('Please rewrite the user\'s password to confirm'),
+            validators=[EqualTo('password', message=lazy_gettext('Passwords must match'))],
+            widget=BS3PasswordFieldWidget()
+        )
+    }
 
-    add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'password', 'conf_password']
+    add_columns = [
+        'first_name',
+        'last_name',
+        'username',
+        'active',
+        'email',
+        'roles',
+        'password',
+        'conf_password'
+    ]
 
     @expose('/show/<pk>', methods=['GET'])
     @has_access
     def show(self, pk):
-        actions = {}
+        actions = dict()
         actions['resetpasswords'] = self.actions.get('resetpasswords')
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
             abort(404)
         widgets = self._get_show_widget(pk, item, actions=actions)
         self.update_redirect()
-        return self.render_template(self.show_template,
-                               pk=pk,
-                               title=self.show_title,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder,
-                               related_views=self._related_views)
+        return self.render_template(
+            self.show_template,
+            pk=pk,
+            title=self.show_title,
+            widgets=widgets,
+            appbuilder=self.appbuilder,
+            related_views=self._related_views
+        )
 
     @expose('/userinfo/')
     @has_access
     def userinfo(self):
-        actions = {}
+        actions = dict()
         actions['resetmypassword'] = self.actions.get('resetmypassword')
         actions['userinfoedit'] = self.actions.get('userinfoedit')
 
         item = self.datamodel.get(g.user.id, self._base_filters)
-        widgets = self._get_show_widget(g.user.id, item, actions=actions, show_fieldsets=self.user_show_fieldsets)
+        widgets = self._get_show_widget(
+            g.user.id,
+            item,
+            actions=actions,
+            show_fieldsets=self.user_show_fieldsets
+        )
         self.update_redirect()
-        return self.render_template(self.show_template,
-                               title=self.user_info_title,
-                               widgets=widgets,
-                               appbuilder=self.appbuilder,
+        return self.render_template(
+            self.show_template,
+            title=self.user_info_title,
+            widgets=widgets,
+            appbuilder=self.appbuilder,
         )
 
-    @action('resetmypassword', lazy_gettext("Reset my password"), "", "fa-lock", multiple=False)
+    @action(
+        'resetmypassword',
+        lazy_gettext("Reset my password"),
+        "",
+        "fa-lock",
+        multiple=False
+    )
     def resetmypassword(self, item):
-        return redirect(url_for(self.appbuilder.sm.resetmypasswordview.__name__ + '.this_form_get'))
+        return redirect(
+            url_for(
+                self.appbuilder.sm.resetmypasswordview.__name__ + '.this_form_get'
+            )
+        )
 
-    @action('resetpasswords', lazy_gettext("Reset Password"), "", "fa-lock", multiple=False)
+    @action(
+        'resetpasswords',
+        lazy_gettext("Reset Password"),
+        "",
+        "fa-lock",
+        multiple=False
+    )
     def resetpasswords(self, item):
-        return redirect(url_for(self.appbuilder.sm.resetpasswordview.__name__ + '.this_form_get', pk=item.id))
+        return redirect(
+            url_for(
+                self.appbuilder.sm.resetpasswordview.__name__
+                + '.this_form_get', pk=item.id
+            )
+        )
 
     def pre_update(self, item):
         item.changed_on = datetime.datetime.now()
@@ -295,9 +371,10 @@ class UserDBModelView(UserModelView):
 
 class UserStatsChartView(DirectByChartView):
     chart_title = lazy_gettext('User Statistics')
-    label_columns = {'username': lazy_gettext('User Name'),
-                     'login_count': lazy_gettext('Login count'),
-                     'fail_login_count': lazy_gettext('Failed login count')
+    label_columns = {
+        'username': lazy_gettext('User Name'),
+        'login_count': lazy_gettext('Login count'),
+        'fail_login_count': lazy_gettext('Failed login count')
     }
 
     search_columns = UserModelView.search_columns
@@ -325,11 +402,20 @@ class RoleModelView(ModelView):
     add_title = lazy_gettext('Add Role')
     edit_title = lazy_gettext('Edit Role')
 
-    label_columns = {'name': lazy_gettext('Name'), 'permissions': lazy_gettext('Permissions')}
+    label_columns = {
+        'name': lazy_gettext('Name'),
+        'permissions': lazy_gettext('Permissions')
+    }
     list_columns = ['name', 'permissions']
     order_columns = ['name']
 
-    @action("Copy Role", lazy_gettext('Copy Role'), lazy_gettext('Copy the selected roles?'), icon='fa-copy', single=False)
+    @action(
+        "Copy Role",
+        lazy_gettext('Copy Role'),
+        lazy_gettext('Copy the selected roles?'),
+        icon='fa-copy',
+        single=False
+    )
     def copy_role(self, items):
         self.update_redirect()
         for item in items:
@@ -346,7 +432,7 @@ class RegisterUserModelView(ModelView):
     base_permissions = ['can_list', 'can_show', 'can_delete']
     list_title = lazy_gettext('List of Registration Requests')
     show_title = lazy_gettext('Show Registration')
-    list_columns = ['username','registration_date','email']
+    list_columns = ['username', 'registration_date', 'email']
     show_exclude_columns = ['password']
     search_exclude_columns = ['password']
 
@@ -354,9 +440,7 @@ class RegisterUserModelView(ModelView):
 class AuthView(BaseView):
     route_base = ''
     login_template = ''
-
     invalid_login_message = lazy_gettext('Invalid login. Please try again.')
-
     title = lazy_gettext('Sign In')
 
     @expose('/login/', methods=['GET', 'POST'])
@@ -378,16 +462,21 @@ class AuthDBView(AuthView):
             return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_db()
         if form.validate_on_submit():
-            user = self.appbuilder.sm.auth_user_db(form.username.data, form.password.data)
+            user = self.appbuilder.sm.auth_user_db(
+                form.username.data,
+                form.password.data
+            )
             if not user:
                 flash(as_unicode(self.invalid_login_message), 'warning')
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
             return redirect(self.appbuilder.get_url_for_index)
-        return self.render_template(self.login_template,
-                               title=self.title,
-                               form=form,
-                               appbuilder=self.appbuilder)
+        return self.render_template(
+            self.login_template,
+            title=self.title,
+            form=form,
+            appbuilder=self.appbuilder
+        )
 
 
 class AuthLDAPView(AuthView):
@@ -399,16 +488,21 @@ class AuthLDAPView(AuthView):
             return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_db()
         if form.validate_on_submit():
-            user = self.appbuilder.sm.auth_user_ldap(form.username.data, form.password.data)
+            user = self.appbuilder.sm.auth_user_ldap(
+                form.username.data,
+                form.password.data
+            )
             if not user:
                 flash(as_unicode(self.invalid_login_message), 'warning')
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
             return redirect(self.appbuilder.get_url_for_index)
-        return self.render_template(self.login_template,
-                               title=self.title,
-                               form=form,
-                               appbuilder=self.appbuilder)
+        return self.render_template(
+            self.login_template,
+            title=self.title,
+            form=form,
+            appbuilder=self.appbuilder
+        )
 
     """
         For Future Use, API Auth, must check howto keep REST stateless
@@ -455,13 +549,17 @@ class AuthOIDView(AuthView):
             form = LoginForm_oid()
             if form.validate_on_submit():
                 session['remember_me'] = form.remember_me.data
-                return self.appbuilder.sm.oid.try_login(form.openid.data, ask_for=self.oid_ask_for,
-                                                        ask_for_optional=self.oid_ask_for_optional)
-            return self.render_template(self.login_template,
-                                   title=self.title,
-                                   form=form,
-                                   providers=self.appbuilder.sm.openid_providers,
-                                   appbuilder=self.appbuilder
+                return self.appbuilder.sm.oid.try_login(
+                    form.openid.data,
+                    ask_for=self.oid_ask_for,
+                    ask_for_optional=self.oid_ask_for_optional
+                )
+            return self.render_template(
+                self.login_template,
+                title=self.title,
+                form=form,
+                providers=self.appbuilder.sm.openid_providers,
+                appbuilder=self.appbuilder
             )
 
         @self.appbuilder.sm.oid.after_login
@@ -487,7 +585,6 @@ class AuthOIDView(AuthView):
 class AuthOAuthView(AuthView):
     login_template = 'appbuilder/general/security/login_oauth.html'
 
-
     @expose('/login/')
     @expose('/login/<provider>')
     @expose('/login/<provider>/<register>')
@@ -497,17 +594,25 @@ class AuthOAuthView(AuthView):
             log.debug("Already authenticated {0}".format(g.user))
             return redirect(self.appbuilder.get_url_for_index)
         if provider is None:
-            return self.render_template(self.login_template,
-                               providers = self.appbuilder.sm.oauth_providers,
-                               title=self.title,
-                               appbuilder=self.appbuilder)
+            return self.render_template(
+                self.login_template,
+                providers=self.appbuilder.sm.oauth_providers,
+                title=self.title,
+                appbuilder=self.appbuilder
+            )
         else:
             log.debug("Going to call authorize for: {0}".format(provider))
             try:
                 if register:
                     log.debug('Login to Register')
                     session['register'] = True
-                return self.appbuilder.sm.oauth_remotes[provider].authorize(callback=url_for('.oauth_authorized',provider=provider, _external=True))
+                return self.appbuilder.sm.oauth_remotes[provider].authorize(
+                    callback=url_for(
+                        '.oauth_authorized',
+                        provider=provider,
+                        _external=True
+                    )
+                )
             except Exception as e:
                 log.error("Error on OAuth authorize: {0}".format(e))
                 flash(as_unicode(self.invalid_login_message), 'warning')
