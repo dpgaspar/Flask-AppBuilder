@@ -1,17 +1,12 @@
 import unittest
 import os
-import string
-import random
-import datetime
 import json
 import logging
-
-from nose.tools import eq_, ok_
+from nose.tools import eq_
 from flask_appbuilder import SQLA
 from .sqla.models import Model1, Model2, insert_data
 from flask_appbuilder.models.sqla.filters import \
     FilterGreater, FilterSmaller
-
 
 log = logging.getLogger(__name__)
 
@@ -80,6 +75,17 @@ class FlaskTestCase(unittest.TestCase):
                 'field_string': 'Field String'
             }
 
+        class Model1ApiExcludeCols(ModelApi):
+            datamodel = SQLAInterface(Model1)
+            list_exclude_columns = [
+                'field_integer',
+                'field_float',
+                'field_date'
+            ]
+            show_exclude_columns = list_exclude_columns
+            edit_exclude_columns = list_exclude_columns
+            add_exclude_columns = list_exclude_columns
+
         class Model1ApiOrder(ModelApi):
             datamodel = SQLAInterface(Model1)
             base_order = ('field_integer', 'desc')
@@ -99,6 +105,7 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view_no_menu(Model1ApiFieldsInfo)
         self.appbuilder.add_view_no_menu(Model1ApiOrder)
         self.appbuilder.add_view_no_menu(Model1ApiFiltered)
+        self.appbuilder.add_view_no_menu(Model1ApiExcludeCols)
 
         class Model2Api(ModelApi):
             datamodel = SQLAInterface(Model2)
@@ -182,6 +189,19 @@ class FlaskTestCase(unittest.TestCase):
                 'field_integer': 'Field Integer'
             })
             eq_(rv.status_code, 200)
+
+    def test_get_item_excluded_cols(self):
+        """
+            REST Api: Test get item with excluded columns
+        """
+        client = self.app.test_client()
+        pk = 1
+        rv = client.get('api/v1/model1apiexcludecols/{}/'.format(pk))
+        data = json.loads(rv.data.decode('utf-8'))
+        eq_(data['result'], {
+            'field_string': 'test0'
+        })
+        eq_(rv.status_code, 200)
 
     def test_get_item_not_found(self):
         """
@@ -369,6 +389,19 @@ class FlaskTestCase(unittest.TestCase):
             'field_integer'
         ])
         eq_(rv.status_code, 200)
+
+    def test_get_list_exclude_cols(self):
+        """
+            REST Api: Test get list with excluded columns
+        """
+        client = self.app.test_client()
+        uri = 'api/v1/model1apiexcludecols/'
+        rv = client.get(uri)
+        data = json.loads(rv.data.decode('utf-8'))
+        eq_(data['result'][0], {
+            'id': 1,
+            'field_string': 'test0'
+        })
 
     def test_get_list_base_filters(self):
         """
@@ -659,6 +692,26 @@ class FlaskTestCase(unittest.TestCase):
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_string'][0], 'Not a valid string.')
 
+    def test_update_item_excluded_cols(self):
+        """
+            REST Api: Test update item with excluded cols
+        """
+        client = self.app.test_client()
+        pk = 1
+        item = dict(
+            field_string="test_Put",
+            field_integer=1000
+        )
+        rv = client.put(
+            'api/v1/model1apiexcludecols/{}'.format(pk),
+            json=item
+        )
+        eq_(rv.status_code, 200)
+        model = self.db.session.query(Model1).get(pk)
+        eq_(model.field_integer, 0)
+        eq_(model.field_float, 0.0)
+        eq_(model.field_date, None)
+
     def test_create_item(self):
         """
             REST Api: Test create item
@@ -720,6 +773,29 @@ class FlaskTestCase(unittest.TestCase):
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_string'][0], 'Not a valid string.')
 
+    def test_create_item_excluded_cols(self):
+        """
+            REST Api: Test create with excluded columns
+        """
+        client = self.app.test_client()
+        item = dict(
+            field_string="test{}".format(MODEL1_DATA_SIZE+1)
+        )
+        rv = client.post('api/v1/model1apiexcludecols/', json=item)
+        eq_(rv.status_code, 201)
+        item = dict(
+            field_string="test{}".format(MODEL1_DATA_SIZE+2),
+            field_integer=MODEL1_DATA_SIZE+2
+        )
+        rv = client.post('api/v1/model1apiexcludecols/', json=item)
+        eq_(rv.status_code, 201)
+        model = (self.db.session.query(Model1)
+                 .filter_by(field_string="test11")
+                 .first())
+        eq_(model.field_integer, None)
+        eq_(model.field_float, None)
+        eq_(model.field_date, None)
+
     def test_get_list_col_function(self):
         """
             REST Api: Test get list of objects with columns as functions
@@ -733,11 +809,11 @@ class FlaskTestCase(unittest.TestCase):
         eq_(len(data['result']), self.model1api.page_size)
         for i in range(1, MODEL1_DATA_SIZE):
             item = data['result'][i - 1]
-            eq_(item['full_concat'], "{}.{}.{}.{}".format(
+            eq_(
+                item['full_concat'], "{}.{}.{}.{}".format(
                     "test" + str(i - 1),
                     i - 1,
                     float(i - 1),
                     None
                 )
             )
-
