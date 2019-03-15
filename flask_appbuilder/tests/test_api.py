@@ -8,7 +8,7 @@ import logging
 
 from nose.tools import eq_, ok_
 from flask_appbuilder import SQLA
-from .sqla.models import Model1, insert_data
+from .sqla.models import Model1, Model2, insert_data
 from flask_appbuilder.models.sqla.filters import \
     FilterGreater, FilterSmaller
 
@@ -16,6 +16,7 @@ from flask_appbuilder.models.sqla.filters import \
 log = logging.getLogger(__name__)
 
 MODEL1_DATA_SIZE = 10
+MODEL2_DATA_SIZE = 10
 
 
 class FlaskTestCase(unittest.TestCase):
@@ -35,7 +36,7 @@ class FlaskTestCase(unittest.TestCase):
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session, update_perms=False)
         # Create models and insert data
-        insert_data(self.db.session, Model1, MODEL1_DATA_SIZE)
+        insert_data(self.db.session, MODEL1_DATA_SIZE)
 
         class Model1Api(ModelApi):
             datamodel = SQLAInterface(Model1)
@@ -83,7 +84,7 @@ class FlaskTestCase(unittest.TestCase):
             datamodel = SQLAInterface(Model1)
             base_filters = [
                 ['field_integer', FilterGreater, 2],
-                ['field_integer', FilterSmaller, 4],
+                ['field_integer', FilterSmaller, 4]
             ]
 
         self.model1api = Model1Api
@@ -93,6 +94,36 @@ class FlaskTestCase(unittest.TestCase):
         self.model1apifieldsinfo = Model1ApiFieldsInfo
         self.appbuilder.add_view_no_menu(Model1ApiFieldsInfo)
         self.appbuilder.add_view_no_menu(Model1ApiFiltered)
+
+        class Model2Api(ModelApi):
+            datamodel = SQLAInterface(Model2)
+            list_columns = [
+                'group'
+            ]
+            show_columns = [
+                'group'
+            ]
+
+        class Model2ApiFilteredRelFields(ModelApi):
+            datamodel = SQLAInterface(Model2)
+            list_columns = [
+                'group'
+            ]
+            show_columns = [
+                'group'
+            ]
+            add_query_rel_fields = {
+                'group': [
+                    ['field_integer', FilterGreater, 2],
+                    ['field_integer', FilterSmaller, 4]
+                ]
+            }
+            edit_query_rel_fields = add_query_rel_fields
+
+        self.model2api = Model2Api
+        self.appbuilder.add_view_no_menu(Model2Api)
+        self.model2apifilteredrelfields = Model2ApiFilteredRelFields
+        self.appbuilder.add_view_no_menu(Model2ApiFilteredRelFields)
 
     def tearDown(self):
         self.appbuilder = None
@@ -170,6 +201,18 @@ class FlaskTestCase(unittest.TestCase):
         pk = 4
         rv = client.get('api/v1/model1apifiltered/{}/'.format(pk))
         eq_(rv.status_code, 200)
+
+    def test_get_item_rel_field(self):
+        """
+            REST Api: Test get item with with related fields
+        """
+        client = self.app.test_client()
+        # We can't get a base filtered item
+        pk = 1
+        rv = client.get('api/v1/model2api/{}/'.format(pk))
+        data = json.loads(rv.data.decode('utf-8'))
+        eq_(rv.status_code, 200)
+        eq_(data['result'], {'group': 1})
 
     def test_get_list(self):
         """
@@ -399,6 +442,62 @@ class FlaskTestCase(unittest.TestCase):
                     expect_edit_fields.append(item)
         eq_(data['add_fields'], expect_add_fields)
         eq_(data['edit_fields'], expect_edit_fields)
+
+    def test_info_fields_rel_field(self):
+        """
+            REST Api: Test info fields with related fields
+        """
+        client = self.app.test_client()
+        uri = 'api/v1/model2api/info'
+        rv = client.get(uri)
+        data = json.loads(rv.data.decode('utf-8'))
+        expected_rel_add_field = {
+                'description': '',
+                'label': 'Group',
+                'name': 'group',
+                'required': False,
+                'type': 'Related',
+                'values': []
+            }
+        for i in range(MODEL1_DATA_SIZE):
+            expected_rel_add_field['values'].append(
+                {
+                    'id': i + 1,
+                    'value': "test{}".format(i)
+                }
+            )
+        for rel_field in data['add_fields']:
+            if rel_field['name'] == 'group':
+                eq_(rel_field, expected_rel_add_field)
+
+    def test_info_fields_rel_filtered_field(self):
+        """
+            REST Api: Test info fields with filtered
+            related fields
+        """
+        client = self.app.test_client()
+        uri = 'api/v1/model2apifilteredrelfields/info'
+        rv = client.get(uri)
+        data = json.loads(rv.data.decode('utf-8'))
+        expected_rel_add_field = {
+            'description': '',
+            'label': 'Group',
+            'name': 'group',
+            'required': False,
+            'type': 'Related',
+            'values': [
+                {
+                    'id': 4,
+                    'value': 'test3'
+                }
+            ]
+        }
+        for rel_field in data['add_fields']:
+            if rel_field['name'] == 'group':
+                eq_(rel_field, expected_rel_add_field)
+        for rel_field in data['edit_fields']:
+            if rel_field['name'] == 'group':
+                eq_(rel_field, expected_rel_add_field)
 
     def test_delete_item(self):
         """

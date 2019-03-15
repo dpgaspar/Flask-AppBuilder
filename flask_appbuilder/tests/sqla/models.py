@@ -68,10 +68,21 @@ class ModelWithEnums(Model):
     """
 
 
-def insert_data(session, model1, count):
+def insert_data(session, count):
+    model1_collection = list()
     for i in range(count):
-        model = model1(field_string="test{}".format(i),
-                       field_integer=i,
-                       field_float=float(i))
+        model = Model1()
+        model.field_string = "test{}".format(i)
+        model.field_integer = i
+        model.field_float = float(i)
+        session.add(model)
+        session.commit()
+        model1_collection.append(model)
+    for i in range(count):
+        model = Model2()
+        model.field_string = "test{}".format(i)
+        model.field_integer = i
+        model.field_float = float(i)
+        model.group = model1_collection[i]
         session.add(model)
         session.commit()

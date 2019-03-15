@@ -6,6 +6,7 @@ from flask_appbuilder.models.group import aggregate_count
 from flask_babel import lazy_gettext as _
 from flask_appbuilder.api import ModelApi
 from flask_appbuilder.security.sqla.models import User
+from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction
 
 from app import db, appbuilder, app
 from .models import ContactGroup, Gender, Contact, ContactGroupSchema, ContactSchema
@@ -61,6 +62,14 @@ class ContactModelApi(ModelApi):
     datamodel = SQLAInterface(Contact)
     #show_columns = ['name']
     #list_model_schema = ContactSchema()
+    base_filters = [['name', FilterStartsWith, 'a']]
+    add_query_rel_fields = {
+        'contact_group': [['name', FilterStartsWith, 'F']]
+    }
+    edit_query_rel_fields = {
+        'contact_group': [['name', FilterStartsWith, 'F']]
+    }
+
     list_columns = ['name', 'address', 'personal_celphone']
 
 
