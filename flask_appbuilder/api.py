@@ -404,32 +404,35 @@ class ModelApi(BaseModelApi):
     """
     show_columns = None
     """
-        A list of columns (or model's methods) to be displayed on the show view.
-        Use it to control the order of the display
+        A list of columns (or model's methods) for the get item endpoint.
+        Use it to control the order of the results
     """
     add_columns = None
     """
-        A list of columns (or model's methods) to be displayed 
-        on the add form view. Use it to control the order of the display
+        A list of columns (or model's methods) to be allowed to post 
     """
     edit_columns = None
     """
-        A list of columns (or model's methods) to be displayed 
-        on the edit form view. Use it to control the order of the display
+        A list of columns (or model's methods) to be allowed to update
+    """
+    list_exclude_columns = None
+    """
+        A list of columns to exclude from the get list endpoint. 
+        By default all columns are included.
     """
     show_exclude_columns = None
     """
-        A list of columns to exclude from the show view. 
+        A list of columns to exclude from the get item endpoint. 
         By default all columns are included.
     """
     add_exclude_columns = None
     """
-        A list of columns to exclude from the add form.
+        A list of columns to exclude from the add endpoint.
         By default all columns are included.
     """
     edit_exclude_columns = None
     """
-        A list of columns to exclude from the edit form.
+        A list of columns to exclude from the edit endpoint.
         By default all columns are included.
     """
     order_columns = None
@@ -539,17 +542,20 @@ class ModelApi(BaseModelApi):
         # Reset init props
         self.description_columns = self.description_columns or {}
         self.formatters_columns = self.formatters_columns or {}
+        self.list_exclude_columns = self.list_exclude_columns or []
         self.show_exclude_columns = self.show_exclude_columns or []
         self.add_exclude_columns = self.add_exclude_columns or []
         self.edit_exclude_columns = self.edit_exclude_columns or []
         # Generate base props
         list_cols = self.datamodel.get_user_columns_list()
         if not self.list_columns and self.list_model_schema:
-            self.list_columns =\
-                list(self.list_model_schema._declared_fields.keys())
+            list(self.list_model_schema._declared_fields.keys())
         else:
-            self.list_columns = self.list_columns or \
-                                self.datamodel.get_columns_list()
+            self.list_columns = self.list_columns or [
+                x for x in self.datamodel.get_columns_list()
+                if x not in self.list_exclude_columns
+            ]
+
         self._gen_labels_columns(self.list_columns)
         self.order_columns = self.order_columns or \
             self.datamodel.get_order_columns_list(list_columns=self.list_columns)
@@ -795,6 +801,10 @@ class ModelApi(BaseModelApi):
         response = make_response(_ret_json, code)
         response.headers['Content-Type'] = "application/json; charset=utf-8"
         return response
+
+    def _api_json_400(self, message=None):
+        message = message or "Arguments are not correct"
+        return self._api_json_response(400, **{"message": message})
 
     def _api_json_404(self):
         return self._api_json_response(404, **{"message": "Not found"})
