@@ -80,6 +80,10 @@ class FlaskTestCase(unittest.TestCase):
                 'field_string': 'Field String'
             }
 
+        class Model1ApiOrder(ModelApi):
+            datamodel = SQLAInterface(Model1)
+            base_order = ('field_integer', 'desc')
+
         class Model1ApiFiltered(ModelApi):
             datamodel = SQLAInterface(Model1)
             base_filters = [
@@ -93,6 +97,7 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view_no_menu(Model1FuncApi)
         self.model1apifieldsinfo = Model1ApiFieldsInfo
         self.appbuilder.add_view_no_menu(Model1ApiFieldsInfo)
+        self.appbuilder.add_view_no_menu(Model1ApiOrder)
         self.appbuilder.add_view_no_menu(Model1ApiFiltered)
 
         class Model2Api(ModelApi):
@@ -265,6 +270,23 @@ class FlaskTestCase(unittest.TestCase):
             'field_string': "test{}".format(MODEL1_DATA_SIZE - 1)
         })
         eq_(rv.status_code, 200)
+
+    def test_get_list_base_order(self):
+        """
+            REST Api: Test get list with base order
+        """
+        client = self.app.test_client()
+
+        # test string order asc
+        rv = client.get('api/v1/model1apiorder/')
+        data = json.loads(rv.data.decode('utf-8'))
+        eq_(data['result'][0], {
+            'id': MODEL1_DATA_SIZE,
+            'field_date': None,
+            'field_float': float(MODEL1_DATA_SIZE - 1),
+            'field_integer': MODEL1_DATA_SIZE - 1,
+            'field_string': "test{}".format(MODEL1_DATA_SIZE - 1)
+        })
 
     def test_get_list_page(self):
         """
