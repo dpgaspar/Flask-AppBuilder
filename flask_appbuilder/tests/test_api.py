@@ -287,6 +287,16 @@ class FlaskTestCase(unittest.TestCase):
             'field_integer': MODEL1_DATA_SIZE - 1,
             'field_string': "test{}".format(MODEL1_DATA_SIZE - 1)
         })
+        # Test override
+        rv = client.get('api/v1/model1apiorder/?_o_=field_integer:asc')
+        data = json.loads(rv.data.decode('utf-8'))
+        eq_(data['result'][0], {
+            'id': 1,
+            'field_date': None,
+            'field_float': 0.0,
+            'field_integer': 0,
+            'field_string': "test0"
+        })
 
     def test_get_list_page(self):
         """
