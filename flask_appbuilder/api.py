@@ -759,6 +759,9 @@ class ModelApi(BaseModelApi):
         self._filters.clear_filters()
         self._filters.rest_add_filters(filters)
         joined_filters = self._filters.get_joined_filters(self._base_filters)
+        # handle base order
+        if not order_column and self.base_order:
+            order_column, order_direction = self.base_order
         # Make the query
         count, lst = self.datamodel.query(joined_filters,
                                           order_column,
