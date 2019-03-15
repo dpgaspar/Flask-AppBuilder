@@ -40,7 +40,6 @@ REDIRECT_OBJ_ID = 99999
 log = logging.getLogger(__name__)
 
 
-
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):
         from flask import Flask
@@ -66,7 +65,6 @@ class FlaskTestCase(unittest.TestCase):
             base_permissions = ['can_list', 'can_show']
             list_columns = ['UID', 'C', 'CMD', 'TIME']
             search_columns = ['UID', 'C', 'CMD']
-
 
         class Model2View(ModelView):
             datamodel = SQLAInterface(Model2)
@@ -115,22 +113,18 @@ class FlaskTestCase(unittest.TestCase):
             datamodel = SQLAInterface(Model1)
             base_filters = [['field_string', FilterStartsWith, 'a']]
 
-
         class Model1MasterView(MasterDetailView):
             datamodel = SQLAInterface(Model1)
             related_views = [Model2View]
-
 
         class Model1Filtered2View(ModelView):
             datamodel = SQLAInterface(Model1)
             base_filters = [['field_integer', FilterEqual, 0]]
 
-
         class Model2ChartView(ChartView):
             datamodel = SQLAInterface(Model2)
             chart_title = 'Test Model1 Chart'
             group_by_columns = ['field_string']
-
 
         class Model2GroupByChartView(GroupByChartView):
             datamodel = SQLAInterface(Model2)
