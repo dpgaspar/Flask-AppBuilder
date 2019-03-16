@@ -12,6 +12,8 @@ log = logging.getLogger(__name__)
 
 MODEL1_DATA_SIZE = 10
 MODEL2_DATA_SIZE = 10
+USERNAME = "testadmin"
+PASSWORD = "password"
 
 
 class FlaskTestCase(unittest.TestCase):
@@ -29,7 +31,7 @@ class FlaskTestCase(unittest.TestCase):
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
         self.db = SQLA(self.app)
-        self.appbuilder = AppBuilder(self.app, self.db.session, update_perms=False)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
         # Create models and insert data
         insert_data(self.db.session, MODEL1_DATA_SIZE)
 
@@ -136,20 +138,78 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view_no_menu(Model2Api)
         self.model2apifilteredrelfields = Model2ApiFilteredRelFields
         self.appbuilder.add_view_no_menu(Model2ApiFilteredRelFields)
+        role_admin = self.appbuilder.sm.find_role('Admin')
+        self.appbuilder.sm.add_user(
+            USERNAME,
+            'admin',
+            'user',
+            'admin@fab.org',
+            role_admin,
+            PASSWORD
+        )
 
     def tearDown(self):
         self.appbuilder = None
         self.app = None
         self.db = None
 
+    @staticmethod
+    def auth_client_get(client, token, uri):
+        return client.get(
+            uri,
+            headers={"Authorization": "Bearer {}".format(token)}
+        )
+
+    @staticmethod
+    def auth_client_delete(client, token, uri):
+        return client.delete(
+            uri,
+            headers={"Authorization": "Bearer {}".format(token)}
+        )
+
+    @staticmethod
+    def auth_client_put(client, token, uri, json):
+        return client.put(
+            uri,
+            json=json,
+            headers={"Authorization": "Bearer {}".format(token)}
+        )
+
+    @staticmethod
+    def auth_client_post(client, token, uri, json):
+        return client.post(
+            uri,
+            json=json,
+            headers={"Authorization": "Bearer {}".format(token)}
+        )
+
+    @staticmethod
+    def login(client, username, password):
+        # Login with default admin
+        rv = client.post(
+            'api/v1/security/login',
+            data=json.dumps(dict(
+                username=username,
+                password=password,
+                provider="db"
+            )),
+            content_type='application/json'
+        )
+        log.fatal("FATAL {}".format(rv.data))
+        return json.loads(rv.data.decode('utf-8')).get("access_token")
+
     def test_get_item(self):
         """
             REST Api: Test get item
         """
         client = self.app.test_client()
-
+        token = self.login(client, USERNAME, PASSWORD)
         for i in range(1, MODEL1_DATA_SIZE):
-            rv = client.get('api/v1/model1api/{}/'.format(i))
+            rv = self.auth_client_get(
+                client,
+                token,
+                'api/v1/model1api/{}/'.format(i)
+            )
             data = json.loads(rv.data.decode('utf-8'))
             eq_(rv.status_code, 200)
             self.assert_get_item(rv, data, i - 1)
@@ -177,9 +237,14 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test get item with select columns
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
 
         for i in range(1, MODEL1_DATA_SIZE):
-            rv = client.get('api/v1/model1api/{}/?_c_=field_integer'.format(i))
+            rv = self.auth_client_get(
+                client,
+                token,
+                'api/v1/model1api/{}/?_c_=field_integer'.format(i)
+            )
             data = json.loads(rv.data.decode('utf-8'))
             eq_(data['result'], {'field_integer': i - 1})
             eq_(data['description_columns'], {
@@ -195,8 +260,14 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test get item with excluded columns
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
         pk = 1
-        rv = client.get('api/v1/model1apiexcludecols/{}/'.format(pk))
+        rv = self.auth_client_get(
+            client,
+            token,
+            'api/v1/model1apiexcludecols/{}/'.format(pk)
+        )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'], {
             'field_string': 'test0'
@@ -208,8 +279,14 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test get item not found
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
         pk = 11
-        rv = client.get('api/v1/model1api/{}/'.format(pk))
+        rv = self.auth_client_get(
+            client,
+            token,
+            'api/v1/model1api/{}/'.format(pk)
+        )
         eq_(rv.status_code, 404)
 
     def test_get_item_base_filters(self):
@@ -217,14 +294,23 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test get item with base filters
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
         # We can't get a base filtered item
         pk = 1
-        rv = client.get('api/v1/model1apifiltered/{}/'.format(pk))
+        rv = self.auth_client_get(
+            client,
+            token,
+            'api/v1/model1apifiltered/{}/'.format(pk)
+        )
         eq_(rv.status_code, 404)
-        client = self.app.test_client()
         # This one is ok pk=4 field_integer=3 2>3<4
         pk = 4
-        rv = client.get('api/v1/model1apifiltered/{}/'.format(pk))
+        rv = self.auth_client_get(
+            client,
+            token,
+            'api/v1/model1apifiltered/{}/'.format(pk)
+        )
         eq_(rv.status_code, 200)
 
     def test_get_item_rel_field(self):
@@ -232,9 +318,15 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test get item with with related fields
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
         # We can't get a base filtered item
         pk = 1
-        rv = client.get('api/v1/model2api/{}/'.format(pk))
+        rv = self.auth_client_get(
+            client,
+            token,
+            'api/v1/model2api/{}/'.format(pk)
+        )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(rv.status_code, 200)
         eq_(data['result'], {'group': 1})
@@ -244,8 +336,13 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test get list
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
 
-        rv = client.get('api/v1/model1api/')
+        rv = self.auth_client_get(
+            client,
+            token,
+            'api/v1/model1api/'
+        )
         data = json.loads(rv.data.decode('utf-8'))
         # Tests count property
         eq_(data['count'], MODEL1_DATA_SIZE)
@@ -269,9 +366,14 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test get list order params
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
 
         # test string order asc
-        rv = client.get('api/v1/model1api/?_o_=field_string:asc')
+        rv = self.auth_client_get(
+            client,
+            token,
+            'api/v1/model1api/?_o_=field_string:asc'
+        )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'][0], {
             'field_date': None,
@@ -281,7 +383,11 @@ class FlaskTestCase(unittest.TestCase):
         })
         eq_(rv.status_code, 200)
         # test string order desc
-        rv = client.get('api/v1/model1api/?_o_=field_string:desc')
+        rv = self.auth_client_get(
+            client,
+            token,
+            'api/v1/model1api/?_o_=field_string:desc'
+        )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'][0], {
             'field_date': None,
@@ -296,9 +402,14 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test get list with base order
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
 
         # test string order asc
-        rv = client.get('api/v1/model1apiorder/')
+        rv = self.auth_client_get(
+            client,
+            token,
+            'api/v1/model1apiorder/'
+        )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'][0], {
             'id': MODEL1_DATA_SIZE,
@@ -308,7 +419,12 @@ class FlaskTestCase(unittest.TestCase):
             'field_string': "test{}".format(MODEL1_DATA_SIZE - 1)
         })
         # Test override
-        rv = client.get('api/v1/model1apiorder/?_o_=field_integer:asc')
+        rv = self.auth_client_get(
+            client,
+            token,
+            'api/v1/model1apiorder/?_o_=field_integer:asc'
+        )
+
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'][0], {
             'id': 1,
@@ -324,10 +440,15 @@ class FlaskTestCase(unittest.TestCase):
         """
         page_size = 5
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
 
         # test page zero
         uri = 'api/v1/model1api/?_p_={}:0&_o_=field_integer:asc'.format(page_size)
-        rv = client.get(uri)
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'][0], {
             'field_date': None,
@@ -339,7 +460,11 @@ class FlaskTestCase(unittest.TestCase):
         eq_(len(data['result']), page_size)
         # test page zero
         uri = 'api/v1/model1api/?_p_={}:1&_o_=field_integer:asc'.format(page_size)
-        rv = client.get(uri)
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'][0], {
             'field_date': None,
@@ -355,10 +480,16 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test get list filter params
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
         filter_value = 5
         # test string order asc
         uri = 'api/v1/model1api/?_f_0=field_integer:gt:{}&_o_=field_integer:asc'.format(filter_value)
-        rv = client.get(uri)
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'][0], {
             'field_date': None,
@@ -373,8 +504,14 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test get list with selected columns
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
         uri = 'api/v1/model1api/?_c_=field_integer&_o_=field_integer:asc'
-        rv = client.get(uri)
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'][0], {
             'field_integer': 0,
@@ -395,8 +532,14 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test get list with excluded columns
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
         uri = 'api/v1/model1apiexcludecols/'
-        rv = client.get(uri)
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'][0], {
             'id': 1,
@@ -408,8 +551,14 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test get list with base filters
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
         uri = 'api/v1/model1apifiltered/?_o_=field_integer:asc'
-        rv = client.get(uri)
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
         data = json.loads(rv.data.decode('utf-8'))
         expected_result = [
             {
@@ -427,8 +576,13 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test info filters
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
         uri = 'api/v1/model1api/info'
-        rv = client.get(uri)
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
         data = json.loads(rv.data.decode('utf-8'))
         expected_filters = {
             'field_date': [
@@ -467,8 +621,14 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test info fields (add, edit)
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
         uri = 'api/v1/model1apifieldsinfo/info'
-        rv = client.get(uri)
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
         data = json.loads(rv.data.decode('utf-8'))
         expect_add_fields = [
             {
@@ -513,17 +673,23 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test info fields with related fields
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
         uri = 'api/v1/model2api/info'
-        rv = client.get(uri)
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
         data = json.loads(rv.data.decode('utf-8'))
         expected_rel_add_field = {
-                'description': '',
-                'label': 'Group',
-                'name': 'group',
-                'required': False,
-                'type': 'Related',
-                'values': []
-            }
+            'description': '',
+            'label': 'Group',
+            'name': 'group',
+            'required': False,
+            'type': 'Related',
+            'values': []
+        }
         for i in range(MODEL1_DATA_SIZE):
             expected_rel_add_field['values'].append(
                 {
@@ -541,8 +707,13 @@ class FlaskTestCase(unittest.TestCase):
             related fields
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
         uri = 'api/v1/model2apifilteredrelfields/info'
-        rv = client.get(uri)
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
         data = json.loads(rv.data.decode('utf-8'))
         expected_rel_add_field = {
             'description': '',
@@ -569,8 +740,15 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test delete item
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
         pk = 2
-        rv = client.delete('api/v1/model1api/{}'.format(pk))
+        uri = 'api/v1/model1api/{}'.format(pk)
+        rv = self.auth_client_delete(
+            client,
+            token,
+            uri
+        )
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model1).get(pk)
         eq_(model, None)
@@ -580,8 +758,15 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test delete item not found
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
         pk = 11
-        rv = client.delete('api/v1/model1api/{}'.format(pk))
+        uri = 'api/v1/model1api/{}'.format(pk)
+        rv = self.auth_client_delete(
+            client,
+            token,
+            uri
+        )
         eq_(rv.status_code, 404)
 
     def test_delete_item_base_filters(self):
@@ -589,9 +774,15 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test delete item with base filters
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
         # Try to delete a filtered item
         pk = 1
-        rv = client.delete('api/v1/model1apifiltered/{}'.format(pk))
+        uri = 'api/v1/model1apifiltered/{}'.format(pk)
+        rv = self.auth_client_delete(
+            client,
+            token,
+            uri
+        )
         eq_(rv.status_code, 404)
 
     def test_update_item(self):
@@ -599,13 +790,20 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test update item
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
         pk = 3
         item = dict(
             field_string="test_Put",
             field_integer=0,
             field_float=0.0
         )
-        rv = client.put('api/v1/model1api/{}'.format(pk), json=item)
+        uri = 'api/v1/model1api/{}'.format(pk)
+        rv = self.auth_client_put(
+            client,
+            token,
+            uri,
+            item
+        )
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model1).get(pk)
         eq_(model.field_string, "test_Put")
@@ -617,22 +815,34 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test update item with base filters
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
         pk = 4
         item = dict(
             field_string="test_Put",
             field_integer=3,
             field_float=3.0
         )
-        rv = client.put('api/v1/model1apifiltered/{}'.format(pk), json=item)
+        uri = 'api/v1/model1apifiltered/{}'.format(pk)
+        rv = self.auth_client_put(
+            client,
+            token,
+            uri,
+            item
+        )
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model1).get(pk)
         eq_(model.field_string, "test_Put")
         eq_(model.field_integer, 3)
         eq_(model.field_float, 3.0)
         # We can't update an item that is base filtered
-        client = self.app.test_client()
         pk = 1
-        rv = client.put('api/v1/model1apifiltered/{}'.format(pk), json=item)
+        uri = 'api/v1/model1apifiltered/{}'.format(pk)
+        rv = self.auth_client_put(
+            client,
+            token,
+            uri,
+            item
+        )
         eq_(rv.status_code, 404)
 
     def test_update_item_not_found(self):
@@ -640,13 +850,20 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test update item not found
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
         pk = 11
         item = dict(
             field_string="test_Put",
             field_integer=0,
             field_float=0.0
         )
-        rv = client.put('api/v1/model1api/{}'.format(pk), json=item)
+        uri = 'api/v1/model1api/{}'.format(pk)
+        rv = self.auth_client_put(
+            client,
+            token,
+            uri,
+            item
+        )
         eq_(rv.status_code, 404)
 
     def test_update_val_size(self):
@@ -654,6 +871,7 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test update validate size
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
         pk = 1
         field_string = 'a' * 51
         item = dict(
@@ -661,7 +879,13 @@ class FlaskTestCase(unittest.TestCase):
             field_integer=11,
             field_float=11.0
         )
-        rv = client.put('api/v1/model1api/{}'.format(pk), json=item)
+        uri = 'api/v1/model1api/{}'.format(pk)
+        rv = self.auth_client_put(
+            client,
+            token,
+            uri,
+            item
+        )
         eq_(rv.status_code, 400)
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_string'][0], 'Longer than maximum length 50.')
@@ -671,13 +895,20 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test update validate type
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
         pk = 1
         item = dict(
             field_string="test11",
             field_integer="test11",
             field_float=11.0
         )
-        rv = client.put('api/v1/model1api/{}'.format(pk), json=item)
+        uri = 'api/v1/model1api/{}'.format(pk)
+        rv = self.auth_client_put(
+            client,
+            token,
+            uri,
+            item
+        )
         eq_(rv.status_code, 400)
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_integer'][0], 'Not a valid integer.')
@@ -687,7 +918,12 @@ class FlaskTestCase(unittest.TestCase):
             field_integer=11,
             field_float=11.0
         )
-        rv = client.post('api/v1/model1api/', json=item)
+        rv = self.auth_client_put(
+            client,
+            token,
+            uri,
+            item
+        )
         eq_(rv.status_code, 400)
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_string'][0], 'Not a valid string.')
@@ -697,14 +933,18 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test update item with excluded cols
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
         pk = 1
         item = dict(
             field_string="test_Put",
             field_integer=1000
         )
-        rv = client.put(
-            'api/v1/model1apiexcludecols/{}'.format(pk),
-            json=item
+        uri = 'api/v1/model1apiexcludecols/{}'.format(pk)
+        rv = self.auth_client_put(
+            client,
+            token,
+            uri,
+            item
         )
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model1).get(pk)
@@ -717,13 +957,20 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test create item
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
         item = dict(
             field_string="test11",
             field_integer=11,
             field_float=11.0,
             field_date=None
         )
-        rv = client.post('api/v1/model1api/', json=item)
+        uri = 'api/v1/model1api/'
+        rv = self.auth_client_post(
+            client,
+            token,
+            uri,
+            item
+        )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(rv.status_code, 201)
         eq_(data['result'], item)
@@ -737,13 +984,20 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test create validate size
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
         field_string = 'a' * 51
         item = dict(
             field_string=field_string,
             field_integer=11,
             field_float=11.0
         )
-        rv = client.post('api/v1/model1api/', json=item)
+        uri = 'api/v1/model1api/'
+        rv = self.auth_client_post(
+            client,
+            token,
+            uri,
+            item
+        )
         eq_(rv.status_code, 400)
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_string'][0], 'Longer than maximum length 50.')
@@ -753,12 +1007,19 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test create validate type
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
         item = dict(
             field_string="test11",
             field_integer="test11",
             field_float=11.0
         )
-        rv = client.post('api/v1/model1api/', json=item)
+        uri = 'api/v1/model1api/'
+        rv = self.auth_client_post(
+            client,
+            token,
+            uri,
+            item
+        )
         eq_(rv.status_code, 400)
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_integer'][0], 'Not a valid integer.')
@@ -768,7 +1029,12 @@ class FlaskTestCase(unittest.TestCase):
             field_integer=11,
             field_float=11.0
         )
-        rv = client.post('api/v1/model1api/', json=item)
+        rv = self.auth_client_post(
+            client,
+            token,
+            uri,
+            item
+        )
         eq_(rv.status_code, 400)
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_string'][0], 'Not a valid string.')
@@ -778,16 +1044,28 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test create with excluded columns
         """
         client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
         item = dict(
             field_string="test{}".format(MODEL1_DATA_SIZE+1)
         )
-        rv = client.post('api/v1/model1apiexcludecols/', json=item)
+        uri = 'api/v1/model1apiexcludecols/'
+        rv = self.auth_client_post(
+            client,
+            token,
+            uri,
+            item
+        )
         eq_(rv.status_code, 201)
         item = dict(
             field_string="test{}".format(MODEL1_DATA_SIZE+2),
             field_integer=MODEL1_DATA_SIZE+2
         )
-        rv = client.post('api/v1/model1apiexcludecols/', json=item)
+        rv = self.auth_client_post(
+            client,
+            token,
+            uri,
+            item
+        )
         eq_(rv.status_code, 201)
         model = (self.db.session.query(Model1)
                  .filter_by(field_string="test11")
@@ -801,7 +1079,13 @@ class FlaskTestCase(unittest.TestCase):
             REST Api: Test get list of objects with columns as functions
         """
         client = self.app.test_client()
-        rv = client.get('api/v1/model1funcapi/')
+        token = self.login(client, USERNAME, PASSWORD)
+        uri = 'api/v1/model1funcapi/'
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
         data = json.loads(rv.data.decode('utf-8'))
         # Tests count property
         eq_(data['count'], MODEL1_DATA_SIZE)

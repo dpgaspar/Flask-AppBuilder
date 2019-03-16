@@ -2,6 +2,7 @@ import logging
 
 from flask import Blueprint, url_for, current_app
 from flask_marshmallow import Marshmallow
+from flask_jwt_extended import JWTManager
 from .views import IndexView, UtilView
 from .filters import TemplateFilters
 from .menu import Menu
@@ -135,6 +136,7 @@ class AppBuilder(object):
         self.app = app
 
         self.marshmallow = Marshmallow()
+        self.jwt_manager = JWTManager()
         if app is not None:
             self.init_app(app, session)
 
@@ -166,6 +168,7 @@ class AppBuilder(object):
         self._add_addon_views()
         self._add_menu_permissions()
         self.marshmallow.init_app(self.app)
+        self.jwt_manager.init_app(self.app)
         if not self.app:
             for baseview in self.baseviews:
                 # instantiate the views and add session

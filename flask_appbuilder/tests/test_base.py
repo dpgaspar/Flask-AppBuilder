@@ -205,7 +205,14 @@ class FlaskTestCase(unittest.TestCase):
 
         self.appbuilder.add_view(PSView, "Generic DS PS View", category='PSView')
         role_admin = self.appbuilder.sm.find_role('Admin')
-        self.appbuilder.sm.add_user('admin','admin','user','admin@fab.org',role_admin,'general')
+        self.appbuilder.sm.add_user(
+            'admin',
+            'admin',
+            'user',
+            'admin@fab.org',
+            role_admin,
+            'general'
+        )
 
     def tearDown(self):
         self.appbuilder = None

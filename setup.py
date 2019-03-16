@@ -43,6 +43,7 @@ setup(
         'Flask-OpenID>=1.2.5,<2',
         'Flask-SQLAlchemy>=2.3,<3',
         'Flask-WTF>=0.14.2,<1',
+        'Flask-JWT-Extended>=3.18,<4',
         'python-dateutil>=2.3,<3',
         'flask-marshmallow==0.9.0',
         'marshmallow==2.18.0',

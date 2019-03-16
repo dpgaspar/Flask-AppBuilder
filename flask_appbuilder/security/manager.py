@@ -9,6 +9,7 @@ from flask_login import LoginManager, current_user
 from flask_openid import OpenID
 from flask_babel import lazy_gettext as _
 from .views import (
+    SecurityApi,
     AuthDBView,
     AuthOIDView,
     ResetMyPasswordView,
@@ -517,6 +518,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         return jwt_decoded_payload
 
     def register_views(self):
+
+        self.appbuilder.add_view_no_menu(SecurityApi)
+
         if self.auth_user_registration:
             if self.auth_type == AUTH_DB:
                 self.registeruser_view = self.registeruserdbview()

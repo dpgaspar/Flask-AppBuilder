@@ -9,5 +9,6 @@ Flask-OpenID>=1.2.5,<2
 Flask-SQLAlchemy>=2.3,<3
 Flask-WTF>=0.14.2,<1
 flask-marshmallow==0.9.0
+Flask-JWT-Extended>=3.18,<4
 marshmallow==2.18.0
 marshmallow-sqlalchemy==0.15.0

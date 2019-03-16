@@ -1,9 +1,9 @@
 import re
 import logging
 import functools
-from flask import Blueprint, abort, make_response, jsonify, request
+from flask import Blueprint, make_response, jsonify, request
 from flask_babel import lazy_gettext as _
-from .security.decorators import permission_name
+from .security.decorators import permission_name, jwt_has_access
 from marshmallow import ValidationError
 from ._compat import as_unicode
 
@@ -113,10 +113,13 @@ def filter_args(f):
                 re_match = re.findall('(.*):(.*):(.*)', value)
                 for _item_re_match in re_match:
                     if _item_re_match and len(_item_re_match) == 3:
-                        filters.append({"col_name": _item_re_match[0],
-                                        "operator": _item_re_match[1],
-                                        "value": _item_re_match[2],
-                                        })
+                        filters.append(
+                            {
+                                "col_name": _item_re_match[0],
+                                "operator": _item_re_match[1],
+                                "value": _item_re_match[2],
+                            }
+                        )
                     else:
                         log.warning("Bar filter args {} ".format(_item_re_match))
         kwargs['filters'] = filters
@@ -249,6 +252,27 @@ class BaseApi:
             Sets initialized inner views
         """
         pass
+
+    @staticmethod
+    def response(code, **kwargs):
+        _ret_json = jsonify(kwargs)
+        resp = make_response(_ret_json, code)
+        resp.headers['Content-Type'] = "application/json; charset=utf-8"
+        return resp
+
+    def response_400(self, message=None):
+        message = message or "Arguments are not correct"
+        return self.response(400, **{"message": message})
+
+    def response_401(self):
+        return self.response(401, **{"message": "Not authorized"})
+
+    def response_404(self):
+        return self.response(404, **{"message": "Not found"})
+
+    def response_500(self, message=None):
+        message = message or "Internal error"
+        return self.response(500, **{"message": message})
 
 
 class BaseModelApi(BaseApi):
@@ -630,6 +654,7 @@ class ModelApi(BaseModelApi):
         ]
 
     @expose('/info', methods=['GET'])
+    @jwt_has_access
     @permission_name('get')
     def info(self):
         # Get info from add fields
@@ -653,7 +678,7 @@ class ModelApi(BaseModelApi):
                 {'name': as_unicode(flt.name),
                  'operator': flt.arg_name} for flt in dict_filters[col]
             ]
-        return self._api_json_response(
+        return self.response(
             200,
             filters=search_filters,
             add_fields=_add_fields,
@@ -662,6 +687,7 @@ class ModelApi(BaseModelApi):
 
     @expose('/', methods=['GET'])
     @expose('/<pk>/', methods=['GET'])
+    @jwt_has_access
     @permission_name('get')
     def get(self, pk=None):
         if not pk:
@@ -669,65 +695,68 @@ class ModelApi(BaseModelApi):
         return self._get_item(pk)
 
     @expose('/', methods=['POST'])
+    @jwt_has_access
     @permission_name('post')
     def post(self):
         try:
             item = self.add_model_schema.load(request.json)
         except ValidationError as err:
-            return self._api_json_response(400, **{'message': err.messages})
+            return self.response(400, **{'message': err.messages})
         else:
             self.pre_add(item.data)
             if self.datamodel.add(item.data):
                 self.post_add(item.data)
-                return self._api_json_response(
+                return self.response(
                     201,
                     **{'result': self.add_model_schema.dump(item.data, many=False).data}
                 )
             else:
-                return self._api_json_500()
+                return self.response_500()
 
     @expose('/<pk>', methods=['PUT'])
+    @jwt_has_access
     @permission_name('put')
     def put(self, pk):
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
-            return self._api_json_404()
+            return self.response_404()
         else:
             try:
                 item = self.edit_model_schema.load(request.json, instance=item)
             except ValidationError as err:
-                return self._api_json_response(400, **{'message': err.messages})
+                return self.response(400, **{'message': err.messages})
             else:
                 self.pre_update(item.data)
                 if self.datamodel.edit(item.data):
                     self.post_add(item)
                     self.post_update(item)
-                    return self._api_json_response(
+                    return self.response(
                         200,
                         **{'result': self.edit_model_schema.dump(item.data, many=False).data}
                     )
                 else:
-                    return self._api_json_500()
+                    return self.response_500()
 
     @expose('/<pk>', methods=['DELETE'])
+    @jwt_has_access
     @permission_name('delete')
     def delete(self, pk):
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
-            return self._api_json_404()
+            return self.response_404()
         else:
             self.pre_delete(item)
             if self.datamodel.delete(item):
                 self.post_delete(item)
-                return self._api_json_response(200, **{'message': 'OK'})
+                return self.response(200, **{'message': 'OK'})
             else:
-                return self._api_json_500()
+                return self.response_500()
 
     @select_col_args
     def _get_item(self, pk, select_cols=None):
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
-            return self._api_json_404()
+            return self.response_404()
         select_cols = select_cols or []
         _pruned_select_cols = [col for col in select_cols if col in self.show_columns]
         if _pruned_select_cols:
@@ -736,7 +765,7 @@ class ModelApi(BaseModelApi):
         else:
             _show_columns = self.show_columns
             _show_model_schema = self.show_model_schema
-        return self._api_json_response(
+        return self.response(
             200, pk=pk,
             label_columns=self._label_columns_json(_show_columns),
             include_columns=_show_columns,
@@ -779,7 +808,7 @@ class ModelApi(BaseModelApi):
             order_col
             for order_col in self.order_columns if order_col in _list_columns
         ]
-        return self._api_json_response(
+        return self.response(
             200,
             label_columns=self._label_columns_json(_list_columns),
             list_columns=_list_columns,
@@ -795,24 +824,6 @@ class ModelApi(BaseModelApi):
                 HELPER FUNCTIONS
     ------------------------------------------------
     """
-    @staticmethod
-    def _api_json_response(code, **kwargs):
-        _ret_json = jsonify(kwargs)
-        response = make_response(_ret_json, code)
-        response.headers['Content-Type'] = "application/json; charset=utf-8"
-        return response
-
-    def _api_json_400(self, message=None):
-        message = message or "Arguments are not correct"
-        return self._api_json_response(400, **{"message": message})
-
-    def _api_json_404(self):
-        return self._api_json_response(404, **{"message": "Not found"})
-
-    def _api_json_500(self, message=None):
-        message = message or "Internal error"
-        return self._api_json_response(500, **{"message": message})
-
     def _description_columns_json(self, cols=None):
         """
             Prepares dict with col descriptions to be JSON serializable

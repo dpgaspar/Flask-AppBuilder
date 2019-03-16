@@ -7,7 +7,9 @@ from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
+from flask_jwt_extended import create_access_token
 from ..views import ModelView, SimpleFormView, expose
+from ..api import BaseApi
 from ..baseviews import BaseView
 from ..charts.views import DirectByChartView
 from ..fieldwidgets import BS3PasswordFieldWidget
@@ -18,6 +20,57 @@ from .decorators import has_access
 
 
 log = logging.getLogger(__name__)
+
+
+class SecurityApi(BaseApi):
+
+    route_base = '/api/v1/security'
+
+    @expose('/login', methods=['POST'])
+    def login(self):
+        """
+            Login endpoint for the API returns a JWT
+        :return:
+        """
+        # LOGIN_DB
+        # LDAP
+        # REMOTE USER ( is this possible secure? )
+        # OAUTH ( is this done on the backend? )
+        # AUTH0 ( trusted JWT we need a key to trust )
+
+        # Study asymmetric crypto option, good for AUTH0
+        # Study refresh tokens
+        #    https://flask-jwt-extended.readthedocs.io/en/latest/refresh_tokens.html#refresh-tokens
+        # https://tools.ietf.org/html/rfc7519
+        # https://auth0.com/blog/json-web-token-signing-algorithms-overview/
+
+        print("LOGIN PAYLOAD {}".format(request.json))
+        username = request.json.get('username', None)
+        password = request.json.get('password', None)
+        provider = request.json.get('provider', None)
+        if not username or not password or not provider:
+            return self.response_400(message="Missing required parameter")
+        # AUTH
+        if provider == 'db':
+            user = self.appbuilder.sm.auth_user_db(
+                username,
+                password
+            )
+        elif provider == 'ldap':
+            user = self.appbuilder.sm.auth_user_ldap(
+                username,
+                password
+            )
+        else:
+            return self.response_400(
+                message="Provider {} not supported".format(provider)
+            )
+        if not user:
+            return self.response_401()
+
+        # Identity can be any data that is json serializable
+        access_token = create_access_token(identity=user.id)
+        return self.response(200, access_token=access_token)
 
 
 class PermissionModelView(ModelView):
