@@ -159,10 +159,10 @@ class Filters(object):
         :return:
         """
         for _filter in data:
-            filter_class = map_args_filter.get(_filter['operator'], None)
+            filter_class = map_args_filter.get(_filter['opr'], None)
             print("OPR {}".format(filter_class))
             if filter_class:
-                self.add_filter(_filter['col_name'], filter_class,
+                self.add_filter(_filter['col'], filter_class,
                                 _filter['value'])
 
     def add_filter(self, column_name, filter_class, value):

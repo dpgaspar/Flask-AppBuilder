@@ -283,10 +283,11 @@ class FlaskTestCase(unittest.TestCase):
         token = self.login(client, USERNAME, PASSWORD)
 
         for i in range(1, MODEL1_DATA_SIZE):
+            uri = 'api/v1/model1api/{}?q=(columns:!(field_integer))'.format(i)
             rv = self.auth_client_get(
                 client,
                 token,
-                'api/v1/model1api/{}?_c_=field_integer'.format(i)
+                uri
             )
             data = json.loads(rv.data.decode('utf-8'))
             eq_(data['result'], {'field_integer': i - 1})
@@ -386,6 +387,8 @@ class FlaskTestCase(unittest.TestCase):
             token,
             'api/v1/model1api/'
         )
+        log.info("DATA !!!!!!!!! {}".format(rv.data))
+
         data = json.loads(rv.data.decode('utf-8'))
         # Tests count property
         eq_(data['count'], MODEL1_DATA_SIZE)
@@ -412,10 +415,11 @@ class FlaskTestCase(unittest.TestCase):
         token = self.login(client, USERNAME, PASSWORD)
 
         # test string order asc
+        uri = 'api/v1/model1api/?q=(order_column:field_string,order_direction:asc)'
         rv = self.auth_client_get(
             client,
             token,
-            'api/v1/model1api/?_o_=field_string:asc'
+            uri
         )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'][0], {
@@ -426,10 +430,11 @@ class FlaskTestCase(unittest.TestCase):
         })
         eq_(rv.status_code, 200)
         # test string order desc
+        uri = 'api/v1/model1api/?q=(order_column:field_string,order_direction:desc)'
         rv = self.auth_client_get(
             client,
             token,
-            'api/v1/model1api/?_o_=field_string:desc'
+            uri
         )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'][0], {
@@ -462,10 +467,11 @@ class FlaskTestCase(unittest.TestCase):
             'field_string': "test{}".format(MODEL1_DATA_SIZE - 1)
         })
         # Test override
+        uri = 'api/v1/model1apiorder/?q_=(order_column:field_integer,order_direction:asc)'
         rv = self.auth_client_get(
             client,
             token,
-            'api/v1/model1apiorder/?_o_=field_integer:asc'
+            'api/v1/model1apiorder/?q=(order_column:field_integer,order_direction:asc)'
         )
 
         data = json.loads(rv.data.decode('utf-8'))
@@ -486,7 +492,7 @@ class FlaskTestCase(unittest.TestCase):
         token = self.login(client, USERNAME, PASSWORD)
 
         # test page zero
-        uri = 'api/v1/model1api/?_p_={}:0&_o_=field_integer:asc'.format(page_size)
+        uri = 'api/v1/model1api/?q=(page_size:{},page:0,order_column:field_integer,order_direction:asc)'.format(page_size)
         rv = self.auth_client_get(
             client,
             token,
@@ -502,12 +508,14 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
         eq_(len(data['result']), page_size)
         # test page zero
-        uri = 'api/v1/model1api/?_p_={}:1&_o_=field_integer:asc'.format(page_size)
+        uri = 'api/v1/model1api/?q=(page_size:{},page:1,order_column:field_integer,order_direction:asc)'.format(page_size)
         rv = self.auth_client_get(
             client,
             token,
             uri
         )
+        log.info("DATA !!!!! {}".format(rv.data))
+
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'][0], {
             'field_date': None,
@@ -527,7 +535,8 @@ class FlaskTestCase(unittest.TestCase):
 
         filter_value = 5
         # test string order asc
-        uri = 'api/v1/model1api/?_f_0=field_integer:gt:{}&_o_=field_integer:asc'.format(filter_value)
+        uri = 'api/v1/model1api/?q=(filters:!((col:field_integer,opr:gt,value:{})),order_columns:field_integer,order_direction:asc)'.format(filter_value)
+
         rv = self.auth_client_get(
             client,
             token,
@@ -549,7 +558,7 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
 
-        uri = 'api/v1/model1api/?_c_=field_integer&_o_=field_integer:asc'
+        uri = 'api/v1/model1api/?q=(columns:!(field_integer),order_column:field_integer,order_direction:asc)'
         rv = self.auth_client_get(
             client,
             token,
@@ -596,7 +605,7 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
 
-        uri = 'api/v1/model1apifiltered/?_o_=field_integer:asc'
+        uri = 'api/v1/model1apifiltered/?order_columns:field_integer,order_direction:asc'
         rv = self.auth_client_get(
             client,
             token,

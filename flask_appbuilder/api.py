@@ -1,6 +1,7 @@
 import re
 import logging
 import functools
+import prison
 from flask import Blueprint, make_response, jsonify, request
 from flask_babel import lazy_gettext as _
 from .security.decorators import permission_name, jwt_has_access
@@ -13,6 +14,22 @@ URI_ORDER_BY_PREFIX = "_o_"
 URI_PAGE_PREFIX = "_p_"
 URI_FILTER_PREFIX = "_f_"
 URI_SELECT_COL_PREFIX = "_c_"
+URI_RISON_KEY = 'q'
+
+
+def rison(f):
+    def wraps(self, *args, **kwargs):
+
+        value = request.args.get(URI_RISON_KEY, None)
+        kwargs['rison'] = dict()
+        if value:
+            try:
+                kwargs['rison'] = \
+                    prison.loads(value)
+            except prison.decoder.ParserException:
+                return self.response_400(message="Not valid rison argument")
+        return f(self, *args, **kwargs)
+    return functools.update_wrapper(wraps, f)
 
 
 def order_args(f):
@@ -145,6 +162,29 @@ def expose(url='/', methods=('GET',)):
     return wrap
 
 
+def merge_response_func(func, key):
+    """
+        Use this decorator to set a new merging
+        response function to HTTP endpoints
+
+        candidate function must have the following signature
+        and be childs of BaseApi:
+        ```
+            def merge_some_function(self, response, rison_args):
+        ```
+
+    :param func: Name of the merge function where the key is allower
+    :param key: The key name for rison selection
+    :return: None
+    """
+    def wrap(f):
+        if not hasattr(f, '_response_key_func_mappings'):
+            f._response_key_func_mappings = dict()
+        f._response_key_func_mappings[key] = func
+        return f
+    return wrap
+
+
 class BaseApi:
     """
         All apis inherit from this class.
@@ -172,6 +212,7 @@ class BaseApi:
 
             Initialization of extra args
         """
+        self._response_key_func_mappings = dict()
         if self.base_permissions is None:
             self.base_permissions = set()
             for attr_name in dir(self):
@@ -252,6 +293,24 @@ class BaseApi:
             Sets initialized inner views
         """
         pass
+
+    def set_response_key_mappings(self, response, func, rison_args, **kwargs):
+        if not hasattr(func, '_response_key_func_mappings'):
+            return
+        _keys = rison_args.get('keys', None)
+        if not _keys:
+            for k, v in func._response_key_func_mappings.items():
+                v(self, response, **kwargs)
+        else:
+            for k, v in func._response_key_func_mappings.items():
+                if k in _keys:
+                    v(self, response, **kwargs)
+
+    def merge_current_user_permissions(self, response, **kwargs):
+        response['permissions'] =\
+            self.appbuilder.sm.get_user_permissions_on_view(
+                self.__class__.__name__
+            )
 
     @staticmethod
     def response(code, **kwargs):
@@ -597,6 +656,33 @@ class ModelApi(BaseModelApi):
         self.edit_query_rel_fields = self.edit_query_rel_fields or dict()
         self.add_query_rel_fields = self.add_query_rel_fields or dict()
 
+    def merge_add_field_info(self, response, **kwargs):
+        response['add_fields'] = \
+            self._get_fields_info(
+                self.add_columns,
+                self.add_model_schema,
+                self.add_query_rel_fields
+            )
+
+    def merge_edit_field_info(self, response, **kwargs):
+        response['edit_fields'] = \
+            self._get_fields_info(
+                self.edit_columns,
+                self.edit_model_schema,
+                self.edit_query_rel_fields
+            )
+
+    def merge_search_filters(self, response, **kwargs):
+        # Get possible search fields and all possible operations
+        search_filters = dict()
+        dict_filters = self._filters.get_search_filters()
+        for col in self.search_columns:
+            search_filters[col] = [
+                {'name': as_unicode(flt.name),
+                 'operator': flt.arg_name} for flt in dict_filters[col]
+            ]
+        response['filters'] = search_filters
+
     def _get_field_info(self, field, filter_rel_field):
         """
             Return a dict with field details
@@ -653,38 +739,35 @@ class ModelApi(BaseModelApi):
             for col in cols
         ]
 
-    def _get_current_user_permissions(self):
-        return self.appbuilder.sm.get_user_permissions_on_view(self.__class__.__name__)
-
     @expose('/_info', methods=['GET'])
     @jwt_has_access
     @permission_name('get')
-    def info(self):
+    @rison
+    @merge_response_func(
+        BaseApi.merge_current_user_permissions,
+        'permissions'
+    )
+    @merge_response_func(
+        merge_add_field_info,
+        'add_fields'
+    )
+    @merge_response_func(
+        merge_edit_field_info,
+        'edit_fields'
+    )
+    @merge_response_func(
+        merge_search_filters,
+        "filters"
+    )
+    def info(self, **kwargs):
         _response = dict()
-        _response['permissions'] = \
-            self._get_current_user_permissions()
-        # Get info from add fields
-        _response['add_fields'] = self._get_fields_info(
-            self.add_columns,
-            self.add_model_schema,
-            self.add_query_rel_fields
+        _args = kwargs.get('rison', {})
+        self.set_response_key_mappings(
+            _response,
+            self.info,
+            _args,
+            **{}
         )
-        # Get info from edit fields
-        _response['_edit_fields'] = self._get_fields_info(
-            self.edit_columns,
-            self.edit_model_schema,
-            self.edit_query_rel_fields
-        )
-
-        # Get possible search fields and all possible operations
-        search_filters = dict()
-        dict_filters = self._filters.get_search_filters()
-        for col in self.search_columns:
-            search_filters[col] = [
-                {'name': as_unicode(flt.name),
-                 'operator': flt.arg_name} for flt in dict_filters[col]
-            ]
-        _response['filters'] = search_filters
         return self.response(
             200,
             **_response
@@ -757,73 +840,120 @@ class ModelApi(BaseModelApi):
             else:
                 return self.response_500()
 
-    @select_col_args
-    def _get_item(self, pk, select_cols=None):
+    def merge_label_columns(self, response, **kwargs):
+        _pruned_select_cols = kwargs.get('columns', [])
+        if _pruned_select_cols:
+            _show_columns = _pruned_select_cols
+        else:
+            _show_columns = self.show_columns
+        response['label_columns'] = self._label_columns_json(_show_columns)
+
+    def merge_include_columns(self, response, **kwargs):
+        _pruned_select_cols = kwargs.get('columns', [])
+        if _pruned_select_cols:
+            response['include_columns'] = _pruned_select_cols
+        else:
+            response['include_columns'] = self.show_columns
+
+    def merge_description_columns(self, response, **kwargs):
+        _pruned_select_cols = kwargs.get('columns', [])
+        if _pruned_select_cols:
+            response['description_columns'] = \
+                self._description_columns_json(_pruned_select_cols)
+        else:
+            response['description_columns'] = \
+                self._description_columns_json(self.show_columns)
+
+    def merge_list_columns(self, response, **kwargs):
+        _pruned_select_cols = kwargs.get('columns', [])
+        if _pruned_select_cols:
+            response['list_columns'] = _pruned_select_cols
+        else:
+            response['list_columns'] = self.list_columns
+
+    def merge_order_columns(self, response, **kwargs):
+        _pruned_select_cols = kwargs.get('columns', [])
+        response['order_columns'] = [
+            order_col
+            for order_col in self.order_columns if order_col in _pruned_select_cols
+        ]
+
+    @rison
+    @merge_response_func(merge_label_columns, "label_columns")
+    @merge_response_func(merge_include_columns, "include_columns")
+    @merge_response_func(merge_description_columns, "description_columns")
+    def _get_item(self, pk, **kwargs):
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
             return self.response_404()
-        select_cols = select_cols or []
-        _pruned_select_cols = [col for col in select_cols if col in self.show_columns]
+
+        _response = dict()
+        _args = kwargs.get('rison', {})
+        select_cols = _args.get('columns', [])
+        _pruned_select_cols = [
+            col for col in select_cols if col in self.show_columns
+        ]
+        self.set_response_key_mappings(
+            _response,
+            self._get_item,
+            _args,
+            **{"columns": _pruned_select_cols}
+        )
         if _pruned_select_cols:
-            _show_columns = _pruned_select_cols
             _show_model_schema = self._model_schema_factory(_pruned_select_cols)
         else:
-            _show_columns = self.show_columns
             _show_model_schema = self.show_model_schema
-        return self.response(
-            200, pk=pk,
-            label_columns=self._label_columns_json(_show_columns),
-            include_columns=_show_columns,
-            description_columns=self._description_columns_json(_show_columns),
-            modelview_name=self.__class__.__name__,
-            result=_show_model_schema.dump(item, many=False).data
+
+        _response['pk'] = pk
+        _response['result'] = _show_model_schema.dump(item, many=False).data
+        return self.response(200, **_response)
+
+    @rison
+    @merge_response_func(merge_order_columns, "order_columns")
+    @merge_response_func(merge_label_columns, "label_columns")
+    @merge_response_func(merge_description_columns, "description_columns")
+    @merge_response_func(merge_list_columns, 'list_columns')
+    def _get_list(self, **kwargs):
+        _response = dict()
+        _args = kwargs.get('rison', {})
+        # handle select columns
+
+        select_cols = _args.get('columns', [])
+        _pruned_select_cols = [col for col in select_cols if col in self.list_columns]
+        self.set_response_key_mappings(
+            _response,
+            self._get_list,
+            _args,
+            **{"columns": _pruned_select_cols}
         )
 
-    @order_args
-    @page_args
-    @filter_args
-    @select_col_args
-    def _get_list(self, filters=None, order_column=None, order_direction=None,
-                  page_size=0, page_index=0, select_cols=None):
-
-        # handle select columns
-        select_cols = select_cols or []
-        _pruned_select_cols = [col for col in select_cols if col in self.list_columns]
         if _pruned_select_cols:
-            _list_columns = _pruned_select_cols
             _list_model_schema = self._model_schema_factory(_pruned_select_cols)
         else:
-            _list_columns = self.list_columns
             _list_model_schema = self.list_model_schema
         # handle filters
         self._filters.clear_filters()
-        self._filters.rest_add_filters(filters)
+        self._filters.rest_add_filters(_args.get('filters', []))
         joined_filters = self._filters.get_joined_filters(self._base_filters)
         # handle base order
+        order_column = _args.get('order_column', '')
+        order_direction = _args.get('order_direction', '')
         if not order_column and self.base_order:
             order_column, order_direction = self.base_order
         # Make the query
+        page_index = _args.get('page', 0)
+        page_size = _args.get('page_size', self.page_size)
         count, lst = self.datamodel.query(joined_filters,
                                           order_column,
                                           order_direction,
                                           page=page_index,
                                           page_size=page_size)
         pks = self.datamodel.get_keys(lst)
-        order_columns = [
-            order_col
-            for order_col in self.order_columns if order_col in _list_columns
-        ]
-        return self.response(
-            200,
-            label_columns=self._label_columns_json(_list_columns),
-            list_columns=_list_columns,
-            description_columns=self._description_columns_json(_list_columns),
-            order_columns=order_columns,
-            modelview_name=self.__class__.__name__,
-            count=count,
-            ids=pks,
-            result=_list_model_schema.dump(lst, many=True).data
-        )
+        _response['result'] = _list_model_schema.dump(lst, many=True).data
+        _response['ids'] = pks
+        _response['count'] = count
+        return self.response(200, **_response)
+
     """
     ------------------------------------------------
                 HELPER FUNCTIONS
