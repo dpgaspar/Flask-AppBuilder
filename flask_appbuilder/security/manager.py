@@ -606,14 +606,14 @@ class BaseSecurityManager(AbstractSecurityManager):
         if user is None:
             user = self.find_user(email=username)
         if user is None or (not user.is_active):
-            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
+            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username.encode('utf-8')))
             return None
         elif check_password_hash(user.password, password):
             self.update_user_auth_stat(user, True)
             return user
         else:
             self.update_user_auth_stat(user, False)
-            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
+            log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username.encode('utf-8')))
             return None
 
     def _search_ldap(self, ldap, con, username):
