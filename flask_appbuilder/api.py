@@ -613,7 +613,7 @@ class ModelApi(BaseModelApi):
         # Handles related fields
         if isinstance(field, Related) or isinstance(field, RelatedList):
             _rel_interface = self.datamodel.get_related_interface(field.name)
-            _filters = _rel_interface .get_filters(_rel_interface .get_search_columns_list())
+            _filters = _rel_interface.get_filters(_rel_interface.get_search_columns_list())
             if filter_rel_field:
                 filters = _filters.add_filter_list(filter_rel_field)
                 _values = _rel_interface.query(filters)[1]
@@ -653,18 +653,24 @@ class ModelApi(BaseModelApi):
             for col in cols
         ]
 
-    @expose('/info', methods=['GET'])
+    def _get_current_user_permissions(self):
+        return self.appbuilder.sm.get_user_permissions_on_view(self.__class__.__name__)
+
+    @expose('/_info', methods=['GET'])
     @jwt_has_access
     @permission_name('get')
     def info(self):
+        _response = dict()
+        _response['permissions'] = \
+            self._get_current_user_permissions()
         # Get info from add fields
-        _add_fields = self._get_fields_info(
+        _response['add_fields'] = self._get_fields_info(
             self.add_columns,
             self.add_model_schema,
             self.add_query_rel_fields
         )
         # Get info from edit fields
-        _edit_fields = self._get_fields_info(
+        _response['_edit_fields'] = self._get_fields_info(
             self.edit_columns,
             self.edit_model_schema,
             self.edit_query_rel_fields
@@ -678,15 +684,14 @@ class ModelApi(BaseModelApi):
                 {'name': as_unicode(flt.name),
                  'operator': flt.arg_name} for flt in dict_filters[col]
             ]
+        _response['filters'] = search_filters
         return self.response(
             200,
-            filters=search_filters,
-            add_fields=_add_fields,
-            edit_fields=_edit_fields
+            **_response
         )
 
     @expose('/', methods=['GET'])
-    @expose('/<pk>/', methods=['GET'])
+    @expose('/<pk>', methods=['GET'])
     @jwt_has_access
     @permission_name('get')
     def get(self, pk=None):

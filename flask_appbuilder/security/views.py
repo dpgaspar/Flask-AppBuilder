@@ -44,7 +44,8 @@ class SecurityApi(BaseApi):
         # https://tools.ietf.org/html/rfc7519
         # https://auth0.com/blog/json-web-token-signing-algorithms-overview/
 
-        print("LOGIN PAYLOAD {}".format(request.json))
+        if not request.is_json:
+            return self.response_400(message="Request payload is not JSON")
         username = request.json.get('username', None)
         password = request.json.get('password', None)
         provider = request.json.get('provider', None)

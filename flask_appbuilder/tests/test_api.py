@@ -184,9 +184,15 @@ class FlaskTestCase(unittest.TestCase):
         )
 
     @staticmethod
-    def login(client, username, password):
-        # Login with default admin
-        rv = client.post(
+    def _login(client, username, password):
+        """
+            Login help method
+        :param client: Flask test client
+        :param username: username
+        :param password: password
+        :return: Flask client response class
+        """
+        return client.post(
             'api/v1/security/login',
             data=json.dumps(dict(
                 username=username,
@@ -195,8 +201,45 @@ class FlaskTestCase(unittest.TestCase):
             )),
             content_type='application/json'
         )
-        log.fatal("FATAL {}".format(rv.data))
-        return json.loads(rv.data.decode('utf-8')).get("access_token")
+
+    def login(self, client, username, password):
+        # Login with default admin
+        rv = self._login(client, username, password)
+        try:
+            return json.loads(rv.data.decode('utf-8')).get("access_token")
+        except:
+            return rv
+
+    def test_auth_login(self):
+        """
+            REST Api: Test auth login
+        """
+        client = self.app.test_client()
+        rv = self._login(client, USERNAME, PASSWORD)
+        eq_(rv.status_code, 200)
+        assert json.loads(
+            rv.data.decode('utf-8')
+        ).get("access_token", False)
+
+    def test_auth_login_failed(self):
+        """
+            REST Api: Test auth login failed
+        """
+        client = self.app.test_client()
+        rv = self._login(client, "fail", "fail")
+        eq_(json.loads(rv.data), {"message": "Not authorized"})
+        eq_(rv.status_code, 401)
+
+    def test_auth_login_bad(self):
+        """
+            REST Api: Test auth login bad request
+        """
+        client = self.app.test_client()
+        rv = client.post(
+            'api/v1/security/login',
+            data="BADADATA"
+        )
+        eq_(rv.status_code, 400)
 
     def test_get_item(self):
         """
@@ -208,7 +251,7 @@ class FlaskTestCase(unittest.TestCase):
             rv = self.auth_client_get(
                 client,
                 token,
-                'api/v1/model1api/{}/'.format(i)
+                'api/v1/model1api/{}'.format(i)
             )
             data = json.loads(rv.data.decode('utf-8'))
             eq_(rv.status_code, 200)
@@ -243,7 +286,7 @@ class FlaskTestCase(unittest.TestCase):
             rv = self.auth_client_get(
                 client,
                 token,
-                'api/v1/model1api/{}/?_c_=field_integer'.format(i)
+                'api/v1/model1api/{}?_c_=field_integer'.format(i)
             )
             data = json.loads(rv.data.decode('utf-8'))
             eq_(data['result'], {'field_integer': i - 1})
@@ -266,7 +309,7 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.auth_client_get(
             client,
             token,
-            'api/v1/model1apiexcludecols/{}/'.format(pk)
+            'api/v1/model1apiexcludecols/{}'.format(pk)
         )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'], {
@@ -285,7 +328,7 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.auth_client_get(
             client,
             token,
-            'api/v1/model1api/{}/'.format(pk)
+            'api/v1/model1api/{}'.format(pk)
         )
         eq_(rv.status_code, 404)
 
@@ -301,7 +344,7 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.auth_client_get(
             client,
             token,
-            'api/v1/model1apifiltered/{}/'.format(pk)
+            'api/v1/model1apifiltered/{}'.format(pk)
         )
         eq_(rv.status_code, 404)
         # This one is ok pk=4 field_integer=3 2>3<4
@@ -309,7 +352,7 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.auth_client_get(
             client,
             token,
-            'api/v1/model1apifiltered/{}/'.format(pk)
+            'api/v1/model1apifiltered/{}'.format(pk)
         )
         eq_(rv.status_code, 200)
 
@@ -325,7 +368,7 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.auth_client_get(
             client,
             token,
-            'api/v1/model2api/{}/'.format(pk)
+            'api/v1/model2api/{}'.format(pk)
         )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(rv.status_code, 200)
@@ -577,7 +620,7 @@ class FlaskTestCase(unittest.TestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
-        uri = 'api/v1/model1api/info'
+        uri = 'api/v1/model1api/_info'
         rv = self.auth_client_get(
             client,
             token,
@@ -623,7 +666,7 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
 
-        uri = 'api/v1/model1apifieldsinfo/info'
+        uri = 'api/v1/model1apifieldsinfo/_info'
         rv = self.auth_client_get(
             client,
             token,
@@ -675,7 +718,7 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
 
-        uri = 'api/v1/model2api/info'
+        uri = 'api/v1/model2api/_info'
         rv = self.auth_client_get(
             client,
             token,
@@ -708,7 +751,7 @@ class FlaskTestCase(unittest.TestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
-        uri = 'api/v1/model2apifilteredrelfields/info'
+        uri = 'api/v1/model2apifilteredrelfields/_info'
         rv = self.auth_client_get(
             client,
             token,

@@ -376,14 +376,21 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
 
         #Reset Password Admin
-        rv = client.get('/users/action/resetpasswords/1', follow_redirects=True)
+        rv = client.get(
+            '/users/action/resetpasswords/1',
+            follow_redirects=True
+        )
         data = rv.data.decode('utf-8')
         ok_("Reset Password Form" in data)
-        rv = client.post('/resetmypassword/form',
-                         data=dict(password=DEFAULT_ADMIN_PASSWORD, conf_password=DEFAULT_ADMIN_PASSWORD),
-                         follow_redirects=True)
+        rv = client.post(
+            '/resetmypassword/form',
+            data=dict(
+                password=DEFAULT_ADMIN_PASSWORD,
+                conf_password=DEFAULT_ADMIN_PASSWORD
+            ),
+            follow_redirects=True
+        )
         eq_(rv.status_code, 200)
-
 
     def test_generic_interface(self):
         """
@@ -393,7 +400,6 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         rv = client.get('/psview/list')
         data = rv.data.decode('utf-8')
-
 
     def test_model_crud(self):
         """

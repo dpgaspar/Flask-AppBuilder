@@ -8,8 +8,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, current_user
 from flask_openid import OpenID
 from flask_babel import lazy_gettext as _
-from .views import (
+from .api import (
     SecurityApi,
+    UserApi
+)
+from .views import (
     AuthDBView,
     AuthOIDView,
     ResetMyPasswordView,
@@ -182,6 +185,12 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ Override if you want your own reset password view """
     userinfoeditview = UserInfoEditView
     """ Override if you want your own User information edit view """
+
+    # API
+    security_api = SecurityApi
+    """ Override if you want your own Security API login endpoint """
+    user_api = UserApi
+    """ Override if you want your own user API """
 
     rolemodelview = RoleModelView
     permissionmodelview = PermissionModelView
@@ -519,7 +528,9 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def register_views(self):
 
-        self.appbuilder.add_view_no_menu(SecurityApi)
+        # Security APIs
+        self.appbuilder.add_view_no_menu(self.security_api)
+        self.appbuilder.add_view_no_menu(self.user_api)
 
         if self.auth_user_registration:
             if self.auth_type == AUTH_DB:
@@ -982,6 +993,23 @@ class BaseSecurityManager(AbstractSecurityManager):
             return self._has_view_access(g.user, permission_name, view_name)
         else:
             return self.is_item_public(permission_name, view_name)
+
+    @staticmethod
+    def get_user_permissions_on_view(view_name):
+        """
+            Returns all current user permissions
+             on a certain view/resource
+        :param view_name: The name of the view/resource/menu
+        :return: (list) with permissions
+        """
+        _ret = list()
+        if current_user.is_authenticated:
+            for role in current_user.roles:
+                if role.permissions:
+                    for permission in role.permissions:
+                        if permission.view_menu.name == view_name:
+                            _ret.append(permission.permission.name)
+        return _ret
 
     def add_permissions_view(self, base_permissions, view_menu):
         """
