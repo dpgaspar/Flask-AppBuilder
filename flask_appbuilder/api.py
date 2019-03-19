@@ -1,20 +1,44 @@
 import re
 import logging
 import functools
+import traceback
 import prison
-from flask import Blueprint, make_response, jsonify, request
+from flask import Blueprint, make_response, jsonify, request, current_app
+from werkzeug.exceptions import BadRequest
 from flask_babel import lazy_gettext as _
-from .security.decorators import permission_name, jwt_has_access
+from .security.decorators import permission_name, protect
 from marshmallow import ValidationError
 from ._compat import as_unicode
 
 log = logging.getLogger(__name__)
 
-URI_ORDER_BY_PREFIX = "_o_"
-URI_PAGE_PREFIX = "_p_"
-URI_FILTER_PREFIX = "_f_"
-URI_SELECT_COL_PREFIX = "_c_"
 URI_RISON_KEY = 'q'
+
+
+def get_error_msg():
+    """
+        (inspired on Superset code)
+    :return:
+    """
+    if current_app.config.get("FAB_API_SHOW_STACKTRACE"):
+        return traceback.format_exc()
+    return "Fatal error"
+
+
+def safe(f):
+    """
+    A decorator that catches uncaught exceptions and
+    return the response in JSON format (inspired on Superset code)
+    """
+    def wraps(self, *args, **kwargs):
+        try:
+            return f(self, *args, **kwargs)
+        except BadRequest as e:
+            return self.response_400(message=str(e))
+        except Exception as e:
+            logging.exception(e)
+            return self.response_500(message=get_error_msg())
+    return functools.update_wrapper(wraps, f)
 
 
 def rison(f):
@@ -28,118 +52,6 @@ def rison(f):
                     prison.loads(value)
             except prison.decoder.ParserException:
                 return self.response_400(message="Not valid rison argument")
-        return f(self, *args, **kwargs)
-    return functools.update_wrapper(wraps, f)
-
-
-def order_args(f):
-    """
-        Get order arguments decorator
-
-        Arguments are passed like: _o_=<COL_NAME>:'<asc|desc>'
-        
-        function is called with named args: order_column, order_direction
-    """
-    def wraps(self, *args, **kwargs):
-        orders = {}
-        for arg, value in request.args.items():
-            if arg == URI_ORDER_BY_PREFIX:
-                re_match = re.findall('(.*):(.*)', value)
-                for _item_re_match in re_match:
-                    if _item_re_match and _item_re_match[1] in ('asc', 'desc'):
-                        orders[_item_re_match[0]] = _item_re_match[1]
-        if orders:
-            for order_col, order_dir in orders.items():
-                order_column, order_direction = order_col, order_dir
-        else:
-            order_column, order_direction = '', ''
-        kwargs['order_column'] = order_column
-        kwargs['order_direction'] = order_direction
-        return f(self, *args,
-                 order_column=order_column,
-                 order_direction=order_direction)
-    return functools.update_wrapper(wraps, f)
-
-
-def page_args(f):
-    """
-        Get page arguments decorator
-
-        Arguments are passed like: _p_=<SIZE>:'<INDEX>'
-
-        function is called with named args: page_size, page_index
-    """
-    def wraps(self, *args, **kwargs):
-        for arg, value in request.args.items():
-            if arg == URI_PAGE_PREFIX:
-                re_match = re.findall('(.*):(.*)', value)
-                for _item_re_match in re_match:
-                    if _item_re_match and len(_item_re_match) == 2:
-                        try:
-                            kwargs['page_size'] = int(_item_re_match[0])
-                            kwargs['page_index'] = int(_item_re_match[1])
-                            return f(self, *args, **kwargs)
-                        except ValueError:
-                            log.warning("Bad page args {}, {}".format(
-                                _item_re_match[0],
-                                _item_re_match[1])
-                            )
-        kwargs['page_size'] = self.page_size
-        kwargs['page_index'] = 0
-        return f(self, *args, **kwargs)
-    return functools.update_wrapper(wraps, f)
-
-
-def select_col_args(f):
-    """
-        Get selectable columns on the fly
-
-        Arguments are passed like: _c_=<COL_NAME>,<COL_NAME>, ...
-
-        function is called with named args: page_size, page_index
-    """
-    def wraps(self, *args, **kwargs):
-        for arg, value in request.args.items():
-            if arg == URI_SELECT_COL_PREFIX:
-                re_match = re.findall('(\w+),*', value)
-                kwargs['select_cols'] = [i for i in re_match]
-        return f(self, *args, **kwargs)
-    return functools.update_wrapper(wraps, f)
-
-
-def filter_args(f):
-    """
-        Get filter arguments, return a list of dicts
-        { <VIEW_NAME>: (ORDER_COL, ORDER_DIRECTION) }
-
-        Arguments are passed like: _f_<INDEX>=<COL_NAME>:<OPERATOR>:<VALUE>
-
-        :return: list [
-                        {
-                            "col_name":"<COLNAME>",
-                            "operator":"<operator>",
-                            "value":"<value>",                            
-                        }
-                      ]
-    """
-    def wraps(self, *args, **kwargs):
-        filters = list()
-        for arg, value in request.args.items():
-            key_match = re.match(r"{}(\d)".format(URI_FILTER_PREFIX), arg)
-            if key_match:
-                re_match = re.findall('(.*):(.*):(.*)', value)
-                for _item_re_match in re_match:
-                    if _item_re_match and len(_item_re_match) == 3:
-                        filters.append(
-                            {
-                                "col_name": _item_re_match[0],
-                                "operator": _item_re_match[1],
-                                "value": _item_re_match[2],
-                            }
-                        )
-                    else:
-                        log.warning("Bar filter args {} ".format(_item_re_match))
-        kwargs['filters'] = filters
         return f(self, *args, **kwargs)
     return functools.update_wrapper(wraps, f)
 
@@ -201,7 +113,14 @@ class BaseApi:
 
     version = 'v1'
     route_base = None
-
+    """ 
+        Define the route base where all methods will sufix from 
+    """
+    resource_name = None
+    """ 
+        Defines a custom resource name, overrides the inferred from Class name 
+        makes no sense to use it with route base
+    """
     base_permissions = None
     extra_args = None
 
@@ -236,11 +155,12 @@ class BaseApi:
         self.appbuilder = appbuilder
         # If endpoint name is not provided, get it from the class name
         self.endpoint = endpoint or self.__class__.__name__
+        self.resource_name = self.resource_name or self.__class__.__name__
 
         if self.route_base is None:
             self.route_base = \
                 "/api/{}/{}".format(self.version,
-                                    self.__class__.__name__.lower())
+                                    self.resource_name.lower())
         self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.route_base)
 
@@ -348,7 +268,7 @@ class BaseModelApi(BaseApi):
         columns will be used. If you want to limit the search (*filter*) columns
          possibilities, define it with a list of column names from your model::
 
-            class MyView(ModelView):
+            class MyView(ModelRestApi):
                 datamodel = SQLAInterface(MyTable)
                 search_columns = ['name', 'address']
 
@@ -365,7 +285,7 @@ class BaseModelApi(BaseApi):
 
         example (will just override the label for name column)::
 
-            class MyView(ModelApi):
+            class MyView(ModelRestApi):
                 datamodel = SQLAInterface(MyTable)
                 label_columns = {'name':'My Name Label Override'}
 
@@ -379,7 +299,7 @@ class BaseModelApi(BaseApi):
             def get_user():
                 return g.user
 
-            class MyView(ModelApi):
+            class MyView(ModelRestApi):
                 datamodel = SQLAInterface(MyTable)
                 base_filters = [['created_by', FilterEqualFunction, get_user],
                                 ['name', FilterStartsWith, 'a']]
@@ -391,7 +311,7 @@ class BaseModelApi(BaseApi):
         Use this property to set default ordering for lists
          ('col_name','asc|desc')::
 
-            class MyView(ModelApi):
+            class MyView(ModelRestApi):
                 datamodel = SQLAInterface(MyTable)
                 base_order = ('my_column_name','asc')
 
@@ -458,7 +378,7 @@ class BaseModelApi(BaseApi):
         pass
 
 
-class ModelApi(BaseModelApi):
+class ModelRestApi(BaseModelApi):
     list_title = ""
     """ 
         List Title, if not configured the default is 
@@ -570,7 +490,7 @@ class ModelApi(BaseModelApi):
 
     def create_blueprint(self, appbuilder, *args, **kwargs):
         self._init_model_schemas()
-        return super(ModelApi, self).create_blueprint(appbuilder,
+        return super(ModelRestApi, self).create_blueprint(appbuilder,
                                                       *args, **kwargs)
 
     def _init_model_schemas(self):
@@ -605,7 +525,7 @@ class ModelApi(BaseModelApi):
         """
             Init Titles if not defined
         """
-        super(ModelApi, self)._init_titles()
+        super(ModelRestApi, self)._init_titles()
         class_name = self.datamodel.model_name
         if not self.list_title:
             self.list_title = 'List ' + self._prettify_name(class_name)
@@ -621,7 +541,7 @@ class ModelApi(BaseModelApi):
         """
             Init Properties
         """
-        super(ModelApi, self)._init_properties()
+        super(ModelRestApi, self)._init_properties()
         # Reset init props
         self.description_columns = self.description_columns or {}
         self.formatters_columns = self.formatters_columns or {}
@@ -714,8 +634,10 @@ class ModelApi(BaseModelApi):
                     }
                 )
 
-        if field.validate:
+        if field.validate and isinstance(field.validate, list):
             ret['validate'] = [str(v) for v in field.validate]
+        elif field.validate:
+            ret['validate'] = [str(field.validate)]
         ret['type'] = field.__class__.__name__
         ret['required'] = field.required
         return ret
@@ -740,9 +662,10 @@ class ModelApi(BaseModelApi):
         ]
 
     @expose('/_info', methods=['GET'])
-    @jwt_has_access
-    @permission_name('get')
+    @protect
     @rison
+    @safe
+    @permission_name('get')
     @merge_response_func(
         BaseApi.merge_current_user_permissions,
         'permissions'
@@ -775,7 +698,8 @@ class ModelApi(BaseModelApi):
 
     @expose('/', methods=['GET'])
     @expose('/<pk>', methods=['GET'])
-    @jwt_has_access
+    @protect
+    @safe
     @permission_name('get')
     def get(self, pk=None):
         if not pk:
@@ -783,7 +707,8 @@ class ModelApi(BaseModelApi):
         return self._get_item(pk)
 
     @expose('/', methods=['POST'])
-    @jwt_has_access
+    @protect
+    @safe
     @permission_name('post')
     def post(self):
         try:
@@ -791,18 +716,25 @@ class ModelApi(BaseModelApi):
         except ValidationError as err:
             return self.response(400, **{'message': err.messages})
         else:
+            # This validates custom Schema with custom validations
+            if isinstance(item.data, dict):
+                return self.response(400, **{'message': item.errors})
             self.pre_add(item.data)
             if self.datamodel.add(item.data):
                 self.post_add(item.data)
                 return self.response(
                     201,
-                    **{'result': self.add_model_schema.dump(item.data, many=False).data}
+                    **{
+                        'result': self.add_model_schema.dump(item.data, many=False).data,
+                        'id': self.datamodel.get_pk_value(item.data)
+                    }
                 )
             else:
                 return self.response_500()
 
     @expose('/<pk>', methods=['PUT'])
-    @jwt_has_access
+    @protect
+    @safe
     @permission_name('put')
     def put(self, pk):
         item = self.datamodel.get(pk, self._base_filters)
@@ -814,6 +746,9 @@ class ModelApi(BaseModelApi):
             except ValidationError as err:
                 return self.response(400, **{'message': err.messages})
             else:
+                # This validates custom Schema with custom validations
+                if isinstance(item.data, dict):
+                    return self.response(400, **{'message': item.errors})
                 self.pre_update(item.data)
                 if self.datamodel.edit(item.data):
                     self.post_add(item)
@@ -826,7 +761,8 @@ class ModelApi(BaseModelApi):
                     return self.response_500()
 
     @expose('/<pk>', methods=['DELETE'])
-    @jwt_has_access
+    @protect
+    @safe
     @permission_name('delete')
     def delete(self, pk):
         item = self.datamodel.get(pk, self._base_filters)
@@ -836,7 +772,7 @@ class ModelApi(BaseModelApi):
             self.pre_delete(item)
             if self.datamodel.delete(item):
                 self.post_delete(item)
-                return self.response(200, **{'message': 'OK'})
+                return self.response(200, message='OK')
             else:
                 return self.response_500()
 
@@ -904,7 +840,7 @@ class ModelApi(BaseModelApi):
         else:
             _show_model_schema = self.show_model_schema
 
-        _response['pk'] = pk
+        _response['id'] = pk
         _response['result'] = _show_model_schema.dump(item, many=False).data
         return self.response(200, **_response)
 
@@ -917,7 +853,6 @@ class ModelApi(BaseModelApi):
         _response = dict()
         _args = kwargs.get('rison', {})
         # handle select columns
-
         select_cols = _args.get('columns', [])
         _pruned_select_cols = [col for col in select_cols if col in self.list_columns]
         self.set_response_key_mappings(

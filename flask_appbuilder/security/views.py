@@ -9,7 +9,7 @@ from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
 from flask_jwt_extended import create_access_token
 from ..views import ModelView, SimpleFormView, expose
-from ..api import BaseApi
+from ..api import BaseApi, safe
 from ..baseviews import BaseView
 from ..charts.views import DirectByChartView
 from ..fieldwidgets import BS3PasswordFieldWidget
@@ -27,23 +27,12 @@ class SecurityApi(BaseApi):
     route_base = '/api/v1/security'
 
     @expose('/login', methods=['POST'])
+    @safe
     def login(self):
         """
             Login endpoint for the API returns a JWT
         :return:
         """
-        # LOGIN_DB
-        # LDAP
-        # REMOTE USER ( is this possible secure? )
-        # OAUTH ( is this done on the backend? )
-        # AUTH0 ( trusted JWT we need a key to trust )
-
-        # Study asymmetric crypto option, good for AUTH0
-        # Study refresh tokens
-        #    https://flask-jwt-extended.readthedocs.io/en/latest/refresh_tokens.html#refresh-tokens
-        # https://tools.ietf.org/html/rfc7519
-        # https://auth0.com/blog/json-web-token-signing-algorithms-overview/
-
         if not request.is_json:
             return self.response_400(message="Request payload is not JSON")
         username = request.json.get('username', None)

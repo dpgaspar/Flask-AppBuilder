@@ -2,7 +2,7 @@ from flask import request
 from flask_jwt_extended import create_access_token
 from flask_babel import lazy_gettext
 from ..views import expose
-from ..api import BaseApi, ModelApi
+from ..api import BaseApi, ModelRestApi
 
 
 class SecurityApi(BaseApi):
@@ -45,8 +45,8 @@ class SecurityApi(BaseApi):
         return self.response(200, access_token=access_token)
 
 
-class UserApi(ModelApi):
-    route_base = '/api/v1/user'
+class UserApi(ModelRestApi):
+    resource_name = 'user'
 
     label_columns = {
         'get_full_name': lazy_gettext('Full Name'),

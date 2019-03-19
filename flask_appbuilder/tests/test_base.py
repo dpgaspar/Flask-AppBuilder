@@ -267,7 +267,11 @@ class FlaskTestCase(unittest.TestCase):
                 self.db.session.rollback()
 
     def insert_data3(self):
-        model3 = Model3(pk1=3, pk2=datetime.datetime(2017, 3, 3), field_string='foo')
+        model3 = Model3(
+            pk1=3,
+            pk2=datetime.datetime(2017, 3, 3),
+            field_string='foo'
+        )
         try:
             self.db.session.add(model3)
             self.db.session.commit()

@@ -10,26 +10,21 @@ from ..const import LOGMSG_ERR_SEC_ACCESS_DENIED, FLAMSG_ERR_SEC_ACCESS_DENIED, 
 log = logging.getLogger(__name__)
 
 
-def jwt_has_access(f):
+def protect(f):
     """
         Use this decorator to enable granular security permissions
-        to your API methods.
+        to your API methods (BaseApi and child classes).
         Permissions will be associated to a role, and roles are associated to users.
 
         By default the permission's name is the methods name.
     """
     if hasattr(f, '_permission_name'):
-        permission_str = "{}{}".format(
-            PERMISSION_PREFIX,
-            f._permission_name
-        )
+        permission_str = f._permission_name
     else:
-        permission_str = "{}{}".format(
-            PERMISSION_PREFIX,
-            f.__name__
-        )
+        permission_str = f.__name__
 
     def wraps(self, *args, **kwargs):
+        permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
         if self.appbuilder.sm.is_item_public(
                 permission_str,
                 self.__class__.__name__
@@ -44,9 +39,13 @@ def jwt_has_access(f):
             return f(self, *args, **kwargs)
         else:
             log.warning(
-                LOGMSG_ERR_SEC_ACCESS_DENIED.format(permission_str, self.__class__.__name__)
+                LOGMSG_ERR_SEC_ACCESS_DENIED.format(
+                    permission_str,
+                    self.__class__.__name__
+                )
             )
         return self.response_401()
+    f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
 
 

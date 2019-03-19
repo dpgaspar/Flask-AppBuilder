@@ -22,7 +22,7 @@ class FlaskTestCase(unittest.TestCase):
         from flask import Flask
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.models.sqla.interface import SQLAInterface
-        from flask_appbuilder.api import ModelApi
+        from flask_appbuilder.api import ModelRestApi
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
@@ -35,7 +35,7 @@ class FlaskTestCase(unittest.TestCase):
         # Create models and insert data
         insert_data(self.db.session, MODEL1_DATA_SIZE)
 
-        class Model1Api(ModelApi):
+        class Model1Api(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             list_columns = [
                 'field_integer',
@@ -62,7 +62,7 @@ class FlaskTestCase(unittest.TestCase):
                 'field_integer'
             ]
 
-        class Model1FuncApi(ModelApi):
+        class Model1FuncApi(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             list_columns = [
                 'field_integer',
@@ -77,7 +77,7 @@ class FlaskTestCase(unittest.TestCase):
                 'field_string': 'Field String'
             }
 
-        class Model1ApiExcludeCols(ModelApi):
+        class Model1ApiExcludeCols(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             list_exclude_columns = [
                 'field_integer',
@@ -88,11 +88,11 @@ class FlaskTestCase(unittest.TestCase):
             edit_exclude_columns = list_exclude_columns
             add_exclude_columns = list_exclude_columns
 
-        class Model1ApiOrder(ModelApi):
+        class Model1ApiOrder(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             base_order = ('field_integer', 'desc')
 
-        class Model1ApiFiltered(ModelApi):
+        class Model1ApiFiltered(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             base_filters = [
                 ['field_integer', FilterGreater, 2],
@@ -109,7 +109,7 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view_no_menu(Model1ApiFiltered)
         self.appbuilder.add_view_no_menu(Model1ApiExcludeCols)
 
-        class Model2Api(ModelApi):
+        class Model2Api(ModelRestApi):
             datamodel = SQLAInterface(Model2)
             list_columns = [
                 'group'
@@ -118,7 +118,7 @@ class FlaskTestCase(unittest.TestCase):
                 'group'
             ]
 
-        class Model2ApiFilteredRelFields(ModelApi):
+        class Model2ApiFilteredRelFields(ModelRestApi):
             datamodel = SQLAInterface(Model2)
             list_columns = [
                 'group'
