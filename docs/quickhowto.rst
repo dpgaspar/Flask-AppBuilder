@@ -284,6 +284,10 @@ in case of success or errors. See the following table for a description of each 
 REST API
 --------
 
+note:
+    This sort of automatic REST API is going to be deprecated, and will
+    be completely removed in 2 minors.
+
 This API is still BETA and will be subject to change. In the future F.A.B. will probably use AngularJS
 to display the UI interface using AJAX.
 

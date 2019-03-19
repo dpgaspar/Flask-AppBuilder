@@ -186,6 +186,11 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | the existing languages with the countries  |           |
 |                                   | name and flag                              |           |
 +-----------------------------------+--------------------------------------------+-----------+
+| FAB_API_SHOW_STACKTRACE           | Sends api stack trace on uncaught          |   No      |
+|                                   | exceptions. (Boolean)                      |           |
++-----------------------------------+--------------------------------------------+-----------+
+| FAB_API_MAX_PAGE_SIZE             | Sets a limit for FAB Model Api page size   |   No      |
++-----------------------------------+--------------------------------------------+-----------+
 
 
 Using config.py

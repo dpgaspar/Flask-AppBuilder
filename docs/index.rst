@@ -35,6 +35,7 @@ Contents:
 
    views
    quickhowto
+   rest_api
    quickhowto_mongo
    quickcharts
    quickfiles
