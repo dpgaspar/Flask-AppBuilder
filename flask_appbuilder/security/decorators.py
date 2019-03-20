@@ -1,7 +1,7 @@
 import logging
 import functools
 
-from flask import flash, redirect, url_for, make_response, jsonify
+from flask import flash, redirect, url_for, make_response, jsonify, request
 from flask_jwt_extended import verify_jwt_in_request,  get_jwt_identity
 from flask_login import login_user
 from .._compat import as_unicode
