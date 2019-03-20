@@ -261,7 +261,7 @@ class BaseApi(object):
 
         :param code: HTTP code (int)
         :param kwargs: Data structure for response (dict)
-        :return: None
+        :return: HTTP Json response
         """
         _ret_json = jsonify(kwargs)
         resp = make_response(_ret_json, code)
@@ -269,16 +269,40 @@ class BaseApi(object):
         return resp
 
     def response_400(self, message=None):
+        """
+            Helper method for HTTP 400 response
+
+        :param message: Error message (str)
+        :return: HTTP Json response
+        """
         message = message or "Arguments are not correct"
         return self.response(400, **{"message": message})
 
     def response_401(self):
+        """
+            Helper method for HTTP 401 response
+
+        :param message: Error message (str)
+        :return: HTTP Json response
+        """
         return self.response(401, **{"message": "Not authorized"})
 
     def response_404(self):
+        """
+            Helper method for HTTP 404 response
+
+        :param message: Error message (str)
+        :return: HTTP Json response
+        """
         return self.response(404, **{"message": "Not found"})
 
     def response_500(self, message=None):
+        """
+            Helper method for HTTP 500 response
+
+        :param message: Error message (str)
+        :return: HTTP Json response
+        """
         message = message or "Internal error"
         return self.response(500, **{"message": message})
 
@@ -352,11 +376,6 @@ class BaseModelApi(BaseApi):
         Filters object will calculate all possible filter types 
         based on search_columns 
     """
-    list_model_schema = None
-    add_model_schema = None
-    edit_model_schema = None
-    show_model_schema = None
-
     def __init__(self, **kwargs):
         """
             Constructor
@@ -393,7 +412,8 @@ class BaseModelApi(BaseApi):
         self.search_exclude_columns = self.search_exclude_columns or []
         self.search_columns = self.search_columns or []
 
-        self._base_filters = self.datamodel.get_filters().add_filter_list(self.base_filters)
+        self._base_filters = \
+            self.datamodel.get_filters().add_filter_list(self.base_filters)
         list_cols = self.datamodel.get_columns_list()
         search_columns = self.datamodel.get_search_columns_list()
         if not self.search_columns:
@@ -497,7 +517,7 @@ class ModelRestApi(BaseModelApi):
         {'relation col name':[['Related model col',FilterClass,'Filter Value'],...],...}
         Add a custom filter to form related fields::
     
-            class ContactModelView(ModelView):
+            class ContactModelView(ModelRestApi):
                 datamodel = SQLAModel(Contact, db.session)
                 add_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
     
@@ -511,10 +531,30 @@ class ModelRestApi(BaseModelApi):
         {'relation col name':[['Related model col',FilterClass,'Filter Value'],...],...}
         Add a custom filter to form related fields::
     
-            class ContactModelView(ModelView):
+            class ContactModelView(ModelRestApi):
                 datamodel = SQLAModel(Contact, db.session)
                 edit_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
     
+    """
+    list_model_schema = None
+    """
+        Override to provide your own marshmallow Schema 
+        for JSON to SQLA dumps
+    """
+    add_model_schema = None
+    """
+        Override to provide your own marshmallow Schema 
+        for JSON to SQLA dumps
+    """
+    edit_model_schema = None
+    """
+        Override to provide your own marshmallow Schema 
+        for JSON to SQLA dumps
+    """
+    show_model_schema = None
+    """
+        Override to provide your own marshmallow Schema 
+        for JSON to SQLA dumps
     """
 
     def create_blueprint(self, appbuilder, *args, **kwargs):
@@ -632,98 +672,24 @@ class ModelRestApi(BaseModelApi):
             ]
         response['filters'] = search_filters
 
-    def _get_field_info(self, field, filter_rel_field):
-        """
-            Return a dict with field details
-            ready to serve as a response
-
-        :param field: marshmallow field
-        :return: dict with field details
-        """
-        from marshmallow_sqlalchemy.fields import Related, RelatedList
-        ret = dict()
-        ret['name'] = field.name
-        ret['label'] = self.label_columns.get(field.name, '')
-        ret['description'] = self.description_columns.get(field.name, '')
-        # Handles related fields
-        if isinstance(field, Related) or isinstance(field, RelatedList):
-            _rel_interface = self.datamodel.get_related_interface(field.name)
-            _filters = _rel_interface.get_filters(_rel_interface.get_search_columns_list())
-            if filter_rel_field:
-                filters = _filters.add_filter_list(filter_rel_field)
-                _values = _rel_interface.query(filters)[1]
-            else:
-                _values = _rel_interface.query()[1]
-            ret['values'] = list()
-            for _value in _values:
-                ret['values'].append(
-                    {
-                        "id": _rel_interface.get_pk_value(_value),
-                        "value": str(_value)
-                    }
-                )
-
-        if field.validate and isinstance(field.validate, list):
-            ret['validate'] = [str(v) for v in field.validate]
-        elif field.validate:
-            ret['validate'] = [str(field.validate)]
-        ret['type'] = field.__class__.__name__
-        ret['required'] = field.required
-        return ret
-
-    def _get_fields_info(self, cols, model_schema, filter_rel_fields):
-        """
-            Returns a dict with fields detail
-            from a marshmallow schema
-
-        :param cols: list of columns to show info for
-        :param model_schema: Marshmallow model schema
-        :param filter_rel_fields: expects add_query_rel_fields or
-                                    edit_query_rel_fields
-        :return: dict with all fields details
-        """
-        return [
-            self._get_field_info(
-                model_schema.fields[col],
-                filter_rel_fields.get(col, [])
-            )
-            for col in cols
-        ]
-
     @expose('/_info', methods=['GET'])
     @protect
     @rison
     @safe
     @permission_name('get')
-    @merge_response_func(
-        BaseApi.merge_current_user_permissions,
-        'permissions'
-    )
-    @merge_response_func(
-        merge_add_field_info,
-        'add_fields'
-    )
-    @merge_response_func(
-        merge_edit_field_info,
-        'edit_fields'
-    )
-    @merge_response_func(
-        merge_search_filters,
-        "filters"
-    )
+    @merge_response_func(BaseApi.merge_current_user_permissions, 'permissions')
+    @merge_response_func(merge_add_field_info, 'add_fields')
+    @merge_response_func(merge_edit_field_info, 'edit_fields')
+    @merge_response_func(merge_search_filters, "filters")
     def info(self, **kwargs):
+        """
+            Endpoint that renders a response for CRUD REST meta data
+        :param kwargs: Rison kwargs
+        """
         _response = dict()
         _args = kwargs.get('rison', {})
-        self.set_response_key_mappings(
-            _response,
-            self.info,
-            _args,
-            **{}
-        )
-        return self.response(
-            200,
-            **_response
-        )
+        self.set_response_key_mappings(_response, self.info, _args, **{})
+        return self.response(200, **_response)
 
     @expose('/', methods=['GET'])
     @expose('/<pk>', methods=['GET'])
@@ -904,9 +870,10 @@ class ModelRestApi(BaseModelApi):
         order_direction = _args.get('order_direction', '')
         if not order_column and self.base_order:
             order_column, order_direction = self.base_order
-        # Make the query
+        # handle pagination
         page_index = _args.get('page', 0)
         page_size = _args.get('page_size', self.page_size)
+        # Make the query
         count, lst = self.datamodel.query(joined_filters,
                                           order_column,
                                           order_direction,
@@ -933,6 +900,64 @@ class ModelRestApi(BaseModelApi):
         for key, value in d.items():
             ret[key] = as_unicode(_(value).encode('UTF-8'))
         return ret
+
+    def _get_field_info(self, field, filter_rel_field):
+        """
+            Return a dict with field details
+            ready to serve as a response
+
+        :param field: marshmallow field
+        :return: dict with field details
+        """
+        from marshmallow_sqlalchemy.fields import Related, RelatedList
+        ret = dict()
+        ret['name'] = field.name
+        ret['label'] = self.label_columns.get(field.name, '')
+        ret['description'] = self.description_columns.get(field.name, '')
+        # Handles related fields
+        if isinstance(field, Related) or isinstance(field, RelatedList):
+            _rel_interface = self.datamodel.get_related_interface(field.name)
+            _filters = _rel_interface.get_filters(_rel_interface.get_search_columns_list())
+            if filter_rel_field:
+                filters = _filters.add_filter_list(filter_rel_field)
+                _values = _rel_interface.query(filters)[1]
+            else:
+                _values = _rel_interface.query()[1]
+            ret['values'] = list()
+            for _value in _values:
+                ret['values'].append(
+                    {
+                        "id": _rel_interface.get_pk_value(_value),
+                        "value": str(_value)
+                    }
+                )
+
+        if field.validate and isinstance(field.validate, list):
+            ret['validate'] = [str(v) for v in field.validate]
+        elif field.validate:
+            ret['validate'] = [str(field.validate)]
+        ret['type'] = field.__class__.__name__
+        ret['required'] = field.required
+        return ret
+
+    def _get_fields_info(self, cols, model_schema, filter_rel_fields):
+        """
+            Returns a dict with fields detail
+            from a marshmallow schema
+
+        :param cols: list of columns to show info for
+        :param model_schema: Marshmallow model schema
+        :param filter_rel_fields: expects add_query_rel_fields or
+                                    edit_query_rel_fields
+        :return: dict with all fields details
+        """
+        return [
+            self._get_field_info(
+                model_schema.fields[col],
+                filter_rel_fields.get(col, [])
+            )
+            for col in cols
+        ]
 
     def pre_update(self, item):
         """
