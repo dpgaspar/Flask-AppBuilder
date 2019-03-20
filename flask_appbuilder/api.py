@@ -42,6 +42,18 @@ def safe(f):
 
 
 def rison(f):
+    """
+        Use this decorator to parse URI *Rison* arguments to
+        a python data structure, you're method gets the data
+        structure on kwargs['rison']. Response is HTTP 400
+        if *Rison* is not correct::
+
+            class ExampleApi(BaseApi):
+                    @expose('/risonjson')
+                    @rison
+                    def rison_json(self, **kwargs):
+                        return self.response(200, result=kwargs['rison'])
+    """
     def wraps(self, *args, **kwargs):
 
         value = request.args.get(URI_RISON_KEY, None)
@@ -112,16 +124,26 @@ class BaseApi:
     endpoint = None
 
     version = 'v1'
+    """
+        Define the Api version for this resource/class
+    """
     route_base = None
     """ 
-        Define the route base where all methods will sufix from 
+        Define the route base where all methods will suffix from 
     """
     resource_name = None
-    """ 
+    """
         Defines a custom resource name, overrides the inferred from Class name 
         makes no sense to use it with route base
     """
     base_permissions = None
+    """
+        A list of allowed base permissions::
+        
+            class ExampleApi(BaseApi):
+                base_permissions = ['can_get']
+                
+    """
     extra_args = None
 
     def __init__(self):
@@ -234,6 +256,13 @@ class BaseApi:
 
     @staticmethod
     def response(code, **kwargs):
+        """
+            Generic HTTP JSON response method
+
+        :param code: HTTP code (int)
+        :param kwargs: Data structure for response (dict)
+        :return: None
+        """
         _ret_json = jsonify(kwargs)
         resp = make_response(_ret_json, code)
         resp.headers['Content-Type'] = "application/json; charset=utf-8"

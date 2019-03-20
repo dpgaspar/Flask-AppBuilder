@@ -37,6 +37,8 @@ flask_appbuilder.api
 .. automodule:: flask_appbuilder.api
 
     .. autofunction:: expose
+    .. autofunction:: rison
+    .. autofunction:: safe
 
 BaseApi
 -------
@@ -47,7 +49,7 @@ BaseApi
 ModelRestApi
 ------------
 
-.. autoclass:: ModelApi
+.. autoclass:: ModelRestApi
     :members:
 
 flask_appbuilder.baseviews
