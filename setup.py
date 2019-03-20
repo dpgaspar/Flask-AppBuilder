@@ -48,7 +48,7 @@ setup(
         'flask-marshmallow==0.9.0',
         'marshmallow==2.18.0',
         'marshmallow-sqlalchemy==0.15.0',
-        'prison==0.1.0'
+        'prison==0.1.0',
         'PyJWT>=1.7.1'
     ],
     tests_require=[
