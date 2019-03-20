@@ -939,9 +939,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         if not user:
             user = self.add_user(
                     username=userinfo['username'],
-                    first_name=userinfo['first_name'],
-                    last_name=userinfo['last_name'],
-                    email=userinfo['email'],
+                    first_name=userinfo.get('first_name', ''),
+                    last_name=userinfo.get('last_name', ''),
+                    email=userinfo.get('email', ''),
                     role=self.find_role(self.auth_user_registration_role)
                 )
             if not user:

@@ -73,11 +73,7 @@ def has_access(f):
                 LOGMSG_ERR_SEC_ACCESS_DENIED.format(permission_str, self.__class__.__name__)
             )
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
-        return redirect(
-            url_for(
-                self.appbuilder.sm.auth_view.__class__.__name__ + ".login"
-            )
-        )
+        return redirect(url_for(self.appbuilder.sm.auth_view.__class__.__name__ + ".login", next=request.url))
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
 
@@ -118,6 +114,7 @@ def has_access_api(f):
             )
             response.headers['Content-Type'] = "application/json"
             return response
+        return redirect(url_for(self.appbuilder.sm.auth_view.__class__.__name__ + ".login", next=request.url))
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
 

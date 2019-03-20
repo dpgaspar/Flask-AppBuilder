@@ -71,6 +71,14 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   |                                            |           |
 |                                   | AUTH_LDAP_SEARCH = "ou=people,dc=example"  |           |
 +-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_SEARCH_FILTER           | Filter or limit allowable users from       |   No      |
+|                                   | the LDAP server, e.g., only the people     |           |
+|                                   | on your team.                              |           |
+|                                   |                                            |           |
+|                                   | AUTH_LDAP_SEARCH_FILTER =                  |           |
+|                                   | "(memberOf=cn=group name,OU=type,dc=ex     |           |
+|                                   | ,cn=com)"                                  |           |
++-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_UID_FIELD               | if doing an indirect bind to ldap, this    |   No      |
 |                                   | is the field that matches the username     |           |
 |                                   | when searching for the account to bind     |           | 
@@ -196,10 +204,10 @@ Use config.py to configure the following parameters. By default it will use SQLL
 Using config.py
 ---------------
  
-My favorite way, and the one i advise if you are building a medium to large size application
+My favorite way, and the one I advise if you are building a medium to large size application
 is to place all your configuration keys on a config.py file
  
-next you only have to import them to the Flask app object, like this
+Next you only have to import them to the Flask app object, like this
 ::
 
     app = Flask(__name__)

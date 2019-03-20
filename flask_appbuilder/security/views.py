@@ -1,6 +1,7 @@
 import re
 import datetime
 import logging
+import jwt
 from flask import flash, redirect, session, url_for, request, g, abort
 from werkzeug.security import generate_password_hash
 from wtforms import validators, PasswordField
@@ -645,17 +646,23 @@ class AuthOAuthView(AuthView):
             )
         else:
             log.debug("Going to call authorize for: {0}".format(provider))
+            state = jwt.encode(
+                request.args.to_dict(flat=False),
+                self.appbuilder.app.config['SECRET_KEY'],
+                algorithm='HS256')
             try:
                 if register:
                     log.debug('Login to Register')
                     session['register'] = True
-                return self.appbuilder.sm.oauth_remotes[provider].authorize(
-                    callback=url_for(
-                        '.oauth_authorized',
-                        provider=provider,
-                        _external=True
-                    )
-                )
+                if provider == 'twitter':
+                    return self.appbuilder.sm.oauth_remotes[provider].authorize(
+                        callback=url_for
+                            ('.oauth_authorized', provider=provider, _external=True, state=state))
+                else:
+                    return self.appbuilder.sm.oauth_remotes[provider].authorize(
+                        callback=url_for
+                            ('.oauth_authorized', provider=provider, _external=True),
+                            state=state)
             except Exception as e:
                 log.error("Error on OAuth authorize: {0}".format(e))
                 flash(as_unicode(self.invalid_login_message), 'warning')
@@ -698,7 +705,20 @@ class AuthOAuthView(AuthView):
             return redirect('login')
         else:
             login_user(user)
-            return redirect(self.appbuilder.get_url_for_index)
+            try:
+                state = jwt.decode(
+                    request.args['state'],
+                    self.appbuilder.app.config['SECRET_KEY'],
+                    algorithms=['HS256'])
+            except jwt.InvalidTokenError:
+                raise AuthenticationError('State signature is not valid!')
+
+            try:
+                next_url = state['next'][0]
+            except (KeyError, IndexError):
+                next_url = self.appbuilder.get_url_for_index
+
+            return redirect(next_url)
 
 
 class AuthRemoteUserView(AuthView):

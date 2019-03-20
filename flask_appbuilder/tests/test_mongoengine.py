@@ -4,6 +4,7 @@ import os
 import string
 import random
 import datetime
+import jinja2
 from flask_mongoengine import MongoEngine
 from mongoengine import Document
 from mongoengine import IntField, FloatField, DateTimeField, StringField, ReferenceField, ListField, FileField, ImageField
@@ -75,6 +76,7 @@ class FlaskTestCase(unittest.TestCase):
         from flask_appbuilder.security.mongoengine.manager import SecurityManager
 
         self.app = Flask(__name__)
+        self.app.jinja_env.undefined = jinja2.StrictUndefined
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config['MONGODB_SETTINGS'] = {'DB': 'test'}
         self.app.config['CSRF_ENABLED'] = False

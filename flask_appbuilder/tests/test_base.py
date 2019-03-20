@@ -7,7 +7,9 @@ import json
 import logging
 from nose.tools import eq_, ok_
 from flask import redirect, request, session
-from flask_appbuilder import SQLA
+import jinja2
+
+from flask_appbuilder import Model, SQLA
 from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqual
 from flask_appbuilder.views import MasterDetailView, CompactCRUDMixin
 from flask_appbuilder.charts.views import (ChartView, TimeChartView,
@@ -48,6 +50,7 @@ class FlaskTestCase(unittest.TestCase):
         from flask_appbuilder.views import ModelView
 
         self.app = Flask(__name__)
+        self.app.jinja_env.undefined = jinja2.StrictUndefined
         self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'
         self.app.config['CSRF_ENABLED'] = False
@@ -143,6 +146,7 @@ class FlaskTestCase(unittest.TestCase):
         class Model2DirectByChartView(DirectByChartView):
             datamodel = SQLAInterface(Model2)
             chart_title = 'Test Model1 Chart'
+            list_title = ''
 
             definitions = [
                 {
