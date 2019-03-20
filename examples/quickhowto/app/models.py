@@ -2,9 +2,14 @@ import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from flask_appbuilder import Model
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, ValidationError, post_load, pre_load
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
+
+
+def validate_name(n):
+    if n[0] != 'A':
+        raise ValidationError('Name must start with an A')
 
 
 class ContactGroup(Model):
@@ -13,6 +18,14 @@ class ContactGroup(Model):
 
     def __repr__(self):
         return self.name
+
+
+class GroupCustomSchema(Schema):
+    name = fields.Str(validate=validate_name)
+
+    @post_load
+    def process(self, data):
+        return ContactGroup(**data)
 
 
 class ContactGroupSchema(Schema):
@@ -29,7 +42,7 @@ class Gender(Model):
 
 class Contact(Model):
     id = Column(Integer, primary_key=True)
-    name = Column(String(150), unique = True, nullable=False)
+    name = Column(String(150), unique=True, nullable=False)
     address = Column(String(564))
     birthday = Column(Date, nullable=True)
     personal_phone = Column(String(20))
@@ -45,6 +58,9 @@ class Contact(Model):
     def month_year(self):
         date = self.birthday or mindate
         return datetime.datetime(date.year, date.month, 1) or mindate
+
+    def some_function(self):
+        return "Hello {}".format(self.name)
 
     def year(self):
         date = self.birthday or mindate

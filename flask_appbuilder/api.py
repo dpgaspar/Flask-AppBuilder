@@ -109,7 +109,7 @@ def merge_response_func(func, key):
     return wrap
 
 
-class BaseApi:
+class BaseApi(object):
     """
         All apis inherit from this class.
         it's constructor will register your exposed urls on flask
