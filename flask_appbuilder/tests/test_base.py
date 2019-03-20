@@ -35,7 +35,7 @@ UNIQUE_VALIDATION_STRING = 'Already exists'
 NOTNULL_VALIDATION_STRING = 'This field is required'
 DEFAULT_ADMIN_USER = 'admin'
 DEFAULT_ADMIN_PASSWORD = 'general'
-REDIRECT_OBJ_ID = 99999
+REDIRECT_OBJ_ID = 1
 
 log = logging.getLogger(__name__)
 

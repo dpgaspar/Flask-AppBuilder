@@ -1,5 +1,6 @@
 import calendar
 from flask_appbuilder import ModelView
+from flask_appbuilder.views import redirect
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.charts.views import GroupByChartView
 from flask_appbuilder.models.group import aggregate_count
@@ -23,6 +24,9 @@ def fill_gender():
 
 class ContactModelView(ModelView):
     datamodel = SQLAInterface(Contact)
+
+    def post_add_redirect(self):
+        return redirect('model1viewwithredirects/show/{0}'.format(99999))
 
     list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
 
