@@ -330,7 +330,7 @@ class RoleModelView(ModelView):
     list_columns = ['name', 'permissions']
     order_columns = ['name']
 
-    @action("Copy Role", lazy_gettext('Copy Role'), lazy_gettext('Copy the selected roles?'), icon='fa-copy', single=False)
+    @action("copyrole", lazy_gettext('Copy Role'), lazy_gettext('Copy the selected roles?'), icon='fa-copy', single=False)
     def copy_role(self, items):
         self.update_redirect()
         for item in items:
