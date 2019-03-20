@@ -153,7 +153,8 @@ class AppBuilder(object):
         app.config.setdefault('APP_ICON', '')
         app.config.setdefault('LANGUAGES',
                               {'en': {'flag': 'gb', 'name': 'English'}})
-        app.config.setdefault('ADDON_MANAGERS',[])
+        app.config.setdefault('ADDON_MANAGERS', [])
+        app.config.setdefault('FAB_API_MAX_PAGE_SIZE', 20)
         if self.security_manager_class is None:
             from flask_appbuilder.security.sqla.manager import SecurityManager
             self.security_manager_class = SecurityManager
