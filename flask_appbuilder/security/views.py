@@ -454,7 +454,7 @@ class RoleModelView(ModelView):
     order_columns = ['name']
 
     @action(
-        "Copy Role",
+        "copyrole",
         lazy_gettext('Copy Role'),
         lazy_gettext('Copy the selected roles?'),
         icon='fa-copy',

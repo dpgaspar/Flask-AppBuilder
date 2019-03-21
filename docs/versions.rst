@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.12.5
+------------------------------------
+
+- Fix, #928 Copy role modal not showing
+
 Improvements and Bug fixes on 1.12.4
 ------------------------------------
 
