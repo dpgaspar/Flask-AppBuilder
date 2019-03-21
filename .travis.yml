@@ -5,6 +5,7 @@ python:
 install:
   - pip install --upgrade 'pip>=9.0.1,<9.99'
   - pip -V
+  - pip install -r requirements.txt
   - python setup.py install
   - pip install coveralls
   - pip install 'mongoengine>=0.7.10,<0.7.99'
