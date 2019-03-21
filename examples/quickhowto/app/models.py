@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, Date
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, DateTime
 from sqlalchemy.orm import relationship
 from flask_appbuilder import Model
 
