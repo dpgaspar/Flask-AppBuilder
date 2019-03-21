@@ -2,12 +2,9 @@ Flask App Builder
 =================
 
 .. image:: https://travis-ci.org/dpgaspar/Flask-AppBuilder.png?branch=master
-	:target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
+    :target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
 .. image:: https://coveralls.io/repos/dpgaspar/Flask-AppBuilder/badge.png?branch=master
     :target: https://coveralls.io/r/dpgaspar/Flask-AppBuilder
-.. image:: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master
-   :alt: Code Health
 .. image:: https://img.shields.io/badge/pyversions-2.7%2C3.6-blue.svg
 .. image:: https://badges.gitter.im/Flask-Appbuilder/Lobby.svg
    :target: https://gitter.im/dpgaspar/Flask-AppBuilder
