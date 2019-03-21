@@ -26,7 +26,7 @@ class Contact(Model):
     id = Column(Integer, primary_key=True)
     name =  Column(String(150), unique = True, nullable=False)
     address = Column(String(564))
-    birthday = Column(Date, nullable=True)
+    birthday = Column(DateTime, nullable=True)
     personal_phone = Column(String(20))
     personal_celphone = Column(String(20))
     contact_group_id = Column(Integer, ForeignKey('contact_group.id'), nullable=False)
