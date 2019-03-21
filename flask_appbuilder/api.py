@@ -750,7 +750,7 @@ class ModelRestApi(BaseModelApi):
                     self.post_update(item)
                     return self.response(
                         200,
-                        **{'result': self.edit_model_schema.dump(item.data, many=False).data}
+                        result=self.edit_model_schema.dump(item.data, many=False).data
                     )
                 else:
                     return self.response_500()
@@ -871,8 +871,7 @@ class ModelRestApi(BaseModelApi):
         if not order_column and self.base_order:
             order_column, order_direction = self.base_order
         # handle pagination
-        page_index = _args.get('page', 0)
-        page_size = _args.get('page_size', self.page_size)
+        page_index, page_size = self._handle_page_args(_args)
         # Make the query
         count, lst = self.datamodel.query(joined_filters,
                                           order_column,
@@ -890,6 +889,20 @@ class ModelRestApi(BaseModelApi):
                 HELPER FUNCTIONS
     ------------------------------------------------
     """
+    def _handle_page_args(self, rison_args):
+        """
+            Helper function to handle page rison page
+            argument, sets defaults and impose MAX_PAGE_SIZE
+        :param args:
+        :return: (tuple) page, page_size
+        """
+        page_index = rison_args.get('page', 0)
+        page_size = rison_args.get('page_size', self.page_size)
+        max_page_size = current_app.config.get('FAB_API_MAX_PAGE_SIZE')
+        if page_size > max_page_size:
+            page_size = max_page_size
+        return page_index, page_size
+
     def _description_columns_json(self, cols=None):
         """
             Prepares dict with col descriptions to be JSON serializable

@@ -10,10 +10,11 @@ from flask_appbuilder.models.sqla.filters import \
 
 log = logging.getLogger(__name__)
 
-MODEL1_DATA_SIZE = 10
-MODEL2_DATA_SIZE = 10
+MODEL1_DATA_SIZE = 20
+MODEL2_DATA_SIZE = 20
 USERNAME = "testadmin"
 PASSWORD = "password"
+MAX_PAGE_SIZE = 10
 
 
 class FlaskTestCase(unittest.TestCase):
@@ -29,6 +30,7 @@ class FlaskTestCase(unittest.TestCase):
         self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'
         self.app.config['SECRET_KEY'] = 'thisismyscretkey'
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+        self.app.config['FAB_API_MAX_PAGE_SIZE'] = MAX_PAGE_SIZE
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -325,7 +327,7 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
 
-        pk = 11
+        pk = MODEL1_DATA_SIZE + 1
         rv = self.auth_client_get(
             client,
             token,
@@ -387,14 +389,13 @@ class FlaskTestCase(unittest.TestCase):
             token,
             'api/v1/model1api/'
         )
-        log.info("DATA !!!!!!!!! {}".format(rv.data))
 
         data = json.loads(rv.data.decode('utf-8'))
         # Tests count property
         eq_(data['count'], MODEL1_DATA_SIZE)
         # Tests data result default page size
         eq_(len(data['result']), self.model1api.page_size)
-        for i in range(1, MODEL1_DATA_SIZE):
+        for i in range(1, self.model1api.page_size):
             self.assert_get_list(rv, data['result'][i - 1], i - 1)
 
     @staticmethod
@@ -415,7 +416,7 @@ class FlaskTestCase(unittest.TestCase):
         token = self.login(client, USERNAME, PASSWORD)
 
         # test string order asc
-        uri = 'api/v1/model1api/?q=(order_column:field_string,order_direction:asc)'
+        uri = 'api/v1/model1api/?q=(order_column:field_integer,order_direction:asc)'
         rv = self.auth_client_get(
             client,
             token,
@@ -430,7 +431,7 @@ class FlaskTestCase(unittest.TestCase):
         })
         eq_(rv.status_code, 200)
         # test string order desc
-        uri = 'api/v1/model1api/?q=(order_column:field_string,order_direction:desc)'
+        uri = 'api/v1/model1api/?q=(order_column:field_integer,order_direction:desc)'
         rv = self.auth_client_get(
             client,
             token,
@@ -493,6 +494,7 @@ class FlaskTestCase(unittest.TestCase):
 
         # test page zero
         uri = 'api/v1/model1api/?q=(page_size:{},page:0,order_column:field_integer,order_direction:asc)'.format(page_size)
+
         rv = self.auth_client_get(
             client,
             token,
@@ -514,7 +516,6 @@ class FlaskTestCase(unittest.TestCase):
             token,
             uri
         )
-        log.info("DATA !!!!! {}".format(rv.data))
 
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['result'][0], {
@@ -525,6 +526,24 @@ class FlaskTestCase(unittest.TestCase):
         })
         eq_(rv.status_code, 200)
         eq_(len(data['result']), page_size)
+
+    def test_get_list_max_page_size(self):
+        """
+            REST Api: Test get list max page size config setting
+        """
+        page_size = 100  # Max is globally set to MAX_PAGE_SIZE
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        # test page zero
+        uri = 'api/v1/model1api/?q=(page_size:{},page:0,order_column:field_integer,order_direction:asc)'.format(page_size)
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
+        data = json.loads(rv.data.decode('utf-8'))
+        eq_(len(data['result']), MAX_PAGE_SIZE)
 
     def test_get_list_filters(self):
         """
@@ -812,7 +831,7 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
 
-        pk = 11
+        pk = MODEL1_DATA_SIZE + 1
         uri = 'api/v1/model1api/{}'.format(pk)
         rv = self.auth_client_delete(
             client,
@@ -903,7 +922,7 @@ class FlaskTestCase(unittest.TestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
-        pk = 11
+        pk = MODEL1_DATA_SIZE + 1
         item = dict(
             field_string="test_Put",
             field_integer=0,
@@ -1011,9 +1030,9 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
         item = dict(
-            field_string="test11",
-            field_integer=11,
-            field_float=11.0,
+            field_string="test{}".format(MODEL1_DATA_SIZE+1),
+            field_integer=MODEL1_DATA_SIZE+1,
+            field_float=float(MODEL1_DATA_SIZE+1),
             field_date=None
         )
         uri = 'api/v1/model1api/'
@@ -1026,10 +1045,12 @@ class FlaskTestCase(unittest.TestCase):
         data = json.loads(rv.data.decode('utf-8'))
         eq_(rv.status_code, 201)
         eq_(data['result'], item)
-        model = self.db.session.query(Model1).filter_by(field_string='test11').first()
-        eq_(model.field_string, "test11")
-        eq_(model.field_integer, 11)
-        eq_(model.field_float, 11.0)
+        model = self.db.session.query(Model1).filter_by(
+            field_string='test{}'.format(MODEL1_DATA_SIZE+1)
+        ).first()
+        eq_(model.field_string, "test{}".format(MODEL1_DATA_SIZE+1))
+        eq_(model.field_integer, MODEL1_DATA_SIZE+1)
+        eq_(model.field_float, float(MODEL1_DATA_SIZE+1))
 
     def test_create_item_val_size(self):
         """
@@ -1040,8 +1061,8 @@ class FlaskTestCase(unittest.TestCase):
         field_string = 'a' * 51
         item = dict(
             field_string=field_string,
-            field_integer=11,
-            field_float=11.0
+            field_integer=MODEL1_DATA_SIZE+1,
+            field_float=float(MODEL1_DATA_SIZE+1)
         )
         uri = 'api/v1/model1api/'
         rv = self.auth_client_post(
@@ -1061,9 +1082,9 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
         item = dict(
-            field_string="test11",
-            field_integer="test11",
-            field_float=11.0
+            field_string="test{}".format(MODEL1_DATA_SIZE),
+            field_integer="test{}".format(MODEL1_DATA_SIZE),
+            field_float=float(MODEL1_DATA_SIZE)
         )
         uri = 'api/v1/model1api/'
         rv = self.auth_client_post(
@@ -1077,9 +1098,9 @@ class FlaskTestCase(unittest.TestCase):
         eq_(data['message']['field_integer'][0], 'Not a valid integer.')
 
         item = dict(
-            field_string=11,
-            field_integer=11,
-            field_float=11.0
+            field_string=MODEL1_DATA_SIZE,
+            field_integer=MODEL1_DATA_SIZE,
+            field_float=float(MODEL1_DATA_SIZE)
         )
         rv = self.auth_client_post(
             client,
@@ -1120,7 +1141,7 @@ class FlaskTestCase(unittest.TestCase):
         )
         eq_(rv.status_code, 201)
         model = (self.db.session.query(Model1)
-                 .filter_by(field_string="test11")
+                 .filter_by(field_string="test{}".format(MODEL1_DATA_SIZE+1))
                  .first())
         eq_(model.field_integer, None)
         eq_(model.field_float, None)
@@ -1143,7 +1164,7 @@ class FlaskTestCase(unittest.TestCase):
         eq_(data['count'], MODEL1_DATA_SIZE)
         # Tests data result default page size
         eq_(len(data['result']), self.model1api.page_size)
-        for i in range(1, MODEL1_DATA_SIZE):
+        for i in range(1, self.model1api.page_size):
             item = data['result'][i - 1]
             eq_(
                 item['full_concat'], "{}.{}.{}.{}".format(
