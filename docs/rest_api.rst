@@ -1,7 +1,7 @@
-REST Api
+REST API
 ========
 
-On this chapter we are going to describe how you can define a RESTfull API
+On this chapter we are going to describe how you can define a RESTful API
 using almost the same concept as defining your MVC views.
 
 :note:

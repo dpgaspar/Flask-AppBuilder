@@ -28,6 +28,7 @@ from flask_appbuilder.const import (
     API_ADD_COLUMNS_RIS_KEY,
     API_EDIT_COLUMNS_RIS_KEY,
     API_SELECT_COLUMNS_RIS_KEY,
+    API_SELECT_KEYS_RIS_KEY,
     API_FILTERS_RIS_KEY,
     API_PERMISSIONS_RIS_KEY
 )
@@ -326,6 +327,38 @@ class FlaskTestCase(unittest.TestCase):
                 'field_integer': 'Field Integer'
             })
             eq_(rv.status_code, 200)
+
+    def test_get_item_select_meta_data(self):
+        """
+            REST Api: Test get item select meta data
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        selectable_keys = [
+            API_DESCRIPTION_COLUMNS_RIS_KEY,
+            API_LABEL_COLUMNS_RIS_KEY,
+            API_SHOW_COLUMNS_RIS_KEY
+        ]
+        for selectable_key in selectable_keys:
+            argument = {
+                API_SELECT_KEYS_RIS_KEY: [
+                    selectable_key
+                ]
+            }
+            uri = 'api/v1/model1api/1?{}={}'.format(
+                API_URI_RIS_KEY,
+                prison.dumps(argument)
+            )
+            rv = self.auth_client_get(
+                client,
+                token,
+                uri
+            )
+            data = json.loads(rv.data.decode('utf-8'))
+            eq_(len(data.keys()), 1 + 2)  # always exist id, result
+            # We assume that rison meta key equals result meta key
+            assert selectable_key in data
 
     def test_get_item_excluded_cols(self):
         """
@@ -695,6 +728,39 @@ class FlaskTestCase(unittest.TestCase):
         ])
         eq_(rv.status_code, 200)
 
+    def test_get_list_select_meta_data(self):
+        """
+            REST Api: Test get list select meta data
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        selectable_keys = [
+            API_DESCRIPTION_COLUMNS_RIS_KEY,
+            API_LABEL_COLUMNS_RIS_KEY,
+            API_ORDER_COLUMNS_RIS_KEY,
+            API_LIST_COLUMNS_RIS_KEY
+        ]
+        for selectable_key in selectable_keys:
+            argument = {
+                API_SELECT_KEYS_RIS_KEY: [
+                    selectable_key
+                ]
+            }
+            uri = 'api/v1/model1api/?{}={}'.format(
+                API_URI_RIS_KEY,
+                prison.dumps(argument)
+            )
+            rv = self.auth_client_get(
+                client,
+                token,
+                uri
+            )
+            data = json.loads(rv.data.decode('utf-8'))
+            eq_(len(data.keys()), 1 + 3)  # always exist count, ids, result
+            # We assume that rison meta key equals result meta key
+            assert selectable_key in data
+
     def test_get_list_exclude_cols(self):
         """
             REST Api: Test get list with excluded columns
@@ -909,6 +975,40 @@ class FlaskTestCase(unittest.TestCase):
         for rel_field in data[API_EDIT_COLUMNS_RES_KEY]:
             if rel_field['name'] == 'group':
                 eq_(rel_field, expected_rel_add_field)
+
+    def test_info_select_meta_data(self):
+        """
+            REST Api: Test info select meta data
+        """
+        # select meta for add fields
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        selectable_keys = [
+            API_ADD_COLUMNS_RIS_KEY,
+            API_EDIT_COLUMNS_RIS_KEY,
+            API_PERMISSIONS_RIS_KEY,
+            API_FILTERS_RIS_KEY
+        ]
+        for selectable_key in selectable_keys:
+            arguments = {
+                API_SELECT_KEYS_RIS_KEY: [
+                    selectable_key
+                ]
+            }
+            uri = 'api/v1/model1api/_info?{}={}'.format(
+                API_URI_RIS_KEY,
+                prison.dumps(arguments)
+            )
+            rv = self.auth_client_get(
+                client,
+                token,
+                uri
+            )
+            data = json.loads(rv.data.decode('utf-8'))
+            eq_(len(data.keys()), 1)
+            # We assume that rison meta key equals result meta key
+            assert selectable_key in data
 
     def test_delete_item(self):
         """
