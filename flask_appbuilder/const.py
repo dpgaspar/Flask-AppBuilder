@@ -107,7 +107,6 @@ LOGMSG_INF_FAB_ADD_VIEW = "Registering class {0} on menu {1}"
 """ Inform that view class was added, format with class name, name"""
 
 
-
 FLAMSG_ERR_SEC_ACCESS_DENIED = lazy_gettext("Access is Denied")
 """ Access denied flash message """
 
@@ -121,3 +120,34 @@ AUTH_LDAP = 2
 AUTH_REMOTE_USER = 3
 AUTH_OAUTH = 4
 """ Constants for supported authentication types """
+
+#-----------------------------------
+#  REST API Constants
+#-----------------------------------
+
+# Response keys
+
+API_ORDER_COLUMNS_RES_KEY = 'order_columns'
+API_LABEL_COLUMNS_RES_KEY = 'label_columns'
+API_LIST_COLUMNS_RES_KEY = 'list_columns'
+API_SHOW_COLUMNS_RES_KEY = 'include_columns'
+API_ADD_COLUMNS_RES_KEY = 'add_fields'
+API_EDIT_COLUMNS_RES_KEY = 'edit_fields'
+API_DESCRIPTION_COLUMNS_RES_KEY = 'description_columns'
+API_RESULT_RES_KEY = 'result'
+API_FILTERS_RES_KEY = 'filters'
+API_PERMISSIONS_RES_KEY = 'permissions'
+
+# Request Rison keys
+
+API_URI_RIS_KEY = 'q'
+API_ORDER_COLUMNS_RIS_KEY = 'order_columns'
+API_LABEL_COLUMNS_RIS_KEY = 'label_columns'
+API_LIST_COLUMNS_RIS_KEY = 'list_columns'
+API_SHOW_COLUMNS_RIS_KEY = 'include_columns'
+API_ADD_COLUMNS_RIS_KEY = 'add_fields'
+API_EDIT_COLUMNS_RIS_KEY = 'edit_fields'
+API_DESCRIPTION_COLUMNS_RIS_KEY = 'description_columns'
+API_FILTERS_RIS_KEY = 'filters'
+API_PERMISSIONS_RIS_KEY = 'permissions'
+API_SELECT_COLUMNS_RIS_KEY = 'columns'

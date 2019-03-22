@@ -174,7 +174,6 @@ We can use this package, to help us dump or load python structures to Rison::
         "number": 777,
         "string": "string",
         "null": None
-
     }
 
     print(prison.dumps(b))
@@ -624,7 +623,7 @@ by just defining new methods and protecting them with the ``protect`` decorator:
     }
 
 On all GET HTTP methods we can select which meta data keys we want, this can
-be done using *Rison* URI arguments. So the **_info** endpoint is not exception.
+be done using *Rison* URI arguments. So the **_info** endpoint is no exception.
 The across the board way to filter meta data is to send a GET request
 using the following structure::
 
@@ -865,7 +864,7 @@ As before meta data can be chosen using *Rison* arguments::
 
 Will only fetch the *label_columns* meta data key
 
-And we can chose which columns to fetch::
+And we can choose which columns to fetch::
 
     (columns:!(name,address))
 

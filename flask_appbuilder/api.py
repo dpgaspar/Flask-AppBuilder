@@ -9,10 +9,31 @@ from flask_babel import lazy_gettext as _
 from .security.decorators import permission_name, protect
 from marshmallow import ValidationError
 from ._compat import as_unicode
+from .const import (
+    API_URI_RIS_KEY,
+    API_ORDER_COLUMNS_RES_KEY,
+    API_LABEL_COLUMNS_RES_KEY,
+    API_LIST_COLUMNS_RES_KEY,
+    API_DESCRIPTION_COLUMNS_RES_KEY,
+    API_SHOW_COLUMNS_RES_KEY,
+    API_ADD_COLUMNS_RES_KEY,
+    API_EDIT_COLUMNS_RES_KEY,
+    API_FILTERS_RES_KEY,
+    API_PERMISSIONS_RES_KEY,
+    API_RESULT_RES_KEY,
+    API_ORDER_COLUMNS_RIS_KEY,
+    API_LABEL_COLUMNS_RIS_KEY,
+    API_LIST_COLUMNS_RIS_KEY,
+    API_DESCRIPTION_COLUMNS_RIS_KEY,
+    API_SHOW_COLUMNS_RIS_KEY,
+    API_ADD_COLUMNS_RIS_KEY,
+    API_EDIT_COLUMNS_RIS_KEY,
+    API_SELECT_COLUMNS_RIS_KEY,
+    API_FILTERS_RIS_KEY,
+    API_PERMISSIONS_RIS_KEY
+)
 
 log = logging.getLogger(__name__)
-
-URI_RISON_KEY = 'q'
 
 
 def get_error_msg():
@@ -56,7 +77,7 @@ def rison(f):
     """
     def wraps(self, *args, **kwargs):
 
-        value = request.args.get(URI_RISON_KEY, None)
+        value = request.args.get(API_URI_RIS_KEY, None)
         kwargs['rison'] = dict()
         if value:
             try:
@@ -249,7 +270,7 @@ class BaseApi(object):
                     v(self, response, **kwargs)
 
     def merge_current_user_permissions(self, response, **kwargs):
-        response['permissions'] =\
+        response[API_PERMISSIONS_RES_KEY] =\
             self.appbuilder.sm.get_user_permissions_on_view(
                 self.__class__.__name__
             )
@@ -559,8 +580,11 @@ class ModelRestApi(BaseModelApi):
 
     def create_blueprint(self, appbuilder, *args, **kwargs):
         self._init_model_schemas()
-        return super(ModelRestApi, self).create_blueprint(appbuilder,
-                                                      *args, **kwargs)
+        return super(ModelRestApi, self).create_blueprint(
+            appbuilder,
+            *args,
+            **kwargs
+        )
 
     def _init_model_schemas(self):
         # Create Marshmalow schemas if one is not specified
@@ -646,7 +670,7 @@ class ModelRestApi(BaseModelApi):
         self.add_query_rel_fields = self.add_query_rel_fields or dict()
 
     def merge_add_field_info(self, response, **kwargs):
-        response['add_fields'] = \
+        response[API_ADD_COLUMNS_RES_KEY] = \
             self._get_fields_info(
                 self.add_columns,
                 self.add_model_schema,
@@ -654,7 +678,7 @@ class ModelRestApi(BaseModelApi):
             )
 
     def merge_edit_field_info(self, response, **kwargs):
-        response['edit_fields'] = \
+        response[API_EDIT_COLUMNS_RES_KEY] = \
             self._get_fields_info(
                 self.edit_columns,
                 self.edit_model_schema,
@@ -670,17 +694,17 @@ class ModelRestApi(BaseModelApi):
                 {'name': as_unicode(flt.name),
                  'operator': flt.arg_name} for flt in dict_filters[col]
             ]
-        response['filters'] = search_filters
+        response[API_FILTERS_RES_KEY] = search_filters
 
     @expose('/_info', methods=['GET'])
     @protect
     @rison
     @safe
     @permission_name('get')
-    @merge_response_func(BaseApi.merge_current_user_permissions, 'permissions')
-    @merge_response_func(merge_add_field_info, 'add_fields')
-    @merge_response_func(merge_edit_field_info, 'edit_fields')
-    @merge_response_func(merge_search_filters, "filters")
+    @merge_response_func(BaseApi.merge_current_user_permissions, API_PERMISSIONS_RIS_KEY)
+    @merge_response_func(merge_add_field_info, API_ADD_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_edit_field_info, API_EDIT_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_search_filters, API_FILTERS_RIS_KEY)
     def info(self, **kwargs):
         """
             Endpoint that renders a response for CRUD REST meta data
@@ -720,7 +744,9 @@ class ModelRestApi(BaseModelApi):
                 return self.response(
                     201,
                     **{
-                        'result': self.add_model_schema.dump(item.data, many=False).data,
+                        API_RESULT_RES_KEY: self.add_model_schema.dump(
+                            item.data, many=False
+                        ).data,
                         'id': self.datamodel.get_pk_value(item.data)
                     }
                 )
@@ -750,7 +776,9 @@ class ModelRestApi(BaseModelApi):
                     self.post_update(item)
                     return self.response(
                         200,
-                        result=self.edit_model_schema.dump(item.data, many=False).data
+                        **{API_RESULT_RES_KEY: self.edit_model_schema.dump(
+                            item.data,
+                            many=False).data}
                     )
                 else:
                     return self.response_500()
@@ -772,47 +800,47 @@ class ModelRestApi(BaseModelApi):
                 return self.response_500()
 
     def merge_label_columns(self, response, **kwargs):
-        _pruned_select_cols = kwargs.get('columns', [])
+        _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if _pruned_select_cols:
             _show_columns = _pruned_select_cols
         else:
             _show_columns = self.show_columns
-        response['label_columns'] = self._label_columns_json(_show_columns)
+        response[API_LABEL_COLUMNS_RES_KEY] = self._label_columns_json(_show_columns)
 
     def merge_include_columns(self, response, **kwargs):
-        _pruned_select_cols = kwargs.get('columns', [])
+        _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if _pruned_select_cols:
-            response['include_columns'] = _pruned_select_cols
+            response[API_SHOW_COLUMNS_RES_KEY] = _pruned_select_cols
         else:
-            response['include_columns'] = self.show_columns
+            response[API_SHOW_COLUMNS_RES_KEY] = self.show_columns
 
     def merge_description_columns(self, response, **kwargs):
-        _pruned_select_cols = kwargs.get('columns', [])
+        _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if _pruned_select_cols:
-            response['description_columns'] = \
+            response[API_DESCRIPTION_COLUMNS_RES_KEY] = \
                 self._description_columns_json(_pruned_select_cols)
         else:
-            response['description_columns'] = \
+            response[API_DESCRIPTION_COLUMNS_RES_KEY] = \
                 self._description_columns_json(self.show_columns)
 
     def merge_list_columns(self, response, **kwargs):
-        _pruned_select_cols = kwargs.get('columns', [])
+        _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if _pruned_select_cols:
-            response['list_columns'] = _pruned_select_cols
+            response[API_LIST_COLUMNS_RES_KEY] = _pruned_select_cols
         else:
-            response['list_columns'] = self.list_columns
+            response[API_LIST_COLUMNS_RES_KEY] = self.list_columns
 
     def merge_order_columns(self, response, **kwargs):
-        _pruned_select_cols = kwargs.get('columns', [])
-        response['order_columns'] = [
+        _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
+        response[API_ORDER_COLUMNS_RES_KEY] = [
             order_col
             for order_col in self.order_columns if order_col in _pruned_select_cols
         ]
 
     @rison
-    @merge_response_func(merge_label_columns, "label_columns")
-    @merge_response_func(merge_include_columns, "include_columns")
-    @merge_response_func(merge_description_columns, "description_columns")
+    @merge_response_func(merge_label_columns, API_LABEL_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_include_columns, API_SHOW_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_description_columns, API_DESCRIPTION_COLUMNS_RIS_KEY)
     def _get_item(self, pk, **kwargs):
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
@@ -820,7 +848,7 @@ class ModelRestApi(BaseModelApi):
 
         _response = dict()
         _args = kwargs.get('rison', {})
-        select_cols = _args.get('columns', [])
+        select_cols = _args.get(API_SELECT_COLUMNS_RIS_KEY, [])
         _pruned_select_cols = [
             col for col in select_cols if col in self.show_columns
         ]
@@ -828,7 +856,7 @@ class ModelRestApi(BaseModelApi):
             _response,
             self._get_item,
             _args,
-            **{"columns": _pruned_select_cols}
+            **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols}
         )
         if _pruned_select_cols:
             _show_model_schema = self._model_schema_factory(_pruned_select_cols)
@@ -836,25 +864,25 @@ class ModelRestApi(BaseModelApi):
             _show_model_schema = self.show_model_schema
 
         _response['id'] = pk
-        _response['result'] = _show_model_schema.dump(item, many=False).data
+        _response[API_RESULT_RES_KEY] = _show_model_schema.dump(item, many=False).data
         return self.response(200, **_response)
 
     @rison
-    @merge_response_func(merge_order_columns, "order_columns")
-    @merge_response_func(merge_label_columns, "label_columns")
-    @merge_response_func(merge_description_columns, "description_columns")
-    @merge_response_func(merge_list_columns, 'list_columns')
+    @merge_response_func(merge_order_columns, API_ORDER_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_label_columns, API_LABEL_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_description_columns, API_DESCRIPTION_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_list_columns, API_LIST_COLUMNS_RIS_KEY)
     def _get_list(self, **kwargs):
         _response = dict()
         _args = kwargs.get('rison', {})
         # handle select columns
-        select_cols = _args.get('columns', [])
+        select_cols = _args.get(API_SELECT_COLUMNS_RIS_KEY, [])
         _pruned_select_cols = [col for col in select_cols if col in self.list_columns]
         self.set_response_key_mappings(
             _response,
             self._get_list,
             _args,
-            **{"columns": _pruned_select_cols}
+            **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols}
         )
 
         if _pruned_select_cols:
@@ -862,14 +890,9 @@ class ModelRestApi(BaseModelApi):
         else:
             _list_model_schema = self.list_model_schema
         # handle filters
-        self._filters.clear_filters()
-        self._filters.rest_add_filters(_args.get('filters', []))
-        joined_filters = self._filters.get_joined_filters(self._base_filters)
+        joined_filters = self._handle_filters_args(_args)
         # handle base order
-        order_column = _args.get('order_column', '')
-        order_direction = _args.get('order_direction', '')
-        if not order_column and self.base_order:
-            order_column, order_direction = self.base_order
+        order_column, order_direction = self._handle_order_args(_args)
         # handle pagination
         page_index, page_size = self._handle_page_args(_args)
         # Make the query
@@ -879,7 +902,7 @@ class ModelRestApi(BaseModelApi):
                                           page=page_index,
                                           page_size=page_size)
         pks = self.datamodel.get_keys(lst)
-        _response['result'] = _list_model_schema.dump(lst, many=True).data
+        _response[API_RESULT_RES_KEY] = _list_model_schema.dump(lst, many=True).data
         _response['ids'] = pks
         _response['count'] = count
         return self.response(200, **_response)
@@ -891,8 +914,10 @@ class ModelRestApi(BaseModelApi):
     """
     def _handle_page_args(self, rison_args):
         """
-            Helper function to handle page rison page
-            argument, sets defaults and impose MAX_PAGE_SIZE
+            Helper function to handle rison page
+            arguments, sets defaults and impose
+            FAB_API_MAX_PAGE_SIZE
+
         :param args:
         :return: (tuple) page, page_size
         """
@@ -902,6 +927,25 @@ class ModelRestApi(BaseModelApi):
         if page_size > max_page_size:
             page_size = max_page_size
         return page_index, page_size
+
+    def _handle_order_args(self, rison_args):
+        """
+            Help function to handle rison order
+            arguments
+
+        :param rison_args:
+        :return:
+        """
+        order_column = rison_args.get('order_column', '')
+        order_direction = rison_args.get('order_direction', '')
+        if not order_column and self.base_order:
+            order_column, order_direction = self.base_order
+        return order_column, order_direction
+
+    def _handle_filters_args(self, rison_args):
+        self._filters.clear_filters()
+        self._filters.rest_add_filters(rison_args.get(API_FILTERS_RIS_KEY, []))
+        return self._filters.get_joined_filters(self._base_filters)
 
     def _description_columns_json(self, cols=None):
         """
