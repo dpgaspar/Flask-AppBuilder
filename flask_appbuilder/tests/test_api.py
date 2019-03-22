@@ -2,11 +2,36 @@ import unittest
 import os
 import json
 import logging
+import prison
 from nose.tools import eq_
 from flask_appbuilder import SQLA
 from .sqla.models import Model1, Model2, insert_data
 from flask_appbuilder.models.sqla.filters import \
     FilterGreater, FilterSmaller
+from flask_appbuilder.const import (
+    API_URI_RIS_KEY,
+    API_ORDER_COLUMNS_RES_KEY,
+    API_LABEL_COLUMNS_RES_KEY,
+    API_LIST_COLUMNS_RES_KEY,
+    API_DESCRIPTION_COLUMNS_RES_KEY,
+    API_SHOW_COLUMNS_RES_KEY,
+    API_ADD_COLUMNS_RES_KEY,
+    API_EDIT_COLUMNS_RES_KEY,
+    API_FILTERS_RES_KEY,
+    API_PERMISSIONS_RES_KEY,
+    API_RESULT_RES_KEY,
+    API_ORDER_COLUMNS_RIS_KEY,
+    API_LABEL_COLUMNS_RIS_KEY,
+    API_LIST_COLUMNS_RIS_KEY,
+    API_DESCRIPTION_COLUMNS_RIS_KEY,
+    API_SHOW_COLUMNS_RIS_KEY,
+    API_ADD_COLUMNS_RIS_KEY,
+    API_EDIT_COLUMNS_RIS_KEY,
+    API_SELECT_COLUMNS_RIS_KEY,
+    API_FILTERS_RIS_KEY,
+    API_PERMISSIONS_RIS_KEY
+)
+
 
 log = logging.getLogger(__name__)
 
@@ -260,7 +285,7 @@ class FlaskTestCase(unittest.TestCase):
             self.assert_get_item(rv, data, i - 1)
 
     def assert_get_item(self, rv, data, value):
-        eq_(data['result'], {
+        eq_(data[API_RESULT_RES_KEY], {
             'field_date': None,
             'field_float': float(value),
             'field_integer': value,
@@ -269,7 +294,7 @@ class FlaskTestCase(unittest.TestCase):
         # test descriptions
         eq_(data['description_columns'], self.model1api.description_columns)
         # test labels
-        eq_(data['label_columns'], {
+        eq_(data[API_LABEL_COLUMNS_RES_KEY], {
             'field_date': 'Field Date',
             'field_float': 'Field Float',
             'field_integer': 'Field Integer',
@@ -285,18 +310,19 @@ class FlaskTestCase(unittest.TestCase):
         token = self.login(client, USERNAME, PASSWORD)
 
         for i in range(1, MODEL1_DATA_SIZE):
-            uri = 'api/v1/model1api/{}?q=(columns:!(field_integer))'.format(i)
+            uri = ('api/v1/model1api/{}?q=({}:!(field_integer))'
+                   .format(i, API_SELECT_COLUMNS_RIS_KEY))
             rv = self.auth_client_get(
                 client,
                 token,
                 uri
             )
             data = json.loads(rv.data.decode('utf-8'))
-            eq_(data['result'], {'field_integer': i - 1})
-            eq_(data['description_columns'], {
+            eq_(data[API_RESULT_RES_KEY], {'field_integer': i - 1})
+            eq_(data[API_DESCRIPTION_COLUMNS_RES_KEY], {
                 'field_integer': 'Field Integer'
             })
-            eq_(data['label_columns'], {
+            eq_(data[API_LABEL_COLUMNS_RES_KEY], {
                 'field_integer': 'Field Integer'
             })
             eq_(rv.status_code, 200)
@@ -315,7 +341,7 @@ class FlaskTestCase(unittest.TestCase):
             'api/v1/model1apiexcludecols/{}'.format(pk)
         )
         data = json.loads(rv.data.decode('utf-8'))
-        eq_(data['result'], {
+        eq_(data[API_RESULT_RES_KEY], {
             'field_string': 'test0'
         })
         eq_(rv.status_code, 200)
@@ -375,7 +401,7 @@ class FlaskTestCase(unittest.TestCase):
         )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(rv.status_code, 200)
-        eq_(data['result'], {'group': 1})
+        eq_(data[API_RESULT_RES_KEY], {'group': 1})
 
     def test_get_list(self):
         """
@@ -394,9 +420,9 @@ class FlaskTestCase(unittest.TestCase):
         # Tests count property
         eq_(data['count'], MODEL1_DATA_SIZE)
         # Tests data result default page size
-        eq_(len(data['result']), self.model1api.page_size)
+        eq_(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
         for i in range(1, self.model1api.page_size):
-            self.assert_get_list(rv, data['result'][i - 1], i - 1)
+            self.assert_get_list(rv, data[API_RESULT_RES_KEY][i - 1], i - 1)
 
     @staticmethod
     def assert_get_list(rv, data, value):
@@ -416,14 +442,21 @@ class FlaskTestCase(unittest.TestCase):
         token = self.login(client, USERNAME, PASSWORD)
 
         # test string order asc
-        uri = 'api/v1/model1api/?q=(order_column:field_integer,order_direction:asc)'
+        arguments = {
+            "order_column": "field_integer",
+            "order_direction": "asc"
+        }
+        uri = 'api/v1/model1api/?{}={}'.format(
+            API_URI_RIS_KEY,
+            prison.dumps(arguments)
+        )
         rv = self.auth_client_get(
             client,
             token,
             uri
         )
         data = json.loads(rv.data.decode('utf-8'))
-        eq_(data['result'][0], {
+        eq_(data[API_RESULT_RES_KEY][0], {
             'field_date': None,
             'field_float': 0.0,
             'field_integer': 0,
@@ -431,14 +464,21 @@ class FlaskTestCase(unittest.TestCase):
         })
         eq_(rv.status_code, 200)
         # test string order desc
-        uri = 'api/v1/model1api/?q=(order_column:field_integer,order_direction:desc)'
+        arguments = {
+            "order_column": "field_integer",
+            "order_direction": "desc"
+        }
+        uri = 'api/v1/model1api/?{}={}'.format(
+            API_URI_RIS_KEY,
+            prison.dumps(arguments)
+        )
         rv = self.auth_client_get(
             client,
             token,
             uri
         )
         data = json.loads(rv.data.decode('utf-8'))
-        eq_(data['result'][0], {
+        eq_(data[API_RESULT_RES_KEY][0], {
             'field_date': None,
             'field_float': float(MODEL1_DATA_SIZE - 1),
             'field_integer': MODEL1_DATA_SIZE - 1,
@@ -460,7 +500,7 @@ class FlaskTestCase(unittest.TestCase):
             'api/v1/model1apiorder/'
         )
         data = json.loads(rv.data.decode('utf-8'))
-        eq_(data['result'][0], {
+        eq_(data[API_RESULT_RES_KEY][0], {
             'id': MODEL1_DATA_SIZE,
             'field_date': None,
             'field_float': float(MODEL1_DATA_SIZE - 1),
@@ -468,15 +508,21 @@ class FlaskTestCase(unittest.TestCase):
             'field_string': "test{}".format(MODEL1_DATA_SIZE - 1)
         })
         # Test override
-        uri = 'api/v1/model1apiorder/?q_=(order_column:field_integer,order_direction:asc)'
+        arguments = {
+            "order_column": "field_integer",
+            "order_direction": "asc"
+        }
+        uri = 'api/v1/model1apiorder/?{}={}'.format(
+            API_URI_RIS_KEY,
+            prison.dumps(arguments)
+        )
         rv = self.auth_client_get(
             client,
             token,
-            'api/v1/model1apiorder/?q=(order_column:field_integer,order_direction:asc)'
+            uri
         )
-
         data = json.loads(rv.data.decode('utf-8'))
-        eq_(data['result'][0], {
+        eq_(data[API_RESULT_RES_KEY][0], {
             'id': 1,
             'field_date': None,
             'field_float': 0.0,
@@ -493,24 +539,41 @@ class FlaskTestCase(unittest.TestCase):
         token = self.login(client, USERNAME, PASSWORD)
 
         # test page zero
-        uri = 'api/v1/model1api/?q=(page_size:{},page:0,order_column:field_integer,order_direction:asc)'.format(page_size)
-
+        arguments = {
+            "page_size": page_size,
+            "page": 0,
+            "order_column": "field_integer",
+            "order_direction": "asc"
+        }
+        uri = 'api/v1/model1api/?{}={}'.format(
+            API_URI_RIS_KEY,
+            prison.dumps(arguments)
+        )
         rv = self.auth_client_get(
             client,
             token,
             uri
         )
         data = json.loads(rv.data.decode('utf-8'))
-        eq_(data['result'][0], {
+        eq_(data[API_RESULT_RES_KEY][0], {
             'field_date': None,
             'field_float': 0.0,
             'field_integer': 0,
             'field_string': "test0"
         })
         eq_(rv.status_code, 200)
-        eq_(len(data['result']), page_size)
-        # test page zero
-        uri = 'api/v1/model1api/?q=(page_size:{},page:1,order_column:field_integer,order_direction:asc)'.format(page_size)
+        eq_(len(data[API_RESULT_RES_KEY]), page_size)
+        # test page one
+        arguments = {
+            "page_size": page_size,
+            "page": 1,
+            "order_column": "field_integer",
+            "order_direction": "asc"
+        }
+        uri = 'api/v1/model1api/?{}={}'.format(
+            API_URI_RIS_KEY,
+            prison.dumps(arguments)
+        )
         rv = self.auth_client_get(
             client,
             token,
@@ -518,14 +581,14 @@ class FlaskTestCase(unittest.TestCase):
         )
 
         data = json.loads(rv.data.decode('utf-8'))
-        eq_(data['result'][0], {
+        eq_(data[API_RESULT_RES_KEY][0], {
             'field_date': None,
             'field_float': float(page_size),
             'field_integer': page_size,
             'field_string': "test{}".format(page_size)
         })
         eq_(rv.status_code, 200)
-        eq_(len(data['result']), page_size)
+        eq_(len(data[API_RESULT_RES_KEY]), page_size)
 
     def test_get_list_max_page_size(self):
         """
@@ -536,14 +599,23 @@ class FlaskTestCase(unittest.TestCase):
         token = self.login(client, USERNAME, PASSWORD)
 
         # test page zero
-        uri = 'api/v1/model1api/?q=(page_size:{},page:0,order_column:field_integer,order_direction:asc)'.format(page_size)
+        arguments = {
+            "page_size": page_size,
+            "page": 0,
+            "order_column": "field_integer",
+            "order_direction": "asc"
+        }
+        uri = 'api/v1/model1api/?{}={}'.format(
+            API_URI_RIS_KEY,
+            prison.dumps(arguments)
+        )
         rv = self.auth_client_get(
             client,
             token,
             uri
         )
         data = json.loads(rv.data.decode('utf-8'))
-        eq_(len(data['result']), MAX_PAGE_SIZE)
+        eq_(len(data[API_RESULT_RES_KEY]), MAX_PAGE_SIZE)
 
     def test_get_list_filters(self):
         """
@@ -554,7 +626,21 @@ class FlaskTestCase(unittest.TestCase):
 
         filter_value = 5
         # test string order asc
-        uri = 'api/v1/model1api/?q=(filters:!((col:field_integer,opr:gt,value:{})),order_columns:field_integer,order_direction:asc)'.format(filter_value)
+        arguments = {
+            API_FILTERS_RIS_KEY: [
+                {
+                    "col": "field_integer",
+                    "opr": "gt",
+                    "value": filter_value
+                }
+            ],
+            "order_column": "field_integer",
+            "order_direction": "asc"
+        }
+
+        uri = 'api/v1/model1api/?{}={}'.format(
+            API_URI_RIS_KEY,
+            prison.dumps(arguments))
 
         rv = self.auth_client_get(
             client,
@@ -562,7 +648,7 @@ class FlaskTestCase(unittest.TestCase):
             uri
         )
         data = json.loads(rv.data.decode('utf-8'))
-        eq_(data['result'][0], {
+        eq_(data[API_RESULT_RES_KEY][0], {
             'field_date': None,
             'field_float': float(filter_value + 1),
             'field_integer': filter_value + 1,
@@ -577,23 +663,34 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
 
-        uri = 'api/v1/model1api/?q=(columns:!(field_integer),order_column:field_integer,order_direction:asc)'
+        argument = {
+            API_SELECT_COLUMNS_RIS_KEY: [
+                "field_integer"
+            ],
+            "order_column": "field_integer",
+            "order_direction": "asc"
+        }
+
+        uri = 'api/v1/model1api/?{}={}'.format(
+            API_URI_RIS_KEY,
+            prison.dumps(argument)
+        )
         rv = self.auth_client_get(
             client,
             token,
             uri
         )
         data = json.loads(rv.data.decode('utf-8'))
-        eq_(data['result'][0], {
+        eq_(data[API_RESULT_RES_KEY][0], {
             'field_integer': 0,
         })
-        eq_(data['label_columns'], {
+        eq_(data[API_LABEL_COLUMNS_RES_KEY], {
             'field_integer': 'Field Integer'
         })
-        eq_(data['description_columns'], {
+        eq_(data[API_DESCRIPTION_COLUMNS_RES_KEY], {
             'field_integer': 'Field Integer'
         })
-        eq_(data['list_columns'], [
+        eq_(data[API_LIST_COLUMNS_RES_KEY], [
             'field_integer'
         ])
         eq_(rv.status_code, 200)
@@ -612,7 +709,7 @@ class FlaskTestCase(unittest.TestCase):
             uri
         )
         data = json.loads(rv.data.decode('utf-8'))
-        eq_(data['result'][0], {
+        eq_(data[API_RESULT_RES_KEY][0], {
             'id': 1,
             'field_string': 'test0'
         })
@@ -624,7 +721,14 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
 
-        uri = 'api/v1/model1apifiltered/?order_columns:field_integer,order_direction:asc'
+        arguments = {
+            "order_column": "field_integer",
+            "order_direction": "desc"
+        }
+        uri = 'api/v1/model1apifiltered/?{}={}'.format(
+            API_URI_RIS_KEY,
+            prison.dumps(arguments)
+        )
         rv = self.auth_client_get(
             client,
             token,
@@ -640,7 +744,7 @@ class FlaskTestCase(unittest.TestCase):
                 'id': 4
             }
         ]
-        eq_(data['result'], expected_result)
+        eq_(data[API_RESULT_RES_KEY], expected_result)
 
     def test_info_filters(self):
         """
@@ -736,8 +840,8 @@ class FlaskTestCase(unittest.TestCase):
             for item in expect_add_fields:
                 if item['name'] == edit_col:
                     expect_edit_fields.append(item)
-        eq_(data['add_fields'], expect_add_fields)
-        eq_(data['edit_fields'], expect_edit_fields)
+        eq_(data[API_ADD_COLUMNS_RES_KEY], expect_add_fields)
+        eq_(data[API_EDIT_COLUMNS_RES_KEY], expect_edit_fields)
 
     def test_info_fields_rel_field(self):
         """
@@ -799,10 +903,10 @@ class FlaskTestCase(unittest.TestCase):
                 }
             ]
         }
-        for rel_field in data['add_fields']:
+        for rel_field in data[API_ADD_COLUMNS_RES_KEY]:
             if rel_field['name'] == 'group':
                 eq_(rel_field, expected_rel_add_field)
-        for rel_field in data['edit_fields']:
+        for rel_field in data[API_EDIT_COLUMNS_RES_KEY]:
             if rel_field['name'] == 'group':
                 eq_(rel_field, expected_rel_add_field)
 
@@ -969,8 +1073,8 @@ class FlaskTestCase(unittest.TestCase):
         token = self.login(client, USERNAME, PASSWORD)
         pk = 1
         item = dict(
-            field_string="test11",
-            field_integer="test11",
+            field_string="test{}".format(MODEL1_DATA_SIZE+1),
+            field_integer="test{}".format(MODEL1_DATA_SIZE+1),
             field_float=11.0
         )
         uri = 'api/v1/model1api/{}'.format(pk)
@@ -1044,7 +1148,7 @@ class FlaskTestCase(unittest.TestCase):
         )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(rv.status_code, 201)
-        eq_(data['result'], item)
+        eq_(data[API_RESULT_RES_KEY], item)
         model = self.db.session.query(Model1).filter_by(
             field_string='test{}'.format(MODEL1_DATA_SIZE+1)
         ).first()
@@ -1163,9 +1267,9 @@ class FlaskTestCase(unittest.TestCase):
         # Tests count property
         eq_(data['count'], MODEL1_DATA_SIZE)
         # Tests data result default page size
-        eq_(len(data['result']), self.model1api.page_size)
+        eq_(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
         for i in range(1, self.model1api.page_size):
-            item = data['result'][i - 1]
+            item = data[API_RESULT_RES_KEY][i - 1]
             eq_(
                 item['full_concat'], "{}.{}.{}.{}".format(
                     "test" + str(i - 1),
