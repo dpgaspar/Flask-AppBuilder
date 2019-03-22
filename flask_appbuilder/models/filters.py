@@ -30,7 +30,6 @@ class BaseFilter(object):
         REST API use
     """
 
-
     def __init__(self, column_name, datamodel, is_related_view=False):
         """
             Constructor.
@@ -160,7 +159,6 @@ class Filters(object):
         """
         for _filter in data:
             filter_class = map_args_filter.get(_filter['opr'], None)
-            print("OPR {}".format(filter_class))
             if filter_class:
                 self.add_filter(_filter['col'], filter_class,
                                 _filter['value'])
