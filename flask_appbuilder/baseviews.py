@@ -64,7 +64,9 @@ class BaseView(object):
     """ The template folder relative location """
     static_folder = 'static'
     """  The static folder relative location """
+    static_url_path = '/static'
     base_permissions = None
+    base_permissions_inclusive = ['menu_access']
     """
         List with allowed base permission.
         Use it like this if you want to restrict your view to readonly::
@@ -94,6 +96,8 @@ class BaseView(object):
                     permission_name = getattr(getattr(self, attr_name), '_permission_name')
                     self.base_permissions.add('can_' + permission_name)
             self.base_permissions = list(self.base_permissions)
+        if self.base_permissions_inclusive:
+            self.base_permissions.extend(self.base_permissions_inclusive)
         if not self.extra_args:
             self.extra_args = dict()
         self._apis = dict()
@@ -104,7 +108,8 @@ class BaseView(object):
 
     def create_blueprint(self, appbuilder,
                          endpoint=None,
-                         static_folder=None):
+                         static_folder=None,
+						 static_url_path=None):
         """
             Create Flask blueprint. You will generally not use it
 
@@ -123,18 +128,22 @@ class BaseView(object):
 
         if self.route_base is None:
             self.route_base = '/' + self.__class__.__name__.lower()
-
-        self.static_folder = static_folder
+        if static_url_path:
+            self.static_url_path=static_url_path
+        #self.static_folder = static_folder
         if not static_folder:
             # Create blueprint and register rules
-            self.blueprint = Blueprint(self.endpoint, __name__,
-                                       url_prefix=self.route_base,
-                                       template_folder=self.template_folder)
-        else:
-            self.blueprint = Blueprint(self.endpoint, __name__,
+            self.blueprint = Blueprint(self.endpoint, self.__module__,
                                        url_prefix=self.route_base,
                                        template_folder=self.template_folder,
-                                       static_folder=static_folder)
+                                       static_folder=self.static_folder,
+                                       static_url_path=self.static_url_path)
+        else:
+            self.blueprint = Blueprint(self.endpoint, self.__module__,
+                                       url_prefix=self.route_base,
+                                       template_folder=self.template_folder,
+                                       static_folder=static_folder,
+                                       static_url_path=self.static_url_path)
         self._register_urls()
         return self.blueprint
 
