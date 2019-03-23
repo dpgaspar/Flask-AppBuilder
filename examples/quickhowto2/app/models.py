@@ -1,7 +1,7 @@
 from flask import Markup
 import datetime
 import math
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, Numeric
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, DateTime, Float, Numeric
 from sqlalchemy.orm import relationship
 from flask_appbuilder.models.mixins import AuditMixin, BaseMixin, FileColumn, ImageColumn
 from flask_appbuilder import Model
@@ -82,6 +82,7 @@ class Contact(Model):
     name =  Column(String(150), unique = True, nullable=False)
     address = Column(String(564))
     birthday = Column(Date, nullable=True)
+    created_at = Column(DateTime, nullable=True)
     personal_phone = Column(String(20))
     personal_celphone = Column(String(20))
     contact_group_id = Column(Integer, ForeignKey('contact_group.id'), nullable=False)

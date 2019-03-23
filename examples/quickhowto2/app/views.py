@@ -61,7 +61,7 @@ class MyListWidgetOverride(ListWidget):
 
 class ContactModelView2(ModelView):
     datamodel = SQLAInterface(Contact)
-    list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
+    list_columns = ['name', 'personal_celphone', 'birthday', 'created_at', 'contact_group.name']
     add_form_query_rel_fields = {'gender':[['name',FilterStartsWith,'F']]}
     search_form_query_rel_fields = {'gender':[['name',FilterStartsWith,'F']]}
     list_template = 'mylist.html'
@@ -96,21 +96,21 @@ class ContactModelView(ModelView):
         ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
-            {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
+            {'fields': ['address', 'birthday', 'created_at', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     add_fieldsets = [
         ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
-            {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
+            {'fields': ['address', 'birthday', 'created_at', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     edit_fieldsets = [
         ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
-            {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
+            {'fields': ['address', 'birthday', 'created_at', 'personal_phone', 'personal_celphone'], 'expanded': False}),
     ]
 
     @action("muldelete", "Delete", Markup("<p>Delete all Really?</p><p>Ok then...</p>"), "fa-rocket")

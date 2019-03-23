@@ -7,6 +7,15 @@
 {% endblock %}
 
 {% block list_search scoped %}
+
+<div id="timezone-selector">
+  <label> Timezone: </label>
+  <select id="timezone-input">
+    <option>UTC</option>
+     <option>Local</option>
+  </select>
+<div/>
+
     Text before the search section
     {{ super() }}
 {% endblock %}
@@ -17,3 +26,19 @@
 {% endblock %}
 
 
+{% block add_tail_js %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#timezone-input').on('change', function(e) {
+        let timeZoneId = this.value == "Local" ? moment.tz.guess() : this.value;
+        let picker = $('#datetimepicker').data("DateTimePicker");
+        picker.format("YYYY-MM-DD HH:mm:ss ZZ");
+        let selectedDateTime = picker.date();
+        if (selectedDateTime) {
+            picker.date(selectedDateTime.tz(timeZoneId));
+        }
+        picker.timeZone(timeZoneId);
+    });
+});
+</script>
+{% endblock %}

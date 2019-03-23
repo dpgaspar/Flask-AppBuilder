@@ -1,7 +1,7 @@
 from app import db
 from app.models import ContactGroup, Gender, Contact
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 
 db.create_all()
 def get_random_name(names_list, size=1):
@@ -41,6 +41,7 @@ for i in range(1, 50):
     month = random.choice(range(1, 12))
     day = random.choice(range(1, 28))
     c.birthday = datetime(year, month, day)
+    c.created_at = datetime.now() - timedelta(days=random.randint(0, 365))
     db.session.add(c)
     try:
         db.session.commit()
