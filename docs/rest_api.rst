@@ -288,7 +288,11 @@ For this we POST request with a JSON payload using::
     }
 
 Notice the *provider* argument, FAB currently supports DB and LDAP
-authentication backends for the Api.
+authentication backends for the Api. The login endpoint returns a fresh **access token** and optionally
+a **refresh token**. You can renew the **access token** using the **refresh token** but this time
+the returned token will not be fresh. To obtain a new non fresh access token
+use ``refresh`` endpoint with the **refresh token**. To obtain a **refresh token** on the login endpoint
+send the optional parameter **"refresh": true** on the JSON PUT payload.
 
 Let's request our Token then::
 
@@ -334,6 +338,17 @@ methods::
 
     class MyFirstApi(BaseApi):
         base_permissions = ['can_private']
+
+
+You can create an alternate JWT user loader, this can be useful if you want
+to use an external Authentication provider and map the JWT identity to your
+user Model::
+
+    @appbuilder.sm.jwt_manager.user_loader_callback_loader
+    def alternate_user_loader(identity):
+        # find the user by it's identity
+        ...
+        return user
 
 
 Model REST Api

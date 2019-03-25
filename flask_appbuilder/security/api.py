@@ -1,8 +1,9 @@
 from flask import request
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, create_refresh_token, \
+    jwt_refresh_token_required, get_jwt_identity
 from flask_babel import lazy_gettext
 from ..views import expose
-from ..api import BaseApi, ModelRestApi
+from ..api import BaseApi, ModelRestApi, safe
 
 
 class SecurityApi(BaseApi):
@@ -10,16 +11,19 @@ class SecurityApi(BaseApi):
     route_base = '/api/v1/security'
 
     @expose('/login', methods=['POST'])
+    @safe
     def login(self):
         """
-            Login endpoint for the API returns a JWT
-        :return:
+            Login endpoint for the API returns a JWT and possibly a refresh token
+        :return: Flask response with JSON payload containing an
+            access_token and refresh_token
         """
         if not request.is_json:
             return self.response_400(message="Request payload is not JSON")
         username = request.json.get('username', None)
         password = request.json.get('password', None)
         provider = request.json.get('provider', None)
+        refresh = request.json.get('refresh', False)
         if not username or not password or not provider:
             return self.response_400(message="Missing required parameter")
         # AUTH
@@ -41,8 +45,26 @@ class SecurityApi(BaseApi):
             return self.response_401()
 
         # Identity can be any data that is json serializable
-        access_token = create_access_token(identity=user.id)
-        return self.response(200, access_token=access_token)
+        resp = dict()
+        resp['access_token'] = create_access_token(identity=user.id, fresh=True)
+        if refresh:
+            resp['refresh_token'] = create_refresh_token(identity=user.id)
+        return self.response(200, **resp)
+
+    @expose('/refresh', methods=['POST'])
+    @jwt_refresh_token_required
+    @safe
+    def refresh(self):
+        """
+            Security endpoint for the refresh token, so we can obtain a new
+            token without forcing the user to login again
+        :return: Flask Response with JSON payload containing
+            a new access_token
+        """
+        return self.response(
+            200,
+            access_token=create_access_token(identity=get_jwt_identity(), fresh=False)
+        )
 
 
 class UserApi(ModelRestApi):
