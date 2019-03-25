@@ -6,6 +6,8 @@ import json
 from flask import url_for, g, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, current_user
+from flask_jwt_extended import JWTManager
+from flask_jwt_extended import current_user as current_user_jwt
 from flask_openid import OpenID
 from flask_babel import lazy_gettext as _
 from .api import (
@@ -253,9 +255,15 @@ class BaseSecurityManager(AbstractSecurityManager):
                     self.oauth_whitelists[provider_name] = _provider['whitelist']
                 self.oauth_remotes[provider_name] = obj_provider
 
+        # Setup Flask-Login
         self.lm = LoginManager(app)
         self.lm.login_view = 'login'
         self.lm.user_loader(self.load_user)
+
+        # Setup Flask-Jwt-Extended
+        self.jwt_manager = JWTManager()
+        self.jwt_manager.init_app(app)
+        self.jwt_manager.user_loader_callback_loader(self.load_user)
 
     @property
     def get_url_for_registeruser(self):
@@ -991,6 +999,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         if current_user.is_authenticated:
             return self._has_view_access(g.user, permission_name, view_name)
+        elif current_user_jwt:
+            return self._has_view_access(current_user_jwt, permission_name, view_name)
         else:
             return self.is_item_public(permission_name, view_name)
 

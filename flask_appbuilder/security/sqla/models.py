@@ -1,6 +1,7 @@
 import datetime
 from flask import g
-from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime, ForeignKey, Sequence, UniqueConstraint
+from sqlalchemy import Table, Column, Integer, \
+    String, Boolean, DateTime, ForeignKey, Sequence, UniqueConstraint
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declared_attr
 from ... import Model
@@ -46,11 +47,12 @@ class PermissionView(Model):
         return str(self.permission).replace('_', ' ') + ' on ' + str(self.view_menu)
 
 
-assoc_permissionview_role = Table('ab_permission_view_role', Model.metadata,
-                                  Column('id', Integer, Sequence('ab_permission_view_role_id_seq'), primary_key=True),
-                                  Column('permission_view_id', Integer, ForeignKey('ab_permission_view.id')),
-                                  Column('role_id', Integer, ForeignKey('ab_role.id')),
-                                  UniqueConstraint('permission_view_id', 'role_id')
+assoc_permissionview_role = Table(
+    'ab_permission_view_role', Model.metadata,
+    Column('id', Integer, Sequence('ab_permission_view_role_id_seq'), primary_key=True),
+    Column('permission_view_id', Integer, ForeignKey('ab_permission_view.id')),
+    Column('role_id', Integer, ForeignKey('ab_role.id')),
+    UniqueConstraint('permission_view_id', 'role_id')
 )
 
 
@@ -59,17 +61,22 @@ class Role(Model):
 
     id = Column(Integer, Sequence('ab_role_id_seq'), primary_key=True)
     name = Column(String(64), unique=True, nullable=False)
-    permissions = relationship('PermissionView', secondary=assoc_permissionview_role, backref='role')
+    permissions = relationship(
+        'PermissionView',
+        secondary=assoc_permissionview_role,
+        backref='role'
+    )
 
     def __repr__(self):
         return self.name
 
 
-assoc_user_role = Table('ab_user_role', Model.metadata,
-                                  Column('id', Integer, Sequence('ab_user_role_id_seq'), primary_key=True),
-                                  Column('user_id', Integer, ForeignKey('ab_user.id')),
-                                  Column('role_id', Integer, ForeignKey('ab_role.id')),
-                                  UniqueConstraint('user_id', 'role_id')
+assoc_user_role = Table(
+    'ab_user_role', Model.metadata,
+    Column('id', Integer, Sequence('ab_user_role_id_seq'), primary_key=True),
+    Column('user_id', Integer, ForeignKey('ab_user.id')),
+    Column('role_id', Integer, ForeignKey('ab_role.id')),
+    UniqueConstraint('user_id', 'role_id')
 )
 
 
@@ -99,10 +106,16 @@ class User(Model):
         return Column(Integer, ForeignKey('ab_user.id'),
                       default=self.get_user_id, nullable=True)
 
-    created_by = relationship("User", backref=backref("created", uselist=True),
-                              remote_side=[id], primaryjoin='User.created_by_fk == User.id', uselist=False)
-    changed_by = relationship("User", backref=backref("changed", uselist=True),
-                              remote_side=[id], primaryjoin='User.changed_by_fk == User.id', uselist=False)
+    created_by = relationship(
+        "User",
+        backref=backref("created", uselist=True),
+        remote_side=[id], primaryjoin='User.created_by_fk == User.id', uselist=False
+    )
+    changed_by = relationship(
+        "User",
+        backref=backref("changed", uselist=True),
+        remote_side=[id], primaryjoin='User.changed_by_fk == User.id', uselist=False
+    )
 
     @classmethod
     def get_user_id(cls):

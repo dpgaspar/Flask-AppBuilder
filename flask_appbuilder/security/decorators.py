@@ -1,9 +1,16 @@
 import logging
 import functools
 
-from flask import flash, redirect, url_for, make_response, jsonify, request
-from flask_jwt_extended import verify_jwt_in_request,  get_jwt_identity
-from flask_login import login_user
+from flask import (
+    flash,
+    redirect,
+    url_for,
+    make_response,
+    jsonify,
+    request,
+    current_app
+)
+from flask_jwt_extended import verify_jwt_in_request
 from .._compat import as_unicode
 from ..const import LOGMSG_ERR_SEC_ACCESS_DENIED, FLAMSG_ERR_SEC_ACCESS_DENIED, PERMISSION_PREFIX
 
@@ -25,14 +32,13 @@ def protect(f):
 
     def wraps(self, *args, **kwargs):
         permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
-        if self.appbuilder.sm.is_item_public(
+        if current_app.appbuilder.sm.is_item_public(
                 permission_str,
                 self.__class__.__name__
         ):
             return f(self, *args, **kwargs)
         verify_jwt_in_request()
-        login_user(self.appbuilder.sm.get_user_by_id(int(get_jwt_identity())))
-        if self.appbuilder.sm.has_access(
+        if current_app.appbuilder.sm.has_access(
                 permission_str,
                 self.__class__.__name__
         ):
@@ -44,7 +50,7 @@ def protect(f):
                     self.__class__.__name__
                 )
             )
-        return self.response_401()
+            return self.response_401()
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
 
