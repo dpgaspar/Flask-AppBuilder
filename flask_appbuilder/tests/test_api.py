@@ -30,7 +30,13 @@ from flask_appbuilder.const import (
     API_SELECT_COLUMNS_RIS_KEY,
     API_SELECT_KEYS_RIS_KEY,
     API_FILTERS_RIS_KEY,
-    API_PERMISSIONS_RIS_KEY
+    API_PERMISSIONS_RIS_KEY,
+    API_SECURITY_USERNAME_KEY,
+    API_SECURITY_PASSWORD_KEY,
+    API_SECURITY_PROVIDER_KEY,
+    API_SECURITY_ACCESS_TOKEN_KEY,
+    API_SECURITY_REFRESH_TOKEN_KEY,
+    API_SECURITY_VERSION
 )
 
 
@@ -221,12 +227,14 @@ class FlaskTestCase(unittest.TestCase):
         :return: Flask client response class
         """
         return client.post(
-            'api/v1/security/login',
-            data=json.dumps(dict(
-                username=username,
-                password=password,
-                provider="db"
-            )),
+            'api/{}/security/login'.format(API_SECURITY_VERSION),
+            data=json.dumps(
+                {
+                    API_SECURITY_USERNAME_KEY: username,
+                    API_SECURITY_PASSWORD_KEY: password,
+                    API_SECURITY_PROVIDER_KEY: "db"
+                }
+            ),
             content_type='application/json'
         )
 
@@ -247,7 +255,7 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
         assert json.loads(
             rv.data.decode('utf-8')
-        ).get("access_token", False)
+        ).get(API_SECURITY_ACCESS_TOKEN_KEY, False)
 
     def test_auth_login_failed(self):
         """

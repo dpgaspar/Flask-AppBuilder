@@ -125,6 +125,15 @@ AUTH_OAUTH = 4
 #  REST API Constants
 #-----------------------------------
 
+API_SECURITY_VERSION = 'v1'
+API_SECURITY_PROVIDER_DB = 'db'
+API_SECURITY_PROVIDER_LDAP = 'ldap'
+API_SECURITY_USERNAME_KEY = 'username'
+API_SECURITY_PASSWORD_KEY = 'password'
+API_SECURITY_PROVIDER_KEY = 'provider'
+API_SECURITY_REFRESH_KEY = 'refresh'
+API_SECURITY_ACCESS_TOKEN_KEY = 'access_token'
+API_SECURITY_REFRESH_TOKEN_KEY = 'refresh_token'
 # Response keys
 
 API_ORDER_COLUMNS_RES_KEY = 'order_columns'
