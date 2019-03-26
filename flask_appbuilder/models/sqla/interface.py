@@ -4,7 +4,7 @@ import logging
 import sqlalchemy as sa
 
 from . import filters
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, load_only, Load, joinedload_all
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
 from sqlalchemy.orm.properties import SynonymProperty
@@ -24,6 +24,7 @@ def _include_filters(obj):
     for key in filters.__all__:
         if not hasattr(obj, key):
             setattr(obj, key, getattr(filters, key))
+
 
 def _is_sqla_type(obj, sa_type):
     return isinstance(obj, sa_type) or \
@@ -62,7 +63,8 @@ class SQLAInterface(BaseInterface):
         """
         return self.obj.__name__
 
-    def _get_base_query(self, query=None, filters=None, order_column='', order_direction=''):
+    def _get_base_query(self, query=None, filters=None,
+                        order_column='', order_direction=''):
         if filters:
             query = filters.apply_all(query)
         if order_column != '':
@@ -77,8 +79,34 @@ class SQLAInterface(BaseInterface):
                 query = query.order_by(self._get_attr(order_column).desc())
         return query
 
+    def _query_select_options(self, query, select_columns=None):
+        """
+            Add select load options to query. The goal
+            is to only SQL select what is requested
+
+        :param query: SQLAlchemy Query obj
+        :param select_columns: (list) of columns
+        :return: SQLAlchemy Query obj
+        """
+        if select_columns:
+            _load_options = list()
+            for column in select_columns:
+                if '.' in column:
+                    print(column.split('.')[0])
+                    model_relation = self.get_related_model(column.split('.')[0])
+                    query = query.join(model_relation)
+                    _load_options.append(Load(model_relation).load_only(column.split('.')[1]))
+                else:
+                    if (not self.is_relation(column) and
+                            not hasattr(getattr(self.obj, column), '__call__')):
+                        _load_options.append(Load(self.obj).load_only(column))
+                    else:
+                        _load_options.append(Load(self.obj))
+            query = query.options(*tuple(_load_options))
+        return query
+
     def query(self, filters=None, order_column='', order_direction='',
-              page=None, page_size=None):
+              page=None, page_size=None, select_columns=None):
         """
             QUERY
             :param filters:
@@ -94,6 +122,7 @@ class SQLAInterface(BaseInterface):
 
         """
         query = self.session.query(self.obj)
+        query = self._query_select_options(query, select_columns)
         if len(order_column.split('.')) >= 2:
             tmp_order_column = ''
             for join_relation in order_column.split('.')[:-1]:
@@ -118,7 +147,7 @@ class SQLAInterface(BaseInterface):
             query = query.offset(page * page_size)
         if page_size:
             query = query.limit(page_size)
-
+        print(query.all())
         return count, query.all()
 
     def query_simple_group(self, group_by='', aggregate_func=None, aggregate_col=None, filters=None):

@@ -36,6 +36,16 @@ from .const import (
 log = logging.getLogger(__name__)
 
 
+from marshmallow import fields
+
+
+class SmartNested(fields.Nested):
+    def serialize(self, attr, obj, accessor=None):
+        if attr not in obj.__dict__:
+            return {"id": int(getattr(obj, attr + ".id"))}
+        return super(SmartNested, self).serialize(attr, obj, accessor)
+
+
 def get_error_msg():
     """
         (inspired on Superset code)
@@ -215,10 +225,12 @@ class BaseApi(object):
             attr = getattr(self, attr_name)
             if hasattr(attr, '_urls'):
                 for url, methods in attr._urls:
-                    self.blueprint.add_url_rule(url,
-                                                attr_name,
-                                                attr,
-                                                methods=methods)
+                    self.blueprint.add_url_rule(
+                        url,
+                        attr_name,
+                        attr,
+                        methods=methods
+                    )
 
     @staticmethod
     def _prettify_name(name):
@@ -593,26 +605,63 @@ class ModelRestApi(BaseModelApi):
                 self._model_schema_factory(self.list_columns)
         if self.add_model_schema is None:
             self.add_model_schema = \
-                self._model_schema_factory(self.add_columns)
+                self._model_schema_factory(self.add_columns, nested=False)
         if self.edit_model_schema is None:
             self.edit_model_schema = \
-                self._model_schema_factory(self.edit_columns)
+                self._model_schema_factory(self.edit_columns, nested=False)
         if self.show_model_schema is None:
             self.show_model_schema = \
                 self._model_schema_factory(self.show_columns)
 
-    def _model_schema_factory(self, columns):
+    def _meta_schema_factory(self, columns, model, class_mixin):
+        _model = model
+        if columns:
+            class MetaSchema(self.appbuilder.marshmallow.ModelSchema, class_mixin):
+                class Meta:
+                    model = _model
+                    fields = columns
+                    strict = True
+        else:
+            class MetaSchema(self.appbuilder.marshmallow.ModelSchema, class_mixin):
+                class Meta:
+                    model = _model
+                    strict = True
+        return MetaSchema
+
+    def _model_schema_factory(self, columns, model=None, nested=True):
         """
             Will create a Marshmallow SQLAlchemy schema class
         :param columns: List with columns to include
         :return: ModelSchema object
         """
-        class MetaSchema(self.appbuilder.marshmallow.ModelSchema):
-            class Meta:
-                model = self.datamodel.obj
-                fields = columns
-                strict = True
-        return MetaSchema()
+        _model = model or self.datamodel.obj
+
+        class SchemaMixin:
+            pass
+
+        _columns = list()
+        if nested:
+            for column in columns:
+                if self.datamodel.is_relation(column):
+                    nested_model = self.datamodel.get_related_model(column)
+                    nested_schema = self._model_schema_factory(
+                        [],
+                        nested_model,
+                        nested=False
+                    )
+                    if self.datamodel.is_relation_many_to_one(column):
+                        many = False
+                    elif self.datamodel.is_relation_many_to_many(column):
+                        many = True
+                    setattr(
+                        SchemaMixin,
+                        column,
+                        fields.Nested(nested_schema, many=many)
+                    )
+                _columns.append(column)
+        else:
+            _columns = columns
+        return self._meta_schema_factory(_columns, _model, SchemaMixin)()
 
     def _init_titles(self):
         """
@@ -896,11 +945,15 @@ class ModelRestApi(BaseModelApi):
         # handle pagination
         page_index, page_size = self._handle_page_args(_args)
         # Make the query
-        count, lst = self.datamodel.query(joined_filters,
-                                          order_column,
-                                          order_direction,
-                                          page=page_index,
-                                          page_size=page_size)
+        query_select_columns = _pruned_select_cols or self.list_columns
+        count, lst = self.datamodel.query(
+            joined_filters,
+            order_column,
+            order_direction,
+            page=page_index,
+            page_size=page_size,
+            select_columns=query_select_columns
+        )
         pks = self.datamodel.get_keys(lst)
         _response[API_RESULT_RES_KEY] = _list_model_schema.dump(lst, many=True).data
         _response['ids'] = pks

@@ -442,7 +442,17 @@ class FlaskTestCase(unittest.TestCase):
         )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(rv.status_code, 200)
-        eq_(data[API_RESULT_RES_KEY], {'group': 1})
+        expected_rel_field = {
+            'group':
+                {
+                    'field_date': None,
+                    'field_float': 0.0,
+                    'field_integer': 0,
+                    'field_string': 'test0',
+                    'id': 1
+                }
+        }
+        eq_(data[API_RESULT_RES_KEY], expected_rel_field)
 
     def test_get_list(self):
         """
