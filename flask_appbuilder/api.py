@@ -7,7 +7,7 @@ from flask import Blueprint, make_response, jsonify, request, current_app
 from werkzeug.exceptions import BadRequest
 from flask_babel import lazy_gettext as _
 from .security.decorators import permission_name, protect
-from marshmallow import ValidationError
+from marshmallow import ValidationError, fields
 from ._compat import as_unicode
 from .const import (
     API_URI_RIS_KEY,
@@ -34,16 +34,6 @@ from .const import (
 )
 
 log = logging.getLogger(__name__)
-
-
-from marshmallow import fields
-
-
-class SmartNested(fields.Nested):
-    def serialize(self, attr, obj, accessor=None):
-        if attr not in obj.__dict__:
-            return {"id": int(getattr(obj, attr + ".id"))}
-        return super(SmartNested, self).serialize(attr, obj, accessor)
 
 
 def get_error_msg():

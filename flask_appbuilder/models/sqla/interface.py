@@ -92,7 +92,6 @@ class SQLAInterface(BaseInterface):
             _load_options = list()
             for column in select_columns:
                 if '.' in column:
-                    print(column.split('.')[0])
                     model_relation = self.get_related_model(column.split('.')[0])
                     query = query.join(model_relation)
                     _load_options.append(Load(model_relation).load_only(column.split('.')[1]))
@@ -147,7 +146,6 @@ class SQLAInterface(BaseInterface):
             query = query.offset(page * page_size)
         if page_size:
             query = query.limit(page_size)
-        print(query.all())
         return count, query.all()
 
     def query_simple_group(self, group_by='', aggregate_func=None, aggregate_col=None, filters=None):
