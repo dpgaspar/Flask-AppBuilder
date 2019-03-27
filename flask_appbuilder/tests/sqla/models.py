@@ -52,13 +52,14 @@ class Model3(Model):
 
 
 class TmpEnum(enum.Enum):
-    e1 = 'one'
-    e2 = 'two'
+    e1 = 'a'
+    e2 = 2
 
 
 class ModelWithEnums(Model):
     id = Column(Integer, primary_key=True)
-    enum1 = Column(Enum(TmpEnum), info={'enum_class': TmpEnum})
+    enum1 = Column(Enum('e1', 'e2'))
+    enum2 = Column(Enum(TmpEnum), info={'enum_class': TmpEnum})
 
 
 assoc_parent_child = Table(

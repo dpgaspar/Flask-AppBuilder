@@ -1504,7 +1504,7 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
         item = dict(
-            enum1='e1'
+            enum2='e1'
         )
         uri = 'api/v1/modelwithenumsapi/'
         rv = self.auth_client_post(
@@ -1516,7 +1516,7 @@ class FlaskTestCase(unittest.TestCase):
         data = json.loads(rv.data.decode('utf-8'))
         eq_(rv.status_code, 201)
         model = self.db.session.query(ModelWithEnums).get(data['id'])
-        eq_(model.enum1, TmpEnum.e1)
+        eq_(model.enum2, TmpEnum.e1)
 
     def test_get_list_col_function(self):
         """
