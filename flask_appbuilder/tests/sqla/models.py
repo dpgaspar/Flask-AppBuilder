@@ -1,8 +1,8 @@
 import enum
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, Enum, DateTime
+from sqlalchemy import Column, Integer, String, \
+    ForeignKey, Date, Float, Enum, DateTime, Table, UniqueConstraint
 from sqlalchemy.orm import relationship
 from flask_appbuilder import Model, SQLA
-
 
 
 class Model1(Model):
@@ -61,6 +61,28 @@ class ModelWithEnums(Model):
     enum1 = Column(Enum(TmpEnum), info={'enum_class': TmpEnum})
 
 
+assoc_parent_child = Table(
+    'parent_child', Model.metadata,
+    Column('id', Integer, primary_key=True),
+    Column('parent_id', Integer, ForeignKey('parent.id')),
+    Column('child_id', Integer, ForeignKey('child.id')),
+    UniqueConstraint('parent_id', 'child_id')
+)
+
+
+class ModelMMParent(Model):
+    __tablename__ = 'parent'
+    id = Column(Integer, primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+    children = relationship('ModelMMChild', secondary=assoc_parent_child)
+
+
+class ModelMMChild(Model):
+    __tablename__ = 'child'
+    id = Column(Integer, primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+
+
     """ ---------------------------------
             TEST HELPER FUNCTIONS
         ---------------------------------
@@ -91,3 +113,18 @@ def insert_data(session, count):
         model.enum2 = TmpEnum.e2
         session.add(model)
         session.commit()
+
+    children = list()
+    for i in range(1, 4):
+        model = ModelMMChild()
+        model.field_string = str(i)
+        children.append(model)
+        session.add(model)
+        session.commit()
+    for i in range(count):
+        model = ModelMMParent()
+        model.field_string = str(i)
+        model.children = children
+        session.add(model)
+        session.commit()
+

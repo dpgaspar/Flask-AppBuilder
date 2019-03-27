@@ -329,7 +329,7 @@ class SQLAInterface(BaseInterface):
     -------------------------------
     """
 
-    def add(self, item):
+    def add(self, item, raise_exception=False):
         try:
             self.session.add(item)
             self.session.commit()
@@ -339,14 +339,18 @@ class SQLAInterface(BaseInterface):
             self.message = (as_unicode(self.add_integrity_error_message), 'warning')
             log.warning(LOGMSG_WAR_DBI_ADD_INTEGRITY.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
         except Exception as e:
             self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception(LOGMSG_ERR_DBI_ADD_GENERIC.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
 
-    def edit(self, item):
+    def edit(self, item, raise_exception=False):
         try:
             self.session.merge(item)
             self.session.commit()
@@ -356,14 +360,18 @@ class SQLAInterface(BaseInterface):
             self.message = (as_unicode(self.edit_integrity_error_message), 'warning')
             log.warning(LOGMSG_WAR_DBI_EDIT_INTEGRITY.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
         except Exception as e:
             self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception(LOGMSG_ERR_DBI_EDIT_GENERIC.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
 
-    def delete(self, item):
+    def delete(self, item, raise_exception=False):
         try:
             self._delete_files(item)
             self.session.delete(item)
@@ -374,11 +382,15 @@ class SQLAInterface(BaseInterface):
             self.message = (as_unicode(self.delete_integrity_error_message), 'warning')
             log.warning(LOGMSG_WAR_DBI_DEL_INTEGRITY.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
         except Exception as e:
             self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
 
     def delete_all(self, items):

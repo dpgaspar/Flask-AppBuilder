@@ -6,7 +6,7 @@ import prison
 from nose.tools import eq_
 from flask_appbuilder import SQLA
 from .sqla.models import Model1, Model2, ModelWithEnums, TmpEnum, \
-    insert_data
+    ModelMMParent, ModelMMChild, insert_data
 from flask_appbuilder.models.sqla.filters import \
     FilterGreater, FilterSmaller
 from flask_appbuilder.const import (
@@ -127,6 +127,10 @@ class FlaskTestCase(unittest.TestCase):
             datamodel = SQLAInterface(Model1)
             base_order = ('field_integer', 'desc')
 
+        class Model1ApiRestrictedPermissions(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            base_permissions = ['can_get']
+
         class Model1ApiFiltered(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             base_filters = [
@@ -136,6 +140,9 @@ class FlaskTestCase(unittest.TestCase):
 
         class ModelWithEnumsApi(ModelRestApi):
             datamodel = SQLAInterface(ModelWithEnums)
+
+        class ModelMMApi(ModelRestApi):
+            datamodel = SQLAInterface(ModelMMParent)
 
         self.model1api = Model1Api
         self.appbuilder.add_view_no_menu(Model1Api)
@@ -147,6 +154,8 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view_no_menu(Model1ApiFiltered)
         self.appbuilder.add_view_no_menu(Model1ApiExcludeCols)
         self.appbuilder.add_view_no_menu(ModelWithEnumsApi)
+        self.appbuilder.add_view_no_menu(Model1ApiRestrictedPermissions)
+        self.appbuilder.add_view_no_menu(ModelMMApi)
 
         class Model2Api(ModelRestApi):
             datamodel = SQLAInterface(Model2)
@@ -281,6 +290,43 @@ class FlaskTestCase(unittest.TestCase):
             data="BADADATA"
         )
         eq_(rv.status_code, 400)
+
+    def test_auth_authorization(self):
+        """
+            REST Api: Test auth base limited authorization
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        pk = 1
+        uri = 'api/v1/model1apirestrictedpermissions/{}'.format(pk)
+        rv = self.auth_client_delete(
+            client,
+            token,
+            uri
+        )
+        eq_(rv.status_code, 401)
+        item = dict(
+            field_string="test{}".format(MODEL1_DATA_SIZE+1),
+            field_integer=MODEL1_DATA_SIZE+1,
+            field_float=float(MODEL1_DATA_SIZE+1),
+            field_date=None
+        )
+        uri = 'api/v1/model1apirestrictedpermissions/'
+        rv = self.auth_client_post(
+            client,
+            token,
+            uri,
+            item
+        )
+        eq_(rv.status_code, 401)
+        uri = 'api/v1/model1apirestrictedpermissions/1'
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
+        eq_(rv.status_code, 200)
 
     def test_get_item(self):
         """
@@ -431,9 +477,9 @@ class FlaskTestCase(unittest.TestCase):
         )
         eq_(rv.status_code, 200)
 
-    def test_get_item_rel_field(self):
+    def test_get_item_1m_field(self):
         """
-            REST Api: Test get item with with related fields
+            REST Api: Test get item with 1-N related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
@@ -458,6 +504,29 @@ class FlaskTestCase(unittest.TestCase):
                 }
         }
         eq_(data[API_RESULT_RES_KEY], expected_rel_field)
+
+    def test_get_item_mm_field(self):
+        """
+            REST Api: Test get item with N-N releted field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        # We can't get a base filtered item
+        pk = 1
+        rv = self.auth_client_get(
+            client,
+            token,
+            'api/v1/modelmmapi/{}'.format(pk)
+        )
+        data = json.loads(rv.data.decode('utf-8'))
+        eq_(rv.status_code, 200)
+        expected_rel_field = [
+                {'field_string': '1', 'id': 1},
+                {'field_string': '2', 'id': 2},
+                {'field_string': '3', 'id': 3}
+            ]
+        eq_(data[API_RESULT_RES_KEY]['children'], expected_rel_field)
 
     def test_get_list(self):
         """
@@ -995,6 +1064,38 @@ class FlaskTestCase(unittest.TestCase):
             if rel_field['name'] == 'group':
                 eq_(rel_field, expected_rel_add_field)
 
+    def test_info_permissions(self):
+        """
+            REST Api: Test info permissions
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        uri = 'api/v1/model1api/_info'
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
+        data = json.loads(rv.data.decode('utf-8'))
+        expected_permissions = [
+            'can_delete',
+            'can_get',
+            'can_post',
+            'can_put',
+        ]
+        eq_(sorted(data[API_PERMISSIONS_RES_KEY]), expected_permissions)
+        uri = 'api/v1/model1apirestrictedpermissions/_info'
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
+        data = json.loads(rv.data.decode('utf-8'))
+        expected_permissions = [
+            'can_get',
+        ]
+        eq_(sorted(data[API_PERMISSIONS_RES_KEY]), expected_permissions)
+
     def test_info_select_meta_data(self):
         """
             REST Api: Test info select meta data
@@ -1183,6 +1284,32 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 400)
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_string'][0], 'Longer than maximum length 50.')
+
+    def test_update_mm_field(self):
+        """
+            REST Api: Test update m-m field
+        """
+        model = ModelMMChild()
+        model.field_string = 'update_m,m'
+        xpto = self.appbuilder.get_session.add(model)
+        self.appbuilder.get_session.commit()
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        pk = 1
+        item = dict(
+            children=[4],
+            field_string='0'
+        )
+        uri = 'api/v1/modelmmapi/{}'.format(pk)
+        rv = self.auth_client_put(
+            client,
+            token,
+            uri,
+            item
+        )
+        eq_(rv.status_code, 200)
+        data = json.loads(rv.data.decode('utf-8'))
+        eq_(data[API_RESULT_RES_KEY], {"children": [4], "field_string": "0"})
 
     def test_update_item_val_type(self):
         """

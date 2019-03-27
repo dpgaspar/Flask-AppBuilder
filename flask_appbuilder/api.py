@@ -3,6 +3,7 @@ import logging
 import functools
 import traceback
 import prison
+from sqlalchemy.exc import IntegrityError
 from flask import Blueprint, make_response, jsonify, request, current_app
 from werkzeug.exceptions import BadRequest
 from flask_babel import lazy_gettext as _
@@ -646,6 +647,7 @@ class ModelRestApi(BaseModelApi):
             else:
                 many = False
             return fields.Nested(nested_schema, many=many, required=required)
+        # Handle bug on marshmallow-sqlalchemy #163
         elif datamodel.is_relation(column):
             required = not datamodel.is_nullable(column)
             field = field_for(_model, column)
@@ -766,9 +768,9 @@ class ModelRestApi(BaseModelApi):
         response[API_FILTERS_RES_KEY] = search_filters
 
     @expose('/_info', methods=['GET'])
+    @safe
     @protect
     @rison
-    @safe
     @permission_name('get')
     @merge_response_func(BaseApi.merge_current_user_permissions, API_PERMISSIONS_RIS_KEY)
     @merge_response_func(merge_add_field_info, API_ADD_COLUMNS_RIS_KEY)
@@ -800,29 +802,29 @@ class ModelRestApi(BaseModelApi):
     @permission_name('post')
     def post(self):
         if not request.is_json:
-            return self.response(400, **{'message': 'Request is not JSON'})
+            return self.response_400(message='Request is not JSON')
         try:
             item = self.add_model_schema.load(request.json)
         except ValidationError as err:
-            return self.response(400, **{'message': err.messages})
-        else:
-            # This validates custom Schema with custom validations
-            if isinstance(item.data, dict):
-                return self.response(400, **{'message': item.errors})
-            self.pre_add(item.data)
-            if self.datamodel.add(item.data):
-                self.post_add(item.data)
-                return self.response(
-                    201,
-                    **{
-                        API_RESULT_RES_KEY: self.add_model_schema.dump(
-                            item.data, many=False
-                        ).data,
-                        'id': self.datamodel.get_pk_value(item.data)
-                    }
-                )
-            else:
-                return self.response_500()
+            return self.response_400(message=err.messages)
+        # This validates custom Schema with custom validations
+        if isinstance(item.data, dict):
+            return self.response_400(message=item.errors)
+        self.pre_add(item.data)
+        try:
+            self.datamodel.add(item.data, raise_exception=True)
+            self.post_add(item.data)
+            return self.response(
+                201,
+                **{
+                    API_RESULT_RES_KEY: self.add_model_schema.dump(
+                        item.data, many=False
+                    ).data,
+                    'id': self.datamodel.get_pk_value(item.data)
+                }
+            )
+        except IntegrityError as e:
+            return self.response_400(message=str(e.orig))
 
     @expose('/<pk>', methods=['PUT'])
     @protect
@@ -834,27 +836,25 @@ class ModelRestApi(BaseModelApi):
             return self.response(400, **{'message': 'Request is not JSON'})
         if not item:
             return self.response_404()
-        else:
-            try:
-                item = self.edit_model_schema.load(request.json, instance=item)
-            except ValidationError as err:
-                return self.response(400, **{'message': err.messages})
-            else:
-                # This validates custom Schema with custom validations
-                if isinstance(item.data, dict):
-                    return self.response(400, **{'message': item.errors})
-                self.pre_update(item.data)
-                if self.datamodel.edit(item.data):
-                    self.post_add(item)
-                    self.post_update(item)
-                    return self.response(
-                        200,
-                        **{API_RESULT_RES_KEY: self.edit_model_schema.dump(
-                            item.data,
-                            many=False).data}
-                    )
-                else:
-                    return self.response_500()
+        try:
+            item = self.edit_model_schema.load(request.json, instance=item)
+        except ValidationError as err:
+            return self.response(400, **{'message': err.messages})
+        # This validates custom Schema with custom validations
+        if isinstance(item.data, dict):
+            return self.response(400, **{'message': item.errors})
+        self.pre_update(item.data)
+        try:
+            self.datamodel.edit(item.data, raise_exception=True)
+            self.post_update(item)
+            return self.response(
+                200,
+                **{API_RESULT_RES_KEY: self.edit_model_schema.dump(
+                    item.data,
+                    many=False).data}
+            )
+        except IntegrityError as e:
+            return self.response_400(message=str(e.orig))
 
     @expose('/<pk>', methods=['DELETE'])
     @protect
@@ -864,13 +864,13 @@ class ModelRestApi(BaseModelApi):
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
             return self.response_404()
-        else:
-            self.pre_delete(item)
-            if self.datamodel.delete(item):
-                self.post_delete(item)
-                return self.response(200, message='OK')
-            else:
-                return self.response_500()
+        self.pre_delete(item)
+        try:
+            self.datamodel.delete(item, raise_exception=True)
+            self.post_delete(item)
+            return self.response(200, message='OK')
+        except IntegrityError as e:
+            return self.response_400(message=str(e.orig))
 
     def merge_label_columns(self, response, **kwargs):
         _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])

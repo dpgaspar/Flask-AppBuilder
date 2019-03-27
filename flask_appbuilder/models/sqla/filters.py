@@ -12,6 +12,7 @@ __all__ = ['SQLAFilterConverter', 'FilterEqual', 'FilterNotStartsWith', 'FilterS
            'FilterRelationManyToManyEqual', 'FilterRelationOneToManyEqual', 'FilterRelationOneToManyNotEqual',
            'FilterSmaller']
 
+
 def get_field_setup_query(query, model, column_name):
     """
         Help function for SQLA filters, checks for dot notation on column names.
