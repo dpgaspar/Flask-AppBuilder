@@ -1,8 +1,8 @@
+import enum
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, Enum, DateTime
 from sqlalchemy.orm import relationship
 from flask_appbuilder import Model, SQLA
 
-import enum
 
 
 class Model1(Model):
@@ -52,14 +52,13 @@ class Model3(Model):
 
 
 class TmpEnum(enum.Enum):
-    e1 = 'a'
-    e2 = 2
+    e1 = 'one'
+    e2 = 'two'
 
 
 class ModelWithEnums(Model):
     id = Column(Integer, primary_key=True)
-    enum1 = Column(Enum('e1', 'e2'))
-    enum2 = Column(Enum(TmpEnum))
+    enum1 = Column(Enum(TmpEnum), info={'enum_class': TmpEnum})
 
 
     """ ---------------------------------
@@ -84,5 +83,11 @@ def insert_data(session, count):
         model.field_integer = i
         model.field_float = float(i)
         model.group = model1_collection[i]
+        session.add(model)
+        session.commit()
+    for i in range(count):
+        model = ModelWithEnums()
+        model.enum1 = 'e1'
+        model.enum2 = TmpEnum.e2
         session.add(model)
         session.commit()

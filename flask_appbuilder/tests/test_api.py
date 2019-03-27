@@ -5,7 +5,8 @@ import logging
 import prison
 from nose.tools import eq_
 from flask_appbuilder import SQLA
-from .sqla.models import Model1, Model2, insert_data
+from .sqla.models import Model1, Model2, ModelWithEnums, TmpEnum, \
+    insert_data
 from flask_appbuilder.models.sqla.filters import \
     FilterGreater, FilterSmaller
 from flask_appbuilder.const import (
@@ -133,6 +134,9 @@ class FlaskTestCase(unittest.TestCase):
                 ['field_integer', FilterSmaller, 4]
             ]
 
+        class ModelWithEnumsApi(ModelRestApi):
+            datamodel = SQLAInterface(ModelWithEnums)
+
         self.model1api = Model1Api
         self.appbuilder.add_view_no_menu(Model1Api)
         self.model1funcapi = Model1Api
@@ -142,6 +146,7 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.add_view_no_menu(Model1ApiOrder)
         self.appbuilder.add_view_no_menu(Model1ApiFiltered)
         self.appbuilder.add_view_no_menu(Model1ApiExcludeCols)
+        self.appbuilder.add_view_no_menu(ModelWithEnumsApi)
 
         class Model2Api(ModelRestApi):
             datamodel = SQLAInterface(Model2)
@@ -552,7 +557,6 @@ class FlaskTestCase(unittest.TestCase):
         )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data[API_RESULT_RES_KEY][0], {
-            'id': MODEL1_DATA_SIZE,
             'field_date': None,
             'field_float': float(MODEL1_DATA_SIZE - 1),
             'field_integer': MODEL1_DATA_SIZE - 1,
@@ -574,7 +578,6 @@ class FlaskTestCase(unittest.TestCase):
         )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data[API_RESULT_RES_KEY][0], {
-            'id': 1,
             'field_date': None,
             'field_float': 0.0,
             'field_integer': 0,
@@ -794,7 +797,6 @@ class FlaskTestCase(unittest.TestCase):
         )
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data[API_RESULT_RES_KEY][0], {
-            'id': 1,
             'field_string': 'test0'
         })
 
@@ -825,7 +827,6 @@ class FlaskTestCase(unittest.TestCase):
                 'field_float': 3.0,
                 'field_integer': 3,
                 'field_string': 'test3',
-                'id': 4
             }
         ]
         eq_(data[API_RESULT_RES_KEY], expected_result)
@@ -945,7 +946,7 @@ class FlaskTestCase(unittest.TestCase):
             'description': '',
             'label': 'Group',
             'name': 'group',
-            'required': False,
+            'required': True,
             'type': 'Related',
             'values': []
         }
@@ -978,7 +979,7 @@ class FlaskTestCase(unittest.TestCase):
             'description': '',
             'label': 'Group',
             'name': 'group',
-            'required': False,
+            'required': True,
             'type': 'Related',
             'values': [
                 {
@@ -1368,6 +1369,27 @@ class FlaskTestCase(unittest.TestCase):
         eq_(model.field_integer, None)
         eq_(model.field_float, None)
         eq_(model.field_date, None)
+
+    def test_create_item_with_enum(self):
+        """
+            REST Api: Test create item with enum
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        item = dict(
+            enum1='e1'
+        )
+        uri = 'api/v1/modelwithenumsapi/'
+        rv = self.auth_client_post(
+            client,
+            token,
+            uri,
+            item
+        )
+        data = json.loads(rv.data.decode('utf-8'))
+        eq_(rv.status_code, 201)
+        model = self.db.session.query(ModelWithEnums).get(data['id'])
+        eq_(model.enum1, TmpEnum.e1)
 
     def test_get_list_col_function(self):
         """

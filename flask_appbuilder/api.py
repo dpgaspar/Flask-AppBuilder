@@ -8,6 +8,8 @@ from werkzeug.exceptions import BadRequest
 from flask_babel import lazy_gettext as _
 from .security.decorators import permission_name, protect
 from marshmallow import ValidationError, fields
+from marshmallow_sqlalchemy import field_for
+from marshmallow_enum import EnumField
 from ._compat import as_unicode
 from .const import (
     API_URI_RIS_KEY,
@@ -603,20 +605,57 @@ class ModelRestApi(BaseModelApi):
             self.show_model_schema = \
                 self._model_schema_factory(self.show_columns)
 
+    @staticmethod
+    def _debug_schema(schema):
+        for k, v in schema._declared_fields.items():
+            print(k, v)
+
     def _meta_schema_factory(self, columns, model, class_mixin):
+        from marshmallow_sqlalchemy.schema import ModelSchema
         _model = model
         if columns:
-            class MetaSchema(self.appbuilder.marshmallow.ModelSchema, class_mixin):
+            class MetaSchema(ModelSchema, class_mixin):
                 class Meta:
                     model = _model
                     fields = columns
                     strict = True
+                    sqla_session = self.appbuilder.get_session
         else:
-            class MetaSchema(self.appbuilder.marshmallow.ModelSchema, class_mixin):
+            class MetaSchema(ModelSchema, class_mixin):
                 class Meta:
                     model = _model
                     strict = True
+                    sqla_session = self.appbuilder.get_session
         return MetaSchema
+
+    def _column2field(self, datamodel, column, nested=True):
+        _model = datamodel.obj
+        # Handle relations
+        if datamodel.is_relation(column) and nested:
+            required = not datamodel.is_nullable(column)
+            nested_model = datamodel.get_related_model(column)
+            nested_schema = self._model_schema_factory(
+                [],
+                nested_model,
+                nested=False
+            )
+            if datamodel.is_relation_many_to_one(column):
+                many = False
+            elif datamodel.is_relation_many_to_many(column):
+                many = True
+            else:
+                many = False
+            return fields.Nested(nested_schema, many=many, required=required)
+        elif datamodel.is_relation(column):
+            required = not datamodel.is_nullable(column)
+            field = field_for(_model, column)
+            field.required = required
+            return field
+        # Handle Enums
+        elif datamodel.is_enum(column):
+            required = not datamodel.is_nullable(column)
+            enum_class = datamodel.list_columns[column].info.get('enum_class')
+            return EnumField(enum_class, dump_by=EnumField.VALUE, required=required)
 
     def _model_schema_factory(self, columns, model=None, nested=True):
         """
@@ -624,33 +663,24 @@ class ModelRestApi(BaseModelApi):
         :param columns: List with columns to include
         :return: ModelSchema object
         """
-        _model = model or self.datamodel.obj
-
         class SchemaMixin:
             pass
 
+        _model = model or self.datamodel.obj
+        _datamodel = self.datamodel.__class__(_model)
+
+        ma_sqla_fields_override = {}
+
         _columns = list()
-        if nested:
-            for column in columns:
-                if self.datamodel.is_relation(column):
-                    nested_model = self.datamodel.get_related_model(column)
-                    nested_schema = self._model_schema_factory(
-                        [],
-                        nested_model,
-                        nested=False
-                    )
-                    if self.datamodel.is_relation_many_to_one(column):
-                        many = False
-                    elif self.datamodel.is_relation_many_to_many(column):
-                        many = True
-                    setattr(
-                        SchemaMixin,
-                        column,
-                        fields.Nested(nested_schema, many=many)
-                    )
-                _columns.append(column)
-        else:
-            _columns = columns
+        for column in columns:
+            ma_sqla_fields_override[column] = self._column2field(
+                _datamodel,
+                column,
+                nested
+            )
+            _columns.append(column)
+        for k, v in ma_sqla_fields_override.items():
+            setattr(SchemaMixin, k, v)
         return self._meta_schema_factory(_columns, _model, SchemaMixin)()
 
     def _init_titles(self):
@@ -687,7 +717,7 @@ class ModelRestApi(BaseModelApi):
             list(self.list_model_schema._declared_fields.keys())
         else:
             self.list_columns = self.list_columns or [
-                x for x in self.datamodel.get_columns_list()
+                x for x in self.datamodel.get_user_columns_list()
                 if x not in self.list_exclude_columns
             ]
 
@@ -769,6 +799,8 @@ class ModelRestApi(BaseModelApi):
     @safe
     @permission_name('post')
     def post(self):
+        if not request.is_json:
+            return self.response(400, **{'message': 'Request is not JSON'})
         try:
             item = self.add_model_schema.load(request.json)
         except ValidationError as err:
@@ -798,6 +830,8 @@ class ModelRestApi(BaseModelApi):
     @permission_name('put')
     def put(self, pk):
         item = self.datamodel.get(pk, self._base_filters)
+        if not request.is_json:
+            return self.response(400, **{'message': 'Request is not JSON'})
         if not item:
             return self.response_404()
         else:

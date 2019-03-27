@@ -1014,11 +1014,16 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         _ret = list()
         if current_user.is_authenticated:
-            for role in current_user.roles:
-                if role.permissions:
-                    for permission in role.permissions:
-                        if permission.view_menu.name == view_name:
-                            _ret.append(permission.permission.name)
+            _current_user = current_user
+        elif current_user_jwt:
+            _current_user = current_user_jwt
+        else:
+            return _ret
+        for role in _current_user.roles:
+            if role.permissions:
+                for permission in role.permissions:
+                    if permission.view_menu.name == view_name:
+                        _ret.append(permission.permission.name)
         return _ret
 
     def add_permissions_view(self, base_permissions, view_menu):
