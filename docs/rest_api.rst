@@ -259,7 +259,7 @@ Next, let's see how to create a private method::
 
         ...
         @expose('/private')
-        @protect
+        @protect()
         def rison_json(self):
             return self.response(200, message="This is private")
 
@@ -350,6 +350,22 @@ user Model::
         ...
         return user
 
+Optionally you can enable signed cookie sessions (from flask-login) on the
+API. You can do it class or method wide::
+
+    class MyFirstApi(BaseApi):
+        allow_browser_login = True
+
+The previous example will enable cookie sessions on the all class::
+
+    class MyFirstApi(BaseApi):
+
+        @expose('/private')
+        @protect(allow_browser_login=True)
+        def private(self)
+            ....
+
+On the previous example, we are enabling signed cookies on the ``private`` method
 
 Model REST Api
 --------------

@@ -17,42 +17,60 @@ from ..const import LOGMSG_ERR_SEC_ACCESS_DENIED, FLAMSG_ERR_SEC_ACCESS_DENIED, 
 log = logging.getLogger(__name__)
 
 
-def protect(f):
+def protect(allow_browser_login=False):
     """
         Use this decorator to enable granular security permissions
         to your API methods (BaseApi and child classes).
         Permissions will be associated to a role, and roles are associated to users.
 
+        allow_browser_login will accept signed cookies obtained from the normal MVC app::
+
+            class MyApi(BaseApi):
+                @expose('/dosonmething', methods=['GET'])
+                @protect(allow_browser_login=True)
+                @safe
+                def do_something(self):
+                    ....
+
+                @expose('/dosonmethingelse', methods=['GET'])
+                @protect()
+                @safe
+                def do_something_else(self):
+                    ....
+
         By default the permission's name is the methods name.
     """
-    if hasattr(f, '_permission_name'):
-        permission_str = f._permission_name
-    else:
-        permission_str = f.__name__
-
-    def wraps(self, *args, **kwargs):
-        permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
-        if current_app.appbuilder.sm.is_item_public(
-                permission_str,
-                self.__class__.__name__
-        ):
-            return f(self, *args, **kwargs)
-        verify_jwt_in_request()
-        if current_app.appbuilder.sm.has_access(
-                permission_str,
-                self.__class__.__name__
-        ):
-            return f(self, *args, **kwargs)
+    def _protect(f):
+        if hasattr(f, '_permission_name'):
+            permission_str = f._permission_name
         else:
-            log.warning(
-                LOGMSG_ERR_SEC_ACCESS_DENIED.format(
+            permission_str = f.__name__
+
+        def wraps(self, *args, **kwargs):
+            permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
+            if current_app.appbuilder.sm.is_item_public(
                     permission_str,
                     self.__class__.__name__
+            ):
+                return f(self, *args, **kwargs)
+            if not (self.allow_browser_login or allow_browser_login):
+                verify_jwt_in_request()
+            if current_app.appbuilder.sm.has_access(
+                    permission_str,
+                    self.__class__.__name__
+            ):
+                return f(self, *args, **kwargs)
+            else:
+                log.warning(
+                    LOGMSG_ERR_SEC_ACCESS_DENIED.format(
+                        permission_str,
+                        self.__class__.__name__
+                    )
                 )
-            )
-            return self.response_401()
-    f._permission_name = permission_str
-    return functools.update_wrapper(wraps, f)
+                return self.response_401()
+        f._permission_name = permission_str
+        return functools.update_wrapper(wraps, f)
+    return functools.update_wrapper(_protect, allow_browser_login)
 
 
 def has_access(f):
@@ -76,10 +94,18 @@ def has_access(f):
             return f(self, *args, **kwargs)
         else:
             log.warning(
-                LOGMSG_ERR_SEC_ACCESS_DENIED.format(permission_str, self.__class__.__name__)
+                LOGMSG_ERR_SEC_ACCESS_DENIED.format(
+                    permission_str,
+                    self.__class__.__name__
+                )
             )
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
-        return redirect(url_for(self.appbuilder.sm.auth_view.__class__.__name__ + ".login", next=request.url))
+        return redirect(
+            url_for(
+                self.appbuilder.sm.auth_view.__class__.__name__ + ".login",
+                next=request.url
+            )
+        )
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
 
@@ -107,7 +133,10 @@ def has_access_api(f):
             return f(self, *args, **kwargs)
         else:
             log.warning(
-                LOGMSG_ERR_SEC_ACCESS_DENIED.format(permission_str, self.__class__.__name__)
+                LOGMSG_ERR_SEC_ACCESS_DENIED.format(
+                    permission_str,
+                    self.__class__.__name__
+                )
             )
             response = make_response(
                 jsonify(
@@ -120,7 +149,6 @@ def has_access_api(f):
             )
             response.headers['Content-Type'] = "application/json"
             return response
-        return redirect(url_for(self.appbuilder.sm.auth_view.__class__.__name__ + ".login", next=request.url))
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
 

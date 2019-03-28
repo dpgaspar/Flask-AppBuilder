@@ -168,6 +168,11 @@ class BaseApi(object):
                 base_permissions = ['can_get']
                 
     """
+    allow_browser_login = False
+    """
+        Will allow flask-login cookie authorization on the API
+        default is False.
+    """
     extra_args = None
 
     def __init__(self):
@@ -768,10 +773,10 @@ class ModelRestApi(BaseModelApi):
         response[API_FILTERS_RES_KEY] = search_filters
 
     @expose('/_info', methods=['GET'])
+    @protect()
     @safe
-    @protect
     @rison
-    @permission_name('get')
+    @permission_name('info')
     @merge_response_func(BaseApi.merge_current_user_permissions, API_PERMISSIONS_RIS_KEY)
     @merge_response_func(merge_add_field_info, API_ADD_COLUMNS_RIS_KEY)
     @merge_response_func(merge_edit_field_info, API_EDIT_COLUMNS_RIS_KEY)
@@ -788,7 +793,7 @@ class ModelRestApi(BaseModelApi):
 
     @expose('/', methods=['GET'])
     @expose('/<pk>', methods=['GET'])
-    @protect
+    @protect()
     @safe
     @permission_name('get')
     def get(self, pk=None):
@@ -797,7 +802,7 @@ class ModelRestApi(BaseModelApi):
         return self._get_item(pk)
 
     @expose('/', methods=['POST'])
-    @protect
+    @protect()
     @safe
     @permission_name('post')
     def post(self):
@@ -827,7 +832,7 @@ class ModelRestApi(BaseModelApi):
             return self.response_400(message=str(e.orig))
 
     @expose('/<pk>', methods=['PUT'])
-    @protect
+    @protect()
     @safe
     @permission_name('put')
     def put(self, pk):
@@ -857,7 +862,7 @@ class ModelRestApi(BaseModelApi):
             return self.response_400(message=str(e.orig))
 
     @expose('/<pk>', methods=['DELETE'])
-    @protect
+    @protect()
     @safe
     @permission_name('delete')
     def delete(self, pk):
