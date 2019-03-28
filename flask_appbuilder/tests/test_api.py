@@ -320,7 +320,7 @@ class FlaskTestCase(unittest.TestCase):
 
     def test_auth_authorization_browser(self):
         """
-            REST Api: Test authorization with browser login
+            REST Api: Test auth with browser login
         """
         client = self.app.test_client()
         rv = self.browser_login(client, USERNAME, PASSWORD)
