@@ -1080,6 +1080,7 @@ class FlaskTestCase(unittest.TestCase):
         expected_permissions = [
             'can_delete',
             'can_get',
+            'can_info',
             'can_post',
             'can_put',
         ]

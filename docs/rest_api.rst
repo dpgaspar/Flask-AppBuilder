@@ -378,7 +378,7 @@ define it almost like an MVC ``ModelView``. This class will expose the following
 +-----------------------------+-------------------------------------------------------+-----------------+--------+
 | URL                         | Description                                           | Permission Name | HTTP   |
 +=============================+=======================================================+=================+========+
-| /_info                      | Returns info about the CRUD model and security        | can_get         | GET    |
+| /_info                      | Returns info about the CRUD model and security        | can_info        | GET    |
 +-----------------------------+-------------------------------------------------------+-----------------+--------+
 | /                           | Queries models data, receives args as Rison           | can_get         | GET    |
 +-----------------------------+-------------------------------------------------------+-----------------+--------+
