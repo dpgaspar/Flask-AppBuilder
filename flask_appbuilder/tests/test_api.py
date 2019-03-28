@@ -507,7 +507,7 @@ class FlaskTestCase(unittest.TestCase):
 
     def test_get_item_mm_field(self):
         """
-            REST Api: Test get item with N-N releted field
+            REST Api: Test get item with N-N related field
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
@@ -964,13 +964,16 @@ class FlaskTestCase(unittest.TestCase):
                 'description': 'Field Integer',
                 'label': 'Field Integer',
                 'name': 'field_integer',
-                'required': False, 'type': 'Integer'
+                'required': False,
+                'unique': False,
+                'type': 'Integer'
             },
             {
                 'description': 'Field Float',
                 'label': 'Field Float',
                 'name': 'field_float',
                 'required': False,
+                'unique': False,
                 'type': 'Float'
             },
             {
@@ -978,6 +981,7 @@ class FlaskTestCase(unittest.TestCase):
                 'label': 'Field String',
                 'name': 'field_string',
                 'required': True,
+                'unique': True,
                 'type': 'String',
                 'validate': ['<Length(min=None, max=50, equal=None, error=None)>']
             },
@@ -986,6 +990,7 @@ class FlaskTestCase(unittest.TestCase):
                 'label': 'Field Date',
                 'name': 'field_date',
                 'required': False,
+                'unique': False,
                 'type': 'Date'
             }
         ]
@@ -1016,6 +1021,7 @@ class FlaskTestCase(unittest.TestCase):
             'label': 'Group',
             'name': 'group',
             'required': True,
+            'unique': False,
             'type': 'Related',
             'values': []
         }
@@ -1049,6 +1055,7 @@ class FlaskTestCase(unittest.TestCase):
             'label': 'Group',
             'name': 'group',
             'required': True,
+            'unique': False,
             'type': 'Related',
             'values': [
                 {

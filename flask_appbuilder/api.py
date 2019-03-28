@@ -651,18 +651,27 @@ class ModelRestApi(BaseModelApi):
                 many = True
             else:
                 many = False
-            return fields.Nested(nested_schema, many=many, required=required)
+            field = fields.Nested(nested_schema, many=many, required=required)
+            field.unique = datamodel.is_unique(column)
+            return field
         # Handle bug on marshmallow-sqlalchemy #163
         elif datamodel.is_relation(column):
             required = not datamodel.is_nullable(column)
             field = field_for(_model, column)
             field.required = required
+            field.unique = datamodel.is_unique(column)
             return field
         # Handle Enums
         elif datamodel.is_enum(column):
             required = not datamodel.is_nullable(column)
             enum_class = datamodel.list_columns[column].info.get('enum_class')
-            return EnumField(enum_class, dump_by=EnumField.VALUE, required=required)
+            field = EnumField(enum_class, dump_by=EnumField.VALUE, required=required)
+            field.unique = datamodel.is_unique(column)
+            return field
+        if not hasattr(getattr(_model, column), '__call__'):
+            field = field_for(_model, column)
+            field.unique = datamodel.is_unique(column)
+            return field
 
     def _model_schema_factory(self, columns, model=None, nested=True):
         """
@@ -1077,6 +1086,7 @@ class ModelRestApi(BaseModelApi):
             ret['validate'] = [str(field.validate)]
         ret['type'] = field.__class__.__name__
         ret['required'] = field.required
+        ret['unique'] = field.unique
         return ret
 
     def _get_fields_info(self, cols, model_schema, filter_rel_fields):

@@ -292,7 +292,7 @@ class SQLAInterface(BaseInterface):
 
     def is_unique(self, col_name):
         try:
-            return self.list_columns[col_name].unique
+            return self.list_columns[col_name].unique == True
         except:
             return False
 

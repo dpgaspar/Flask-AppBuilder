@@ -615,6 +615,7 @@ following data structure::
                 "label": "<COL_LABEL>",
                 "name": "<COL_NAME>",
                 "required": true|false,
+                "unique": true|false,
                 "type": "String|Integer|Related|RelatedList|...",
                 "validate": [ ... list of validation methods ... ]
                 "values" : [ ... optional with all possible values for a related field ... ]
@@ -723,6 +724,7 @@ values from related fields, using our *quickhowto* example::
               "label": "Gender",
               "name": "gender",
               "required": false,
+              "unique": false,
               "type": "Related",
               "values": [
                 {
