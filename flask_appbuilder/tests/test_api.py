@@ -129,7 +129,7 @@ class FlaskTestCase(unittest.TestCase):
 
         class Model1ApiRestrictedPermissions(ModelRestApi):
             datamodel = SQLAInterface(Model1)
-            base_permissions = ['can_get']
+            base_permissions = ['can_get', 'can_info']
 
         class Model1ApiFiltered(ModelRestApi):
             datamodel = SQLAInterface(Model1)
@@ -1094,6 +1094,7 @@ class FlaskTestCase(unittest.TestCase):
         data = json.loads(rv.data.decode('utf-8'))
         expected_permissions = [
             'can_get',
+            'can_info'
         ]
         eq_(sorted(data[API_PERMISSIONS_RES_KEY]), expected_permissions)
 
