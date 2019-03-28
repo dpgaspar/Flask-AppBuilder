@@ -454,7 +454,7 @@ Now let's query our newly created Group::
 
     {
       "description_columns": {},
-      "include_columns": [
+      "show_columns": [
         "name"
       ],
       "label_columns": {
@@ -598,8 +598,8 @@ layer to be able to render dynamically:
 First a birds eye view from the output of the **_info** endpoint::
 
     {
-        "add_fields": [...],
-        "edit_fields": [...],
+        "add_columns": [...],
+        "edit_columns": [...],
         "filters": {...},
         "permissions": [...]
     }
@@ -717,7 +717,7 @@ The ``add_fields`` and ``edit_fields`` keys also render all possible
 values from related fields, using our *quickhowto* example::
 
     {
-        "add_fields": [
+        "add_columns": [
             {
               "description": "",
               "label": "Gender",
@@ -772,7 +772,7 @@ The response data structure is::
         "id": "<Primary Key>"
         "description_columnns": {},
         "label_columns": {},
-        "include_columns": [],
+        "show_columns": [],
         "result": {}
     }
 
@@ -796,7 +796,7 @@ Our *curl* command will look like::
     {
       "description_columns": {},
       "id": "1",
-      "include_columns": [
+      "show_columns": [
         "name",
         "address"
       ],
@@ -882,7 +882,7 @@ The response data structure is::
     {
         "count": <RESULT_COUNT">
         "ids": [ ... List of PK's ordered by result ... ],
-        "description_columnns": {},
+        "description_columns": {},
         "label_columns": {},
         "list_columns": [ ... An ordered list of columns ...],
         "order_columns": [ ... List of columns that can be ordered ... ],

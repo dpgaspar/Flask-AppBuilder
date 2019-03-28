@@ -1026,7 +1026,7 @@ class FlaskTestCase(unittest.TestCase):
                     'value': "test{}".format(i)
                 }
             )
-        for rel_field in data['add_fields']:
+        for rel_field in data[API_ADD_COLUMNS_RES_KEY]:
             if rel_field['name'] == 'group':
                 eq_(rel_field, expected_rel_add_field)
 
