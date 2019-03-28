@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, Date
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Enum
 from sqlalchemy.orm import relationship
 from flask_appbuilder import Model
 from marshmallow import Schema, fields, ValidationError, post_load, pre_load
@@ -34,10 +34,17 @@ class ContactGroupSchema(Schema):
 
 class Gender(Model):
     id = Column(Integer, primary_key=True)
-    name = Column(String(50), unique = True, nullable=False)
+    name = Column(String(50), unique=True, nullable=False)
 
     def __repr__(self):
         return self.name
+
+import enum
+
+
+class GenderEnum(enum.Enum):
+    male = 'Male'
+    female = 'Female'
 
 
 class Contact(Model):
@@ -49,8 +56,9 @@ class Contact(Model):
     personal_celphone = Column(String(20))
     contact_group_id = Column(Integer, ForeignKey('contact_group.id'), nullable=False)
     contact_group = relationship("ContactGroup")
-    gender_id = Column(Integer, ForeignKey('gender.id'), nullable=False)
-    gender = relationship("Gender")
+    #gender_id = Column(Integer, ForeignKey('gender.id'), nullable=False)
+    #gender = relationship("Gender")
+    gender = Column(Enum(GenderEnum), nullable=False, info={"enum_class": GenderEnum})
 
     def __repr__(self):
         return self.name

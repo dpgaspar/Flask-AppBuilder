@@ -60,16 +60,15 @@ class GroupModelView(ModelView):
 
 class GroupModelRestApi(ModelRestApi):
     resource_name = 'group'
-    add_model_schema = GroupCustomSchema()
-    edit_model_schema = GroupCustomSchema()
     datamodel = SQLAInterface(ContactGroup)
 
 
 class ContactModelRestApi(ModelRestApi):
     resource_name = 'contact'
+    allow_browser_login = True
     datamodel = SQLAInterface(Contact)
-    list_columns = ['name', 'contact_group']
-    base_filters = [['contact_group.name', FilterStartsWith, 'F']]
+    #list_columns = ['name', 'some_function']
+    #base_filters = [['contact_group.name', FilterStartsWith, 'F']]
     #list_model_schema = ContactSchema()
     #base_filters = [['name', FilterStartsWith, 'a']]
     #add_query_rel_fields = {
@@ -80,7 +79,7 @@ class ContactModelRestApi(ModelRestApi):
     #}
 
     #list_columns = ['name', 'address', 'personal_celphone']
-    #base_order = ('name', 'desc')
+    base_order = ('name', 'desc')
     #list_exclude_columns = ['gender', 'contact_group_id','gender_id', 'id']
     #show_exclude_columns = ['name']
 
@@ -149,4 +148,3 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
-

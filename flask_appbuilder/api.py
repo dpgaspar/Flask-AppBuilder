@@ -851,6 +851,9 @@ class ModelRestApi(BaseModelApi):
         if not item:
             return self.response_404()
         try:
+            # MERGE
+            for _col in self.add_columns:
+                print("COL!!! {}={}".format(_col, getattr(item, _col)))
             item = self.edit_model_schema.load(request.json, instance=item)
         except ValidationError as err:
             return self.response(400, **{'message': err.messages})
@@ -894,7 +897,7 @@ class ModelRestApi(BaseModelApi):
             _show_columns = self.show_columns
         response[API_LABEL_COLUMNS_RES_KEY] = self._label_columns_json(_show_columns)
 
-    def merge_include_columns(self, response, **kwargs):
+    def merge_show_columns(self, response, **kwargs):
         _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if _pruned_select_cols:
             response[API_SHOW_COLUMNS_RES_KEY] = _pruned_select_cols
@@ -919,14 +922,17 @@ class ModelRestApi(BaseModelApi):
 
     def merge_order_columns(self, response, **kwargs):
         _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
-        response[API_ORDER_COLUMNS_RES_KEY] = [
-            order_col
-            for order_col in self.order_columns if order_col in _pruned_select_cols
-        ]
+        if _pruned_select_cols:
+            response[API_ORDER_COLUMNS_RES_KEY] = [
+                order_col
+                for order_col in self.order_columns if order_col in _pruned_select_cols
+            ]
+        else:
+            response[API_ORDER_COLUMNS_RES_KEY] = self.order_columns
 
     @rison
     @merge_response_func(merge_label_columns, API_LABEL_COLUMNS_RIS_KEY)
-    @merge_response_func(merge_include_columns, API_SHOW_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_show_columns, API_SHOW_COLUMNS_RIS_KEY)
     @merge_response_func(merge_description_columns, API_DESCRIPTION_COLUMNS_RIS_KEY)
     def _get_item(self, pk, **kwargs):
         item = self.datamodel.get(pk, self._base_filters)

@@ -77,7 +77,7 @@ def protect(allow_browser_login=False):
             return self.response_401()
         f._permission_name = permission_str
         return functools.update_wrapper(wraps, f)
-    return functools.update_wrapper(_protect, allow_browser_login)
+    return _protect
 
 
 def has_access(f):
