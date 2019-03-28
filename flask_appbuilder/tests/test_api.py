@@ -64,6 +64,7 @@ class FlaskTestCase(unittest.TestCase):
         self.app.config['SECRET_KEY'] = 'thisismyscretkey'
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         self.app.config['FAB_API_MAX_PAGE_SIZE'] = MAX_PAGE_SIZE
+        self.app.config['WTF_CSRF_ENABLED'] = False
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -84,6 +85,9 @@ class FlaskTestCase(unittest.TestCase):
                 'field_string': 'Field String'
             }
 
+        self.model1api = Model1Api
+        self.appbuilder.add_view_no_menu(Model1Api)
+
         class Model1ApiFieldsInfo(Model1Api):
             datamodel = SQLAInterface(Model1)
             add_columns = [
@@ -96,6 +100,9 @@ class FlaskTestCase(unittest.TestCase):
                 'field_string',
                 'field_integer'
             ]
+
+        self.model1apifieldsinfo = Model1ApiFieldsInfo
+        self.appbuilder.add_view_no_menu(Model1ApiFieldsInfo)
 
         class Model1FuncApi(ModelRestApi):
             datamodel = SQLAInterface(Model1)
@@ -112,6 +119,9 @@ class FlaskTestCase(unittest.TestCase):
                 'field_string': 'Field String'
             }
 
+        self.model1funcapi = Model1Api
+        self.appbuilder.add_view_no_menu(Model1FuncApi)
+
         class Model1ApiExcludeCols(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             list_exclude_columns = [
@@ -123,13 +133,19 @@ class FlaskTestCase(unittest.TestCase):
             edit_exclude_columns = list_exclude_columns
             add_exclude_columns = list_exclude_columns
 
+        self.appbuilder.add_view_no_menu(Model1ApiExcludeCols)
+
         class Model1ApiOrder(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             base_order = ('field_integer', 'desc')
 
+        self.appbuilder.add_view_no_menu(Model1ApiOrder)
+
         class Model1ApiRestrictedPermissions(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             base_permissions = ['can_get', 'can_info']
+
+        self.appbuilder.add_view_no_menu(Model1ApiRestrictedPermissions)
 
         class Model1ApiFiltered(ModelRestApi):
             datamodel = SQLAInterface(Model1)
@@ -138,23 +154,22 @@ class FlaskTestCase(unittest.TestCase):
                 ['field_integer', FilterSmaller, 4]
             ]
 
+        self.appbuilder.add_view_no_menu(Model1ApiFiltered)
+
         class ModelWithEnumsApi(ModelRestApi):
             datamodel = SQLAInterface(ModelWithEnums)
+
+        self.appbuilder.add_view_no_menu(ModelWithEnumsApi)
+
+        class Model1BrowserLogin(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            allow_browser_login = True
+
+        self.appbuilder.add_view_no_menu(Model1BrowserLogin)
 
         class ModelMMApi(ModelRestApi):
             datamodel = SQLAInterface(ModelMMParent)
 
-        self.model1api = Model1Api
-        self.appbuilder.add_view_no_menu(Model1Api)
-        self.model1funcapi = Model1Api
-        self.appbuilder.add_view_no_menu(Model1FuncApi)
-        self.model1apifieldsinfo = Model1ApiFieldsInfo
-        self.appbuilder.add_view_no_menu(Model1ApiFieldsInfo)
-        self.appbuilder.add_view_no_menu(Model1ApiOrder)
-        self.appbuilder.add_view_no_menu(Model1ApiFiltered)
-        self.appbuilder.add_view_no_menu(Model1ApiExcludeCols)
-        self.appbuilder.add_view_no_menu(ModelWithEnumsApi)
-        self.appbuilder.add_view_no_menu(Model1ApiRestrictedPermissions)
         self.appbuilder.add_view_no_menu(ModelMMApi)
 
         class Model2Api(ModelRestApi):
@@ -165,6 +180,9 @@ class FlaskTestCase(unittest.TestCase):
             show_columns = [
                 'group'
             ]
+
+        self.model2api = Model2Api
+        self.appbuilder.add_view_no_menu(Model2Api)
 
         class Model2ApiFilteredRelFields(ModelRestApi):
             datamodel = SQLAInterface(Model2)
@@ -182,10 +200,9 @@ class FlaskTestCase(unittest.TestCase):
             }
             edit_query_rel_fields = add_query_rel_fields
 
-        self.model2api = Model2Api
-        self.appbuilder.add_view_no_menu(Model2Api)
         self.model2apifilteredrelfields = Model2ApiFilteredRelFields
         self.appbuilder.add_view_no_menu(Model2ApiFilteredRelFields)
+
         role_admin = self.appbuilder.sm.find_role('Admin')
         self.appbuilder.sm.add_user(
             USERNAME,
@@ -260,6 +277,16 @@ class FlaskTestCase(unittest.TestCase):
         except:
             return rv
 
+    def browser_login(self, client, username, password):
+        # Login with default admin
+        rv = client.post('/login/', data=dict(
+            username=username,
+            password=password
+        ), follow_redirects=True)
+
+    def browser_logout(self, client):
+        return client.get('/logout/')
+
     def test_auth_login(self):
         """
             REST Api: Test auth login
@@ -291,13 +318,49 @@ class FlaskTestCase(unittest.TestCase):
         )
         eq_(rv.status_code, 400)
 
+    def test_auth_authorization_browser(self):
+        """
+            REST Api: Test authorization with browser login
+        """
+        client = self.app.test_client()
+        rv = self.browser_login(client, USERNAME, PASSWORD)
+        # Test access with browser login
+        uri = 'api/v1/model1browserlogin/1'
+        rv = client.get(
+            uri
+        )
+        eq_(rv.status_code, 200)
+        # Test unauthorized access with browser login
+        uri = 'api/v1/model1api/1'
+        rv = client.get(
+            uri
+        )
+        eq_(rv.status_code, 401)
+        # Test access wihout cookie or JWT
+        rv = self.browser_logout(client)
+        # Test access with browser login
+        uri = 'api/v1/model1browserlogin/1'
+        rv = client.get(
+            uri
+        )
+        eq_(rv.status_code, 401)
+        # Test access with JWT but without cookie
+        token = self.login(client, USERNAME, PASSWORD)
+        uri = 'api/v1/model1browserlogin/1'
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
+        eq_(rv.status_code, 200)
+
     def test_auth_authorization(self):
         """
             REST Api: Test auth base limited authorization
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
-
+        # Test unauthorized DELETE
         pk = 1
         uri = 'api/v1/model1apirestrictedpermissions/{}'.format(pk)
         rv = self.auth_client_delete(
@@ -306,6 +369,7 @@ class FlaskTestCase(unittest.TestCase):
             uri
         )
         eq_(rv.status_code, 401)
+        # Test unauthorized POST
         item = dict(
             field_string="test{}".format(MODEL1_DATA_SIZE+1),
             field_integer=MODEL1_DATA_SIZE+1,
@@ -320,6 +384,7 @@ class FlaskTestCase(unittest.TestCase):
             item
         )
         eq_(rv.status_code, 401)
+        # Test unauthorized GET
         uri = 'api/v1/model1apirestrictedpermissions/1'
         rv = self.auth_client_get(
             client,

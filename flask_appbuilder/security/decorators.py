@@ -48,26 +48,33 @@ def protect(allow_browser_login=False):
 
         def wraps(self, *args, **kwargs):
             permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
+            class_permission_name = self.__class__.__name__
             if current_app.appbuilder.sm.is_item_public(
                     permission_str,
-                    self.__class__.__name__
+                    class_permission_name
             ):
                 return f(self, *args, **kwargs)
             if not (self.allow_browser_login or allow_browser_login):
                 verify_jwt_in_request()
             if current_app.appbuilder.sm.has_access(
                     permission_str,
-                    self.__class__.__name__
+                    class_permission_name
             ):
                 return f(self, *args, **kwargs)
-            else:
-                log.warning(
-                    LOGMSG_ERR_SEC_ACCESS_DENIED.format(
+            elif (self.allow_browser_login or allow_browser_login):
+                verify_jwt_in_request()
+                if current_app.appbuilder.sm.has_access(
                         permission_str,
-                        self.__class__.__name__
-                    )
+                        class_permission_name
+                ):
+                    return f(self, *args, **kwargs)
+            log.warning(
+                LOGMSG_ERR_SEC_ACCESS_DENIED.format(
+                    permission_str,
+                    class_permission_name
                 )
-                return self.response_401()
+            )
+            return self.response_401()
         f._permission_name = permission_str
         return functools.update_wrapper(wraps, f)
     return functools.update_wrapper(_protect, allow_browser_login)
