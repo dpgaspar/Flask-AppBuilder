@@ -1,16 +1,10 @@
 import calendar
 from flask_appbuilder import ModelView
-from flask_appbuilder.views import redirect
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.charts.views import GroupByChartView
 from flask_appbuilder.models.group import aggregate_count
-from flask_babel import lazy_gettext as _
-from flask_appbuilder.api import ModelRestApi
-from flask_appbuilder.security.sqla.models import User
-from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction
-
-from . import db, appbuilder, app
-from .models import ContactGroup, Gender, Contact, ContactGroupSchema, ContactSchema, GroupCustomSchema
+from . import db, appbuilder
+from .models import ContactGroup, Gender, Contact
 
 
 def fill_gender():
@@ -25,9 +19,6 @@ def fill_gender():
 class ContactModelView(ModelView):
     datamodel = SQLAInterface(Contact)
 
-    def post_add_redirect(self):
-        return redirect('model1viewwithredirects/show/{0}'.format(99999))
-
     list_columns = ['name', 'personal_celphone', 'birthday', 'contact_group.name']
 
     base_order = ('name', 'asc')
@@ -35,53 +26,39 @@ class ContactModelView(ModelView):
         ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
-            {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
+            {'fields':
+                 ['address', 'birthday', 'personal_phone', 'personal_celphone'],
+             'expanded': False
+             }
+        ),
     ]
 
     add_fieldsets = [
         ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
-            {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
+            {'fields':
+                 ['address', 'birthday', 'personal_phone', 'personal_celphone'],
+             'expanded': False
+             }
+        ),
     ]
 
     edit_fieldsets = [
         ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
-            {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
+            {'fields':
+                 ['address', 'birthday', 'personal_phone', 'personal_celphone'],
+             'expanded': False
+             }
+        ),
     ]
 
 
 class GroupModelView(ModelView):
     datamodel = SQLAInterface(ContactGroup)
     related_views = [ContactModelView]
-
-
-class GroupModelRestApi(ModelRestApi):
-    resource_name = 'group'
-    datamodel = SQLAInterface(ContactGroup)
-
-
-class ContactModelRestApi(ModelRestApi):
-    resource_name = 'contact'
-    allow_browser_login = True
-    datamodel = SQLAInterface(Contact)
-    #list_columns = ['name', 'some_function']
-    #base_filters = [['contact_group.name', FilterStartsWith, 'F']]
-    #list_model_schema = ContactSchema()
-    #base_filters = [['name', FilterStartsWith, 'a']]
-    #add_query_rel_fields = {
-    #    'contact_group': [['name', FilterStartsWith, 'F']]
-    #}
-    #edit_query_rel_fields = {
-    #    'contact_group': [['name', FilterStartsWith, 'F']]
-    #}
-
-    #list_columns = ['name', 'address', 'personal_celphone']
-    base_order = ('name', 'desc')
-    #list_exclude_columns = ['gender', 'contact_group_id','gender_id', 'id']
-    #show_exclude_columns = ['name']
 
 
 class ContactChartView(GroupByChartView):
@@ -92,12 +69,12 @@ class ContactChartView(GroupByChartView):
 
     definitions = [
         {
-            'group' : 'contact_group',
-            'series' : [(aggregate_count,'contact_group')]
+            'group': 'contact_group',
+            'series': [(aggregate_count, 'contact_group')]
         },
         {
-            'group' : 'gender',
-            'series' : [(aggregate_count,'contact_group')]
+            'group': 'gender',
+            'series': [(aggregate_count, 'contact_group')]
         }
     ]
 
@@ -132,19 +109,29 @@ class ContactTimeChartView(GroupByChartView):
 
 db.create_all()
 fill_gender()
-appbuilder.add_view_no_menu(GroupModelRestApi)
-appbuilder.add_view_no_menu(ContactModelRestApi)
-
-appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
+appbuilder.add_view(
+    GroupModelView,
+    "List Groups",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon='fa-envelope'
+)
+appbuilder.add_view(
+    ContactModelView,
+    "List Contacts",
+    icon="fa-envelope",
+    category="Contacts"
+)
 appbuilder.add_separator("Contacts")
-appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
-appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
-
-
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    return response
+appbuilder.add_view(
+    ContactChartView,
+    "Contacts Chart",
+    icon="fa-dashboard",
+    category="Contacts"
+)
+appbuilder.add_view(
+    ContactTimeChartView,
+    "Contacts Birth Chart",
+    icon="fa-dashboard",
+    category="Contacts"
+)

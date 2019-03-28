@@ -664,7 +664,10 @@ class ModelRestApi(BaseModelApi):
         # Handle Enums
         elif datamodel.is_enum(column):
             required = not datamodel.is_nullable(column)
-            enum_class = datamodel.list_columns[column].info.get('enum_class')
+            enum_class = datamodel.list_columns[column].info.get(
+                'enum_class',
+                datamodel.list_columns[column].type
+            )
             field = EnumField(enum_class, dump_by=EnumField.VALUE, required=required)
             field.unique = datamodel.is_unique(column)
             return field
