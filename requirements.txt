@@ -31,6 +31,7 @@ prison==0.1.0
 pyasn1==0.4.5
 pyasn1-modules==0.2.4
 PyJWT==1.7.1
+jsonschema==3.0.1
 pymongo==2.8.1
 python-dateutil==2.8.0
 pytz==2018.9
