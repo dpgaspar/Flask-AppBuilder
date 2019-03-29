@@ -57,7 +57,6 @@ class SecurityManager(BaseSecurityManager):
         self.permissionmodelview.datamodel = SQLAInterface(self.permission_model)
         self.viewmenumodelview.datamodel = SQLAInterface(self.viewmenu_model)
         self.permissionviewmodelview.datamodel = SQLAInterface(self.permissionview_model)
-        self.user_api.datamodel = SQLAInterface(self.user_model)
         self.create_db()
 
     @property

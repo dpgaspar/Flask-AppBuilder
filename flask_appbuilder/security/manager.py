@@ -10,10 +10,7 @@ from flask_jwt_extended import JWTManager
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_openid import OpenID
 from flask_babel import lazy_gettext as _
-from .api import (
-    SecurityApi,
-    UserApi
-)
+from .api import SecurityApi
 from .views import (
     AuthDBView,
     AuthOIDView,
@@ -191,8 +188,6 @@ class BaseSecurityManager(AbstractSecurityManager):
     # API
     security_api = SecurityApi
     """ Override if you want your own Security API login endpoint """
-    user_api = UserApi
-    """ Override if you want your own user API """
 
     rolemodelview = RoleModelView
     permissionmodelview = PermissionModelView
@@ -537,8 +532,7 @@ class BaseSecurityManager(AbstractSecurityManager):
     def register_views(self):
 
         # Security APIs
-        self.appbuilder.add_view_no_menu(self.security_api)
-        self.appbuilder.add_view_no_menu(self.user_api)
+        self.appbuilder.add_api(self.security_api)
 
         if self.auth_user_registration:
             if self.auth_type == AUTH_DB:
