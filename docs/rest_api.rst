@@ -216,7 +216,7 @@ If we send an invalid *Rison* argument we get an error::
     < Content-Type: application/json; charset=utf-8
     ...
     {
-      "message": "Not valid rison argument"
+      "message": "Not a valid rison argument"
     }
 
 You can additionally pass a JSON schema to

@@ -3,7 +3,7 @@ import logging
 import functools
 import traceback
 import prison
-from jsonschema import validate, ValidationError
+import jsonschema
 from sqlalchemy.exc import IntegrityError
 from marshmallow import ValidationError
 from flask import Blueprint, make_response, jsonify, request, current_app
@@ -107,13 +107,13 @@ def rison(schema=None):
                     kwargs['rison'] = \
                         prison.loads(value)
                 except prison.decoder.ParserException:
-                    return self.response_400(message="Not valid rison argument")
+                    return self.response_400(message="Not a valid rison argument")
             if schema:
                 try:
-                    validate(instance=kwargs['rison'], schema=schema)
-                except ValidationError as e:
+                    jsonschema.validate(instance=kwargs['rison'], schema=schema)
+                except jsonschema.ValidationError as e:
                     return self.response_400(
-                        message="Not valid rison schema {}".format(e)
+                        message="Not a valid rison schema {}".format(e)
                     )
             return f(self, *args, **kwargs)
         return functools.update_wrapper(wraps, f)
