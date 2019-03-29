@@ -3,6 +3,15 @@ from flask_appbuilder.api import BaseApi, expose, rison, safe
 from flask_appbuilder.security.decorators import protect
 from . import appbuilder
 
+schema = {
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "integer"
+        }
+    }
+}
+
 
 class MyFirstApi(BaseApi):
 
@@ -27,6 +36,14 @@ class MyFirstApi(BaseApi):
                 message="Hello {}".format(kwargs['rison']['name'])
             )
         return self.response_400(message="Please send your name")
+
+    @expose('/greeting4')
+    @rison(schema)
+    def greeting4(self, **kwargs):
+        return self.response(
+            200,
+            message="Hello {}".format(kwargs['rison']['name'])
+        )
 
     @expose('/risonjson')
     @rison

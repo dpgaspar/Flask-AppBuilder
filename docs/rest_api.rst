@@ -132,7 +132,7 @@ so data can be translated back and forth without loss or guesswork::
         ...
 
         @expose('/greeting3')
-        @rison
+        @rison()
         def greeting3(self, **kwargs):
             if 'name' in kwargs['rison']:
                 return self.response(
@@ -183,7 +183,7 @@ So to test our concept::
     ...
 
     @expose('/risonjson')
-    @rison
+    @rison()
     def rison_json(self, **kwargs):
         return self.response(200, result=kwargs['rison'])
 
@@ -218,6 +218,27 @@ If we send an invalid *Rison* argument we get an error::
     {
       "message": "Not valid rison argument"
     }
+
+You can additionally pass a JSON schema to
+validate your Rison arguments, this way you can implement a very strict API easily::
+
+    schema = {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "integer"
+            }
+        }
+    }
+    ...
+
+    @expose('/greeting4')
+    @rison(schema)
+    def greeting4(self, **kwargs):
+        return self.response(
+            200,
+            message="Hello {}".format(kwargs['rison']['name'])
+        )
 
 Finally to properly handle all possible exceptions use the ``safe`` decorator,
 that will catch all uncaught exceptions for you and return a proper error response.

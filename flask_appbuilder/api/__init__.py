@@ -3,12 +3,14 @@ import logging
 import functools
 import traceback
 import prison
+from jsonschema import validate, ValidationError
 from sqlalchemy.exc import IntegrityError
 from marshmallow import ValidationError
 from flask import Blueprint, make_response, jsonify, request, current_app
 from werkzeug.exceptions import BadRequest
 from flask_babel import lazy_gettext as _
 from .convert import Model2SchemaConverter
+from .schemas import get_list_schema, get_item_schema, get_info_schema
 from ..security.decorators import permission_name, protect
 from .._compat import as_unicode
 from ..const import (
@@ -64,7 +66,7 @@ def safe(f):
     return functools.update_wrapper(wraps, f)
 
 
-def rison(f):
+def rison(schema=None):
     """
         Use this decorator to parse URI *Rison* arguments to
         a python data structure, you're method gets the data
@@ -73,22 +75,49 @@ def rison(f):
 
             class ExampleApi(BaseApi):
                     @expose('/risonjson')
-                    @rison
+                    @rison()
                     def rison_json(self, **kwargs):
                         return self.response(200, result=kwargs['rison'])
-    """
-    def wraps(self, *args, **kwargs):
 
-        value = request.args.get(API_URI_RIS_KEY, None)
-        kwargs['rison'] = dict()
-        if value:
-            try:
-                kwargs['rison'] = \
-                    prison.loads(value)
-            except prison.decoder.ParserException:
-                return self.response_400(message="Not valid rison argument")
-        return f(self, *args, **kwargs)
-    return functools.update_wrapper(wraps, f)
+        You can additionally pass a JSON schema to
+        validate Rison arguments::
+
+            schema = {
+                "type": "object",
+                "properties": {
+                    "arg1": {
+                        "type": "integer"
+                    }
+                }
+            }
+
+            class ExampleApi(BaseApi):
+                    @expose('/risonjson')
+                    @rison(schema)
+                    def rison_json(self, **kwargs):
+                        return self.response(200, result=kwargs['rison'])
+
+    """
+    def _rison(f):
+        def wraps(self, *args, **kwargs):
+            value = request.args.get(API_URI_RIS_KEY, None)
+            kwargs['rison'] = dict()
+            if value:
+                try:
+                    kwargs['rison'] = \
+                        prison.loads(value)
+                except prison.decoder.ParserException:
+                    return self.response_400(message="Not valid rison argument")
+            if schema:
+                try:
+                    validate(instance=kwargs['rison'], schema=schema)
+                except ValidationError as e:
+                    return self.response_400(
+                        message="Not valid rison schema {}".format(e)
+                    )
+            return f(self, *args, **kwargs)
+        return functools.update_wrapper(wraps, f)
+    return _rison
 
 
 def expose(url='/', methods=('GET',)):
@@ -719,7 +748,7 @@ class ModelRestApi(BaseModelApi):
     @expose('/_info', methods=['GET'])
     @protect()
     @safe
-    @rison
+    @rison(get_info_schema)
     @permission_name('info')
     @merge_response_func(BaseApi.merge_current_user_permissions, API_PERMISSIONS_RIS_KEY)
     @merge_response_func(merge_add_field_info, API_ADD_COLUMNS_RIS_KEY)
@@ -863,7 +892,7 @@ class ModelRestApi(BaseModelApi):
         else:
             response[API_ORDER_COLUMNS_RES_KEY] = self.order_columns
 
-    @rison
+    @rison(get_item_schema)
     @merge_response_func(merge_label_columns, API_LABEL_COLUMNS_RIS_KEY)
     @merge_response_func(merge_show_columns, API_SHOW_COLUMNS_RIS_KEY)
     @merge_response_func(merge_description_columns, API_DESCRIPTION_COLUMNS_RIS_KEY)
@@ -893,7 +922,7 @@ class ModelRestApi(BaseModelApi):
         _response[API_RESULT_RES_KEY] = _show_model_schema.dump(item, many=False).data
         return self.response(200, **_response)
 
-    @rison
+    @rison(get_list_schema)
     @merge_response_func(merge_order_columns, API_ORDER_COLUMNS_RIS_KEY)
     @merge_response_func(merge_label_columns, API_LABEL_COLUMNS_RIS_KEY)
     @merge_response_func(merge_description_columns, API_DESCRIPTION_COLUMNS_RIS_KEY)
@@ -916,10 +945,7 @@ class ModelRestApi(BaseModelApi):
         else:
             _list_model_schema = self.list_model_schema
         # handle filters
-        try:
-            joined_filters = self._handle_filters_args(_args)
-        except Exception as e:
-            return self.response_400("Filter arguments not correct")
+        joined_filters = self._handle_filters_args(_args)
         # handle base order
         order_column, order_direction = self._handle_order_args(_args)
         # handle pagination
@@ -956,9 +982,6 @@ class ModelRestApi(BaseModelApi):
         """
         page_index = rison_args.get('page', 0)
         page_size = rison_args.get('page_size', self.page_size)
-        if not isinstance(page_size, int) or not isinstance(page_index, int):
-            log.warning("Wrong page parameters")
-            return 0, self.page_size
         max_page_size = current_app.config.get('FAB_API_MAX_PAGE_SIZE')
         if page_size > max_page_size:
             page_size = max_page_size
