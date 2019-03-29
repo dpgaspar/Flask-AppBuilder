@@ -7,8 +7,6 @@ from . import appbuilder
 class MyFirstApi(BaseApi):
 
     resource_name = 'myfirst'
-    version = 'v2'
-    route_base = '/newapi/v3/nice'
 
     @expose('/greeting')
     def greeting(self):
@@ -47,4 +45,4 @@ class MyFirstApi(BaseApi):
         raise Exception
 
 
-appbuilder.add_view_no_menu(MyFirstApi)
+appbuilder.add_api(MyFirstApi)
