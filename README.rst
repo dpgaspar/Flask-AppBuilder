@@ -2,13 +2,10 @@ Flask App Builder
 =================
 
 .. image:: https://travis-ci.org/dpgaspar/Flask-AppBuilder.png?branch=master
-	:target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
+   :target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
 .. image:: https://coveralls.io/repos/dpgaspar/Flask-AppBuilder/badge.png?branch=master
-    :target: https://coveralls.io/r/dpgaspar/Flask-AppBuilder
-.. image:: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/dpgaspar/Flask-AppBuilder/master
-   :alt: Code Health
-.. image:: https://img.shields.io/badge/pyversions-2.7%2C3.3%2C3.5-blue.svg
+   :target: https://coveralls.io/r/dpgaspar/Flask-AppBuilder
+.. image:: https://img.shields.io/badge/pyversions-2.7%2C3.6-blue.svg
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto CRUD generation for your models, google charts and much more.
@@ -17,19 +14,30 @@ Extensive configuration of all functionality, easily integrate with normal Flask
 
 Take a look at installation, quick how to tutorials, API reference etc: `Documentation <http://flask-appbuilder.readthedocs.org/en/latest/>`_
 
-Checkout installation video on `YouTube <http://youtu.be/xvum4vfwldg>`_ for 1.2.0 and prior `YouTube <http://youtu.be/ZrqFDroqqWE>`_
+Checkout installation video on `YouTube <http://youtu.be/xvum4vfwldg>`_
 
 Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples>`_ and a live quick how to `Demo from the docs <http://flaskappbuilder.pythonanywhere.com/>`_ (login has guest/welcome).
 
 Package Version
 ---------------
 
-*New 1.11.0*.
+*New 1.12.5*.
 
-BREAKING CHANGES relative to 1.8.1 when using OAUTH authentication method.
+BREAKING CHANGES relative to 1.12.0: we have bumped flask-login version, this causes breaking changes on the API relative to this package.
 
-If you're already using F.A.B.
-read carefully the `migration <http://flask-appbuilder.readthedocs.org/en/latest/versionmigration.html>`_ procedures.
+- Flask-AppBuilder version <= 1.11.1 was using Flask-Login 0.2.X.
+
+- Flask-AppBuilder version > 1.12.0 is using Flask-Login > 0.3.X.
+
+The following methods from Flask-Login changed to properties:
+
+- is_anonymous() -> is_anonymous
+
+- is_active() -> is_active
+
+- is_authenticated() -> is_authenticated
+
+Take at look at: https://github.com/maxcountryman/flask-login/blob/master/CHANGES#L49
 
 Also read the `Versions <http://flask-appbuilder.readthedocs.org/en/latest/versions.html>`_ for further detail on what changed.
 
@@ -49,13 +57,20 @@ Or, if you have mongodb and the requirements installed locally-
 `setup.py test`
 
 
-Projects using FAB
-------------------
+Projects/Organizations using FAB
+--------------------------------
 
-If you would like to share your projects and join the list, just send me the link.
+If you would like to share your project, or let everyone know that you're using FAB on your organization please submit a PR or send me an email with the details. 
+
+Projects:
 
 - `Superset <https://github.com/airbnb/superset>`_ - a data exploration platform designed to be visual, intuitive, and interactive
-- `Flog <http://demo-ninmesara.rhcloud.com/category/about>`_
+
+Organizations:
+
+- Airbnb
+- Miniclip
+- EuroBIC
 
 Includes:
 ---------

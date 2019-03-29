@@ -1,6 +1,46 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.12.5
+------------------------------------
+
+- Fix, #928 Copy role modal not showing
+
+Improvements and Bug fixes on 1.12.4
+------------------------------------
+
+- Fix, #911 fabmanager missing session rollback() when user add fails
+- Fix, #910 Next page on OAuth
+
+Improvements and Bug fixes on 1.12.3
+------------------------------------
+
+- Fix, #762 Instantiate AdminActions only after DOM finishes loading
+- New, #883 Changed templates so that is possible to use Jinja2 StrictUndefined
+- Fix, #891 Missing import reduce python3 compatibility
+- Fix, #862 fabmanager appbuilder parameter is now working
+
+Improvements and Bug fixes on 1.12.2
+------------------------------------
+
+- Fix, #832 don't install examples as a package with flask-appbuilder
+- Fix, #760 Select all checkbox, in related view, selects checkboxes from all related views
+- New, #833 LDAPS TLS config options
+- New, #829 Aditional filtering in LDAP search
+
+Improvements and Bug fixes on 1.12.1
+------------------------------------
+
+- New, #826 Greek support i18n
+- New, #813 Dependencies unpinned
+- Fix, #828 list and form widget rendering html InLine, regression from #797
+
+Improvements and Bug fixes on 1.12.0
+------------------------------------
+
+- Fix, #797 Remove safe filter from template
+- New, #911 BREAKING CHANGES, bumped Flask-Login dependency to >=0.3,<0.5
+
 Improvements and Bug fixes on 1.11.1
 ------------------------------------
 

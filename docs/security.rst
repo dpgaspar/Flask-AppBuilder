@@ -59,7 +59,7 @@ If you extend your view with some exposed method via the @expose decorator and y
 use the @has_access decorator::
 
     class MyModelView(ModelView):
-        datamodel = SQLAInterdace(Group)
+        datamodel = SQLAInterface(Group)
     	
         @has_access
         @expose('/mymethod/')
@@ -369,6 +369,7 @@ First extend the User Model (create a sec_models.py file)::
     from flask_appbuilder import Model
 
     class MyUser(User):
+        __tablename__ = 'ab_user'
         extra = Column(String(256))
 
 

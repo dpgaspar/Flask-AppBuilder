@@ -1,0 +1,6 @@
+[run]
+source = flask_appbuilder
+
+omit =
+  *messages.py*
+  *baseapp.py*

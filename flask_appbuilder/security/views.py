@@ -7,6 +7,7 @@ from wtforms import validators, PasswordField
 from wtforms.validators import EqualTo
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
+import jwt
 
 from ..views import ModelView, SimpleFormView, expose
 from ..baseviews import BaseView
@@ -329,7 +330,7 @@ class RoleModelView(ModelView):
     list_columns = ['name', 'permissions']
     order_columns = ['name']
 
-    @action("Copy Role", lazy_gettext('Copy Role'), lazy_gettext('Copy the selected roles?'), icon='fa-copy', single=False)
+    @action("copyrole", lazy_gettext('Copy Role'), lazy_gettext('Copy the selected roles?'), icon='fa-copy', single=False)
     def copy_role(self, items):
         self.update_redirect()
         for item in items:
@@ -374,7 +375,7 @@ class AuthDBView(AuthView):
 
     @expose('/login/', methods=['GET', 'POST'])
     def login(self):
-        if g.user is not None and g.user.is_authenticated():
+        if g.user is not None and g.user.is_authenticated:
             return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_db()
         if form.validate_on_submit():
@@ -395,7 +396,7 @@ class AuthLDAPView(AuthView):
 
     @expose('/login/', methods=['GET', 'POST'])
     def login(self):
-        if g.user is not None and g.user.is_authenticated():
+        if g.user is not None and g.user.is_authenticated:
             return redirect(self.appbuilder.get_url_for_index)
         form = LoginForm_db()
         if form.validate_on_submit():
@@ -417,7 +418,7 @@ class AuthLDAPView(AuthView):
     """
     @expose_api(name='auth',url='/api/auth')
     def auth(self):
-        if g.user is not None and g.user.is_authenticated():
+        if g.user is not None and g.user.is_authenticated:
             http_return_code = 401
             response = make_response(jsonify({'message': 'Login Failed already authenticated',
                                               'severity': 'critical'}), http_return_code)
@@ -450,7 +451,7 @@ class AuthOIDView(AuthView):
     def login(self, flag=True):
         @self.appbuilder.sm.oid.loginhandler
         def login_handler(self):
-            if g.user is not None and g.user.is_authenticated():
+            if g.user is not None and g.user.is_authenticated:
                 return redirect(self.appbuilder.get_url_for_index)
             form = LoginForm_oid()
             if form.validate_on_submit():
@@ -493,7 +494,7 @@ class AuthOAuthView(AuthView):
     @expose('/login/<provider>/<register>')
     def login(self, provider=None, register=None):
         log.debug('Provider: {0}'.format(provider))
-        if g.user is not None and g.user.is_authenticated():
+        if g.user is not None and g.user.is_authenticated:
             log.debug("Already authenticated {0}".format(g.user))
             return redirect(self.appbuilder.get_url_for_index)
         if provider is None:
@@ -503,11 +504,23 @@ class AuthOAuthView(AuthView):
                                appbuilder=self.appbuilder)
         else:
             log.debug("Going to call authorize for: {0}".format(provider))
+            state = jwt.encode(
+                request.args.to_dict(flat=False),
+                self.appbuilder.app.config['SECRET_KEY'],
+                algorithm='HS256')
             try:
                 if register:
                     log.debug('Login to Register')
                     session['register'] = True
-                return self.appbuilder.sm.oauth_remotes[provider].authorize(callback=url_for('.oauth_authorized',provider=provider, _external=True))
+                if provider == 'twitter':
+                    return self.appbuilder.sm.oauth_remotes[provider].authorize(
+                        callback=url_for
+                            ('.oauth_authorized', provider=provider, _external=True, state=state))
+                else:
+                    return self.appbuilder.sm.oauth_remotes[provider].authorize(
+                        callback=url_for
+                            ('.oauth_authorized', provider=provider, _external=True),
+                            state=state)
             except Exception as e:
                 log.error("Error on OAuth authorize: {0}".format(e))
                 flash(as_unicode(self.invalid_login_message), 'warning')
@@ -550,7 +563,20 @@ class AuthOAuthView(AuthView):
             return redirect('login')
         else:
             login_user(user)
-            return redirect(self.appbuilder.get_url_for_index)
+            try:
+                state = jwt.decode(
+                    request.args['state'],
+                    self.appbuilder.app.config['SECRET_KEY'],
+                    algorithms=['HS256'])
+            except jwt.InvalidTokenError:
+                raise AuthenticationError('State signature is not valid!')
+
+            try:
+                next_url = state['next'][0]
+            except (KeyError, IndexError):
+                next_url = self.appbuilder.get_url_for_index
+
+            return redirect(next_url)
 
 
 class AuthRemoteUserView(AuthView):
@@ -559,7 +585,7 @@ class AuthRemoteUserView(AuthView):
     @expose('/login/')
     def login(self):
         username = request.environ.get('REMOTE_USER')
-        if g.user is not None and g.user.is_authenticated():
+        if g.user is not None and g.user.is_authenticated:
             return redirect(self.appbuilder.get_url_for_index)
         if username:
             user = self.appbuilder.sm.auth_user_remote_user(username)
