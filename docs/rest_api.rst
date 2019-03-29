@@ -514,7 +514,7 @@ inferred from our SQLAlchemy Models.
 But you can always use your own defined Marshmallow schemas independently
 for add, edit, list and show endpoints.
 
-A validation error for PUT and POST methods returns HTTP 400 and the following JSON data::
+A validation error for PUT and POST methods returns HTTP 422 and the following JSON data::
 
     {
         "message": {
@@ -541,7 +541,7 @@ by sending a name that is a number::
       }
     }
 
-And we get an HTTP 400 (Bad request).
+And we get an HTTP 422 (Unprocessable Entity).
 
 How to add custom validation? On our next example we only allow
 group names that start with a capital "A"::

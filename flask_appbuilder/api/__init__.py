@@ -4,15 +4,14 @@ import functools
 import traceback
 import prison
 from sqlalchemy.exc import IntegrityError
+from marshmallow import ValidationError
 from flask import Blueprint, make_response, jsonify, request, current_app
 from werkzeug.exceptions import BadRequest
 from flask_babel import lazy_gettext as _
-from .security.decorators import permission_name, protect
-from marshmallow import ValidationError, fields
-from marshmallow_sqlalchemy import field_for
-from marshmallow_enum import EnumField
-from ._compat import as_unicode
-from .const import (
+from .convert import Model2SchemaConverter
+from ..security.decorators import permission_name, protect
+from .._compat import as_unicode
+from ..const import (
     API_URI_RIS_KEY,
     API_ORDER_COLUMNS_RES_KEY,
     API_LABEL_COLUMNS_RES_KEY,
@@ -139,7 +138,7 @@ class BaseApi(object):
         it's constructor will register your exposed urls on flask
         as a Blueprint.
 
-        This class does not expose any urls, 
+        This class does not expose any urls,
         but provides a common base for all apis.
     """
 
@@ -280,7 +279,7 @@ class BaseApi(object):
                     v(self, response, **kwargs)
 
     def merge_current_user_permissions(self, response, **kwargs):
-        response[API_PERMISSIONS_RES_KEY] =\
+        response[API_PERMISSIONS_RES_KEY] = \
             self.appbuilder.sm.get_user_permissions_on_view(
                 self.__class__.__name__
             )
@@ -308,6 +307,16 @@ class BaseApi(object):
         """
         message = message or "Arguments are not correct"
         return self.response(400, **{"message": message})
+
+    def response_422(self, message=None):
+        """
+            Helper method for HTTP 422 response
+
+        :param message: Error message (str)
+        :return: HTTP Json response
+        """
+        message = message or "Could not process entity"
+        return self.response(422, **{"message": message})
 
     def response_401(self):
         """
@@ -587,6 +596,15 @@ class ModelRestApi(BaseModelApi):
         Override to provide your own marshmallow Schema 
         for JSON to SQLA dumps
     """
+    model2schemaconverter = Model2SchemaConverter
+    """
+        Override to use your own Model2SchemaConverter 
+        (inherit from BaseModel2SchemaConverter)
+    """
+
+    def __init__(self):
+        super(ModelRestApi, self).__init__()
+        self.model2schemaconverter = self.model2schemaconverter(self.datamodel)
 
     def create_blueprint(self, appbuilder, *args, **kwargs):
         self._init_model_schemas()
@@ -600,107 +618,20 @@ class ModelRestApi(BaseModelApi):
         # Create Marshmalow schemas if one is not specified
         if self.list_model_schema is None:
             self.list_model_schema = \
-                self._model_schema_factory(self.list_columns)
+                self.model2schemaconverter.convert(self.list_columns)
         if self.add_model_schema is None:
             self.add_model_schema = \
-                self._model_schema_factory(self.add_columns, nested=False)
+                self.model2schemaconverter.convert(self.add_columns, nested=False)
         if self.edit_model_schema is None:
             self.edit_model_schema = \
-                self._model_schema_factory(self.edit_columns, nested=False)
+                self.model2schemaconverter.convert(
+                    self.edit_columns,
+                    nested=False,
+                    enum_dump_by_name=True
+                )
         if self.show_model_schema is None:
             self.show_model_schema = \
-                self._model_schema_factory(self.show_columns)
-
-    @staticmethod
-    def _debug_schema(schema):
-        for k, v in schema._declared_fields.items():
-            print(k, v)
-
-    def _meta_schema_factory(self, columns, model, class_mixin):
-        from marshmallow_sqlalchemy.schema import ModelSchema
-        _model = model
-        if columns:
-            class MetaSchema(ModelSchema, class_mixin):
-                class Meta:
-                    model = _model
-                    fields = columns
-                    strict = True
-                    sqla_session = self.appbuilder.get_session
-        else:
-            class MetaSchema(ModelSchema, class_mixin):
-                class Meta:
-                    model = _model
-                    strict = True
-                    sqla_session = self.appbuilder.get_session
-        return MetaSchema
-
-    def _column2field(self, datamodel, column, nested=True):
-        _model = datamodel.obj
-        # Handle relations
-        if datamodel.is_relation(column) and nested:
-            required = not datamodel.is_nullable(column)
-            nested_model = datamodel.get_related_model(column)
-            nested_schema = self._model_schema_factory(
-                [],
-                nested_model,
-                nested=False
-            )
-            if datamodel.is_relation_many_to_one(column):
-                many = False
-            elif datamodel.is_relation_many_to_many(column):
-                many = True
-            else:
-                many = False
-            field = fields.Nested(nested_schema, many=many, required=required)
-            field.unique = datamodel.is_unique(column)
-            return field
-        # Handle bug on marshmallow-sqlalchemy #163
-        elif datamodel.is_relation(column):
-            required = not datamodel.is_nullable(column)
-            field = field_for(_model, column)
-            field.required = required
-            field.unique = datamodel.is_unique(column)
-            return field
-        # Handle Enums
-        elif datamodel.is_enum(column):
-            required = not datamodel.is_nullable(column)
-            enum_class = datamodel.list_columns[column].info.get(
-                'enum_class',
-                datamodel.list_columns[column].type
-            )
-            field = EnumField(enum_class, dump_by=EnumField.VALUE, required=required)
-            field.unique = datamodel.is_unique(column)
-            return field
-        if not hasattr(getattr(_model, column), '__call__'):
-            field = field_for(_model, column)
-            field.unique = datamodel.is_unique(column)
-            return field
-
-    def _model_schema_factory(self, columns, model=None, nested=True):
-        """
-            Will create a Marshmallow SQLAlchemy schema class
-        :param columns: List with columns to include
-        :return: ModelSchema object
-        """
-        class SchemaMixin:
-            pass
-
-        _model = model or self.datamodel.obj
-        _datamodel = self.datamodel.__class__(_model)
-
-        ma_sqla_fields_override = {}
-
-        _columns = list()
-        for column in columns:
-            ma_sqla_fields_override[column] = self._column2field(
-                _datamodel,
-                column,
-                nested
-            )
-            _columns.append(column)
-        for k, v in ma_sqla_fields_override.items():
-            setattr(SchemaMixin, k, v)
-        return self._meta_schema_factory(_columns, _model, SchemaMixin)()
+                self.model2schemaconverter.convert(self.show_columns)
 
     def _init_titles(self):
         """
@@ -742,7 +673,7 @@ class ModelRestApi(BaseModelApi):
 
         self._gen_labels_columns(self.list_columns)
         self.order_columns = self.order_columns or \
-            self.datamodel.get_order_columns_list(list_columns=self.list_columns)
+                             self.datamodel.get_order_columns_list(list_columns=self.list_columns)
         # Process excluded columns
         if not self.show_columns:
             self.show_columns = \
@@ -823,10 +754,10 @@ class ModelRestApi(BaseModelApi):
         try:
             item = self.add_model_schema.load(request.json)
         except ValidationError as err:
-            return self.response_400(message=err.messages)
+            return self.response_422(message=err.messages)
         # This validates custom Schema with custom validations
         if isinstance(item.data, dict):
-            return self.response_400(message=item.errors)
+            return self.response_422(message=item.errors)
         self.pre_add(item.data)
         try:
             self.datamodel.add(item.data, raise_exception=True)
@@ -841,7 +772,7 @@ class ModelRestApi(BaseModelApi):
                 }
             )
         except IntegrityError as e:
-            return self.response_400(message=str(e.orig))
+            return self.response_422(message=str(e.orig))
 
     @expose('/<pk>', methods=['PUT'])
     @protect()
@@ -854,15 +785,13 @@ class ModelRestApi(BaseModelApi):
         if not item:
             return self.response_404()
         try:
-            # MERGE
-            for _col in self.add_columns:
-                print("COL!!! {}={}".format(_col, getattr(item, _col)))
-            item = self.edit_model_schema.load(request.json, instance=item)
+            data = self._merge_update_item(item, request.json)
+            item = self.edit_model_schema.load(data, instance=item)
         except ValidationError as err:
-            return self.response(400, **{'message': err.messages})
+            return self.response_422(message=err.messages)
         # This validates custom Schema with custom validations
         if isinstance(item.data, dict):
-            return self.response(400, **{'message': item.errors})
+            return self.response_422(message=item.errors)
         self.pre_update(item.data)
         try:
             self.datamodel.edit(item.data, raise_exception=True)
@@ -874,7 +803,7 @@ class ModelRestApi(BaseModelApi):
                     many=False).data}
             )
         except IntegrityError as e:
-            return self.response_400(message=str(e.orig))
+            return self.response_422(message=str(e.orig))
 
     @expose('/<pk>', methods=['DELETE'])
     @protect()
@@ -890,7 +819,7 @@ class ModelRestApi(BaseModelApi):
             self.post_delete(item)
             return self.response(200, message='OK')
         except IntegrityError as e:
-            return self.response_400(message=str(e.orig))
+            return self.response_422(message=str(e.orig))
 
     def merge_label_columns(self, response, **kwargs):
         _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
@@ -955,7 +884,7 @@ class ModelRestApi(BaseModelApi):
             **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols}
         )
         if _pruned_select_cols:
-            _show_model_schema = self._model_schema_factory(_pruned_select_cols)
+            _show_model_schema = self.model2schemaconverter.convert(_pruned_select_cols)
         else:
             _show_model_schema = self.show_model_schema
 
@@ -982,7 +911,7 @@ class ModelRestApi(BaseModelApi):
         )
 
         if _pruned_select_cols:
-            _list_model_schema = self._model_schema_factory(_pruned_select_cols)
+            _list_model_schema = self.model2schemaconverter.convert(_pruned_select_cols)
         else:
             _list_model_schema = self.list_model_schema
         # handle filters
@@ -1074,7 +1003,9 @@ class ModelRestApi(BaseModelApi):
         # Handles related fields
         if isinstance(field, Related) or isinstance(field, RelatedList):
             _rel_interface = self.datamodel.get_related_interface(field.name)
-            _filters = _rel_interface.get_filters(_rel_interface.get_search_columns_list())
+            _filters = _rel_interface.get_filters(
+                _rel_interface.get_search_columns_list()
+            )
             if filter_rel_field:
                 filters = _filters.add_filter_list(filter_rel_field)
                 _values = _rel_interface.query(filters)[1]
@@ -1117,6 +1048,25 @@ class ModelRestApi(BaseModelApi):
             for col in cols
         ]
 
+    def _merge_update_item(self, model_item, data):
+        """
+            Merge a model with a python data structure
+            This is useful to turn PUT method into a PATH also
+        :param model_item: SQLA Model
+        :param data: python data structure
+        :return: python data structure
+        """
+        data_item = self.edit_model_schema.dump(model_item, many=False).data
+        for _col in self.edit_columns:
+            if _col not in data.keys():
+                data[_col] = data_item[_col]
+        return data
+
+    """
+    ------------------------------------------------
+                PRE AND POST METHODS
+    ------------------------------------------------
+    """
     def pre_update(self, item):
         """
             Override this, this method is called before the update takes place.

@@ -56,7 +56,7 @@ class FlaskTestCase(unittest.TestCase):
         from flask import Flask
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.models.sqla.interface import SQLAInterface
-        from flask_appbuilder.api import ModelRestApi
+        from flask_appbuilder import ModelRestApi
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
@@ -1355,7 +1355,7 @@ class FlaskTestCase(unittest.TestCase):
             uri,
             item
         )
-        eq_(rv.status_code, 400)
+        eq_(rv.status_code, 422)
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_string'][0], 'Longer than maximum length 50.')
 
@@ -1371,8 +1371,7 @@ class FlaskTestCase(unittest.TestCase):
         token = self.login(client, USERNAME, PASSWORD)
         pk = 1
         item = dict(
-            children=[4],
-            field_string='0'
+            children=[4]
         )
         uri = 'api/v1/modelmmapi/{}'.format(pk)
         rv = self.auth_client_put(
@@ -1404,7 +1403,7 @@ class FlaskTestCase(unittest.TestCase):
             uri,
             item
         )
-        eq_(rv.status_code, 400)
+        eq_(rv.status_code, 422)
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_integer'][0], 'Not a valid integer.')
 
@@ -1419,7 +1418,7 @@ class FlaskTestCase(unittest.TestCase):
             uri,
             item
         )
-        eq_(rv.status_code, 400)
+        eq_(rv.status_code, 422)
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_string'][0], 'Not a valid string.')
 
@@ -1495,7 +1494,7 @@ class FlaskTestCase(unittest.TestCase):
             uri,
             item
         )
-        eq_(rv.status_code, 400)
+        eq_(rv.status_code, 422)
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_string'][0], 'Longer than maximum length 50.')
 
@@ -1503,6 +1502,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             REST Api: Test create validate type
         """
+        # Test integer as string
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
         item = dict(
@@ -1517,10 +1517,10 @@ class FlaskTestCase(unittest.TestCase):
             uri,
             item
         )
-        eq_(rv.status_code, 400)
+        eq_(rv.status_code, 422)
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_integer'][0], 'Not a valid integer.')
-
+        # Test string as integer
         item = dict(
             field_string=MODEL1_DATA_SIZE,
             field_integer=MODEL1_DATA_SIZE,
@@ -1532,7 +1532,7 @@ class FlaskTestCase(unittest.TestCase):
             uri,
             item
         )
-        eq_(rv.status_code, 400)
+        eq_(rv.status_code, 422)
         data = json.loads(rv.data.decode('utf-8'))
         eq_(data['message']['field_string'][0], 'Not a valid string.')
 
