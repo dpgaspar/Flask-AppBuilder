@@ -164,7 +164,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name('list')
     def api(self):
-        log.warning("This is API is deprecated and will be removed on 1.15.X")
+        log.warning("This API is deprecated and will be removed on 1.15.X")
         view_name = self.__class__.__name__
         api_urls = self._get_api_urls()
         modelview_urls = self._get_modelview_urls()
@@ -207,7 +207,7 @@ class RestCRUDView(BaseCRUDView):
     def api_read(self):
         """
         """
-        log.warning("This is API is deprecated and will be removed on 1.15.X")
+        log.warning("This API is deprecated and will be removed on 1.15.X")
         # Get arguments for ordering
         if get_order_args().get(self.__class__.__name__):
             order_column, order_direction = get_order_args().get(self.__class__.__name__)
@@ -249,7 +249,7 @@ class RestCRUDView(BaseCRUDView):
     def api_get(self, pk):
         """
         """
-        log.warning("This is API is deprecated and will be removed on 1.15.X")
+        log.warning("This API is deprecated and will be removed on 1.15.X")
         # Get arguments for ordering
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
@@ -267,7 +267,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name('add')
     def api_create(self):
-        log.warning("This is API is deprecated and will be removed on 1.15.X")
+        log.warning("This API is deprecated and will be removed on 1.15.X")
         get_filter_args(self._filters)
         exclude_cols = self._filters.get_relation_cols()
         form = self.add_form.refresh()
@@ -298,7 +298,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name('edit')
     def api_update(self, pk):
-        log.warning("This is API is deprecated and will be removed on 1.15.X")
+        log.warning("This API is deprecated and will be removed on 1.15.X")
         get_filter_args(self._filters)
         exclude_cols = self._filters.get_relation_cols()
 
@@ -345,7 +345,7 @@ class RestCRUDView(BaseCRUDView):
     @has_access_api
     @permission_name('delete')
     def api_delete(self, pk):
-        log.warning("This is API is deprecated and will be removed on 1.15.X")
+        log.warning("This API is deprecated and will be removed on 1.15.X")
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
             abort(404)
@@ -388,7 +388,7 @@ class RestCRUDView(BaseCRUDView):
         :param col_name: The related column name
         :return: JSON response
         """
-        log.warning("This is API is deprecated and will be removed on 1.15.X")
+        log.warning("This API is deprecated and will be removed on 1.15.X")
         filter_rel_fields = None
         if self.add_form_query_rel_fields:
             filter_rel_fields = self.add_form_query_rel_fields.get(col_name)
@@ -409,7 +409,7 @@ class RestCRUDView(BaseCRUDView):
         :param col_name: The related column name
         :return: JSON response
         """
-        log.warning("This is API is deprecated and will be removed on 1.15.X")
+        log.warning("This API is deprecated and will be removed on 1.15.X")
         filter_rel_fields = None
         if self.edit_form_query_rel_fields:
             filter_rel_fields = self.edit_form_query_rel_fields
@@ -424,7 +424,7 @@ class RestCRUDView(BaseCRUDView):
     def api_readvalues(self):
         """
         """
-        log.warning("This is API is deprecated and will be removed on 1.15.X")
+        log.warning("This API is deprecated and will be removed on 1.15.X")
         # Get arguments for ordering
         if get_order_args().get(self.__class__.__name__):
             order_column, order_direction = get_order_args().get(self.__class__.__name__)
