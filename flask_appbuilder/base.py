@@ -414,8 +414,8 @@ class AppBuilder(object):
         """
             Add your views without creating a menu.
 
-            :param baseview:
-                A BaseView type class instantiated.
+        :param baseview:
+            A BaseView type class instantiated.
 
         """
         baseview = self._check_and_init(baseview)
@@ -432,6 +432,15 @@ class AppBuilder(object):
         else:
             log.warning(LOGMSG_WAR_FAB_VIEW_EXISTS.format(baseview.__class__.__name__))
         return baseview
+
+    def add_api(self, baseview):
+        """
+            Add a BaseApi class or child to AppBuilder
+
+        :param baseview: A BaseApi type class
+        :return: The instantiated base view
+        """
+        return self.add_view_no_menu(baseview)
 
     def security_cleanup(self):
         """

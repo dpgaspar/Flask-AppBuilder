@@ -86,7 +86,7 @@ class FlaskTestCase(unittest.TestCase):
             }
 
         self.model1api = Model1Api
-        self.appbuilder.add_view_no_menu(Model1Api)
+        self.appbuilder.add_api(Model1Api)
 
         class Model1ApiFieldsInfo(Model1Api):
             datamodel = SQLAInterface(Model1)
@@ -102,7 +102,7 @@ class FlaskTestCase(unittest.TestCase):
             ]
 
         self.model1apifieldsinfo = Model1ApiFieldsInfo
-        self.appbuilder.add_view_no_menu(Model1ApiFieldsInfo)
+        self.appbuilder.add_api(Model1ApiFieldsInfo)
 
         class Model1FuncApi(ModelRestApi):
             datamodel = SQLAInterface(Model1)
@@ -120,7 +120,7 @@ class FlaskTestCase(unittest.TestCase):
             }
 
         self.model1funcapi = Model1Api
-        self.appbuilder.add_view_no_menu(Model1FuncApi)
+        self.appbuilder.add_api(Model1FuncApi)
 
         class Model1ApiExcludeCols(ModelRestApi):
             datamodel = SQLAInterface(Model1)
@@ -133,19 +133,19 @@ class FlaskTestCase(unittest.TestCase):
             edit_exclude_columns = list_exclude_columns
             add_exclude_columns = list_exclude_columns
 
-        self.appbuilder.add_view_no_menu(Model1ApiExcludeCols)
+        self.appbuilder.add_api(Model1ApiExcludeCols)
 
         class Model1ApiOrder(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             base_order = ('field_integer', 'desc')
 
-        self.appbuilder.add_view_no_menu(Model1ApiOrder)
+        self.appbuilder.add_api(Model1ApiOrder)
 
         class Model1ApiRestrictedPermissions(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             base_permissions = ['can_get', 'can_info']
 
-        self.appbuilder.add_view_no_menu(Model1ApiRestrictedPermissions)
+        self.appbuilder.add_api(Model1ApiRestrictedPermissions)
 
         class Model1ApiFiltered(ModelRestApi):
             datamodel = SQLAInterface(Model1)
@@ -154,23 +154,23 @@ class FlaskTestCase(unittest.TestCase):
                 ['field_integer', FilterSmaller, 4]
             ]
 
-        self.appbuilder.add_view_no_menu(Model1ApiFiltered)
+        self.appbuilder.add_api(Model1ApiFiltered)
 
         class ModelWithEnumsApi(ModelRestApi):
             datamodel = SQLAInterface(ModelWithEnums)
 
-        self.appbuilder.add_view_no_menu(ModelWithEnumsApi)
+        self.appbuilder.add_api(ModelWithEnumsApi)
 
         class Model1BrowserLogin(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             allow_browser_login = True
 
-        self.appbuilder.add_view_no_menu(Model1BrowserLogin)
+        self.appbuilder.add_api(Model1BrowserLogin)
 
         class ModelMMApi(ModelRestApi):
             datamodel = SQLAInterface(ModelMMParent)
 
-        self.appbuilder.add_view_no_menu(ModelMMApi)
+        self.appbuilder.add_api(ModelMMApi)
 
         class Model2Api(ModelRestApi):
             datamodel = SQLAInterface(Model2)
@@ -182,7 +182,7 @@ class FlaskTestCase(unittest.TestCase):
             ]
 
         self.model2api = Model2Api
-        self.appbuilder.add_view_no_menu(Model2Api)
+        self.appbuilder.add_api(Model2Api)
 
         class Model2ApiFilteredRelFields(ModelRestApi):
             datamodel = SQLAInterface(Model2)
@@ -201,7 +201,7 @@ class FlaskTestCase(unittest.TestCase):
             edit_query_rel_fields = add_query_rel_fields
 
         self.model2apifilteredrelfields = Model2ApiFilteredRelFields
-        self.appbuilder.add_view_no_menu(Model2ApiFilteredRelFields)
+        self.appbuilder.add_api(Model2ApiFilteredRelFields)
 
         role_admin = self.appbuilder.sm.find_role('Admin')
         self.appbuilder.sm.add_user(
@@ -1365,7 +1365,7 @@ class FlaskTestCase(unittest.TestCase):
         """
         model = ModelMMChild()
         model.field_string = 'update_m,m'
-        xpto = self.appbuilder.get_session.add(model)
+        self.appbuilder.get_session.add(model)
         self.appbuilder.get_session.commit()
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)

@@ -81,7 +81,7 @@ using ``version`` and ``resource_name`` properties::
             return self.response(200, message="Hello")
 
 
-    appbuilder.add_view_no_menu(MyFirstApi)
+    appbuilder.add_api(MyFirstApi)
 
 Now our endpoint will be::
 
@@ -264,7 +264,7 @@ Next, let's see how to create a private method::
             return self.response(200, message="This is private")
 
 
-    appbuilder.add_view_no_menu(MyFirstApi)
+    appbuilder.add_api(MyFirstApi)
 
 Accessing this method as expected will
 return an HTTP 401 not authorized code and message::
@@ -406,7 +406,7 @@ First let's define a CRUD REST Api for our Group model resource::
         resource_name = 'group'
         datamodel = SQLAInterface(ContactGroup)
 
-    appbuilder.add_view_no_menu(MyFirstApi)
+    appbuilder.add_api(MyFirstApi)
 
 Behind the scenes FAB uses marshmallow-sqlalchemy to infer the Model to a Marshmallow Schema,
 that can be safely serialized and deserialized. Let's recall our Model definition for ``ContactGroup``::

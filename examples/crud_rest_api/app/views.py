@@ -17,29 +17,17 @@ db.create_all()
 fill_gender()
 
 
-class ContactModelView(ModelRestApi):
+class ContactModelApi(ModelRestApi):
     resource_name = 'contact'
     datamodel = SQLAInterface(Contact)
 
 
-appbuilder.add_view(
-    ContactModelView,
-    "List Contacts",
-    icon="fa-envelope",
-    category="Contacts"
-)
+appbuilder.add_api(ContactModelApi)
 
 
-class GroupModelView(ModelRestApi):
+class GroupModelApi(ModelRestApi):
     resource_name = 'group'
     datamodel = SQLAInterface(ContactGroup)
 
 
-appbuilder.add_view(
-    GroupModelView,
-    "List Groups",
-    icon="fa-folder-open-o",
-    category="Contacts",
-    category_icon='fa-envelope'
-)
-
+appbuilder.add_api(GroupModelApi)
