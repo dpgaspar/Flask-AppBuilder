@@ -1,8 +1,14 @@
 import enum
 from sqlalchemy import Column, Integer, String, \
     ForeignKey, Date, Float, Enum, DateTime, Table, UniqueConstraint
+from marshmallow import ValidationError
 from sqlalchemy.orm import relationship
 from flask_appbuilder import Model, SQLA
+
+
+def validate_name(n):
+    if n[0] != 'A':
+        raise ValidationError('Name must start with an A')
 
 
 class Model1(Model):

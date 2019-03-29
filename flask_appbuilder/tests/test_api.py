@@ -6,7 +6,7 @@ import prison
 from nose.tools import eq_
 from flask_appbuilder import SQLA
 from .sqla.models import Model1, Model2, ModelWithEnums, TmpEnum, \
-    ModelMMParent, ModelMMChild, insert_data
+    ModelMMParent, ModelMMChild, insert_data, validate_name
 from flask_appbuilder.models.sqla.filters import \
     FilterGreater, FilterSmaller
 from flask_appbuilder.const import (
@@ -171,6 +171,13 @@ class FlaskTestCase(unittest.TestCase):
             datamodel = SQLAInterface(ModelMMParent)
 
         self.appbuilder.add_api(ModelMMApi)
+
+        class Model1CustomValidationApi(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            validators_columns = {
+                "field_string": validate_name
+            }
+        self.appbuilder.add_api(Model1CustomValidationApi)
 
         class Model2Api(ModelRestApi):
             datamodel = SQLAInterface(Model2)
@@ -1279,6 +1286,41 @@ class FlaskTestCase(unittest.TestCase):
         eq_(model.field_integer, 0)
         eq_(model.field_float, 0.0)
 
+    def test_update_custom_validation(self):
+        """
+            REST Api: Test update item custom validation
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        pk = 3
+        item = dict(
+            field_string="test_Put",
+            field_integer=0,
+            field_float=0.0
+        )
+        uri = 'api/v1/model1customvalidationapi/{}'.format(pk)
+        rv = self.auth_client_put(
+            client,
+            token,
+            uri,
+            item
+        )
+        eq_(rv.status_code, 422)
+        pk = 3
+        item = dict(
+            field_string="Atest_Put",
+            field_integer=0,
+            field_float=0.0
+        )
+        uri = 'api/v1/model1customvalidationapi/{}'.format(pk)
+        rv = self.auth_client_put(
+            client,
+            token,
+            uri,
+            item
+        )
+        eq_(rv.status_code, 200)
+
     def test_update_item_base_filters(self):
         """
             REST Api: Test update item with base filters
@@ -1474,6 +1516,50 @@ class FlaskTestCase(unittest.TestCase):
         eq_(model.field_string, "test{}".format(MODEL1_DATA_SIZE+1))
         eq_(model.field_integer, MODEL1_DATA_SIZE+1)
         eq_(model.field_float, float(MODEL1_DATA_SIZE+1))
+
+    def test_create_item_custom_validation(self):
+        """
+            REST Api: Test create item custom validation
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        item = dict(
+            field_string="test{}".format(MODEL1_DATA_SIZE+1),
+            field_integer=MODEL1_DATA_SIZE+1,
+            field_float=float(MODEL1_DATA_SIZE+1),
+            field_date=None
+        )
+        uri = 'api/v1/model1customvalidationapi/'
+        rv = self.auth_client_post(
+            client,
+            token,
+            uri,
+            item
+        )
+        data = json.loads(rv.data.decode('utf-8'))
+        eq_(rv.status_code, 422)
+        eq_(data, {
+            "message": {
+                "field_string": [
+                    "Name must start with an A"
+                ]
+            }
+        })
+        item = dict(
+            field_string="A{}".format(MODEL1_DATA_SIZE+1),
+            field_integer=MODEL1_DATA_SIZE+1,
+            field_float=float(MODEL1_DATA_SIZE+1),
+            field_date=None
+        )
+        uri = 'api/v1/model1customvalidationapi/'
+        rv = self.auth_client_post(
+            client,
+            token,
+            uri,
+            item
+        )
+        data = json.loads(rv.data.decode('utf-8'))
+        eq_(rv.status_code, 201)
 
     def test_create_item_val_size(self):
         """
