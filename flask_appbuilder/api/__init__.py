@@ -34,7 +34,19 @@ from ..const import (
     API_EDIT_COLUMNS_RIS_KEY,
     API_SELECT_COLUMNS_RIS_KEY,
     API_FILTERS_RIS_KEY,
-    API_PERMISSIONS_RIS_KEY
+    API_PERMISSIONS_RIS_KEY,
+    API_ORDER_COLUMN_RIS_KEY,
+    API_ORDER_DIRECTION_RIS_KEY,
+    API_PAGE_INDEX_RIS_KEY,
+    API_PAGE_SIZE_RIS_KEY,
+    API_LIST_TITLE_RES_KEY,
+    API_ADD_TITLE_RES_KEY,
+    API_EDIT_TITLE_RES_KEY,
+    API_SHOW_TITLE_RES_KEY,
+    API_LIST_TITLE_RIS_KEY,
+    API_ADD_TITLE_RIS_KEY,
+    API_EDIT_TITLE_RIS_KEY,
+    API_SHOW_TITLE_RIS_KEY
 )
 
 log = logging.getLogger(__name__)
@@ -745,6 +757,12 @@ class ModelRestApi(BaseModelApi):
             ]
         response[API_FILTERS_RES_KEY] = search_filters
 
+    def merge_add_title(self, response, **kwargs):
+        response[API_ADD_TITLE_RES_KEY] = self.add_title
+
+    def merge_edit_title(self, response, **kwargs):
+        response[API_EDIT_TITLE_RES_KEY] = self.edit_title
+
     @expose('/_info', methods=['GET'])
     @protect()
     @safe
@@ -754,6 +772,8 @@ class ModelRestApi(BaseModelApi):
     @merge_response_func(merge_add_field_info, API_ADD_COLUMNS_RIS_KEY)
     @merge_response_func(merge_edit_field_info, API_EDIT_COLUMNS_RIS_KEY)
     @merge_response_func(merge_search_filters, API_FILTERS_RIS_KEY)
+    @merge_response_func(merge_add_title, API_ADD_TITLE_RIS_KEY)
+    @merge_response_func(merge_edit_title, API_EDIT_TITLE_RIS_KEY)
     def info(self, **kwargs):
         """
             Endpoint that renders a response for CRUD REST meta data
@@ -892,10 +912,17 @@ class ModelRestApi(BaseModelApi):
         else:
             response[API_ORDER_COLUMNS_RES_KEY] = self.order_columns
 
+    def merge_list_title(self, response, **kwargs):
+        response[API_LIST_TITLE_RES_KEY] = self.list_title
+
+    def merge_show_title(self, response, **kwargs):
+        response[API_SHOW_TITLE_RES_KEY] = self.show_title
+
     @rison(get_item_schema)
     @merge_response_func(merge_label_columns, API_LABEL_COLUMNS_RIS_KEY)
     @merge_response_func(merge_show_columns, API_SHOW_COLUMNS_RIS_KEY)
     @merge_response_func(merge_description_columns, API_DESCRIPTION_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_show_title, API_SHOW_TITLE_RIS_KEY)
     def _get_item(self, pk, **kwargs):
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
@@ -927,6 +954,7 @@ class ModelRestApi(BaseModelApi):
     @merge_response_func(merge_label_columns, API_LABEL_COLUMNS_RIS_KEY)
     @merge_response_func(merge_description_columns, API_DESCRIPTION_COLUMNS_RIS_KEY)
     @merge_response_func(merge_list_columns, API_LIST_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_list_title, API_LIST_TITLE_RIS_KEY)
     def _get_list(self, **kwargs):
         _response = dict()
         _args = kwargs.get('rison', {})
@@ -980,10 +1008,10 @@ class ModelRestApi(BaseModelApi):
         :param args:
         :return: (tuple) page, page_size
         """
-        page_index = rison_args.get('page', 0)
-        page_size = rison_args.get('page_size', self.page_size)
+        page_index = rison_args.get(API_PAGE_INDEX_RIS_KEY, 0)
+        page_size = rison_args.get(API_PAGE_SIZE_RIS_KEY, self.page_size)
         max_page_size = current_app.config.get('FAB_API_MAX_PAGE_SIZE')
-        if page_size > max_page_size:
+        if page_size > max_page_size or page_size < 1:
             page_size = max_page_size
         return page_index, page_size
 
@@ -995,8 +1023,8 @@ class ModelRestApi(BaseModelApi):
         :param rison_args:
         :return:
         """
-        order_column = rison_args.get('order_column', '')
-        order_direction = rison_args.get('order_direction', '')
+        order_column = rison_args.get(API_ORDER_COLUMN_RIS_KEY, '')
+        order_direction = rison_args.get(API_ORDER_DIRECTION_RIS_KEY, '')
         if not order_column and self.base_order:
             order_column, order_direction = self.base_order
         if order_column not in self.order_columns:

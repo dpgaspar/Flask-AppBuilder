@@ -147,6 +147,11 @@ API_RESULT_RES_KEY = 'result'
 API_FILTERS_RES_KEY = 'filters'
 API_PERMISSIONS_RES_KEY = 'permissions'
 
+API_LIST_TITLE_RES_KEY = 'list_title'
+API_ADD_TITLE_RES_KEY = 'add_title'
+API_EDIT_TITLE_RES_KEY = 'edit_title'
+API_SHOW_TITLE_RES_KEY = 'show_title'
+
 # Request Rison keys
 
 API_URI_RIS_KEY = 'q'
@@ -161,3 +166,12 @@ API_FILTERS_RIS_KEY = 'filters'
 API_PERMISSIONS_RIS_KEY = 'permissions'
 API_SELECT_COLUMNS_RIS_KEY = 'columns'
 API_SELECT_KEYS_RIS_KEY = 'keys'
+API_ORDER_COLUMN_RIS_KEY = 'order_column'
+API_ORDER_DIRECTION_RIS_KEY = 'order_direction'
+API_PAGE_INDEX_RIS_KEY = 'page'
+API_PAGE_SIZE_RIS_KEY = 'page_size'
+
+API_LIST_TITLE_RIS_KEY = 'list_title'
+API_ADD_TITLE_RIS_KEY = 'add_title'
+API_EDIT_TITLE_RIS_KEY = 'edit_title'
+API_SHOW_TITLE_RIS_KEY = 'show_title'

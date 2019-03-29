@@ -476,6 +476,7 @@ Now let's query our newly created Group::
 
     {
       "description_columns": {},
+      "show_title": "Show Contact Group",
       "show_columns": [
         "name"
       ],
@@ -544,6 +545,8 @@ First a birds eye view from the output of the **_info** endpoint::
     {
         "add_columns": [...],
         "edit_columns": [...],
+        "add_title": "...",
+        "edit_title": "...",
         "filters": {...},
         "permissions": [...]
     }
@@ -719,6 +722,7 @@ The response data structure is::
         "description_columnns": {},
         "label_columns": {},
         "show_columns": [],
+        "show_title": "",
         "result": {}
     }
 
@@ -746,6 +750,7 @@ Our *curl* command will look like::
         "name",
         "address"
       ],
+      "show_title": "Show Contact",
       "label_columns": {
         "address": "Address",
         "name": "Name"
@@ -832,6 +837,7 @@ The response data structure is::
         "label_columns": {},
         "list_columns": [ ... An ordered list of columns ...],
         "order_columns": [ ... List of columns that can be ordered ... ],
+        "list_title": "",
         "result": {}
     }
 

@@ -1,40 +1,62 @@
+from ..const import (
+    API_ORDER_COLUMNS_RIS_KEY,
+    API_LABEL_COLUMNS_RIS_KEY,
+    API_LIST_COLUMNS_RIS_KEY,
+    API_DESCRIPTION_COLUMNS_RIS_KEY,
+    API_SHOW_COLUMNS_RIS_KEY,
+    API_ADD_COLUMNS_RIS_KEY,
+    API_EDIT_COLUMNS_RIS_KEY,
+    API_SELECT_COLUMNS_RIS_KEY,
+    API_FILTERS_RIS_KEY,
+    API_PERMISSIONS_RIS_KEY,
+    API_SELECT_KEYS_RIS_KEY,
+    API_ORDER_COLUMN_RIS_KEY,
+    API_ORDER_DIRECTION_RIS_KEY,
+    API_PAGE_INDEX_RIS_KEY,
+    API_PAGE_SIZE_RIS_KEY,
+    API_LIST_TITLE_RIS_KEY,
+    API_ADD_TITLE_RIS_KEY,
+    API_EDIT_TITLE_RIS_KEY,
+    API_SHOW_TITLE_RIS_KEY
+)
 
 get_list_schema = {
     "type": "object",
     "properties": {
-        "keys": {
+        API_SELECT_KEYS_RIS_KEY: {
             "type": "array",
             "items": {
                 "type": "string",
                 "enum": [
-                    "list_columns",
-                    "order_columns",
-                    "label_columns",
-                    "description_columns",
+                    API_LIST_COLUMNS_RIS_KEY,
+                    API_ORDER_COLUMNS_RIS_KEY,
+                    API_LABEL_COLUMNS_RIS_KEY,
+                    API_DESCRIPTION_COLUMNS_RIS_KEY,
+                    API_LIST_TITLE_RIS_KEY,
                     "none"
                 ]
             }
         },
-        "columns": {
+        API_SELECT_COLUMNS_RIS_KEY: {
             "type": "array",
             "items": {
                 "type": "string"
             }
         },
-        "order_column": {
+        API_ORDER_COLUMN_RIS_KEY: {
             "type": "string"
         },
-        "order_direction": {
+        API_ORDER_DIRECTION_RIS_KEY: {
             "type": "string",
             "enum": ["asc", "desc"]
         },
-        "page": {
+        API_PAGE_INDEX_RIS_KEY: {
             "type": "integer"
         },
-        "page_size": {
+        API_PAGE_SIZE_RIS_KEY: {
             "type": "integer"
         },
-        "filters": {
+        API_FILTERS_RIS_KEY: {
             "type": "array",
             "items": {
                 "type": "object",
@@ -57,19 +79,20 @@ get_list_schema = {
 get_item_schema = {
     "type": "object",
     "properties": {
-        "keys": {
+        API_SELECT_KEYS_RIS_KEY: {
             "type": "array",
             "items": {
                 "type": "string",
                 "enum": [
-                    "show_columns",
-                    "description_columns",
-                    "label_columns",
+                    API_SHOW_COLUMNS_RIS_KEY,
+                    API_DESCRIPTION_COLUMNS_RIS_KEY,
+                    API_LABEL_COLUMNS_RIS_KEY,
+                    API_SHOW_TITLE_RIS_KEY,
                     "none"
                 ]
             }
         },
-        "columns": {
+        API_SELECT_COLUMNS_RIS_KEY: {
             "type": "array",
             "items": {
                 "type": "string"
@@ -81,15 +104,17 @@ get_item_schema = {
 get_info_schema = {
     "type": "object",
     "properties": {
-        "keys": {
+        API_SELECT_KEYS_RIS_KEY: {
             "type": "array",
             "items": {
                 "type": "string",
                 "enum": [
-                    "add_columns",
-                    "edit_columns",
-                    "filters",
-                    "permissions",
+                    API_ADD_COLUMNS_RIS_KEY,
+                    API_EDIT_COLUMNS_RIS_KEY,
+                    API_FILTERS_RIS_KEY,
+                    API_PERMISSIONS_RIS_KEY,
+                    API_ADD_TITLE_RIS_KEY,
+                    API_EDIT_TITLE_RIS_KEY,
                     "none"
                 ]
             }

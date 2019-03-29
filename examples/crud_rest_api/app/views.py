@@ -20,6 +20,7 @@ fill_gender()
 class ContactModelApi(ModelRestApi):
     resource_name = 'contact'
     datamodel = SQLAInterface(Contact)
+    allow_browser_login = True
 
 
 appbuilder.add_api(ContactModelApi)
@@ -28,6 +29,7 @@ appbuilder.add_api(ContactModelApi)
 class GroupModelApi(ModelRestApi):
     resource_name = 'group'
     datamodel = SQLAInterface(ContactGroup)
+    allow_browser_login = True
 
 
 appbuilder.add_api(GroupModelApi)

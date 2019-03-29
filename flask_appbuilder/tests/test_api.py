@@ -37,7 +37,15 @@ from flask_appbuilder.const import (
     API_SECURITY_PROVIDER_KEY,
     API_SECURITY_ACCESS_TOKEN_KEY,
     API_SECURITY_REFRESH_TOKEN_KEY,
-    API_SECURITY_VERSION
+    API_SECURITY_VERSION,
+    API_LIST_TITLE_RIS_KEY,
+    API_LIST_TITLE_RES_KEY,
+    API_SHOW_TITLE_RIS_KEY,
+    API_SHOW_TITLE_RES_KEY,
+    API_ADD_TITLE_RIS_KEY,
+    API_ADD_TITLE_RES_KEY,
+    API_EDIT_TITLE_RIS_KEY,
+    API_EDIT_TITLE_RES_KEY
 )
 
 
@@ -469,7 +477,8 @@ class FlaskTestCase(unittest.TestCase):
         selectable_keys = [
             API_DESCRIPTION_COLUMNS_RIS_KEY,
             API_LABEL_COLUMNS_RIS_KEY,
-            API_SHOW_COLUMNS_RIS_KEY
+            API_SHOW_COLUMNS_RIS_KEY,
+            API_SHOW_TITLE_RIS_KEY
         ]
         for selectable_key in selectable_keys:
             argument = {
@@ -901,7 +910,8 @@ class FlaskTestCase(unittest.TestCase):
             API_DESCRIPTION_COLUMNS_RIS_KEY,
             API_LABEL_COLUMNS_RIS_KEY,
             API_ORDER_COLUMNS_RIS_KEY,
-            API_LIST_COLUMNS_RIS_KEY
+            API_LIST_COLUMNS_RIS_KEY,
+            API_LIST_TITLE_RIS_KEY
         ]
         for selectable_key in selectable_keys:
             argument = {
@@ -1189,7 +1199,9 @@ class FlaskTestCase(unittest.TestCase):
             API_ADD_COLUMNS_RIS_KEY,
             API_EDIT_COLUMNS_RIS_KEY,
             API_PERMISSIONS_RIS_KEY,
-            API_FILTERS_RIS_KEY
+            API_FILTERS_RIS_KEY,
+            API_ADD_TITLE_RIS_KEY,
+            API_EDIT_TITLE_RIS_KEY
         ]
         for selectable_key in selectable_keys:
             arguments = {
