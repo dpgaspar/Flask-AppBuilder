@@ -21,7 +21,7 @@ custom API endpoints::
             return self.response(200, message="Hello")
 
 
-    appbuilder.add_view_no_menu(MyFirstApi)
+    appbuilder.add_api(MyFirstApi)
 
 
 On the previous example, we are exposing an HTTP GET endpoint,
@@ -59,7 +59,7 @@ so on our previous example::
             return self.response(200, message="Hello")
 
 
-    appbuilder.add_view_no_menu(MyFirstApi)
+    appbuilder.add_api(MyFirstApi)
 
 Now our endpoint will be::
 
@@ -365,9 +365,10 @@ The previous example will enable cookie sessions on the all class::
         def private(self)
             ....
 
-On the previous example, we are enabling signed cookies on the ``private`` method
+On the previous example, we are enabling signed cookies on the ``private`` method. Not that event then
+valid a valid JWT is also accepted.
 
-Model REST Api
+Model REST API
 --------------
 
 To automatically create a RESTfull CRUD Api from a database *Model*, use ``ModelRestApi`` class and
@@ -504,84 +505,6 @@ Let's check if it exists (HTTP GET)::
 
 We get an HTTP 404 (Not found).
 
-Validation and Custom Validation
---------------------------------
-
-Notice that by using marshmallow with SQLAlchemy,
-we are validating field size, type and required fields out of the box.
-This is done by marshmallow-sqlalchemy that automatically creates ModelSchema's
-inferred from our SQLAlchemy Models.
-But you can always use your own defined Marshmallow schemas independently
-for add, edit, list and show endpoints.
-
-A validation error for PUT and POST methods returns HTTP 422 and the following JSON data::
-
-    {
-        "message": {
-            "<COL_NAME>": [
-                "<ERROR_MESSAGE>",
-                ...
-            ],
-            ...
-        }
-    }
-
-Next we will test some basic validation, first the field type
-by sending a name that is a number::
-
-    $ curl XPOST http://localhost:8080/api/v1/group/ -d \
-    '{"name": 1234}' \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $TOKEN"
-    {
-      "message": {
-        "name": [
-          "Not a valid string."
-        ]
-      }
-    }
-
-And we get an HTTP 422 (Unprocessable Entity).
-
-How to add custom validation? On our next example we only allow
-group names that start with a capital "A"::
-
-    from marshmallow import Schema, fields, ValidationError, post_load
-
-
-    def validate_name(n):
-        if n[0] != 'A':
-            raise ValidationError('Name must start with an A')
-
-    class GroupCustomSchema(Schema):
-        name = fields.Str(validate=validate_name)
-
-        @post_load
-        def process(self, data):
-            return ContactGroup(**data)
-
-Then on our Api class::
-
-    class GroupModelRestApi(ModelRestApi):
-        resource_name = 'group'
-        add_model_schema = GroupCustomSchema()
-        edit_model_schema = GroupCustomSchema()
-        datamodel = SQLAInterface(ContactGroup)
-
-Let's try it out::
-
-    $ curl -v XPOST http://localhost:8080/api/v1/group/ -d \
-    '{"name": "BOLA"}' \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $TOKEN"
-    {
-      "message": {
-        "name": [
-          "Name must start with an A"
-        ]
-      }
-    }
-
 Information endpoint
 --------------------
 
@@ -604,12 +527,12 @@ First a birds eye view from the output of the **_info** endpoint::
         "permissions": [...]
     }
 
-Let's drill down this data structure, ``add_fields`` and ``edit_fields`` are similar
+Let's drill down this data structure, ``add_columns`` and ``edit_columns`` are similar
 and serve to aid on rendering forms for add and edit so their response contains the
 following data structure::
 
     {
-        "add_fields": [
+        "add_columns": [
             {
                 "description": "<COL_DESCRIPTION>",
                 "label": "<COL_LABEL>",
@@ -624,7 +547,7 @@ following data structure::
         ]
     }
 
-Edit fields ``edit_fields`` is similar, but it's content may be different, since
+Edit fields ``edit_columns`` is similar, but it's content may be different, since
 we can configure it in a distinct way
 
 Next, filters, this returns all the necessary info to render all possible filters allowed
@@ -683,11 +606,11 @@ So, back to our example::
 
 And to fetch the permissions and Add form fields info::
 
-    $ curl 'http://localhost:8080/api/v1/group/_info?q=(keys:!(permissions,add_fields))' \
+    $ curl 'http://localhost:8080/api/v1/group/_info?q=(keys:!(permissions,add_columns))' \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN"
     {
-      "add_fields": [ ... ],
+      "add_columns": [ ... ],
       "permissions": [
         "can_get",
         "can_post",
@@ -699,11 +622,11 @@ And to fetch the permissions and Add form fields info::
 To fetch meta data with internationalization use **_l_** URI key argument with i18n
 country code as the value. This will work on any HTTP GET endpoint::
 
-    $ curl 'http://localhost:8080/api/v1/group/_info?q=(keys:!(permissions,add_fields))&_l_=pt' \
+    $ curl 'http://localhost:8080/api/v1/group/_info?q=(keys:!(permissions,add_columns))&_l_=pt' \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN"
     {
-      "add_fields": [ ... ],
+      "add_columns": [ ... ],
       "permissions": [
         "can_get",
         "can_post",
@@ -714,7 +637,7 @@ country code as the value. This will work on any HTTP GET endpoint::
 
 Render meta data with *Portuguese*, labels, description, filters
 
-The ``add_fields`` and ``edit_fields`` keys also render all possible
+The ``add_columns`` and ``edit_columns`` keys also render all possible
 values from related fields, using our *quickhowto* example::
 
     {
@@ -980,4 +903,167 @@ Simple example using doted notation, FAB will infer the necessary join operation
 
 Locks all contacts, to groups whose name starts with "F". Using the provided test data
 on the quickhowto example, limits the contacts to family and friends.
+
+Updates and Partial Updates
+---------------------------
+
+PUT methods allow for changing a **Model**. Allowed changes are controlled by
+``edit_columns``::
+
+    class ContactModelRestApi(ModelRestApi):
+        resource_name = 'contact'
+        datamodel = SQLAInterface(Contact)
+        edit_columns = ['name']
+
+First let's create a new contact::
+
+     curl -XPOST 'http://localhost:8080/api/v1/contact/' -H "Authorization: Bearer $TOKEN" -d \
+     '{"name":"New Contact", "personal_celphone":"1234", "contact_group": 1, "gender":1}' \
+     -H "Content-Type: application/json"
+     {
+      "id": 4,
+      "result": {
+        "address": null,
+        "birthday": null,
+        "contact_group": 1,
+        "gender": 1,
+        "name": "New Contact",
+        "personal_celphone": "1234",
+        "personal_phone": null
+      }
+     }
+
+So if you submit a change for ``personal_celphone``::
+
+    $ curl -v XPUT http://localhost:8080/api/v1/contact/4 -d \
+    '{"name": "Change name", "personal_celphone": "this should not change"}' \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $TOKEN"
+    {
+      "result": {
+        "name": "Change name"
+      }
+    }
+
+Let's confirm::
+
+    curl -XGET 'http://localhost:8080/api/v1/contact/4' -H "Authorization: Bearer $TOKEN"
+    {
+      ....
+      "id": "4",
+      "result": {
+        "address": null,
+        "birthday": null,
+        "contact_group": {
+          "id": 1,
+          "name": "Friends"
+        },
+        "gender": {
+          "id": 1,
+          "name": "Male"
+        }
+        "name": "Change name",
+        "personal_celphone": "1234",
+        "personal_phone": null
+      }
+    }
+
+The PUT method may also work like a PATCH method, remove the ``edit_columns`` from the API class
+and test a partial update::
+
+    $ curl -v XPUT http://localhost:8080/api/v1/contact/ -d \
+    '{"personal_celphone": "4321"}' \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $TOKEN"
+    {
+      "result": {
+        "address": null,
+        "birthday": null,
+        "contact_group": 1
+        "gender": 1,
+        "name": "Change name",
+        "personal_celphone": "4321",
+        "personal_phone": null
+      }
+    }
+
+
+
+Validation and Custom Validation
+--------------------------------
+
+Notice that by using marshmallow with SQLAlchemy,
+we are validating field size, type and required fields out of the box.
+This is done by marshmallow-sqlalchemy that automatically creates ModelSchema's
+inferred from our SQLAlchemy Models.
+But you can always use your own defined Marshmallow schemas independently
+for add, edit, list and show endpoints.
+
+A validation error for PUT and POST methods returns HTTP 422 and the following JSON data::
+
+    {
+        "message": {
+            "<COL_NAME>": [
+                "<ERROR_MESSAGE>",
+                ...
+            ],
+            ...
+        }
+    }
+
+Next we will test some basic validation, first the field type
+by sending a name that is a number::
+
+    $ curl XPOST http://localhost:8080/api/v1/group/ -d \
+    '{"name": 1234}' \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $TOKEN"
+    {
+      "message": {
+        "name": [
+          "Not a valid string."
+        ]
+      }
+    }
+
+And we get an HTTP 422 (Unprocessable Entity).
+
+How to add custom validation? On our next example we only allow
+group names that start with a capital "A"::
+
+    from marshmallow import Schema, fields, ValidationError, post_load
+
+
+    def validate_name(n):
+        if n[0] != 'A':
+            raise ValidationError('Name must start with an A')
+
+    class GroupCustomSchema(Schema):
+        name = fields.Str(validate=validate_name)
+
+        @post_load
+        def process(self, data):
+            return ContactGroup(**data)
+
+Then on our Api class::
+
+    class GroupModelRestApi(ModelRestApi):
+        resource_name = 'group'
+        add_model_schema = GroupCustomSchema()
+        edit_model_schema = GroupCustomSchema()
+        datamodel = SQLAInterface(ContactGroup)
+
+Let's try it out::
+
+    $ curl -v XPOST http://localhost:8080/api/v1/group/ -d \
+    '{"name": "BOLA"}' \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $TOKEN"
+    {
+      "message": {
+        "name": [
+          "Name must start with an A"
+        ]
+      }
+    }
 

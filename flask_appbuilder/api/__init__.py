@@ -93,10 +93,10 @@ def rison(f):
 
 def expose(url='/', methods=('GET',)):
     """
-        Use this decorator to expose views on your view classes.
+        Use this decorator to expose API endpoints on your API classes.
 
         :param url:
-            Relative URL for the view
+            Relative URL for the endpoint
         :param methods:
             Allowed HTTP methods. By default only GET is allowed.
     """
