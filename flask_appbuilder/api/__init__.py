@@ -543,11 +543,9 @@ class ModelRestApi(BaseModelApi):
                 description_columns = {'name':'your models name column',
                                         'address':'the address column'}
     """
-    formatters_columns = None
-    """ Dictionary of formatter used to format the display of columns
+    validators_columns = None
+    """ Dictionary to add your own validators for forms """
 
-        formatters_columns = {'some_date_col': lambda x: x.isoformat() }
-    """
     add_query_rel_fields = None
     """
         Add Customized query for related add fields.
@@ -604,7 +602,11 @@ class ModelRestApi(BaseModelApi):
 
     def __init__(self):
         super(ModelRestApi, self).__init__()
-        self.model2schemaconverter = self.model2schemaconverter(self.datamodel)
+        self.validators_columns = self.validators_columns or {}
+        self.model2schemaconverter = self.model2schemaconverter(
+            self.datamodel,
+            self.validators_columns
+        )
 
     def create_blueprint(self, appbuilder, *args, **kwargs):
         self._init_model_schemas()
@@ -656,7 +658,6 @@ class ModelRestApi(BaseModelApi):
         super(ModelRestApi, self)._init_properties()
         # Reset init props
         self.description_columns = self.description_columns or {}
-        self.formatters_columns = self.formatters_columns or {}
         self.list_exclude_columns = self.list_exclude_columns or []
         self.show_exclude_columns = self.show_exclude_columns or []
         self.add_exclude_columns = self.add_exclude_columns or []

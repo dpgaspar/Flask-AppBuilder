@@ -6,11 +6,12 @@ from marshmallow_enum import EnumField
 
 class BaseModel2SchemaConverter(object):
 
-    def __init__(self, datamodel):
+    def __init__(self, datamodel, validators_columns):
         """
         :param datamodel: SQLAInterface
         """
         self.datamodel = datamodel
+        self.validators_columns = validators_columns
 
     def convert(self, columns, **kwargs):
         pass
@@ -21,11 +22,11 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         Class that converts Models to marshmallow Schemas
     """
 
-    def __init__(self, datamodel):
+    def __init__(self, datamodel, validators_columns):
         """
         :param datamodel: SQLAInterface
         """
-        super(Model2SchemaConverter, self).__init__(datamodel)
+        super(Model2SchemaConverter, self).__init__(datamodel, validators_columns)
 
     @staticmethod
     def _debug_schema(schema):
@@ -101,6 +102,8 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         if not hasattr(getattr(_model, column), '__call__'):
             field = field_for(_model, column)
             field.unique = datamodel.is_unique(column)
+            if column in self.validators_columns:
+                field.validate.append(self.validators_columns[column])
             return field
 
     def convert(self, columns, model=None, nested=True, enum_dump_by_name=False):

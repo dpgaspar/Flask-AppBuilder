@@ -1067,3 +1067,13 @@ Let's try it out::
       }
     }
 
+Overriding completely the marshmallow Schema gives you complete control
+but can become very cumbersome for **Models** with many attributes, there is
+a simpler way of doing this using ``validators_columns`` property::
+
+    class GroupModelRestApi(ModelRestApi):
+        resource_name = 'group'
+        datamodel = SQLAInterface(ContactGroup)
+        validators_columns = {'name': validate_name}
+
+
