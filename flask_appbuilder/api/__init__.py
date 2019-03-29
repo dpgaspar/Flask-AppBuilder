@@ -916,7 +916,10 @@ class ModelRestApi(BaseModelApi):
         else:
             _list_model_schema = self.list_model_schema
         # handle filters
-        joined_filters = self._handle_filters_args(_args)
+        try:
+            joined_filters = self._handle_filters_args(_args)
+        except Exception as e:
+            return self.response_400("Filter arguments not correct")
         # handle base order
         order_column, order_direction = self._handle_order_args(_args)
         # handle pagination
@@ -953,6 +956,9 @@ class ModelRestApi(BaseModelApi):
         """
         page_index = rison_args.get('page', 0)
         page_size = rison_args.get('page_size', self.page_size)
+        if not isinstance(page_size, int) or not isinstance(page_index, int):
+            log.warning("Wrong page parameters")
+            return 0, self.page_size
         max_page_size = current_app.config.get('FAB_API_MAX_PAGE_SIZE')
         if page_size > max_page_size:
             page_size = max_page_size
@@ -970,6 +976,8 @@ class ModelRestApi(BaseModelApi):
         order_direction = rison_args.get('order_direction', '')
         if not order_column and self.base_order:
             order_column, order_direction = self.base_order
+        if order_column not in self.order_columns:
+            return '', ''
         return order_column, order_direction
 
     def _handle_filters_args(self, rison_args):
