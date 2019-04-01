@@ -107,6 +107,18 @@ class ContactTimeChartView(GroupByChartView):
     ]
 
 
+from flask_appbuilder import ModelRestApi
+
+class ContactModelApi(ModelRestApi):
+    resource_name = 'contact'
+    datamodel = SQLAInterface(Contact)
+    allow_browser_login = True
+    order_rel_fields = {
+        'contact_group': ('name', 'desc')
+    }
+
+appbuilder.add_api(ContactModelApi)
+
 db.create_all()
 fill_gender()
 appbuilder.add_view(

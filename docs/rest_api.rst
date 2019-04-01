@@ -674,6 +674,7 @@ values from related fields, using our *quickhowto* example::
               "required": false,
               "unique": false,
               "type": "Related",
+              "count": 2,
               "values": [
                 {
                   "id": 1,
@@ -709,6 +710,9 @@ You can also impose an order for these values server side using ``order_rel_fiel
             'gender': ('name', 'asc')
         }
 
+The previous example will filter out only the **Female** gender from our list
+of possible values
+
 Note that these related fields may render a long list of values, so pagination
 is available and subject to a max page size. You can paginate these values using
 the following Rison argument structure::
@@ -726,9 +730,6 @@ Using Rison example::
 
     (add_columns:(contact_group:(page:0,page_size:10)))
 
-
-The previous example will filter out only the **Female** gender from our list
-of possible values
 
 We can also restrict server side the available fields for add and edit using ``add_columns``
 and ``edit_columns``. Additionally you can use ``add_exclude_columns`` and ``edit_exclude_columns``::
