@@ -1152,3 +1152,26 @@ a simpler way of doing this using ``validators_columns`` property::
         validators_columns = {'name': validate_name}
 
 
+Enum Fields
+-----------
+
+``ModelRestApi`` offers support for **Enum** fields, you have to declare them
+on a specific way::
+
+    class GenderEnum(enum.Enum):
+    male = 'Male'
+    female = 'Female'
+
+
+    class Contact(Model):
+        id = Column(Integer, primary_key=True)
+        name = Column(String(150), unique=True, nullable=False)
+        address = Column(String(564))
+        birthday = Column(Date, nullable=True)
+        personal_phone = Column(String(20))
+        personal_celphone = Column(String(20))
+        contact_group_id = Column(Integer, ForeignKey('contact_group.id'), nullable=False)
+        contact_group = relationship("ContactGroup")
+        gender = Column(Enum(GenderEnum), nullable=False, info={"enum_class": GenderEnum})
+
+Notice the ``info={"enum_class": GenderEnum}``
