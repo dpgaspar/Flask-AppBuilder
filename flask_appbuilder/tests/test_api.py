@@ -51,11 +51,11 @@ from flask_appbuilder.const import (
 
 log = logging.getLogger(__name__)
 
-MODEL1_DATA_SIZE = 20
-MODEL2_DATA_SIZE = 20
+MODEL1_DATA_SIZE = 30
+MODEL2_DATA_SIZE = 30
 USERNAME = "testadmin"
 PASSWORD = "password"
-MAX_PAGE_SIZE = 10
+MAX_PAGE_SIZE = 25
 
 
 class FlaskTestCase(unittest.TestCase):
@@ -813,6 +813,7 @@ class FlaskTestCase(unittest.TestCase):
             API_URI_RIS_KEY,
             prison.dumps(arguments)
         )
+        print("URI {}".format(uri))
         rv = self.auth_client_get(
             client,
             token,
@@ -1099,6 +1100,7 @@ class FlaskTestCase(unittest.TestCase):
         )
         data = json.loads(rv.data.decode('utf-8'))
         expected_rel_add_field = {
+            'count': MODEL2_DATA_SIZE,
             'description': '',
             'label': 'Group',
             'name': 'group',
@@ -1107,7 +1109,7 @@ class FlaskTestCase(unittest.TestCase):
             'type': 'Related',
             'values': []
         }
-        for i in range(MODEL1_DATA_SIZE):
+        for i in range(self.model2api.page_size):
             expected_rel_add_field['values'].append(
                 {
                     'id': i + 1,
@@ -1139,6 +1141,7 @@ class FlaskTestCase(unittest.TestCase):
             'required': True,
             'unique': False,
             'type': 'Related',
+            'count': 1,
             'values': [
                 {
                     'id': 4,

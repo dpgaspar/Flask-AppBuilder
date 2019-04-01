@@ -565,6 +565,7 @@ following data structure::
                 "unique": true|false,
                 "type": "String|Integer|Related|RelatedList|...",
                 "validate": [ ... list of validation methods ... ]
+                "count": <optional number>
                 "values" : [ ... optional with all possible values for a related field ... ]
             },
             ...
@@ -698,6 +699,34 @@ or ``edit_query_rel_fields``::
             'gender': [['name', FilterStartsWith, 'F']]
         }
 
+You can also impose an order for these values server side using ``order_rel_fields``::
+
+    class ContactModelRestApi(ModelRestApi):
+        resource_name = 'contact'
+        datamodel = SQLAInterface(Contact)
+        order_rel_fields = {
+            'contact_group': ('name', 'asc'),
+            'gender': ('name', 'asc')
+        }
+
+Note that these related fields may render a long list of values, so pagination
+is available and subject to a max page size. You can paginate these values using
+the following Rison argument structure::
+
+    {
+        "add_columns": {
+            <COL_NAME> : {
+                'page': int,
+                'page_size': int
+            }
+        }
+    }
+
+Using Rison example::
+
+    (add_columns:(contact_group:(page:0,page_size:10)))
+
+
 The previous example will filter out only the **Female** gender from our list
 of possible values
 
@@ -727,7 +756,7 @@ The response data structure is::
     }
 
 Now we are going to cover the *Rison* arguments for custom fetching
-meta data keys or columns. This time the accepted arguments is slightly extended::
+meta data keys or columns. This time the accepted arguments are slightly extended::
 
     {
         "keys": [ ... List of meta data keys to return ... ],
@@ -781,6 +810,24 @@ Our *curl* command will look like::
         "name": "Wilko Kamboh"
       }
     }
+
+To discard completely all meta data use the special key ``none``::
+
+    (columns:!(name,address),keys:!(none))
+
+Our *curl* command will look like::
+
+    curl 'http://localhost:8080/api/v1/contact/1?q=(columns:!(name,address),keys:!(none))' \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $TOKEN"
+    {
+      "id": "1",
+      "result": {
+        "address": "Street phoung",
+        "name": "Wilko Kamboh"
+      }
+    }
+
 
 We can restrict or add fields for the get item endpoint using
 the ``show_columns`` property. This takes precedence from the *Rison* arguments::

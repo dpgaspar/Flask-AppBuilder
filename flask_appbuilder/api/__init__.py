@@ -6,6 +6,7 @@ import prison
 import jsonschema
 from sqlalchemy.exc import IntegrityError
 from marshmallow import ValidationError
+from marshmallow_sqlalchemy.fields import Related, RelatedList
 from flask import Blueprint, make_response, jsonify, request, current_app
 from werkzeug.exceptions import BadRequest
 from flask_babel import lazy_gettext as _
@@ -570,7 +571,7 @@ class ModelRestApi(BaseModelApi):
     """
     order_columns = None
     """ Allowed order columns """
-    page_size = 10
+    page_size = 20
     """
         Use this property to change default page size
     """
@@ -597,7 +598,7 @@ class ModelRestApi(BaseModelApi):
         Add a custom filter to form related fields::
     
             class ContactModelView(ModelRestApi):
-                datamodel = SQLAModel(Contact, db.session)
+                datamodel = SQLAModel(Contact)
                 add_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
     
     """
@@ -614,6 +615,18 @@ class ModelRestApi(BaseModelApi):
                 datamodel = SQLAModel(Contact, db.session)
                 edit_query_rel_fields = {'group':[['name',FilterStartsWith,'W']]}
     
+    """
+    order_rel_fields = None
+    """
+        Impose order on related fields.
+        assign a dictionary where the keys are the related column names::
+        
+            class ContactModelView(ModelRestApi):
+                datamodel = SQLAModel(Contact)
+                order_rel_fields = {
+                    'group': ('name', 'asc')
+                    'gender': ('name', 'asc')
+                }
     """
     list_model_schema = None
     """
@@ -703,6 +716,7 @@ class ModelRestApi(BaseModelApi):
         self.show_exclude_columns = self.show_exclude_columns or []
         self.add_exclude_columns = self.add_exclude_columns or []
         self.edit_exclude_columns = self.edit_exclude_columns or []
+        self.order_rel_fields = self.order_rel_fields or {}
         # Generate base props
         list_cols = self.datamodel.get_user_columns_list()
         if not self.list_columns and self.list_model_schema:
@@ -731,19 +745,23 @@ class ModelRestApi(BaseModelApi):
         self.add_query_rel_fields = self.add_query_rel_fields or dict()
 
     def merge_add_field_info(self, response, **kwargs):
+        _kwargs = kwargs.get('add_columns', {})
         response[API_ADD_COLUMNS_RES_KEY] = \
             self._get_fields_info(
                 self.add_columns,
                 self.add_model_schema,
-                self.add_query_rel_fields
+                self.add_query_rel_fields,
+                **_kwargs
             )
 
     def merge_edit_field_info(self, response, **kwargs):
+        _kwargs = kwargs.get('edit_columns', {})
         response[API_EDIT_COLUMNS_RES_KEY] = \
             self._get_fields_info(
                 self.edit_columns,
                 self.edit_model_schema,
-                self.edit_query_rel_fields
+                self.edit_query_rel_fields,
+                **_kwargs
             )
 
     def merge_search_filters(self, response, **kwargs):
@@ -781,7 +799,7 @@ class ModelRestApi(BaseModelApi):
         """
         _response = dict()
         _args = kwargs.get('rison', {})
-        self.set_response_key_mappings(_response, self.info, _args, **{})
+        self.set_response_key_mappings(_response, self.info, _args, **_args)
         return self.response(200, **_response)
 
     @expose('/', methods=['GET'])
@@ -1008,12 +1026,17 @@ class ModelRestApi(BaseModelApi):
         :param args:
         :return: (tuple) page, page_size
         """
-        page_index = rison_args.get(API_PAGE_INDEX_RIS_KEY, 0)
+        page = rison_args.get(API_PAGE_INDEX_RIS_KEY, 0)
         page_size = rison_args.get(API_PAGE_SIZE_RIS_KEY, self.page_size)
+        return self._sanitize_page_args(page, page_size)
+
+    def _sanitize_page_args(self, page, page_size):
+        _page = page or 0
+        _page_size = page_size or self.page_size
         max_page_size = current_app.config.get('FAB_API_MAX_PAGE_SIZE')
-        if page_size > max_page_size or page_size < 1:
-            page_size = max_page_size
-        return page_index, page_size
+        if _page_size > max_page_size or _page_size < 1:
+            _page_size = max_page_size
+        return _page, _page_size
 
     def _handle_order_args(self, rison_args):
         """
@@ -1047,7 +1070,7 @@ class ModelRestApi(BaseModelApi):
             ret[key] = as_unicode(_(value).encode('UTF-8'))
         return ret
 
-    def _get_field_info(self, field, filter_rel_field):
+    def _get_field_info(self, field, filter_rel_field, page=None, page_size=None):
         """
             Return a dict with field details
             ready to serve as a response
@@ -1055,31 +1078,19 @@ class ModelRestApi(BaseModelApi):
         :param field: marshmallow field
         :return: dict with field details
         """
-        from marshmallow_sqlalchemy.fields import Related, RelatedList
         ret = dict()
         ret['name'] = field.name
         ret['label'] = self.label_columns.get(field.name, '')
         ret['description'] = self.description_columns.get(field.name, '')
         # Handles related fields
         if isinstance(field, Related) or isinstance(field, RelatedList):
-            _rel_interface = self.datamodel.get_related_interface(field.name)
-            _filters = _rel_interface.get_filters(
-                _rel_interface.get_search_columns_list()
-            )
-            if filter_rel_field:
-                filters = _filters.add_filter_list(filter_rel_field)
-                _values = _rel_interface.query(filters)[1]
-            else:
-                _values = _rel_interface.query()[1]
-            ret['values'] = list()
-            for _value in _values:
-                ret['values'].append(
-                    {
-                        "id": _rel_interface.get_pk_value(_value),
-                        "value": str(_value)
-                    }
-                )
+            ret['count'], ret['values'] = self._get_list_related_field(
+                field,
+                filter_rel_field,
 
+                page=page,
+                page_size=page_size
+            )
         if field.validate and isinstance(field.validate, list):
             ret['validate'] = [str(v) for v in field.validate]
         elif field.validate:
@@ -1089,7 +1100,7 @@ class ModelRestApi(BaseModelApi):
         ret['unique'] = field.unique
         return ret
 
-    def _get_fields_info(self, cols, model_schema, filter_rel_fields):
+    def _get_fields_info(self, cols, model_schema, filter_rel_fields, **kwargs):
         """
             Returns a dict with fields detail
             from a marshmallow schema
@@ -1098,20 +1109,76 @@ class ModelRestApi(BaseModelApi):
         :param model_schema: Marshmallow model schema
         :param filter_rel_fields: expects add_query_rel_fields or
                                     edit_query_rel_fields
+        :param kwargs: Receives all rison arguments for pagination
         :return: dict with all fields details
         """
-        return [
-            self._get_field_info(
+        ret = list()
+        for col in cols:
+            page = page_size = None
+            col_args = kwargs.get(col, {})
+            if col_args:
+                page = col_args.get(API_PAGE_INDEX_RIS_KEY, None)
+                page_size = col_args.get(API_PAGE_SIZE_RIS_KEY, None)
+            ret.append(self._get_field_info(
                 model_schema.fields[col],
-                filter_rel_fields.get(col, [])
+                filter_rel_fields.get(col, []),
+                page=page,
+                page_size=page_size
+            ))
+        return ret
+
+    def _get_list_related_field(self, field, filter_rel_field, page=None, page_size=None):
+        """
+            Return a list of values for a related field
+
+        :param field: Marshmallow field
+        :param filter_rel_field: Filters for the related field
+        :param page: The page index
+        :param page_size: The page size
+        :return: (int, list) total record count and list of dict with id and value
+        """
+        ret = list()
+        if isinstance(field, Related) or isinstance(field, RelatedList):
+            datamodel = self.datamodel.get_related_interface(field.name)
+            filters = datamodel.get_filters(
+                datamodel.get_search_columns_list()
             )
-            for col in cols
-        ]
+            page, page_size = self._sanitize_page_args(page, page_size)
+            order_field = self.order_rel_fields.get(field.name)
+            if order_field:
+                order_column, order_direction = order_field
+            else:
+                order_column, order_direction = '', ''
+            if filter_rel_field:
+                filters = filters.add_filter_list(filter_rel_field)
+                count, values = datamodel.query(
+                    filters,
+                    order_column,
+                    order_direction,
+                    page=page,
+                    page_size=page_size,
+                )
+            else:
+                count, values = datamodel.query(
+                    filters,
+                    order_column,
+                    order_direction,
+                    page=page,
+                    page_size=page_size,
+                )
+            for value in values:
+                ret.append(
+                    {
+                        "id": datamodel.get_pk_value(value),
+                        "value": str(value)
+                    }
+                )
+        return count, ret
 
     def _merge_update_item(self, model_item, data):
         """
             Merge a model with a python data structure
-            This is useful to turn PUT method into a PATH also
+            This is useful to turn PUT method into a PATCH also
         :param model_item: SQLA Model
         :param data: python data structure
         :return: python data structure
