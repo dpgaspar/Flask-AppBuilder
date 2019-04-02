@@ -279,11 +279,12 @@ class AppBuilder(object):
                     log.error(LOGMSG_ERR_FAB_ADDON_PROCESS.format(addon, e))
 
     def _add_permissions_menu(self, name):
-        try:
-            self.sm.add_permissions_menu(name)
-        except Exception as e:
-            log.exception(e)
-            log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_MENU.format(str(e)))
+        if self.update_perms:
+            try:
+                self.sm.add_permissions_menu(name)
+            except Exception as e:
+                log.exception(e)
+                log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_MENU.format(str(e)))
 
     def _add_menu_permissions(self):
         if self.update_perms:
