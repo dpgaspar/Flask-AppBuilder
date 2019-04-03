@@ -68,6 +68,7 @@ def safe(f):
     A decorator that catches uncaught exceptions and
     return the response in JSON format (inspired on Superset code)
     """
+
     def wraps(self, *args, **kwargs):
         try:
             return f(self, *args, **kwargs)
@@ -76,6 +77,7 @@ def safe(f):
         except Exception as e:
             logging.exception(e)
             return self.response_500(message=get_error_msg())
+
     return functools.update_wrapper(wraps, f)
 
 
@@ -111,6 +113,7 @@ def rison(schema=None):
                         return self.response(200, result=kwargs['rison'])
 
     """
+
     def _rison(f):
         def wraps(self, *args, **kwargs):
             value = request.args.get(API_URI_RIS_KEY, None)
@@ -129,7 +132,9 @@ def rison(schema=None):
                         message="Not a valid rison schema {}".format(e)
                     )
             return f(self, *args, **kwargs)
+
         return functools.update_wrapper(wraps, f)
+
     return _rison
 
 
@@ -148,6 +153,7 @@ def expose(url='/', methods=('GET',)):
             f._urls = []
         f._urls.append((url, methods))
         return f
+
     return wrap
 
 
@@ -162,15 +168,17 @@ def merge_response_func(func, key):
             def merge_some_function(self, response, rison_args):
         ```
 
-    :param func: Name of the merge function where the key is allower
+    :param func: Name of the merge function where the key is allowed
     :param key: The key name for rison selection
     :return: None
     """
+
     def wrap(f):
         if not hasattr(f, '_response_key_func_mappings'):
             f._response_key_func_mappings = dict()
         f._response_key_func_mappings[key] = func
         return f
+
     return wrap
 
 
@@ -181,7 +189,7 @@ class BaseApi(object):
         as a Blueprint.
 
         This class does not expose any urls,
-        but provides a common base for all apis.
+        but provides a common base for all APIS.
     """
 
     appbuilder = None
@@ -458,6 +466,7 @@ class BaseModelApi(BaseApi):
         Filters object will calculate all possible filter types 
         based on search_columns 
     """
+
     def __init__(self, **kwargs):
         """
             Constructor
@@ -729,7 +738,9 @@ class ModelRestApi(BaseModelApi):
 
         self._gen_labels_columns(self.list_columns)
         self.order_columns = self.order_columns or \
-                             self.datamodel.get_order_columns_list(list_columns=self.list_columns)
+                             self.datamodel.get_order_columns_list(
+                                 list_columns=self.list_columns
+                             )
         # Process excluded columns
         if not self.show_columns:
             self.show_columns = \
@@ -1017,6 +1028,7 @@ class ModelRestApi(BaseModelApi):
                 HELPER FUNCTIONS
     ------------------------------------------------
     """
+
     def _handle_page_args(self, rison_args):
         """
             Helper function to handle rison page
@@ -1194,6 +1206,7 @@ class ModelRestApi(BaseModelApi):
                 PRE AND POST METHODS
     ------------------------------------------------
     """
+
     def pre_update(self, item):
         """
             Override this, this method is called before the update takes place.
