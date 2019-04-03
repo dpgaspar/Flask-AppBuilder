@@ -1133,7 +1133,7 @@ class BaseCRUDView(BaseModelView):
 
     def pre_add(self, item):
         if type(item) == self.appbuilder.sm.user_model:
-            if self.appbuilder.sm.count_users() >= self.appbuilder.get_app.config['MAXIMUM_USER']:
+            if self.appbuilder.sm.count_users() > self.appbuilder.get_app.config['MAXIMUM_USER']:
                 raise Exception('Add users error. Maximum user exceeded.')
         pass
 
