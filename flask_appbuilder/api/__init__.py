@@ -82,7 +82,7 @@ def safe(f):
 def rison(schema=None):
     """
         Use this decorator to parse URI *Rison* arguments to
-        a python data structure, you're method gets the data
+        a python data structure, your method gets the data
         structure on kwargs['rison']. Response is HTTP 400
         if *Rison* is not correct::
 
