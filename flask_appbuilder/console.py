@@ -35,7 +35,7 @@ def import_application(app_package, appbuilder):
     if hasattr(_app, appbuilder):
         return getattr(_app, appbuilder)
     else:
-        click.echo(click.style('There in no appbuilder var on your package, you can use appbuilder parameter to config', fg='red'))
+        click.echo(click.style('There is no appbuilder var on your package, you can use appbuilder parameter to config', fg='red'))
         exit(3)
 
 
