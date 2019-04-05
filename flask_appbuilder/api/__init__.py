@@ -4,6 +4,7 @@ import functools
 import traceback
 import prison
 import jsonschema
+from apispec.exceptions import DuplicateComponentNameError
 from sqlalchemy.exc import IntegrityError
 from marshmallow import ValidationError
 from marshmallow_sqlalchemy.fields import Related, RelatedList
@@ -132,9 +133,7 @@ def rison(schema=None):
                         message="Not a valid rison schema {}".format(e)
                     )
             return f(self, *args, **kwargs)
-
         return functools.update_wrapper(wraps, f)
-
     return _rison
 
 
@@ -224,6 +223,27 @@ class BaseApi(object):
     """
     extra_args = None
 
+    apispec_parameter_schemas = None
+    """
+        Set your custom Rison parameter schemas here so that
+        they get registered on the OpenApi spec::
+        
+            custom_parameter = {
+                "type": "object"
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            }
+        
+            class CustomApi(BaseApi):
+                apispec_parameter_schemas = {
+                    "custom_parameter": custom_parameter
+                }
+    """
+    _apispec_parameter_schemas = None
+
     def __init__(self):
         """
             Initialization of base permissions
@@ -232,6 +252,9 @@ class BaseApi(object):
             Initialization of extra args
         """
         self._response_key_func_mappings = dict()
+        self.apispec_parameter_schemas = self.apispec_parameter_schemas or dict()
+        self._apispec_parameter_schemas = self._apispec_parameter_schemas or dict()
+        self._apispec_parameter_schemas.update(self.apispec_parameter_schemas)
         if self.base_permissions is None:
             self.base_permissions = set()
             for attr_name in dir(self):
@@ -265,7 +288,11 @@ class BaseApi(object):
                                    url_prefix=self.route_base)
 
         self._register_urls()
+        self.add_apispec_components()
         return self.blueprint
+
+    def add_apispec_components(self):
+        pass
 
     def _register_urls(self):
         for attr_name in dir(self):
@@ -278,6 +305,58 @@ class BaseApi(object):
                         attr,
                         methods=methods
                     )
+                    operations = dict()
+                    path = self.path_helper(path=url, operations=operations)
+                    self.operation_helper(
+                        path=path,
+                        operations=operations,
+                        methods=methods,
+                        func=attr
+                    )
+                    self.appbuilder.apispec.path(
+                        path=path,
+                        operations=operations
+                    )
+
+    def path_helper(self, path=None, operations=None, **kwargs):
+        """
+            Works like a apispec plugin
+            May return a path as string and mutate operations dict.
+
+        :param str path: Path to the resource
+        :param dict operations: A `dict` mapping HTTP methods to operation object. See
+            https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject
+        :param kwargs:
+        :return: Return value should be a string or None. If a string is returned, it
+        is set as the path.
+        """
+        RE_URL = re.compile(r'<(?:[^:<>]+:)?([^<>]+)>')
+        path = RE_URL.sub(r'{\1}', path)
+        return "{}{}".format(self.blueprint.url_prefix, path)
+
+    def operation_helper(
+            self, path=None,
+            operations=None,
+            methods=None,
+            func=None,
+            **kwargs):
+        """May mutate operations.
+        :param str path: Path to the resource
+        :param dict operations: A `dict` mapping HTTP methods to operation object. See
+        :param list methods: A list of methods registered for this path
+        """
+        import yaml
+        from apispec import yaml_utils
+
+        for method in methods:
+            yaml_doc_string = yaml_utils.load_operations_from_docstring(func.__doc__)
+            yaml_doc_string = yaml.safe_load(str(yaml_doc_string).replace(
+                "{{self.__class__.__name__}}",
+                self.__class__.__name__))
+            if yaml_doc_string:
+                operations[method.lower()] = yaml_doc_string.get(method.lower(), {})
+            else:
+                operations[method.lower()] = {}
 
     @staticmethod
     def _prettify_name(name):
@@ -662,6 +741,11 @@ class ModelRestApi(BaseModelApi):
         Override to use your own Model2SchemaConverter 
         (inherit from BaseModel2SchemaConverter)
     """
+    _apispec_parameter_schemas = {
+        "get_info_schema": get_info_schema,
+        "get_item_schema": get_item_schema,
+        "get_list_schema": get_list_schema
+    }
 
     def __init__(self):
         super(ModelRestApi, self).__init__()
@@ -679,6 +763,30 @@ class ModelRestApi(BaseModelApi):
             **kwargs
         )
 
+    def add_apispec_components(self):
+        super(ModelRestApi, self).add_apispec_components()
+        for k, v in self._apispec_parameter_schemas.items():
+            try:
+                self.appbuilder.apispec.components.parameter(k, v)
+            except DuplicateComponentNameError:
+                continue
+        self.appbuilder.apispec.components.schema(
+            "{}.{}".format(self.__class__.__name__, "get_list"),
+            schema=self.list_model_schema
+        )
+        self.appbuilder.apispec.components.schema(
+            "{}.{}".format(self.__class__.__name__, "post"),
+            schema=self.add_model_schema
+        )
+        self.appbuilder.apispec.components.schema(
+            "{}.{}".format(self.__class__.__name__, "put"),
+            schema=self.edit_model_schema
+        )
+        self.appbuilder.apispec.components.schema(
+            "{}.{}".format(self.__class__.__name__, "get_item"),
+            schema=self.show_model_schema
+        )
+
     def _init_model_schemas(self):
         # Create Marshmalow schemas if one is not specified
         if self.list_model_schema is None:
@@ -686,7 +794,11 @@ class ModelRestApi(BaseModelApi):
                 self.model2schemaconverter.convert(self.list_columns)
         if self.add_model_schema is None:
             self.add_model_schema = \
-                self.model2schemaconverter.convert(self.add_columns, nested=False)
+                self.model2schemaconverter.convert(
+                    self.add_columns,
+                    nested=False,
+                    enum_dump_by_name=True
+                )
         if self.edit_model_schema is None:
             self.edit_model_schema = \
                 self.model2schemaconverter.convert(
@@ -792,114 +904,6 @@ class ModelRestApi(BaseModelApi):
     def merge_edit_title(self, response, **kwargs):
         response[API_EDIT_TITLE_RES_KEY] = self.edit_title
 
-    @expose('/_info', methods=['GET'])
-    @protect()
-    @safe
-    @rison(get_info_schema)
-    @permission_name('info')
-    @merge_response_func(BaseApi.merge_current_user_permissions, API_PERMISSIONS_RIS_KEY)
-    @merge_response_func(merge_add_field_info, API_ADD_COLUMNS_RIS_KEY)
-    @merge_response_func(merge_edit_field_info, API_EDIT_COLUMNS_RIS_KEY)
-    @merge_response_func(merge_search_filters, API_FILTERS_RIS_KEY)
-    @merge_response_func(merge_add_title, API_ADD_TITLE_RIS_KEY)
-    @merge_response_func(merge_edit_title, API_EDIT_TITLE_RIS_KEY)
-    def info(self, **kwargs):
-        """
-            Endpoint that renders a response for CRUD REST meta data
-        :param kwargs: Rison kwargs
-        """
-        _response = dict()
-        _args = kwargs.get('rison', {})
-        self.set_response_key_mappings(_response, self.info, _args, **_args)
-        return self.response(200, **_response)
-
-    @expose('/', methods=['GET'])
-    @expose('/<pk>', methods=['GET'])
-    @protect()
-    @safe
-    @permission_name('get')
-    def get(self, pk=None):
-        if not pk:
-            return self._get_list()
-        return self._get_item(pk)
-
-    @expose('/', methods=['POST'])
-    @protect()
-    @safe
-    @permission_name('post')
-    def post(self):
-        if not request.is_json:
-            return self.response_400(message='Request is not JSON')
-        try:
-            item = self.add_model_schema.load(request.json)
-        except ValidationError as err:
-            return self.response_422(message=err.messages)
-        # This validates custom Schema with custom validations
-        if isinstance(item.data, dict):
-            return self.response_422(message=item.errors)
-        self.pre_add(item.data)
-        try:
-            self.datamodel.add(item.data, raise_exception=True)
-            self.post_add(item.data)
-            return self.response(
-                201,
-                **{
-                    API_RESULT_RES_KEY: self.add_model_schema.dump(
-                        item.data, many=False
-                    ).data,
-                    'id': self.datamodel.get_pk_value(item.data)
-                }
-            )
-        except IntegrityError as e:
-            return self.response_422(message=str(e.orig))
-
-    @expose('/<pk>', methods=['PUT'])
-    @protect()
-    @safe
-    @permission_name('put')
-    def put(self, pk):
-        item = self.datamodel.get(pk, self._base_filters)
-        if not request.is_json:
-            return self.response(400, **{'message': 'Request is not JSON'})
-        if not item:
-            return self.response_404()
-        try:
-            data = self._merge_update_item(item, request.json)
-            item = self.edit_model_schema.load(data, instance=item)
-        except ValidationError as err:
-            return self.response_422(message=err.messages)
-        # This validates custom Schema with custom validations
-        if isinstance(item.data, dict):
-            return self.response_422(message=item.errors)
-        self.pre_update(item.data)
-        try:
-            self.datamodel.edit(item.data, raise_exception=True)
-            self.post_update(item)
-            return self.response(
-                200,
-                **{API_RESULT_RES_KEY: self.edit_model_schema.dump(
-                    item.data,
-                    many=False).data}
-            )
-        except IntegrityError as e:
-            return self.response_422(message=str(e.orig))
-
-    @expose('/<pk>', methods=['DELETE'])
-    @protect()
-    @safe
-    @permission_name('delete')
-    def delete(self, pk):
-        item = self.datamodel.get(pk, self._base_filters)
-        if not item:
-            return self.response_404()
-        self.pre_delete(item)
-        try:
-            self.datamodel.delete(item, raise_exception=True)
-            self.post_delete(item)
-            return self.response(200, message='OK')
-        except IntegrityError as e:
-            return self.response_422(message=str(e.orig))
-
     def merge_label_columns(self, response, **kwargs):
         _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if _pruned_select_cols:
@@ -947,12 +951,87 @@ class ModelRestApi(BaseModelApi):
     def merge_show_title(self, response, **kwargs):
         response[API_SHOW_TITLE_RES_KEY] = self.show_title
 
+    @expose('/_info', methods=['GET'])
+    @protect()
+    @safe
+    @rison(get_info_schema)
+    @permission_name('info')
+    @merge_response_func(BaseApi.merge_current_user_permissions, API_PERMISSIONS_RIS_KEY)
+    @merge_response_func(merge_add_field_info, API_ADD_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_edit_field_info, API_EDIT_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_search_filters, API_FILTERS_RIS_KEY)
+    @merge_response_func(merge_add_title, API_ADD_TITLE_RIS_KEY)
+    @merge_response_func(merge_edit_title, API_EDIT_TITLE_RIS_KEY)
+    def info(self, **kwargs):
+        """
+            Endpoint that renders a response for CRUD REST meta data
+        :param kwargs: Rison kwargs
+        """
+        _response = dict()
+        _args = kwargs.get('rison', {})
+        self.set_response_key_mappings(_response, self.info, _args, **_args)
+        return self.response(200, **_response)
+
+    @expose('/<pk>', methods=['GET'])
+    @protect()
+    @safe
+    @permission_name('get')
     @rison(get_item_schema)
     @merge_response_func(merge_label_columns, API_LABEL_COLUMNS_RIS_KEY)
     @merge_response_func(merge_show_columns, API_SHOW_COLUMNS_RIS_KEY)
     @merge_response_func(merge_description_columns, API_DESCRIPTION_COLUMNS_RIS_KEY)
     @merge_response_func(merge_show_title, API_SHOW_TITLE_RIS_KEY)
-    def _get_item(self, pk, **kwargs):
+    def get(self, pk, **kwargs):
+        """Get item from Model
+        ---
+        get:
+          parameters:
+          - in: path
+            schema:
+              type: integer
+          parameters:
+          - in: query
+            name: q
+            schema:
+              $ref: '#/components/parameter/get_item_schema'
+          responses:
+            200:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      label_columns:
+                        type: object
+                      show_columns:
+                        type: array
+                      description_columns:
+                        type: object
+                      show_title:
+                        type: string
+                      id:
+                        type: string
+                      result:
+                        type: object
+                        schema:
+                          $ref: '#/components/schemas/{{self.__class__.__name__}}.get'
+            400:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+            404:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+        """
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
             return self.response_404()
@@ -965,7 +1044,7 @@ class ModelRestApi(BaseModelApi):
         ]
         self.set_response_key_mappings(
             _response,
-            self._get_item,
+            self.get,
             _args,
             **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols}
         )
@@ -978,13 +1057,52 @@ class ModelRestApi(BaseModelApi):
         _response[API_RESULT_RES_KEY] = _show_model_schema.dump(item, many=False).data
         return self.response(200, **_response)
 
+    @expose('/', methods=['GET'])
+    @protect()
+    @safe
+    @permission_name('get')
     @rison(get_list_schema)
     @merge_response_func(merge_order_columns, API_ORDER_COLUMNS_RIS_KEY)
     @merge_response_func(merge_label_columns, API_LABEL_COLUMNS_RIS_KEY)
     @merge_response_func(merge_description_columns, API_DESCRIPTION_COLUMNS_RIS_KEY)
     @merge_response_func(merge_list_columns, API_LIST_COLUMNS_RIS_KEY)
     @merge_response_func(merge_list_title, API_LIST_TITLE_RIS_KEY)
-    def _get_list(self, **kwargs):
+    def get_list(self, **kwargs):
+        """Get list of items from Model
+        ---
+        get:
+          responses:
+            200:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      label_columns:
+                        type: object
+                      list_columns:
+                        type: array
+                      description_columns:
+                        type: object
+                      list_title:
+                        type: string
+                      ids:
+                        type: array
+                      order_columns:
+                        type: array
+                      result:
+                        type: object
+                        schema:
+                          $ref: '#/components/schemas/{{self.__class__.__name__}}.get_list'
+            400:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+        """
         _response = dict()
         _args = kwargs.get('rison', {})
         # handle select columns
@@ -992,7 +1110,7 @@ class ModelRestApi(BaseModelApi):
         _pruned_select_cols = [col for col in select_cols if col in self.list_columns]
         self.set_response_key_mappings(
             _response,
-            self._get_list,
+            self.get_list,
             _args,
             **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols}
         )
@@ -1022,6 +1140,172 @@ class ModelRestApi(BaseModelApi):
         _response['ids'] = pks
         _response['count'] = count
         return self.response(200, **_response)
+
+    @expose('/', methods=['POST'])
+    @protect()
+    @safe
+    @permission_name('post')
+    def post(self):
+        """POST item to Model
+        ---
+        post:
+          responses:
+            201:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      result:
+                        type: object
+                        schema:
+                          $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
+            400:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+        """
+        if not request.is_json:
+            return self.response_400(message='Request is not JSON')
+        try:
+            item = self.add_model_schema.load(request.json)
+        except ValidationError as err:
+            return self.response_422(message=err.messages)
+        # This validates custom Schema with custom validations
+        if isinstance(item.data, dict):
+            return self.response_422(message=item.errors)
+        self.pre_add(item.data)
+        try:
+            self.datamodel.add(item.data, raise_exception=True)
+            self.post_add(item.data)
+            return self.response(
+                201,
+                **{
+                    API_RESULT_RES_KEY: self.add_model_schema.dump(
+                        item.data, many=False
+                    ).data,
+                    'id': self.datamodel.get_pk_value(item.data)
+                }
+            )
+        except IntegrityError as e:
+            return self.response_422(message=str(e.orig))
+
+    @expose('/<pk>', methods=['PUT'])
+    @protect()
+    @safe
+    @permission_name('put')
+    def put(self, pk):
+        """POST item to Model
+        ---
+        put:
+          responses:
+            200:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      result:
+                        type: object
+                        schema:
+                          $ref: '#/components/schemas/{{self.__class__.__name__}}.put'
+            400:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+            404:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+        """
+        item = self.datamodel.get(pk, self._base_filters)
+        if not request.is_json:
+            return self.response(400, **{'message': 'Request is not JSON'})
+        if not item:
+            return self.response_404()
+        try:
+            data = self._merge_update_item(item, request.json)
+            item = self.edit_model_schema.load(data, instance=item)
+        except ValidationError as err:
+            return self.response_422(message=err.messages)
+        # This validates custom Schema with custom validations
+        if isinstance(item.data, dict):
+            return self.response_422(message=item.errors)
+        self.pre_update(item.data)
+        try:
+            self.datamodel.edit(item.data, raise_exception=True)
+            self.post_update(item)
+            return self.response(
+                200,
+                **{API_RESULT_RES_KEY: self.edit_model_schema.dump(
+                    item.data,
+                    many=False).data}
+            )
+        except IntegrityError as e:
+            return self.response_422(message=str(e.orig))
+
+    @expose('/<pk>', methods=['DELETE'])
+    @protect()
+    @safe
+    @permission_name('delete')
+    def delete(self, pk):
+        """Delete item from Model
+        ---
+        delete:
+          parameters:
+          - in: path
+            schema:
+              type: integer
+          responses:
+            200:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+            400:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+            404:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+        """
+        item = self.datamodel.get(pk, self._base_filters)
+        if not item:
+            return self.response_404()
+        self.pre_delete(item)
+        try:
+            self.datamodel.delete(item, raise_exception=True)
+            self.post_delete(item)
+            return self.response(200, message='OK')
+        except IntegrityError as e:
+            return self.response_422(message=str(e.orig))
 
     """
     ------------------------------------------------

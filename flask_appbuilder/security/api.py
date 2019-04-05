@@ -22,13 +22,62 @@ class SecurityApi(BaseApi):
     resource_name = 'security'
     version = API_SECURITY_VERSION
 
+    def add_apispec_components(self):
+        super(SecurityApi, self).add_apispec_components()
+        jwt_scheme = {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
+        self.appbuilder.apispec.components.security_scheme("jwt", jwt_scheme)
+
     @expose('/login', methods=['POST'])
     @safe
     def login(self):
-        """
-            Login endpoint for the API returns a JWT and possibly a refresh token
-        :return: Flask response with JSON payload containing an
-            access_token and refresh_token
+        """Login endpoint for the API returns a JWT and optionally a refresh token
+        ---
+        post:
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    username:
+                      type: string
+                    password:
+                      type: string
+                    provider:
+                      type: string
+                      enum:
+                      - db
+                      - ldap
+                    refresh:
+                      type: boolean
+          responses:
+            200:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                      refresh_token:
+                        type: string
+            400:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+            401:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
         """
         if not request.is_json:
             return self.response_400(message="Request payload is not JSON")
@@ -72,8 +121,25 @@ class SecurityApi(BaseApi):
         """
             Security endpoint for the refresh token, so we can obtain a new
             token without forcing the user to login again
-        :return: Flask Response with JSON payload containing
-            a new access_token
+        ---
+        post:
+          responses:
+            200:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      refresh_token:
+                        type: string
+            401:
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
         """
         resp = {
             API_SECURITY_REFRESH_TOKEN_KEY: create_access_token(

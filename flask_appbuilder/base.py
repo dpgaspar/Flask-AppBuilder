@@ -1,5 +1,6 @@
 import logging
-
+from apispec import APISpec
+from apispec.ext.marshmallow import MarshmallowPlugin
 from flask import Blueprint, url_for, current_app
 from .views import IndexView, UtilView
 from .filters import TemplateFilters
@@ -130,7 +131,7 @@ class AppBuilder(object):
         self.static_folder = static_folder
         self.static_url_path = static_url_path
         self.update_perms = update_perms
-
+        self.apispec = None
         self.app = app
 
         if app is not None:
@@ -158,6 +159,13 @@ class AppBuilder(object):
         self.session = session
         self.sm = self.security_manager_class(self)
         self.bm = BabelManager(self)
+        self.apispec = APISpec(
+            title=self.app_name,
+            version="0.0.0",
+            openapi_version="3.0.2",
+            info=dict(description=self.app_name),
+            plugins=[MarshmallowPlugin()],
+        )
         self._add_global_static()
         self._add_global_filters()
         app.before_request(self.sm.before_request)
@@ -499,5 +507,3 @@ class AppBuilder(object):
                 for v in self.baseviews:
                     if isinstance(v, inner_class) and v not in view.get_init_inner_views():
                         view.get_init_inner_views().append(v)
-
-
