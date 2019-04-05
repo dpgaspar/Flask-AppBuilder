@@ -53,6 +53,7 @@ class SecurityApi(BaseApi):
                       type: boolean
           responses:
             200:
+              description: Authentication Successful
               content:
                 application/json:
                   schema:
@@ -63,21 +64,11 @@ class SecurityApi(BaseApi):
                       refresh_token:
                         type: string
             400:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      message:
-                        type: string
+              $ref: '#/components/responses/400'
             401:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      message:
-                        type: string
+              $ref: '#/components/responses/401'
+            500:
+              $ref: '#/components/responses/500'
         """
         if not request.is_json:
             return self.response_400(message="Request payload is not JSON")
@@ -125,6 +116,7 @@ class SecurityApi(BaseApi):
         post:
           responses:
             200:
+              description: Refresh Successful
               content:
                 application/json:
                   schema:
@@ -133,13 +125,9 @@ class SecurityApi(BaseApi):
                       refresh_token:
                         type: string
             401:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      message:
-                        type: string
+              $ref: '#/components/responses/401'
+            500:
+              $ref: '#/components/responses/500'
         """
         resp = {
             API_SECURITY_REFRESH_TOKEN_KEY: create_access_token(

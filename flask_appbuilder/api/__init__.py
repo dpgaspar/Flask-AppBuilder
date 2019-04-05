@@ -244,6 +244,87 @@ class BaseApi(object):
     """
     _apispec_parameter_schemas = None
 
+    responses = {
+        "400": {
+            "description": "Bad request",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "message": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "401": {
+            "description": "Unauthorized",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "message": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "404": {
+            "description": "Not found",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "message": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "422": {
+            "description": "Could not process entity",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "message": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "500": {
+            "description": "Fatal error",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "message": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    """
+        Override custom OpenApi responses
+    """
+
     def __init__(self):
         """
             Initialization of base permissions
@@ -292,7 +373,18 @@ class BaseApi(object):
         return self.blueprint
 
     def add_apispec_components(self):
-        pass
+        for k, v in self.responses.items():
+            self.appbuilder.apispec.components._responses[k] = v
+        for k, v in self._apispec_parameter_schemas.items():
+            if k not in self.appbuilder.apispec.components._parameters:
+                _v = {
+                    "in": "query",
+                    "name": API_URI_RIS_KEY,
+                    "schema": {"$ref": "#/components/schemas/{}".format(k)}
+                }
+                # Using private because parameter method does not behave correctly
+                self.appbuilder.apispec.components._schemas[k] = v
+                self.appbuilder.apispec.components._parameters[k] = _v
 
     def _register_urls(self):
         for attr_name in dir(self):
@@ -317,6 +409,10 @@ class BaseApi(object):
                         path=path,
                         operations=operations
                     )
+                    for operation in operations:
+                        self.appbuilder.apispec._paths[path][operation]['tags'] = [
+                            self.__class__.__name__
+                        ]
 
     def path_helper(self, path=None, operations=None, **kwargs):
         """
@@ -765,11 +861,6 @@ class ModelRestApi(BaseModelApi):
 
     def add_apispec_components(self):
         super(ModelRestApi, self).add_apispec_components()
-        for k, v in self._apispec_parameter_schemas.items():
-            try:
-                self.appbuilder.apispec.components.parameter(k, v)
-            except DuplicateComponentNameError:
-                continue
         self.appbuilder.apispec.components.schema(
             "{}.{}".format(self.__class__.__name__, "get_list"),
             schema=self.list_model_schema
@@ -783,7 +874,7 @@ class ModelRestApi(BaseModelApi):
             schema=self.edit_model_schema
         )
         self.appbuilder.apispec.components.schema(
-            "{}.{}".format(self.__class__.__name__, "get_item"),
+            "{}.{}".format(self.__class__.__name__, "get"),
             schema=self.show_model_schema
         )
 
@@ -963,9 +1054,37 @@ class ModelRestApi(BaseModelApi):
     @merge_response_func(merge_add_title, API_ADD_TITLE_RIS_KEY)
     @merge_response_func(merge_edit_title, API_EDIT_TITLE_RIS_KEY)
     def info(self, **kwargs):
-        """
-            Endpoint that renders a response for CRUD REST meta data
-        :param kwargs: Rison kwargs
+        """ Endpoint that renders a response for CRUD REST meta data
+        ---
+        get:
+          parameters:
+          - $ref: '#/components/parameters/get_info_schema'
+          responses:
+            200:
+              description: Item from Model
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      add_columns:
+                        type: object
+                      edit_columns:
+                        type: object
+                      filters:
+                        type: object
+                      permissions:
+                        type: array
+                        items:
+                          type: string
+            400:
+              $ref: '#/components/responses/400'
+            401:
+              $ref: '#/components/responses/401'
+            422:
+              $ref: '#/components/responses/422'
+            500:
+              $ref: '#/components/responses/500'
         """
         _response = dict()
         _args = kwargs.get('rison', {})
@@ -989,13 +1108,11 @@ class ModelRestApi(BaseModelApi):
           - in: path
             schema:
               type: integer
-          parameters:
-          - in: query
-            name: q
-            schema:
-              $ref: '#/components/parameter/get_item_schema'
+            name: pk
+          - $ref: '#/components/parameters/get_item_schema'
           responses:
             200:
+              description: Item from Model
               content:
                 application/json:
                   schema:
@@ -1005,6 +1122,8 @@ class ModelRestApi(BaseModelApi):
                         type: object
                       show_columns:
                         type: array
+                        items:
+                          type: string
                       description_columns:
                         type: object
                       show_title:
@@ -1012,25 +1131,17 @@ class ModelRestApi(BaseModelApi):
                       id:
                         type: string
                       result:
-                        type: object
-                        schema:
-                          $ref: '#/components/schemas/{{self.__class__.__name__}}.get'
+                        $ref: '#/components/schemas/{{self.__class__.__name__}}.get'
             400:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      message:
-                        type: string
+              $ref: '#/components/responses/400'
+            401:
+              $ref: '#/components/responses/401'
             404:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      message:
-                        type: string
+              $ref: '#/components/responses/404'
+            422:
+              $ref: '#/components/responses/422'
+            500:
+              $ref: '#/components/responses/500'
         """
         item = self.datamodel.get(pk, self._base_filters)
         if not item:
@@ -1071,8 +1182,11 @@ class ModelRestApi(BaseModelApi):
         """Get list of items from Model
         ---
         get:
+          parameters:
+          - $ref: '#/components/parameters/get_item_schema'
           responses:
             200:
+              description: Items from Model
               content:
                 application/json:
                   schema:
@@ -1082,26 +1196,30 @@ class ModelRestApi(BaseModelApi):
                         type: object
                       list_columns:
                         type: array
+                        items:
+                          type: string
                       description_columns:
                         type: object
                       list_title:
                         type: string
                       ids:
                         type: array
+                        items:
+                          type: string
                       order_columns:
                         type: array
+                        items:
+                          type: string
                       result:
-                        type: object
-                        schema:
-                          $ref: '#/components/schemas/{{self.__class__.__name__}}.get_list'
+                        $ref: '#/components/schemas/{{self.__class__.__name__}}.get_list'
             400:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      message:
-                        type: string
+              $ref: '#/components/responses/400'
+            401:
+              $ref: '#/components/responses/401'
+            422:
+              $ref: '#/components/responses/422'
+            500:
+              $ref: '#/components/responses/500'
         """
         _response = dict()
         _args = kwargs.get('rison', {})
@@ -1151,6 +1269,7 @@ class ModelRestApi(BaseModelApi):
         post:
           responses:
             201:
+              description: Item inserted
               content:
                 application/json:
                   schema:
@@ -1159,17 +1278,15 @@ class ModelRestApi(BaseModelApi):
                       id:
                         type: string
                       result:
-                        type: object
-                        schema:
-                          $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
+                        $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
             400:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      message:
-                        type: string
+              $ref: '#/components/responses/400'
+            401:
+              $ref: '#/components/responses/401'
+            422:
+              $ref: '#/components/responses/422'
+            500:
+              $ref: '#/components/responses/500'
         """
         if not request.is_json:
             return self.response_400(message='Request is not JSON')
@@ -1204,33 +1321,31 @@ class ModelRestApi(BaseModelApi):
         """POST item to Model
         ---
         put:
+          parameters:
+          - in: path
+            schema:
+              type: integer
+            name: pk
           responses:
             200:
+              description: Item changed
               content:
                 application/json:
                   schema:
                     type: object
                     properties:
                       result:
-                        type: object
-                        schema:
-                          $ref: '#/components/schemas/{{self.__class__.__name__}}.put'
+                        $ref: '#/components/schemas/{{self.__class__.__name__}}.put'
             400:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      message:
-                        type: string
+              $ref: '#/components/responses/400'
+            401:
+              $ref: '#/components/responses/401'
             404:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      message:
-                        type: string
+              $ref: '#/components/responses/404'
+            422:
+              $ref: '#/components/responses/422'
+            500:
+              $ref: '#/components/responses/500'
         """
         item = self.datamodel.get(pk, self._base_filters)
         if not request.is_json:
@@ -1270,16 +1385,10 @@ class ModelRestApi(BaseModelApi):
           - in: path
             schema:
               type: integer
+            name: pk
           responses:
             200:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-            400:
+              description: Item deleted
               content:
                 application/json:
                   schema:
@@ -1288,13 +1397,11 @@ class ModelRestApi(BaseModelApi):
                       message:
                         type: string
             404:
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      message:
-                        type: string
+              $ref: '#/components/responses/404'
+            422:
+              $ref: '#/components/responses/422'
+            500:
+              $ref: '#/components/responses/500'
         """
         item = self.datamodel.get(pk, self._base_filters)
         if not item:

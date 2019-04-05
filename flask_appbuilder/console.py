@@ -25,6 +25,7 @@ SQLA_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/m
 MONGOENGIE_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-me/archive/master.zip'
 ADDON_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-AddOn/archive/master.zip'
 
+
 def import_application(app_package, appbuilder):
     sys.path.append(os.getcwd())
     try:
@@ -60,6 +61,17 @@ def cli_app():
         If you're using different namings use app and appbuilder parameters.
     """
     pass
+
+
+@cli_app.command("api-spec")
+@click.option('--app', default='app', help='Your application init directory (package)')
+@click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
+def api_spec(app, appbuilder):
+    """
+        Resets a user's password
+    """
+    _appbuilder = import_application(app, appbuilder)
+    print(_appbuilder.apispec.to_yaml())
 
 
 @cli_app.command("reset-password")
