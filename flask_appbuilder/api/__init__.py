@@ -4,7 +4,6 @@ import functools
 import traceback
 import prison
 import jsonschema
-from apispec.exceptions import DuplicateComponentNameError
 from sqlalchemy.exc import IntegrityError
 from marshmallow import ValidationError
 from marshmallow_sqlalchemy.fields import Related, RelatedList
@@ -369,22 +368,44 @@ class BaseApi(object):
                                    url_prefix=self.route_base)
 
         self._register_urls()
-        self.add_apispec_components()
         return self.blueprint
 
-    def add_apispec_components(self):
+    def add_api_spec(self, api_spec):
+        for attr_name in dir(self):
+            attr = getattr(self, attr_name)
+            if hasattr(attr, '_urls'):
+                for url, methods in attr._urls:
+                    operations = dict()
+                    path = self.path_helper(path=url, operations=operations)
+                    self.operation_helper(
+                        path=path,
+                        operations=operations,
+                        methods=methods,
+                        func=attr
+                    )
+                    api_spec.path(
+                        path=path,
+                        operations=operations
+                    )
+                    for operation in operations:
+                        api_spec._paths[path][operation]['tags'] = [
+                            self.__class__.__name__
+                        ]
+        self.add_apispec_components(api_spec)
+
+    def add_apispec_components(self, api_spec):
         for k, v in self.responses.items():
-            self.appbuilder.apispec.components._responses[k] = v
+            api_spec.components._responses[k] = v
         for k, v in self._apispec_parameter_schemas.items():
-            if k not in self.appbuilder.apispec.components._parameters:
+            if k not in api_spec.components._parameters:
                 _v = {
                     "in": "query",
                     "name": API_URI_RIS_KEY,
                     "schema": {"$ref": "#/components/schemas/{}".format(k)}
                 }
                 # Using private because parameter method does not behave correctly
-                self.appbuilder.apispec.components._schemas[k] = v
-                self.appbuilder.apispec.components._parameters[k] = _v
+                api_spec.components._schemas[k] = v
+                api_spec.components._parameters[k] = _v
 
     def _register_urls(self):
         for attr_name in dir(self):
@@ -397,22 +418,6 @@ class BaseApi(object):
                         attr,
                         methods=methods
                     )
-                    operations = dict()
-                    path = self.path_helper(path=url, operations=operations)
-                    self.operation_helper(
-                        path=path,
-                        operations=operations,
-                        methods=methods,
-                        func=attr
-                    )
-                    self.appbuilder.apispec.path(
-                        path=path,
-                        operations=operations
-                    )
-                    for operation in operations:
-                        self.appbuilder.apispec._paths[path][operation]['tags'] = [
-                            self.__class__.__name__
-                        ]
 
     def path_helper(self, path=None, operations=None, **kwargs):
         """
@@ -428,7 +433,7 @@ class BaseApi(object):
         """
         RE_URL = re.compile(r'<(?:[^:<>]+:)?([^<>]+)>')
         path = RE_URL.sub(r'{\1}', path)
-        return "{}{}".format(self.blueprint.url_prefix, path)
+        return "/{}{}".format(self.resource_name, path)
 
     def operation_helper(
             self, path=None,
@@ -859,21 +864,21 @@ class ModelRestApi(BaseModelApi):
             **kwargs
         )
 
-    def add_apispec_components(self):
-        super(ModelRestApi, self).add_apispec_components()
-        self.appbuilder.apispec.components.schema(
+    def add_apispec_components(self, api_spec):
+        super(ModelRestApi, self).add_apispec_components(api_spec)
+        api_spec.components.schema(
             "{}.{}".format(self.__class__.__name__, "get_list"),
             schema=self.list_model_schema
         )
-        self.appbuilder.apispec.components.schema(
+        api_spec.components.schema(
             "{}.{}".format(self.__class__.__name__, "post"),
             schema=self.add_model_schema
         )
-        self.appbuilder.apispec.components.schema(
+        api_spec.components.schema(
             "{}.{}".format(self.__class__.__name__, "put"),
             schema=self.edit_model_schema
         )
-        self.appbuilder.apispec.components.schema(
+        api_spec.components.schema(
             "{}.{}".format(self.__class__.__name__, "get"),
             schema=self.show_model_schema
         )
@@ -1183,7 +1188,7 @@ class ModelRestApi(BaseModelApi):
         ---
         get:
           parameters:
-          - $ref: '#/components/parameters/get_item_schema'
+          - $ref: '#/components/parameters/get_list_schema'
           responses:
             200:
               description: Items from Model
@@ -1211,7 +1216,9 @@ class ModelRestApi(BaseModelApi):
                         items:
                           type: string
                       result:
-                        $ref: '#/components/schemas/{{self.__class__.__name__}}.get_list'
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/{{self.__class__.__name__}}.get_list'
             400:
               $ref: '#/components/responses/400'
             401:
@@ -1267,6 +1274,13 @@ class ModelRestApi(BaseModelApi):
         """POST item to Model
         ---
         post:
+          requestBody:
+            description: Model schema
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
           responses:
             201:
               description: Item inserted
@@ -1326,6 +1340,13 @@ class ModelRestApi(BaseModelApi):
             schema:
               type: integer
             name: pk
+          requestBody:
+            description: Model schema
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/{{self.__class__.__name__}}.put'
           responses:
             200:
               description: Item changed

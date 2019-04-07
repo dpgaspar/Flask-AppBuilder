@@ -63,17 +63,6 @@ def cli_app():
     pass
 
 
-@cli_app.command("api-spec")
-@click.option('--app', default='app', help='Your application init directory (package)')
-@click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')
-def api_spec(app, appbuilder):
-    """
-        Resets a user's password
-    """
-    _appbuilder = import_application(app, appbuilder)
-    print(_appbuilder.apispec.to_yaml())
-
-
 @cli_app.command("reset-password")
 @click.option('--app', default='app', help='Your application init directory (package)')
 @click.option('--appbuilder', default='appbuilder', help='your AppBuilder object')

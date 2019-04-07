@@ -22,10 +22,10 @@ class SecurityApi(BaseApi):
     resource_name = 'security'
     version = API_SECURITY_VERSION
 
-    def add_apispec_components(self):
-        super(SecurityApi, self).add_apispec_components()
+    def add_apispec_components(self, api_spec):
+        super(SecurityApi, self).add_apispec_components(api_spec)
         jwt_scheme = {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
-        self.appbuilder.apispec.components.security_scheme("jwt", jwt_scheme)
+        api_spec.components.security_scheme("jwt", jwt_scheme)
 
     @expose('/login', methods=['POST'])
     @safe

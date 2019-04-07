@@ -70,7 +70,7 @@ class MyFirstApi(BaseApi):
         return self.response(201, message="Hello (POST)")
 
     @expose('/greeting3')
-    @rison
+    @rison()
     def greeting3(self, **kwargs):
         if 'name' in kwargs['rison']:
             return self.response(
@@ -132,7 +132,7 @@ class MyFirstApi(BaseApi):
                 application/json:
                   schema:
                     type: object
-        401:
+            401:
               $ref: '#/components/responses/401'
         """
         return self.response(200, message="This is private")
