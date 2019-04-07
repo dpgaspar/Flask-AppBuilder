@@ -25,4 +25,4 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.close()
 """    
 
-from . import models, views
+from . import models, api
