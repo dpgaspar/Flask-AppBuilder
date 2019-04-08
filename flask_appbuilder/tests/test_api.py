@@ -1720,3 +1720,17 @@ class FlaskTestCase(unittest.TestCase):
                     None
                 )
             )
+
+    def test_openapi(self):
+        """
+            REST Api: Test OpenAPI spec
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        uri = 'api/v1/_openapi'
+        rv = self.auth_client_get(
+            client,
+            token,
+            uri
+        )
+        eq_(rv.status_code, 200)
