@@ -4,6 +4,8 @@ import functools
 import traceback
 import prison
 import jsonschema
+import yaml
+from apispec import yaml_utils
 from sqlalchemy.exc import IntegrityError
 from marshmallow import ValidationError
 from marshmallow_sqlalchemy.fields import Related, RelatedList
@@ -446,9 +448,6 @@ class BaseApi(object):
         :param dict operations: A `dict` mapping HTTP methods to operation object. See
         :param list methods: A list of methods registered for this path
         """
-        import yaml
-        from apispec import yaml_utils
-
         for method in methods:
             yaml_doc_string = yaml_utils.load_operations_from_docstring(func.__doc__)
             yaml_doc_string = yaml.safe_load(str(yaml_doc_string).replace(
