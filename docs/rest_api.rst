@@ -342,7 +342,7 @@ responses we can use for the sake of brevity::
         """
         raise Exception
 
-At complete list of packaged responses you can use::
+A complete list of packaged responses you can use::
 
           responses:
             400:
@@ -587,11 +587,12 @@ First let's define a CRUD REST Api for our Group model resource::
     from . import appbuilder
 
 
-    class GroupModelRestApi(ModelRestApi):
+    class GroupModelApi(ModelRestApi):
         resource_name = 'group'
         datamodel = SQLAInterface(ContactGroup)
 
-    appbuilder.add_api(ExampleApi)
+    appbuilder.add_api(GroupModelApi)
+
 
 Behind the scenes FAB uses marshmallow-sqlalchemy to infer the Model to a Marshmallow Schema,
 that can be safely serialized and deserialized. Let's recall our Model definition for ``ContactGroup``::
@@ -862,7 +863,7 @@ values from related fields, using our *quickhowto* example::
 These related field values can be filtered server side using the ``add_query_rel_fields``
 or ``edit_query_rel_fields``::
 
-    class ContactModelRestApi(ModelRestApi):
+    class ContactModelApi(ModelRestApi):
         resource_name = 'contact'
         datamodel = SQLAInterface(Contact)
         add_query_rel_fields = {
@@ -871,7 +872,7 @@ or ``edit_query_rel_fields``::
 
 You can also impose an order for these values server side using ``order_rel_fields``::
 
-    class ContactModelRestApi(ModelRestApi):
+    class ContactModelApi(ModelRestApi):
         resource_name = 'contact'
         datamodel = SQLAInterface(Contact)
         order_rel_fields = {
@@ -903,7 +904,7 @@ Using Rison example::
 We can also restrict server side the available fields for add and edit using ``add_columns``
 and ``edit_columns``. Additionally you can use ``add_exclude_columns`` and ``edit_exclude_columns``::
 
-    class ContactModelRestApi(ModelRestApi):
+    class ContactModelApi(ModelRestApi):
         resource_name = 'contact'
         datamodel = SQLAInterface(Contact)
         add_columns = ['name']
@@ -1002,7 +1003,7 @@ Our *curl* command will look like::
 We can restrict or add fields for the get item endpoint using
 the ``show_columns`` property. This takes precedence from the *Rison* arguments::
 
-    class ContactModelRestApi(ModelRestApi):
+    class ContactModelApi(ModelRestApi):
         resource_name = 'contact'
         datamodel = SQLAInterface(Contact)
         show_columns = ['name']
@@ -1030,7 +1031,7 @@ let's add a new function::
 
 And then on the REST API::
 
-    class ContactModelRestApi(ModelRestApi):
+    class ContactModelApi(ModelRestApi):
         resource_name = 'contact'
         datamodel = SQLAInterface(Contact)
         show_columns = ['name', 'some_function']
@@ -1072,7 +1073,7 @@ To reduce or extend the default inferred columns from our *Model*.
 On server side we can use the ``list_columns`` property,
 this takes precedence over *Rison* arguments::
 
-    class ContactModelRestApi(ModelRestApi):
+    class ContactModelApi(ModelRestApi):
         resource_name = 'contact'
         datamodel = SQLAInterface(Contact)
         list_columns = ['name', 'address']
@@ -1083,7 +1084,7 @@ For ordering the results, the following will order contacts by name descending Z
 
 To set a default order server side use ``base_order`` tuple::
 
-    class ContactModelRestApi(ModelRestApi):
+    class ContactModelApi(ModelRestApi):
         resource_name = 'contact'
         datamodel = SQLAInterface(Contact)
         base_order = ('name', 'desc')
@@ -1094,7 +1095,7 @@ Pagination, get the second page using page size of two (just an example)::
 
 To set the default page size server side::
 
-    class ContactModelRestApi(ModelRestApi):
+    class ContactModelApi(ModelRestApi):
         resource_name = 'contact'
         datamodel = SQLAInterface(Contact)
         page_size = 20
@@ -1130,7 +1131,7 @@ just fetching the **name** column.
 
 To impose base filters server side::
 
-    class ContactModelRestApi(ModelRestApi):
+    class ContactModelApi(ModelRestApi):
         resource_name = 'contact'
         datamodel = SQLAInterface(Contact)
         base_filters = [['name', FilterStartsWith, 'A']]
@@ -1140,7 +1141,7 @@ operations
 
 Simple example using doted notation, FAB will infer the necessary join operation::
 
-    class ContactModelRestApi(ModelRestApi):
+    class ContactModelApi(ModelRestApi):
         resource_name = 'contact'
         datamodel = SQLAInterface(Contact)
         base_filters = [['contact_group.name', FilterStartsWith, 'F']]
@@ -1154,7 +1155,7 @@ Updates and Partial Updates
 PUT methods allow for changing a **Model**. Allowed changes are controlled by
 ``edit_columns``::
 
-    class ContactModelRestApi(ModelRestApi):
+    class ContactModelApi(ModelRestApi):
         resource_name = 'contact'
         datamodel = SQLAInterface(Contact)
         edit_columns = ['name']
