@@ -37,7 +37,7 @@ setup(
     install_requires=[
         'colorama>=0.3.9,<1',
         'click>=6.7,<8',
-        'apispec>=1.1.1<2',
+        'apispec[yaml]>=1.1.1<2',
         'Flask>=0.12,<2',
         'Flask-Babel>=0.11.1,<1',
         'Flask-Login>=0.3,<0.5',
