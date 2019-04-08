@@ -5,6 +5,7 @@ from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.api import BaseApi
 from flask_appbuilder.api import expose, safe, protect
 from flask_appbuilder.basemanager import BaseManager
+from flask_appbuilder.security.decorators import has_access
 
 
 class OpenApi(BaseApi):
@@ -62,12 +63,11 @@ class OpenApi(BaseApi):
 class SwaggerView(BaseView):
 
     default_view = 'ui'
-
-    title = "Example"
     openapi_uri = '/api/{}/_openapi'
 
     @expose('/<version>')
-    def ui(self, version):
+    @has_access
+    def show(self, version):
         return self.render_template(
             'appbuilder/swagger/swagger.html',
             openapi_uri=self.openapi_uri.format(version)
