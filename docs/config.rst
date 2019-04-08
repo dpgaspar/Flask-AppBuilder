@@ -199,6 +199,8 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +-----------------------------------+--------------------------------------------+-----------+
 | FAB_API_MAX_PAGE_SIZE             | Sets a limit for FAB Model Api page size   |   No      |
 +-----------------------------------+--------------------------------------------+-----------+
+| FAB_API_SWAGGER_UI                | Enables a Swagger UI view (Boolean)        |   No      |
++-----------------------------------+--------------------------------------------+-----------+
 
 
 Using config.py

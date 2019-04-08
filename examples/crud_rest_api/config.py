@@ -38,6 +38,8 @@ LANGUAGES = {
 #------------------------------
 # GLOBALS FOR GENERAL APP's
 #------------------------------
+FAB_API_SWAGGER_UI = True
+
 UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_FOLDER = basedir + '/app/static/uploads/'
 IMG_UPLOAD_URL = '/static/uploads/'

@@ -319,6 +319,8 @@ So our spec for a method that accepts two HTTP verbs::
         return self.response(201, message="Hello (POST)")
 
 
+To access Swagger UI you must enable ``FAB_API_SWAGGER_UI = True`` on your config file
+then goto ``http://localhost:8080/swaggerview/v1`` for OpenAPI **v1** definitions
 On Swagger UI our example API looks like:
 
 .. image:: ./images/swagger001.png

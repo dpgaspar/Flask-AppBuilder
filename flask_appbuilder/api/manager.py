@@ -1,6 +1,7 @@
 from flask import current_app
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
+from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.api import BaseApi
 from flask_appbuilder.api import expose, safe, protect
 from flask_appbuilder.basemanager import BaseManager
@@ -58,6 +59,23 @@ class OpenApi(BaseApi):
         )
 
 
+class SwaggerView(BaseView):
+
+    default_view = 'ui'
+
+    title = "Example"
+    openapi_uri = '/api/{}/_openapi'
+
+    @expose('/<version>')
+    def ui(self, version):
+        return self.render_template(
+            'appbuilder/swagger/swagger.html',
+            openapi_uri=self.openapi_uri.format(version)
+        )
+
+
 class OpenApiManager(BaseManager):
     def register_views(self):
         self.appbuilder.add_api(OpenApi)
+        if self.appbuilder.get_app.config.get('FAB_API_SWAGGER_UI', False):
+            self.appbuilder.add_view_no_menu(SwaggerView)
