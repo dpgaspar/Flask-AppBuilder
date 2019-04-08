@@ -15,13 +15,12 @@ custom API endpoints::
     from . import appbuilder
 
 
-    class MyFirstApi(BaseApi):
-        @expose('/greeting')
+    class ExampleApi(BaseApi):
         def greeting(self):
             return self.response(200, message="Hello")
 
 
-    appbuilder.add_api(MyFirstApi)
+    appbuilder.add_api(ExampleApi)
 
 
 On the previous example, we are exposing an HTTP GET endpoint,
@@ -37,11 +36,11 @@ to be associated with a Flask blueprint. A ``BaseApi`` class defines a blueprint
 contains all exposed methods. By default the base route of the class blueprint is
 defined by:
 
-/api/v1/<LOWERCASE_CLASS_NAME>
+``/api/v1/<LOWERCASE_CLASS_NAME>``
 
 So we can make a request to our method using::
 
-    $ curl http://localhost:8080/api/v1/myfirstapi/greeting
+    $ curl http://localhost:8080/api/v1/exampleapi/greeting
 
 To override the base route class blueprint, override the ``base_route`` property,
 so on our previous example::
@@ -50,7 +49,7 @@ so on our previous example::
     from . import appbuilder
 
 
-    class MyFirstApi(BaseApi):
+    class ExampleApi(BaseApi):
 
         base_route = '/newapi/v2/nice'
 
@@ -59,7 +58,7 @@ so on our previous example::
             return self.response(200, message="Hello")
 
 
-    appbuilder.add_api(MyFirstApi)
+    appbuilder.add_api(ExampleApi)
 
 Now our endpoint will be::
 
@@ -72,20 +71,20 @@ using ``version`` and ``resource_name`` properties::
     from . import appbuilder
 
 
-    class MyFirstApi(BaseApi):
+    class ExampleApi(BaseApi):
 
-        resource_name = 'nice'
+        resource_name = 'example'
 
         @expose('/greeting')
         def greeting(self):
             return self.response(200, message="Hello")
 
 
-    appbuilder.add_api(MyFirstApi)
+    appbuilder.add_api(ExampleApi)
 
 Now our endpoint will be::
 
-    $ curl http://localhost:8080/api/v1/nice/greeting
+    $ curl http://localhost:8080/api/v1/example/greeting
 
 
 The other HTTP methods (PUT, POST, DELETE, ...) can be defined just like
@@ -94,7 +93,7 @@ a Flask route signature::
     from flask import request
     from flask_appbuilder.api import BaseApi, expose
 
-    class MyFirstApi(BaseApi):
+    class ExampleApi(BaseApi):
 
         ....
 
@@ -107,14 +106,15 @@ a Flask route signature::
 The previous example will expose a new `greeting2` endpoint on HTTP GET and POST
 so we can request it by::
 
-    $ curl http://localhost:8080/api/v1/myfirstapi/greeting2
+    $ curl http://localhost:8080/api/v1/example/greeting2
     {
         "message": "Hello (GET)"
     }
-    $ curl -XPOST http://localhost:8080/api/v1/myfirstapi/greeting2
+    $ curl -XPOST http://localhost:8080/api/v1/example/greeting2
     {
         "message": "Hello (POST)"
     }
+
 
 Let's make our method a bit more interesting, and send our name on the HTTP
 GET method. You can optionally use a ``@rison`` decorator that will parse
@@ -127,7 +127,7 @@ so data can be translated back and forth without loss or guesswork::
 
     from flask_appbuilder.api import BaseApi, expose, rison
 
-    class MyFirstApi(BaseApi):
+    class ExampleApi(BaseApi):
 
         ...
 
@@ -143,7 +143,7 @@ so data can be translated back and forth without loss or guesswork::
 
 And to test our method::
 
-    $ curl 'http://localhost:8080/api/v1/myfirstapi/greeting3?q=(name:daniel)'
+    $ curl 'http://localhost:8080/api/v1/example/greeting3?q=(name:daniel)'
     {
         "message": "Hello daniel"
     }
@@ -189,7 +189,7 @@ So to test our concept::
 
 Then call it::
 
-    $ curl 'http://localhost:8080/api/v1/myfirstapi/risonjson?q=(bool:!t,list:!(a,b,c),null:!n,number:777,string:'string')'
+    $ curl 'http://localhost:8080/api/v1/example/risonjson?q=(bool:!t,list:!(a,b,c),null:!n,number:777,string:'string')'
     {
       "result": {
         "bool": true,
@@ -210,7 +210,7 @@ so you can always use *normal* URI arguments using Flask's ``request.args``
 
 If we send an invalid *Rison* argument we get an error::
 
-    $ curl -v 'http://localhost:8080/api/v1/myfirstapi/risonjson?q=(bool:!t'
+    $ curl -v 'http://localhost:8080/api/v1/example/risonjson?q=(bool:!t'
     ...
     < HTTP/1.0 400 BAD REQUEST
     < Content-Type: application/json; charset=utf-8
@@ -226,7 +226,7 @@ validate your Rison arguments, this way you can implement a very strict API easi
         "type": "object",
         "properties": {
             "name": {
-                "type": "integer"
+                "type": "string"
             }
         }
     }
@@ -254,6 +254,148 @@ You can enable or disable stack trace response using the
         def error(self):
             raise Exception
 
+OpenAPI spec
+------------
+
+We can define an OpenAPI specification by using YAML on the docs section of our
+methods::
+
+    @expose('/greeting')
+    def greeting(self):
+        """Send a greeting
+        ---
+        get:
+          responses:
+            200:
+              description: Greet the user
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+        """
+        return self.response(200, message="Hello")
+
+
+We are defining that, our endpoint will respond to HTTP GET with a JSON object that contains
+a key ``message`` with values of type **string**. To access all our OpenAPI specifications
+request it on ``/api/v1/_openapi``, this is a dynamic endpoint that will serve all specs
+from different API versions. So if we register an API for version **v2** we access it's
+spec on ``/api/v2/_openapi``. Please note that OpenAPI specs are subject to authentication.
+
+So our spec for a method that accepts two HTTP verbs::
+
+    @expose('/greeting2', methods=['POST', 'GET'])
+    def greeting2(self):
+        """Send a greeting
+        ---
+        get:
+          responses:
+            200:
+              description: Greet the user
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+        post:
+          responses:
+            201:
+              description: Greet the user
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+        """
+        if request.method == 'GET':
+            return self.response(200, message="Hello (GET)")
+        return self.response(201, message="Hello (POST)")
+
+
+On Swagger UI our example API looks like:
+
+.. image:: ./images/swagger001.png
+    :width: 70%
+
+
+Notice the ``get`` and ``put`` structures, we should always detail all our
+possible responses. The ``BaseApi`` class comes with some pre packaged HTTP
+responses we can use for the sake of brevity::
+
+    @expose('/error')
+    @protect()
+    @safe
+    def error(self):
+        """Error 500
+        ---
+        get:
+          responses:
+            500:
+              $ref: '#/components/responses/500'
+        """
+        raise Exception
+
+At complete list of packaged responses you can use::
+
+          responses:
+            400:
+              $ref: '#/components/responses/400'
+            401:
+              $ref: '#/components/responses/401'
+            404:
+              $ref: '#/components/responses/404'
+            422:
+              $ref: '#/components/responses/422'
+            500:
+              $ref: '#/components/responses/500'
+
+The automatic OpenAPI spec generation also supports **Rison** arguments and their
+json schema spec. Since both are compatible we can reuse our Json schema spec on OpenAPI.
+First we need to register our spec, using ``apispec_parameter_schemas`` dictionary::
+
+
+    class ExampleApi(BaseApi):
+
+        resource_name = 'example'
+        apispec_parameter_schemas = {
+            "greeting_schema": greeting_schema
+        }
+
+
+FAB will register your schema on ``/components/parameters``, so you can now
+easily reference them::
+
+        @expose('/greeting4')
+        @rison(greeting_schema)
+        def greeting4(self, **kwargs):
+            """Get item from Model
+            ---
+            get:
+              parameters:
+              - $ref: '#/components/parameters/greeting_schema'
+              responses:
+                200:
+                  description: Greet the user
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          message:
+                            type: string
+            """
+            return self.response(
+                200,
+                message="Hello {}".format(kwargs['rison']['name'])
+            )
+
 
 Security
 --------
@@ -276,21 +418,34 @@ Next, let's see how to create a private method::
     from . import appbuilder
 
 
-    class MyFirstApi(BaseApi):
+    class ExampleApi(BaseApi):
 
         ...
         @expose('/private')
         @protect()
         def rison_json(self):
+            """Say it's risonjson
+            ---
+            get:
+              responses:
+                200:
+                  description: Say it's private
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                401:
+                  $ref: '#/components/responses/401'
+            """
             return self.response(200, message="This is private")
 
 
-    appbuilder.add_api(MyFirstApi)
+    appbuilder.add_api(ExampleApi)
 
 Accessing this method as expected will
 return an HTTP 401 not authorized code and message::
 
-    $ curl -v 'http://localhost:8080/api/v1/myfirstapi/private'
+    $ curl -v 'http://localhost:8080/api/v1/example/private'
     ...
     < HTTP/1.0 401 UNAUTHORIZED
     < Content-Type: application/json
@@ -340,7 +495,7 @@ Let's request our Token then::
 
 Next we can use our token on protected endpoints::
 
-    $ curl 'http://localhost:8080/api/v1/myfirstapi/private' -H "Authorization: Bearer $TOKEN"
+    $ curl 'http://localhost:8080/api/v1/example/private' -H "Authorization: Bearer $TOKEN"
     {
       "message": "This is private"
     }
@@ -348,7 +503,7 @@ Next we can use our token on protected endpoints::
 As always FAB created a new **can_private** permission
 on the DB and as associated it to the *Admin* Role.
 So the Admin role as a new permission on
-a view named "can private on MyFirstApi"
+a view named "can private on ExampleApi"
 Note that you can protect all your methods and make
 them public or not by adding them to the *Public* Role.
 
@@ -357,7 +512,7 @@ list property. This can be specially useful on ``ModelRestApi`` (up next)
 where we can restrict our Api resources to be read only, or only allow POST
 methods::
 
-    class MyFirstApi(BaseApi):
+    class ExampleApi(BaseApi):
         base_permissions = ['can_private']
 
 
@@ -374,12 +529,12 @@ user Model::
 Optionally you can enable signed cookie sessions (from flask-login) on the
 API. You can do it class or method wide::
 
-    class MyFirstApi(BaseApi):
+    class ExampleApi(BaseApi):
         allow_browser_login = True
 
 The previous example will enable cookie sessions on the all class::
 
-    class MyFirstApi(BaseApi):
+    class ExampleApi(BaseApi):
 
         @expose('/private')
         @protect(allow_browser_login=True)
@@ -394,6 +549,9 @@ Model REST API
 
 To automatically create a RESTfull CRUD Api from a database *Model*, use ``ModelRestApi`` class and
 define it almost like an MVC ``ModelView``. This class will expose the following REST endpoints
+
+:note:
+    Follow this example on Flask-AppBuilder project ./examples/crud_rest_api/
 
     .. cssclass:: table-bordered table-hover
 
@@ -414,8 +572,13 @@ define it almost like an MVC ``ModelView``. This class will expose the following
 +-----------------------------+-------------------------------------------------------+-----------------+--------+
 
 For each ``ModelRestApi`` you will get 5 CRUD endpoints and an extra information method.
+All created CRUD endpoints have their OpenAPI spec accessible on ``/api/<version>/_openapi``,
+each class is tagged so the CRUD endpoints get nicely grouped when using Swagger UI.
+Notice that ``ModelRestApi`` will generate a complete OpenAPI schema models for you data,
+so you can get free documentation for you API's.
 Let's dive into a simple example using the quickhowto.
-The quickhowto example as a Contact's Model and a Group Model, so each Contact belongs to a Group.
+The quickhowto example as a Contact's Model and a Group Model,
+so each Contact belongs to a Group.
 
 First let's define a CRUD REST Api for our Group model resource::
 
@@ -428,7 +591,7 @@ First let's define a CRUD REST Api for our Group model resource::
         resource_name = 'group'
         datamodel = SQLAInterface(ContactGroup)
 
-    appbuilder.add_api(MyFirstApi)
+    appbuilder.add_api(ExampleApi)
 
 Behind the scenes FAB uses marshmallow-sqlalchemy to infer the Model to a Marshmallow Schema,
 that can be safely serialized and deserialized. Let's recall our Model definition for ``ContactGroup``::
@@ -439,6 +602,11 @@ that can be safely serialized and deserialized. Let's recall our Model definitio
 
         def __repr__(self):
             return self.name
+
+Swagger UI API representation for groups:
+
+.. image:: ./images/swagger002.png
+    :width: 70%
 
 
 All endpoints are protected so we need to request a JWT and use it on our REST resource,
@@ -466,6 +634,7 @@ First let's create a Group::
         "name": "Friends"
       }
     }
+
 
 We got back a response with the model id and result with the inserted data.
 Now let's query our newly created Group::

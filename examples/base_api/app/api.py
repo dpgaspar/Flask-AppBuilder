@@ -13,9 +13,9 @@ greeting_schema = {
 }
 
 
-class MyFirstApi(BaseApi):
+class ExampleApi(BaseApi):
 
-    resource_name = 'myfirst'
+    resource_name = 'example'
     apispec_parameter_schemas = {
         "greeting_schema": greeting_schema
     }
@@ -151,4 +151,4 @@ class MyFirstApi(BaseApi):
         raise Exception
 
 
-appbuilder.add_api(MyFirstApi)
+appbuilder.add_api(ExampleApi)
