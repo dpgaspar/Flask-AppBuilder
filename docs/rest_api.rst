@@ -606,7 +606,7 @@ that can be safely serialized and deserialized. Let's recall our Model definitio
         def __repr__(self):
             return self.name
 
-Swagger UI API representation for groups:
+Swagger UI API representation for groups (http://localhost:8080/swaggerview/v1):
 
 .. image:: ./images/swagger002.png
     :width: 70%
