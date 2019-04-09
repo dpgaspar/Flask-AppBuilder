@@ -1324,6 +1324,18 @@ a simpler way of doing this using ``validators_columns`` property::
         validators_columns = {'name': validate_name}
 
 
+Pre and Post processing
+-----------------------
+
+``ModelRestApi`` offers several methods that you can override to perform pre processing or post processing
+on all HTTP methods. These methods are nice places to change data before submission or retrieval:
+
+.. automodule:: flask_appbuilder.api
+
+    .. autoclass:: ModelRestApi
+        :members: pre_get, pre_get_list, pre_update, post_update, pre_add, post_add, pre_delete, post_delete
+        :noindex:
+
 Enum Fields
 -----------
 

@@ -1170,6 +1170,7 @@ class ModelRestApi(BaseModelApi):
 
         _response['id'] = pk
         _response[API_RESULT_RES_KEY] = _show_model_schema.dump(item, many=False).data
+        self.pre_get(_response)
         return self.response(200, **_response)
 
     @expose('/', methods=['GET'])
@@ -1263,6 +1264,7 @@ class ModelRestApi(BaseModelApi):
         _response[API_RESULT_RES_KEY] = _list_model_schema.dump(lst, many=True).data
         _response['ids'] = pks
         _response['count'] = count
+        self.pre_get_list(_response)
         return self.response(200, **_response)
 
     @expose('/', methods=['POST'])
@@ -1574,21 +1576,13 @@ class ModelRestApi(BaseModelApi):
                 order_column, order_direction = '', ''
             if filter_rel_field:
                 filters = filters.add_filter_list(filter_rel_field)
-                count, values = datamodel.query(
-                    filters,
-                    order_column,
-                    order_direction,
-                    page=page,
-                    page_size=page_size,
-                )
-            else:
-                count, values = datamodel.query(
-                    filters,
-                    order_column,
-                    order_direction,
-                    page=page,
-                    page_size=page_size,
-                )
+            count, values = datamodel.query(
+                filters,
+                order_column,
+                order_direction,
+                page=page,
+                page_size=page_size,
+            )
             for value in values:
                 ret.append(
                     {
@@ -1621,11 +1615,6 @@ class ModelRestApi(BaseModelApi):
     def pre_update(self, item):
         """
             Override this, this method is called before the update takes place.
-            If an exception is raised by this method,
-            the message is shown to the user and the update operation is
-            aborted. Because of this behavior, it can be used as a way to
-            implement more complex logic around updates. For instance
-            allowing only the original creator of the object to update it.
         """
         pass
 
@@ -1638,8 +1627,6 @@ class ModelRestApi(BaseModelApi):
     def pre_add(self, item):
         """
             Override this, will be called before add.
-            If an exception is raised by this method,
-            the message is shown to the user and the add operation is aborted.
         """
         pass
 
@@ -1652,16 +1639,29 @@ class ModelRestApi(BaseModelApi):
     def pre_delete(self, item):
         """
             Override this, will be called before delete
-            If an exception is raised by this method,
-            the message is shown to the user and the delete operation is
-            aborted. Because of this behavior, it can be used as a way to
-            implement more complex logic around deletes. For instance
-            allowing only the original creator of the object to delete it.
         """
         pass
 
     def post_delete(self, item):
         """
             Override this, will be called after delete
+        """
+        pass
+
+    def pre_get(self, data):
+        """
+            Override this, will be called before data is sent
+            to the requester on get item endpoint.
+            You can use it to mutate the response sent.
+            Note that any new field added will not be reflected on the OpenApi spec.
+        """
+        pass
+
+    def pre_get_list(self, data):
+        """
+            Override this, will be called before data is sent
+            to the requester on get list endpoint.
+            You can use it to mutate the response sent
+            Note that any new field added will not be reflected on the OpenApi spec.
         """
         pass
