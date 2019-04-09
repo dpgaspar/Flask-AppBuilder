@@ -4,10 +4,10 @@ import logging
 import sqlalchemy as sa
 
 from . import filters
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, Load
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
-from sqlalchemy.orm.properties import SynonymProperty
+from sqlalchemy.orm.descriptor_props import SynonymProperty
 
 from ..base import BaseInterface
 from ..group import GroupByDateYear, GroupByDateMonth, GroupByCol
@@ -24,6 +24,7 @@ def _include_filters(obj):
     for key in filters.__all__:
         if not hasattr(obj, key):
             setattr(obj, key, getattr(filters, key))
+
 
 def _is_sqla_type(obj, sa_type):
     return isinstance(obj, sa_type) or \
@@ -62,7 +63,12 @@ class SQLAInterface(BaseInterface):
         """
         return self.obj.__name__
 
-    def _get_base_query(self, query=None, filters=None, order_column='', order_direction=''):
+    @staticmethod
+    def is_model_already_joinded(query, model):
+        return model in [mapper.class_ for mapper in query._join_entities]
+
+    def _get_base_query(self, query=None, filters=None,
+                        order_column='', order_direction=''):
         if filters:
             query = filters.apply_all(query)
         if order_column != '':
@@ -77,8 +83,34 @@ class SQLAInterface(BaseInterface):
                 query = query.order_by(self._get_attr(order_column).desc())
         return query
 
+    def _query_select_options(self, query, select_columns=None):
+        """
+            Add select load options to query. The goal
+            is to only SQL select what is requested
+
+        :param query: SQLAlchemy Query obj
+        :param select_columns: (list) of columns
+        :return: SQLAlchemy Query obj
+        """
+        if select_columns:
+            _load_options = list()
+            for column in select_columns:
+                if '.' in column:
+                    model_relation = self.get_related_model(column.split('.')[0])
+                    if not self.is_model_already_joinded(query, model_relation):
+                        query = query.join(model_relation)
+                    _load_options.append(Load(model_relation).load_only(column.split('.')[1]))
+                else:
+                    if (not self.is_relation(column) and
+                            not hasattr(getattr(self.obj, column), '__call__')):
+                        _load_options.append(Load(self.obj).load_only(column))
+                    else:
+                        _load_options.append(Load(self.obj))
+            query = query.options(*tuple(_load_options))
+        return query
+
     def query(self, filters=None, order_column='', order_direction='',
-              page=None, page_size=None):
+              page=None, page_size=None, select_columns=None):
         """
             QUERY
             :param filters:
@@ -94,11 +126,13 @@ class SQLAInterface(BaseInterface):
 
         """
         query = self.session.query(self.obj)
+        query = self._query_select_options(query, select_columns)
         if len(order_column.split('.')) >= 2:
             tmp_order_column = ''
             for join_relation in order_column.split('.')[:-1]:
                 model_relation = self.get_related_model(join_relation)
-                query = query.join(model_relation)
+                if not self.is_model_already_joinded(query, model_relation):
+                    query = query.join(model_relation)
                 # redefine order column name, because relationship can have a different name
                 # from the related table name.
                 tmp_order_column = tmp_order_column + model_relation.__tablename__ + '.'
@@ -118,7 +152,6 @@ class SQLAInterface(BaseInterface):
             query = query.offset(page * page_size)
         if page_size:
             query = query.limit(page_size)
-
         return count, query.all()
 
     def query_simple_group(self, group_by='', aggregate_func=None, aggregate_col=None, filters=None):
@@ -265,7 +298,7 @@ class SQLAInterface(BaseInterface):
 
     def is_unique(self, col_name):
         try:
-            return self.list_columns[col_name].unique
+            return self.list_columns[col_name].unique == True
         except:
             return False
 
@@ -302,7 +335,7 @@ class SQLAInterface(BaseInterface):
     -------------------------------
     """
 
-    def add(self, item):
+    def add(self, item, raise_exception=False):
         try:
             self.session.add(item)
             self.session.commit()
@@ -312,14 +345,18 @@ class SQLAInterface(BaseInterface):
             self.message = (as_unicode(self.add_integrity_error_message), 'warning')
             log.warning(LOGMSG_WAR_DBI_ADD_INTEGRITY.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
         except Exception as e:
             self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception(LOGMSG_ERR_DBI_ADD_GENERIC.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
 
-    def edit(self, item):
+    def edit(self, item, raise_exception=False):
         try:
             self.session.merge(item)
             self.session.commit()
@@ -329,14 +366,18 @@ class SQLAInterface(BaseInterface):
             self.message = (as_unicode(self.edit_integrity_error_message), 'warning')
             log.warning(LOGMSG_WAR_DBI_EDIT_INTEGRITY.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
         except Exception as e:
             self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception(LOGMSG_ERR_DBI_EDIT_GENERIC.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
 
-    def delete(self, item):
+    def delete(self, item, raise_exception=False):
         try:
             self._delete_files(item)
             self.session.delete(item)
@@ -347,11 +388,15 @@ class SQLAInterface(BaseInterface):
             self.message = (as_unicode(self.delete_integrity_error_message), 'warning')
             log.warning(LOGMSG_WAR_DBI_DEL_INTEGRITY.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
         except Exception as e:
             self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
             log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
 
     def delete_all(self, items):

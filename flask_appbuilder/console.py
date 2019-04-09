@@ -25,6 +25,7 @@ SQLA_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/m
 MONGOENGIE_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-me/archive/master.zip'
 ADDON_REPO_URL = 'https://github.com/dpgaspar/Flask-AppBuilder-Skeleton-AddOn/archive/master.zip'
 
+
 def import_application(app_package, appbuilder):
     sys.path.append(os.getcwd())
     try:
@@ -35,7 +36,7 @@ def import_application(app_package, appbuilder):
     if hasattr(_app, appbuilder):
         return getattr(_app, appbuilder)
     else:
-        click.echo(click.style('There in no appbuilder var on your package, you can use appbuilder parameter to config', fg='red'))
+        click.echo(click.style('There is no appbuilder var on your package, you can use appbuilder parameter to config', fg='red'))
         exit(3)
 
 

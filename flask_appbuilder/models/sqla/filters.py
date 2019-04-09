@@ -2,7 +2,7 @@ import logging
 import datetime
 from dateutil import parser
 from flask_babel import lazy_gettext
-from ..filters import BaseFilter, FilterRelation, BaseFilterConverter
+from ..filters import BaseFilter, FilterRelation, BaseFilterConverter, map_args_filter
 
 log = logging.getLogger(__name__)
 
@@ -11,6 +11,7 @@ __all__ = ['SQLAFilterConverter', 'FilterEqual', 'FilterNotStartsWith', 'FilterS
            'FilterNotEqual', 'FilterEndsWith', 'FilterEqualFunction', 'FilterGreater', 'FilterNotEndsWith',
            'FilterRelationManyToManyEqual', 'FilterRelationOneToManyEqual', 'FilterRelationOneToManyNotEqual',
            'FilterSmaller']
+
 
 def get_field_setup_query(query, model, column_name):
     """
@@ -58,6 +59,7 @@ def set_value_to_type(datamodel, column_name, value):
 
 class FilterStartsWith(BaseFilter):
     name = lazy_gettext('Starts with')
+    arg_name = 'sw'
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -66,6 +68,7 @@ class FilterStartsWith(BaseFilter):
 
 class FilterNotStartsWith(BaseFilter):
     name = lazy_gettext('Not Starts with')
+    arg_name = "nsw"
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -74,6 +77,7 @@ class FilterNotStartsWith(BaseFilter):
 
 class FilterEndsWith(BaseFilter):
     name = lazy_gettext('Ends with')
+    arg_name = "ew"
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -82,7 +86,8 @@ class FilterEndsWith(BaseFilter):
 
 class FilterNotEndsWith(BaseFilter):
     name = lazy_gettext('Not Ends with')
-
+    arg_name = 'new'
+ 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
         return query.filter(~field.like('%' + value))
@@ -90,6 +95,7 @@ class FilterNotEndsWith(BaseFilter):
 
 class FilterContains(BaseFilter):
     name = lazy_gettext('Contains')
+    arg_name = 'ct'
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -98,6 +104,7 @@ class FilterContains(BaseFilter):
 
 class FilterNotContains(BaseFilter):
     name = lazy_gettext('Not Contains')
+    arg_name = 'nct'
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -106,6 +113,7 @@ class FilterNotContains(BaseFilter):
 
 class FilterEqual(BaseFilter):
     name = lazy_gettext('Equal to')
+    arg_name = 'eq'
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -115,6 +123,7 @@ class FilterEqual(BaseFilter):
 
 class FilterNotEqual(BaseFilter):
     name = lazy_gettext('Not Equal to')
+    arg_name = 'neq'
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -124,6 +133,7 @@ class FilterNotEqual(BaseFilter):
 
 class FilterGreater(BaseFilter):
     name = lazy_gettext('Greater than')
+    arg_name = 'gt'
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -133,6 +143,7 @@ class FilterGreater(BaseFilter):
 
 class FilterSmaller(BaseFilter):
     name = lazy_gettext('Smaller than')
+    arg_name = 'lt'
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -142,6 +153,7 @@ class FilterSmaller(BaseFilter):
 
 class FilterRelationOneToManyEqual(FilterRelation):
     name = lazy_gettext('Relation')
+    arg_name = 'rel_o_m'
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -151,6 +163,7 @@ class FilterRelationOneToManyEqual(FilterRelation):
 
 class FilterRelationOneToManyNotEqual(FilterRelation):
     name = lazy_gettext('No Relation')
+    arg_name = 'nrel_o_m'
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -160,6 +173,7 @@ class FilterRelationOneToManyNotEqual(FilterRelation):
 
 class FilterRelationManyToManyEqual(FilterRelation):
     name = lazy_gettext('Relation as Many')
+    arg_name = 'rel_m_m'
 
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -169,6 +183,7 @@ class FilterRelationManyToManyEqual(FilterRelation):
 
 class FilterEqualFunction(BaseFilter):
     name = "Filter view with a function"
+    arg_name = 'eqf'
 
     def apply(self, query, func):
         query, field = get_field_setup_query(query, self.model, self.column_name)
@@ -177,6 +192,7 @@ class FilterEqualFunction(BaseFilter):
 
 class FilterInFunction(BaseFilter):
     name = "Filter view where field is in a list returned by a function"
+    arg_name = 'inf'
 
     def apply(self, query, func):
         query, field = get_field_setup_query(query, self.model, self.column_name)

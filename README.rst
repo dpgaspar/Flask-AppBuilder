@@ -97,6 +97,13 @@ Includes:
       - Related Select2 fields.
       - Google charts with automatic group by or direct values and filters.
       - AddOn system, write your own and contribute.
+  - CRUD REST API
+      - Automatic CRUD RESTful APIs.
+      - Internationalization
+      - Integration with flask-jwt-extended extension to protect your endpoints.
+      - Metadata for dynamic rendering.
+      - Selectable columns and metadata keys.
+      - Automatic and configurable data validation.
   - Forms
       - Automatic, Add, Edit and Show from Database Models
       - Labels and descriptions for each field.

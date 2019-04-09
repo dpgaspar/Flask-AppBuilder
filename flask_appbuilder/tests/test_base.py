@@ -5,34 +5,26 @@ import random
 import datetime
 import json
 import logging
-
-try:
-    import enum
-    _has_enum = True
-except ImportError:
-    _has_enum = False
-
 from nose.tools import eq_, ok_
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, Enum, DateTime
-from sqlalchemy.orm import relationship
 from flask import redirect, request, session
 import jinja2
 
 from flask_appbuilder import Model, SQLA
 from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqual
-from flask_appbuilder.models.mixins import FileColumn, ImageColumn
 from flask_appbuilder.views import MasterDetailView, CompactCRUDMixin
 from flask_appbuilder.charts.views import (ChartView, TimeChartView,
                                            DirectChartView, GroupByChartView,
                                            DirectByChartView)
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
-
 from flask_appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.generic import PSModel
+from .sqla.models import Model1, Model2, Model3, ModelWithEnums, TmpEnum
+
 
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 logging.getLogger().setLevel(logging.DEBUG)
+
 
 
 """
@@ -45,60 +37,10 @@ UNIQUE_VALIDATION_STRING = 'Already exists'
 NOTNULL_VALIDATION_STRING = 'This field is required'
 DEFAULT_ADMIN_USER = 'admin'
 DEFAULT_ADMIN_PASSWORD = 'general'
-REDIRECT_OBJ_ID = 99999
+REDIRECT_OBJ_ID = 1
 
 log = logging.getLogger(__name__)
 
-
-class Model1(Model):
-    id = Column(Integer, primary_key=True)
-    field_string = Column(String(50), unique=True, nullable=False)
-    field_integer = Column(Integer())
-    field_float = Column(Float())
-    field_date = Column(Date())
-    field_file = FileColumn()
-    field_image = ImageColumn()
-
-    def __repr__(self):
-        return str(self.field_string)
-
-
-class Model2(Model):
-    id = Column(Integer, primary_key=True)
-    field_string = Column(String(50), unique=True, nullable=False)
-    field_integer = Column(Integer())
-    field_float = Column(Float())
-    field_date = Column(Date())
-    excluded_string = Column(String(50), default='EXCLUDED')
-    default_string = Column(String(50), default='DEFAULT')
-    group_id = Column(Integer, ForeignKey('model1.id'), nullable=False)
-    group = relationship("Model1")
-
-    def __repr__(self):
-        return str(self.field_string)
-
-    def field_method(self):
-       return "field_method_value"
-
-class Model3(Model):
-    pk1 = Column(Integer(), primary_key=True)
-    pk2 = Column(DateTime(), primary_key=True)
-    field_string = Column(String(50), unique=True, nullable=False)
-
-    def __repr__(self):
-        return str(self.field_string)
-
-
-if _has_enum:
-    class TestEnum(enum.Enum):
-        e1 = 'a'
-        e2 = 2
-
-class ModelWithEnums(Model):
-    id = Column(Integer, primary_key=True)
-    enum1 = Column(Enum('e1', 'e2'))
-    if _has_enum:
-        enum2 = Column(Enum(TestEnum))
 
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):
@@ -114,6 +56,7 @@ class FlaskTestCase(unittest.TestCase):
         self.app.config['CSRF_ENABLED'] = False
         self.app.config['SECRET_KEY'] = 'thisismyscretkey'
         self.app.config['WTF_CSRF_ENABLED'] = False
+        self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -125,7 +68,6 @@ class FlaskTestCase(unittest.TestCase):
             base_permissions = ['can_list', 'can_show']
             list_columns = ['UID', 'C', 'CMD', 'TIME']
             search_columns = ['UID', 'C', 'CMD']
-
 
         class Model2View(ModelView):
             datamodel = SQLAInterface(Model2)
@@ -174,22 +116,18 @@ class FlaskTestCase(unittest.TestCase):
             datamodel = SQLAInterface(Model1)
             base_filters = [['field_string', FilterStartsWith, 'a']]
 
-
         class Model1MasterView(MasterDetailView):
             datamodel = SQLAInterface(Model1)
             related_views = [Model2View]
-
 
         class Model1Filtered2View(ModelView):
             datamodel = SQLAInterface(Model1)
             base_filters = [['field_integer', FilterEqual, 0]]
 
-
         class Model2ChartView(ChartView):
             datamodel = SQLAInterface(Model2)
             chart_title = 'Test Model1 Chart'
             group_by_columns = ['field_string']
-
 
         class Model2GroupByChartView(GroupByChartView):
             datamodel = SQLAInterface(Model2)
@@ -271,7 +209,14 @@ class FlaskTestCase(unittest.TestCase):
 
         self.appbuilder.add_view(PSView, "Generic DS PS View", category='PSView')
         role_admin = self.appbuilder.sm.find_role('Admin')
-        self.appbuilder.sm.add_user('admin','admin','user','admin@fab.org',role_admin,'general')
+        self.appbuilder.sm.add_user(
+            'admin',
+            'admin',
+            'user',
+            'admin@fab.org',
+            role_admin,
+            'general'
+        )
 
     def tearDown(self):
         self.appbuilder = None
@@ -326,7 +271,11 @@ class FlaskTestCase(unittest.TestCase):
                 self.db.session.rollback()
 
     def insert_data3(self):
-        model3 = Model3(pk1=3, pk2=datetime.datetime(2017, 3, 3), field_string='foo')
+        model3 = Model3(
+            pk1=3,
+            pk2=datetime.datetime(2017, 3, 3),
+            field_string='foo'
+        )
         try:
             self.db.session.add(model3)
             self.db.session.commit()
@@ -338,7 +287,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 32)  # current minimal views are 12
+        eq_(len(self.appbuilder.baseviews), 34)  # current minimal views are 34
 
     def test_back(self):
         """
@@ -435,14 +384,21 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 200)
 
         #Reset Password Admin
-        rv = client.get('/users/action/resetpasswords/1', follow_redirects=True)
+        rv = client.get(
+            '/users/action/resetpasswords/1',
+            follow_redirects=True
+        )
         data = rv.data.decode('utf-8')
         ok_("Reset Password Form" in data)
-        rv = client.post('/resetmypassword/form',
-                         data=dict(password=DEFAULT_ADMIN_PASSWORD, conf_password=DEFAULT_ADMIN_PASSWORD),
-                         follow_redirects=True)
+        rv = client.post(
+            '/resetmypassword/form',
+            data=dict(
+                password=DEFAULT_ADMIN_PASSWORD,
+                conf_password=DEFAULT_ADMIN_PASSWORD
+            ),
+            follow_redirects=True
+        )
         eq_(rv.status_code, 200)
-
 
     def test_generic_interface(self):
         """
@@ -452,7 +408,6 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         rv = client.get('/psview/list')
         data = rv.data.decode('utf-8')
-
 
     def test_model_crud(self):
         """
@@ -531,27 +486,21 @@ class FlaskTestCase(unittest.TestCase):
         client = self.app.test_client()
         rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
-        data = {'enum1': u'e1'}
-        if _has_enum:
-            data['enum2'] = 'e1'
+        data = {'enum1': u'e1', 'enum2': 'e1'}
         rv = client.post('/modelwithenumsview/add', data=data, follow_redirects=True)
         eq_(rv.status_code, 200)
 
         model = self.db.session.query(ModelWithEnums).first()
         eq_(model.enum1, u'e1')
-        if _has_enum:
-            eq_(model.enum2, TestEnum.e1)
+        eq_(model.enum2, TmpEnum.e1)
 
-        data = {'enum1': u'e2'}
-        if _has_enum:
-            data['enum2'] = 'e2'
+        data = {'enum1': u'e2', 'enum2': 'e2'}
         rv = client.post('/modelwithenumsview/edit/1', data=data, follow_redirects=True)
         eq_(rv.status_code, 200)
 
         model = self.db.session.query(ModelWithEnums).first()
         eq_(model.enum1, u'e2')
-        if _has_enum:
-            eq_(model.enum2, TestEnum.e2)
+        eq_(model.enum2, TmpEnum.e2)
 
         rv = client.get('/modelwithenumsview/delete/1', follow_redirects=True)
         eq_(rv.status_code, 200)

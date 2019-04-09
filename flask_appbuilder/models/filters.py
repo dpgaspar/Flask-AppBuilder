@@ -4,6 +4,9 @@ from .._compat import as_unicode
 
 log = logging.getLogger(__name__)
 
+map_args_filter = {}
+""" private map for arg_name and child Filter classes """
+
 
 class BaseFilter(object):
     """
@@ -18,6 +21,13 @@ class BaseFilter(object):
     """
         Sets this filter to a special kind for related views.
         If true this filter was not set by the user
+    """
+
+    arg_name = None
+    """ 
+        the request argument that represent the filter
+        child Filter classes should set it to enable
+        REST API use
     """
 
     def __init__(self, column_name, datamodel, is_related_view=False):
@@ -35,6 +45,8 @@ class BaseFilter(object):
         self.datamodel = datamodel
         self.model = datamodel.obj
         self.is_related_view = is_related_view
+        if self.arg_name:
+            map_args_filter[self.arg_name] = self.__class__
 
     def apply(self, query, value):
         """
@@ -108,12 +120,12 @@ class Filters(object):
             :param search_columns: restricts possible columns, accepts a list of column names
             :param datamodel: Accepts BaseInterface class
         """
-        search_columns = search_columns or []
+        self.search_columns = search_columns or []
         self.filter_converter = filter_converter
         self.datamodel = datamodel
         self.clear_filters()
-        if search_columns:
-            self._search_filters = self._get_filters(search_columns)
+        if self.search_columns:
+            self._search_filters = self._get_filters(self.search_columns)
             self._all_filters = self._get_filters(datamodel.get_columns_list())
 
     def get_search_filters(self):
@@ -137,6 +149,19 @@ class Filters(object):
 
     def add_filter_index(self, column_name, filter_instance_index, value):
         self._add_filter(self._all_filters[column_name][filter_instance_index], value)
+
+    def rest_add_filters(self, data):
+        """
+            Adds list of dicts
+        
+        :param data: list of dicts
+        :return:
+        """
+        for _filter in data:
+            filter_class = map_args_filter.get(_filter['opr'], None)
+            if filter_class:
+                self.add_filter(_filter['col'], filter_class,
+                                _filter['value'])
 
     def add_filter(self, column_name, filter_class, value):
         self._add_filter(filter_class(column_name, self.datamodel), value)
@@ -208,7 +233,7 @@ class Filters(object):
         return query
 
     def __repr__(self):
-        retstr = "FILTERS \n"
+        retstr = "FILTERS:"
         for flt, value in self.get_filters_values():
             retstr = retstr + "%s.%s:%s\n" % (flt.model.__table__, str(flt.column_name), str(value))
         return retstr
