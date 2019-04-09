@@ -21,7 +21,7 @@ Lots of `examples <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/exam
 Package Version
 ---------------
 
-*New 1.12.5*.
+*New 1.13.0*.
 
 BREAKING CHANGES relative to 1.12.0: we have bumped flask-login version, this causes breaking changes on the API relative to this package.
 

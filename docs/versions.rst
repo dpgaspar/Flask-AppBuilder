@@ -1,6 +1,11 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.13.0
+------------------------------------
+
+- New, CRUD RESTful API and custom API
+
 Improvements and Bug fixes on 1.12.5
 ------------------------------------
 
