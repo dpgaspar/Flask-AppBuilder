@@ -5,7 +5,7 @@ Flask App Builder
    :target: https://travis-ci.org/dpgaspar/Flask-AppBuilder
 .. image:: https://coveralls.io/repos/dpgaspar/Flask-AppBuilder/badge.png?branch=master
    :target: https://coveralls.io/r/dpgaspar/Flask-AppBuilder
-.. image:: https://img.shields.io/badge/pyversions-2.7%2C3.6-blue.svg
+.. image:: https://img.shields.io/badge/pyversions-3.6-blue.svg
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto CRUD generation for your models, google charts and much more.
