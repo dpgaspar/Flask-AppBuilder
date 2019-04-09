@@ -7,7 +7,7 @@ from . import filters
 from sqlalchemy.orm import joinedload, load_only, Load, joinedload_all
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
-from sqlalchemy.orm.properties import SynonymProperty
+from sqlalchemy.orm.descriptor_props import SynonymProperty
 
 from ..base import BaseInterface
 from ..group import GroupByDateYear, GroupByDateMonth, GroupByCol
@@ -63,6 +63,10 @@ class SQLAInterface(BaseInterface):
         """
         return self.obj.__name__
 
+    @staticmethod
+    def is_model_already_joinded(query, model):
+        return model in [mapper.class_ for mapper in query._join_entities]
+
     def _get_base_query(self, query=None, filters=None,
                         order_column='', order_direction=''):
         if filters:
@@ -93,7 +97,8 @@ class SQLAInterface(BaseInterface):
             for column in select_columns:
                 if '.' in column:
                     model_relation = self.get_related_model(column.split('.')[0])
-                    query = query.join(model_relation)
+                    if not self.is_model_already_joinded(query, model_relation):
+                        query = query.join(model_relation)
                     _load_options.append(Load(model_relation).load_only(column.split('.')[1]))
                 else:
                     if (not self.is_relation(column) and
@@ -126,7 +131,8 @@ class SQLAInterface(BaseInterface):
             tmp_order_column = ''
             for join_relation in order_column.split('.')[:-1]:
                 model_relation = self.get_related_model(join_relation)
-                query = query.join(model_relation)
+                if not self.is_model_already_joinded(query, model_relation):
+                    query = query.join(model_relation)
                 # redefine order column name, because relationship can have a different name
                 # from the related table name.
                 tmp_order_column = tmp_order_column + model_relation.__tablename__ + '.'

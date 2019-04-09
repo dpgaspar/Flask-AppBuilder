@@ -1417,7 +1417,7 @@ class ModelRestApi(BaseModelApi):
             arguments, sets defaults and impose
             FAB_API_MAX_PAGE_SIZE
 
-        :param args:
+        :param rison_args:
         :return: (tuple) page, page_size
         """
         page = rison_args.get(API_PAGE_INDEX_RIS_KEY, 0)

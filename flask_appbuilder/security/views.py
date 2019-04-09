@@ -23,47 +23,6 @@ from .decorators import has_access
 log = logging.getLogger(__name__)
 
 
-class SecurityApi(BaseApi):
-
-    route_base = '/api/v1/security'
-
-    @expose('/login', methods=['POST'])
-    @safe
-    def login(self):
-        """
-            Login endpoint for the API returns a JWT
-        :return:
-        """
-        if not request.is_json:
-            return self.response_400(message="Request payload is not JSON")
-        username = request.json.get('username', None)
-        password = request.json.get('password', None)
-        provider = request.json.get('provider', None)
-        if not username or not password or not provider:
-            return self.response_400(message="Missing required parameter")
-        # AUTH
-        if provider == 'db':
-            user = self.appbuilder.sm.auth_user_db(
-                username,
-                password
-            )
-        elif provider == 'ldap':
-            user = self.appbuilder.sm.auth_user_ldap(
-                username,
-                password
-            )
-        else:
-            return self.response_400(
-                message="Provider {} not supported".format(provider)
-            )
-        if not user:
-            return self.response_401()
-
-        # Identity can be any data that is json serializable
-        access_token = create_access_token(identity=user.id)
-        return self.response(200, access_token=access_token)
-
-
 class PermissionModelView(ModelView):
     route_base = '/permissions'
     base_permissions = ['can_list']
