@@ -1,10 +1,10 @@
-from flask import current_app
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
-from flask_appbuilder.baseviews import BaseView
+from flask import current_app
 from flask_appbuilder.api import BaseApi
-from flask_appbuilder.api import expose, safe, protect
+from flask_appbuilder.api import expose, protect, safe
 from flask_appbuilder.basemanager import BaseManager
+from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.security.decorators import has_access
 
 

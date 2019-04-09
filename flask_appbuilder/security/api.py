@@ -1,25 +1,29 @@
 from flask import request
-from flask_jwt_extended import create_access_token, create_refresh_token, \
-    jwt_refresh_token_required, get_jwt_identity
-from flask_babel import lazy_gettext
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    get_jwt_identity,
+    jwt_refresh_token_required,
+)
+
+from ..api import BaseApi, safe
 from ..const import (
-    API_SECURITY_VERSION,
-    API_SECURITY_PROVIDER_DB,
-    API_SECURITY_PROVIDER_LDAP,
-    API_SECURITY_USERNAME_KEY,
-    API_SECURITY_PASSWORD_KEY,
-    API_SECURITY_PROVIDER_KEY,
-    API_SECURITY_REFRESH_KEY,
     API_SECURITY_ACCESS_TOKEN_KEY,
-    API_SECURITY_REFRESH_TOKEN_KEY
+    API_SECURITY_PASSWORD_KEY,
+    API_SECURITY_PROVIDER_DB,
+    API_SECURITY_PROVIDER_KEY,
+    API_SECURITY_PROVIDER_LDAP,
+    API_SECURITY_REFRESH_KEY,
+    API_SECURITY_REFRESH_TOKEN_KEY,
+    API_SECURITY_USERNAME_KEY,
+    API_SECURITY_VERSION,
 )
 from ..views import expose
-from ..api import BaseApi, ModelRestApi, safe
 
 
 class SecurityApi(BaseApi):
 
-    resource_name = 'security'
+    resource_name = "security"
     version = API_SECURITY_VERSION
 
     def add_apispec_components(self, api_spec):
@@ -27,7 +31,7 @@ class SecurityApi(BaseApi):
         jwt_scheme = {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
         api_spec.components.security_scheme("jwt", jwt_scheme)
 
-    @expose('/login', methods=['POST'])
+    @expose("/login", methods=["POST"])
     @safe
     def login(self):
         """Login endpoint for the API returns a JWT and optionally a refresh token
@@ -80,15 +84,9 @@ class SecurityApi(BaseApi):
             return self.response_400(message="Missing required parameter")
         # AUTH
         if provider == API_SECURITY_PROVIDER_DB:
-            user = self.appbuilder.sm.auth_user_db(
-                username,
-                password
-            )
+            user = self.appbuilder.sm.auth_user_db(username, password)
         elif provider == API_SECURITY_PROVIDER_LDAP:
-            user = self.appbuilder.sm.auth_user_ldap(
-                username,
-                password
-            )
+            user = self.appbuilder.sm.auth_user_ldap(username, password)
         else:
             return self.response_400(
                 message="Provider {} not supported".format(provider)
@@ -98,14 +96,16 @@ class SecurityApi(BaseApi):
 
         # Identity can be any data that is json serializable
         resp = dict()
-        resp[API_SECURITY_ACCESS_TOKEN_KEY] = \
-            create_access_token(identity=user.id, fresh=True)
+        resp[API_SECURITY_ACCESS_TOKEN_KEY] = create_access_token(
+            identity=user.id, fresh=True
+        )
         if refresh:
-            resp[API_SECURITY_REFRESH_TOKEN_KEY] = \
-                create_refresh_token(identity=user.id)
+            resp[API_SECURITY_REFRESH_TOKEN_KEY] = create_refresh_token(
+                identity=user.id
+            )
         return self.response(200, **resp)
 
-    @expose('/refresh', methods=['POST'])
+    @expose("/refresh", methods=["POST"])
     @jwt_refresh_token_required
     @safe
     def refresh(self):
