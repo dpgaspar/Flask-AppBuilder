@@ -1080,6 +1080,17 @@ this takes precedence over *Rison* arguments::
         datamodel = SQLAInterface(Contact)
         list_columns = ['name', 'address']
 
+FAB supports dotted notation (one level on GET methods only) so you can control what columns get
+rendered on related nested columns this applies with order by fields::
+
+    class ContactModelApi(ModelRestApi):
+        resource_name = 'contact'
+        datamodel = SQLAInterface(Contact)
+        list_columns = ['name', 'address', 'contact_group.name']
+
+By default related columns on this case ``contact_group`` will create a nested
+complete sub schema (on our example will return {"contact_group": {"name", "id"}}.
+
 For ordering the results, the following will order contacts by name descending Z..A::
 
     (order_column:name,order_direction:desc)
