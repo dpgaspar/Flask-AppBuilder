@@ -1,11 +1,14 @@
 import datetime
-import logging
 from functools import reduce
+import logging
+
 from flask_babel import lazy_gettext
+
 from .filters import Filters
 
 try:
     import enum
+
     _has_enum = True
 except ImportError:
     _has_enum = False
@@ -18,19 +21,26 @@ class BaseInterface(object):
         Base class for all data model interfaces.
         Sub class it to implement your own interface for some data engine.
     """
+
     obj = None
 
     filter_converter_class = None
     """ when sub classing override with your own custom filter converter """
 
     """ Messages to display on CRUD Events """
-    add_row_message = lazy_gettext('Added Row')
-    edit_row_message = lazy_gettext('Changed Row')
-    delete_row_message = lazy_gettext('Deleted Row')
-    delete_integrity_error_message = lazy_gettext('Associated data exists, please delete them first')
-    add_integrity_error_message = lazy_gettext('Integrity error, probably unique constraint')
-    edit_integrity_error_message = lazy_gettext('Integrity error, probably unique constraint')
-    general_error_message = lazy_gettext('General Error')
+    add_row_message = lazy_gettext("Added Row")
+    edit_row_message = lazy_gettext("Changed Row")
+    delete_row_message = lazy_gettext("Deleted Row")
+    delete_integrity_error_message = lazy_gettext(
+        "Associated data exists, please delete them first"
+    )
+    add_integrity_error_message = lazy_gettext(
+        "Integrity error, probably unique constraint"
+    )
+    edit_integrity_error_message = lazy_gettext(
+        "Integrity error, probably unique constraint"
+    )
+    general_error_message = lazy_gettext("General Error")
 
     """ Tuple with message and text with severity type ex: ("Added Row", "info") """
     message = ()
@@ -43,13 +53,13 @@ class BaseInterface(object):
             # it's an inner obj attr
             try:
                 _obj = self.obj
-                for i in col_name.split('.'):
+                for i in col_name.split("."):
                     try:
                         _obj = self.get_related_model(i)
-                    except Exception as e:
+                    except Exception:
                         _obj = getattr(_obj, i)
                 return _obj
-            except Exception as e:
+            except Exception:
                 return None
         return getattr(self.obj, col_name)
 
@@ -58,10 +68,10 @@ class BaseInterface(object):
         if not hasattr(item, col):
             # it's an inner obj attr
             try:
-                return reduce(getattr, col.split('.'), item)
-            except Exception as e:
-                return ''
-        if hasattr(getattr(item, col), '__call__'):
+                return reduce(getattr, col.split("."), item)
+            except Exception:
+                return ""
+        if hasattr(getattr(item, col), "__call__"):
             # its a function
             return getattr(item, col)()
         else:
@@ -121,7 +131,9 @@ class BaseInterface(object):
         result = []
         for item in self.get_values(lst, list_columns):
             for key, value in list(item.items()):
-                if isinstance(value, datetime.datetime) or isinstance(value, datetime.date):
+                if isinstance(value, datetime.datetime) or isinstance(
+                    value, datetime.date
+                ):
                     value = value.isoformat()
                     item[key] = value
                 if isinstance(value, list):
@@ -133,6 +145,7 @@ class BaseInterface(object):
         Returns the models class name
         useful for auto title on views
     """
+
     @property
     def model_name(self):
         return self.obj.__class__.__name__
@@ -140,8 +153,15 @@ class BaseInterface(object):
     """
         Next methods must be overridden
     """
-    def query(self, filters=None, order_column='', order_direction='',
-              page=None, page_size=None):
+
+    def query(
+        self,
+        filters=None,
+        order_column="",
+        order_direction="",
+        page=None,
+        page_size=None,
+    ):
         pass
 
     def is_image(self, col_name):
@@ -327,6 +347,3 @@ class BaseInterface(object):
 
     def get_relation_fk(self, prop):
         pass
-
-
-

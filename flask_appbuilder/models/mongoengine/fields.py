@@ -1,6 +1,7 @@
-from wtforms import fields
-from ...upload import BS3FileUploadFieldWidget, BS3ImageUploadFieldWidget
 from werkzeug.datastructures import FileStorage
+from wtforms import fields
+
+from ...upload import BS3FileUploadFieldWidget, BS3ImageUploadFieldWidget
 
 try:
     from wtforms.fields.core import _unset_value as unset_value
@@ -19,6 +20,7 @@ class MongoFileField(fields.FileField):
     """
         GridFS file field.
     """
+
     widget = BS3FileUploadFieldWidget()
 
     def __init__(self, label=None, validators=None, **kwargs):
@@ -28,7 +30,7 @@ class MongoFileField(fields.FileField):
 
     def process(self, formdata, data=unset_value):
         if formdata:
-            marker = '_%s-delete' % self.name
+            marker = "_%s-delete" % self.name
             if marker in formdata:
                 self._should_delete = True
 
@@ -48,13 +50,16 @@ class MongoFileField(fields.FileField):
                 else:
                     func = field.replace
 
-                func(self.data.stream,
-                     filename=self.data.filename,
-                     content_type=self.data.content_type)
+                func(
+                    self.data.stream,
+                    filename=self.data.filename,
+                    content_type=self.data.content_type,
+                )
 
 
 class MongoImageField(MongoFileField):
     """
         GridFS file field.
     """
+
     widget = BS3ImageUploadFieldWidget()
