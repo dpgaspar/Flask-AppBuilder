@@ -1,8 +1,10 @@
 import os
-from flask import session, has_request_context
+
+from flask import has_request_context, request, session
 from flask_babel import Babel
-from ..basemanager import BaseManager
+
 from .views import LocaleView
+from ..basemanager import BaseManager
 
 
 class BabelManager(BaseManager):
@@ -13,15 +15,23 @@ class BabelManager(BaseManager):
     def __init__(self, appbuilder):
         super(BabelManager, self).__init__(appbuilder)
         app = appbuilder.get_app
-        app.config.setdefault('BABEL_DEFAULT_LOCALE', 'en')
-        appbuilder_parent_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
-        appbuilder_translations_path = os.path.join(appbuilder_parent_dir, 'translations')
-        if 'BABEL_TRANSLATION_DIRECTORIES' in app.config:
-            current_translation_directories = app.config.get('BABEL_TRANSLATION_DIRECTORIES')
-            translations_path = appbuilder_translations_path + ';' + current_translation_directories
+        app.config.setdefault("BABEL_DEFAULT_LOCALE", "en")
+        appbuilder_parent_dir = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), os.pardir
+        )
+        appbuilder_translations_path = os.path.join(
+            appbuilder_parent_dir, "translations"
+        )
+        if "BABEL_TRANSLATION_DIRECTORIES" in app.config:
+            current_translation_directories = app.config.get(
+                "BABEL_TRANSLATION_DIRECTORIES"
+            )
+            translations_path = (
+                appbuilder_translations_path + ";" + current_translation_directories
+            )
         else:
-            translations_path = appbuilder_translations_path + ';translations'
-        app.config['BABEL_TRANSLATION_DIRECTORIES'] = translations_path
+            translations_path = appbuilder_translations_path + ";translations"
+        app.config["BABEL_TRANSLATION_DIRECTORIES"] = translations_path
         self.babel = Babel(app)
         self.babel.locale_selector_func = self.get_locale
 
@@ -31,13 +41,16 @@ class BabelManager(BaseManager):
 
     @property
     def babel_default_locale(self):
-        return self.appbuilder.get_app.config['BABEL_DEFAULT_LOCALE']
+        return self.appbuilder.get_app.config["BABEL_DEFAULT_LOCALE"]
 
     def get_locale(self):
         if has_request_context():
-            locale = session.get('locale')
+            # locale selector for API searches for request args
+            for arg, value in request.args.items():
+                if arg == "_l_":
+                    return value
+            locale = session.get("locale")
             if locale:
                 return locale
-            session['locale'] = self.babel_default_locale
-            return session['locale']
-
+            session["locale"] = self.babel_default_locale
+            return session["locale"]

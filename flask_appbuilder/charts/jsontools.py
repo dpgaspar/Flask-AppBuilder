@@ -1,5 +1,7 @@
 import datetime
+
 from flask_appbuilder._compat import as_unicode
+
 
 def dict_to_json(xcol, ycols, labels, value_columns):
     """

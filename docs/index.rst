@@ -35,6 +35,7 @@ Contents:
 
    views
    quickhowto
+   rest_api
    quickhowto_mongo
    quickcharts
    quickfiles
@@ -69,7 +70,6 @@ Contents:
    diagrams
    api
    versionmigration
-   versions
 
 
 Indices and tables

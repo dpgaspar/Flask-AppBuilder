@@ -144,11 +144,11 @@ Let's define it::
         show_fieldsets = [
                             (
                                 'Summary',
-                                {'fields':['name','address','contact_group']}
+                                {'fields': ['name', 'address', 'contact_group']}
                             ),
                             (
                                 'Personal Info',
-                                {'fields':['birthday','personal_phone','personal_cellphone'],'expanded':False}
+                                {'fields': ['birthday', 'personal_phone', 'personal_cellphone'], 'expanded': False}
                             ),
                          ]
 
@@ -194,20 +194,22 @@ take a look at the `widgets <https://github.com/dpgaspar/Flask-AppBuilder/tree/m
 Register (views.py)
 -------------------
 
-Register everything, to present the models and create the menu. Issue **create_all** to create your models also.
-
-::
+Register everything, to present the models and create the menu. Issue **create_all** to create your models also.::
 
         db.create_all()
-        appbuilder.add_view(GroupModelView,
-                            "List Groups",
-                            icon = "fa-folder-open-o",
-                            category = "Contacts",
-                            category_icon = "fa-envelope")
-        appbuilder.add_view(ContactModelView,
-                            "List Contacts",
-                            icon = "fa-envelope",
-                            category = "Contacts")
+        appbuilder.add_view(
+            GroupModelView,
+            "List Groups",
+            icon = "fa-folder-open-o",
+            category = "Contacts",
+            category_icon = "fa-envelope"
+        )
+        appbuilder.add_view(
+            ContactModelView,
+            "List Contacts",
+            icon = "fa-envelope",
+            category = "Contacts"
+        )
 
 Take a look at the :doc:`api` for add_view method.
 
@@ -283,6 +285,10 @@ in case of success or errors. See the following table for a description of each 
 
 REST API
 --------
+
+note:
+    This sort of automatic REST API is going to be deprecated, and will
+    be completely removed in 2 minors.
 
 This API is still BETA and will be subject to change. In the future F.A.B. will probably use AngularJS
 to display the UI interface using AJAX.
@@ -382,10 +388,12 @@ Then define your View::
 
 Then register the view with a menu::
 
-    appbuilder.add_view(MultipleViewsExp,
-                        "Multiple Views",
-                        icon="fa-envelope",
-                        category="Contacts")
+    appbuilder.add_view(
+        MultipleViewsExp,
+        "Multiple Views",
+        icon="fa-envelope",
+        category="Contacts"
+    )
 
 You can render as many views on the same page as you want, this includes Chart type views also,
 take a look at :doc:`quickcharts` to learn about Chart views.

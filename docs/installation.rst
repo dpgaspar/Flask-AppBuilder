@@ -134,4 +134,5 @@ or::
 Python 2 and 3 Compatibility
 ----------------------------
 
-The framework itself is compatible and has been tested for Python 2.7 and 3.6.
+The framework removed support for python 2 since version 1.13.X
+
