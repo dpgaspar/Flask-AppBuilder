@@ -70,7 +70,6 @@ Contents:
    diagrams
    api
    versionmigration
-   versions
 
 
 Indices and tables

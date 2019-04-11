@@ -3,6 +3,7 @@ import logging
 
 from flask import Blueprint, current_app, url_for
 
+from . import __version__
 from .api.manager import OpenApiManager
 from .babel.manager import BabelManager
 from .const import (
@@ -16,7 +17,6 @@ from .const import (
 )
 from .filters import TemplateFilters
 from .menu import Menu
-from .version import VERSION_STRING
 from .views import IndexView, UtilView
 
 log = logging.getLogger(__name__)
@@ -250,7 +250,7 @@ class AppBuilder(object):
 
             :return: String with the current F.A.B. version
         """
-        return VERSION_STRING
+        return __version__
 
     def _add_global_filters(self):
         self.template_filters = TemplateFilters(self.get_app, self.sm)
@@ -284,7 +284,7 @@ class AppBuilder(object):
         for addon in self._addon_managers:
             addon_class = dynamic_class_import(addon)
             if addon_class:
-                # Intantiate manager with appbuilder (self)
+                # Instantiate manager with appbuilder (self)
                 addon_class = addon_class(self)
                 try:
                     addon_class.pre_process()
@@ -308,7 +308,7 @@ class AppBuilder(object):
             for category in self.menu.get_list():
                 self._add_permissions_menu(category.name)
                 for item in category.childs:
-                    # dont add permission for menu separator
+                    # don't add permission for menu separator
                     if item.name != "-":
                         self._add_permissions_menu(item.name)
 
