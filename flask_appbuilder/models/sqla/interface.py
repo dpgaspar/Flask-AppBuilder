@@ -150,7 +150,8 @@ class SQLAInterface(BaseInterface):
         query = self._query_select_options(query, select_columns)
         if len(order_column.split('.')) >= 2:
             for join_relation in order_column.split('.')[:-1]:
-                model_relation, relation_join = self.get_related_model_and_join(join_relation)
+                relation_tuple = self.get_related_model_and_join(join_relation)
+                model_relation, relation_join = relation_tuple
                 if not self.is_model_already_joinded(query, model_relation):
                     query = query.join(model_relation, relation_join, isouter=True)
         query_count = self.session.query(func.count('*')).select_from(self.obj)
