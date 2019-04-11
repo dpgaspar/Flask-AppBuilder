@@ -108,7 +108,6 @@ class AppBuilder(object):
         static_folder="static/appbuilder",
         static_url_path="/appbuilder",
         security_manager_class=None,
-        update_perms=True,
     ):
         """
             AppBuilder constructor
@@ -139,8 +138,8 @@ class AppBuilder(object):
         self.indexview = indexview or IndexView
         self.static_folder = static_folder
         self.static_url_path = static_url_path
-        self.update_perms = update_perms
         self.app = app
+        self.update_perms = False
 
         if app is not None:
             self.init_app(app, session)
@@ -159,10 +158,12 @@ class AppBuilder(object):
         app.config.setdefault("LANGUAGES", {"en": {"flag": "gb", "name": "English"}})
         app.config.setdefault("ADDON_MANAGERS", [])
         app.config.setdefault("FAB_API_MAX_PAGE_SIZE", 20)
+        self.update_perms = app.config.get('FAB_UPDATE_PERMS', False)
+        self.security_manager_class = app.config.get('FAB_SECURITY_MANAGER_CLASS', None)
         if self.security_manager_class is None:
             from flask_appbuilder.security.sqla.manager import SecurityManager
-
             self.security_manager_class = SecurityManager
+
         self._addon_managers = app.config["ADDON_MANAGERS"]
         self.session = session
         self.sm = self.security_manager_class(self)
