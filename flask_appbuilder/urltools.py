@@ -1,4 +1,5 @@
 import re
+
 from flask import request
 
 
@@ -7,6 +8,7 @@ class Stack(object):
         Stack data structure will not insert
         equal sequential data
     """
+
     def __init__(self, list=None, size=5):
         self.size = size
         self.data = list or []
@@ -33,8 +35,9 @@ def get_group_by_args():
     """
         Get page arguments for group by
     """
-    group_by = request.args.get('group_by')
-    if not group_by: group_by = ''
+    group_by = request.args.get("group_by")
+    if not group_by:
+        group_by = ""
     return group_by
 
 
@@ -48,7 +51,7 @@ def get_page_args():
     """
     pages = {}
     for arg in request.args:
-        re_match = re.findall('page_(.*)', arg)
+        re_match = re.findall("page_(.*)", arg)
         if re_match:
             pages[re_match[0]] = int(request.args.get(arg))
     return pages
@@ -64,7 +67,7 @@ def get_page_size_args():
     """
     page_sizes = {}
     for arg in request.args:
-        re_match = re.findall('psize_(.*)', arg)
+        re_match = re.findall("psize_(.*)", arg)
         if re_match:
             page_sizes[re_match[0]] = int(request.args.get(arg))
     return page_sizes
@@ -80,10 +83,10 @@ def get_order_args():
     """
     orders = {}
     for arg in request.args:
-        re_match = re.findall('_oc_(.*)', arg)
+        re_match = re.findall("_oc_(.*)", arg)
         if re_match:
-            order_direction = request.args.get('_od_' + re_match[0])
-            if order_direction in ('asc', 'desc'):
+            order_direction = request.args.get("_od_" + re_match[0])
+            if order_direction in ("asc", "desc"):
                 orders[re_match[0]] = (request.args.get(arg), order_direction)
     return orders
 
@@ -91,6 +94,8 @@ def get_order_args():
 def get_filter_args(filters):
     filters.clear_filters()
     for arg in request.args:
-        re_match = re.findall('_flt_(\d)_(.*)', arg)
+        re_match = re.findall("_flt_(\d)_(.*)", arg)
         if re_match:
-            filters.add_filter_index(re_match[0][1], int(re_match[0][0]), request.args.get(arg))
+            filters.add_filter_index(
+                re_match[0][1], int(re_match[0][0]), request.args.get(arg)
+            )

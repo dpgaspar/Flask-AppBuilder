@@ -1,5 +1,29 @@
-Versions
-========
+Flask-AppBuilder ChangeLog
+==========================
+
+Improvements and Bug fixes on 1.13.0
+------------------------------------
+
+- New, CRUD RESTful API and custom API
+
+Improvements and Bug fixes on 1.12.5
+------------------------------------
+
+- Fix, #928 Copy role modal not showing
+
+Improvements and Bug fixes on 1.12.4
+------------------------------------
+
+- Fix, #911 fabmanager missing session rollback() when user add fails
+- Fix, #910 Next page on OAuth
+
+Improvements and Bug fixes on 1.12.3
+------------------------------------
+
+- Fix, #762 Instantiate AdminActions only after DOM finishes loading
+- New, #883 Changed templates so that is possible to use Jinja2 StrictUndefined
+- Fix, #891 Missing import reduce python3 compatibility
+- Fix, #862 fabmanager appbuilder parameter is now working
 
 Improvements and Bug fixes on 1.12.2
 ------------------------------------
@@ -220,7 +244,7 @@ Improvements and Bug fixes on 1.4.4
 -----------------------------------
 
 - Fix, #188 but fix created a display bug on empty queries with related views.
-- Fix, #186 LDAP configuration - Invalid DN syntax on OpenLDAP. Introduced AUTH_LDAP_BIND_USER and AUTH_LDAP_BIND_PASSWORD 
+- Fix, #186 LDAP configuration - Invalid DN syntax on OpenLDAP. Introduced AUTH_LDAP_BIND_USER and AUTH_LDAP_BIND_PASSWORD
 - New, decorator for mapping custom Model property to real db property, supports sorting on custom properties. @renders.
 - New, various new filters for generic models. #193.
 
@@ -705,7 +729,7 @@ Improvements and Bug fixes on 0.6.2
 - New, compact view with add and edit on the same page has lists. Use of CompactCRUDMixin Mixin.
 - Break, GeneralView (BaseCRUDView) related_views attr, must be filled with classes intead of instances.
 - Fix, removed Flask-SQlAlchemy version constraint.
-- Fix, TimeChartView resolved error with null dates. 
+- Fix, TimeChartView resolved error with null dates.
 - Fix, registering related_views with instances will raise proper error.
 - Fix, filter not supported with report a warning not an error.
 - Fix, ImageColumn and FileColumn was being included has a possible filter.

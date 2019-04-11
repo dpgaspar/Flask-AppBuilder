@@ -4,11 +4,12 @@ import uuid
 from sqlalchemy import func
 from sqlalchemy.engine.reflection import Inspector
 from werkzeug.security import generate_password_hash
-from .models import User, Permission, PermissionView, RegisterUser, ViewMenu, Role
+
+from .models import Permission, PermissionView, RegisterUser, Role, User, ViewMenu
 from ..manager import BaseSecurityManager
-from ...models.sqla.interface import SQLAInterface
-from ...models.sqla import Base
 from ... import const as c
+from ...models.sqla import Base
+from ...models.sqla.interface import SQLAInterface
 
 log = logging.getLogger(__name__)
 
@@ -21,6 +22,7 @@ class SecurityManager(BaseSecurityManager):
         If you want to change anything just inherit and override, then
         pass your own security manager to AppBuilder.
     """
+
     user_model = User
     """ Override to set your own User Model """
     role_model = Role
@@ -51,12 +53,16 @@ class SecurityManager(BaseSecurityManager):
 
         self.userstatschartview.datamodel = user_datamodel
         if self.auth_user_registration:
-            self.registerusermodelview.datamodel = SQLAInterface(self.registeruser_model)
+            self.registerusermodelview.datamodel = SQLAInterface(
+                self.registeruser_model
+            )
 
         self.rolemodelview.datamodel = SQLAInterface(self.role_model)
         self.permissionmodelview.datamodel = SQLAInterface(self.permission_model)
         self.viewmenumodelview.datamodel = SQLAInterface(self.viewmenu_model)
-        self.permissionviewmodelview.datamodel = SQLAInterface(self.permissionview_model)
+        self.permissionviewmodelview.datamodel = SQLAInterface(
+            self.permissionview_model
+        )
         self.create_db()
 
     @property
@@ -70,7 +76,7 @@ class SecurityManager(BaseSecurityManager):
         try:
             engine = self.get_session.get_bind(mapper=None, clause=None)
             inspector = Inspector.from_engine(engine)
-            if 'ab_user' not in inspector.get_table_names():
+            if "ab_user" not in inspector.get_table_names():
                 log.info(c.LOGMSG_INF_SEC_NO_DB)
                 Base.metadata.create_all(engine)
                 log.info(c.LOGMSG_INF_SEC_ADD_DB)
@@ -80,11 +86,15 @@ class SecurityManager(BaseSecurityManager):
             exit(1)
 
     def find_register_user(self, registration_hash):
-        return self.get_session.query(self.registeruser_model).filter(
-            self.registeruser_model.registration_hash == registration_hash).scalar()
+        return (
+            self.get_session.query(self.registeruser_model)
+            .filter(self.registeruser_model.registration_hash == registration_hash)
+            .scalar()
+        )
 
-    def add_register_user(self, username, first_name, last_name, email,
-                         password='', hashed_password=''):
+    def add_register_user(
+        self, username, first_name, last_name, email, password="", hashed_password=""
+    ):
         """
             Add a registration request for the user.
 
@@ -129,14 +139,29 @@ class SecurityManager(BaseSecurityManager):
             Finds user by username or email
         """
         if username:
-            return self.get_session.query(self.user_model).filter(func.lower(self.user_model.username) == func.lower(username)).first()
+            return (
+                self.get_session.query(self.user_model)
+                .filter(func.lower(self.user_model.username) == func.lower(username))
+                .first()
+            )
         elif email:
-            return self.get_session.query(self.user_model).filter_by(email=email).first()
+            return (
+                self.get_session.query(self.user_model).filter_by(email=email).first()
+            )
 
     def get_all_users(self):
         return self.get_session.query(self.user_model).all()
 
-    def add_user(self, username, first_name, last_name, email, role, password='', hashed_password=''):
+    def add_user(
+        self,
+        username,
+        first_name,
+        last_name,
+        email,
+        role,
+        password="",
+        hashed_password="",
+    ):
         """
             Generic function to create user
         """
@@ -158,10 +183,15 @@ class SecurityManager(BaseSecurityManager):
             return user
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_ADD_USER.format(str(e)))
+            self.get_session.rollback()
             return False
 
     def count_users(self):
-        return self.get_session.query(func.count('*')).select_from(self.user_model).scalar()
+        return (
+            self.get_session.query(func.count("*"))
+            .select_from(self.user_model)
+            .scalar()
+        )
 
     def update_user(self, user):
         try:
@@ -181,6 +211,7 @@ class SecurityManager(BaseSecurityManager):
      PERMISSION MANAGEMENT
     -----------------------
     """
+
     def add_role(self, name):
         role = self.find_role(name)
         if role is None:
@@ -203,14 +234,20 @@ class SecurityManager(BaseSecurityManager):
         return self.get_session.query(self.role_model).all()
 
     def get_public_permissions(self):
-        role = self.get_session.query(self.role_model).filter_by(name=self.auth_role_public).first()
+        role = (
+            self.get_session.query(self.role_model)
+            .filter_by(name=self.auth_role_public)
+            .first()
+        )
         return role.permissions
 
     def find_permission(self, name):
         """
             Finds and returns a Permission by name
         """
-        return self.get_session.query(self.permission_model).filter_by(name=name).first()
+        return (
+            self.get_session.query(self.permission_model).filter_by(name=name).first()
+        )
 
     def add_permission(self, name):
         """
@@ -253,6 +290,7 @@ class SecurityManager(BaseSecurityManager):
      PRIMITIVES VIEW MENU
     ----------------------
     """
+
     def find_view_menu(self, name):
         """
             Finds and returns a ViewMenu by name
@@ -302,13 +340,18 @@ class SecurityManager(BaseSecurityManager):
      PERMISSION VIEW MENU
     ----------------------
     """
+
     def find_permission_view_menu(self, permission_name, view_menu_name):
         """
             Finds and returns a PermissionView by names
         """
         permission = self.find_permission(permission_name)
         view_menu = self.find_view_menu(view_menu_name)
-        return self.get_session.query(self.permissionview_model).filter_by(permission=permission, view_menu=view_menu).first()
+        return (
+            self.get_session.query(self.permissionview_model)
+            .filter_by(permission=permission, view_menu=view_menu)
+            .first()
+        )
 
     def find_permissions_view_menu(self, view_menu):
         """
@@ -317,7 +360,11 @@ class SecurityManager(BaseSecurityManager):
             :param view_menu: ViewMenu object
             :return: list of PermissionView objects
         """
-        return self.get_session.query(self.permissionview_model).filter_by(view_menu_id=view_menu.id).all()
+        return (
+            self.get_session.query(self.permissionview_model)
+            .filter_by(view_menu_id=view_menu.id)
+            .all()
+        )
 
     def add_permission_view_menu(self, permission_name, view_menu_name):
         """
@@ -348,9 +395,15 @@ class SecurityManager(BaseSecurityManager):
             self.get_session.delete(pv)
             self.get_session.commit()
             # if no more permission on permission view, delete permission
-            if not self.get_session.query(self.permissionview_model).filter_by(permission=pv.permission).all():
+            if (
+                not self.get_session.query(self.permissionview_model)
+                .filter_by(permission=pv.permission)
+                .all()
+            ):
                 self.del_permission(pv.permission.name)
-            log.info(c.LOGMSG_INF_SEC_DEL_PERMVIEW.format(permission_name, view_menu_name))
+            log.info(
+                c.LOGMSG_INF_SEC_DEL_PERMVIEW.format(permission_name, view_menu_name)
+            )
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_DEL_PERMVIEW.format(str(e)))
             self.get_session.rollback()
@@ -381,7 +434,9 @@ class SecurityManager(BaseSecurityManager):
                 role.permissions.append(perm_view)
                 self.get_session.merge(role)
                 self.get_session.commit()
-                log.info(c.LOGMSG_INF_SEC_ADD_PERMROLE.format(str(perm_view), role.name))
+                log.info(
+                    c.LOGMSG_INF_SEC_ADD_PERMROLE.format(str(perm_view), role.name)
+                )
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_ADD_PERMROLE.format(str(e)))
                 self.get_session.rollback()
@@ -400,7 +455,9 @@ class SecurityManager(BaseSecurityManager):
                 role.permissions.remove(perm_view)
                 self.get_session.merge(role)
                 self.get_session.commit()
-                log.info(c.LOGMSG_INF_SEC_DEL_PERMROLE.format(str(perm_view), role.name))
+                log.info(
+                    c.LOGMSG_INF_SEC_DEL_PERMROLE.format(str(perm_view), role.name)
+                )
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE.format(str(e)))
                 self.get_session.rollback()

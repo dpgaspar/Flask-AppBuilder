@@ -5,8 +5,9 @@
 
 <script type="text/javascript">
 
-var baseLoginUrl = {{url_for('AuthOAuthView.login')}};
-var baseRegisterUrl = {{url_for('AuthOAuthView.login')}};
+var baseLoginUrl = "{{url_for('AuthOAuthView.login')}}";
+var baseRegisterUrl = "{{url_for('AuthOAuthView.login')}}";
+var next = "?next={{request.args.get('next', '')}}"
 
 var currentSelection = "";
 
@@ -20,13 +21,13 @@ function set_openid(url, pr)
 
 function signin() {
     if (currentSelection != "") {
-        window.location.href = baseLoginUrl + currentSelection;
+        window.location.href = baseLoginUrl + currentSelection + next;
     }
 }
 
 function register() {
     if (currentSelection != "") {
-        window.location.href = baseRegisterUrl + currentSelection + '/register';
+        window.location.href = baseRegisterUrl + currentSelection + '/register' + next;
     }
 }
 
