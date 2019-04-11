@@ -1,0 +1,11 @@
+coverage==4.5.3
+flake8-import-order==0.18
+flake8==3.6.0
+nose==1.3.7
+pip-tools==3.5.0
+tox==3.5.3
+mongoengine>=0.7.10,<0.7.99
+flask-mongoengine==0.7.1
+pymongo>=2.8.1,<2.8.99
+Pillow>=3.4.2,<3.99
+mockldap>=0.3.0

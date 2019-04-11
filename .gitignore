@@ -13,4 +13,4 @@ env
 venv
 *.sublime*
 .vscode/
-
+.tox

@@ -3,11 +3,7 @@ from flask_appbuilder import ModelView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.charts.views import GroupByChartView
 from flask_appbuilder.models.group import aggregate_count
-from flask_appbuilder.widgets import FormHorizontalWidget, FormInlineWidget, FormVerticalWidget
-from flask_babel import lazy_gettext as _
-
-
-from app import db, appbuilder
+from . import db, appbuilder
 from .models import ContactGroup, Gender, Contact
 
 
@@ -30,21 +26,33 @@ class ContactModelView(ModelView):
         ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
-            {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
+            {'fields':
+                 ['address', 'birthday', 'personal_phone', 'personal_celphone'],
+             'expanded': False
+             }
+        ),
     ]
 
     add_fieldsets = [
         ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
-            {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
+            {'fields':
+                 ['address', 'birthday', 'personal_phone', 'personal_celphone'],
+             'expanded': False
+             }
+        ),
     ]
 
     edit_fieldsets = [
         ('Summary', {'fields': ['name', 'gender', 'contact_group']}),
         (
             'Personal Info',
-            {'fields': ['address', 'birthday', 'personal_phone', 'personal_celphone'], 'expanded': False}),
+            {'fields':
+                 ['address', 'birthday', 'personal_phone', 'personal_celphone'],
+             'expanded': False
+             }
+        ),
     ]
 
 
@@ -61,18 +69,19 @@ class ContactChartView(GroupByChartView):
 
     definitions = [
         {
-            'group' : 'contact_group',
-            'series' : [(aggregate_count,'contact_group')]
+            'group': 'contact_group',
+            'series': [(aggregate_count, 'contact_group')]
         },
         {
-            'group' : 'gender',
-            'series' : [(aggregate_count,'contact_group')]
+            'group': 'gender',
+            'series': [(aggregate_count, 'contact_group')]
         }
     ]
 
 
 def pretty_month_year(value):
     return calendar.month_name[value.month] + ' ' + str(value.year)
+
 
 def pretty_year(value):
     return str(value.year)
@@ -100,8 +109,29 @@ class ContactTimeChartView(GroupByChartView):
 
 db.create_all()
 fill_gender()
-appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts", category_icon='fa-envelope')
-appbuilder.add_view(ContactModelView, "List Contacts", icon="fa-envelope", category="Contacts")
+appbuilder.add_view(
+    GroupModelView,
+    "List Groups",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon='fa-envelope'
+)
+appbuilder.add_view(
+    ContactModelView,
+    "List Contacts",
+    icon="fa-envelope",
+    category="Contacts"
+)
 appbuilder.add_separator("Contacts")
-appbuilder.add_view(ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts")
-appbuilder.add_view(ContactTimeChartView, "Contacts Birth Chart", icon="fa-dashboard", category="Contacts")
+appbuilder.add_view(
+    ContactChartView,
+    "Contacts Chart",
+    icon="fa-dashboard",
+    category="Contacts"
+)
+appbuilder.add_view(
+    ContactTimeChartView,
+    "Contacts Birth Chart",
+    icon="fa-dashboard",
+    category="Contacts"
+)
