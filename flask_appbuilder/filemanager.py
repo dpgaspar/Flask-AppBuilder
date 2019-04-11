@@ -1,13 +1,12 @@
+import logging
 import os
+import os.path as op
 import re
 import uuid
-import logging
-import os.path as op
 
 from flask.globals import _request_ctx_stack
-from wtforms import ValidationError
-from werkzeug import secure_filename
 from werkzeug.datastructures import FileStorage
+from wtforms import ValidationError
 
 try:
     from flask import _app_ctx_stack
@@ -26,43 +25,47 @@ except ImportError:
 
 
 class FileManager(object):
-    def __init__(self, base_path=None,
-                 relative_path='',
-                 namegen=None,
-                 allowed_extensions=None,
-                 permission=0o666, **kwargs):
-
+    def __init__(
+        self,
+        base_path=None,
+        relative_path="",
+        namegen=None,
+        allowed_extensions=None,
+        permission=0o666,
+        **kwargs
+    ):
 
         ctx = app_stack.top
 
-        if 'UPLOAD_FOLDER' in ctx.app.config and not base_path:
-            base_path = ctx.app.config['UPLOAD_FOLDER']
+        if "UPLOAD_FOLDER" in ctx.app.config and not base_path:
+            base_path = ctx.app.config["UPLOAD_FOLDER"]
         if not base_path:
-            raise Exception('Config key UPLOAD_FOLDER is mandatory')
+            raise Exception("Config key UPLOAD_FOLDER is mandatory")
 
         self.base_path = base_path
         self.relative_path = relative_path
         self.namegen = namegen or uuid_namegen
-        if not allowed_extensions and 'FILE_ALLOWED_EXTENSIONS' in ctx.app.config:
-            self.allowed_extensions = ctx.app.config['FILE_ALLOWED_EXTENSIONS']
+        if not allowed_extensions and "FILE_ALLOWED_EXTENSIONS" in ctx.app.config:
+            self.allowed_extensions = ctx.app.config["FILE_ALLOWED_EXTENSIONS"]
         else:
             self.allowed_extensions = allowed_extensions
         self.permission = permission
         self._should_delete = False
 
-
     def is_file_allowed(self, filename):
         if not self.allowed_extensions:
             return True
-        return ('.' in filename and
-                filename.rsplit('.', 1)[1].lower() in self.allowed_extensions)
+        return (
+            "." in filename and
+            filename.rsplit(".", 1)[1].lower() in self.allowed_extensions
+        )
 
     def generate_name(self, obj, file_data):
         return self.namegen(file_data)
 
     def get_path(self, filename):
         if not self.base_path:
-            raise ValueError('FileUploadField field requires base_path to be set.')
+            raise ValueError("FileUploadField field requires base_path to be set.")
         return op.join(self.base_path, filename)
 
     def delete_file(self, filename):
@@ -84,49 +87,54 @@ class ImageManager(FileManager):
         will save files on IMG_UPLOAD_FOLDER as <uuid>_sep_<filename>
     """
 
-    keep_image_formats = ('PNG',)
+    keep_image_formats = ("PNG",)
 
-    def __init__(self, base_path=None,
-                 relative_path=None,
-                 max_size=None,
-                 namegen=None,
-                 allowed_extensions=None,
-                 thumbgen=None, thumbnail_size=None,
-                 permission=0o666,
-                 **kwargs):
+    def __init__(
+        self,
+        base_path=None,
+        relative_path=None,
+        max_size=None,
+        namegen=None,
+        allowed_extensions=None,
+        thumbgen=None,
+        thumbnail_size=None,
+        permission=0o666,
+        **kwargs
+    ):
 
         # Check if PIL is installed
         if Image is None:
-            raise Exception('PIL library was not found')
+            raise Exception("PIL library was not found")
 
         ctx = app_stack.top
-        if 'IMG_SIZE' in ctx.app.config and not max_size:
-            self.max_size = ctx.app.config['IMG_SIZE']
+        if "IMG_SIZE" in ctx.app.config and not max_size:
+            self.max_size = ctx.app.config["IMG_SIZE"]
 
-        if 'IMG_UPLOAD_URL' in ctx.app.config and not relative_path:
-            relative_path = ctx.app.config['IMG_UPLOAD_URL']
+        if "IMG_UPLOAD_URL" in ctx.app.config and not relative_path:
+            relative_path = ctx.app.config["IMG_UPLOAD_URL"]
         if not relative_path:
-            raise Exception('Config key IMG_UPLOAD_URL is mandatory')
+            raise Exception("Config key IMG_UPLOAD_URL is mandatory")
 
-        if 'IMG_UPLOAD_FOLDER' in ctx.app.config and not base_path:
-            base_path = ctx.app.config['IMG_UPLOAD_FOLDER']
+        if "IMG_UPLOAD_FOLDER" in ctx.app.config and not base_path:
+            base_path = ctx.app.config["IMG_UPLOAD_FOLDER"]
         if not base_path:
-            raise Exception('Config key IMG_UPLOAD_FOLDER is mandatory')
+            raise Exception("Config key IMG_UPLOAD_FOLDER is mandatory")
 
         self.thumbnail_fn = thumbgen or thumbgen_filename
         self.thumbnail_size = thumbnail_size
         self.image = None
 
         if not allowed_extensions:
-            allowed_extensions = ('gif', 'jpg', 'jpeg', 'png', 'tiff')
+            allowed_extensions = ("gif", "jpg", "jpeg", "png", "tiff")
 
-        super(ImageManager, self).__init__(base_path=base_path,
-                                           relative_path=relative_path,
-                                           namegen=namegen,
-                                           allowed_extensions=allowed_extensions,
-                                           permission=permission,
-                                           **kwargs)
-
+        super(ImageManager, self).__init__(
+            base_path=base_path,
+            relative_path=relative_path,
+            namegen=namegen,
+            allowed_extensions=allowed_extensions,
+            permission=permission,
+            **kwargs
+        )
 
     def get_url(self, filename):
         if isinstance(filename, FileStorage):
@@ -163,7 +171,7 @@ class ImageManager(FileManager):
             try:
                 self.image = Image.open(data)
             except Exception as e:
-                raise ValidationError('Invalid image: %s' % e)
+                raise ValidationError("Invalid image: %s" % e)
 
         path = self.get_path(filename)
         # If Path does not exist, create it
@@ -190,9 +198,7 @@ class ImageManager(FileManager):
         if self.image and thumbnail_size:
             path = self.get_path(self.thumbnail_fn(filename))
 
-            self.save_image(self.resize(self.image, thumbnail_size),
-                            path,
-                            format)
+            self.save_image(self.resize(self.image, thumbnail_size), path, format)
 
     def resize(self, image, size):
         """
@@ -213,22 +219,22 @@ class ImageManager(FileManager):
 
         return image
 
-    def save_image(self, image, path, format='JPEG'):
-        if image.mode not in ('RGB', 'RGBA'):
-            image = image.convert('RGBA')
-        with open(path, 'wb') as fp:
+    def save_image(self, image, path, format="JPEG"):
+        if image.mode not in ("RGB", "RGBA"):
+            image = image.convert("RGBA")
+        with open(path, "wb") as fp:
             image.save(fp, format)
 
     def get_save_format(self, filename, image):
         if image.format not in self.keep_image_formats:
             name, ext = op.splitext(filename)
-            filename = '%s.jpg' % name
-            return filename, 'JPEG'
+            filename = "%s.jpg" % name
+            return filename, "JPEG"
         return filename, image.format
 
 
 def uuid_namegen(file_data):
-    return str(uuid.uuid1()) + '_sep_' + file_data.filename
+    return str(uuid.uuid1()) + "_sep_" + file_data.filename
 
 
 def get_file_original_name(name):
@@ -251,18 +257,17 @@ def get_file_original_name(name):
         :return:
             Returns the user's original filename removes <UUID>_sep_
     """
-    re_match = re.findall('.*_sep_(.*)', name)
+    re_match = re.findall(".*_sep_(.*)", name)
     if re_match:
         return re_match[0]
     else:
-        return 'Not valid'
+        return "Not valid"
 
 
 def uuid_originalname(uuid_filename):
-    return uuid_filename.split('_sep_')[1]
+    return uuid_filename.split("_sep_")[1]
 
 
 def thumbgen_filename(filename):
     name, ext = op.splitext(filename)
-    return '%s_thumb%s' % (name, ext)
-
+    return "%s_thumb%s" % (name, ext)

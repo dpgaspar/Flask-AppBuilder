@@ -1,5 +1,6 @@
-import logging
 import copy
+import logging
+
 from .._compat import as_unicode
 
 log = logging.getLogger(__name__)
@@ -13,10 +14,11 @@ class BaseFilter(object):
         Base class for all data filters.
         Sub class to implement your own custom filters
     """
-    column_name = ''
+
+    column_name = ""
     datamodel = None
     model = None
-    name = ''
+    name = ""
     is_related_view = False
     """
         Sets this filter to a special kind for related views.
@@ -24,7 +26,7 @@ class BaseFilter(object):
     """
 
     arg_name = None
-    """ 
+    """
         the request argument that represent the filter
         child Filter classes should set it to enable
         REST API use
@@ -62,6 +64,7 @@ class FilterRelation(BaseFilter):
     """
         Base class for all filters for relations
     """
+
     pass
 
 
@@ -72,6 +75,7 @@ class BaseFilterConverter(object):
         will inherit from this and override the conversion_table property.
 
     """
+
     conversion_table = ()
     """
         When implementing your own filters you just need to define
@@ -101,7 +105,7 @@ class BaseFilterConverter(object):
         for conversion in self.conversion_table:
             if getattr(self.datamodel, conversion[0])(col_name):
                 return [item(col_name, self.datamodel) for item in conversion[1]]
-        log.warning('Filter type not supported for column: %s' % col_name)
+        log.warning("Filter type not supported for column: %s" % col_name)
 
 
 class Filters(object):
@@ -117,7 +121,8 @@ class Filters(object):
         """
 
             :param filter_converter: Accepts BaseFilterConverter class
-            :param search_columns: restricts possible columns, accepts a list of column names
+            :param search_columns: restricts possible columns,
+                    accepts a list of column names
             :param datamodel: Accepts BaseInterface class
         """
         self.search_columns = search_columns or []
@@ -153,15 +158,14 @@ class Filters(object):
     def rest_add_filters(self, data):
         """
             Adds list of dicts
-        
+
         :param data: list of dicts
         :return:
         """
         for _filter in data:
-            filter_class = map_args_filter.get(_filter['opr'], None)
+            filter_class = map_args_filter.get(_filter["opr"], None)
             if filter_class:
-                self.add_filter(_filter['col'], filter_class,
-                                _filter['value'])
+                self.add_filter(_filter["col"], filter_class, _filter["value"])
 
     def add_filter(self, column_name, filter_class, value):
         self._add_filter(filter_class(column_name, self.datamodel), value)
@@ -225,7 +229,10 @@ class Filters(object):
                 return value
 
     def get_filters_values_tojson(self):
-        return [(flt.column_name, as_unicode(flt.name), value) for flt, value in zip(self.filters, self.values)]
+        return [
+            (flt.column_name, as_unicode(flt.name), value)
+            for flt, value in zip(self.filters, self.values)
+        ]
 
     def apply_all(self, query):
         for flt, value in zip(self.filters, self.values):
@@ -235,5 +242,9 @@ class Filters(object):
     def __repr__(self):
         retstr = "FILTERS:"
         for flt, value in self.get_filters_values():
-            retstr = retstr + "%s.%s:%s\n" % (flt.model.__table__, str(flt.column_name), str(value))
+            retstr = retstr + "%s.%s:%s\n" % (
+                flt.model.__table__,
+                str(flt.column_name),
+                str(value),
+            )
         return retstr

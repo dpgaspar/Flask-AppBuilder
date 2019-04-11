@@ -25,11 +25,13 @@ class MenuItem(object):
             if not self.baseview:
                 return ""
             else:
-                return url_for('%s.%s' % (self.baseview.endpoint, self.baseview.default_view))
+                return url_for(
+                    "{}.{}".format(self.baseview.endpoint, self.baseview.default_view)
+                )
         else:
             try:
                 return url_for(self.href)
-            except:
+            except Exception:
                 return self.href
 
     def __repr__(self):
@@ -74,28 +76,43 @@ class Menu(object):
         if parent_category == "":
             self.menu.append(MenuItem(name=category, icon=icon, label=label))
         else:
-            self.find(category).childs.append(MenuItem(name=category, icon=icon, label=label))
+            self.find(category).childs.append(
+                MenuItem(name=category, icon=icon, label=label)
+            )
 
-    def add_link(self, name, href="", icon="", label="", category="", category_icon="", category_label="",
-                 baseview=None):
+    def add_link(
+        self,
+        name,
+        href="",
+        icon="",
+        label="",
+        category="",
+        category_icon="",
+        category_label="",
+        baseview=None,
+    ):
         label = label or name
         category_label = category_label or category
         if category == "":
-            self.menu.append(MenuItem(name=name,
-                href=href, icon=icon,
-                label=label, baseview=baseview))
+            self.menu.append(
+                MenuItem(
+                    name=name, href=href, icon=icon, label=label, baseview=baseview
+                )
+            )
         else:
             menu_item = self.find(category)
             if menu_item:
-                new_menu_item = MenuItem(name=name,
-                                    href=href, icon=icon,
-                                    label=label, baseview=baseview)
+                new_menu_item = MenuItem(
+                    name=name, href=href, icon=icon, label=label, baseview=baseview
+                )
                 menu_item.childs.append(new_menu_item)
             else:
-                self.add_category(category=category, icon=category_icon, label=category_label)
-                new_menu_item = MenuItem(name=name,
-                                    href=href, icon=icon, label=label,
-                                    baseview=baseview)
+                self.add_category(
+                    category=category, icon=category_icon, label=category_label
+                )
+                new_menu_item = MenuItem(
+                    name=name, href=href, icon=icon, label=label, baseview=baseview
+                )
                 self.find(category).childs.append(new_menu_item)
 
     def add_separator(self, category=""):
@@ -103,5 +120,6 @@ class Menu(object):
         if menu_item:
             menu_item.childs.append(MenuItem("-"))
         else:
-            raise Exception("Menu separator does not have correct category {}".format(category))
-
+            raise Exception(
+                "Menu separator does not have correct category {}".format(category)
+            )

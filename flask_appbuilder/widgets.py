@@ -1,11 +1,13 @@
-'''
+"""
 Created on Oct 12, 2013
 
 @author: Daniel Gaspar
-'''
+"""
 
 import logging
+
 from flask.globals import _request_ctx_stack
+
 from ._compat import as_unicode
 
 
@@ -18,7 +20,8 @@ class RenderTemplateWidget(object):
         Enables the possibility of rendering a template
          inside a template with run time options
     """
-    template = 'appbuilder/general/widgets/render.html'
+
+    template = "appbuilder/general/widgets/render.html"
     template_args = None
 
     def __init__(self, **kwargs):
@@ -43,7 +46,8 @@ class FormWidget(RenderTemplateWidget):
         exclude_cols = []
         fieldsets = []
     """
-    template = 'appbuilder/general/widgets/form.html'
+
+    template = "appbuilder/general/widgets/form.html"
 
 
 class FormVerticalWidget(RenderTemplateWidget):
@@ -55,7 +59,8 @@ class FormVerticalWidget(RenderTemplateWidget):
         exclude_cols = []
         fieldsets = []
     """
-    template = 'appbuilder/general/widgets/form_vertical.html'
+
+    template = "appbuilder/general/widgets/form_vertical.html"
 
 
 class FormHorizontalWidget(RenderTemplateWidget):
@@ -67,7 +72,8 @@ class FormHorizontalWidget(RenderTemplateWidget):
         exclude_cols = []
         fieldsets = []
     """
-    template = 'appbuilder/general/widgets/form_horizontal.html'
+
+    template = "appbuilder/general/widgets/form_horizontal.html"
 
 
 class FormInlineWidget(RenderTemplateWidget):
@@ -79,19 +85,20 @@ class FormInlineWidget(RenderTemplateWidget):
         exclude_cols = []
         fieldsets = []
     """
-    template = 'appbuilder/general/widgets/form_inline.html'
+
+    template = "appbuilder/general/widgets/form_inline.html"
 
 
 class GroupFormListWidget(RenderTemplateWidget):
-    template = 'appbuilder/general/widgets/group_form_list.html'
+    template = "appbuilder/general/widgets/group_form_list.html"
 
 
 class SearchWidget(FormWidget):
-    template = 'appbuilder/general/widgets/search.html'
+    template = "appbuilder/general/widgets/search.html"
     filters = None
 
     def __init__(self, **kwargs):
-        self.filters = kwargs.get('filters')
+        self.filters = kwargs.get("filters")
         return super(SearchWidget, self).__init__(**kwargs)
 
     def __call__(self, **kwargs):
@@ -103,15 +110,15 @@ class SearchWidget(FormWidget):
         form_fields = {}
         search_filters = {}
         dict_filters = self.filters.get_search_filters()
-        for col in self.template_args['include_cols']:
-            label_columns[col] = as_unicode(self.template_args['form'][col].label.text)
-            form_fields[col] = self.template_args['form'][col]()
+        for col in self.template_args["include_cols"]:
+            label_columns[col] = as_unicode(self.template_args["form"][col].label.text)
+            form_fields[col] = self.template_args["form"][col]()
             search_filters[col] = [as_unicode(flt.name) for flt in dict_filters[col]]
 
-        kwargs['label_columns'] = label_columns
-        kwargs['form_fields'] = form_fields
-        kwargs['search_filters'] = search_filters
-        kwargs['active_filters'] = self.filters.get_filters_values_tojson()
+        kwargs["label_columns"] = label_columns
+        kwargs["form_fields"] = form_fields
+        kwargs["search_filters"] = search_filters
+        kwargs["active_filters"] = self.filters.get_filters_values_tojson()
         return super(SearchWidget, self).__call__(**kwargs)
 
 
@@ -128,15 +135,16 @@ class ShowWidget(RenderTemplateWidget):
         fieldsets = []
         modelview_name = ''
     """
-    template = 'appbuilder/general/widgets/show.html'
+
+    template = "appbuilder/general/widgets/show.html"
 
 
 class ShowBlockWidget(RenderTemplateWidget):
-    template = 'appbuilder/general/widgets/show_block.html'
+    template = "appbuilder/general/widgets/show_block.html"
 
 
 class ShowVerticalWidget(RenderTemplateWidget):
-    template = 'appbuilder/general/widgets/show_vertical.html'
+    template = "appbuilder/general/widgets/show_vertical.html"
 
 
 class ListWidget(RenderTemplateWidget):
@@ -156,15 +164,16 @@ class ListWidget(RenderTemplateWidget):
         filters = {}
         modelview_name = ''
     """
-    template = 'appbuilder/general/widgets/list.html'
+
+    template = "appbuilder/general/widgets/list.html"
 
 
 class ListMasterWidget(ListWidget):
-    template = 'appbuilder/general/widgets/list_master.html'
+    template = "appbuilder/general/widgets/list_master.html"
 
 
 class ListAddWidget(ListWidget):
-    template = 'appbuilder/general/widgets/list_add.html'
+    template = "appbuilder/general/widgets/list_add.html"
 
     def __init__(self, **kwargs):
         super(ListAddWidget, self).__init__(**kwargs)
@@ -174,20 +183,20 @@ class ListAddWidget(ListWidget):
 
 
 class ListThumbnail(ListWidget):
-    template = 'appbuilder/general/widgets/list_thumbnail.html'
+    template = "appbuilder/general/widgets/list_thumbnail.html"
 
 
 class ListLinkWidget(ListWidget):
-    template = 'appbuilder/general/widgets/list_link.html'
+    template = "appbuilder/general/widgets/list_link.html"
 
 
 class ListCarousel(ListWidget):
-    template = 'appbuilder/general/widgets/list_carousel.html'
+    template = "appbuilder/general/widgets/list_carousel.html"
 
 
 class ListItem(ListWidget):
-    template = 'appbuilder/general/widgets/list_item.html'
+    template = "appbuilder/general/widgets/list_item.html"
 
 
 class ListBlock(ListWidget):
-    template = 'appbuilder/general/widgets/list_block.html'
+    template = "appbuilder/general/widgets/list_block.html"

@@ -1,16 +1,19 @@
-__author__ = 'dpgaspar'
+__author__ = "dpgaspar"
 
+from datetime import date, datetime
 import operator
 import os
-from ..._compat import with_metaclass
-from datetime import date, datetime
 
-#--------------------------------------
+from ..._compat import with_metaclass
+
+# --------------------------------------
 #        Exceptions
-#--------------------------------------
+# --------------------------------------
+
+
 class PKMissingException(Exception):
-    def __init__(self, model_name=''):
-        message = 'Please set one primary key on: {0}'.format(model_name)
+    def __init__(self, model_name=""):
+        message = "Please set one primary key on: {0}".format(model_name)
         super(PKMissingException, self).__init__(self, message)
 
 
@@ -95,15 +98,14 @@ class GenericModel(with_metaclass(MetaGenericModel, object)):
     def get_col_type(self, col_name):
         return self._col_defs[col_name].col_type
 
-
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        str = self.__class__.__name__ + '=('
+        str = self.__class__.__name__ + "=("
         for col in self.columns:
             str += "{0}:{1};".format(col, getattr(self, col))
-        str += ')\n'
+        str += ")\n"
         return str
 
 
@@ -117,6 +119,7 @@ class GenericSession(object):
         **GenericSession** will implement filter and orders
         based on your data generation on the **all** method.
     """
+
     def __init__(self):
         self._order_by_cmd = None
         self._filters_cmd = list()
@@ -167,13 +170,14 @@ class GenericSession(object):
 
     def _order_by(self, data, order_cmd):
         col_name, direction = order_cmd.split()
-        reverse_flag = direction == 'desc'
-        #patched as suggested by:
-        #http://stackoverflow.com/questions/18411560/python-sort-list-with-none-at-the-end
-        #and
-        #http://stackoverflow.com/questions/5055942/sort-python-list-of-objects-by-date-when-some-are-none
+        reverse_flag = direction == "desc"
+        # patched as suggested by:
+        # http://stackoverflow.com/questions/18411560/python-sort-list-with-none-at-the-end
+        # and
+        # http://stackoverflow.com/questions/5055942/sort-python-list-of-objects-by-date-when-some-are-none
+
         def col_name_if_not_none(data):
-            '''
+            """
             - sqlite sets to null unfilled fields.
             - sqlalchemy cast this to None
             - this is a killer if the datum is of type datetime.date:
@@ -181,19 +185,19 @@ class GenericSession(object):
             approach.
 
             this function tries to patch the issue
-            '''
-            op = operator.attrgetter(col_name)
-            missing = (getattr(data,col_name) is not None)
-            return (missing, getattr(data,col_name))
+            """
+            op = operator.attrgetter(col_name)  # noqa
+            missing = getattr(data, col_name) is not None
+            return missing, getattr(data, col_name)
 
         return sorted(data, key=col_name_if_not_none, reverse=reverse_flag)
 
     def scalar(self):
         return 0
 
-    #-----------------------------------------
+    # -----------------------------------------
     #           FUNCTIONS for FILTERS
-    #-----------------------------------------
+    # -----------------------------------------
 
     def starts_with(self, col_name, value):
         self._filters_cmd.append((self._starts_with, col_name, value))
@@ -203,10 +207,10 @@ class GenericSession(object):
         lw_col = getattr(item, col_name)
         try:
             lw_col = lw_col.lower()
-        except:
+        except Exception:
             return None
         lw_value = value.lower()
-        lw_value_list = lw_value.split(' ')
+        lw_value_list = lw_value.split(" ")
 
         for lw_item in lw_value_list:
             if not lw_col.startswith(lw_item):
@@ -222,21 +226,21 @@ class GenericSession(object):
         source_value = getattr(item, col_name)
 
         try:
-            #whatever we have to copare it will never match
-            if source_value == None:
+            # whatever we have to copare it will never match
+            if source_value is None:
                 return False
 
-            #date has special constructor, tested only on sqlite
+            # date has special constructor, tested only on sqlite
             elif isinstance(source_value, date):
                 value = datetime.strptime(value, "%Y-%m-%d").date()
 
-            #fallback to native python types
-            else:            
+            # fallback to native python types
+            else:
                 value = type(source_value)(value)
 
             return source_value > value
-        except:
-            #when everything fails silently report False
+        except Exception:
+            # when everything fails silently report False
             return False
 
     def smaller(self, col_name, value):
@@ -247,21 +251,21 @@ class GenericSession(object):
         source_value = getattr(item, col_name)
 
         try:
-            #whatever we have to copare it will never match
-            if source_value == None:
+            # whatever we have to copare it will never match
+            if source_value is None:
                 return False
 
-            #date has special constructor, tested only on sqlite
+            # date has special constructor, tested only on sqlite
             elif isinstance(source_value, date):
                 value = datetime.strptime(value, "%Y-%m-%d").date()
 
-            #fallback to native python types
-            else:            
+            # fallback to native python types
+            else:
                 value = type(source_value)(value)
 
             return source_value < value
-        except:
-            #when everything fails silently report False
+        except Exception:
+            # when everything fails silently report False
             return False
 
     def ilike(self, col_name, value):
@@ -272,13 +276,13 @@ class GenericSession(object):
         lw_col = getattr(item, col_name)
         try:
             lw_col = lw_col.lower()
-        except:
+        except Exception:
             return None
         lw_value = value.lower()
-        lw_value_list = lw_value.split(' ')
+        lw_value_list = lw_value.split(" ")
 
         for lw_item in lw_value_list:
-            if not lw_item in lw_col:
+            if lw_item not in lw_col:
                 return None
 
         return col_name
@@ -289,10 +293,10 @@ class GenericSession(object):
 
     def _like(self, item, col_name, value):
         lw_col = getattr(item, col_name)
-        lw_value_list = value.split(' ')
+        lw_value_list = value.split(" ")
 
         for lw_item in lw_value_list:
-            if not lw_item in lw_col:
+            if lw_item not in lw_col:
                 return None
 
         return col_name
@@ -312,21 +316,21 @@ class GenericSession(object):
         source_value = getattr(item, col_name)
 
         try:
-            #whatever we have to copare it will never match
-            if source_value == None:
+            # whatever we have to copare it will never match
+            if source_value is None:
                 return False
 
-            #date has special constructor, tested only on sqlite
+            # date has special constructor, tested only on sqlite
             elif isinstance(source_value, date):
                 value = datetime.strptime(value, "%Y-%m-%d").date()
 
-            #fallback to native python types
-            else:            
+            # fallback to native python types
+            else:
                 value = type(source_value)(value)
 
             return source_value == value
-        except:
-            #when everything fails silently report False
+        except Exception:
+            # when everything fails silently report False
             return False
 
     def not_equal(self, col_name, value):
@@ -365,7 +369,7 @@ class GenericSession(object):
             items = self._order_by(items, self._order_by_cmd)
         total_length = len(items)
         if self._limit != 0:
-            items = items[self._offset:self._offset + self._limit]
+            items = items[self._offset: self._offset + self._limit]
         return total_length, items
 
     def add(self, model):
@@ -376,9 +380,9 @@ class GenericSession(object):
         self.store[model_cls_name].append(model)
 
 
-#-------------------------------------
+# -------------------------------------
 #   Example of an Generic Data Source
-#-------------------------------------
+# -------------------------------------
 class PSModel(GenericModel):
     UID = GenericColumn(str)
     PID = GenericColumn(int, primary_key=True)
@@ -391,7 +395,9 @@ class PSModel(GenericModel):
 
 
 class PSSession(GenericSession):
-    regexp = "(\w+) +(\w+) +(\w+) +(\w+) +(\w+:\w+|\w+) (\?|tty\w+) +(\w+:\w+:\w+) +(.+)\n"
+    regexp = (
+        "(\w+) +(\w+) +(\w+) +(\w+) +(\w+:\w+|\w+) (\?|tty\w+) +(\w+:\w+:\w+) +(.+)\n"
+    )
 
     def add_object(self, line):
         import re
@@ -409,18 +415,16 @@ class PSSession(GenericSession):
             model.CMD = group[0][7]
             self.add(model)
 
-
     def get(self, pk):
         self.delete_all(PSModel())
-        out = os.popen('ps -p {0} -f'.format(pk))
+        out = os.popen("ps -p {0} -f".format(pk))
         for line in out.readlines():
             self.add_object(line)
         return super(PSSession, self).get(pk)
 
-
     def all(self):
         self.delete_all(PSModel())
-        out = os.popen('ps -ef')
+        out = os.popen("ps -ef")
         for line in out.readlines():
             self.add_object(line)
         return super(PSSession, self).all()

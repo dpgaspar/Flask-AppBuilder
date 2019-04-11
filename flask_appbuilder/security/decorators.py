@@ -1,18 +1,23 @@
-import logging
 import functools
+import logging
 
 from flask import (
+    current_app,
     flash,
-    redirect,
-    url_for,
-    make_response,
     jsonify,
+    make_response,
+    redirect,
     request,
-    current_app
+    url_for
 )
 from flask_jwt_extended import verify_jwt_in_request
+
 from .._compat import as_unicode
-from ..const import LOGMSG_ERR_SEC_ACCESS_DENIED, FLAMSG_ERR_SEC_ACCESS_DENIED, PERMISSION_PREFIX
+from ..const import (
+    FLAMSG_ERR_SEC_ACCESS_DENIED,
+    LOGMSG_ERR_SEC_ACCESS_DENIED,
+    PERMISSION_PREFIX
+)
 
 log = logging.getLogger(__name__)
 
@@ -199,5 +204,3 @@ def permission_name(name):
         f._permission_name = name
         return f
     return wraps
-
-
