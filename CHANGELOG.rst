@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 1.13.1
+------------------------------------
+
+- Fix, #885 list view ordering problem of related model with dotted notation, fixes #884
+
 Improvements and Bug fixes on 1.13.0
 ------------------------------------
 
