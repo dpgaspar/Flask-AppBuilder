@@ -126,8 +126,6 @@ class AppBuilder(object):
                 optional, your override for the global static url path
             :param security_manager_class:
                 optional, pass your own security manager class
-            :param update_perms:
-                optional, whether to update permissions on app init
         """
         self.baseviews = []
         self._addon_managers = []
@@ -178,16 +176,10 @@ class AppBuilder(object):
         app.before_request(self.sm.before_request)
         self._add_admin_views()
         self._add_addon_views()
-        self._add_menu_permissions()
+        if self.update_perms:
+            self._add_menu_permissions()
         if not self.app:
-            for baseview in self.baseviews:
-                # instantiate the views and add session
-                self._check_and_init(baseview)
-                # Register the views has blueprints
-                self.register_blueprint(baseview)
-                # Add missing permissions where needed
-                self._add_permission(baseview)
-
+            self.post_init()
         self._init_extension(app)
 
     def _init_extension(self, app):
@@ -195,6 +187,17 @@ class AppBuilder(object):
         if not hasattr(app, "extensions"):
             app.extensions = {}
         app.extensions["appbuilder"] = self
+
+    def post_init(self):
+        for baseview in self.baseviews:
+            # instantiate the views and add session
+            self._check_and_init(baseview)
+            # Register the views has blueprints
+            if baseview.__class__.__name__ not in self.get_app.blueprints.keys():
+                self.register_blueprint(baseview)
+            # Add missing permissions where needed
+            if self.update_perms:
+                self._add_permission(baseview)
 
     @property
     def get_app(self):
@@ -302,21 +305,19 @@ class AppBuilder(object):
                     log.error(LOGMSG_ERR_FAB_ADDON_PROCESS.format(addon, e))
 
     def _add_permissions_menu(self, name):
-        if self.update_perms:
-            try:
-                self.sm.add_permissions_menu(name)
-            except Exception as e:
-                log.exception(e)
-                log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_MENU.format(str(e)))
+        try:
+            self.sm.add_permissions_menu(name)
+        except Exception as e:
+            log.exception(e)
+            log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_MENU.format(str(e)))
 
     def _add_menu_permissions(self):
-        if self.update_perms:
-            for category in self.menu.get_list():
-                self._add_permissions_menu(category.name)
-                for item in category.childs:
-                    # don't add permission for menu separator
-                    if item.name != "-":
-                        self._add_permissions_menu(item.name)
+        for category in self.menu.get_list():
+            self._add_permissions_menu(category.name)
+            for item in category.childs:
+                # don't add permission for menu separator
+                if item.name != "-":
+                    self._add_permissions_menu(item.name)
 
     def _check_and_init(self, baseview):
         # If class if not instantiated, instantiate it
@@ -401,7 +402,8 @@ class AppBuilder(object):
             self._process_inner_views()
             if self.app:
                 self.register_blueprint(baseview)
-                self._add_permission(baseview)
+                if self.update_perms:
+                    self._add_permission(baseview)
         self.add_link(
             name=name,
             href=href,
@@ -491,7 +493,8 @@ class AppBuilder(object):
                 self.register_blueprint(
                     baseview, endpoint=endpoint, static_folder=static_folder
                 )
-                self._add_permission(baseview)
+                if self.update_perms:
+                    self._add_permission(baseview)
         else:
             log.warning(LOGMSG_WAR_FAB_VIEW_EXISTS.format(baseview.__class__.__name__))
         return baseview
@@ -520,6 +523,11 @@ class AppBuilder(object):
         """
         self.sm.security_cleanup(self.baseviews, self.menu)
 
+    def add_permissions(self):
+        for baseview in self.baseviews:
+            self._add_permission(baseview)
+        self._add_menu_permissions()
+
     @property
     def get_url_for_login(self):
         return url_for("%s.%s" % (self.sm.auth_view.endpoint, "login"))
@@ -543,14 +551,13 @@ class AppBuilder(object):
         )
 
     def _add_permission(self, baseview):
-        if self.update_perms:
-            try:
-                self.sm.add_permissions_view(
-                    baseview.base_permissions, baseview.__class__.__name__
-                )
-            except Exception as e:
-                log.exception(e)
-                log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW.format(str(e)))
+        try:
+            self.sm.add_permissions_view(
+                baseview.base_permissions, baseview.__class__.__name__
+            )
+        except Exception as e:
+            log.exception(e)
+            log.error(LOGMSG_ERR_FAB_ADD_PERMISSION_VIEW.format(str(e)))
 
     def register_blueprint(self, baseview, endpoint=None, static_folder=None):
         self.get_app.register_blueprint(

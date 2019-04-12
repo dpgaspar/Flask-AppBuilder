@@ -37,16 +37,18 @@ setup(
     long_description_content_type="text/x-rst",
     packages=find_packages(),
     package_data={'': ['LICENSE']},
-    entry_points={'console_scripts': [
-        'fabmanager = flask_appbuilder.console:cli',
-    ]},
+    entry_points={
+        'flask.commands': [
+            'fab=flask_appbuilder.cli:fab'
+        ],
+    },
     include_package_data=True,
     zip_safe=False,
     platforms='any',
     install_requires=[
+        'apispec[yaml]>=1.1.1<2',
         'colorama>=0.3.9,<1',
         'click>=6.7,<8',
-        'apispec[yaml]>=1.1.1<2',
         'Flask>=0.12,<2',
         'Flask-Babel>=0.11.1,<1',
         'Flask-Login>=0.3,<0.5',
@@ -54,12 +56,12 @@ setup(
         'Flask-SQLAlchemy>=2.3,<3',
         'Flask-WTF>=0.14.2,<1',
         'Flask-JWT-Extended>=3.18,<4',
-        'python-dateutil>=2.3,<3',
+        'jsonschema>=3.0.1<4',
         'marshmallow>=2.18.0,<2.20',
         'marshmallow-enum>=1.4.1,<2',
         'marshmallow-sqlalchemy>=0.16.1<1',
+        'python-dateutil>=2.3,<3',
         'prison==0.1.0',
-        'jsonschema>=3.0.1<4',
         'PyJWT>=1.7.1'
     ],
     tests_require=[

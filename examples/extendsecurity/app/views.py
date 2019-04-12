@@ -1,9 +1,10 @@
 from flask import g
 from flask_appbuilder import ModelView
-from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.sqla.filters import FilterEqualFunction
-from . import db, appbuilder
-from .models import ContactGroup, Contact, Company
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+from . import appbuilder
+from .models import Company, Contact, ContactGroup
 
 
 def get_user_company():

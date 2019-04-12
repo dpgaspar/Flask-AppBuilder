@@ -1,10 +1,11 @@
 import datetime
+
 from flask import g
-from flask_appbuilder.security.sqla.models import User
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, DateTime
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declared_attr
 from flask_appbuilder import Model
+from flask_appbuilder.security.sqla.models import User
+from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, String
+from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import relationship
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
@@ -43,8 +44,7 @@ class Gender(Model):
 def get_user_id(cls):
     try:
         return g.user.id
-    except Exception as e:
-        # log.warning("AuditMixin Get User ID {0}".format(str(e)))
+    except Exception:
         return None
 
 
@@ -90,6 +90,5 @@ class Contact(Model):
     def get_user_id(cls):
         try:
             return g.user.id
-        except Exception as e:
-            # log.warning("AuditMixin Get User ID {0}".format(str(e)))
+        except Exception:
             return None
