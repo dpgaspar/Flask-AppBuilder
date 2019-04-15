@@ -156,6 +156,7 @@ class AppBuilder(object):
         app.config.setdefault("LANGUAGES", {"en": {"flag": "gb", "name": "English"}})
         app.config.setdefault("ADDON_MANAGERS", [])
         app.config.setdefault("FAB_API_MAX_PAGE_SIZE", 20)
+        self.app = app
         self.update_perms = app.config.get('FAB_UPDATE_PERMS', True)
         _security_manager_class_name = app.config.get('FAB_SECURITY_MANAGER_CLASS', None)
         if _security_manager_class_name is not None:
