@@ -129,6 +129,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     """ The obj instance for registering user view """
     lm = None
     """ Flask-Login LoginManager """
+    jwt_manager = None
+    """ Flask-JWT-Extended """
     oid = None
     """ Flask-OpenID OpenID """
     oauth = None
@@ -261,11 +263,27 @@ class BaseSecurityManager(AbstractSecurityManager):
                 self.oauth_remotes[provider_name] = obj_provider
 
         # Setup Flask-Login
+        self.set_login_manager(app)
+
+        # Setup Flask-Jwt-Extended
+        self.set_jwt_manager(app)
+
+    def set_login_manager(self, app):
+        """
+            Override to implement your custom login manager instance
+
+            :param app: Flask app
+        """
         self.lm = LoginManager(app)
         self.lm.login_view = "login"
         self.lm.user_loader(self.load_user)
 
-        # Setup Flask-Jwt-Extended
+    def set_jwt_manager(self, app):
+        """
+            Override to implement your custom JWT manager instance
+
+            :param app: Flask app
+        """
         self.jwt_manager = JWTManager()
         self.jwt_manager.init_app(app)
         self.jwt_manager.user_loader_callback_loader(self.load_user)
