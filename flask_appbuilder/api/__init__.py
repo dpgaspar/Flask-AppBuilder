@@ -390,7 +390,7 @@ class BaseApi(object):
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
-                    log.debug(
+                    log.info(
                         f"Registering route {self.blueprint.url_prefix}{url} {methods}"
                     )
                     self.blueprint.add_url_rule(url, attr_name, attr, methods=methods)
