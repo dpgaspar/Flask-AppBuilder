@@ -196,8 +196,8 @@ class AppBuilder(object):
             if baseview.__class__.__name__ not in self.get_app.blueprints.keys():
                 self.register_blueprint(baseview)
             # Add missing permissions where needed
-            if self.update_perms:
-                self._add_permission(baseview)
+        if self.update_perms:
+            self.add_permissions()
 
     @property
     def get_app(self):
