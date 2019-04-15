@@ -101,10 +101,10 @@ def create_db():
     """
         Create all your database objects (SQLAlchemy specific).
     """
-    from flask_appbuilder.models.sqla import Base
+    from flask_appbuilder.models.sqla import Model
 
     engine = current_app.appbuilder.get_session.get_bind(mapper=None, clause=None)
-    Base.metadata.create_all(engine)
+    Model.metadata.create_all(engine)
     click.echo(click.style("DB objects created", fg="green"))
 
 
