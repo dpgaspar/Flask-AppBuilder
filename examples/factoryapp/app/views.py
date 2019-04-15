@@ -76,7 +76,7 @@ appbuilder.add_view(
     "List Contacts",
     icon="fa-envelope",
     category="Contacts",
-    category_icon="fa-envelope"
+    category_icon="fa-envelope",
 )
 
 
@@ -86,8 +86,5 @@ class GroupModelView(ModelView):
 
 
 appbuilder.add_view(
-    GroupModelView,
-    "List Groups",
-    icon="fa-folder-open-o",
-    category="Contacts",
+    GroupModelView, "List Groups", icon="fa-folder-open-o", category="Contacts"
 )

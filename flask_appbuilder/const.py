@@ -54,7 +54,7 @@ LOGMSG_ERR_SEC_ADD_USER = "Error adding new user to database. {0}"
 """ Error adding user, format with err message """
 LOGMSG_ERR_SEC_UPD_USER = "Error updating user to database. {0} "
 """ Error updating user, format with err message """
-LOGMSG_WAR_SEC_NO_USER = "No user yet created, use fabmanager command to do it."
+LOGMSG_WAR_SEC_NO_USER = "No user yet created, use flask fab command to do it."
 """ Warning when app starts if no user exists on db """
 LOGMSG_WAR_SEC_NOLDAP_OBJ = (
     "User self registration failed no LDAP object found for: {0}"

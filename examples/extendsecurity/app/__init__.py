@@ -17,5 +17,6 @@ def create_app(config):
         db.init_app(app)
         appbuilder.init_app(app, db.session)
         from . import views  # noqa
+
         appbuilder.post_init()
     return app
