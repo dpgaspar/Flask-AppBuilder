@@ -1,18 +1,16 @@
-import os
 import logging
-from flask import Flask
-from flask_appbuilder import SQLA
-from flask_appbuilder import AppBuilder
-from sqlalchemy.engine import Engine
-from sqlalchemy import event
-from config import basedir
 
-logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
+from flask import Flask
+from flask_appbuilder import AppBuilder, SQLA
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
+
+logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
 
 
 app = Flask(__name__)
-app.config.from_object('config')
+app.config.from_object("config")
 db = SQLA(app)
 appbuilder = AppBuilder(app, db.session)
 
@@ -22,6 +20,6 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
-    
 
-from app import models, views
+
+from . import models, views  # noqa

@@ -1,26 +1,18 @@
 from flask import request
 from flask_appbuilder.api import BaseApi, expose, rison, safe
 from flask_appbuilder.security.decorators import protect
+
 from . import appbuilder
 
-greeting_schema = {
-    "type": "object",
-    "properties": {
-        "name": {
-            "type": "string"
-        }
-    }
-}
+greeting_schema = {"type": "object", "properties": {"name": {"type": "string"}}}
 
 
 class ExampleApi(BaseApi):
 
-    resource_name = 'example'
-    apispec_parameter_schemas = {
-        "greeting_schema": greeting_schema
-    }
+    resource_name = "example"
+    apispec_parameter_schemas = {"greeting_schema": greeting_schema}
 
-    @expose('/greeting')
+    @expose("/greeting")
     def greeting(self):
         """Send a greeting
         ---
@@ -38,7 +30,7 @@ class ExampleApi(BaseApi):
         """
         return self.response(200, message="Hello")
 
-    @expose('/greeting2', methods=['POST', 'GET'])
+    @expose("/greeting2", methods=["POST", "GET"])
     def greeting2(self):
         """Send a greeting
         ---
@@ -65,21 +57,20 @@ class ExampleApi(BaseApi):
                       message:
                         type: string
         """
-        if request.method == 'GET':
+        if request.method == "GET":
             return self.response(200, message="Hello (GET)")
         return self.response(201, message="Hello (POST)")
 
-    @expose('/greeting3')
+    @expose("/greeting3")
     @rison()
     def greeting3(self, **kwargs):
-        if 'name' in kwargs['rison']:
+        if "name" in kwargs["rison"]:
             return self.response(
-                200,
-                message="Hello {}".format(kwargs['rison']['name'])
+                200, message="Hello {}".format(kwargs["rison"]["name"])
             )
         return self.response_400(message="Please send your name")
 
-    @expose('/greeting4')
+    @expose("/greeting4")
     @rison(greeting_schema)
     def greeting4(self, **kwargs):
         """Get item from Model
@@ -98,12 +89,9 @@ class ExampleApi(BaseApi):
                       message:
                         type: string
         """
-        return self.response(
-            200,
-            message="Hello {}".format(kwargs['rison']['name'])
-        )
+        return self.response(200, message="Hello {}".format(kwargs["rison"]["name"]))
 
-    @expose('/risonjson')
+    @expose("/risonjson")
     @rison()
     def rison_json(self, **kwargs):
         """Say it's risonjson
@@ -117,9 +105,9 @@ class ExampleApi(BaseApi):
                   schema:
                     type: object
         """
-        return self.response(200, result=kwargs['rison'])
+        return self.response(200, result=kwargs["rison"])
 
-    @expose('/private')
+    @expose("/private")
     @protect()
     def private(self):
         """Say it's private
@@ -137,7 +125,7 @@ class ExampleApi(BaseApi):
         """
         return self.response(200, message="This is private")
 
-    @expose('/error')
+    @expose("/error")
     @protect()
     @safe
     def error(self):

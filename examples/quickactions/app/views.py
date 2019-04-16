@@ -9,9 +9,11 @@ from .models import ContactGroup
 
 class GroupModelView(ModelView):
     datamodel = SQLAInterface(ContactGroup)
-    list_columns = ['name']
+    list_columns = ["name"]
 
-    @action("myaction", "Do something on this record", "Do you really want to?", "fa-rocket")
+    @action(
+        "myaction", "Do something on this record", "Do you really want to?", "fa-rocket"
+    )
     def myaction(self, item):
         """
             do something with the item record
@@ -28,5 +30,10 @@ class GroupModelView(ModelView):
         return redirect(self.get_redirect())
 
 
-appbuilder.add_view(GroupModelView, "List Groups", icon="fa-folder-open-o",
-                    category="Contacts", category_icon='fa-envelope')
+appbuilder.add_view(
+    GroupModelView,
+    "List Groups",
+    icon="fa-folder-open-o",
+    category="Contacts",
+    category_icon="fa-envelope",
+)

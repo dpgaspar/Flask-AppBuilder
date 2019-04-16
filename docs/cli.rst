@@ -1,13 +1,29 @@
 Command Line Manager
 ====================
 
-Since version 1.3.0 F.A.B. has a command line manager, you can use it for many development tasks.
+Since version 1.13.1 F.A.B. has a new command line manager, integrated with Flask cli.
+The old ``fabmanager`` command line is now deprecated and will be completely removed on 1.16.X.
+It's very easy to migrate to the new command line, all sub commands are still the same and
+use the same parameters.
 
-Many of the commands are designed to import **AppBuilder** class initialized by your application.
-By default it will assume your application follows the skeleton structure, so it will try to import
-appbuilder from *app/__init__.py*. You can pass your own info to where appbuilder is being initialized.
+To use the new commands integrated with **Flask cli** you must specify on to import your app.
+Take a look at `Flask docs <http://flask.pocoo.org/docs/cli/>`_.::
 
-Take a quick look to the current possibilities. The bold ones require to import your appbuilder.
+    # Using the default skeleton application
+    # export FLASK_APP=app
+
+    # Using factory app pattern
+    # FLASK_APP="app:create_app('config')"
+
+FAB creates a **Flask** command group named ``fab``, so all commands are issued like::
+
+    $ flask fab <command> <parameters>
+
+To Run your application on development::
+
+    $ flask run --with-threads --reload
+
+Take a quick look to the current possibilities. (The bold ones require app context)
 
   - babel-compile - Babel, Compiles all translations
 
@@ -31,8 +47,6 @@ Take a quick look to the current possibilities. The bold ones require to import 
 
   - **reset-password** - Resets a user's password.
 
-  - **run** - Runs Flask dev web server.
-
   - **security-cleanup** - Cleanup unused permissions from views and roles.
 
   - **upgrade-db** - Upgrade your database after F.A.B upgrade.
@@ -41,8 +55,8 @@ Take a quick look to the current possibilities. The bold ones require to import 
 
 Command Line uses the excellent click package, so you can have a detailed help for each command, for instance::
 
-    $ fabmanager create-app --help
-    Usage: fabmanager create-app [OPTIONS]
+    $ flask fab create-app --help
+    Usage: flask fab create-app [OPTIONS]
 
     Create a Skeleton application
 
@@ -54,20 +68,27 @@ Command Line uses the excellent click package, so you can have a detailed help f
     --help                          Show this message and exit.
 
 
-**babel-extract** - Babel, Extracts and updates all messages.
-----------------------------------------
-
-Use multi **-k** options separated by space to specify how to locate the strings you want to translate. 
-Default values: **lazy_gettext, gettext, _, __**.
-For example:
-
-    fabmanager babel-extract --target flask_appbuilder/translations/ -k _ -k __
-
 **create-app** - Create new Applications
 ----------------------------------------
 
 To create a ready to dev skeleton application, you can use this command for SQLAlchemy engine and MongoEngine (MongoDB).
 This commands needs an internet connection to **github.com**, because it will download a zip version of the skeleton repos.
+
+**create-admin** - Create an admin user
+---------------------------------------
+
+Use this to create your first **Admin** user, or additional ones.
+This admin user can be used to any type of authentication method configured, but *flask fab create-admin*
+will not check it, so it will always ask for a password (assumes AUTH_DB).
+
+**babel-extract** - Babel, Extracts and updates all messages.
+-------------------------------------------------------------
+
+Use multi **-k** options separated by space to specify how to locate the strings you want to translate. 
+Default values: **lazy_gettext, gettext, _, __**.
+For example::
+
+    flask fab babel-extract --target flask_appbuilder/translations/ -k _ -k __
 
 **create-addon** - Create new AddOns
 ------------------------------------
@@ -75,18 +96,8 @@ This commands needs an internet connection to **github.com**, because it will do
 To create a ready to dev skeleton addon.
 This commands needs an internet connection to **github.com**, because it will download a zip version of the skeleton repos.
 
-**create-admin** - Create an admin user
----------------------------------------
-
-Use this to create your first **Admin** user, or additional ones. issue on the root directory of your application
-if you're initializing **AppBuilder** on *app/__init__.py* and have named it appbuilder. If not use the **--app** and
-**--appbuilder** switches to identify how to import **appbuilder**.
-
-This admin user can be used to any type of authentication method configured, but *fabmanager* will not checkit so
-it will allways ask for a password (assumes AUTH_DB).
-
 **collect-static** - Collect static files
----------------------------------------
+-----------------------------------------
 
 Use this to copy all static files from flask-appbuilder package to your application static folder. Nice to have
 on certain deploys, if your web server is serving the static files directly.
@@ -97,16 +108,7 @@ on certain deploys, if your web server is serving the static files directly.
 Will upgrade your database, necessary if you're already using F.A.B. Users now are able to have multiple roles.
 Take a look at :doc:`versionmigration`
 
-Issue on the root directory of your application
-if you're initializing **AppBuilder** on app/__init__.py and have named it appbuilder. If not use the **--app** and
-**--appbuilder** switches to identify how to import **appbuilder**.
-
 **reset-password** - Resets a user's password.
 ----------------------------------------------
 
-Reset a user's password, also needs to import **appbuilder** so 
-Issue on the root directory of your application
-if you're initializing **AppBuilder** on app/__init__.py and have named it appbuilder. If not use the **--app** and
-**--appbuilder** switches to identify how to import **appbuilder**.
-
-
+Reset a user's password

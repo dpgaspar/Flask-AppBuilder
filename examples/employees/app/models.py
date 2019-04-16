@@ -1,7 +1,8 @@
 import datetime
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, Date, Text
-from sqlalchemy.orm import relationship
+
 from flask_appbuilder import Model
+from sqlalchemy import Column, Date, ForeignKey, Integer, String, Table, Text
+from sqlalchemy.orm import relationship
 
 
 class Department(Model):
@@ -27,22 +28,25 @@ class Benefit(Model):
     def __repr__(self):
         return self.name
 
-assoc_benefits_employee = Table('benefits_employee', Model.metadata,
-                                  Column('id', Integer, primary_key=True),
-                                  Column('benefit_id', Integer, ForeignKey('benefit.id')),
-                                  Column('employee_id', Integer, ForeignKey('employee.id'))
+
+assoc_benefits_employee = Table(
+    "benefits_employee",
+    Model.metadata,
+    Column("id", Integer, primary_key=True),
+    Column("benefit_id", Integer, ForeignKey("benefit.id")),
+    Column("employee_id", Integer, ForeignKey("employee.id")),
 )
 
 
 def today():
-    return datetime.datetime.today().strftime('%Y-%m-%d')
+    return datetime.datetime.today().strftime("%Y-%m-%d")
 
 
 class EmployeeHistory(Model):
     id = Column(Integer, primary_key=True)
-    department_id = Column(Integer, ForeignKey('department.id'), nullable=False)
+    department_id = Column(Integer, ForeignKey("department.id"), nullable=False)
     department = relationship("Department")
-    employee_id = Column(Integer, ForeignKey('employee.id'), nullable=False)
+    employee_id = Column(Integer, ForeignKey("employee.id"), nullable=False)
     employee = relationship("Employee")
     begin_date = Column(Date, default=today)
     end_date = Column(Date)
@@ -54,11 +58,13 @@ class Employee(Model):
     address = Column(Text(250), nullable=False)
     fiscal_number = Column(Integer, nullable=False)
     employee_number = Column(Integer, nullable=False)
-    department_id = Column(Integer, ForeignKey('department.id'), nullable=False)
+    department_id = Column(Integer, ForeignKey("department.id"), nullable=False)
     department = relationship("Department")
-    function_id = Column(Integer, ForeignKey('function.id'), nullable=False)
+    function_id = Column(Integer, ForeignKey("function.id"), nullable=False)
     function = relationship("Function")
-    benefits = relationship('Benefit', secondary=assoc_benefits_employee, backref='employee')
+    benefits = relationship(
+        "Benefit", secondary=assoc_benefits_employee, backref="employee"
+    )
 
     begin_date = Column(Date, default=datetime.date.today(), nullable=True)
     end_date = Column(Date, default=datetime.date.today(), nullable=True)

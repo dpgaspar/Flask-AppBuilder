@@ -6,7 +6,8 @@ from flask_appbuilder.forms import DynamicForm
 
 
 class TweetForm(DynamicForm):
-    message = StringField(lazy_gettext('Tweet message'), validators=[DataRequired()], widget=BS3TextFieldWidget())
-
-
-
+    message = StringField(
+        lazy_gettext("Tweet message"),
+        validators=[DataRequired()],
+        widget=BS3TextFieldWidget(),
+    )
