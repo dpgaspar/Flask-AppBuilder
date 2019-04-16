@@ -1,8 +1,8 @@
 from datetime import datetime
 import random
 
-from .app import create_app, db
-from .app.models import Contact, ContactGroup, Gender
+from app import create_app, db
+from app.models import Contact, ContactGroup, Gender
 
 app = create_app("config")
 app.app_context().push()

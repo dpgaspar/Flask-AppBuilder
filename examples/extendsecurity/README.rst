@@ -22,7 +22,7 @@ Their passwords are 'password'
 
 Run it::
 
-    $ export FLASK_APP="app/__init__.py:create_app('config')
+    $ export FLASK_APP="app:create_app('config')"
     $ flask fab create-admin
     $ flask fab create-permissions
     $ flask run

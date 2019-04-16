@@ -9,8 +9,15 @@ Create an Admin user and insert test data::
 
 Run it::
 
-    $ export FLASK_APP="app/__init__.py:create_app('config')
+    $ export FLASK_APP="app:create_app('config')"
     $ flask fab create-admin
     $ flask run
 
-Try it. Open a browser to http://localhost:5000, then login using admin/general.
+Try it. Open a browser to http://localhost:5000.
+
+Using an alternate config::
+
+    $ export FLASK_APP="app:create_app('config2')"
+    $ flask fab create-admin
+    $ flask run
+

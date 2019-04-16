@@ -475,7 +475,8 @@ send the optional parameter **"refresh": true** on the JSON PUT payload.
 Let's request our Token then::
 
     # If not already, create an admin user
-    $ fabmanager create-admin
+    $ export FLASK_APP=app
+    $ flask fab create-admin
     Username [admin]:
     User first name [admin]:
     User last name [user]:
