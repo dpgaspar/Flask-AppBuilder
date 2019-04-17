@@ -347,11 +347,12 @@ class SecurityManager(BaseSecurityManager):
         """
         permission = self.find_permission(permission_name)
         view_menu = self.find_view_menu(view_menu_name)
-        return (
-            self.get_session.query(self.permissionview_model)
-            .filter_by(permission=permission, view_menu=view_menu)
-            .first()
-        )
+        if permission and view_menu:
+            return (
+                self.get_session.query(self.permissionview_model)
+                .filter_by(permission=permission, view_menu=view_menu)
+                .first()
+            )
 
     def find_permissions_view_menu(self, view_menu):
         """
@@ -375,6 +376,14 @@ class SecurityManager(BaseSecurityManager):
             :param view_menu_name:
                 name of the view menu to add
         """
+        if not (permission_name and view_menu_name):
+            return None
+        pv = self.find_permission_view_menu(
+            permission_name,
+            view_menu_name
+        )
+        if pv:
+            return pv
         vm = self.add_view_menu(view_menu_name)
         perm = self.add_permission(permission_name)
         pv = self.permissionview_model()
