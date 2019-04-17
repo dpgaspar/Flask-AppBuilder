@@ -525,6 +525,10 @@ class SQLAInterface(BaseInterface):
                 if model == self.get_related_model(col_name):
                     return col_name
 
+    def get_info(self, col_name):
+        if col_name in self.list_properties:
+            return self.list_properties[col_name].info
+        return {}
     """
     -------------
      GET METHODS
