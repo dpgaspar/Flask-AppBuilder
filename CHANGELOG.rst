@@ -1,10 +1,16 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
-Improvements and Bug fixes on 1.13.1
+Improvements and Bug fixes on 1.14.0
 ------------------------------------
 
+- Fix, #951 M-M fields are always required, now they default to not required with optional required flag on col info dict
 - Fix, #885 list view ordering problem of related model with dotted notation, fixes #884
+- Fix, #946 Factory app pattern
+- (DEPRECATION) New, command line integrated with Flask cli, fabmanager is deprecated and will be removed on 1.16.X
+- New, config key, FAB_SECURITY_MANAGER_CLASS to declare custom SecurityManager classes.
+- New, sub command 'create-permissions' to create all permissions when update_perms is False.
+- New, config key, FAB_UPDATE_PERMS to flag FAB to update or not update permissions.
 
 Improvements and Bug fixes on 1.13.0
 ------------------------------------
