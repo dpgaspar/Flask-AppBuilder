@@ -33,6 +33,8 @@ Change Log
 
 `Versions <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/CHANGELOG.rst>`_ for further detail on what changed.
 
+Since 2.0.0 that `fabmanager` command line is considered **deprecated**, use the new `flask fab <command>` instead
+
 Fixes, Bugs and contributions
 -----------------------------
 

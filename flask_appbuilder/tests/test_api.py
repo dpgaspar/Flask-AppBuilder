@@ -44,6 +44,7 @@ from .sqla.models import (
     Model2,
     ModelMMChild,
     ModelMMParent,
+    ModelMMParentRequired,
     ModelWithEnums,
     TmpEnum,
     validate_name
@@ -167,6 +168,11 @@ class FlaskTestCase(unittest.TestCase):
             datamodel = SQLAInterface(ModelMMParent)
 
         self.appbuilder.add_api(ModelMMApi)
+
+        class ModelMMRequiredApi(ModelRestApi):
+            datamodel = SQLAInterface(ModelMMParentRequired)
+
+        self.appbuilder.add_api(ModelMMRequiredApi)
 
         class Model1CustomValidationApi(ModelRestApi):
             datamodel = SQLAInterface(Model1)
@@ -1321,6 +1327,40 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 201)
         model = self.db.session.query(ModelWithEnums).get(data["id"])
         eq_(model.enum2, TmpEnum.e1)
+
+    def test_create_item_mm_field(self):
+        """
+            REST Api: Test create with M-M field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        item = dict(
+            field_string='new1',
+            children=[1, 2]
+        )
+        uri = "api/v1/modelmmapi/"
+        rv = self.auth_client_post(client, token, uri, item)
+        eq_(rv.status_code, 201)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(data[API_RESULT_RES_KEY], {"children": [1, 2], "field_string": "new1"})
+        # Test without M-M field data, default is not required
+        item = dict(
+            field_string='new2'
+        )
+        uri = "api/v1/modelmmapi/"
+        rv = self.auth_client_post(client, token, uri, item)
+        eq_(rv.status_code, 201)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(data[API_RESULT_RES_KEY], {"children": [], "field_string": "new2"})
+        # Test without M-M field data, default is required
+        item = dict(
+            field_string='new1'
+        )
+        uri = "api/v1/modelmmrequiredapi/"
+        rv = self.auth_client_post(client, token, uri, item)
+        eq_(rv.status_code, 422)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(data, {"message": {"children": ["Missing data for required field."]}})
 
     def test_get_list_col_function(self):
         """
