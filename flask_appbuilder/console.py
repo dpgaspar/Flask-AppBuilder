@@ -23,7 +23,7 @@ except ImportError:
     from urllib2 import urlopen
 
 click.echo(click.style("fabmanager is going to be deprecated in 1.16.X, you can use "
-           " the same commands on the improved 'flask fab <command>'", fg="red"))
+           "the same commands on the improved 'flask fab <command>'", fg="red"))
 
 SQLA_REPO_URL = (
     "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip"
