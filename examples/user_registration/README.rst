@@ -1,5 +1,5 @@
-Quick How to Example to show the use of SQL views
--------------------------------------------------
+Quick How to Example for self user registration
+-----------------------------------------------
 
 Simple contacts application.
 

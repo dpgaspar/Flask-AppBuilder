@@ -1,10 +1,10 @@
 from flask import Markup, url_for
-from sqlalchemy import Column, Integer, Float, String, ForeignKey, Text
-from sqlalchemy.orm import relationship
-from flask_appbuilder.models.mixins import ImageColumn
-from flask_appbuilder.filemanager import ImageManager
 from flask_appbuilder import Model
+from flask_appbuilder.filemanager import ImageManager
+from flask_appbuilder.models.mixins import ImageColumn
 from flask_appbuilder.security.sqla.models import User
+from sqlalchemy import Column, Float, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import relationship
 
 
 class ProductType(Model):
@@ -21,28 +21,34 @@ class Product(Model):
     price = Column(Float, nullable=False)
     photo = Column(ImageColumn)
     description = Column(Text())
-    product_type_id = Column(Integer, ForeignKey('product_type.id'), nullable=False)
+    product_type_id = Column(Integer, ForeignKey("product_type.id"), nullable=False)
     product_type = relationship("ProductType")
 
     def photo_img(self):
         im = ImageManager()
         if self.photo:
-            return Markup('<a href="' + url_for('ProductPubView.show',
-                                                pk=str(self.id)) + '" class="thumbnail"><img src="' +
-                          im.get_url(self.photo) + '" alt="Photo" class="img-rounded img-responsive"></a>')
+            return Markup(
+                '<a href="' +
+                url_for("ProductPubView.show", pk=str(self.id)) +
+                '" class="thumbnail"><img src="' +
+                im.get_url(self.photo) +
+                '" alt="Photo" class="img-rounded img-responsive"></a>'
+            )
         else:
-            return Markup('<a href="' + url_for('ProductPubView.show',
-                                                pk=str(self.id)) + '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive"></a>')
+            return Markup(
+                '<a href="' +
+                + url_for("ProductPubView.show", pk=str(self.id)) +
+                '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive">'
+                '</a>'
+            )
 
     def price_label(self):
-        return Markup('Price:<strong> {} </strong>'.format(self.price))
+        return Markup("Price:<strong> {} </strong>".format(self.price))
 
     def __repr__(self):
         return self.name
 
 
 class Client(User):
-    __tablename__ = 'ab_user'
+    __tablename__ = "ab_user"
     extra = Column(String(50), unique=True, nullable=False)
-
-

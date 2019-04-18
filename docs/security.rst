@@ -149,10 +149,13 @@ The framework has 5 authentication methods and you choose one of them, you confi
 on the **config.py** (when using the create-app, or following the proposed app structure). First the
 configuration imports the constants for the authentication methods::
 
-    from flask_appbuilder.security.manager import AUTH_OID, \ 
-                                              AUTH_REMOTE_USER, \ 
-                                              AUTH_DB, AUTH_LDAP, \ 
-                                              AUTH_OAUTH
+    from flask_appbuilder.security.manager import (
+        AUTH_DB,
+        AUTH_LDAP,
+        AUTH_OAUTH,
+        AUTH_OID,
+        AUTH_REMOTE_USER
+    )
 
 Next you will use the **AUTH_TYPE** key to choose the type::
 
@@ -169,7 +172,7 @@ Finally you can allow users to self register (take a look at the following chapt
     AUTH_USER_REGISTRATION_ROLE = "My Public Role Name"
 
 These settings can apply to all the authentication methods. When you create your first admin user
-using **fabmanager** command line, this user will be authenticated using the authentication method
+using **flask fab** command line, this user will be authenticated using the authentication method
 defined on your **config.py**.
 
 Authentication: Database
@@ -192,7 +195,8 @@ on **config.py** using OPENID_PROVIDERS key, just add or remove from the list th
         { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
         { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
         { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
-        { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }]
+        { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }
+    ]
 
 Each list entry is a dict with a readable OpenID name and it's url, if the url needs an username just add it using <username>.
 The login template for this method will provide a text box for the user to fillout his/her username.
@@ -341,6 +345,11 @@ Then on the __init__.py initialize AppBuilder with you own security class::
 
     appbuilder = AppBuilder(app, db.session, security_manager_class=MySecurityManager)
 
+
+Alternatively since 1.13.1 you can declare your custom **SecurityManager** on the config.
+This is a must have if your using the factory app pattern, on the config declare you class the following way::
+
+    FAB_SECURITY_MANAGER_CLASS='app.security.MySecurityManager'
 
 F.A.B. uses a different user view for each authentication method
 
