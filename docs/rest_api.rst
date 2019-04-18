@@ -1336,6 +1336,85 @@ a simpler way of doing this using ``validators_columns`` property::
         validators_columns = {'name': validate_name}
 
 
+Many to Many relations
+----------------------
+
+Until now we have only tested one to many relations, let's see how to handle many to many relationships.
+First we need to change our models, on this example we are going to add **tags** to our **Contacts**::
+
+    class Tag(Model):
+        id = Column(Integer, primary_key=True)
+        name = Column(String(50), unique=True, nullable=False)
+
+        def __repr__(self):
+            return self.name
+
+
+    assoc_contact_tag = Table(
+        "contact_tags",
+        Model.metadata,
+        Column("contact_id", Integer, ForeignKey("contact.id"), nullable=True),
+        Column("tag_id", Integer, ForeignKey("tag.id"), nullable=True)
+    )
+
+Then add a new field to the `Contact` Model::
+
+    class Contact(Model):
+        id = Column(Integer, primary_key=True)
+        ...
+        tags = relationship(
+            "Tag",
+            secondary=assoc_contact_tag,
+            backref="contact"
+        )
+
+By default M-M fields are not required, very simple REST API's to `Contact` and `Tag` Model would be::
+
+    class ContactApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        resource_name = 'contact'
+
+    appbuilder.add_api(ContactApi)
+
+    class TagApi(ModelRestApi):
+        datamodel = SQLAInterface(Tag)
+        resource_name = 'tag'
+
+    appbuilder.add_api(TagApi)
+
+First let create some tags (this example assumes that group and gender already contains data)::
+
+    $ curl -XPOST http://localhost:8080/api/v1/tag/ -d \
+    $ '{"name": "T1"}' \
+    $ -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN"
+    {"id":1,"result":{"contact": [], "name":"T1"}}
+    $ curl -XPOST http://localhost:8080/api/v1/tag/ -d \
+    $ '{"name": "T2"}' \
+    $ -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN"
+    {"id":2,"result":{"contact": [], "name":"T2"}}
+
+Notice the `contact` field on the `Tag` model, this is the `backref` and is not required by default also.
+To create a contact with some tags::
+
+    $ curl -XPOST http://localhost:8080/api/v1/contact/ -d \
+    $ '{"name": "C1", "contact_group": 1, "gender": 1, "tags": [1, 2]}' \
+    $ -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN"
+    {"id":1,"result":{"address":null,"birthday":null,"contact_group":1,"gender":1,"name":"C1","personal_celphone":null,"personal_phone":null,"tags":[1,2]}}
+
+You can add a contact without any tags, if you want to enforce `tags` as a required field use the info dict from
+SQLAlchemy::
+
+    class Contact(Model):
+        id = Column(Integer, primary_key=True)
+        ...
+        tags = relationship(
+            "Tag",
+            secondary=assoc_contact_tag,
+            backref="contact",
+            info={"required": True}
+        )
+
+
 Pre and Post processing
 -----------------------
 
