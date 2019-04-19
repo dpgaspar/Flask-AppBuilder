@@ -81,7 +81,7 @@ fill_gender()
 appbuilder.add_view(
     GroupModelView,
     "List Groups",
-    icon="fa-folder-open-o",
+    icon="fa-folder-open",
     category="Contacts",
     category_icon="fa-envelope",
 )
@@ -91,16 +91,16 @@ appbuilder.add_view(
 appbuilder.add_view(
     ContactGroupViewModelView,
     "Contacts By Group View",
-    icon="fa-dashboard",
+    icon="fa-chart-line",
     category="Contacts",
 )
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(
-    ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts"
+    ContactChartView, "Contacts Chart", icon="fa-chart-line", category="Contacts"
 )
 appbuilder.add_view(
     ContactTimeChartView,
     "Contacts Birth Chart",
-    icon="fa-dashboard",
+    icon="fa-chart-line",
     category="Contacts",
 )

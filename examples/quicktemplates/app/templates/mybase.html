@@ -39,12 +39,12 @@
                         {{ baselib.locale_menu(languages) }}
                         {% if not current_user.is_anonymous %}
                             <li><a href="{{appbuilder.get_url_for_logout}}">
-                            <i class="fa fa-sign-out"></i>{{_("Logout")}}</a></li>
+                            <i class="fa fa-sign-out-alt"></i>{{_("Logout")}}</a></li>
                             <li><a class="pull-right" href="{{appbuilder.get_url_for_userinfo}}">
                             <i class="fa fa-user"></i> {{g.user.get_full_name()}}</a></li>
                         {% else %}
                             <li><a href="{{appbuilder.get_url_for_login}}">
-                            <i class="fa fa-sign-in"></i>{{_("Login")}}</a></li>
+                            <i class="fa fa-sign-in-alt"></i>{{_("Login")}}</a></li>
                         {% endif %}
                         </ul>
                 </div>
@@ -77,4 +77,3 @@
         </footer>
     {% endblock %}
 {% endblock %}
-

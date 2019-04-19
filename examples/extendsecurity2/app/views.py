@@ -65,11 +65,11 @@ class CompanyModelView(ModelView):
 
 
 db.create_all()
-appbuilder.add_view(CompanyModelView, "Companys", icon="fa-folder-open-o")
+appbuilder.add_view(CompanyModelView, "Companys", icon="fa-folder-open")
 appbuilder.add_view(
     GroupModelView,
     "List Groups",
-    icon="fa-folder-open-o",
+    icon="fa-folder-open",
     category="Contacts",
     category_icon="fa-envelope",
 )

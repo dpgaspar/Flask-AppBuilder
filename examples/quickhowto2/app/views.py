@@ -236,7 +236,7 @@ fill_gender()
 appbuilder.add_view(
     GroupModelView,
     "List Groups",
-    icon="fa-folder-open-o",
+    icon="fa-folder-open",
     category="Contacts",
     category_icon="fa-envelope",
 )
@@ -254,19 +254,19 @@ appbuilder.add_view(
 )
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(
-    ContactChartView, "Contacts Chart", icon="fa-dashboard", category="Contacts"
+    ContactChartView, "Contacts Chart", icon="fa-chart-line", category="Contacts"
 )
 appbuilder.add_view(
     ContactTimeChartView,
     "Contacts Birth Chart",
-    icon="fa-dashboard",
+    icon="fa-chart-line",
     category="Contacts",
 )
 
 appbuilder.add_view(
     ProductManufacturerView,
     "List Manufacturer",
-    icon="fa-folder-open-o",
+    icon="fa-folder-open",
     category="Products",
     category_icon="fa-envelope",
 )
@@ -282,7 +282,7 @@ appbuilder.add_link(
     icon="fa-envelope",
     label="Add Contact",
 )
-appbuilder.add_view(TestForm, "My form View", icon="fa-group", label="My Test form")
+appbuilder.add_view(TestForm, "My form View", icon="fa-users", label="My Test form")
 appbuilder.add_view(PostTweet, "Tweet", icon="fa-twitter", label="Tweet")
 
 appbuilder.add_link("Index", "MyIndexView.index")

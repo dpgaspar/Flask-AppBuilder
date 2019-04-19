@@ -80,36 +80,36 @@ class CountryGroupByChartView(GroupByChartView):
 
 
 appbuilder.add_view(
-    CountryModelView, "List Countries", icon="fa-folder-open-o", category="Statistics"
+    CountryModelView, "List Countries", icon="fa-folder-open", category="Statistics"
 )
 appbuilder.add_view(
     PoliticalTypeModelView,
     "List Political Types",
-    icon="fa-folder-open-o",
+    icon="fa-folder-open",
     category="Statistics",
 )
 appbuilder.add_view(
     CountryStatsModelView,
     "List Country Stats",
-    icon="fa-folder-open-o",
+    icon="fa-folder-open",
     category="Statistics",
 )
 appbuilder.add_separator("Statistics")
 appbuilder.add_view(
     CountryStatsDirectChart,
     "Show Country Chart",
-    icon="fa-dashboard",
+    icon="fa-chart-line",
     category="Statistics",
 )
 appbuilder.add_view(
     CountryGroupByChartView,
     "Group Country Chart",
-    icon="fa-dashboard",
+    icon="fa-chart-line",
     category="Statistics",
 )
 appbuilder.add_view(
     CountryDirectChartView,
     "Show Country Chart",
-    icon="fa-dashboard",
+    icon="fa-chart-line",
     category="Statistics",
 )

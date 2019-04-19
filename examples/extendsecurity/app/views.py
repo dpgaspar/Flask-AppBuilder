@@ -56,7 +56,7 @@ class GroupModelView(ModelView):
 appbuilder.add_view(
     GroupModelView,
     "List Groups",
-    icon="fa-folder-open-o",
+    icon="fa-folder-open",
     category="Contacts",
     category_icon="fa-envelope",
 )
@@ -66,4 +66,4 @@ class CompanyModelView(ModelView):
     datamodel = SQLAInterface(Company)
 
 
-appbuilder.add_view(CompanyModelView, "Companys", icon="fa-folder-open-o")
+appbuilder.add_view(CompanyModelView, "Companys", icon="fa-folder-open")

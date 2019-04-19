@@ -170,28 +170,28 @@ db.create_all()
 appbuilder.add_view(
     GroupModelView,
     "List Groups",
-    icon="fa-folder-open-o",
+    icon="fa-folder-open",
     category="Contacts",
     category_icon="fa-envelope",
 )
 appbuilder.add_view(
     Group2ModelView,
     "List Groups2",
-    icon="fa-folder-open-o",
+    icon="fa-folder-open",
     category="Contacts",
     category_icon="fa-envelope",
 )
 appbuilder.add_view(
     SubGroupModelView,
     "List Sub Groups",
-    icon="fa-folder-open-o",
+    icon="fa-folder-open",
     category="Contacts",
     category_icon="fa-envelope",
 )
 appbuilder.add_view(
     SubGroup2ModelView,
     "List Sub Groups2",
-    icon="fa-folder-open-o",
+    icon="fa-folder-open",
     category="Contacts",
     category_icon="fa-envelope",
 )

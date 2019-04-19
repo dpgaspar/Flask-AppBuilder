@@ -140,11 +140,11 @@ class PersonChartView(GroupByChartView):
 
 db.create_all()
 appbuilder.add_view(
-    GroupModelView(), "List Groups", icon="fa-folder-open-o", category="Contacts"
+    GroupModelView(), "List Groups", icon="fa-folder-open", category="Contacts"
 )
 appbuilder.add_view(
     PersonModelView(), "List Contacts", icon="fa-envelope", category="Contacts"
 )
 appbuilder.add_view(
-    PersonChartView(), "Contacts Chart", icon="fa-dashboard", category="Contacts"
+    PersonChartView(), "Contacts Chart", icon="fa-chart-line", category="Contacts"
 )

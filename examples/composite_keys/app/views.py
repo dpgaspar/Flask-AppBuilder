@@ -44,7 +44,7 @@ db.create_all()
 appbuilder.add_view(
     DatacenterModelView,
     "List Datacenters",
-    icon="fa-folder-open-o",
+    icon="fa-folder-open",
     category="Datacenters",
     category_icon="fa-envelope",
 )
@@ -54,7 +54,7 @@ appbuilder.add_view(
 appbuilder.add_view(
     ItemModelView,
     "List Items",
-    icon="fa-folder-open-o",
+    icon="fa-folder-open",
     category="Datacenters",
     category_icon="fa-envelope",
 )

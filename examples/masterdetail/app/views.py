@@ -94,11 +94,11 @@ fixed_translations_import = [
 db.create_all()
 fill_gender()
 appbuilder.add_view(
-    GroupMasterView, "List Groups", icon="fa-folder-open-o", category="Contacts"
+    GroupMasterView, "List Groups", icon="fa-folder-open", category="Contacts"
 )
 appbuilder.add_separator("Contacts")
 appbuilder.add_view(
-    GroupGeneralView, "Manage Groups", icon="fa-folder-open-o", category="Contacts"
+    GroupGeneralView, "Manage Groups", icon="fa-folder-open", category="Contacts"
 )
 appbuilder.add_view(
     ContactGeneralView, "List Contacts", icon="fa-envelope", category="Contacts"

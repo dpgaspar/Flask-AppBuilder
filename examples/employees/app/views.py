@@ -55,15 +55,15 @@ db.create_all()
 
 appbuilder.add_view_no_menu(EmployeeHistoryView, "EmployeeHistoryView")
 appbuilder.add_view(
-    EmployeeView, "Employees", icon="fa-folder-open-o", category="Company"
+    EmployeeView, "Employees", icon="fa-folder-open", category="Company"
 )
 appbuilder.add_separator("Company")
 appbuilder.add_view(
-    DepartmentView, "Departments", icon="fa-folder-open-o", category="Company"
+    DepartmentView, "Departments", icon="fa-folder-open", category="Company"
 )
 appbuilder.add_view(
-    FunctionView, "Functions", icon="fa-folder-open-o", category="Company"
+    FunctionView, "Functions", icon="fa-folder-open", category="Company"
 )
 appbuilder.add_view(
-    BenefitView, "Benefits", icon="fa-folder-open-o", category="Company"
+    BenefitView, "Benefits", icon="fa-folder-open", category="Company"
 )

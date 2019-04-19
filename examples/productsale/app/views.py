@@ -33,9 +33,9 @@ class ProductTypeView(ModelView):
 
 
 db.create_all()
-appbuilder.add_view(ProductPubView, "Our Products", icon="fa-folder-open-o")
+appbuilder.add_view(ProductPubView, "Our Products", icon="fa-folder-open")
 appbuilder.add_view(
-    ProductView, "List Products", icon="fa-folder-open-o", category="Management"
+    ProductView, "List Products", icon="fa-folder-open", category="Management"
 )
 appbuilder.add_separator("Management")
 appbuilder.add_view(

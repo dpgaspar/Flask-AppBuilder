@@ -22,7 +22,7 @@ class MyFormView(SimpleFormView):
 appbuilder.add_view(
     MyFormView,
     "My form View",
-    icon="fa-group",
+    icon="fa-users",
     label=_("My form View"),
     category="My Forms",
     category_icon="fa-cogs",
