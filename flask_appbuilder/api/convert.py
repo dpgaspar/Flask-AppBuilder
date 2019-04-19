@@ -17,6 +17,7 @@ class Tree:
     """
         Simplistic one level Tree
     """
+
     def __init__(self):
         self.root = TreeNode('+')
 
@@ -132,6 +133,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                 many = False
             elif datamodel.is_relation_many_to_many(column.data):
                 many = True
+                required = False
             else:
                 many = False
             field = fields.Nested(nested_schema, many=many, required=required)
@@ -139,7 +141,14 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             return field
         # Handle bug on marshmallow-sqlalchemy #163
         elif datamodel.is_relation(column.data):
-            required = not datamodel.is_nullable(column.data)
+            if (datamodel.is_relation_many_to_many(column.data) or
+                    datamodel.is_relation_one_to_many(column.data)):
+                if datamodel.get_info(column.data).get('required', False):
+                    required = True
+                else:
+                    required = False
+            else:
+                required = not datamodel.is_nullable(column.data)
             field = field_for(_model, column.data)
             field.required = required
             field.unique = datamodel.is_unique(column.data)
