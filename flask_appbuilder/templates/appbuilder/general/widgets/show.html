@@ -2,6 +2,8 @@
 {% include 'appbuilder/general/confirm.html' %}
 {% include 'appbuilder/general/alert.html' %}
 
+{% set can_edit = "can_edit" | is_item_visible(modelview_name) %}
+
 {% if fieldsets %}
 
     {% for fieldset_item in fieldsets %}
@@ -44,4 +46,7 @@
 <div class="well well-sm">
     {{ lib.render_action_links(actions, pk, modelview_name) }}
     {{ lib.lnk_back() }}
+    {% if can_edit %}
+        {{ lib.lnk_edit(url_for(modelview_name + '.edit',pk=pk)) }}
+    {% endif %}
 </div>
