@@ -13,8 +13,8 @@ class Stack(object):
         self.size = size
         self.data = list or []
 
-    def push(self, item):
-        if self.data:
+    def push(self, item, force=False):
+        if self.data and not force:
             if item != self.data[-1]:
                 self.data.append(item)
         else:
