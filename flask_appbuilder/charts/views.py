@@ -1,12 +1,14 @@
 import logging
+
 from flask_babel import lazy_gettext
-from .widgets import ChartWidget, DirectChartWidget
+
 from .jsontools import dict_to_json
-from ..widgets import SearchWidget
-from ..security.decorators import has_access
+from .widgets import ChartWidget, DirectChartWidget
 from ..baseviews import BaseModelView, expose
-from ..urltools import *
-from ..models.group import GroupByProcessData, DirectProcessData
+from ..models.group import DirectProcessData, GroupByProcessData
+from ..security.decorators import has_access
+from ..urltools import get_filter_args
+from ..widgets import SearchWidget
 
 log = logging.getLogger(__name__)
 
@@ -14,33 +16,34 @@ log = logging.getLogger(__name__)
 class BaseChartView(BaseModelView):
     """
         This is the base class for all chart views.
-        Use DirectByChartView or GroupByChartView, override their properties and their base classes
+        Use DirectByChartView or GroupByChartView, override their properties
+         and their base classes
         (BaseView, BaseModelView, BaseChartView) to customise your charts
     """
 
-    chart_template = 'appbuilder/general/charts/chart.html'
+    chart_template = "appbuilder/general/charts/chart.html"
     """ The chart template, override to implement your own """
     chart_widget = ChartWidget
     """ Chart widget override to implement your own """
     search_widget = SearchWidget
     """ Search widget override to implement your own """
 
-    chart_title = 'Chart'
+    chart_title = "Chart"
     """ A title to be displayed on the chart """
-    title = 'Title'
+    title = "Title"
 
-    group_by_label = lazy_gettext('Group by')
+    group_by_label = lazy_gettext("Group by")
     """ The label that is displayed for the chart selection """
 
-    default_view = 'chart'
+    default_view = "chart"
 
-    chart_type = 'PieChart'
+    chart_type = "PieChart"
     """ The chart type PieChart, ColumnChart, LineChart """
-    chart_3d = 'true'
+    chart_3d = "true"
     """ Will display in 3D? """
     width = 400
     """ The width """
-    height = '400px'
+    height = "400px"
 
     group_bys = {}
     """ New for 0.6.4, on test, don't use yet """
@@ -52,8 +55,7 @@ class BaseChartView(BaseModelView):
     def _init_titles(self):
         self.title = self.chart_title
 
-    def _get_chart_widget(self, filters=None,
-                          widgets=None, **args):
+    def _get_chart_widget(self, filters=None, widgets=None, **args):
         raise NotImplementedError
 
     def _get_view_widget(self, **kwargs):
@@ -61,7 +63,7 @@ class BaseChartView(BaseModelView):
             :return:
                 Returns a widget
         """
-        return self._get_chart_widget(**kwargs).get('chart')
+        return self._get_chart_widget(**kwargs).get("chart")
 
 
 class GroupByChartView(BaseChartView):
@@ -106,29 +108,32 @@ class GroupByChartView(BaseChartView):
             ]
 
     """
-    chart_type = 'ColumnChart'
-    chart_template = 'appbuilder/general/charts/jsonchart.html'
+    chart_type = "ColumnChart"
+    chart_template = "appbuilder/general/charts/jsonchart.html"
     chart_widget = DirectChartWidget
     ProcessClass = GroupByProcessData
 
     def __init__(self, **kwargs):
         super(GroupByChartView, self).__init__(**kwargs)
         for definition in self.definitions:
-            col = definition.get('group')
+            col = definition.get("group")
             # Setup labels
             try:
-                self.label_columns[col] = definition.get('label') or self.label_columns[col]
+                self.label_columns[col] = (
+                    definition.get("label") or self.label_columns[col]
+                )
             except Exception:
                 self.label_columns[col] = self._prettify_column(col)
-            if not definition.get('label'):
-                definition['label'] = self.label_columns[col]
+            if not definition.get("label"):
+                definition["label"] = self.label_columns[col]
             # Setup Series
-            for serie in definition['series']:
+            for serie in definition["series"]:
                 if isinstance(serie, tuple):
-                    if hasattr(serie[0], '_label'):
+                    if hasattr(serie[0], "_label"):
                         key = serie[0].__name__ + serie[1]
-                        self.label_columns[key] = \
-                            serie[0]._label + ' ' + self._prettify_column(serie[1])
+                        self.label_columns[key] = (
+                            serie[0]._label + " " + self._prettify_column(serie[1])
+                        )
                 else:
                     self.label_columns[serie] = self._prettify_column(serie)
 
@@ -136,68 +141,82 @@ class GroupByChartView(BaseChartView):
         """
             intantiates the processing class (Direct or Grouped) and returns it.
         """
-        group_by = definition['group']
-        series = definition['series']
-        if 'formatter' in definition:
-            formatter = {group_by: definition['formatter']}
+        group_by = definition["group"]
+        series = definition["series"]
+        if "formatter" in definition:
+            formatter = {group_by: definition["formatter"]}
         else:
             formatter = {}
         return self.ProcessClass([group_by], series, formatter)
 
-    def _get_chart_widget(self, filters=None,
-                          order_column='',
-                          order_direction='',
-                          widgets=None,
-                          direct=None,
-                          height=None,
-                          definition='',
-                          **args):
+    def _get_chart_widget(
+        self,
+        filters=None,
+        order_column="",
+        order_direction="",
+        widgets=None,
+        direct=None,
+        height=None,
+        definition="",
+        **args
+    ):
 
         height = height or self.height
         widgets = widgets or dict()
         joined_filters = filters.get_joined_filters(self._base_filters)
         # check if order_column may be database ordered
         if not self.datamodel.get_order_columns_list([order_column]):
-            order_column = ''
-            order_direction = ''
-        count, lst = self.datamodel.query(filters=joined_filters,
-                                          order_column=order_column,
-                                          order_direction=order_direction)
+            order_column = ""
+            order_direction = ""
+        count, lst = self.datamodel.query(
+            filters=joined_filters,
+            order_column=order_column,
+            order_direction=order_direction,
+        )
         if not definition:
             definition = self.definitions[0]
         group = self.get_group_by_class(definition)
-        value_columns = group.to_json(group.apply(lst, sort=order_column == ''), self.label_columns)
-        widgets['chart'] = self.chart_widget(route_base=self.route_base,
-                                             chart_title=self.chart_title,
-                                             chart_type=self.chart_type,
-                                             chart_3d=self.chart_3d,
-                                             height=height,
-                                             value_columns=value_columns,
-                                             modelview_name=self.__class__.__name__,
-                                             **args)
+        value_columns = group.to_json(
+            group.apply(lst, sort=order_column == ""), self.label_columns
+        )
+        widgets["chart"] = self.chart_widget(
+            route_base=self.route_base,
+            chart_title=self.chart_title,
+            chart_type=self.chart_type,
+            chart_3d=self.chart_3d,
+            height=height,
+            value_columns=value_columns,
+            modelview_name=self.__class__.__name__,
+            **args
+        )
         return widgets
 
-    @expose('/chart/<group_by>')
-    @expose('/chart/')
+    @expose("/chart/<group_by>")
+    @expose("/chart/")
     @has_access
     def chart(self, group_by=0):
         group_by = int(group_by)
         form = self.search_form.refresh()
         get_filter_args(self._filters)
-        widgets = self._get_chart_widget(filters=self._filters,
-                                         definition=self.definitions[group_by],
-                                         order_column=self.definitions[group_by]['group'],
-                                         order_direction='asc')
+        widgets = self._get_chart_widget(
+            filters=self._filters,
+            definition=self.definitions[group_by],
+            order_column=self.definitions[group_by]["group"],
+            order_direction="asc",
+        )
         widgets = self._get_search_widget(form=form, widgets=widgets)
         self.update_redirect()
-        return self.render_template(self.chart_template, route_base=self.route_base,
-                                    title=self.chart_title,
-                                    label_columns=self.label_columns,
-                                    definitions=self.definitions,
-                                    group_by_label=self.group_by_label,
-                                    height=self.height,
-                                    widgets=widgets,
-                                    appbuilder=self.appbuilder)
+        return self.render_template(
+            self.chart_template,
+            route_base=self.route_base,
+            title=self.chart_title,
+            label_columns=self.label_columns,
+            definitions=self.definitions,
+            group_by_label=self.group_by_label,
+            height=self.height,
+            widgets=widgets,
+            appbuilder=self.appbuilder,
+        )
 
 
 class DirectByChartView(GroupByChartView):
@@ -243,6 +262,7 @@ class DirectByChartView(GroupByChartView):
                 ]
 
     """
+
     ProcessClass = DirectProcessData
 
 
@@ -250,38 +270,48 @@ class DirectByChartView(GroupByChartView):
 # DEPRECATED SECTION
 # -------------------------------------------------------
 
+
 class BaseSimpleGroupByChartView(BaseChartView):
     group_by_columns = []
     """ A list of columns to be possibly grouped by, this list must be filled """
 
     def __init__(self, **kwargs):
         if not self.group_by_columns:
-            raise Exception('Base Chart View property <group_by_columns> must not be empty')
+            raise Exception(
+                "Base Chart View property <group_by_columns> must not be empty"
+            )
         else:
             super(BaseSimpleGroupByChartView, self).__init__(**kwargs)
 
-    def _get_chart_widget(self, filters=None,
-                          order_column='',
-                          order_direction='',
-                          widgets=None,
-                          group_by=None,
-                          height=None,
-                          **args):
+    def _get_chart_widget(
+        self,
+        filters=None,
+        order_column="",
+        order_direction="",
+        widgets=None,
+        group_by=None,
+        height=None,
+        **args
+    ):
 
         height = height or self.height
         widgets = widgets or dict()
         group_by = group_by or self.group_by_columns[0]
         joined_filters = filters.get_joined_filters(self._base_filters)
-        value_columns = self.datamodel.query_simple_group(group_by, filters=joined_filters)
+        value_columns = self.datamodel.query_simple_group(
+            group_by, filters=joined_filters
+        )
 
-        widgets['chart'] = self.chart_widget(route_base=self.route_base,
-                                             chart_title=self.chart_title,
-                                             chart_type=self.chart_type,
-                                             chart_3d=self.chart_3d,
-                                             height=height,
-                                             value_columns=value_columns,
-                                             modelview_name=self.__class__.__name__,
-                                             **args)
+        widgets["chart"] = self.chart_widget(
+            route_base=self.route_base,
+            chart_title=self.chart_title,
+            chart_type=self.chart_type,
+            chart_3d=self.chart_3d,
+            height=height,
+            value_columns=value_columns,
+            modelview_name=self.__class__.__name__,
+            **args
+        )
         return widgets
 
 
@@ -295,7 +325,9 @@ class BaseSimpleDirectChartView(BaseChartView):
 
     def __init__(self, **kwargs):
         if not self.direct_columns:
-            raise Exception('Base Chart View property <direct_columns> must not be empty')
+            raise Exception(
+                "Base Chart View property <direct_columns> must not be empty"
+            )
         else:
             super(BaseSimpleDirectChartView, self).__init__(**kwargs)
 
@@ -306,31 +338,40 @@ class BaseSimpleDirectChartView(BaseChartView):
         """
         return list(self.direct_columns.keys())
 
-    def _get_chart_widget(self, filters=None,
-                          order_column='',
-                          order_direction='',
-                          widgets=None,
-                          direct=None,
-                          height=None,
-                          **args):
+    def _get_chart_widget(
+        self,
+        filters=None,
+        order_column="",
+        order_direction="",
+        widgets=None,
+        direct=None,
+        height=None,
+        **args
+    ):
 
         height = height or self.height
         widgets = widgets or dict()
         joined_filters = filters.get_joined_filters(self._base_filters)
-        count, lst = self.datamodel.query(filters=joined_filters,
-                                          order_column=order_column,
-                                          order_direction=order_direction)
+        count, lst = self.datamodel.query(
+            filters=joined_filters,
+            order_column=order_column,
+            order_direction=order_direction,
+        )
         value_columns = self.datamodel.get_values(lst, list(direct))
-        value_columns = dict_to_json(direct[0], direct[1:], self.label_columns, value_columns)
+        value_columns = dict_to_json(
+            direct[0], direct[1:], self.label_columns, value_columns
+        )
 
-        widgets['chart'] = self.chart_widget(route_base=self.route_base,
-                                             chart_title=self.chart_title,
-                                             chart_type=self.chart_type,
-                                             chart_3d=self.chart_3d,
-                                             height=height,
-                                             value_columns=value_columns,
-                                             modelview_name=self.__class__.__name__,
-                                             **args)
+        widgets["chart"] = self.chart_widget(
+            route_base=self.route_base,
+            chart_title=self.chart_title,
+            chart_type=self.chart_type,
+            chart_3d=self.chart_3d,
+            height=height,
+            value_columns=value_columns,
+            modelview_name=self.__class__.__name__,
+            **args
+        )
         return widgets
 
 
@@ -343,10 +384,10 @@ class ChartView(BaseSimpleGroupByChartView):
         This will show Google Charts based on group by of your tables.
     """
 
-    @expose('/chart/<group_by>')
-    @expose('/chart/')
+    @expose("/chart/<group_by>")
+    @expose("/chart/")
     @has_access
-    def chart(self, group_by=''):
+    def chart(self, group_by=""):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
 
@@ -354,14 +395,17 @@ class ChartView(BaseSimpleGroupByChartView):
 
         widgets = self._get_chart_widget(filters=self._filters, group_by=group_by)
         widgets = self._get_search_widget(form=form, widgets=widgets)
-        return self.render_template(self.chart_template, route_base=self.route_base,
-                                    title=self.chart_title,
-                                    label_columns=self.label_columns,
-                                    group_by_columns=self.group_by_columns,
-                                    group_by_label=self.group_by_label,
-                                    height=self.height,
-                                    widgets=widgets,
-                                    appbuilder=self.appbuilder)
+        return self.render_template(
+            self.chart_template,
+            route_base=self.route_base,
+            title=self.chart_title,
+            label_columns=self.label_columns,
+            group_by_columns=self.group_by_columns,
+            group_by_label=self.group_by_label,
+            height=self.height,
+            widgets=widgets,
+            appbuilder=self.appbuilder,
+        )
 
 
 class TimeChartView(BaseSimpleGroupByChartView):
@@ -370,63 +414,75 @@ class TimeChartView(BaseSimpleGroupByChartView):
 
         Provides a simple way to draw some time charts on your application.
 
-        This will show Google Charts based on count and group by month and year for your tables.
+        This will show Google Charts based on count and group
+        by month and year for your tables.
     """
 
-    chart_template = 'appbuilder/general/charts/chart_time.html'
-    chart_type = 'ColumnChart'
+    chart_template = "appbuilder/general/charts/chart_time.html"
+    chart_type = "ColumnChart"
 
-    def _get_chart_widget(self, filters=None,
-                          order_column='',
-                          order_direction='',
-                          widgets=None,
-                          group_by=None,
-                          period=None,
-                          height=None,
-                          **args):
+    def _get_chart_widget(
+        self,
+        filters=None,
+        order_column="",
+        order_direction="",
+        widgets=None,
+        group_by=None,
+        period=None,
+        height=None,
+        **args
+    ):
 
         height = height or self.height
         widgets = widgets or dict()
         group_by = group_by or self.group_by_columns[0]
         joined_filters = filters.get_joined_filters(self._base_filters)
 
-        if period == 'month' or not period:
-            value_columns = self.datamodel.query_month_group(group_by, filters=joined_filters)
-        elif period == 'year':
-            value_columns = self.datamodel.query_year_group(group_by, filters=joined_filters)
+        if period == "month" or not period:
+            value_columns = self.datamodel.query_month_group(
+                group_by, filters=joined_filters
+            )
+        elif period == "year":
+            value_columns = self.datamodel.query_year_group(
+                group_by, filters=joined_filters
+            )
 
-        widgets['chart'] = self.chart_widget(route_base=self.route_base,
-                                             chart_title=self.chart_title,
-                                             chart_type=self.chart_type,
-                                             chart_3d=self.chart_3d,
-                                             height=height,
-                                             value_columns=value_columns,
-                                             modelview_name=self.__class__.__name__,
-                                             **args)
+        widgets["chart"] = self.chart_widget(
+            route_base=self.route_base,
+            chart_title=self.chart_title,
+            chart_type=self.chart_type,
+            chart_3d=self.chart_3d,
+            height=height,
+            value_columns=value_columns,
+            modelview_name=self.__class__.__name__,
+            **args
+        )
         return widgets
 
-    @expose('/chart/<group_by>/<period>')
-    @expose('/chart/')
+    @expose("/chart/<group_by>/<period>")
+    @expose("/chart/")
     @has_access
-    def chart(self, group_by='', period=''):
+    def chart(self, group_by="", period=""):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
 
         group_by = group_by or self.group_by_columns[0]
 
-        widgets = self._get_chart_widget(filters=self._filters,
-                                         group_by=group_by,
-                                         period=period,
-                                         height=self.height)
+        widgets = self._get_chart_widget(
+            filters=self._filters, group_by=group_by, period=period, height=self.height
+        )
 
         widgets = self._get_search_widget(form=form, widgets=widgets)
-        return self.render_template(self.chart_template, route_base=self.route_base,
-                                    title=self.chart_title,
-                                    label_columns=self.label_columns,
-                                    group_by_columns=self.group_by_columns,
-                                    group_by_label=self.group_by_label,
-                                    widgets=widgets,
-                                    appbuilder=self.appbuilder)
+        return self.render_template(
+            self.chart_template,
+            route_base=self.route_base,
+            title=self.chart_title,
+            label_columns=self.label_columns,
+            group_by_columns=self.group_by_columns,
+            group_by_label=self.group_by_label,
+            widgets=widgets,
+            appbuilder=self.appbuilder,
+        )
 
 
 class DirectChartView(BaseSimpleDirectChartView):
@@ -444,14 +500,15 @@ class DirectChartView(BaseSimpleDirectChartView):
                                   'Other Stats': ('X_col2', 'stat_col_3')}
 
     """
-    chart_type = 'ColumnChart'
+
+    chart_type = "ColumnChart"
 
     chart_widget = DirectChartWidget
 
-    @expose('/chart/<group_by>')
-    @expose('/chart/')
+    @expose("/chart/<group_by>")
+    @expose("/chart/")
     @has_access
-    def chart(self, group_by=''):
+    def chart(self, group_by=""):
         form = self.search_form.refresh()
         get_filter_args(self._filters)
 
@@ -462,18 +519,23 @@ class DirectChartView(BaseSimpleDirectChartView):
         if self.base_order:
             order_column, order_direction = self.base_order
         else:
-            order_column, order_direction = '', ''
+            order_column, order_direction = "", ""
 
-        widgets = self._get_chart_widget(filters=self._filters,
-                                         order_column=order_column,
-                                         order_direction=order_direction,
-                                         direct=direct)
+        widgets = self._get_chart_widget(
+            filters=self._filters,
+            order_column=order_column,
+            order_direction=order_direction,
+            direct=direct,
+        )
         widgets = self._get_search_widget(form=form, widgets=widgets)
-        return self.render_template(self.chart_template, route_base=self.route_base,
-                                    title=self.chart_title,
-                                    label_columns=self.label_columns,
-                                    group_by_columns=self.get_group_by_columns(),
-                                    group_by_label=self.group_by_label,
-                                    height=self.height,
-                                    widgets=widgets,
-                                    appbuilder=self.appbuilder)
+        return self.render_template(
+            self.chart_template,
+            route_base=self.route_base,
+            title=self.chart_title,
+            label_columns=self.label_columns,
+            group_by_columns=self.get_group_by_columns(),
+            group_by_label=self.group_by_label,
+            height=self.height,
+            widgets=widgets,
+            appbuilder=self.appbuilder,
+        )

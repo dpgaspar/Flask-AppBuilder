@@ -1,11 +1,5 @@
-Quick How to Example
---------------------
-
-A show case for the various builtin widgets.
-
-Create an Admin user::
-
-    $ fabmanager create-admin
+A show case for the various builtin widgets
+-------------------------------------------
 
 Insert test data::
 
@@ -13,6 +7,6 @@ Insert test data::
 
 Run it::
 
-    $ fabmanager run
-
-
+    $ export FLASK_APP=app/__init__.py
+    $ flask fab create-admin
+    $ flask run

@@ -194,6 +194,25 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | the existing languages with the countries  |           |
 |                                   | name and flag                              |           |
 +-----------------------------------+--------------------------------------------+-----------+
+| FAB_API_SHOW_STACKTRACE           | Sends api stack trace on uncaught          |   No      |
+|                                   | exceptions. (Boolean)                      |           |
++-----------------------------------+--------------------------------------------+-----------+
+| FAB_API_MAX_PAGE_SIZE             | Sets a limit for FAB Model Api page size   |   No      |
++-----------------------------------+--------------------------------------------+-----------+
+| FAB_API_SWAGGER_UI                | Enables a Swagger UI view (Boolean)        |   No      |
++-----------------------------------+--------------------------------------------+-----------+
+| FAB_UPDATE_PERMS                  | Enables or disables update permissions     |           |
+|                                   | Default is True (Boolean)                  |   No      |
++-----------------------------------+--------------------------------------------+-----------+
+| FAB_SECURITY_MANAGER_CLASS        | Declare a new custom SecurityManager       |           |
+|                                   | class                                      |   No      |
++-----------------------------------+--------------------------------------------+-----------+
+| FAB_ADD_SECURITY_VIEWS            | Enables or disables registering all        |           |
+|                                   | security views (boolean default:True)      |   No      |
++-----------------------------------+--------------------------------------------+-----------+
+| FAB_ADD_OPENAPI_VIEWS             | Enables or disables registering all        |           |
+|                                   | OPENAPI views (boolean default:True)       |   No      |
++-----------------------------------+--------------------------------------------+-----------+
 
 
 Using config.py
