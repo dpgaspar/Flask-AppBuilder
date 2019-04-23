@@ -205,13 +205,13 @@ class BaseView(object):
         """
         return re.sub("[._]", " ", name).title()
 
-    def update_redirect(self):
+    def update_redirect(self, force=False):
         """
             Call it on your own endpoint's to update the back history navigation.
             If you bypass it, the next submit or back will go over it.
         """
         page_history = Stack(session.get("page_history", []))
-        page_history.push(request.url)
+        page_history.push(request.url, force=force)
         session["page_history"] = page_history.to_json()
 
     def get_redirect(self):
@@ -1052,6 +1052,8 @@ class BaseCRUDView(BaseModelView):
                     self.pre_add(item)
                 except Exception as e:
                     flash(str(e), "danger")
+                    # We need to force an extra item in the history, for the correct rediret
+                    self.update_redirect(force=True)
                 else:
                     if self.datamodel.add(item):
                         self.post_add(item)
@@ -1095,6 +1097,8 @@ class BaseCRUDView(BaseModelView):
                     self.pre_update(item)
                 except Exception as e:
                     flash(str(e), "danger")
+                    # We need to force an extra item in the history, for the correct rediret
+                    self.update_redirect(force=True)
                 else:
                     if self.datamodel.edit(item):
                         self.post_update(item)
@@ -1141,7 +1145,7 @@ class BaseCRUDView(BaseModelView):
             if self.datamodel.delete(item):
                 self.post_delete(item)
             flash(*self.datamodel.message)
-            self.update_redirect()
+        self.update_redirect()
 
     """
     ------------------------------------------------
