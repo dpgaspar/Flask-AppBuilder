@@ -15,7 +15,7 @@ class Stack(object):
 
     def push(self, item):
         if self.data:
-            if item != self.data[len(self.data) - 1]:
+            if item != self.data[-1]:
                 self.data.append(item)
         else:
             self.data.append(item)
