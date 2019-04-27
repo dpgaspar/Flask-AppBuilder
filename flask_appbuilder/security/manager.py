@@ -895,7 +895,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                 con = ldap.initialize(self.auth_ldap_server,
                                       trace_level=self.auth_ldap_trace_level,
                                       trace_file=self.auth_ldap_trace_file,
-                                      trace_stack_limit=self.auth_ldap_trace_stack_limit)
+                                      trace_stack_limit=self.auth_ldap_trace_stack_limit,
+                                      )
                 con.set_option(ldap.OPT_REFERRALS, 0)
                 if self.auth_ldap_use_tls:
                     try:
