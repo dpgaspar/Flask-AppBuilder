@@ -3,6 +3,7 @@ import datetime
 import json
 import logging
 import re
+import sys
 from typing import Dict, List
 
 from flask import g, session, url_for
@@ -237,6 +238,9 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault("AUTH_LDAP_TLS_CACERTFILE", "")
             app.config.setdefault("AUTH_LDAP_TLS_CERTFILE", "")
             app.config.setdefault("AUTH_LDAP_TLS_KEYFILE", "")
+            app.config.setdefault("AUTH_LDAP_TRACE_LEVEL", 0)
+            app.config.setdefault("AUTH_LDAP_TRACE_FILE", sys.stdout)
+            app.config.setdefault("AUTH_LDAP_TRACE_STACK_LIMIT", None)
             # Mapping options
             app.config.setdefault("AUTH_LDAP_UID_FIELD", "uid")
             app.config.setdefault("AUTH_LDAP_FIRSTNAME_FIELD", "givenName")
@@ -410,6 +414,18 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def auth_ldap_tls_keyfile(self):
         return self.appbuilder.get_app.config["AUTH_LDAP_TLS_KEYFILE"]
+
+    @property
+    def auth_ldap_trace_level(self):
+        return self.appbuilder.get_app.config["AUTH_LDAP_TRACE_LEVEL"]
+
+    @property
+    def auth_ldap_trace_file(self):
+        return self.appbuilder.get_app.config["AUTH_LDAP_TRACE_FILE"]
+
+    @property
+    def auth_ldap_trace_stack_limit(self):
+        return self.appbuilder.get_app.config["AUTH_LDAP_TRACE_STACK_LIMIT"]
 
     @property
     def openid_providers(self):
@@ -876,7 +892,10 @@ class BaseSecurityManager(AbstractSecurityManager):
                         ldap.OPT_X_TLS_CERTFILE, self.auth_ldap_tls_certfile
                     )
                     ldap.set_option(ldap.OPT_X_TLS_KEYFILE, self.auth_ldap_tls_keyfile)
-                con = ldap.initialize(self.auth_ldap_server)
+                con = ldap.initialize(self.auth_ldap_server,
+                                      trace_level=self.auth_ldap_trace_level,
+                                      trace_file=self.auth_ldap_trace_file,
+                                      trace_stack_limit=self.auth_ldap_trace_stack_limit)
                 con.set_option(ldap.OPT_REFERRALS, 0)
                 if self.auth_ldap_use_tls:
                     try:

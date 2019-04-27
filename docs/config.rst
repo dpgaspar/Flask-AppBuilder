@@ -63,6 +63,19 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_TLS_KEYFILE             | Certificate key file for client aut        |   No      |
 +-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_TRACE_LEVEL             | The amount of information being logged.    |   No      |
+|                                   | Possible values for trace_level are 0 for  |           |
+|                                   | no logging, 1 for only logging the method  |           |
+|                                   | calls with arguments, 2 for logging the    |           |
+|                                   | method calls with arguments and the        |           |
+|                                   | complete results and 9 for also logging    |           |
+|                                   | the traceback of method calls. Default = 0 |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_TRACE_FILE              | A file-like object as target of the debug  |   No      |
+|                                   | log. Default: sys.stdout                   |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_LDAP_TRACE_STACK_LIMIT       | The stack limit of tracebacks in debug log |   No      |
++-----------------------------------+--------------------------------------------+-----------+
 | AUTH_LDAP_SEARCH                  | Use search with self user                  |   No      |
 |                                   | registration or when using                 |           |
 |                                   | AUTH_LDAP_BIND_USER.                       |           |
