@@ -124,6 +124,7 @@ def create_admin(app, appbuilder, username, firstname, lastname, email, password
         c.AUTH_LDAP: "LDAP Authentication",
         c.AUTH_REMOTE_USER: "WebServer REMOTE_USER Authentication",
         c.AUTH_OAUTH: "OAuth Authentication",
+        c.AUTH_CAS: "CAS Authentication"
     }
     _appbuilder = import_application(app, appbuilder)
     click.echo(

@@ -65,7 +65,8 @@ setup(
         'marshmallow-sqlalchemy>=0.16.1<1',
         'python-dateutil>=2.3,<3',
         'prison==0.1.0',
-        'PyJWT>=1.7.1'
+        'PyJWT>=1.7.1',
+        'xmltodict==0.12.0'
     ],
     tests_require=[
         'nose>=1.0',

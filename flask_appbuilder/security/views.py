@@ -1,14 +1,19 @@
 import datetime
 import logging
 import re
+try:
+    from urllib import urlopen
+except ImportError:
+    from urllib.request import urlopen
 
-from flask import abort, flash, g, redirect, request, session, url_for
+from flask import abort, flash, g, make_response, redirect, request, session, jsonify, url_for, current_app
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
 import jwt
 from werkzeug.security import generate_password_hash
 from wtforms import PasswordField, validators
 from wtforms.validators import EqualTo
+from xmltodict import parse
 
 from .decorators import has_access
 from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm, UserInfoEdit
@@ -18,6 +23,9 @@ from ..baseviews import BaseView
 from ..charts.views import DirectByChartView
 from ..fieldwidgets import BS3PasswordFieldWidget
 from ..views import expose, ModelView, SimpleFormView
+from .cas_urls import create_cas_login_url
+from .cas_urls import create_cas_logout_url
+from .cas_urls import create_cas_validate_url
 
 
 log = logging.getLogger(__name__)
@@ -269,6 +277,15 @@ class UserRemoteUserModelView(UserModelView):
         Then override userldapmodelview property on SecurityManager
     """
 
+    pass
+
+
+class UserCASModelView(UserModelView):
+    """
+        View that add CAS specifics to User view.
+        Override to implement your own custom view.
+        Then override userldapmodelview property on SecurityManager
+    """
     pass
 
 
@@ -720,3 +737,116 @@ class AuthRemoteUserView(AuthView):
         else:
             flash(as_unicode(self.invalid_login_message), "warning")
         return redirect(self.appbuilder.get_url_for_index)
+
+
+"""
+Example to setup CAS providers for hwclouds
+AUTH_TYPE = AUTH_CAS
+CAS_SERVER = 'https://auth.hwclouds.com'
+CAS_LOGIN_ROUTE = 'authui/login'
+CAS_VALIDATE_ROUTE = 'authui/serviceValidate'
+# Test only
+CAS_URL_REDIRECT_ROUTE = 'https://account.hwclouds.com/usercenter'
+"""
+class AuthCASView(AuthView):
+    login_template = ''
+
+    def _get_url_for_login_external(self):
+        redirect_url_config = self.appbuilder.sm.cas_url_redirect_route
+        return redirect_url_config if redirect_url_config is not None \
+                                    else url_for('%s.%s' % (self.endpoint, 'login'), _external=True)
+
+    @expose('/login/')
+    def login(self):
+        if g.user is not None and g.user.is_authenticated:
+            log.debug("Already authenticated {0}".format(g.user))
+            return redirect(self.appbuilder.get_url_for_index)
+
+        cas_token_session_key = self.appbuilder.sm.cas_token_session_key
+
+        redirect_url = create_cas_login_url(
+            self.appbuilder.sm.cas_server,
+            self.appbuilder.sm.cas_login_route,
+            self._get_url_for_login_external())
+
+        if 'ticket' in request.args:
+            session[cas_token_session_key] = request.args['ticket']
+
+        if cas_token_session_key in session:
+            userinfo = self.validateUser(session[cas_token_session_key])
+            if userinfo is not None:
+                user = self.appbuilder.sm.auth_user_cas(userinfo)
+                if user is None:
+                    flash(as_unicode(self.invalid_login_message), 'warning')
+                    return make_response(jsonify(message='authentication failed'), 403)
+                else:
+                    login_user(user)
+                    redirect_url = self.appbuilder.get_url_for_index
+            else:
+                del session[cas_token_session_key]
+
+        log.debug('Redirecting to: {0}'.format(redirect_url))
+
+        return redirect(redirect_url)
+
+    @expose('/logout/')
+    def logout(self):
+        cas_token_session_key = self.appbuilder.sm.cas_token_session_key
+        cas_username_session_key = self.appbuilder.sm.cas_username_session_key
+        cas_attributes_session_key = self.appbuilder.sm.cas_attributes_session_key
+
+        if cas_token_session_key in session:
+            del session[cas_token_session_key]
+
+        if cas_username_session_key in session:
+            del session[cas_username_session_key]
+
+        if cas_attributes_session_key in session:
+            del session[cas_attributes_session_key]
+
+        return super(AuthCASView, self).logout()
+
+    def validateUser(self, ticket):
+        cas_username_session_key = self.appbuilder.sm.cas_username_session_key
+        cas_attributes_session_key = self.appbuilder.sm.cas_attributes_session_key
+
+        log.debug("validating token {0}".format(ticket))
+        cas_validate_url = create_cas_validate_url(
+            self.appbuilder.sm.cas_server,
+            self.appbuilder.sm.cas_validate_route,
+            self._get_url_for_login_external(),
+            ticket)
+
+        log.debug("Making GET request to {0}".format(cas_validate_url))
+
+        xml_from_dict = {}
+        isValid = False
+
+        try:
+            xmldump = urlopen(cas_validate_url).read().strip().decode('utf8', 'ignore')
+            xml_from_dict = parse(xmldump)
+            current_app.logger.debug('Response payload: {0}'.format(xml_from_dict))
+            isValid = True if "cas:authenticationSuccess" in xml_from_dict["cas:serviceResponse"] else False
+        except ValueError:
+            log.error("CAS returned unexpected result")
+
+        if isValid:
+            log.debug("valid CAS login")
+            xml_from_dict = xml_from_dict["cas:serviceResponse"]["cas:authenticationSuccess"]
+            username = xml_from_dict["cas:user"]
+            attributes = xml_from_dict["cas:attributes"]
+
+            if "cas:memberOf" in attributes:
+                attributes["cas:memberOf"] = attributes["cas:memberOf"].lstrip('[').rstrip(']').split(',')
+                for group_number in range(0, len(attributes['cas:memberOf'])):
+                    attributes['cas:memberOf'][group_number] = attributes['cas:memberOf'][group_number].lstrip(
+                        ' ').rstrip(' ')
+
+            session[cas_username_session_key] = username
+            session[cas_attributes_session_key] = attributes
+            return {'username' : username,
+                    'attributes': attributes}
+        else:
+            log.debug("invalid CAS login")
+
+        return None
