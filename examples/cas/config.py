@@ -41,7 +41,7 @@ CSRF_ENABLED = True
 AUTH_TYPE = AUTH_CAS
 
 CAS_SERVER = 'https://casserver.herokuapp.com'
-
+CAS_AFTER_LOGOUT = 'http://localhost:8080/login'
 
 # Uncomment to setup Full admin role name
 # AUTH_ROLE_ADMIN = 'Admin'

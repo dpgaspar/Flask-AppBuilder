@@ -794,6 +794,9 @@ class AuthCASView(AuthView):
         cas_token_session_key = self.appbuilder.sm.cas_token_session_key
         cas_username_session_key = self.appbuilder.sm.cas_username_session_key
         cas_attributes_session_key = self.appbuilder.sm.cas_attributes_session_key
+        cas_after_logout = self.appbuilder.sm.cas_after_logout
+        cas_server = self.appbuilder.sm.cas_server
+        cas_logout_route = self.appbuilder.sm.cas_logout_route
 
         if cas_token_session_key in session:
             del session[cas_token_session_key]
@@ -804,7 +807,19 @@ class AuthCASView(AuthView):
         if cas_attributes_session_key in session:
             del session[cas_attributes_session_key]
 
-        return super(AuthCASView, self).logout()
+        if(cas_after_logout is not None):
+            redirect_url = create_cas_logout_url(
+                cas_server,
+                cas_logout_route,
+                cas_after_logout)
+        else:
+            redirect_url = create_cas_logout_url(
+                cas_server,
+                cas_logout_route)
+        logout_user()
+        log.debug('Redirecting to: '.format(redirect_url))
+
+        return redirect(redirect_url)
 
     def validateUser(self, ticket):
         cas_username_session_key = self.appbuilder.sm.cas_username_session_key
