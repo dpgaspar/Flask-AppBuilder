@@ -133,6 +133,16 @@ def security_cleanup():
     click.echo(click.style("Finished security cleanup", fg="green"))
 
 
+@fab.command("security-converge")
+@with_appcontext
+def security_converge():
+    """
+        Converges security deletes previous_class_permission_name
+    """
+    current_app.appbuilder.security_converge()
+    click.echo(click.style("Finished security cleanup", fg="green"))
+
+
 @fab.command("create-permissions")
 @with_appcontext
 def create_permissions():

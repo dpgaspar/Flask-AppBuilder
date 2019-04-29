@@ -53,7 +53,7 @@ def protect(allow_browser_login=False):
 
         def wraps(self, *args, **kwargs):
             permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
-            class_permission_name = self.__class__.__name__
+            class_permission_name = self.class_permission_name
             if current_app.appbuilder.sm.is_item_public(
                     permission_str,
                     class_permission_name
@@ -101,7 +101,7 @@ def has_access(f):
         permission_str = PERMISSION_PREFIX + f._permission_name
         if self.appbuilder.sm.has_access(
                 permission_str,
-                self.__class__.__name__
+                self.class_permission_name
         ):
             return f(self, *args, **kwargs)
         else:
@@ -140,7 +140,7 @@ def has_access_api(f):
         permission_str = PERMISSION_PREFIX + f._permission_name
         if self.appbuilder.sm.has_access(
                 permission_str,
-                self.__class__.__name__
+                self.class_permission_name
         ):
             return f(self, *args, **kwargs)
         else:

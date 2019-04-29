@@ -84,7 +84,15 @@ class BaseView(object):
             class MyView(ModelView):
                 base_permissions = ['can_list','can_show']
     """
-
+    class_permission_name = None
+    """
+        Override class permission name default fallback to self.__class__.__name__
+    """
+    previous_class_permission_name = None
+    """
+        If set security cleanup will remove all permissions tuples
+        with this name
+    """
     default_view = "list"
     """ the default view for this BaseView, to be used with url_for (method name) """
     extra_args = None
@@ -99,6 +107,8 @@ class BaseView(object):
 
             Initialization of extra args
         """
+        self.class_permission_name = (self.class_permission_name or
+                                      self.__class__.__name__)
         if self.base_permissions is None:
             self.base_permissions = set()
             for attr_name in dir(self):

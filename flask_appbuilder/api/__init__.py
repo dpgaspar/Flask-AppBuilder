@@ -220,6 +220,15 @@ class BaseApi(object):
                 base_permissions = ['can_get']
 
     """
+    class_permission_name = None
+    """
+        Override class permission name default fallback to self.__class__.__name__
+    """
+    previous_class_permission_name = None
+    """
+        If set security cleanup will remove all permissions tuples
+        with this name
+    """
     allow_browser_login = False
     """
         Will allow flask-login cookie authorization on the API
@@ -320,6 +329,8 @@ class BaseApi(object):
         self.apispec_parameter_schemas = self.apispec_parameter_schemas or dict()
         self._apispec_parameter_schemas = self._apispec_parameter_schemas or dict()
         self._apispec_parameter_schemas.update(self.apispec_parameter_schemas)
+        self.class_permission_name = (self.class_permission_name or
+                                      self.__class__.__name__)
         if self.base_permissions is None:
             self.base_permissions = set()
             for attr_name in dir(self):

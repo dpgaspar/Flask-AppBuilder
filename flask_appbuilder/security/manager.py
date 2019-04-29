@@ -1133,7 +1133,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         for viewmenu in viewsmenus:
             found = False
             for baseview in baseviews:
-                if viewmenu.name == baseview.__class__.__name__:
+                if viewmenu.name == baseview.class_permission_name:
                     found = True
                     break
             if menus.find(viewmenu.name):
@@ -1147,6 +1147,33 @@ class BaseSecurityManager(AbstractSecurityManager):
                         permission.permission.name, viewmenu.name
                     )
                 self.del_view_menu(viewmenu.name)
+        self.security_converge(baseviews, menus)
+
+    def security_converge(self, baseviews, menus):
+        roles = self.get_all_roles()
+        for baseview in baseviews:
+            if baseview.previous_class_permission_name is None:
+                continue
+            old_view_menu = self.find_view_menu(
+                baseview.previous_class_permission_name,
+            )
+            view_menu = self.find_view_menu(baseview.class_permission_name)
+            if not (old_view_menu and view_menu):
+                continue
+            old_permissions = self.find_permissions_view_menu(old_view_menu)
+            permissions = self.find_permissions_view_menu(view_menu)
+            for role in roles:
+                for old_permission in old_permissions:
+                    if old_permission in role.permissions:
+                        self.del_permission_role(role, old_permission)
+
+                for permission in permissions:
+                    self.add_permission_role(role, permission)
+            self.del_permission_view_menu(
+                old_permission.permission.name,
+                old_view_menu.name,
+            )
+            self.del_view_menu(old_view_menu.name)
 
     """
      ---------------------------

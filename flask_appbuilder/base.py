@@ -513,6 +513,21 @@ class AppBuilder(object):
         """
         self.sm.security_cleanup(self.baseviews, self.menu)
 
+    def security_converge(self):
+        """
+            This method is useful if you have changed
+            the name of your menus or classes,
+            changing them will leave behind permissions
+            that are not associated with anything.
+
+            You can use it always or just sometimes to
+            perform a security cleanup. Warning this will delete any permission
+            that is no longer part of any registered view or menu.
+
+            Remember invoke ONLY AFTER YOU HAVE REGISTERED ALL VIEWS
+        """
+        self.sm.security_converge(self.baseviews, self.menu)
+
     @property
     def get_url_for_login(self):
         return url_for("%s.%s" % (self.sm.auth_view.endpoint, "login"))
@@ -545,7 +560,7 @@ class AppBuilder(object):
         if self.update_perms or update_perms:
             try:
                 self.sm.add_permissions_view(
-                    baseview.base_permissions, baseview.__class__.__name__
+                    baseview.base_permissions, baseview.class_permission_name
                 )
             except Exception as e:
                 log.exception(e)
