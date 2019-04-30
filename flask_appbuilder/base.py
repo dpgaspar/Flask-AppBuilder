@@ -515,16 +515,14 @@ class AppBuilder(object):
 
     def security_converge(self):
         """
-            This method is useful if you have changed
-            the name of your menus or classes,
-            changing them will leave behind permissions
-            that are not associated with anything.
+            This method is useful when you use:
 
-            You can use it always or just sometimes to
-            perform a security cleanup. Warning this will delete any permission
-            that is no longer part of any registered view or menu.
+            - `class_permission_name`
+            - `previous_class_permission_name`
+            - `method_permission_name`
+            - `previous_method_permission_name`
 
-            Remember invoke ONLY AFTER YOU HAVE REGISTERED ALL VIEWS
+            migrates all permissions to the new names on all the Roles
         """
         self.sm.security_converge(self.baseviews, self.menu)
 

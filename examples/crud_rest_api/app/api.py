@@ -20,17 +20,29 @@ fill_gender()
 
 class ContactModelApi(ModelRestApi):
     resource_name = "contact"
+    class_permission_name = "api"
+    #previous_class_permission_name = "api"
     datamodel = SQLAInterface(Contact)
     allow_browser_login = True
+
+    #method_permission_name = {"get_list": "read",
+    #                          "get": "read"}
+    #previous_method_permission_name = {"get_list": "get",
+    #                                   "get": "get"}
+
 
 
 appbuilder.add_api(ContactModelApi)
 
 
+
 class GroupModelApi(ModelRestApi):
     resource_name = "group"
+    #class_permission_name = "api2"
+    #previous_class_permission_name = "GroupModelApi"
     datamodel = SQLAInterface(ContactGroup)
     allow_browser_login = True
 
 
 appbuilder.add_api(GroupModelApi)
+
