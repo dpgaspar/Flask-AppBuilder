@@ -226,16 +226,31 @@ class BaseApi(object):
     """
     previous_class_permission_name = None
     """
-        If set security cleanup will remove all permissions tuples
-        with this name
+        If set security converge will replace all permissions tuples
+        with this name by the class_permission_name or self.__class__.__name__
+    """
+    method_permission_name = None
+    """
+        Override method permission names, example::
+
+            method_permissions_name = {
+                'get_list': 'read',
+                'get': 'read',
+                'put': 'write',
+                'post': 'write',
+                'delete': 'write'
+            }
+    """
+    previous_method_permission_name = None
+    """
+        Use same structure as method_permission_name. If set security converge
+        will replace all method permissions by the new ones
     """
     allow_browser_login = False
     """
         Will allow flask-login cookie authorization on the API
         default is False.
     """
-    extra_args = None
-
     apispec_parameter_schemas = None
     """
         Set your custom Rison parameter schemas here so that
@@ -317,7 +332,6 @@ class BaseApi(object):
     """
         Override custom OpenApi responses
     """
-
     def __init__(self):
         """
             Initialization of base permissions
@@ -331,23 +345,20 @@ class BaseApi(object):
         self._apispec_parameter_schemas.update(self.apispec_parameter_schemas)
         self.class_permission_name = (self.class_permission_name or
                                       self.__class__.__name__)
+        self.method_permission_name = self.method_permission_name or dict()
+        self.previous_method_permission_name = (self.previous_method_permission_name or
+                                                dict())
         if self.base_permissions is None:
             self.base_permissions = set()
             for attr_name in dir(self):
                 if hasattr(getattr(self, attr_name), "_permission_name"):
-                    _permission_name = getattr(
-                        getattr(self, attr_name), "_permission_name"
-                    )
+                    _permission_name = self.method_permission_name.get(attr_name)
+                    if not _permission_name:
+                        _permission_name = getattr(
+                            getattr(self, attr_name), "_permission_name"
+                        )
                     self.base_permissions.add("can_" + _permission_name)
             self.base_permissions = list(self.base_permissions)
-        if not self.extra_args:
-            self.extra_args = dict()
-        self._apis = dict()
-        for attr_name in dir(self):
-            if hasattr(getattr(self, attr_name), "_extra"):
-                _extra = getattr(getattr(self, attr_name), "_extra")
-                for key in _extra:
-                    self._apis[key] = _extra[key]
 
     def create_blueprint(self, appbuilder, endpoint=None, static_folder=None):
         # Store appbuilder instance

@@ -93,6 +93,23 @@ class BaseView(object):
         If set security cleanup will remove all permissions tuples
         with this name
     """
+    method_permission_name = None
+    """
+        Override method permission names, example::
+
+            method_permissions_name = {
+                'get_list': 'read',
+                'get': 'read',
+                'put': 'write',
+                'post': 'write',
+                'delete': 'write'
+            }
+    """
+    previous_method_permission_name = None
+    """
+        Use same structure as method_permission_name. If set security converge
+        will replace all method permissions by the new ones
+    """
     default_view = "list"
     """ the default view for this BaseView, to be used with url_for (method name) """
     extra_args = None
@@ -109,14 +126,19 @@ class BaseView(object):
         """
         self.class_permission_name = (self.class_permission_name or
                                       self.__class__.__name__)
+        self.method_permission_name = self.method_permission_name or dict()
+        self.previous_method_permission_name = (self.previous_method_permission_name or
+                                                dict())
         if self.base_permissions is None:
             self.base_permissions = set()
             for attr_name in dir(self):
                 if hasattr(getattr(self, attr_name), "_permission_name"):
-                    permission_name = getattr(
-                        getattr(self, attr_name), "_permission_name"
-                    )
-                    self.base_permissions.add("can_" + permission_name)
+                    _permission_name = self.method_permission_name.get(attr_name)
+                    if not _permission_name:
+                        _permission_name = getattr(
+                            getattr(self, attr_name), "_permission_name"
+                        )
+                    self.base_permissions.add("can_" + _permission_name)
             self.base_permissions = list(self.base_permissions)
         if not self.extra_args:
             self.extra_args = dict()
