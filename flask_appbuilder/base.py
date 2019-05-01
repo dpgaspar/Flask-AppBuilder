@@ -72,32 +72,6 @@ class AppBuilder(object):
 
         You can also create everything as an application factory.
     """
-
-    baseviews = []
-    security_manager_class = None
-    # Flask app
-    app = None
-    # Database Session
-    session = None
-    # Security Manager Class
-    sm = None
-    # Babel Manager Class
-    bm = None
-    # OpenAPI Manager Class
-    openapi_manager = None
-    # dict with addon name has key and intantiated class has value
-    addon_managers = None
-    # temporary list that hold addon_managers config key
-    _addon_managers = None
-
-    menu = None
-    indexview = None
-
-    static_folder = None
-    static_url_path = None
-
-    template_filters = None
-
     def __init__(
         self,
         app=None,
@@ -108,7 +82,7 @@ class AppBuilder(object):
         static_folder="static/appbuilder",
         static_url_path="/appbuilder",
         security_manager_class=None,
-        update_perms=True
+        update_perms=True,
     ):
         """
             AppBuilder constructor
