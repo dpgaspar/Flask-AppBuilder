@@ -1052,7 +1052,8 @@ class BaseCRUDView(BaseModelView):
                     self.pre_add(item)
                 except Exception as e:
                     flash(str(e), "danger")
-                    # We need to force an extra item in the history, for the correct rediret
+                    # We need to force an extra item in the history
+                    # for the correct redirect.
                     self.update_redirect(force=True)
                 else:
                     if self.datamodel.add(item):
@@ -1097,7 +1098,8 @@ class BaseCRUDView(BaseModelView):
                     self.pre_update(item)
                 except Exception as e:
                     flash(str(e), "danger")
-                    # We need to force an extra item in the history, for the correct rediret
+                    # We need to force an extra item in the history
+                    # for the correct redirect.
                     self.update_redirect(force=True)
                 else:
                     if self.datamodel.edit(item):
