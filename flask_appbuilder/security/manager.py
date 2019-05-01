@@ -1161,33 +1161,60 @@ class BaseSecurityManager(AbstractSecurityManager):
                 ret['can_' + permission_name] = 'can_' + old_permission_name
         return ret
 
-    def security_converge(self, baseviews, menus):
+    @staticmethod
+    def _add_state_transition(
+            state_transition,
+            old_view_name,
+            old_perm_name,
+            view_name,
+            perm_name
+    ):
+        old_pvm = state_transition.get((old_view_name, old_perm_name))
+        if old_pvm:
+            state_transition[(old_view_name, old_perm_name)].add((view_name, perm_name))
+        else:
+            state_transition[(old_view_name, old_perm_name)] = {(view_name, perm_name)}
+
+    def _create_state_transition(self, baseviews, menus):
         state_transition = dict()
         for baseview in baseviews:
             add_all_flag = False
-            v_new_name = baseview.class_permission_name
+            new_view_name = baseview.class_permission_name
             permission_mapping = self._get_new_old_permissions(
                 baseview.method_permission_name,
                 baseview.previous_method_permission_name,
             )
 
             if baseview.previous_class_permission_name:
-                v_old_name = baseview.previous_class_permission_name
+                old_view_name = baseview.previous_class_permission_name
                 add_all_flag = True
             else:
-                v_new_name = baseview.class_permission_name
-            for permission in baseview.base_permissions:
+                new_view_name = baseview.class_permission_name
+            for new_perm_name in baseview.base_permissions:
                 if add_all_flag:
-                    old_permission = permission_mapping.get(permission)
-                    if not old_permission:
-                        old_permission = permission
-                    state_transition[(v_old_name, old_permission)] = \
-                        (v_new_name, permission)
+                    old_perm_name = permission_mapping.get(new_perm_name)
+                    old_perm_name = old_perm_name or new_perm_name
+                    self._add_state_transition(
+                        state_transition,
+                        old_view_name,
+                        old_perm_name,
+                        new_view_name,
+                        new_perm_name
+                    )
                 else:
-                    old_permission = permission_mapping.get(permission)
-                    if old_permission:
-                        state_transition[(v_old_name, old_permission)] = \
-                            (v_new_name, permission)
+                    old_perm_name = permission_mapping.get(new_perm_name)
+                    if old_perm_name:
+                        self._add_state_transition(
+                            state_transition,
+                            old_view_name,
+                            old_perm_name,
+                            new_view_name,
+                            new_perm_name
+                        )
+        return state_transition
+
+    def security_converge(self, baseviews, menus):
+        state_transition = self._create_state_transition(baseviews, menus)
         if not state_transition:
             log.info("No state transitions found")
             return
@@ -1196,15 +1223,16 @@ class BaseSecurityManager(AbstractSecurityManager):
         for role in roles:
             permissions = list(role.permissions)
             for pvm in permissions:
-                new_pvm_state = state_transition.get(
+                new_pvm_states = state_transition.get(
                     (pvm.view_menu.name, pvm.permission.name)
                 )
-                if not new_pvm_state:
+                if not new_pvm_states:
                     continue
-                new_pvm = self.add_permission_view_menu(
-                    new_pvm_state[1], new_pvm_state[0]
-                )
-                self.add_permission_role(role, new_pvm)
+                for new_pvm_state in new_pvm_states:
+                    new_pvm = self.add_permission_view_menu(
+                        new_pvm_state[1], new_pvm_state[0]
+                    )
+                    self.add_permission_role(role, new_pvm)
                 self.del_permission_role(role, pvm)
 
     """
