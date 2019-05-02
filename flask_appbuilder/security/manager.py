@@ -3,6 +3,7 @@ import datetime
 import json
 import logging
 import re
+from typing import Dict, List
 
 from flask import g, session, url_for
 from flask_babel import lazy_gettext as _
@@ -50,7 +51,8 @@ from ..const import (
     LOGMSG_ERR_SEC_AUTH_LDAP_TLS,
     LOGMSG_WAR_SEC_LOGIN_FAILED,
     LOGMSG_WAR_SEC_NO_USER,
-    LOGMSG_WAR_SEC_NOLDAP_OBJ
+    LOGMSG_WAR_SEC_NOLDAP_OBJ,
+    PERMISSION_PREFIX
 )
 
 log = logging.getLogger(__name__)
@@ -1158,25 +1160,75 @@ class BaseSecurityManager(AbstractSecurityManager):
         for method_name, permission_name in method_permission_name.items():
             old_permission_name = previous_permission_name.get(method_name)
             if old_permission_name:
-                ret['can_' + permission_name] = 'can_' + old_permission_name
+                ret[
+                    PERMISSION_PREFIX + permission_name
+                ] = PERMISSION_PREFIX + old_permission_name
         return ret
 
     @staticmethod
     def _add_state_transition(
-            state_transition,
-            old_view_name,
-            old_perm_name,
-            view_name,
-            perm_name
-    ):
-        old_pvm = state_transition.get((old_view_name, old_perm_name))
+            state_transition: Dict,
+            old_view_name: str,
+            old_perm_name: str,
+            view_name: str,
+            perm_name: str
+    ) -> None:
+        old_pvm = state_transition['add'].get((old_view_name, old_perm_name))
         if old_pvm:
-            state_transition[(old_view_name, old_perm_name)].add((view_name, perm_name))
+            state_transition['add'][(old_view_name, old_perm_name)].add(
+                (view_name, perm_name)
+            )
         else:
-            state_transition[(old_view_name, old_perm_name)] = {(view_name, perm_name)}
+            state_transition['add'][(old_view_name, old_perm_name)] = {
+                (view_name, perm_name)
+            }
+        state_transition['del_role_pvm'].add((old_view_name, old_perm_name))
+        state_transition['del_views'].add(old_view_name)
+        state_transition['del_perms'].add(old_perm_name)
 
-    def _create_state_transition(self, baseviews, menus):
-        state_transition = dict()
+    @staticmethod
+    def _update_del_transitions(state_transitions: Dict, baseviews: List) -> None:
+        """
+            Mutates state_transitions, loop baseviews and prunes all
+            views and permissions that are not to delete because references
+            exist.
+
+        :param baseview:
+        :param state_transitions:
+        :return:
+        """
+        for baseview in baseviews:
+            state_transitions['del_views'].discard(baseview.class_permission_name)
+            for permission in baseview.base_permissions:
+                state_transitions['del_role_pvm'].discard(
+                    (
+                        baseview.class_permission_name,
+                        permission
+                    )
+                )
+                state_transitions['del_perms'].discard(permission)
+
+    def create_state_transitions(self, baseviews: List, menus: List) -> Dict:
+        """
+            Creates a Dict with all the necessary vm/permission transitions
+
+            Dict: {
+                    "add": {(<VM>, <PERM>): ((<VM>, PERM), ... )}
+                    "del_role_pvm": ((<VM>, <PERM>), ...)
+                    "del_views": (<VM>, ... )
+                    "del_perms": (<PERM>, ... )
+                  }
+
+        :param baseviews: List with all the registered BaseView, BaseApi
+        :param menus: List with all the menu entries
+        :return: Dict with state transitions
+        """
+        state_transitions = {
+            'add': {},
+            'del_role_pvm': set(),
+            'del_views': set(),
+            'del_perms': set()
+        }
         for baseview in baseviews:
             add_all_flag = False
             new_view_name = baseview.class_permission_name
@@ -1195,7 +1247,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                     old_perm_name = permission_mapping.get(new_perm_name)
                     old_perm_name = old_perm_name or new_perm_name
                     self._add_state_transition(
-                        state_transition,
+                        state_transitions,
                         old_view_name,
                         old_perm_name,
                         new_view_name,
@@ -1205,25 +1257,39 @@ class BaseSecurityManager(AbstractSecurityManager):
                     old_perm_name = permission_mapping.get(new_perm_name)
                     if old_perm_name:
                         self._add_state_transition(
-                            state_transition,
+                            state_transitions,
                             old_view_name,
                             old_perm_name,
                             new_view_name,
                             new_perm_name
                         )
-        return state_transition
+        self._update_del_transitions(state_transitions, baseviews)
+        return state_transitions
 
-    def security_converge(self, baseviews, menus):
-        state_transition = self._create_state_transition(baseviews, menus)
-        if not state_transition:
+    def security_converge(self, baseviews: List, menus: List, dry=False) -> Dict:
+        """
+            Converges overridden permissions on all registered views/api
+            will compute all necessary operations from `class_permissions_name`,
+            `previous_class_permission_name`, method_permission_name`,
+            `previous_permissions_name` class attributes.
+
+        :param baseviews: List of registered views/apis
+        :param menus: List of menu items
+        :param dry: If True will not change DB
+        :return: Dict with the necessary operations (state_transitions)
+        """
+        state_transitions = self.create_state_transitions(baseviews, menus)
+        if dry:
+            return state_transitions
+        if not state_transitions:
             log.info("No state transitions found")
-            return
-        print(f"State {state_transition}")
+            return dict()
+        log.info(f"State transitions: {state_transitions}")
         roles = self.get_all_roles()
         for role in roles:
             permissions = list(role.permissions)
             for pvm in permissions:
-                new_pvm_states = state_transition.get(
+                new_pvm_states = state_transitions['add'].get(
                     (pvm.view_menu.name, pvm.permission.name)
                 )
                 if not new_pvm_states:
@@ -1233,8 +1299,15 @@ class BaseSecurityManager(AbstractSecurityManager):
                         new_pvm_state[1], new_pvm_state[0]
                     )
                     self.add_permission_role(role, new_pvm)
-                self.del_permission_role(role, pvm)
-
+                if (pvm.view_menu.name, pvm.permission.name) in state_transitions[
+                    'del_role_pvm'
+                ]:
+                    self.del_permission_role(role, pvm)
+        for view_name in state_transitions['del_views']:
+            self.del_view_menu(view_name)
+        for permission_name in state_transitions['del_perms']:
+            self.del_permission(permission_name)
+        return state_transitions
     """
      ---------------------------
      INTERFACE ABSTRACT METHODS

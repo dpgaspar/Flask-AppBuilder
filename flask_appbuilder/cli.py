@@ -134,13 +134,19 @@ def security_cleanup():
 
 
 @fab.command("security-converge")
+@click.option('--dry-run', '-d', is_flag=True, help="Dry run & print state transitions.")
 @with_appcontext
-def security_converge():
+def security_converge(dry_run=False):
     """
         Converges security deletes previous_class_permission_name
     """
-    current_app.appbuilder.security_converge()
-    click.echo(click.style("Finished security cleanup", fg="green"))
+    state_transitions = current_app.appbuilder.security_converge(dry=dry_run)
+    if dry_run:
+        click.echo(click.style(
+            f"Computed security converge:{state_transitions}", fg="green")
+        )
+    else:
+        click.echo(click.style("Finished security converge", fg="green"))
 
 
 @fab.command("create-permissions")
