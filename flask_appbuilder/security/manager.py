@@ -1153,16 +1153,21 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     @staticmethod
     def _get_new_old_permissions(
-            method_permission_name,
-            previous_permission_name,
-    ):
+            method_permission_name: Dict,
+            previous_permission_name: Dict,
+    ) -> Dict:
         ret = dict()
         for method_name, permission_name in method_permission_name.items():
             old_permission_name = previous_permission_name.get(method_name)
             if old_permission_name:
-                ret[
-                    PERMISSION_PREFIX + permission_name
-                ] = PERMISSION_PREFIX + old_permission_name
+                if PERMISSION_PREFIX + permission_name not in ret:
+                    ret[
+                        PERMISSION_PREFIX + permission_name
+                    ] = {PERMISSION_PREFIX + old_permission_name, }
+                else:
+                    ret[
+                        PERMISSION_PREFIX + permission_name
+                    ].add(PERMISSION_PREFIX + old_permission_name)
         return ret
 
     @staticmethod
@@ -1236,7 +1241,6 @@ class BaseSecurityManager(AbstractSecurityManager):
                 baseview.method_permission_name,
                 baseview.previous_method_permission_name,
             )
-
             if baseview.previous_class_permission_name:
                 old_view_name = baseview.previous_class_permission_name
                 add_all_flag = True
@@ -1244,18 +1248,19 @@ class BaseSecurityManager(AbstractSecurityManager):
                 new_view_name = baseview.class_permission_name
             for new_perm_name in baseview.base_permissions:
                 if add_all_flag:
-                    old_perm_name = permission_mapping.get(new_perm_name)
-                    old_perm_name = old_perm_name or new_perm_name
-                    self._add_state_transition(
-                        state_transitions,
-                        old_view_name,
-                        old_perm_name,
-                        new_view_name,
-                        new_perm_name
-                    )
+                    old_perm_names = permission_mapping.get(new_perm_name)
+                    old_perm_names = old_perm_names or (new_perm_name,)
+                    for old_perm_name in old_perm_names:
+                        self._add_state_transition(
+                            state_transitions,
+                            old_view_name,
+                            old_perm_name,
+                            new_view_name,
+                            new_perm_name
+                        )
                 else:
-                    old_perm_name = permission_mapping.get(new_perm_name)
-                    if old_perm_name:
+                    old_perm_names = permission_mapping.get(new_perm_name) or set()
+                    for old_perm_name in old_perm_names:
                         self._add_state_transition(
                             state_transitions,
                             old_view_name,
@@ -1303,6 +1308,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                     'del_role_pvm'
                 ]:
                     self.del_permission_role(role, pvm)
+        for pvm in state_transitions['del_role_pvm']:
+
+            self.del_permission_view_menu(pvm[1], pvm[0], cascade=False)
         for view_name in state_transitions['del_views']:
             self.del_view_menu(view_name)
         for permission_name in state_transitions['del_perms']:
@@ -1491,7 +1499,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         raise NotImplementedError
 
-    def del_permission_view_menu(self, permission_name, view_menu_name):
+    def del_permission_view_menu(self, permission_name, view_menu_name, cascade=True):
         raise NotImplementedError
 
     def exist_permission_on_views(self, lst, item):

@@ -397,13 +397,17 @@ class SecurityManager(BaseSecurityManager):
             log.error(c.LOGMSG_ERR_SEC_ADD_PERMVIEW.format(str(e)))
             self.get_session.rollback()
 
-    def del_permission_view_menu(self, permission_name, view_menu_name):
+    def del_permission_view_menu(self, permission_name, view_menu_name, cascade=True):
         try:
             pv = self.find_permission_view_menu(permission_name, view_menu_name)
+            if not pv:
+                return
             # delete permission on view
             self.get_session.delete(pv)
             self.get_session.commit()
             # if no more permission on permission view, delete permission
+            if not cascade:
+                return
             if (
                 not self.get_session.query(self.permissionview_model)
                 .filter_by(permission=pv.permission)
