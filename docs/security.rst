@@ -96,7 +96,6 @@ You can use the @permission_name to override the permission's name to whatever y
 
 Take a look at :doc:`api`
 
-.. _SecurityPermCustomization:
 
 Permission Customization
 ------------------------
@@ -220,6 +219,9 @@ You can also migrate back by switching ``previous_*`` attributes to their target
 ``previous_method_permission_name`` by ``method_permission_name`` and
 ``previous_permission_name`` by ``class_permission_name``. Then run security converge will expand back all permissions
 on all your Roles.
+
+:note: You should backup your production database before migrating your permissions. Also note that you
+       can run ``flask fab security-converge --dry-run`` to get a list of operations the converge will perform.
 
 
 Automatic Cleanup
