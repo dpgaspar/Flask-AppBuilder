@@ -127,7 +127,8 @@ Required properties:
 Optional properties:
 
 :related_views: if you want a master/detail view on the show and edit. F.A.B.
-    will relate 1/N relations automatically, it will display a show or edit view with tab (or accordion) with a list related record. You can relate charts also.
+    will relate 1/N relations automatically, it will display a show or edit view with tab (or accordion)
+    with a list related record. You can relate charts also.
 
 This is the most basic configuration (with an added related view).
 
@@ -142,15 +143,15 @@ Let's define it::
         list_columns = ['name','personal_cellphone','birthday','contact_group']
 
         show_fieldsets = [
-                            (
-                                'Summary',
-                                {'fields': ['name', 'address', 'contact_group']}
-                            ),
-                            (
-                                'Personal Info',
-                                {'fields': ['birthday', 'personal_phone', 'personal_cellphone'], 'expanded': False}
-                            ),
-                         ]
+            (
+                'Summary',
+                {'fields': ['name', 'address', 'contact_group']}
+            ),
+            (
+                'Personal Info',
+                {'fields': ['birthday', 'personal_phone', 'personal_cellphone'], 'expanded': False}
+            ),
+        ]
 
 Some explanation:
 
@@ -213,6 +214,16 @@ Register everything, to present the models and create the menu. Issue **create_a
 
 Take a look at the :doc:`api` for add_view method.
 
+Security
+--------
+
+FAB will create all possible permissions and add them to the ``AUTH_ROLE_ADMIN`` config key
+that defaults to **Admin**. you can completely override the default inferred permissions
+and reduce the level of granularity, for mode detail about this read the :doc:`security` chapter.
+
+
+Example and Live Demo
+---------------------
 
 You can find this example at: https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/quickhowto
 
@@ -239,7 +250,6 @@ Some images:
 
 .. image:: ./images/contact_list.png
     :width: 100%
-
 
 Exposed methods
 ---------------
