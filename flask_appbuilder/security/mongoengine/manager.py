@@ -352,7 +352,7 @@ class SecurityManager(BaseSecurityManager):
             :param perm_view:
                 The PermissionViewMenu object
         """
-        if perm_view not in role.permissions:
+        if perm_view and perm_view not in role.permissions:
             try:
                 role.permissions.append(perm_view)
                 role.save()

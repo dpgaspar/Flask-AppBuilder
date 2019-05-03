@@ -203,6 +203,21 @@ class FlaskTestCase(unittest.TestCase):
         self.model2apifilteredrelfields = Model2ApiFilteredRelFields
         self.appbuilder.add_api(Model2ApiFilteredRelFields)
 
+        class Model1PermOverride(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            class_permission_name = 'api'
+            method_permission_name = {
+                "get_list": "access",
+                "get": "access",
+                "put": "access",
+                "post": "access",
+                "delete": "access",
+                "info": "access"
+            }
+
+        self.model1permoverride = Model1PermOverride
+        self.appbuilder.add_api(Model1PermOverride)
+
         role_admin = self.appbuilder.sm.find_role("Admin")
         self.appbuilder.sm.add_user(
             USERNAME, "admin", "user", "admin@fab.org", role_admin, PASSWORD
@@ -1391,3 +1406,164 @@ class FlaskTestCase(unittest.TestCase):
         uri = "api/v1/_openapi"
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
+
+    def test_permission_override(self):
+        """
+            REST Api: Test permission name override
+        """
+        role = self.appbuilder.sm.add_role("Test")
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_access",
+            "api"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm)
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+
+        client = self.app.test_client()
+        token = self.login(client, "test", "test")
+        uri = "api/v1/model1permoverride/"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        uri = "api/v1/model1permoverride/_info"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        uri = "api/v1/model1permoverride/1"
+        rv = self.auth_client_delete(client, token, uri)
+        eq_(rv.status_code, 200)
+
+    def test_permission_converge_compress(self):
+        """
+            REST Api: Test permission name converge compress
+        """
+        from flask_appbuilder import ModelRestApi
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+        class Model1PermConverge(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            class_permission_name = 'api2'
+            previous_class_permission_name = 'Model1Api'
+            method_permission_name = {
+                "get_list": "access2",
+                "get": "access2",
+                "put": "access2",
+                "post": "access2",
+                "delete": "access2",
+                "info": "access2"
+            }
+            previous_method_permission_name = {
+                "get_list": "get",
+                "get": "get",
+                "put": "put",
+                "post": "post",
+                "delete": "delete",
+                "info": "info"
+            }
+
+        self.appbuilder.add_api(Model1PermConverge)
+        role = self.appbuilder.sm.add_role("Test")
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_get",
+            "Model1Api"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm)
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+        # Remove previous class, Hack to test code change
+        for i, baseview in enumerate(self.appbuilder.baseviews):
+            if baseview.__class__.__name__ == "Model1Api":
+                break
+        self.appbuilder.baseviews.pop(i)
+
+        target_state_transitions = {
+            'add': {
+                ('Model1Api', 'can_get'): {('api2', 'can_access2')},
+                ('Model1Api', 'can_delete'): {('api2', 'can_access2')},
+                ('Model1Api', 'can_info'): {('api2', 'can_access2')},
+                ('Model1Api', 'can_put'): {('api2', 'can_access2')},
+                ('Model1Api', 'can_post'): {('api2', 'can_access2')}
+            },
+            'del_role_pvm': {
+                ('Model1Api', 'can_put'),
+                ('Model1Api', 'can_delete'),
+                ('Model1Api', 'can_get'),
+                ('Model1Api', 'can_info'),
+                ('Model1Api', 'can_post')
+            },
+            'del_views': {'Model1Api'},
+            'del_perms': set()
+        }
+        state_transitions = self.appbuilder.security_converge()
+        eq_(state_transitions, target_state_transitions)
+        role = self.appbuilder.sm.find_role("Test")
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_access2",
+            "api2"
+        )
+        assert pvm in role.permissions
+        eq_(len(role.permissions), 1)
+
+    def test_permission_converge_expand(self):
+        """
+            REST Api: Test permission name converge expand
+        """
+        from flask_appbuilder import ModelRestApi
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+        class Model1PermConverge(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            class_permission_name = 'Model1PermOverride'
+            previous_class_permission_name = 'api'
+            method_permission_name = {
+                "get_list": "get",
+                "get": "get",
+                "put": "put",
+                "post": "post",
+                "delete": "delete",
+                "info": "info"
+            }
+            previous_method_permission_name = {
+                "get_list": "access",
+                "get": "access",
+                "put": "access",
+                "post": "access",
+                "delete": "access",
+                "info": "access"
+            }
+
+        self.appbuilder.add_api(Model1PermConverge)
+        role = self.appbuilder.sm.add_role("Test")
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_access",
+            "api"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm)
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+        # Remove previous class, Hack to test code change
+        for i, baseview in enumerate(self.appbuilder.baseviews):
+            if baseview.__class__.__name__ == "Model1PermOverride":
+                break
+        self.appbuilder.baseviews.pop(i)
+
+        target_state_transitions = {
+            'add': {
+                ('api', 'can_access'): {
+                    ('Model1PermOverride', 'can_get'),
+                    ('Model1PermOverride', 'can_post'),
+                    ('Model1PermOverride', 'can_put'),
+                    ('Model1PermOverride', 'can_delete'),
+                    ('Model1PermOverride', 'can_info')
+                }
+            },
+            'del_role_pvm': {('api', 'can_access')},
+            'del_views': {'api'},
+            'del_perms': {'can_access'}
+        }
+        state_transitions = self.appbuilder.security_converge()
+        eq_(state_transitions, target_state_transitions)
+        role = self.appbuilder.sm.find_role("Test")
+        eq_(len(role.permissions), 5)
