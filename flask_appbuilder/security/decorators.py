@@ -53,12 +53,11 @@ def protect(allow_browser_login=False):
 
         def wraps(self, *args, **kwargs):
             # Apply method permission name override if exists
+            permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
             if self.method_permission_name:
                 _permission_name = self.method_permission_name.get(f.__name__)
                 if _permission_name:
                     permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)
-            else:
-                permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
             class_permission_name = self.class_permission_name
             if current_app.appbuilder.sm.is_item_public(
                     permission_str,
@@ -105,12 +104,11 @@ def has_access(f):
 
     def wraps(self, *args, **kwargs):
         # Apply method permission name override if exists
+        permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
         if self.method_permission_name:
             _permission_name = self.method_permission_name.get(f.__name__)
             if _permission_name:
                 permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)
-        else:
-            permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
         if self.appbuilder.sm.has_access(
                 permission_str,
                 self.class_permission_name
@@ -150,12 +148,11 @@ def has_access_api(f):
 
     def wraps(self, *args, **kwargs):
         # Apply method permission name override if exists
+        permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
         if self.method_permission_name:
             _permission_name = self.method_permission_name.get(f.__name__)
             if _permission_name:
                 permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)
-        else:
-            permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
         if self.appbuilder.sm.has_access(
                 permission_str,
                 self.class_permission_name
