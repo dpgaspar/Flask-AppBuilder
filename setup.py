@@ -56,7 +56,7 @@ setup(
         'Flask-Babel>=0.11.1,<1',
         'Flask-Login>=0.3,<0.5',
         'Flask-OpenID>=1.2.5,<2',
-        'Flask-SQLAlchemy>=2.3,<3',
+        'Flask-SQLAlchemy>=2.4,<3',
         'Flask-WTF>=0.14.2,<1',
         'Flask-JWT-Extended>=3.18,<4',
         'jsonschema>=3.0.1<4',

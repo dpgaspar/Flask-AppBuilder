@@ -16,7 +16,7 @@ flask-babel==0.12.2
 flask-jwt-extended==3.18.0
 flask-login==0.4.1
 flask-openid==1.2.5
-flask-sqlalchemy==2.3.2
+flask-sqlalchemy==2.4.0
 flask-wtf==0.14.2
 flask==1.0.2
 idna==2.8                 # via requests
