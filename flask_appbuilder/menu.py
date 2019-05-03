@@ -1,4 +1,4 @@
-from flask import url_for
+from flask import url_for, current_app
 
 
 class MenuItem(object):
@@ -25,7 +25,11 @@ class MenuItem(object):
             if not self.baseview:
                 return ""
             else:
-                return url_for(
+                if current_app.appbuilder and current_app.appbuilder.url_prefix:
+                    prefix = current_app.appbuilder.url_prefix
+                else:
+                    prefix = ""
+                return prefix + url_for(
                     "{}.{}".format(self.baseview.endpoint, self.baseview.default_view)
                 )
         else:

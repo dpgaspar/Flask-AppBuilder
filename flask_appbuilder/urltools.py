@@ -1,6 +1,7 @@
 import re
 
-from flask import request
+from flask import request, current_app
+from urllib.parse import urljoin
 
 
 class Stack(object):
@@ -99,3 +100,9 @@ def get_filter_args(filters):
             filters.add_filter_index(
                 re_match[0][1], int(re_match[0][0]), request.args.get(arg)
             )
+
+def rewrite_url(request):
+    if current_app.appbuilder and current_app.appbuilder.url_prefix:
+        return urljoin(request.host_url, current_app.appbuilder.url_prefix + request.path)
+    else:
+        return request.url

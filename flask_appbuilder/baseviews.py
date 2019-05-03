@@ -14,7 +14,8 @@ from .urltools import (
     get_order_args,
     get_page_args,
     get_page_size_args,
-    Stack
+    Stack,
+    rewrite_url
 )
 from .widgets import FormWidget, ListWidget, SearchWidget, ShowWidget
 
@@ -211,7 +212,7 @@ class BaseView(object):
             If you bypass it, the next submit or back will go over it.
         """
         page_history = Stack(session.get("page_history", []))
-        page_history.push(request.url)
+        page_history.push(rewrite_url(request))
         session["page_history"] = page_history.to_json()
 
     def get_redirect(self):

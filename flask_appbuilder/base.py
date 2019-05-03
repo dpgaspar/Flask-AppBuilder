@@ -104,6 +104,7 @@ class AppBuilder(object):
         session=None,
         menu=None,
         indexview=None,
+        url_prefix=None,
         base_template="appbuilder/baselayout.html",
         static_folder="static/appbuilder",
         static_url_path="/appbuilder",
@@ -121,6 +122,8 @@ class AppBuilder(object):
                 optional, a previous contructed menu
             :param indexview:
                 optional, your customized indexview
+            :param url_prefix:
+                optional, your customized url_prefix
             :param static_folder:
                 optional, your override for the global static folder
             :param static_url_path:
@@ -138,6 +141,7 @@ class AppBuilder(object):
         self.base_template = base_template
         self.security_manager_class = security_manager_class
         self.indexview = indexview or IndexView
+        self.url_prefix = url_prefix or ""
         self.static_folder = static_folder
         self.static_url_path = static_url_path
         self.app = app
@@ -515,22 +519,22 @@ class AppBuilder(object):
 
     @property
     def get_url_for_login(self):
-        return url_for("%s.%s" % (self.sm.auth_view.endpoint, "login"))
+        return self.url_prefix + url_for("%s.%s" % (self.sm.auth_view.endpoint, "login"))
 
     @property
     def get_url_for_logout(self):
-        return url_for("%s.%s" % (self.sm.auth_view.endpoint, "logout"))
+        return self.url_prefix + url_for("%s.%s" % (self.sm.auth_view.endpoint, "logout"))
 
     @property
     def get_url_for_index(self):
-        return url_for("%s.%s" % (self.indexview.endpoint, self.indexview.default_view))
+        return self.url_prefix + url_for("%s.%s" % (self.indexview.endpoint, self.indexview.default_view))
 
     @property
     def get_url_for_userinfo(self):
-        return url_for("%s.%s" % (self.sm.user_view.endpoint, "userinfo"))
+        return self.url_prefix + url_for("%s.%s" % (self.sm.user_view.endpoint, "userinfo"))
 
     def get_url_for_locale(self, lang):
-        return url_for(
+        return self.url_prefix + url_for(
             "%s.%s" % (self.bm.locale_view.endpoint, self.bm.locale_view.default_view),
             locale=lang,
         )
