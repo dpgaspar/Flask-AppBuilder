@@ -65,6 +65,7 @@ Organizations:
 
 - Miniclip
 - EuroBIC
+- `On Beat Digital <https://onbeat.digital/>`_
 
 Includes:
 ---------
