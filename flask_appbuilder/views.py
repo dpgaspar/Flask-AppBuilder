@@ -18,7 +18,8 @@ from .baseviews import BaseCRUDView, BaseFormView, BaseView, expose, expose_api
 from .const import FLAMSG_ERR_SEC_ACCESS_DENIED
 from .filemanager import uuid_originalname
 from .security.decorators import has_access, has_access_api, permission_name
-from .urltools import get_filter_args, get_order_args, get_page_args, get_page_size_args
+from .urltools import get_filter_args, get_order_args, get_page_args, get_page_size_args,\
+    prefixed_redirect
 from .widgets import GroupFormListWidget, ListMasterWidget
 
 log = logging.getLogger(__name__)
@@ -621,7 +622,7 @@ class ModelView(RestCRUDView):
             return action.func(self.datamodel.get(pk))
         else:
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
-            return redirect(".")
+            return prefixed_redirect(".")
 
     @expose("/action_post", methods=["POST"])
     def action_post(self):
@@ -638,7 +639,7 @@ class ModelView(RestCRUDView):
             return action.func(items)
         else:
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
-            return redirect(".")
+            return prefixed_redirect(".")
 
 
 class MasterDetailView(BaseCRUDView):
@@ -817,7 +818,7 @@ class CompactCRUDMixin(BaseCRUDView):
         if not widgets:
             self.set_key("session_form_action", "")
             self.set_key("session_form_widget", None)
-            return redirect(request.referrer)
+            return prefixed_redirect(request.referrer)
         else:
             self.set_key("session_form_widget", "add")
             self.set_key("session_form_action", request.script_root + request.full_path)

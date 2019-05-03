@@ -164,7 +164,10 @@ class AppBuilder(object):
         app.config.setdefault("LANGUAGES", {"en": {"flag": "gb", "name": "English"}})
         app.config.setdefault("ADDON_MANAGERS", [])
         app.config.setdefault("FAB_API_MAX_PAGE_SIZE", 20)
+        app.config.setdefault("FAB_URL_PREFIX ", "")
         self.app = app
+        if not self.url_prefix:  # user can override prefix in parameter
+            self.url_prefix = app.config.get('FAB_URL_PREFIX', "")
         if self.update_perms:  # default is True, if False takes precedence from config
             self.update_perms = app.config.get('FAB_UPDATE_PERMS', True)
         _security_manager_class_name = app.config.get('FAB_SECURITY_MANAGER_CLASS', None)

@@ -6,7 +6,7 @@ import random
 import string
 import unittest
 
-from flask import redirect, request, session
+from flask import request, session
 from flask_appbuilder import SQLA
 from flask_appbuilder.charts.views import (
     ChartView,
@@ -20,6 +20,7 @@ from flask_appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
 from flask_appbuilder.models.sqla.filters import FilterEqual, FilterStartsWith
+from flask_appbuilder.urltools import prefixed_redirect
 from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView
 import jinja2
 from nose.tools import eq_, ok_
@@ -122,17 +123,17 @@ class FlaskTestCase(unittest.TestCase):
             obj_id = 1
 
             def post_add_redirect(self):
-                return redirect(
+                return prefixed_redirect(
                     "model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
                 )
 
             def post_edit_redirect(self):
-                return redirect(
+                return prefixed_redirect(
                     "model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
                 )
 
             def post_delete_redirect(self):
-                return redirect(
+                return prefixed_redirect(
                     "model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
                 )
 

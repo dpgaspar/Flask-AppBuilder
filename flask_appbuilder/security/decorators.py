@@ -6,10 +6,10 @@ from flask import (
     flash,
     jsonify,
     make_response,
-    redirect,
     request,
     url_for
 )
+from flask_appbuilder.urltools import get_prefixed_request_url, prefixed_redirect
 from flask_jwt_extended import verify_jwt_in_request
 
 from .._compat import as_unicode
@@ -112,10 +112,10 @@ def has_access(f):
                 )
             )
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
-        return redirect(
+        return prefixed_redirect(
             url_for(
                 self.appbuilder.sm.auth_view.__class__.__name__ + ".login",
-                next=request.url
+                next=get_prefixed_request_url(request)
             )
         )
     f._permission_name = permission_str

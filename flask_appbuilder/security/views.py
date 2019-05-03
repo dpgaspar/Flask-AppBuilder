@@ -3,6 +3,7 @@ import logging
 import re
 
 from flask import abort, flash, g, redirect, request, session, url_for
+from flask_appbuilder.urltools import prefixed_redirect
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
 import jwt
@@ -227,7 +228,7 @@ class UserModelView(ModelView):
 
     @action("userinfoedit", lazy_gettext("Edit User"), "", "fa-edit", multiple=False)
     def userinfoedit(self, item):
-        return redirect(
+        return prefixed_redirect(
             url_for(self.appbuilder.sm.userinfoeditview.__name__ + ".this_form_get")
         )
 
@@ -356,7 +357,7 @@ class UserDBModelView(UserModelView):
         multiple=False,
     )
     def resetmypassword(self, item):
-        return redirect(
+        return prefixed_redirect(
             url_for(self.appbuilder.sm.resetmypasswordview.__name__ + ".this_form_get")
         )
 
@@ -364,7 +365,7 @@ class UserDBModelView(UserModelView):
         "resetpasswords", lazy_gettext("Reset Password"), "", "fa-lock", multiple=False
     )
     def resetpasswords(self, item):
-        return redirect(
+        return prefixed_redirect(
             url_for(
                 self.appbuilder.sm.resetpasswordview.__name__ + ".this_form_get",
                 pk=item.id,
@@ -474,7 +475,11 @@ class AuthDBView(AuthView):
                 flash(as_unicode(self.invalid_login_message), "warning")
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
-            return redirect(self.appbuilder.get_url_for_index)
+            next_url = request.args.get('next')
+            if next_url:
+                return redirect(next_url)
+            else:
+                return redirect(self.appbuilder.get_url_for_index)
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
@@ -583,11 +588,11 @@ class AuthOIDView(AuthView):
         def after_login(resp):
             if resp.email is None or resp.email == "":
                 flash(as_unicode(self.invalid_login_message), "warning")
-                return redirect("login")
+                return prefixed_redirect("login")
             user = self.appbuilder.sm.auth_user_oid(resp.email)
             if user is None:
                 flash(as_unicode(self.invalid_login_message), "warning")
-                return redirect("login")
+                return prefixed_redirect("login")
             remember_me = False
             if "remember_me" in session:
                 remember_me = session["remember_me"]
@@ -655,7 +660,7 @@ class AuthOAuthView(AuthView):
         resp = self.appbuilder.sm.oauth_remotes[provider].authorized_response()
         if resp is None:
             flash(u"You denied the request to sign in.", "warning")
-            return redirect("login")
+            return prefixed_redirect("login")
         log.debug("OAUTH Authorized resp: {0}".format(resp))
         # Retrieves specific user info from the provider
         try:
@@ -676,14 +681,14 @@ class AuthOAuthView(AuthView):
                         break
                 if not allow:
                     flash(u"You are not authorized.", "warning")
-                    return redirect("login")
+                    return prefixed_redirect("login")
             else:
                 log.debug("No whitelist for OAuth provider")
             user = self.appbuilder.sm.auth_user_oauth(userinfo)
 
         if user is None:
             flash(as_unicode(self.invalid_login_message), "warning")
-            return redirect("login")
+            return prefixed_redirect("login")
         else:
             login_user(user)
             try:
@@ -719,4 +724,8 @@ class AuthRemoteUserView(AuthView):
                 login_user(user)
         else:
             flash(as_unicode(self.invalid_login_message), "warning")
-        return redirect(self.appbuilder.get_url_for_index)
+        next_url = request.args.get('next')
+        if next_url:
+            return redirect(next_url)
+        else:
+            return redirect(self.appbuilder.get_url_for_index)

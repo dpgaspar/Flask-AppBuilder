@@ -1,7 +1,8 @@
+from functools import partial
 import re
-
-from flask import request, current_app
 from urllib.parse import urljoin
+
+from flask import current_app, redirect, request
 
 
 class Stack(object):
@@ -102,8 +103,16 @@ def get_filter_args(filters):
             )
 
 
-def rewrite_url(request):
+def get_url_prefix():
     if current_app.appbuilder and current_app.appbuilder.url_prefix:
-        return urljoin(request.host_url, current_app.appbuilder.url_prefix + request.path)
+        return current_app.appbuilder.url_prefix
     else:
-        return request.url
+        return ""
+
+
+def get_prefixed_request_url(request):
+    return urljoin(request.host_url, get_url_prefix() + request.full_path)
+
+
+def prefixed_redirect(location, *args, **kwargs):
+    return partial(redirect, get_url_prefix() + location)(*args, **kwargs)
