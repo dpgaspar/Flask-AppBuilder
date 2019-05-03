@@ -947,7 +947,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 username=username,
                 first_name=username,
                 last_name="-",
-                email="-",
+                email=username + '@email.notfound',
                 role=self.find_role(self.auth_user_registration_role),
             )
 
