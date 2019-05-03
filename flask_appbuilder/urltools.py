@@ -101,6 +101,7 @@ def get_filter_args(filters):
                 re_match[0][1], int(re_match[0][0]), request.args.get(arg)
             )
 
+
 def rewrite_url(request):
     if current_app.appbuilder and current_app.appbuilder.url_prefix:
         return urljoin(request.host_url, current_app.appbuilder.url_prefix + request.path)

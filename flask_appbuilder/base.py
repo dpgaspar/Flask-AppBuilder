@@ -527,11 +527,13 @@ class AppBuilder(object):
 
     @property
     def get_url_for_index(self):
-        return self.url_prefix + url_for("%s.%s" % (self.indexview.endpoint, self.indexview.default_view))
+        return self.url_prefix + url_for("%s.%s" % (self.indexview.endpoint,
+                                                    self.indexview.default_view))
 
     @property
     def get_url_for_userinfo(self):
-        return self.url_prefix + url_for("%s.%s" % (self.sm.user_view.endpoint, "userinfo"))
+        return self.url_prefix + url_for("%s.%s" % (self.sm.user_view.endpoint,
+                                                    "userinfo"))
 
     def get_url_for_locale(self, lang):
         return self.url_prefix + url_for(
