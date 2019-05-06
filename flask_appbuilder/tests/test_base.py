@@ -1003,7 +1003,7 @@ class FlaskTestCase(unittest.TestCase):
         eq_(model.field_string, u"test1")
         eq_(model.field_integer, 1)
 
-    def test_permission_converge_compress(self):
+    def test_1_permission_converge_compress(self):
         """
             MVC: Test permission name converge compress
         """
@@ -1051,6 +1051,10 @@ class FlaskTestCase(unittest.TestCase):
         # Remove previous class, Hack to test code change
         for i, baseview in enumerate(self.appbuilder.baseviews):
             if baseview.__class__.__name__ == "Model1View":
+                break
+        self.appbuilder.baseviews.pop(i)
+        for i, baseview in enumerate(self.appbuilder.baseviews):
+            if baseview.__class__.__name__ == "Model1PermOverride":
                 break
         self.appbuilder.baseviews.pop(i)
 
