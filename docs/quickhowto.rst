@@ -288,7 +288,7 @@ REST API
 
 :note:
     This sort of automatic REST API is going to be deprecated, and will
-    be completely removed in 1.15.X. Checkout the new API on :doc:`rest_api`
+    be completely removed in 2.3.X. Checkout the new API on :doc:`rest_api`
 
 URL=/api
 --------
