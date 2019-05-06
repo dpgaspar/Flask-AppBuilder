@@ -1452,14 +1452,6 @@ class FlaskTestCase(unittest.TestCase):
                 "delete": "access2",
                 "info": "access2"
             }
-            previous_method_permission_name = {
-                "get_list": "get",
-                "get": "get",
-                "put": "put",
-                "post": "post",
-                "delete": "delete",
-                "info": "info"
-            }
 
         self.appbuilder.add_api(Model1PermConverge)
         role = self.appbuilder.sm.add_role("Test")

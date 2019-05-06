@@ -343,16 +343,27 @@ class BaseApi(object):
         self.apispec_parameter_schemas = self.apispec_parameter_schemas or dict()
         self._apispec_parameter_schemas = self._apispec_parameter_schemas or dict()
         self._apispec_parameter_schemas.update(self.apispec_parameter_schemas)
+
+        if not self.previous_class_permission_name and self.class_permission_name:
+            self.previous_class_permission_name = self.__class__.__name__
         self.class_permission_name = (self.class_permission_name or
                                       self.__class__.__name__)
+        is_collect_previous = False
+        if not self.previous_method_permission_name and self.method_permission_name:
+            self.previous_method_permission_name = dict()
+            is_collect_previous = True
         self.method_permission_name = self.method_permission_name or dict()
-        self.previous_method_permission_name = (self.previous_method_permission_name or
-                                                dict())
+
         if self.base_permissions is None:
             self.base_permissions = set()
             for attr_name in dir(self):
                 if hasattr(getattr(self, attr_name), "_permission_name"):
                     _permission_name = self.method_permission_name.get(attr_name)
+                    if is_collect_previous:
+                        self.previous_method_permission_name[attr_name] = \
+                            getattr(
+                                getattr(self, attr_name), "_permission_name"
+                            )
                     if not _permission_name:
                         _permission_name = getattr(
                             getattr(self, attr_name), "_permission_name"

@@ -160,22 +160,15 @@ Now FAB will only generate one permission pair:
 
 - can access on api
 
-If you already have an application running and decided to aggregate your permissions, you need to hint
-FAB about what permission names your changing from::
+If you want to revert back your permission names override, or change just them again, you need to hint FAB
+about what were your last permissions, so that the security converge procedure knows what to do::
+
 
     class OneApi(ModelRestApi):
         datamodel = SQLAInterface(Contact)
-        class_permission_name = "api"
-        previous_permission_name = "OneApi"
+        class_permission_name = "OneApi"
+        previous_permission_name = "api"
         method_permission_name = {
-            "get_list": "access",
-            "get": "access",
-            "post": "access",
-            "put": "access",
-            "delete": "access",
-            "info": "access"
-        }
-        previous_method_permission_name = {
             "get_list": "get",
             "get": "get",
             "post": "post",
@@ -183,13 +176,7 @@ FAB about what permission names your changing from::
             "delete": "delete",
             "info": "info"
         }
-
-
-    class TwoApi(ModelRestApi):
-        datamodel = SQLAInterface(Contact)
-        class_permission_name = "api"
-        previous_permission_name = "OneApi"
-        method_permission_name = {
+        previous_method_permission_name = {
             "get_list": "access",
             "get": "access",
             "post": "access",
@@ -197,14 +184,7 @@ FAB about what permission names your changing from::
             "delete": "access",
             "info": "access"
         }
-        previous_method_permission_name = {
-            "get_list": "get",
-            "get": "get",
-            "post": "post",
-            "put": "put",
-            "delete": "delete",
-            "info": "info"
-        }
+
 
 Then run the following FAB cli command::
 

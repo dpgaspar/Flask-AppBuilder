@@ -1246,6 +1246,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 add_all_flag = True
             else:
                 new_view_name = baseview.class_permission_name
+                old_view_name = new_view_name
             for new_perm_name in baseview.base_permissions:
                 if add_all_flag:
                     old_perm_names = permission_mapping.get(new_perm_name)

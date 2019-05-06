@@ -326,10 +326,10 @@ class SecurityManager(BaseSecurityManager):
             :param name:
                 name of the ViewMenu
         """
-        obj = self.find_view_menu(name)
-        if obj:
+        view_menu = self.find_view_menu(name)
+        if view_menu:
             try:
-                self.get_session.delete(obj)
+                self.get_session.delete(view_menu)
                 self.get_session.commit()
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
@@ -398,10 +398,20 @@ class SecurityManager(BaseSecurityManager):
             self.get_session.rollback()
 
     def del_permission_view_menu(self, permission_name, view_menu_name, cascade=True):
+        if not (permission_name and view_menu_name):
+            return
+        pv = self.find_permission_view_menu(permission_name, view_menu_name)
+        if not pv:
+            return
+        roles_pvs = self.get_session.query(self.role_model).filter(
+            self.role_model.permissions.contains(pv)
+        ).first()
+        if roles_pvs:
+            log.warning(c.LOGMSG_WAR_SEC_DEL_PERMVIEW.format(
+                view_menu_name, permission_name, roles_pvs
+            ))
+            return
         try:
-            pv = self.find_permission_view_menu(permission_name, view_menu_name)
-            if not pv:
-                return
             # delete permission on view
             self.get_session.delete(pv)
             self.get_session.commit()
