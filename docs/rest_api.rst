@@ -16,6 +16,7 @@ custom API endpoints::
 
 
     class ExampleApi(BaseApi):
+        @expose('/greeting')
         def greeting(self):
             return self.response(200, message="Hello")
 
