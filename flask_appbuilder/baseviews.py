@@ -139,10 +139,9 @@ class BaseView(object):
             for attr_name in dir(self):
                 if hasattr(getattr(self, attr_name), "_permission_name"):
                     if is_collect_previous:
-                        self.previous_method_permission_name[attr_name] = \
-                            getattr(
-                                getattr(self, attr_name), "_permission_name"
-                            )
+                        self.previous_method_permission_name[attr_name] = getattr(
+                            getattr(self, attr_name), "_permission_name"
+                        )
                     _permission_name = self.method_permission_name.get(attr_name)
                     if not _permission_name:
                         _permission_name = getattr(
