@@ -4,7 +4,7 @@ import json
 import logging
 import re
 
-from flask import g, session, url_for
+from flask import current_app, g, session, url_for
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
@@ -304,6 +304,10 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def get_register_user_datamodel(self):
         return self.registerusermodelview.datamodel
+
+    @property
+    def builtin_roles(self):
+        return current_app.config.get('FAB_ROLES', {})
 
     @property
     def auth_type(self):
@@ -1022,9 +1026,26 @@ class BaseSecurityManager(AbstractSecurityManager):
         else:
             return False
 
+    def _has_access_builtin_roles(self, role, permission_name, view_name):
+        for builtin_role_name, builtin_pvms in self.builtin_roles.items():
+            if role.name == builtin_role_name:
+                for pvm in builtin_pvms:
+                    _view_name = pvm[0]
+                    _permission_name = pvm[1]
+                    if (re.match(_view_name, view_name) and
+                            re.match(_permission_name, permission_name)):
+                        return True
+        return False
+
     def _has_view_access(self, user, permission_name, view_name):
         roles = user.roles
         for role in roles:
+            if self._has_access_builtin_roles(
+                    role,
+                    permission_name,
+                    view_name
+            ):
+                return True
             permissions = role.permissions
             if permissions:
                 for permission in permissions:

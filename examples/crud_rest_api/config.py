@@ -67,3 +67,15 @@ APP_THEME = ""  # default
 # APP_THEME = "sandstone.css"
 # APP_THEME = "solar.css"
 # APP_THEME = "superhero.css"
+
+FAB_ROLES = {
+    "Admin": [
+        [".*", ".*"]
+    ],
+    "ReadOnly": [
+        [".*", "can_list"],
+        [".*", "can_show"],
+        [".*", "menu_access"]
+    ]
+}
+
