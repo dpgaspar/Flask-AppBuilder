@@ -1468,6 +1468,10 @@ class FlaskTestCase(unittest.TestCase):
             if baseview.__class__.__name__ == "Model1Api":
                 break
         self.appbuilder.baseviews.pop(i)
+        for i, baseview in enumerate(self.appbuilder.baseviews):
+            if baseview.__class__.__name__ == "Model1PermOverride":
+                break
+        self.appbuilder.baseviews.pop(i)
 
         target_state_transitions = {
             'add': {

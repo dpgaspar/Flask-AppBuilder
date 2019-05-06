@@ -1031,23 +1031,6 @@ class FlaskTestCase(unittest.TestCase):
                 "api_read": "access",
                 "api": "access"
             }
-            previous_method_permission_name = {
-                "list": "list",
-                "show": "show",
-                "edit": "edit",
-                "add": "add",
-                "delete": "delete",
-                "download": "download",
-                "api_readvalues": "list",
-                "api_column_edit": "edit",
-                "api_column_add": "add",
-                "api_delete": "delete",
-                "api_update": "edit",
-                "api_create": "add",
-                "api_get": "show",
-                "api_read": "list",
-                "api": "list"
-            }
 
         self.appbuilder.add_view_no_menu(Model1PermConverge)
         role = self.appbuilder.sm.add_role("Test")
