@@ -4,7 +4,7 @@ import json
 import logging
 import re
 
-from flask import current_app, g, session, url_for
+from flask import g, session, url_for
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
@@ -262,6 +262,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                     self.oauth_whitelists[provider_name] = _provider["whitelist"]
                 self.oauth_remotes[provider_name] = obj_provider
 
+        self._builtin_roles = self.create_builtin_roles()
         # Setup Flask-Login
         self.lm = self.create_login_manager(app)
 
@@ -290,6 +291,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         jwt_manager.user_loader_callback_loader(self.load_user)
         return jwt_manager
 
+    def create_builtin_roles(self):
+        bultin_roles = self.appbuilder.get_app.config.get('FAB_ROLES', {})
+        if not bultin_roles.get(self.auth_role_admin):
+            bultin_roles[self.auth_role_admin] = [[".*", ".*"]]
+        return bultin_roles
+
     @property
     def get_url_for_registeruser(self):
         return url_for(
@@ -307,7 +314,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     @property
     def builtin_roles(self):
-        return current_app.config.get('FAB_ROLES', {})
+        return self._builtin_roles
 
     @property
     def auth_type(self):
@@ -676,7 +683,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
             Setups the DB, creates admin and public roles if they don't exist.
         """
-        self.add_role(self.auth_role_admin)
+        for role_name in self.builtin_roles:
+            self.add_role(role_name)
         self.add_role(self.auth_role_public)
         if self.count_users() == 0:
             log.warning(LOGMSG_WAR_SEC_NO_USER)
@@ -1104,17 +1112,13 @@ class BaseSecurityManager(AbstractSecurityManager):
         if not perm_views:
             # No permissions yet on this view
             for permission in base_permissions:
-                pv = self.add_permission_view_menu(permission, view_menu)
-                role_admin = self.find_role(self.auth_role_admin)
-                self.add_permission_role(role_admin, pv)
+                self.add_permission_view_menu(permission, view_menu)
         else:
             # Permissions on this view exist but....
-            role_admin = self.find_role(self.auth_role_admin)
             for permission in base_permissions:
                 # Check if base view permissions exist
                 if not self.exist_permission_on_views(perm_views, permission):
-                    pv = self.add_permission_view_menu(permission, view_menu)
-                    self.add_permission_role(role_admin, pv)
+                    self.add_permission_view_menu(permission, view_menu)
             for perm_view in perm_views:
                 if perm_view.permission.name not in base_permissions:
                     # perm to delete
@@ -1124,9 +1128,6 @@ class BaseSecurityManager(AbstractSecurityManager):
                     for role in roles:
                         self.del_permission_role(role, perm)
                     self.del_permission_view_menu(perm_view.permission.name, view_menu)
-                elif perm_view not in role_admin.permissions:
-                    # Role Admin must have all permissions
-                    self.add_permission_role(role_admin, perm_view)
 
     def add_permissions_menu(self, view_menu_name):
         """
@@ -1138,9 +1139,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.add_view_menu(view_menu_name)
         pv = self.find_permission_view_menu("menu_access", view_menu_name)
         if not pv:
-            pv = self.add_permission_view_menu("menu_access", view_menu_name)
-            role_admin = self.find_role(self.auth_role_admin)
-            self.add_permission_role(role_admin, pv)
+            self.add_permission_view_menu("menu_access", view_menu_name)
 
     def security_cleanup(self, baseviews, menus):
         """
