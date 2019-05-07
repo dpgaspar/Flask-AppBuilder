@@ -21,21 +21,53 @@ The session is preserved and encrypted using Flask-Login, OpenID requires Flask-
 Role based
 ----------
 
-Each user has multiple roles, and a role holds permissions on views and menus, so a user has permissions on views and menus.
+Each user has multiple roles, and a role holds permissions on views/API and menus,
+so a user has permissions on views/API and menus.
+
+Roles can be user defined (backed by the backend) and builtin readonly. Builtin readonly roles
+support regex for views/API and permissions, this simplifies security management and
+improve performance since the many to many permissions between a role and it's permissions
+does not need to be fetched from the backend.
+
+Builtin roles are defined on the config using ``FAB_ROLES`` key and respect the following data structure::
+
+    FAB_ROLES = {
+        "<ROLE NAME>": [
+            ["<VIEW/MENU/API NAME>", "PERMISSION NAME"],
+            ....
+        ],
+        ...
+    }
+
+So for example a **Read Only** role might look like::
+
+    FAB_ROLES = {
+        "ReadOnly": [
+            [".*", "can_list"],
+            [".*", "can_show"],
+            [".*", "menu_access"],
+            [".*", "can_get"],
+            [".*", "can_info"]
+        ]
+    }
+
+These roles are inserted automatically to the database (only their name is added), and
+can be associated to users just like a "normal"/user defined role.
 
 There are two special roles, you can define their names on the :doc:`config`
 
-:Admin Role: The framework will assign all the existing permission on views and menus to this role, automatically, this role is for authenticated users only.
-:Public Role: This is a special role for non authenticated users, you can assign all the permissions on views and menus to this role, and everyone will access specific parts of you application.
-	
-Of course you can create any additional role you want and configure them as you like.
+:Admin Role: Special builtin read only Role, will have full access.
+:Public Role: This is a special role for non authenticated users,
+    you can assign all the permissions on views and menus to this role,
+    and everyone will access specific parts of you application.
 
-.. note:: User's with multiple roles is only possible since 1.3.0 version.
+Of course you can create any additional role you want and configure them as you like.
 
 Permissions
 -----------
 
-The framework automatically creates for you all the possible existing permissions on your views or menus, by "inspecting" your code.
+The framework automatically creates for you all the possible existing permissions
+on your views or menus, by "inspecting" your code.
 
 Each time you create a new view based on a model (inherit from ModelView) it will create the following permissions:
 
@@ -46,7 +78,8 @@ Each time you create a new view based on a model (inherit from ModelView) it wil
 - can delete
 - can download
 	
-These base permissions will be associated to your view, so if you create a view named "MyModelView" you can assign to any role these permissions:
+These base permissions will be associated to your view, so if you create a view named
+"MyModelView" you can assign to any role these permissions:
 
 - can list on MyModelView
 - can show on MyModelView
@@ -231,11 +264,17 @@ this will allow users to authenticate using 'someuser' be setting::
 
 When using self user registration, you can use the following to config further:
 
-- AUTH_LDAP_UID_FIELD: Default to 'uid' will be used to search the user on the LDAP server. For MSFT AD you can set it to 'userPrincipalName'
-- AUTH_LDAP_FIRSTNAME_FIELD: Default to 'givenName' will use MSFT AD attribute to register first_name on the db.
-- AUTH_LDAP_LASTTNAME_FIELD: Default to 'sn' will use MSFT AD attribute to register last_name on the db.
-- AUTH_LDAP_EMAIL_FIELD: Default to 'mail' will use MSFT AD attribute to register email on the db. If this attribute is null the framework will register <username + '@email.notfound'>
-- AUTH_LDAP_SEARCH: This must be set when using self user registration.
+:AUTH_LDAP_UID_FIELD: Default to 'uid' will be used to search the user on the LDAP server.
+    For MSFT AD you can set it to 'userPrincipalName'
+
+:AUTH_LDAP_FIRSTNAME_FIELD: Default to 'givenName' will use MSFT AD attribute to register first_name on the db.
+
+:AUTH_LDAP_LASTTNAME_FIELD: Default to 'sn' will use MSFT AD attribute to register last_name on the db.
+
+:AUTH_LDAP_EMAIL_FIELD: Default to 'mail' will use MSFT AD attribute to register email on the db.
+    If this attribute is null the framework will register <username + '@email.notfound'>
+
+:AUTH_LDAP_SEARCH: This must be set when using self user registration.
 
 
 Authentication: OAuth
@@ -353,9 +392,9 @@ This is a must have if your using the factory app pattern, on the config declare
 
 F.A.B. uses a different user view for each authentication method
 
-- UserDBModelView - for database auth method
-- UserOIDModelView - for Open ID auth method
-- UserLDAPModelView - for LDAP auth method
+:UserDBModelView: For database auth method
+:UserOIDModelView: For Open ID auth method
+:UserLDAPModelView: For LDAP auth method
 
 You can extend or create from scratch your own, and then tell F.A.B. to use them instead, by overriding their
 correspondent lower case properties on **SecurityManager** (just like on the given example).
@@ -385,13 +424,13 @@ First extend the User Model (create a sec_models.py file)::
 Next define a new User view, just like the default User view but with the extra column (create a sec_view.py)
 If you're using:
 
-- AUTH_DB extend UserDBModelView
-- AUTH_LDAP extend UserLDAPModelView
-- AUTH_REMOTE_USER extend UserRemoteUserModelView
-- AUTH_OID extend UserOIDModelView
-- AUTH_OAUTH extend UserOAuthModelView
+:AUTH_DB: Extend UserDBModelView
+:AUTH_LDAP: Extend UserLDAPModelView
+:AUTH_REMOTE_USER: Extend UserRemoteUserModelView
+:AUTH_OID: Extend UserOIDModelView
+:AUTH_OAUTH: Extend UserOAuthModelView
 
-::
+So using AUTH_DB::
 
     from flask_appbuilder.security.views import UserDBModelView
     from flask_babelpkg import lazy_gettext
@@ -420,9 +459,34 @@ If you're using:
              {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
         ]
 
-        add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'extra', 'password', 'conf_password']
-        list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles']
-        edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'extra']
+        add_columns = [
+            'first_name',
+            'last_name',
+            'username',
+            'active',
+            'email',
+            'roles',
+            'extra',
+            'password',
+            'conf_password'
+        ]
+        list_columns = [
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'active',
+            'roles'
+        ]
+        edit_columns = [
+            'first_name',
+            'last_name',
+            'username',
+            'active',
+            'email',
+            'roles',
+            'extra'
+        ]
 
 Next create your own SecurityManager class, overriding your model and view for User (create a sec.py)::
 
@@ -436,10 +500,10 @@ Next create your own SecurityManager class, overriding your model and view for U
 
 Note that this is for AUTH_DB, so if you're using:
 
-- AUTH_DB override userdbmodelview
-- AUTH_LDAP override userldapmodelview
-- AUTH_REMOTE_USER override userremoteusermodelview
-- AUTH_OID override useroidmodelview
+:AUTH_DB: Override userdbmodelview
+:AUTH_LDAP: Override userldapmodelview
+:AUTH_REMOTE_USER: Override userremoteusermodelview
+:AUTH_OID: Override useroidmodelview
 
 Finally (as shown on the previous example) tell F.A.B. to use your SecurityManager class, so when initializing
 **AppBuilder** (on __init__.py)::
