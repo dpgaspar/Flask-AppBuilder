@@ -40,7 +40,7 @@ CSRF_ENABLED = True
 # AUTH_REMOTE_USER : Is for using REMOTE_USER from web server
 AUTH_TYPE = AUTH_CAS
 
-CAS_SERVER = 'https://casserver.herokuapp.com'
+CAS_SERVER = 'https://casserver.herokuapp.com/cas/'
 CAS_AFTER_LOGOUT = 'http://localhost:8080/login'
 
 # Uncomment to setup Full admin role name

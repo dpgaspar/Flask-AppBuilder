@@ -253,15 +253,15 @@ class BaseSecurityManager(AbstractSecurityManager):
 
         if self.auth_type == AUTH_CAS:
             if 'CAS_SERVER' not in app.config:
-                raise Exception("No CAS_SERVER defined on config with AUTH_CAS authentication type.")
+                raise Exception(
+                    "No CAS_SERVER defined on config with AUTH_CAS authentication type.")
             app.config.setdefault('CAS_TOKEN_SESSION_KEY', '_CAS_TOKEN')
             app.config.setdefault('CAS_USERNAME_SESSION_KEY', 'CAS_USERNAME')
             app.config.setdefault('CAS_ATTRIBUTES_SESSION_KEY', 'CAS_ATTRIBUTES')
-            app.config.setdefault('CAS_LOGIN_ROUTE', '/cas')
-            app.config.setdefault('CAS_LOGOUT_ROUTE', '/cas/logout')
-            app.config.setdefault('CAS_VALIDATE_ROUTE', '/cas/serviceValidate')
             app.config.setdefault('CAS_AFTER_LOGOUT', None)
             app.config.setdefault('CAS_URL_REDIRECT_ROUTE', None)
+            app.config.setdefault('CAS_VERSION', '3')
+            app.config.setdefault('CAS_EXTRA_LOGIN_PARAMS', {})
         if self.auth_type == AUTH_OID:
             self.oid = OpenID(app)
         if self.auth_type == AUTH_OAUTH:
@@ -435,6 +435,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config['CAS_SERVER']
 
     @property
+    def cas_version(self):
+        return self.appbuilder.get_app.config['CAS_VERSION']
+
+    @property
     def cas_token_session_key(self):
         return self.appbuilder.get_app.config['CAS_TOKEN_SESSION_KEY']
 
@@ -447,20 +451,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config['CAS_ATTRIBUTES_SESSION_KEY']
 
     @property
-    def cas_login_route(self):
-        return self.appbuilder.get_app.config['CAS_LOGIN_ROUTE']
-
-    @property
-    def cas_logout_route(self):
-        return self.appbuilder.get_app.config['CAS_LOGOUT_ROUTE']
-
-    @property
-    def cas_validate_route(self):
-        return self.appbuilder.get_app.config['CAS_VALIDATE_ROUTE']
-
-    @property
     def cas_after_logout(self):
         return self.appbuilder.get_app.config['CAS_AFTER_LOGOUT']
+
+    @property
+    def cas_extra_login_params(self):
+        return self.appbuilder.get_app.config['CAS_EXTRA_LOGIN_PARAMS']
 
     # Test only to use fiddler to intercept redirect URL for testing purpose
     @property
@@ -1062,7 +1058,8 @@ class BaseSecurityManager(AbstractSecurityManager):
     def auth_user_cas(self, userinfo):
         """
             CAS user Authentication
-            :userinfo: dict with user information including username and a set of attributes.
+            :params userinfo:
+                dict with user information including username and a set of attributes.
         """
         if 'username' in userinfo:
             user = self.find_user(username=userinfo['username'])
@@ -1073,8 +1070,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             user = self.add_user(
                 username=userinfo['username'],
                 first_name=userinfo['username'],
-                last_name="-",
-                email="-",
+                last_name='-',
+                email=username + '@email.notfound',
                 role=self.find_role(self.auth_user_registration_role),
             )
 

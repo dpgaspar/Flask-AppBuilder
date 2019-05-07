@@ -1,19 +1,24 @@
 import datetime
 import logging
 import re
-try:
-    from urllib import urlopen
-except ImportError:
-    from urllib.request import urlopen
 
-from flask import abort, flash, g, make_response, redirect, request, session, jsonify, url_for, current_app
+from flask import (
+    abort,
+    flash,
+    g,
+    make_response,
+    redirect,
+    request,
+    session,
+    jsonify,
+    url_for)
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
 import jwt
 from werkzeug.security import generate_password_hash
 from wtforms import PasswordField, validators
 from wtforms.validators import EqualTo
-from xmltodict import parse
+from cas import CASClient
 
 from .decorators import has_access
 from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm, UserInfoEdit
@@ -23,9 +28,6 @@ from ..baseviews import BaseView
 from ..charts.views import DirectByChartView
 from ..fieldwidgets import BS3PasswordFieldWidget
 from ..views import expose, ModelView, SimpleFormView
-from .cas_urls import create_cas_login_url
-from .cas_urls import create_cas_logout_url
-from .cas_urls import create_cas_validate_url
 
 
 log = logging.getLogger(__name__)
@@ -739,22 +741,28 @@ class AuthRemoteUserView(AuthView):
         return redirect(self.appbuilder.get_url_for_index)
 
 
-"""
-Example to setup CAS providers for hwclouds
-AUTH_TYPE = AUTH_CAS
-CAS_SERVER = 'https://auth.hwclouds.com'
-CAS_LOGIN_ROUTE = 'authui/login'
-CAS_VALIDATE_ROUTE = 'authui/serviceValidate'
-# Test only
-CAS_URL_REDIRECT_ROUTE = 'https://account.hwclouds.com/usercenter'
-"""
 class AuthCASView(AuthView):
     login_template = ''
+
+    def __init__(self):
+        super(AuthCASView, self).__init__()
 
     def _get_url_for_login_external(self):
         redirect_url_config = self.appbuilder.sm.cas_url_redirect_route
         return redirect_url_config if redirect_url_config is not None \
-                                    else url_for('%s.%s' % (self.endpoint, 'login'), _external=True)
+            else url_for('%s.%s' % (self.endpoint, 'login'), _external=True)
+
+    def successful_login(self):
+        return redirect(self.appbuilder.get_url_for_index)
+
+    def _get_cas_client(self, service_url):
+        server_url = self.appbuilder.sm.cas_server
+        return CASClient(
+            service_url=service_url,
+            version=self.appbuilder.sm.cas_version,
+            server_url=server_url,
+            extra_login_params=self.appbuilder.sm.cas_extra_login_params
+        )
 
     @expose('/login/')
     def login(self):
@@ -764,16 +772,15 @@ class AuthCASView(AuthView):
 
         cas_token_session_key = self.appbuilder.sm.cas_token_session_key
 
-        redirect_url = create_cas_login_url(
-            self.appbuilder.sm.cas_server,
-            self.appbuilder.sm.cas_login_route,
-            self._get_url_for_login_external())
+        service_url = self._get_url_for_login_external()
+        client = self._get_cas_client(service_url)
+        redirect_url = client.get_login_url()
 
         if 'ticket' in request.args:
             session[cas_token_session_key] = request.args['ticket']
 
         if cas_token_session_key in session:
-            userinfo = self.validateUser(session[cas_token_session_key])
+            userinfo = self.validate(session[cas_token_session_key])
             if userinfo is not None:
                 user = self.appbuilder.sm.auth_user_cas(userinfo)
                 if user is None:
@@ -795,8 +802,6 @@ class AuthCASView(AuthView):
         cas_username_session_key = self.appbuilder.sm.cas_username_session_key
         cas_attributes_session_key = self.appbuilder.sm.cas_attributes_session_key
         cas_after_logout = self.appbuilder.sm.cas_after_logout
-        cas_server = self.appbuilder.sm.cas_server
-        cas_logout_route = self.appbuilder.sm.cas_logout_route
 
         if cas_token_session_key in session:
             del session[cas_token_session_key]
@@ -807,61 +812,32 @@ class AuthCASView(AuthView):
         if cas_attributes_session_key in session:
             del session[cas_attributes_session_key]
 
-        if(cas_after_logout is not None):
-            redirect_url = create_cas_logout_url(
-                cas_server,
-                cas_logout_route,
-                cas_after_logout)
-        else:
-            redirect_url = create_cas_logout_url(
-                cas_server,
-                cas_logout_route)
+        service_url = self._get_url_for_login_external()
+        client = self._get_cas_client(service_url)
+        redirect_url = client.get_logout_url(cas_after_logout)
         logout_user()
         log.debug('Redirecting to: '.format(redirect_url))
 
         return redirect(redirect_url)
 
-    def validateUser(self, ticket):
+    def validate(self, ticket):
+        """Verifies CAS ticket and get CAS userinfo"""
         cas_username_session_key = self.appbuilder.sm.cas_username_session_key
         cas_attributes_session_key = self.appbuilder.sm.cas_attributes_session_key
 
         log.debug("validating token {0}".format(ticket))
-        cas_validate_url = create_cas_validate_url(
-            self.appbuilder.sm.cas_server,
-            self.appbuilder.sm.cas_validate_route,
-            self._get_url_for_login_external(),
-            ticket)
+        service_url = self._get_url_for_login_external()
+        client = self._get_cas_client(service_url)
+        username, attributes, _ = client.verify_ticket(ticket)
 
-        log.debug("Making GET request to {0}".format(cas_validate_url))
-
-        xml_from_dict = {}
-        isValid = False
-
-        try:
-            xmldump = urlopen(cas_validate_url).read().strip().decode('utf8', 'ignore')
-            xml_from_dict = parse(xmldump)
-            current_app.logger.debug('Response payload: {0}'.format(xml_from_dict))
-            isValid = True if "cas:authenticationSuccess" in xml_from_dict["cas:serviceResponse"] else False
-        except ValueError:
-            log.error("CAS returned unexpected result")
-
-        if isValid:
-            log.debug("valid CAS login")
-            xml_from_dict = xml_from_dict["cas:serviceResponse"]["cas:authenticationSuccess"]
-            username = xml_from_dict["cas:user"]
-            attributes = xml_from_dict["cas:attributes"]
-
-            if "cas:memberOf" in attributes:
-                attributes["cas:memberOf"] = attributes["cas:memberOf"].lstrip('[').rstrip(']').split(',')
-                for group_number in range(0, len(attributes['cas:memberOf'])):
-                    attributes['cas:memberOf'][group_number] = attributes['cas:memberOf'][group_number].lstrip(
-                        ' ').rstrip(' ')
-
+        if username:
             session[cas_username_session_key] = username
             session[cas_attributes_session_key] = attributes
-            return {'username' : username,
-                    'attributes': attributes}
+            userinfo = {
+                'username': username,
+                'attributes': attributes
+            }
         else:
             log.debug("invalid CAS login")
-
-        return None
+            userinfo = None
+        return userinfo

@@ -66,7 +66,7 @@ setup(
         'python-dateutil>=2.3,<3',
         'prison==0.1.0',
         'PyJWT>=1.7.1',
-        'xmltodict==0.12.0'
+        'python-cas==1.4.0'
     ],
     tests_require=[
         'nose>=1.0',
