@@ -432,7 +432,7 @@ class RoleModelView(ModelView):
     }
     list_columns = ["name", "permissions"]
     show_columns = ["name", "permissions"]
-    edit_columns = ["name", "permissions", "user"]
+    edit_columns = ["name", "permissions"]
     add_columns = edit_columns
     order_columns = ["name"]
 
