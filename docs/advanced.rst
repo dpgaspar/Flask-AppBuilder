@@ -36,7 +36,7 @@ with a certain Model property::
         @renders('custom')
         def my_custom(self):
         # will render this columns as bold on ListWidget
-            return Markup('<b>' + custom + '</b>')
+            return Markup('<b>' + this.custom + '</b>')
 
 
 On your view reference your method as a column on list::
