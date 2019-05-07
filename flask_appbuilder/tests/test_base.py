@@ -42,6 +42,8 @@ NOTNULL_VALIDATION_STRING = "This field is required"
 DEFAULT_ADMIN_USER = "admin"
 DEFAULT_ADMIN_PASSWORD = "general"
 REDIRECT_OBJ_ID = 1
+USERNAME_READONLY = "readonly"
+PASSWORD_READONLY = "readonly"
 
 log = logging.getLogger(__name__)
 
@@ -61,6 +63,12 @@ class FlaskTestCase(unittest.TestCase):
         self.app.config["SECRET_KEY"] = "thisismyscretkey"
         self.app.config["WTF_CSRF_ENABLED"] = False
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        self.app.config["FAB_ROLES"] = {
+            "ReadOnly": [
+                [".*", "can_list"],
+                [".*", "can_show"]
+            ]
+        }
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -243,6 +251,15 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.sm.add_user(
             "admin", "admin", "user", "admin@fab.org", role_admin, "general"
         )
+        role_read_only = self.appbuilder.sm.find_role("ReadOnly")
+        self.appbuilder.sm.add_user(
+            USERNAME_READONLY,
+            "readonly",
+            "readonly",
+            "readonly@fab.org",
+            role_read_only,
+            PASSWORD_READONLY
+        )
 
     def tearDown(self):
         self.appbuilder = None
@@ -382,6 +399,25 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.login(client, DEFAULT_ADMIN_USER, "password")
         data = rv.data.decode("utf-8")
         ok_(INVALID_LOGIN_STRING in data)
+
+    def test_auth_builtin_roles(self):
+        """
+            Test Security builtin roles readonly
+        """
+        self.insert_data()
+        client = self.app.test_client()
+        self.login(client, USERNAME_READONLY, PASSWORD_READONLY)
+        # Test unauthorized GET
+        rv = client.get("/model1view/list/")
+        eq_(rv.status_code, 200)
+        # Test unauthorized EDIT
+        rv = client.get("/model1view/show/1")
+        eq_(rv.status_code, 200)
+        rv = client.get("/model1view/edit/1")
+        eq_(rv.status_code, 302)
+        # Test unauthorized DELETE
+        rv = client.get("/model1view/delete/1")
+        eq_(rv.status_code, 302)
 
     def test_sec_reset_password(self):
         """
