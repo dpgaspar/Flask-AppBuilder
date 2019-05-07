@@ -10,8 +10,8 @@ from flask import (
     request,
     url_for
 )
-from flask_login import current_user
 from flask_jwt_extended import verify_jwt_in_request
+from flask_login import current_user
 
 from .._compat import as_unicode
 from ..const import (
@@ -69,7 +69,7 @@ def protect(allow_browser_login=False):
                     class_permission_name
             ):
                 return f(self, *args, **kwargs)
-            elif (self.allow_browser_login or allow_browser_login):
+            elif self.allow_browser_login or allow_browser_login:
                 if not current_user.is_authenticated:
                     verify_jwt_in_request()
                 if current_app.appbuilder.sm.has_access(
