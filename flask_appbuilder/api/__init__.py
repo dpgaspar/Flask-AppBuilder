@@ -483,7 +483,14 @@ class BaseApi(object):
     def merge_current_user_permissions(self, response, **kwargs):
         response[
             API_PERMISSIONS_RES_KEY
-        ] = self.appbuilder.sm.get_user_permissions_on_view(self.__class__.__name__)
+        ] = [
+            permission
+            for permission in self.base_permissions
+            if self.appbuilder.sm.has_access(
+                self.__class__.__name__,
+                permission
+            )
+        ]
 
     @staticmethod
     def response(code, **kwargs):

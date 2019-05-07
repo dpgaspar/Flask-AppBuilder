@@ -1074,28 +1074,6 @@ class BaseSecurityManager(AbstractSecurityManager):
         else:
             return self.is_item_public(permission_name, view_name)
 
-    @staticmethod
-    def get_user_permissions_on_view(view_name):
-        """
-            Returns all current user permissions
-             on a certain view/resource
-        :param view_name: The name of the view/resource/menu
-        :return: (list) with permissions
-        """
-        _ret = list()
-        if current_user.is_authenticated:
-            _current_user = current_user
-        elif current_user_jwt:
-            _current_user = current_user_jwt
-        else:
-            return _ret
-        for role in _current_user.roles:
-            if role.permissions:
-                for permission in role.permissions:
-                    if permission.view_menu.name == view_name:
-                        _ret.append(permission.permission.name)
-        return _ret
-
     def add_permissions_view(self, base_permissions, view_menu):
         """
             Adds a permission on a view menu to the backend

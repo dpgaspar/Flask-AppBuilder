@@ -54,6 +54,8 @@ def protect(allow_browser_login=False):
         def wraps(self, *args, **kwargs):
             permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
             class_permission_name = self.__class__.__name__
+            if permission_str not in self.base_permissions:
+                return self.response_401()
             if current_app.appbuilder.sm.is_item_public(
                     permission_str,
                     class_permission_name
@@ -67,7 +69,6 @@ def protect(allow_browser_login=False):
             ):
                 return f(self, *args, **kwargs)
             elif (self.allow_browser_login or allow_browser_login):
-                verify_jwt_in_request()
                 if current_app.appbuilder.sm.has_access(
                         permission_str,
                         class_permission_name
@@ -99,10 +100,8 @@ def has_access(f):
 
     def wraps(self, *args, **kwargs):
         permission_str = PERMISSION_PREFIX + f._permission_name
-        if self.appbuilder.sm.has_access(
-                permission_str,
-                self.__class__.__name__
-        ):
+        if (permission_str in self.base_permissions and
+                self.appbuilder.sm.has_access(permission_str, self.__class__.__name__)):
             return f(self, *args, **kwargs)
         else:
             log.warning(
@@ -138,10 +137,8 @@ def has_access_api(f):
 
     def wraps(self, *args, **kwargs):
         permission_str = PERMISSION_PREFIX + f._permission_name
-        if self.appbuilder.sm.has_access(
-                permission_str,
-                self.__class__.__name__
-        ):
+        if (permission_str in self.base_permissions and
+                self.appbuilder.sm.has_access(permission_str, self.__class__.__name__)):
             return f(self, *args, **kwargs)
         else:
             log.warning(
