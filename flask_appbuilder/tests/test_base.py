@@ -1003,7 +1003,7 @@ class FlaskTestCase(unittest.TestCase):
         eq_(model.field_string, u"test1")
         eq_(model.field_integer, 1)
 
-    def test_1_permission_converge_compress(self):
+    def test_permission_converge_compress(self):
         """
             MVC: Test permission name converge compress
         """
