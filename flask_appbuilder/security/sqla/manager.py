@@ -1,5 +1,6 @@
 import logging
 import uuid
+from typing import Optional
 
 from sqlalchemy import func
 from sqlalchemy.engine.reflection import Inspector
@@ -212,7 +213,7 @@ class SecurityManager(BaseSecurityManager):
     -----------------------
     """
 
-    def add_role(self, name):
+    def add_role(self, name: str) -> Optional[Role]:
         role = self.find_role(name)
         if role is None:
             try:
@@ -226,6 +227,21 @@ class SecurityManager(BaseSecurityManager):
                 log.error(c.LOGMSG_ERR_SEC_ADD_ROLE.format(str(e)))
                 self.get_session.rollback()
         return role
+
+    def update_role(self, pk, name: str) -> Optional[Role]:
+        role = self.get_session.query(self.role_model).get(pk)
+        print(f"Update role {role} {pk}")
+        if not role:
+            return
+        try:
+            role.name = name
+            self.get_session.merge(role)
+            self.get_session.commit()
+            log.info(c.LOGMSG_INF_SEC_UPD_ROLE.format(role))
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_UPD_ROLE.format(str(e)))
+            self.get_session.rollback()
+            return
 
     def find_role(self, name):
         return self.get_session.query(self.role_model).filter_by(name=name).first()

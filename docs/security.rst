@@ -54,6 +54,23 @@ So for example a **Read Only** role might look like::
 These roles are inserted automatically to the database (only their name is added), and
 can be associated to users just like a "normal"/user defined role.
 
+If you want to later on change the name of these roles, you can map these roles by their backend id::
+
+    FAB_ROLES = {
+        "ReadOnly_Altered": [
+            [".*", "can_list"],
+            [".*", "can_show"],
+            [".*", "menu_access"],
+            [".*", "can_get"],
+            [".*", "can_info"]
+        ]
+    }
+
+    FAB_ROLES_MAPPING = {
+        1: "ReadOnly_Altered"
+    }
+
+
 There are two special roles, you can define their names on the :doc:`config`
 
 :Admin Role: Special builtin read only Role, will have full access.

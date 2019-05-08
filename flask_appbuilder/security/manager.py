@@ -292,10 +292,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         return jwt_manager
 
     def create_builtin_roles(self):
-        bultin_roles = self.appbuilder.get_app.config.get('FAB_ROLES', {})
-        if not bultin_roles.get(self.auth_role_admin):
-            bultin_roles[self.auth_role_admin] = [[".*", ".*"]]
-        return bultin_roles
+        builtin_roles = self.appbuilder.get_app.config.get('FAB_ROLES', {})
+        if not builtin_roles.get(self.auth_role_admin):
+            builtin_roles[self.auth_role_admin] = [[".*", ".*"]]
+        return builtin_roles
 
     @property
     def get_url_for_registeruser(self):
@@ -683,6 +683,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
             Setups the DB, creates admin and public roles if they don't exist.
         """
+        roles_mapping = self.appbuilder.get_app.config.get('FAB_ROLES_MAPPING', {})
+        for pk, name in roles_mapping.items():
+            self.update_role(pk, name)
         for role_name in self.builtin_roles:
             self.add_role(role_name)
         self.add_role(self.auth_role_public)
@@ -1224,6 +1227,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         raise NotImplementedError
 
     def add_role(self, name):
+        raise NotImplementedError
+
+    def update_role(self, pk, name):
         raise NotImplementedError
 
     def get_all_roles(self):

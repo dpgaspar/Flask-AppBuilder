@@ -1,5 +1,6 @@
 import logging
 import uuid
+from typing import Optional
 
 from werkzeug.security import generate_password_hash
 
@@ -167,6 +168,14 @@ class SecurityManager(BaseSecurityManager):
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_ADD_ROLE.format(str(e)))
         return role
+
+    def update_role(self, pk, name: str) -> Optional[Role]:
+        try:
+            role = self.role_model.objects(id=pk).update(name=name)
+            log.info(c.LOGMSG_INF_SEC_UPD_ROLE.format(role))
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_UPD_ROLE.format(str(e)))
+            return
 
     def find_role(self, name):
         return self.role_model.objects(name=name).first()
