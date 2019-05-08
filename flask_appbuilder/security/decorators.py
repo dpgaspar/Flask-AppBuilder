@@ -46,6 +46,7 @@ def protect(allow_browser_login=False):
 
         By default the permission's name is the methods name.
     """
+
     def _protect(f):
         if hasattr(f, '_permission_name'):
             permission_str = f._permission_name
@@ -89,8 +90,10 @@ def protect(allow_browser_login=False):
                 )
             )
             return self.response_401()
+
         f._permission_name = permission_str
         return functools.update_wrapper(wraps, f)
+
     return _protect
 
 
@@ -112,12 +115,12 @@ def has_access(f):
             _permission_name = self.method_permission_name.get(f.__name__)
             if _permission_name:
                 permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)
-        if permission_str in self.base_permissions:
-            if self.appbuilder.sm.has_access(
+        if (permission_str in self.base_permissions and
+                self.appbuilder.sm.has_access(
                     permission_str,
                     self.class_permission_name
-            ):
-                return f(self, *args, **kwargs)
+                )):
+            return f(self, *args, **kwargs)
         else:
             log.warning(
                 LOGMSG_ERR_SEC_ACCESS_DENIED.format(
@@ -132,6 +135,7 @@ def has_access(f):
                 next=request.url
             )
         )
+
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
 
@@ -156,12 +160,12 @@ def has_access_api(f):
             _permission_name = self.method_permission_name.get(f.__name__)
             if _permission_name:
                 permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)
-        if permission_str in self.base_permissions:
-            if self.appbuilder.sm.has_access(
+        if (permission_str in self.base_permissions and
+                self.appbuilder.sm.has_access(
                     permission_str,
                     self.class_permission_name
-            ):
-                return f(self, *args, **kwargs)
+                )):
+            return f(self, *args, **kwargs)
         else:
             log.warning(
                 LOGMSG_ERR_SEC_ACCESS_DENIED.format(
@@ -180,6 +184,7 @@ def has_access_api(f):
             )
             response.headers['Content-Type'] = "application/json"
             return response
+
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
 
@@ -219,7 +224,9 @@ def permission_name(name):
         :param name:
             The name of the permission to override
     """
+
     def wraps(f):
         f._permission_name = name
         return f
+
     return wraps
