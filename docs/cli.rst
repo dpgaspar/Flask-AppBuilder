@@ -2,7 +2,7 @@ Command Line Manager
 ====================
 
 Since version 1.13.1 F.A.B. has a new command line manager, integrated with Flask cli.
-The old ``fabmanager`` command line is now deprecated and will be completely removed on 1.16.X.
+The old ``fabmanager`` command line is now deprecated and will be completely removed on 2.2.X.
 It's very easy to migrate to the new command line, all sub commands are still the same and
 use the same parameters.
 
@@ -10,10 +10,10 @@ To use the new commands integrated with **Flask cli** you must specify on to imp
 Take a look at `Flask docs <http://flask.pocoo.org/docs/cli/>`_.::
 
     # Using the default skeleton application
-    # export FLASK_APP=app
+    $ export FLASK_APP=app
 
     # Using factory app pattern
-    # FLASK_APP="app:create_app('config')"
+    $ FLASK_APP="app:create_app('config')"
 
 FAB creates a **Flask** command group named ``fab``, so all commands are issued like::
 
@@ -47,7 +47,9 @@ Take a quick look to the current possibilities. (The bold ones require app conte
 
   - **reset-password** - Resets a user's password.
 
-  - **security-cleanup** - Cleanup unused permissions from views and roles.
+  - **security-cleanup** - Cleanup unused permissions from views and roles. :doc:`security`
+
+  - **security-converge** - Converges all security view and permission names from all your roles. :doc:`security`
 
   - **upgrade-db** - Upgrade your database after F.A.B upgrade.
 

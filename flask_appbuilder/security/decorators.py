@@ -53,8 +53,13 @@ def protect(allow_browser_login=False):
             permission_str = f.__name__
 
         def wraps(self, *args, **kwargs):
+            # Apply method permission name override if exists
             permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
-            class_permission_name = self.__class__.__name__
+            if self.method_permission_name:
+                _permission_name = self.method_permission_name.get(f.__name__)
+                if _permission_name:
+                    permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)
+            class_permission_name = self.class_permission_name
             if permission_str not in self.base_permissions:
                 return self.response_401()
             if current_app.appbuilder.sm.is_item_public(
@@ -102,9 +107,13 @@ def has_access(f):
         permission_str = f.__name__
 
     def wraps(self, *args, **kwargs):
-        permission_str = PERMISSION_PREFIX + f._permission_name
+        permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
+        if self.method_permission_name:
+            _permission_name = self.method_permission_name.get(f.__name__)
+            if _permission_name:
+                permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)        
         if (permission_str in self.base_permissions and
-                self.appbuilder.sm.has_access(permission_str, self.__class__.__name__)):
+                self.appbuilder.sm.has_access(permission_str, self.class_permission_name)):
             return f(self, *args, **kwargs)
         else:
             log.warning(
@@ -139,9 +148,13 @@ def has_access_api(f):
         permission_str = f.__name__
 
     def wraps(self, *args, **kwargs):
-        permission_str = PERMISSION_PREFIX + f._permission_name
+        permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
+        if self.method_permission_name:
+            _permission_name = self.method_permission_name.get(f.__name__)
+            if _permission_name:
+                permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)        
         if (permission_str in self.base_permissions and
-                self.appbuilder.sm.has_access(permission_str, self.__class__.__name__)):
+                self.appbuilder.sm.has_access(permission_str, self.class_permission_name)):
             return f(self, *args, **kwargs)
         else:
             log.warning(
