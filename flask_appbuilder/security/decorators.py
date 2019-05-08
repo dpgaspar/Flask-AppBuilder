@@ -111,10 +111,13 @@ def has_access(f):
         if self.method_permission_name:
             _permission_name = self.method_permission_name.get(f.__name__)
             if _permission_name:
-                permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)        
-        if (permission_str in self.base_permissions and
-                self.appbuilder.sm.has_access(permission_str, self.class_permission_name)):
-            return f(self, *args, **kwargs)
+                permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)
+        if permission_str in self.base_permissions:
+            if self.appbuilder.sm.has_access(
+                    permission_str,
+                    self.class_permission_name
+            ):
+                return f(self, *args, **kwargs)
         else:
             log.warning(
                 LOGMSG_ERR_SEC_ACCESS_DENIED.format(
@@ -152,10 +155,13 @@ def has_access_api(f):
         if self.method_permission_name:
             _permission_name = self.method_permission_name.get(f.__name__)
             if _permission_name:
-                permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)        
-        if (permission_str in self.base_permissions and
-                self.appbuilder.sm.has_access(permission_str, self.class_permission_name)):
-            return f(self, *args, **kwargs)
+                permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)
+        if permission_str in self.base_permissions:
+            if self.appbuilder.sm.has_access(
+                    permission_str,
+                    self.class_permission_name
+            ):
+                return f(self, *args, **kwargs)
         else:
             log.warning(
                 LOGMSG_ERR_SEC_ACCESS_DENIED.format(
