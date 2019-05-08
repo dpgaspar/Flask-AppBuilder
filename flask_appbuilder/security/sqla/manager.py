@@ -1,6 +1,6 @@
 import logging
-import uuid
 from typing import Optional
+import uuid
 
 from sqlalchemy import func
 from sqlalchemy.engine.reflection import Inspector

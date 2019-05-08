@@ -1,6 +1,6 @@
 import logging
-import uuid
 from typing import Optional
+import uuid
 
 from werkzeug.security import generate_password_hash
 
