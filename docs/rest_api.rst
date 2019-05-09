@@ -16,6 +16,7 @@ custom API endpoints::
 
 
     class ExampleApi(BaseApi):
+        @expose('/greeting')
         def greeting(self):
             return self.response(200, message="Hello")
 
@@ -504,9 +505,7 @@ Next we can use our token on protected endpoints::
     }
 
 As always FAB created a new **can_private** permission
-on the DB and as associated it to the *Admin* Role.
-So the Admin role as a new permission on
-a view named "can private on ExampleApi"
+on the DB named "can private on ExampleApi"
 Note that you can protect all your methods and make
 them public or not by adding them to the *Public* Role.
 
@@ -579,6 +578,11 @@ All created CRUD endpoints have their OpenAPI spec accessible on ``/api/<version
 each class is tagged so the CRUD endpoints get nicely grouped when using Swagger UI.
 Notice that ``ModelRestApi`` will generate a complete OpenAPI schema models for you data,
 so you can get free documentation for you API's.
+
+FAB will create all possible permissions and add them to the ``AUTH_ROLE_ADMIN`` config key
+that defaults to **Admin**. you can completely override the default inferred permissions
+and reduce the level of granularity, for mode detail about this read the :doc:`security` chapter.
+
 Let's dive into a simple example using the quickhowto.
 The quickhowto example as a Contact's Model and a Group Model,
 so each Contact belongs to a Group.

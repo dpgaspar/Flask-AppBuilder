@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 import uuid
 
 from werkzeug.security import generate_password_hash
@@ -168,6 +169,14 @@ class SecurityManager(BaseSecurityManager):
                 log.error(c.LOGMSG_ERR_SEC_ADD_ROLE.format(str(e)))
         return role
 
+    def update_role(self, pk, name: str) -> Optional[Role]:
+        try:
+            role = self.role_model.objects(id=pk).update(name=name)
+            log.info(c.LOGMSG_INF_SEC_UPD_ROLE.format(role))
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_UPD_ROLE.format(str(e)))
+            return
+
     def find_role(self, name):
         return self.role_model.objects(name=name).first()
 
@@ -314,11 +323,13 @@ class SecurityManager(BaseSecurityManager):
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_ADD_PERMVIEW.format(str(e)))
 
-    def del_permission_view_menu(self, permission_name, view_menu_name):
+    def del_permission_view_menu(self, permission_name, view_menu_name, cascade=True):
         try:
             pv = self.find_permission_view_menu(permission_name, view_menu_name)
             # delete permission on view
             pv.delete()
+            if not cascade:
+                return
             # if no more permission on permission view, delete permission
             pv = self.permissionview_model.objects(permission=pv.permission)
             if not pv:
@@ -350,7 +361,7 @@ class SecurityManager(BaseSecurityManager):
             :param perm_view:
                 The PermissionViewMenu object
         """
-        if perm_view not in role.permissions:
+        if perm_view and perm_view not in role.permissions:
             try:
                 role.permissions.append(perm_view)
                 role.save()
