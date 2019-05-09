@@ -1,6 +1,16 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.0
+-----------------------------------
+
+- New, #977 flask-sqlalchemy bump to 2.4.0 (new config options)
+- New, #986 Builtin roles using regex, Admin role is now one of these
+- New, #969 Override class and method permission names and procedure to converge/migrate
+- Fix, #985 Deprecation warning EOL version was wrong
+- New, #976 pRison version bump
+- Fix, #966 Change the default email value for auth_remote_user in security manager
+
 Improvements and Bug fixes on 2.0.0
 -----------------------------------
 
