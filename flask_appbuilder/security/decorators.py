@@ -11,6 +11,7 @@ from flask import (
     url_for
 )
 from flask_jwt_extended import verify_jwt_in_request
+from flask_login import current_user
 
 from .._compat import as_unicode
 from ..const import (
@@ -45,6 +46,7 @@ def protect(allow_browser_login=False):
 
         By default the permission's name is the methods name.
     """
+
     def _protect(f):
         if hasattr(f, '_permission_name'):
             permission_str = f._permission_name
@@ -59,6 +61,8 @@ def protect(allow_browser_login=False):
                 if _permission_name:
                     permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)
             class_permission_name = self.class_permission_name
+            if permission_str not in self.base_permissions:
+                return self.response_401()
             if current_app.appbuilder.sm.is_item_public(
                     permission_str,
                     class_permission_name
@@ -71,8 +75,9 @@ def protect(allow_browser_login=False):
                     class_permission_name
             ):
                 return f(self, *args, **kwargs)
-            elif (self.allow_browser_login or allow_browser_login):
-                verify_jwt_in_request()
+            elif self.allow_browser_login or allow_browser_login:
+                if not current_user.is_authenticated:
+                    verify_jwt_in_request()
                 if current_app.appbuilder.sm.has_access(
                         permission_str,
                         class_permission_name
@@ -85,8 +90,10 @@ def protect(allow_browser_login=False):
                 )
             )
             return self.response_401()
+
         f._permission_name = permission_str
         return functools.update_wrapper(wraps, f)
+
     return _protect
 
 
@@ -103,16 +110,16 @@ def has_access(f):
         permission_str = f.__name__
 
     def wraps(self, *args, **kwargs):
-        # Apply method permission name override if exists
         permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
         if self.method_permission_name:
             _permission_name = self.method_permission_name.get(f.__name__)
             if _permission_name:
                 permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)
-        if self.appbuilder.sm.has_access(
-                permission_str,
-                self.class_permission_name
-        ):
+        if (permission_str in self.base_permissions and
+                self.appbuilder.sm.has_access(
+                    permission_str,
+                    self.class_permission_name
+                )):
             return f(self, *args, **kwargs)
         else:
             log.warning(
@@ -128,6 +135,7 @@ def has_access(f):
                 next=request.url
             )
         )
+
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
 
@@ -147,16 +155,16 @@ def has_access_api(f):
         permission_str = f.__name__
 
     def wraps(self, *args, **kwargs):
-        # Apply method permission name override if exists
         permission_str = "{}{}".format(PERMISSION_PREFIX, f._permission_name)
         if self.method_permission_name:
             _permission_name = self.method_permission_name.get(f.__name__)
             if _permission_name:
                 permission_str = "{}{}".format(PERMISSION_PREFIX, _permission_name)
-        if self.appbuilder.sm.has_access(
-                permission_str,
-                self.class_permission_name
-        ):
+        if (permission_str in self.base_permissions and
+                self.appbuilder.sm.has_access(
+                    permission_str,
+                    self.class_permission_name
+                )):
             return f(self, *args, **kwargs)
         else:
             log.warning(
@@ -176,6 +184,7 @@ def has_access_api(f):
             )
             response.headers['Content-Type'] = "application/json"
             return response
+
     f._permission_name = permission_str
     return functools.update_wrapper(wraps, f)
 
@@ -215,7 +224,9 @@ def permission_name(name):
         :param name:
             The name of the permission to override
     """
+
     def wraps(f):
         f._permission_name = name
         return f
+
     return wraps
