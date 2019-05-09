@@ -519,8 +519,8 @@ class BaseApi(object):
             permission
             for permission in self.base_permissions
             if self.appbuilder.sm.has_access(
-                self.__class__.__name__,
-                permission
+                permission,
+                self.class_permission_name,
             )
         ]
 
