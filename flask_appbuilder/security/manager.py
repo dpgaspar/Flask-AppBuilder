@@ -294,10 +294,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         return jwt_manager
 
     def create_builtin_roles(self):
-        builtin_roles = self.appbuilder.get_app.config.get('FAB_ROLES', {})
-        if not builtin_roles.get(self.auth_role_admin):
-            builtin_roles[self.auth_role_admin] = [[".*", ".*"]]
-        return builtin_roles
+        return self.appbuilder.get_app.config.get('FAB_ROLES', {})
 
     @property
     def get_url_for_registeruser(self):
@@ -690,6 +687,8 @@ class BaseSecurityManager(AbstractSecurityManager):
             self.update_role(pk, name)
         for role_name in self.builtin_roles:
             self.add_role(role_name)
+        if self.auth_role_admin not in self.builtin_roles:
+            self.add_role(self.auth_role_admin)
         self.add_role(self.auth_role_public)
         if self.count_users() == 0:
             log.warning(LOGMSG_WAR_SEC_NO_USER)
@@ -1095,13 +1094,19 @@ class BaseSecurityManager(AbstractSecurityManager):
         if not perm_views:
             # No permissions yet on this view
             for permission in base_permissions:
-                self.add_permission_view_menu(permission, view_menu)
+                pv = self.add_permission_view_menu(permission, view_menu)
+                if self.auth_role_admin not in self.builtin_roles:
+                    role_admin = self.find_role(self.auth_role_admin)
+                    self.add_permission_role(role_admin, pv)
         else:
             # Permissions on this view exist but....
+            role_admin = self.find_role(self.auth_role_admin)
             for permission in base_permissions:
                 # Check if base view permissions exist
                 if not self.exist_permission_on_views(perm_views, permission):
-                    self.add_permission_view_menu(permission, view_menu)
+                    pv = self.add_permission_view_menu(permission, view_menu)
+                    if self.auth_role_admin not in self.builtin_roles:
+                        self.add_permission_role(role_admin, pv)
             for perm_view in perm_views:
                 if perm_view.permission.name not in base_permissions:
                     # perm to delete
@@ -1111,6 +1116,10 @@ class BaseSecurityManager(AbstractSecurityManager):
                     for role in roles:
                         self.del_permission_role(role, perm)
                     self.del_permission_view_menu(perm_view.permission.name, view_menu)
+                elif (self.auth_role_admin not in self.builtin_roles and
+                        perm_view not in role_admin.permissions):
+                    # Role Admin must have all permissions
+                    self.add_permission_role(role_admin, perm_view)
 
     def add_permissions_menu(self, view_menu_name):
         """
@@ -1123,6 +1132,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         pv = self.find_permission_view_menu("menu_access", view_menu_name)
         if not pv:
             self.add_permission_view_menu("menu_access", view_menu_name)
+            if self.auth_role_admin not in self.builtin_roles:
+                role_admin = self.find_role(self.auth_role_admin)
+                self.add_permission_role(role_admin, pv)
 
     def security_cleanup(self, baseviews, menus):
         """
