@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.1
+-----------------------------------
+
+- Fix, #991 Make Admin builtin optional, only if declared on config
+
 Improvements and Bug fixes on 2.1.0
 -----------------------------------
 
