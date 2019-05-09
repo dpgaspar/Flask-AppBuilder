@@ -1131,7 +1131,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.add_view_menu(view_menu_name)
         pv = self.find_permission_view_menu("menu_access", view_menu_name)
         if not pv:
-            self.add_permission_view_menu("menu_access", view_menu_name)
+            pv = self.add_permission_view_menu("menu_access", view_menu_name)
             if self.auth_role_admin not in self.builtin_roles:
                 role_admin = self.find_role(self.auth_role_admin)
                 self.add_permission_role(role_admin, pv)
