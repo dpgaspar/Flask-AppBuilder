@@ -216,6 +216,21 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | FAB_ROLES                         | Configure builtin roles see Security       |           |
 |                                   | chapter for further detail                 |   No      |
 +-----------------------------------+--------------------------------------------+-----------+
+| FAB_INDEX_VIEW                    | Path of your custom IndexView class        |           |
+|                                   | (str)                                      |   No      |
++-----------------------------------+--------------------------------------------+-----------+
+| FAB_MENU                          | Path of your custom Menu class             |           |
+|                                   | (str)                                      |   No      |
++-----------------------------------+--------------------------------------------+-----------+
+| FAB_BASE_TEMPLATE                 | Path of your custom base template          |           |
+|                                   |                                            |   No      |
++-----------------------------------+--------------------------------------------+-----------+
+| FAB_STATIC_FOLDER                 | Path to override default static folder     |           |
+|                                   |                                            |   No      |
++-----------------------------------+--------------------------------------------+-----------+
+| FAB_STATIC_URL_PATH               | Path to override default static folder     |           |
+|                                   |                                            |   No      |
++-----------------------------------+--------------------------------------------+-----------+
 
 
 Using config.py
