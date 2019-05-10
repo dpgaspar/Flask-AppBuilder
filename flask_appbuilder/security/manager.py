@@ -1038,26 +1038,36 @@ class BaseSecurityManager(AbstractSecurityManager):
         else:
             return False
 
-    def _has_access_builtin_roles(self, role, permission_name, view_name):
-        for builtin_role_name, builtin_pvms in self.builtin_roles.items():
-            if role.name == builtin_role_name:
-                for pvm in builtin_pvms:
-                    _view_name = pvm[0]
-                    _permission_name = pvm[1]
-                    if (re.match(_view_name, view_name) and
-                            re.match(_permission_name, permission_name)):
-                        return True
+    def _has_access_builtin_roles(
+            self,
+            role,
+            permission_name: str,
+            view_name: str
+    ) -> bool:
+        """
+            Checks permission on builtin role
+        """
+        builtin_pvms = self.builtin_roles.get(role.name, [])
+        for pvm in builtin_pvms:
+            _view_name = pvm[0]
+            _permission_name = pvm[1]
+            if (re.match(_view_name, view_name) and
+                    re.match(_permission_name, permission_name)):
+                return True
         return False
 
     def _has_view_access(self, user, permission_name, view_name):
         roles = user.roles
         for role in roles:
-            if self._has_access_builtin_roles(
-                    role,
-                    permission_name,
-                    view_name
-            ):
-                return True
+            if role.name in self.builtin_roles:
+                if self._has_access_builtin_roles(
+                        role,
+                        permission_name,
+                        view_name
+                ):
+                    return True
+                else:
+                    continue
             permissions = role.permissions
             if permissions:
                 for permission in permissions:
