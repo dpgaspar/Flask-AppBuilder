@@ -42,6 +42,8 @@ NOTNULL_VALIDATION_STRING = "This field is required"
 DEFAULT_ADMIN_USER = "admin"
 DEFAULT_ADMIN_PASSWORD = "general"
 REDIRECT_OBJ_ID = 1
+USERNAME_READONLY = "readonly"
+PASSWORD_READONLY = "readonly"
 
 log = logging.getLogger(__name__)
 
@@ -61,6 +63,12 @@ class FlaskTestCase(unittest.TestCase):
         self.app.config["SECRET_KEY"] = "thisismyscretkey"
         self.app.config["WTF_CSRF_ENABLED"] = False
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        self.app.config["FAB_ROLES"] = {
+            "ReadOnly": [
+                [".*", "can_list"],
+                [".*", "can_show"]
+            ]
+        }
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -205,6 +213,30 @@ class FlaskTestCase(unittest.TestCase):
         class ModelWithEnumsView(ModelView):
             datamodel = SQLAInterface(ModelWithEnums)
 
+        class Model1PermOverride(ModelView):
+            datamodel = SQLAInterface(Model1)
+            class_permission_name = 'view'
+            method_permission_name = {
+                "list": "access",
+                "show": "access",
+                "edit": "access",
+                "add": "access",
+                "delete": "access",
+                "download": "access",
+                "api_readvalues": "access",
+                "api_column_edit": "access",
+                "api_column_add": "access",
+                "api_delete": "access",
+                "api_update": "access",
+                "api_create": "access",
+                "api_get": "access",
+                "api_read": "access",
+                "api": "access"
+            }
+
+        self.model1permoverride = Model1PermOverride
+        self.appbuilder.add_view_no_menu(Model1PermOverride)
+
         self.appbuilder.add_view(Model1View, "Model1", category="Model1")
         self.appbuilder.add_view(
             Model1ViewWithRedirects, "Model1ViewWithRedirects", category="Model1"
@@ -242,6 +274,15 @@ class FlaskTestCase(unittest.TestCase):
         role_admin = self.appbuilder.sm.find_role("Admin")
         self.appbuilder.sm.add_user(
             "admin", "admin", "user", "admin@fab.org", role_admin, "general"
+        )
+        role_read_only = self.appbuilder.sm.find_role("ReadOnly")
+        self.appbuilder.sm.add_user(
+            USERNAME_READONLY,
+            "readonly",
+            "readonly",
+            "readonly@fab.org",
+            role_read_only,
+            PASSWORD_READONLY
         )
 
     def tearDown(self):
@@ -313,7 +354,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 34)  # current minimal views are 34
+        eq_(len(self.appbuilder.baseviews), 35)
 
     def test_back(self):
         """
@@ -382,6 +423,25 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.login(client, DEFAULT_ADMIN_USER, "password")
         data = rv.data.decode("utf-8")
         ok_(INVALID_LOGIN_STRING in data)
+
+    def test_auth_builtin_roles(self):
+        """
+            Test Security builtin roles readonly
+        """
+        self.insert_data()
+        client = self.app.test_client()
+        self.login(client, USERNAME_READONLY, PASSWORD_READONLY)
+        # Test unauthorized GET
+        rv = client.get("/model1view/list/")
+        eq_(rv.status_code, 200)
+        # Test unauthorized EDIT
+        rv = client.get("/model1view/show/1")
+        eq_(rv.status_code, 200)
+        rv = client.get("/model1view/edit/1")
+        eq_(rv.status_code, 302)
+        # Test unauthorized DELETE
+        rv = client.get("/model1view/delete/1")
+        eq_(rv.status_code, 302)
 
     def test_sec_reset_password(self):
         """
@@ -943,3 +1003,120 @@ class FlaskTestCase(unittest.TestCase):
         item = self.db.session.query(Model1).filter_by(id=1).one()
         eq_(item.field_string, "zzz")
         eq_(item.field_integer, field_integer_before)
+
+    def test_permission_override(self):
+        """
+            MVC: Test permission name override
+        """
+        role = self.appbuilder.sm.add_role("Test")
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_access",
+            "view"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm)
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+
+        client = self.app.test_client()
+
+        self.login(client, "test", "test")
+        rv = client.get("/model1permoverride/list/")
+        eq_(rv.status_code, 200)
+        rv = client.post(
+            "/model1permoverride/add",
+            data=dict(
+                field_string="test1",
+                field_integer="1",
+                field_float="0.12",
+                field_date="2014-01-01",
+            ),
+            follow_redirects=True,
+        )
+        eq_(rv.status_code, 200)
+
+        model = self.db.session.query(Model1).first()
+        eq_(model.field_string, u"test1")
+        eq_(model.field_integer, 1)
+
+    def test_permission_converge_compress(self):
+        """
+            MVC: Test permission name converge compress
+        """
+        from flask_appbuilder import ModelView
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+        class Model1PermConverge(ModelView):
+            datamodel = SQLAInterface(Model1)
+            class_permission_name = 'view2'
+            previous_class_permission_name = 'Model1View'
+            method_permission_name = {
+                "list": "access",
+                "show": "access",
+                "edit": "access",
+                "add": "access",
+                "delete": "access",
+                "download": "access",
+                "api_readvalues": "access",
+                "api_column_edit": "access",
+                "api_column_add": "access",
+                "api_delete": "access",
+                "api_update": "access",
+                "api_create": "access",
+                "api_get": "access",
+                "api_read": "access",
+                "api": "access"
+            }
+
+        self.appbuilder.add_view_no_menu(Model1PermConverge)
+        role = self.appbuilder.sm.add_role("Test")
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_list",
+            "Model1View"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm)
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_add",
+            "Model1View"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm)
+        role = self.appbuilder.sm.find_role("Test")
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+        # Remove previous class, Hack to test code change
+        for i, baseview in enumerate(self.appbuilder.baseviews):
+            if baseview.__class__.__name__ == "Model1View":
+                break
+        self.appbuilder.baseviews.pop(i)
+        for i, baseview in enumerate(self.appbuilder.baseviews):
+            if baseview.__class__.__name__ == "Model1PermOverride":
+                break
+        self.appbuilder.baseviews.pop(i)
+
+        target_state_transitions = {
+            'add': {
+                ('Model1View', 'can_edit'): {('view2', 'can_access')},
+                ('Model1View', 'can_add'): {('view2', 'can_access')},
+                ('Model1View', 'can_list'): {('view2', 'can_access')},
+                ('Model1View', 'can_download'): {('view2', 'can_access')},
+                ('Model1View', 'can_show'): {('view2', 'can_access')},
+                ('Model1View', 'can_delete'): {('view2', 'can_access')}
+            },
+            'del_role_pvm': {
+                ('Model1View', 'can_show'),
+                ('Model1View', 'can_add'),
+                ('Model1View', 'can_download'),
+                ('Model1View', 'can_list'),
+                ('Model1View', 'can_edit'),
+                ('Model1View', 'can_delete')
+            },
+            'del_views': {
+                'Model1View'
+            },
+            'del_perms': set()
+        }
+        state_transitions = self.appbuilder.security_converge()
+        eq_(state_transitions, target_state_transitions)
+        role = self.appbuilder.sm.find_role("Test")
+        eq_(len(role.permissions), 1)
