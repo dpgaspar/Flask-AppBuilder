@@ -505,9 +505,7 @@ Next we can use our token on protected endpoints::
     }
 
 As always FAB created a new **can_private** permission
-on the DB and as associated it to the *Admin* Role.
-So the Admin role as a new permission on
-a view named "can private on ExampleApi"
+on the DB named "can private on ExampleApi"
 Note that you can protect all your methods and make
 them public or not by adding them to the *Public* Role.
 

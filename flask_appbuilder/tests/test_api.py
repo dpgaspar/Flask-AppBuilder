@@ -58,6 +58,8 @@ MODEL2_DATA_SIZE = 30
 USERNAME = "testadmin"
 PASSWORD = "password"
 MAX_PAGE_SIZE = 25
+USERNAME_READONLY = "readonly"
+PASSWORD_READONLY = "readonly"
 
 
 class FlaskTestCase(unittest.TestCase):
@@ -74,6 +76,12 @@ class FlaskTestCase(unittest.TestCase):
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
         self.app.config["WTF_CSRF_ENABLED"] = False
+        self.app.config["FAB_ROLES"] = {
+            "ReadOnly": [
+                [".*", "can_get"],
+                [".*", "can_info"]
+            ]
+        }
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -222,6 +230,15 @@ class FlaskTestCase(unittest.TestCase):
         self.appbuilder.sm.add_user(
             USERNAME, "admin", "user", "admin@fab.org", role_admin, PASSWORD
         )
+        role_read_only = self.appbuilder.sm.find_role("ReadOnly")
+        self.appbuilder.sm.add_user(
+            USERNAME_READONLY,
+            "readonly",
+            "readonly",
+            "readonly@fab.org",
+            role_read_only,
+            PASSWORD_READONLY
+        )
 
     def tearDown(self):
         self.appbuilder = None
@@ -363,8 +380,41 @@ class FlaskTestCase(unittest.TestCase):
         uri = "api/v1/model1apirestrictedpermissions/"
         rv = self.auth_client_post(client, token, uri, item)
         eq_(rv.status_code, 401)
-        # Test unauthorized GET
+        # Test authorized GET
         uri = "api/v1/model1apirestrictedpermissions/1"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+
+    def test_auth_builtin_roles(self):
+        """
+            REST Api: Test auth readonly builtin role
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_READONLY, PASSWORD_READONLY)
+        # Test unauthorized DELETE
+        pk = 1
+        uri = "api/v1/model1api/{}".format(pk)
+        rv = self.auth_client_delete(client, token, uri)
+        eq_(rv.status_code, 401)
+
+        # Test unauthorized POST
+        item = dict(
+            field_string="test{}".format(MODEL1_DATA_SIZE + 1),
+            field_integer=MODEL1_DATA_SIZE + 1,
+            field_float=float(MODEL1_DATA_SIZE + 1),
+            field_date=None,
+        )
+        uri = "api/v1/model1api/"
+        rv = self.auth_client_post(client, token, uri, item)
+        eq_(rv.status_code, 401)
+
+        # Test authorized GET
+        uri = "api/v1/model1api/1"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+
+        # Test authorized INFO
+        uri = "api/v1/model1api/_info"
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
 
