@@ -1,5 +1,6 @@
 from functools import reduce
 import logging
+from typing import Dict
 
 from flask import Blueprint, current_app, url_for
 
@@ -520,6 +521,22 @@ class AppBuilder(object):
         """
         self.sm.security_cleanup(self.baseviews, self.menu)
 
+    def security_converge(self, dry=False) -> Dict:
+        """
+            This method is useful when you use:
+
+            - `class_permission_name`
+            - `previous_class_permission_name`
+            - `method_permission_name`
+            - `previous_method_permission_name`
+
+            migrates all permissions to the new names on all the Roles
+
+        :param dry: If True will not change DB
+        :return: Dict with all computed necessary operations
+        """
+        return self.sm.security_converge(self.baseviews, self.menu, dry)
+
     @property
     def get_url_for_login(self):
         return self.url_prefix + url_for("%s.%s" % (self.sm.auth_view.endpoint, "login"))
@@ -554,7 +571,7 @@ class AppBuilder(object):
         if self.update_perms or update_perms:
             try:
                 self.sm.add_permissions_view(
-                    baseview.base_permissions, baseview.__class__.__name__
+                    baseview.base_permissions, baseview.class_permission_name
                 )
             except Exception as e:
                 log.exception(e)

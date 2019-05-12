@@ -326,10 +326,10 @@ class SecurityManager(BaseSecurityManager):
             :param name:
                 name of the ViewMenu
         """
-        obj = self.find_view_menu(name)
-        if obj:
+        view_menu = self.find_view_menu(name)
+        if view_menu:
             try:
-                self.get_session.delete(obj)
+                self.get_session.delete(view_menu)
                 self.get_session.commit()
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
@@ -397,13 +397,27 @@ class SecurityManager(BaseSecurityManager):
             log.error(c.LOGMSG_ERR_SEC_ADD_PERMVIEW.format(str(e)))
             self.get_session.rollback()
 
-    def del_permission_view_menu(self, permission_name, view_menu_name):
+    def del_permission_view_menu(self, permission_name, view_menu_name, cascade=True):
+        if not (permission_name and view_menu_name):
+            return
+        pv = self.find_permission_view_menu(permission_name, view_menu_name)
+        if not pv:
+            return
+        roles_pvs = self.get_session.query(self.role_model).filter(
+            self.role_model.permissions.contains(pv)
+        ).first()
+        if roles_pvs:
+            log.warning(c.LOGMSG_WAR_SEC_DEL_PERMVIEW.format(
+                view_menu_name, permission_name, roles_pvs
+            ))
+            return
         try:
-            pv = self.find_permission_view_menu(permission_name, view_menu_name)
             # delete permission on view
             self.get_session.delete(pv)
             self.get_session.commit()
             # if no more permission on permission view, delete permission
+            if not cascade:
+                return
             if (
                 not self.get_session.query(self.permissionview_model)
                 .filter_by(permission=pv.permission)
@@ -438,7 +452,7 @@ class SecurityManager(BaseSecurityManager):
             :param perm_view:
                 The PermissionViewMenu object
         """
-        if perm_view not in role.permissions:
+        if perm_view and perm_view not in role.permissions:
             try:
                 role.permissions.append(perm_view)
                 self.get_session.merge(role)

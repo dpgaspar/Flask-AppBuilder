@@ -35,7 +35,8 @@ Of course you can create any additional role you want and configure them as you 
 Permissions
 -----------
 
-The framework automatically creates for you all the possible existing permissions on your views or menus, by "inspecting" your code.
+The framework automatically creates for you all the possible existing permissions on your views, API or menus,
+by "inspecting" your code.
 
 Each time you create a new view based on a model (inherit from ModelView) it will create the following permissions:
 
@@ -45,8 +46,17 @@ Each time you create a new view based on a model (inherit from ModelView) it wil
 - can edit
 - can delete
 - can download
-	
-These base permissions will be associated to your view, so if you create a view named "MyModelView" you can assign to any role these permissions:
+
+In the case of CRUD REST API:
+
+- can get
+- can put
+- can post
+- can delete
+- can info
+
+These base permissions will be associated to your view or API, so if you create a view named ``MyModelView``
+you can assign to any role these permissions:
 
 - can list on MyModelView
 - can show on MyModelView
@@ -54,7 +64,15 @@ These base permissions will be associated to your view, so if you create a view 
 - can edit on MyModelView
 - can delete on MyModelView
 - can download on MyModelView
-	
+
+In case your developing a backend REST API subclassing ``ModelRestApi`` and create a class named ``MyApi``:
+
+- can get on MyApi
+- can put on MyApi
+- can post on MyApi
+- can delete on MyApi
+- can info on MyApi
+
 If you extend your view with some exposed method via the @expose decorator and you want to protect it
 use the @has_access decorator::
 
@@ -77,6 +95,114 @@ if there is no need for granular permissions on a group of methods, for this use
 You can use the @permission_name to override the permission's name to whatever you like.
 
 Take a look at :doc:`api`
+
+
+Permission Customization
+------------------------
+
+The default view/menu, permissions are highly granular, this is a good default since it enables a high level
+of customization, but on medium to large application the amount of permission pairs generated can get a bit daunting.
+You can fully customize the generated permission names generated and if you wish aggregate them::
+
+    class OneApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "api"
+
+
+    class TwoApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "api"
+
+The previous example will generate half the default permissions, by just creating the following:
+
+- can get on api
+- can put on api
+- can post on api
+- can delete on api
+- can info on api
+
+You can also aggregate method permissions by using ``method_permission_name`` attribute.
+Use the following ``Dict`` structure::
+
+    method_permission_name = {
+        "<METHOD_NAME>": "<PERMISSION_NAME>",
+        ...
+    }
+
+Example::
+
+    class OneApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "api"
+        method_permission_name = {
+            "get_list": "access",
+            "get": "access",
+            "post": "access",
+            "put": "access",
+            "delete": "access",
+            "info": "access"
+        }
+
+
+    class TwoApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "api"
+        method_permission_name = {
+            "get_list": "access",
+            "get": "access",
+            "post": "access",
+            "put": "access",
+            "delete": "access",
+            "info": "access"
+        }
+
+Now FAB will only generate one permission pair:
+
+- can access on api
+
+If you want to revert back your permission names override, or change just them again, you need to hint FAB
+about what were your last permissions, so that the security converge procedure knows what to do::
+
+
+    class OneApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "OneApi"
+        previous_permission_name = "api"
+        method_permission_name = {
+            "get_list": "get",
+            "get": "get",
+            "post": "post",
+            "put": "put",
+            "delete": "delete",
+            "info": "info"
+        }
+        previous_method_permission_name = {
+            "get_list": "access",
+            "get": "access",
+            "post": "access",
+            "put": "access",
+            "delete": "access",
+            "info": "access"
+        }
+
+
+Then run the following FAB cli command::
+
+    $ flask fab security-converge
+
+
+Security converge will migrate all your permissions from the previous names to the current names, and
+also change all your roles, so you can migrate smoothly to your new security naming. After converging
+you can delete all your ``previous_*`` attributes.
+
+You can also migrate back by switching ``previous_*`` attributes to their target, ie switch
+``previous_method_permission_name`` by ``method_permission_name`` and
+``previous_permission_name`` by ``class_permission_name``. Then run security converge will expand back all permissions
+on all your Roles.
+
+:note: You should backup your production database before migrating your permissions. Also note that you
+       can run ``flask fab security-converge --dry-run`` to get a list of operations the converge will perform.
+
 
 Automatic Cleanup
 -----------------

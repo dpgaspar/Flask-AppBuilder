@@ -314,11 +314,13 @@ class SecurityManager(BaseSecurityManager):
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_ADD_PERMVIEW.format(str(e)))
 
-    def del_permission_view_menu(self, permission_name, view_menu_name):
+    def del_permission_view_menu(self, permission_name, view_menu_name, cascade=True):
         try:
             pv = self.find_permission_view_menu(permission_name, view_menu_name)
             # delete permission on view
             pv.delete()
+            if not cascade:
+                return
             # if no more permission on permission view, delete permission
             pv = self.permissionview_model.objects(permission=pv.permission)
             if not pv:
@@ -350,7 +352,7 @@ class SecurityManager(BaseSecurityManager):
             :param perm_view:
                 The PermissionViewMenu object
         """
-        if perm_view not in role.permissions:
+        if perm_view and perm_view not in role.permissions:
             try:
                 role.permissions.append(perm_view)
                 role.save()
