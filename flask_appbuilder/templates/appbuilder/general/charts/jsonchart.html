@@ -13,7 +13,7 @@
     <div class="well well-sm">
     <label>{{ group_by_label }}:</label>
     {% for definition in definitions %}
-        <a href="{{url_for('.chart',group_by=loop.index - 1)}}" class="btn btn-sm btn-primary">
+        <a href="{{appbuilder.url_prefix + url_for('.chart',group_by=loop.index - 1)}}" class="btn btn-sm btn-primary">
             {{ definition['label'] }}
         </a>
     {% endfor %}

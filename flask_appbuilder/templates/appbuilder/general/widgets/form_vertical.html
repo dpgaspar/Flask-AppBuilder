@@ -33,5 +33,5 @@
                 {% endfor %}
     {% endif %}
     </div>
-    {{ lib.render_form_controls() }}
+    {{ lib.render_form_controls(appbuilder.url_prefix) }}
 </form>

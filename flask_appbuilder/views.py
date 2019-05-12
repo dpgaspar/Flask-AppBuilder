@@ -529,7 +529,8 @@ class ModelView(RestCRUDView):
 
         widgets = self._list()
         return self.render_template(
-            self.list_template, title=self.list_title, widgets=widgets
+            self.list_template, title=self.list_title, widgets=widgets,
+            appbuilder=self.appbuilder,
         )
 
     """
@@ -549,6 +550,7 @@ class ModelView(RestCRUDView):
             title=self.show_title,
             widgets=widgets,
             related_views=self._related_views,
+            appbuilder=self.appbuilder,
         )
 
     """
@@ -565,7 +567,8 @@ class ModelView(RestCRUDView):
             return self.post_add_redirect()
         else:
             return self.render_template(
-                self.add_template, title=self.add_title, widgets=widget
+                self.add_template, title=self.add_title, widgets=widget,
+                appbuilder=self.appbuilder,
             )
 
     """
@@ -587,6 +590,7 @@ class ModelView(RestCRUDView):
                 title=self.edit_title,
                 widgets=widgets,
                 related_views=self._related_views,
+                appbuilder=self.appbuilder,
             )
 
     """
@@ -690,6 +694,7 @@ class MasterDetailView(BaseCRUDView):
             widgets=widgets,
             related_views=related_views,
             master_div_width=self.master_div_width,
+            appbuilder=self.appbuilder,
         )
 
 
@@ -748,7 +753,8 @@ class MultipleView(BaseView):
             )
         self.update_redirect()
         return self.render_template(
-            self.list_template, views=self._views, views_widgets=views_widgets
+            self.list_template, views=self._views, views_widgets=views_widgets,
+            appbuilder=self.appbuilder,
         )
 
 
@@ -808,7 +814,8 @@ class CompactCRUDMixin(BaseCRUDView):
     def list(self):
         list_widgets = self._list()
         return self.render_template(
-            self.list_template, title=self.list_title, widgets=list_widgets
+            self.list_template, title=self.list_title, widgets=list_widgets,
+            appbuilder=self.appbuilder,
         )
 
     @expose("/add/", methods=["GET", "POST"])

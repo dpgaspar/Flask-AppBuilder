@@ -310,6 +310,7 @@ class BaseSimpleGroupByChartView(BaseChartView):
             height=height,
             value_columns=value_columns,
             modelview_name=self.__class__.__name__,
+            appbuilder=self.appbuilder,
             **args
         )
         return widgets
@@ -370,6 +371,7 @@ class BaseSimpleDirectChartView(BaseChartView):
             height=height,
             value_columns=value_columns,
             modelview_name=self.__class__.__name__,
+            appbuilder=self.appbuilder,
             **args
         )
         return widgets
@@ -455,6 +457,7 @@ class TimeChartView(BaseSimpleGroupByChartView):
             height=height,
             value_columns=value_columns,
             modelview_name=self.__class__.__name__,
+            appbuilder=self.appbuilder,
             **args
         )
         return widgets

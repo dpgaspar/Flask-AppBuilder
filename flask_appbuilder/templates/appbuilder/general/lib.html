@@ -1,20 +1,20 @@
-{% macro render_additional_links(additional_links, pk) %}
+{% macro render_additional_links(additional_links, pk, url_prefix) %}
 	{% if additional_links %}
 		{% for item in additional_links %}
-			<a href="{{item.href}}?pk={{pk}}" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon"></span>
+			<a href="{{ url_prefix }}{{item.href}}?pk={{pk}}" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon"></span>
 			{{_(item.label)}}</a>
 		{% endfor %}
 	{% endif %}
 {% endmacro %}
 
-{% macro render_action_links(actions, pk, modelview_name) %}
+{% macro render_action_links(actions, pk, modelview_name, url_prefix) %}
     {% set actions = actions | get_actions_on_show(modelview_name) %}
     {% for key in actions %}
         {%  set action = actions.get(key) %}
 
         {% set url = url_for(modelview_name + '.action', name = action.name, pk = pk) %}
         <a href="javascript:void(0)" class="btn btn-sm btn-primary"
-           onclick="var a = new AdminActions(); return a.execute_single('{{url}}','{{action.confirmation}}');">
+           onclick="var a = new AdminActions(); return a.execute_single('{{ url_prefix }}{{url}}','{{action.confirmation}}');">
             <i class="fa {{action.icon}}"></i>
                 {{_(action.text)}}
             </a>
@@ -268,24 +268,24 @@
     </div>
 {% endmacro %}
 
-{% macro render_form_controls() %}
+{% macro render_form_controls(url_prefix) %}
     <div class="well well-sm">
         <button type="submit" class="btn  btn-sm btn-primary">{{_("Save")}}
             <i class="fa fa-save"></i></button>
-        {{ lnk_back() }}
+        {{ lnk_back(url_prefix) }}
     </div>
 {% endmacro %}
 
-{% macro render_list_header(can_add, page, page_size, count, filters, actions, modelview_name) %}
+{% macro render_list_header(can_add, page, page_size, count, filters, actions, modelview_name, url_prefix) %}
         {{ render_pagination(page, page_size, count, modelview_name) }}
         {{ render_set_page_size(page, page_size, count, modelview_name) }}
     	{% if can_add %}
-		    {% set path = url_for(modelview_name + '.add') %}
+		    {% set path = url_prefix + url_for(modelview_name + '.add') %}
 			{% set path = path | set_link_filters(filters) %}
-			&nbsp;{{ lnk_add(path) }}
+			&nbsp;{{ lnk_add(path, url_prefix) }}
         {% endif %}
         &nbsp;{{ render_actions(actions, modelview_name) }}
-        &nbsp;{{ lnk_back() }}
+        &nbsp;{{ lnk_back(url_prefix) }}
 		<div class="pull-right">
 			<strong>{{ _('Record Count') }}:</strong> {{ count }}
 		</div>
@@ -315,16 +315,16 @@
     </button>
 {% endmacro %}
 
-{% macro lnk_back() %}
-    <a href="{{url_for('UtilView' + '.back')}}" class="btn btn-sm btn-default" data-toggle="tooltip" rel="tooltip"
+{% macro lnk_back(url_prefix) %}
+    <a href="{{url_prefix + url_for('UtilView' + '.back')}}" class="btn btn-sm btn-default" data-toggle="tooltip" rel="tooltip"
        title="{{_('Back')}}">
         <i class="fa fa-arrow-left"></i>
     </a>
 {% endmacro %}
 
 
-{% macro lnk_add(my_href) %}
-    <a href="{{my_href}}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
+{% macro lnk_add(my_href, url_prefix) %}
+    <a href="{{ url_prefix }}{{my_href}}" class="btn btn-sm btn-primary" data-toggle="tooltip" rel="tooltip"
        title="{{_('Add a new record')}}">
         <i class="fa fa-plus"></i>
     </a>

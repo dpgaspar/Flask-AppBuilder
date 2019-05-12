@@ -92,6 +92,7 @@ class BaseRegisterUser(PublicFormView):
             username=register_user.username,
             first_name=register_user.first_name,
             last_name=register_user.last_name,
+            appbuilder=self.appbuilder,
         )
         msg.recipients = [register_user.email]
         try:

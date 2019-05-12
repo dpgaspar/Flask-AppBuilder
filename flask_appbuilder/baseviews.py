@@ -309,6 +309,7 @@ class BaseFormView(BaseView):
             include_cols=self.form_columns,
             exclude_cols=exclude_cols,
             fieldsets=self.form_fieldsets,
+            appbuilder=self.appbuilder
         )
         return widgets
 
@@ -482,6 +483,7 @@ class BaseModelView(BaseView):
             include_cols=self.search_columns,
             exclude_cols=exclude_cols,
             filters=self._filters,
+            appbuilder=self.appbuilder
         )
         return widgets
 
@@ -847,6 +849,7 @@ class BaseCRUDView(BaseModelView):
             order_direction=order_direction,
             page=page,
             page_size=page_size,
+            appbuilder=self.appbuilder
         )
 
     def _get_related_views_widgets(
@@ -927,6 +930,7 @@ class BaseCRUDView(BaseModelView):
             actions=actions,
             filters=filters,
             modelview_name=self.__class__.__name__,
+            appbuilder=self.appbuilder
         )
         return widgets
 
@@ -944,6 +948,7 @@ class BaseCRUDView(BaseModelView):
             formatters_columns=self.formatters_columns,
             actions=actions,
             fieldsets=show_fieldsets,
+            appbuilder=self.appbuilder,
             modelview_name=self.__class__.__name__,
         )
         return widgets
@@ -956,6 +961,7 @@ class BaseCRUDView(BaseModelView):
             include_cols=self.add_columns,
             exclude_cols=exclude_cols,
             fieldsets=self.add_fieldsets,
+            appbuilder=self.appbuilder,
         )
         return widgets
 
@@ -967,6 +973,7 @@ class BaseCRUDView(BaseModelView):
             include_cols=self.edit_columns,
             exclude_cols=exclude_cols,
             fieldsets=self.edit_fieldsets,
+            appbuilder=self.appbuilder,
         )
         return widgets
 

@@ -39,6 +39,6 @@
 
 
 <div class="well well-sm">
-    {{ lib.render_action_links(actions, pk, modelview_name) }}
-    {{ lib.lnk_back() }}
+    {{ lib.render_action_links(actions, pk, modelview_name, appbuilder.url_prefix) }}
+    {{ lib.lnk_back(appbuilder.url_prefix) }}
 </div>

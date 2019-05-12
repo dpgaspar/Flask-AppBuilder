@@ -8,7 +8,7 @@
 
 <div class="well well-sm">
     {% block list_header scoped %}
-        {{ lib.render_list_header(can_add, page, page_size, count, filters, actions, modelview_name) }}
+        {{ lib.render_list_header(can_add, page, page_size, count, filters, actions, modelview_name, appbuilder.url_prefix) }}
     {% endblock %}
 </div>
 
