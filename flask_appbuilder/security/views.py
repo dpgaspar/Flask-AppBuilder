@@ -3,7 +3,7 @@ import logging
 import re
 
 from flask import abort, current_app, flash, g, redirect, request, session, url_for
-from flask_appbuilder.urltools import prefixed_redirect
+from flask_appbuilder.urltools import prefixed_redirect, prefixed_url
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
 import jwt
@@ -228,7 +228,7 @@ class UserModelView(ModelView):
 
     @action("userinfoedit", lazy_gettext("Edit User"), "", "fa-edit", multiple=False)
     def userinfoedit(self, item):
-        return prefixed_redirect(
+        return prefixed_url(
             url_for(self.appbuilder.sm.userinfoeditview.__name__ + ".this_form_get")
         )
 
@@ -657,7 +657,7 @@ class AuthOAuthView(AuthView):
                     session["register"] = True
                 if provider == "twitter":
                     return self.appbuilder.sm.oauth_remotes[provider].authorize(
-                        callback=prefixed_redirect(url_for(
+                        callback=prefixed_url(url_for(
                             ".oauth_authorized",
                             provider=provider,
                             _external=True,
@@ -666,7 +666,7 @@ class AuthOAuthView(AuthView):
                     )
                 else:
                     return self.appbuilder.sm.oauth_remotes[provider].authorize(
-                        callback=prefixed_redirect(url_for(
+                        callback=prefixed_url(url_for(
                             ".oauth_authorized", provider=provider, _external=True
                         )),
                         state=state,

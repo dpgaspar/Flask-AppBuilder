@@ -116,3 +116,7 @@ def get_prefixed_request_url(request):
 
 def prefixed_redirect(location, *args, **kwargs):
     return partial(redirect, get_url_prefix() + location)(*args, **kwargs)
+
+
+def prefixed_url(url):
+    return get_url_prefix() + url

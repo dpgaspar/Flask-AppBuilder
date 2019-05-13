@@ -5,7 +5,7 @@ from flask_appbuilder.models.mixins import ImageColumn
 from sqlalchemy import Column, Date, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
-from flask_appbuilder.urltools import prefixed_redirect
+from flask_appbuilder.urltools import prefixed_url
 
 
 class PersonGroup(Model):
@@ -43,15 +43,15 @@ class Person(Model):
         if self.photo:
             return Markup(
                 '<a href="' +
-                prefixed_redirect(url_for("PersonModelView.show", pk=str(self.id))) +
+                prefixed_url(url_for("PersonModelView.show", pk=str(self.id))) +
                 '" class="thumbnail"><img src="' +
-                prefixed_redirect(im.get_url(self.photo)) +
+                prefixed_url(im.get_url(self.photo)) +
                 '" alt="Photo" class="img-rounded img-responsive"></a>'
             )
         else:
             return Markup(
                 '<a href="' +
-                prefixed_redirect(url_for("PersonModelView.show", pk=str(self.id))) +
+                prefixed_url(url_for("PersonModelView.show", pk=str(self.id))) +
                 '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive">'
                 '</a>'
             )
@@ -61,7 +61,7 @@ class Person(Model):
         if self.photo:
             return Markup(
                 '<a href="' +
-                prefixed_redirect(url_for("PersonModelView.show", pk=str(self.id))) +
+                prefixed_url(url_for("PersonModelView.show", pk=str(self.id))) +
                 '" class="thumbnail"><img src="' +
                 im.get_url_thumbnail(self.photo) +
                 '" alt="Photo" class="img-rounded img-responsive"></a>'
@@ -69,7 +69,7 @@ class Person(Model):
         else:
             return Markup(
                 '<a href="' +
-                prefixed_redirect(url_for("PersonModelView.show", pk=str(self.id))) +
+                prefixed_url(url_for("PersonModelView.show", pk=str(self.id))) +
                 '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive">'
                 '</a>'
             )
