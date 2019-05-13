@@ -1,10 +1,12 @@
-from flask import Markup, url_for
+from flask import Markup, url_for, current_app
 from flask_appbuilder import Model
 from flask_appbuilder.filemanager import ImageManager
 from flask_appbuilder.models.mixins import ImageColumn
 from flask_appbuilder.security.sqla.models import User
 from sqlalchemy import Column, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
+
+from flask_appbuilder.urltools import prefixed_redirect
 
 
 class ProductType(Model):
@@ -29,7 +31,7 @@ class Product(Model):
         if self.photo:
             return Markup(
                 '<a href="' +
-                url_for("ProductPubView.show", pk=str(self.id)) +
+                prefixed_redirect(url_for("ProductPubView.show", pk=str(self.id))) +
                 '" class="thumbnail"><img src="' +
                 im.get_url(self.photo) +
                 '" alt="Photo" class="img-rounded img-responsive"></a>'
@@ -37,7 +39,7 @@ class Product(Model):
         else:
             return Markup(
                 '<a href="' +
-                + url_for("ProductPubView.show", pk=str(self.id)) +
+                + prefixed_redirect(url_for("ProductPubView.show", pk=str(self.id))) +
                 '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive">'
                 '</a>'
             )

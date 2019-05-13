@@ -1,7 +1,9 @@
 import datetime
-from flask import url_for, Markup
+from flask import url_for, Markup, current_app
 from mongoengine import Document
 from mongoengine import DateTimeField, StringField, ReferenceField, ListField, FileField, ImageField
+
+from flask_appbuilder.urltools import prefixed_redirect
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
@@ -63,22 +65,22 @@ class Contact(Document):
     def file_show(self):
         if self.file:
             return Markup(
-                '<a href="' + url_for('ContactModelView.mongo_download', pk=str(self.id)) + '">Download {0}</a>'.format(self.file.name))
+                '<a href="' + prefixed_redirect(url_for('ContactModelView.mongo_download', pk=str(self.id))) + '">Download {0}</a>'.format(self.file.name))
         else:
             return Markup('')
 
     def image_show(self):
         if self.image:
-            return Markup('<a href="' + url_for('ContactModelView.show',pk=str(self.id)) + \
-                      '" class="thumbnail"><img src="' + url_for('ContactModelView.img', pk=str(self.id)) + \
+            return Markup('<a href="' + prefixed_redirect(url_for('ContactModelView.show',pk=str(self.id))) + \
+                      '" class="thumbnail"><img src="' + current_app.appbuilder.url_prefix + url_for('ContactModelView.img', pk=str(self.id)) + \
                       '" alt="Photo" class="img-rounded img-responsive"></a>')
         else:
             return Markup('')
 
     def image_thumb_show(self):
         if self.image:
-            return Markup('<a href="' + url_for('ContactModelView.show',pk=str(self.id)) + \
-                      '" class="thumbnail"><img src="' + url_for('ContactModelView.img_thumb', pk=str(self.id)) + \
+            return Markup('<a href="' + prefixed_redirect(url_for('ContactModelView.show',pk=str(self.id))) + \
+                      '" class="thumbnail"><img src="' + prefixed_redirect(url_for('ContactModelView.img_thumb', pk=str(self.id))) + \
                       '" alt="Photo" class="img-rounded img-responsive"></a>')
         else:
             return Markup('')

@@ -15,6 +15,7 @@ from .urltools import (
     get_page_args,
     get_page_size_args,
     get_prefixed_request_url,
+    prefixed_redirect,
     Stack,
 )
 from .widgets import FormWidget, ListWidget, SearchWidget, ShowWidget
@@ -274,7 +275,7 @@ class BaseView(object):
         """
             Returns the url for this class default endpoint
         """
-        return url_for(cls.__name__ + "." + cls.default_view, **kwargs)
+        return prefixed_redirect(url_for(cls.__name__ + "." + cls.default_view, **kwargs))
 
     def get_uninit_inner_views(self):
         """

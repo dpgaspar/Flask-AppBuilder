@@ -1,4 +1,5 @@
-from flask import current_app, url_for
+from flask import url_for
+from flask_appbuilder.urltools import prefixed_redirect
 
 
 class MenuItem(object):
@@ -25,12 +26,8 @@ class MenuItem(object):
             if not self.baseview:
                 return ""
             else:
-                if current_app.appbuilder and current_app.appbuilder.url_prefix:
-                    prefix = current_app.appbuilder.url_prefix
-                else:
-                    prefix = ""
-                return prefix + url_for(
-                    "{}.{}".format(self.baseview.endpoint, self.baseview.default_view)
+                return prefixed_redirect(url_for(
+                    "{}.{}".format(self.baseview.endpoint, self.baseview.default_view))
                 )
         else:
             try:

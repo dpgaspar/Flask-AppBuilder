@@ -81,7 +81,7 @@ class BaseRegisterUser(PublicFormView):
         mail = Mail(self.appbuilder.get_app)
         msg = Message()
         msg.subject = self.email_subject
-        url = url_for(
+        url = self.appbuilder.url_prefix + url_for(
             ".activation",
             _external=True,
             activation_hash=register_user.registration_hash,

@@ -1,9 +1,11 @@
-from flask import Markup, url_for
+from flask import Markup, url_for, current_app
 from flask_appbuilder import Model
 from flask_appbuilder.filemanager import ImageManager
 from flask_appbuilder.models.mixins import ImageColumn
 from sqlalchemy import Column, Date, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
+
+from flask_appbuilder.urltools import prefixed_redirect
 
 
 class PersonGroup(Model):
@@ -41,15 +43,15 @@ class Person(Model):
         if self.photo:
             return Markup(
                 '<a href="' +
-                url_for("PersonModelView.show", pk=str(self.id)) +
+                prefixed_redirect(url_for("PersonModelView.show", pk=str(self.id))) +
                 '" class="thumbnail"><img src="' +
-                im.get_url(self.photo) +
+                prefixed_redirect(im.get_url(self.photo)) +
                 '" alt="Photo" class="img-rounded img-responsive"></a>'
             )
         else:
             return Markup(
                 '<a href="' +
-                url_for("PersonModelView.show", pk=str(self.id)) +
+                prefixed_redirect(url_for("PersonModelView.show", pk=str(self.id))) +
                 '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive">'
                 '</a>'
             )
@@ -59,7 +61,7 @@ class Person(Model):
         if self.photo:
             return Markup(
                 '<a href="' +
-                url_for("PersonModelView.show", pk=str(self.id)) +
+                prefixed_redirect(url_for("PersonModelView.show", pk=str(self.id))) +
                 '" class="thumbnail"><img src="' +
                 im.get_url_thumbnail(self.photo) +
                 '" alt="Photo" class="img-rounded img-responsive"></a>'
@@ -67,7 +69,7 @@ class Person(Model):
         else:
             return Markup(
                 '<a href="' +
-                url_for("PersonModelView.show", pk=str(self.id)) +
+                prefixed_redirect(url_for("PersonModelView.show", pk=str(self.id))) +
                 '" class="thumbnail"><img src="//:0" alt="Photo" class="img-responsive">'
                 '</a>'
             )

@@ -79,7 +79,7 @@ class ContactModelView2(ModelView):
         active_filters = self._filters.get_filters_values_tojson()
         return self.render_template(
             "list_angulajs.html",
-            api_url=url_for(self.__class__.__name__ + ".api"),
+            api_url=self.appbuilder.url_prefix + url_for(self.__class__.__name__ + ".api"),
             label_columns=self._label_columns_json(),
             active_filters=active_filters,
         )

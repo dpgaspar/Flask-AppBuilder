@@ -1,4 +1,5 @@
 from flask import request, url_for
+from flask_appbuilder.urltools import prefixed_redirect
 
 
 def app_template_filter(filter_name=""):
@@ -57,9 +58,9 @@ class TemplateFilters(object):
         else:
             args["_oc_" + modelview_name] = column
             args["_od_" + modelview_name] = "asc"
-        return url_for(
+        return prefixed_redirect(url_for(
             request.endpoint,
-            **dict(list(new_args.items()) + list(args.to_dict().items()))
+            **dict(list(new_args.items()) + list(args.to_dict().items())))
         )
 
     @app_template_filter("link_page")
@@ -70,9 +71,9 @@ class TemplateFilters(object):
         new_args = request.view_args.copy()
         args = request.args.copy()
         args["page_" + modelview_name] = page
-        return url_for(
+        return prefixed_redirect(url_for(
             request.endpoint,
-            **dict(list(new_args.items()) + list(args.to_dict().items()))
+            **dict(list(new_args.items()) + list(args.to_dict().items())))
         )
 
     @app_template_filter("link_page_size")
@@ -83,9 +84,9 @@ class TemplateFilters(object):
         new_args = request.view_args.copy()
         args = request.args.copy()
         args["psize_" + modelview_name] = page_size
-        return url_for(
+        return prefixed_redirect(url_for(
             request.endpoint,
-            **dict(list(new_args.items()) + list(args.to_dict().items()))
+            **dict(list(new_args.items()) + list(args.to_dict().items())))
         )
 
     @app_template_filter("get_link_next")

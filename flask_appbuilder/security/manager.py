@@ -6,6 +6,7 @@ import re
 from typing import Dict, List
 
 from flask import g, session, url_for
+from flask_appbuilder.urltools import prefixed_redirect
 from flask_babel import lazy_gettext as _
 from flask_jwt_extended import current_user as current_user_jwt
 from flask_jwt_extended import JWTManager
@@ -298,9 +299,9 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     @property
     def get_url_for_registeruser(self):
-        return url_for(
+        return prefixed_redirect(url_for(
             "%s.%s"
-            % (self.registeruser_view.endpoint, self.registeruser_view.default_view)
+            % (self.registeruser_view.endpoint, self.registeruser_view.default_view))
         )
 
     @property

@@ -657,18 +657,18 @@ class AuthOAuthView(AuthView):
                     session["register"] = True
                 if provider == "twitter":
                     return self.appbuilder.sm.oauth_remotes[provider].authorize(
-                        callback=url_for(
+                        callback=prefixed_redirect(url_for(
                             ".oauth_authorized",
                             provider=provider,
                             _external=True,
                             state=state,
-                        )
+                        ))
                     )
                 else:
                     return self.appbuilder.sm.oauth_remotes[provider].authorize(
-                        callback=url_for(
+                        callback=prefixed_redirect(url_for(
                             ".oauth_authorized", provider=provider, _external=True
-                        ),
+                        )),
                         state=state,
                     )
             except Exception as e:

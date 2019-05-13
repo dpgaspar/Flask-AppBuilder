@@ -129,11 +129,10 @@ def has_access(f):
                 )
             )
             flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
-        return prefixed_redirect(
-            url_for(
-                self.appbuilder.sm.auth_view.__class__.__name__ + ".login",
-                next=get_prefixed_request_url(request)
-            )
+        return prefixed_redirect(url_for(
+            self.appbuilder.sm.auth_view.__class__.__name__ + ".login",
+            next=get_prefixed_request_url(request)
+        )
         )
 
     f._permission_name = permission_str

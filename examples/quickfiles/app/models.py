@@ -1,9 +1,10 @@
-from flask import Markup, url_for
+from flask import Markup, url_for, current_app
 from flask_appbuilder.models.mixins import AuditMixin, FileColumn
 from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from flask_appbuilder import Model
 from flask_appbuilder.filemanager import get_file_original_name
+from flask_appbuilder.urltools import prefixed_redirect
 
 """
 
@@ -32,7 +33,7 @@ class ProjectFiles(Model):
     def download(self):
         return Markup(
             '<a href="'
-            + url_for("ProjectFilesModelView.download", filename=str(self.file))
+            + prefixed_redirect(url_for("ProjectFilesModelView.download", filename=str(self.file)))
             + '">Download</a>'
         )
 

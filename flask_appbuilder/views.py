@@ -18,8 +18,8 @@ from .baseviews import BaseCRUDView, BaseFormView, BaseView, expose, expose_api
 from .const import FLAMSG_ERR_SEC_ACCESS_DENIED
 from .filemanager import uuid_originalname
 from .security.decorators import has_access, has_access_api, permission_name
-from .urltools import get_filter_args, get_order_args, get_page_args, get_page_size_args,\
-    prefixed_redirect
+from .urltools import get_filter_args, get_order_args, get_page_args,\
+    get_page_size_args, prefixed_redirect
 from .widgets import GroupFormListWidget, ListMasterWidget
 
 log = logging.getLogger(__name__)
@@ -167,18 +167,25 @@ class RestCRUDView(BaseCRUDView):
         """
         view_name = self.__class__.__name__
         api_urls = api_urls or {}
-        api_urls["read"] = url_for(view_name + ".api_read")
-        api_urls["delete"] = url_for(view_name + ".api_delete", pk="")
-        api_urls["create"] = url_for(view_name + ".api_create")
-        api_urls["update"] = url_for(view_name + ".api_update", pk="")
+        api_urls["read"] = self.appbuilder.url_prefix + \
+            url_for(view_name + ".api_read")
+        api_urls["delete"] = self.appbuilder.url_prefix + \
+            url_for(view_name + ".api_delete", pk="")
+        api_urls["create"] = self.appbuilder.url_prefix + \
+            url_for(view_name + ".api_create")
+        api_urls["update"] = self.appbuilder.url_prefix + \
+            url_for(view_name + ".api_update", pk="")
         return api_urls
 
     def _get_modelview_urls(self, modelview_urls=None):
         view_name = self.__class__.__name__
         modelview_urls = modelview_urls or {}
-        modelview_urls["show"] = url_for(view_name + ".show", pk="")
-        modelview_urls["add"] = url_for(view_name + ".add")
-        modelview_urls["edit"] = url_for(view_name + ".edit", pk="")
+        modelview_urls["show"] = self.appbuilder.url_prefix +\
+            url_for(view_name + ".show", pk="")
+        modelview_urls["add"] = self.appbuilder.url_prefix +\
+            url_for(view_name + ".add")
+        modelview_urls["edit"] = self.appbuilder.url_prefix +\
+            url_for(view_name + ".edit", pk="")
         return modelview_urls
 
     @expose("/api", methods=["GET"])
