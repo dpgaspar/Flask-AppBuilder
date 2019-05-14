@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.3
+-----------------------------------
+
+- Fix, Index view override on class instantiation is discarded
+
 Improvements and Bug fixes on 2.1.2
 -----------------------------------
 
