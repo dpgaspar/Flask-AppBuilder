@@ -138,10 +138,10 @@ class AppBuilder(object):
         self.baseviews = []
         self._addon_managers = []
         self.addon_managers = {}
-        self.menu = menu or Menu()
+        self.menu = menu
         self.base_template = base_template
         self.security_manager_class = security_manager_class
-        self.indexview = indexview or IndexView
+        self.indexview = indexview
         self.url_prefix = url_prefix or ""
         self.static_folder = static_folder
         self.static_url_path = static_url_path
@@ -165,10 +165,41 @@ class AppBuilder(object):
         app.config.setdefault("LANGUAGES", {"en": {"flag": "gb", "name": "English"}})
         app.config.setdefault("ADDON_MANAGERS", [])
         app.config.setdefault("FAB_API_MAX_PAGE_SIZE", 20)
+        app.config.setdefault("FAB_BASE_TEMPLATE", self.base_template)
+        app.config.setdefault("FAB_STATIC_FOLDER", self.static_folder)
+        app.config.setdefault("FAB_STATIC_URL_PATH", self.static_url_path)
         app.config.setdefault("FAB_URL_PREFIX ", "")
         self.app = app
         if not self.url_prefix:  # user can override prefix in parameter
             self.url_prefix = app.config.get('FAB_URL_PREFIX', "")
+
+        self.base_template = app.config.get(
+            "FAB_BASE_TEMPLATE",
+            self.base_template,
+        )
+        self.static_folder = app.config.get(
+            "FAB_STATIC_FOLDER",
+            self.static_folder,
+        )
+        self.static_url_path = app.config.get(
+            "FAB_STATIC_URL_PATH",
+            self.static_url_path,
+        )
+        _index_view = app.config.get('FAB_INDEX_VIEW', None)
+        if _index_view is not None:
+            self.indexview = dynamic_class_import(
+                _index_view
+            )
+        else:
+            self.indexview = IndexView
+        _menu = app.config.get('FAB_MENU', None)
+        if _menu is not None:
+            self.menu = dynamic_class_import(
+                _menu
+            )
+        else:
+            self.menu = Menu()
+
         if self.update_perms:  # default is True, if False takes precedence from config
             self.update_perms = app.config.get('FAB_UPDATE_PERMS', True)
         _security_manager_class_name = app.config.get('FAB_SECURITY_MANAGER_CLASS', None)
