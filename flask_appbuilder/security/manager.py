@@ -1177,11 +1177,11 @@ class BaseSecurityManager(AbstractSecurityManager):
     @staticmethod
     def _get_new_old_permissions(
             method_permission_name: Dict,
-            previous_permission_name: Dict,
+            previous_method_permission_name: Dict,
     ) -> Dict:
         ret = dict()
         for method_name, permission_name in method_permission_name.items():
-            old_permission_name = previous_permission_name.get(method_name)
+            old_permission_name = previous_method_permission_name.get(method_name)
             if old_permission_name:
                 if PERMISSION_PREFIX + permission_name not in ret:
                     ret[
@@ -1300,7 +1300,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             Converges overridden permissions on all registered views/api
             will compute all necessary operations from `class_permissions_name`,
             `previous_class_permission_name`, method_permission_name`,
-            `previous_permissions_name` class attributes.
+            `previous_method_permission_name` class attributes.
 
         :param baseviews: List of registered views/apis
         :param menus: List of menu items

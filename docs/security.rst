@@ -215,7 +215,7 @@ about what were your last permissions, so that the security converge procedure k
     class OneApi(ModelRestApi):
         datamodel = SQLAInterface(Contact)
         class_permission_name = "OneApi"
-        previous_permission_name = "api"
+        previous_class_permission_name = "api"
         method_permission_name = {
             "get_list": "get",
             "get": "get",
@@ -245,7 +245,7 @@ you can delete all your ``previous_*`` attributes.
 
 You can also migrate back by switching ``previous_*`` attributes to their target, ie switch
 ``previous_method_permission_name`` by ``method_permission_name`` and
-``previous_permission_name`` by ``class_permission_name``. Then run security converge will expand back all permissions
+``previous_class_permission_name`` by ``class_permission_name``. Then run security converge will expand back all permissions
 on all your Roles.
 
 :note: You should backup your production database before migrating your permissions. Also note that you
