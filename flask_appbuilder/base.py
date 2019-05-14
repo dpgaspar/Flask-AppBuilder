@@ -185,14 +185,14 @@ class AppBuilder(object):
                 _index_view
             )
         else:
-            self.indexview = IndexView
+            self.indexview = self.indexview or IndexView
         _menu = app.config.get('FAB_MENU', None)
         if _menu is not None:
             self.menu = dynamic_class_import(
                 _menu
             )
         else:
-            self.menu = Menu()
+            self.menu = self.menu or Menu()
 
         if self.update_perms:  # default is True, if False takes precedence from config
             self.update_perms = app.config.get('FAB_UPDATE_PERMS', True)
