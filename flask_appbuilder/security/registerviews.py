@@ -3,6 +3,7 @@ __author__ = "Daniel Gaspar"
 import logging
 
 from flask import flash, redirect, request, session, url_for
+from flask_appbuilder.urltools import prefixed_external_url
 from flask_babel import lazy_gettext
 from flask_openid import OpenIDResponse, SessionWrapper
 from openid.consumer.consumer import CANCEL, Consumer, SUCCESS
@@ -81,11 +82,11 @@ class BaseRegisterUser(PublicFormView):
         mail = Mail(self.appbuilder.get_app)
         msg = Message()
         msg.subject = self.email_subject
-        url = self.appbuilder.url_prefix + url_for(
+        url = prefixed_external_url(url_for(
             ".activation",
             _external=True,
             activation_hash=register_user.registration_hash,
-        )
+        ))
         msg.html = self.render_template(
             self.email_template,
             url=url,

@@ -3,7 +3,8 @@ import logging
 import re
 
 from flask import abort, current_app, flash, g, redirect, request, session, url_for
-from flask_appbuilder.urltools import prefixed_redirect, prefixed_url
+from flask_appbuilder.urltools import prefixed_external_url, prefixed_redirect, \
+    prefixed_url
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
 import jwt
@@ -657,7 +658,7 @@ class AuthOAuthView(AuthView):
                     session["register"] = True
                 if provider == "twitter":
                     return self.appbuilder.sm.oauth_remotes[provider].authorize(
-                        callback=prefixed_url(url_for(
+                        callback=prefixed_external_url(url_for(
                             ".oauth_authorized",
                             provider=provider,
                             _external=True,

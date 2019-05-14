@@ -1,6 +1,6 @@
 from functools import partial
 import re
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 from flask import current_app, redirect, request
 
@@ -120,3 +120,8 @@ def prefixed_redirect(location, *args, **kwargs):
 
 def prefixed_url(url):
     return get_url_prefix() + url
+
+
+def prefixed_external_url(url):
+    parsed_uri = urlparse(url)
+    return parsed_uri._replace(path=get_url_prefix() + parsed_uri.path).geturl()
