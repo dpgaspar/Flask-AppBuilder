@@ -1178,7 +1178,9 @@ class BaseSecurityManager(AbstractSecurityManager):
     def _get_new_old_permissions(baseview) -> Dict:
         ret = dict()
         for method_name, permission_name in baseview.method_permission_name.items():
-            old_permission_name = baseview.previous_method_permission_name.get(method_name)
+            old_permission_name = baseview.previous_method_permission_name.get(
+                method_name
+            )
             # Actions do not get prefix when normally defined
             if baseview.actions.get(old_permission_name):
                 permission_prefix = ''

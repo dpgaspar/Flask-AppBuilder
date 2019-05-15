@@ -131,7 +131,6 @@ class TemplateFilters(object):
     @staticmethod
     def find_views_by_name(view_name):
         from flask import current_app
-        _view = None
         for view in current_app.appbuilder.baseviews:
             if view.__class__.__name__ == view_name:
                 return view
