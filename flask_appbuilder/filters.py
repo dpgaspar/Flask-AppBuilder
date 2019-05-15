@@ -1,4 +1,4 @@
-from flask import request, url_for
+from flask import current_app, request, url_for
 
 from .const import PERMISSION_PREFIX
 
@@ -130,7 +130,6 @@ class TemplateFilters(object):
 
     @staticmethod
     def find_views_by_name(view_name):
-        from flask import current_app
         for view in current_app.appbuilder.baseviews:
             if view.__class__.__name__ == view_name:
                 return view
@@ -143,20 +142,15 @@ class TemplateFilters(object):
         if PERMISSION_PREFIX in permission:
             method = permission.split(PERMISSION_PREFIX)[1]
         else:
-            if _view.actions.get(permission):
-                method = _view.actions.get(permission).func
-                if _view.method_permission_name.get(method.__name__):
-                    permission = _view.method_permission_name.get(method.__name__)
-                    return self.security_manager.has_access(
-                        PERMISSION_PREFIX + permission, item
-                    )
-                return self.security_manager.has_access(permission, item)
+            if hasattr(_view, 'actions') and _view.actions.get(permission):
+                permission_name = _view.get_action_permission_name(permission)
+                return self.security_manager.has_access(permission_name, item)
             else:
                 method = permission
 
         if _view.method_permission_name:
             permission = _view.method_permission_name.get(method)
         else:
-            permission = getattr(getattr(_view, method), '_permission_name', None)
+            permission = getattr(getattr(_view, method), '_permission_name')
         return self.security_manager.has_access(
             PERMISSION_PREFIX + permission, item)

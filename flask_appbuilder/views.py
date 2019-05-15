@@ -610,7 +610,10 @@ class ModelView(RestCRUDView):
             as_attachment=True,
         )
 
-    def _get_action_permission_name(self, name):
+    def get_action_permission_name(self, name: str) -> str:
+        """
+            Get the permission name of an action name
+        """
         _permission_name = self.method_permission_name.get(
             self.actions.get(name).func.__name__
         )
@@ -625,7 +628,7 @@ class ModelView(RestCRUDView):
             Action method to handle actions from a show view
         """
         pk = self._deserialize_pk_if_composite(pk)
-        permission_name = self._get_action_permission_name(name)
+        permission_name = self.get_action_permission_name(name)
         if self.appbuilder.sm.has_access(permission_name, self.class_permission_name):
             action = self.actions.get(name)
             return action.func(self.datamodel.get(pk))
@@ -640,7 +643,7 @@ class ModelView(RestCRUDView):
         """
         name = request.form["action"]
         pks = request.form.getlist("rowid")
-        permission_name = self._get_action_permission_name(name)
+        permission_name = self.get_action_permission_name(name)
 
         if self.appbuilder.sm.has_access(permission_name, self.class_permission_name):
             action = self.actions.get(name)
