@@ -1182,7 +1182,8 @@ class BaseSecurityManager(AbstractSecurityManager):
                 method_name
             )
             # Actions do not get prefix when normally defined
-            if baseview.actions.get(old_permission_name):
+            if (hasattr(baseview, 'actions') and
+                    baseview.actions.get(old_permission_name)):
                 permission_prefix = ''
             else:
                 permission_prefix = PERMISSION_PREFIX
