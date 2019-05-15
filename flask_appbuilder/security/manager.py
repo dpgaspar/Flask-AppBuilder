@@ -1175,22 +1175,24 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.security_converge(baseviews, menus)
 
     @staticmethod
-    def _get_new_old_permissions(
-            method_permission_name: Dict,
-            previous_permission_name: Dict,
-    ) -> Dict:
+    def _get_new_old_permissions(baseview) -> Dict:
         ret = dict()
-        for method_name, permission_name in method_permission_name.items():
-            old_permission_name = previous_permission_name.get(method_name)
+        for method_name, permission_name in baseview.method_permission_name.items():
+            old_permission_name = baseview.previous_method_permission_name.get(method_name)
+            # Actions do not get prefix when normally defined
+            if baseview.actions.get(old_permission_name):
+                permission_prefix = ''
+            else:
+                permission_prefix = PERMISSION_PREFIX
             if old_permission_name:
                 if PERMISSION_PREFIX + permission_name not in ret:
                     ret[
                         PERMISSION_PREFIX + permission_name
-                    ] = {PERMISSION_PREFIX + old_permission_name, }
+                    ] = {permission_prefix + old_permission_name, }
                 else:
                     ret[
                         PERMISSION_PREFIX + permission_name
-                    ].add(PERMISSION_PREFIX + old_permission_name)
+                    ].add(permission_prefix + old_permission_name)
         return ret
 
     @staticmethod
@@ -1260,10 +1262,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         for baseview in baseviews:
             add_all_flag = False
             new_view_name = baseview.class_permission_name
-            permission_mapping = self._get_new_old_permissions(
-                baseview.method_permission_name,
-                baseview.previous_method_permission_name,
-            )
+            permission_mapping = self._get_new_old_permissions(baseview)
             if baseview.previous_class_permission_name:
                 old_view_name = baseview.previous_class_permission_name
                 add_all_flag = True

@@ -15,7 +15,7 @@ from flask import (
 
 from ._compat import as_unicode, string_types
 from .baseviews import BaseCRUDView, BaseFormView, BaseView, expose, expose_api
-from .const import FLAMSG_ERR_SEC_ACCESS_DENIED
+from .const import FLAMSG_ERR_SEC_ACCESS_DENIED, PERMISSION_PREFIX
 from .filemanager import uuid_originalname
 from .security.decorators import has_access, has_access_api, permission_name
 from .urltools import get_filter_args, get_order_args, get_page_args, get_page_size_args
@@ -610,13 +610,23 @@ class ModelView(RestCRUDView):
             as_attachment=True,
         )
 
+    def _get_action_permission_name(self, name):
+        _permission_name = self.method_permission_name.get(
+            self.actions.get(name).func.__name__
+        )
+        if _permission_name:
+            return PERMISSION_PREFIX + _permission_name
+        else:
+            return name
+
     @expose("/action/<string:name>/<pk>", methods=["GET"])
     def action(self, name, pk):
         """
             Action method to handle actions from a show view
         """
         pk = self._deserialize_pk_if_composite(pk)
-        if self.appbuilder.sm.has_access(name, self.__class__.__name__):
+        permission_name = self._get_action_permission_name(name)
+        if self.appbuilder.sm.has_access(permission_name, self.class_permission_name):
             action = self.actions.get(name)
             return action.func(self.datamodel.get(pk))
         else:
@@ -630,7 +640,9 @@ class ModelView(RestCRUDView):
         """
         name = request.form["action"]
         pks = request.form.getlist("rowid")
-        if self.appbuilder.sm.has_access(name, self.__class__.__name__):
+        permission_name = self._get_action_permission_name(name)
+
+        if self.appbuilder.sm.has_access(permission_name, self.class_permission_name):
             action = self.actions.get(name)
             items = [
                 self.datamodel.get(self._deserialize_pk_if_composite(pk)) for pk in pks

@@ -147,7 +147,7 @@ class BaseView(object):
                         _permission_name = getattr(
                             getattr(self, attr_name), "_permission_name"
                         )
-                    self.base_permissions.add("can_" + _permission_name)
+                    self.base_permissions.add('can_' + _permission_name)
             self.base_permissions = list(self.base_permissions)
         if not self.extra_args:
             self.extra_args = dict()
@@ -740,7 +740,14 @@ class BaseCRUDView(BaseModelView):
             func = getattr(self, attr_name)
             if hasattr(func, "_action"):
                 action = ActionItem(*func._action, func=func)
-                self.base_permissions.append(action.name)
+                permission_name = action.name
+                # Infer previous if not declared
+                if self.method_permission_name.get(attr_name):
+                    if not self.previous_method_permission_name.get(attr_name):
+                        self.previous_method_permission_name[attr_name] = action.name
+                    permission_name = "can_" + self.method_permission_name.get(attr_name)
+                if permission_name not in self.base_permissions:
+                    self.base_permissions.append(permission_name)
                 self.actions[action.name] = action
 
     def _init_forms(self):

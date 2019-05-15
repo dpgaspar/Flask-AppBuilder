@@ -1,5 +1,7 @@
 from flask import request, url_for
 
+from .const import PERMISSION_PREFIX
+
 
 def app_template_filter(filter_name=""):
     def wrap(f):
@@ -126,6 +128,36 @@ class TemplateFilters(object):
     def is_menu_visible(self, item):
         return self.security_manager.has_access("menu_access", item.name)
 
+    @staticmethod
+    def find_views_by_name(view_name):
+        from flask import current_app
+        _view = None
+        for view in current_app.appbuilder.baseviews:
+            if view.__class__.__name__ == view_name:
+                return view
+
     @app_template_filter("is_item_visible")
     def is_item_visible(self, permission, item):
-        return self.security_manager.has_access(permission, item)
+        _view = self.find_views_by_name(item)
+        item = _view.class_permission_name
+
+        if PERMISSION_PREFIX in permission:
+            method = permission.split(PERMISSION_PREFIX)[1]
+        else:
+            if _view.actions.get(permission):
+                method = _view.actions.get(permission).func
+                if _view.method_permission_name.get(method.__name__):
+                    permission = _view.method_permission_name.get(method.__name__)
+                    return self.security_manager.has_access(
+                        PERMISSION_PREFIX + permission, item
+                    )
+                return self.security_manager.has_access(permission, item)
+            else:
+                method = permission
+
+        if _view.method_permission_name:
+            permission = _view.method_permission_name.get(method)
+        else:
+            permission = getattr(getattr(_view, method), '_permission_name', None)
+        return self.security_manager.has_access(
+            PERMISSION_PREFIX + permission, item)
