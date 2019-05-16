@@ -22,10 +22,22 @@ class ContactModelApi(ModelRestApi):
     resource_name = "contact"
     datamodel = SQLAInterface(Contact)
     allow_browser_login = True
-
+    method_permission_name = {
+        "get_list": "read",
+        "get": "read",
+        "put": "write",
+        "post": "write",
+        "delete": "write",
+        "info": "read"
+    }
 
 appbuilder.add_api(ContactModelApi)
 
+
+class C2(ContactModelApi):
+    base_permissions = ['can_read']
+
+appbuilder.add_api(C2)
 
 class GroupModelApi(ModelRestApi):
     resource_name = "group"

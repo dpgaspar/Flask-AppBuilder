@@ -8,6 +8,7 @@ from flask import abort, Blueprint, flash, render_template, request, session, ur
 
 from ._compat import as_unicode
 from .actions import ActionItem
+from .const import PERMISSION_PREFIX
 from .forms import GeneralModelConverter
 from .urltools import (
     get_filter_args,
@@ -134,21 +135,25 @@ class BaseView(object):
             is_collect_previous = True
         self.method_permission_name = self.method_permission_name or dict()
 
+        is_add_base_permissions = False
         if self.base_permissions is None:
             self.base_permissions = set()
-            for attr_name in dir(self):
-                if hasattr(getattr(self, attr_name), "_permission_name"):
-                    if is_collect_previous:
-                        self.previous_method_permission_name[attr_name] = getattr(
-                            getattr(self, attr_name), "_permission_name"
-                        )
-                    _permission_name = self.method_permission_name.get(attr_name)
-                    if not _permission_name:
-                        _permission_name = getattr(
-                            getattr(self, attr_name), "_permission_name"
-                        )
-                    self.base_permissions.add('can_' + _permission_name)
-            self.base_permissions = list(self.base_permissions)
+            is_add_base_permissions = True
+        for attr_name in dir(self):
+            if hasattr(getattr(self, attr_name), "_permission_name"):
+                if is_collect_previous:
+                    self.previous_method_permission_name[attr_name] = getattr(
+                        getattr(self, attr_name), "_permission_name"
+                    )
+                _permission_name = self.method_permission_name.get(attr_name)
+                if not _permission_name:
+                    _permission_name = getattr(
+                        getattr(self, attr_name), "_permission_name"
+                    )
+                if is_add_base_permissions:
+                    self.base_permissions.add(PERMISSION_PREFIX + _permission_name)
+        self.base_permissions = list(self.base_permissions)
+
         if not self.extra_args:
             self.extra_args = dict()
         self._apis = dict()

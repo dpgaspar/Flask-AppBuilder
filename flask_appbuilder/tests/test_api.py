@@ -211,7 +211,7 @@ class FlaskTestCase(unittest.TestCase):
         self.model2apifilteredrelfields = Model2ApiFilteredRelFields
         self.appbuilder.add_api(Model2ApiFilteredRelFields)
 
-        class Model1PermOverride(ModelRestApi):
+        class Model1PermOverride1(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             class_permission_name = 'api'
             method_permission_name = {
@@ -223,8 +223,28 @@ class FlaskTestCase(unittest.TestCase):
                 "info": "access"
             }
 
-        self.model1permoverride = Model1PermOverride
-        self.appbuilder.add_api(Model1PermOverride)
+        self.model1permoverride1 = Model1PermOverride1
+        self.appbuilder.add_api(Model1PermOverride1)
+
+        class Model1PermOverride2(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            method_permission_name = {
+                "get_list": "read",
+                "get": "read",
+                "put": "write",
+                "post": "write",
+                "delete": "write",
+                "info": "read"
+            }
+
+        self.model1permoverride2 = Model1PermOverride2
+        self.appbuilder.add_api(Model1PermOverride2)
+
+        class Model1PermOverride3(Model1PermOverride2):
+            base_permissions = ['can_write']
+
+        self.model1permoverride3 = Model1PermOverride3
+        self.appbuilder.add_api(Model1PermOverride3)
 
         role_admin = self.appbuilder.sm.find_role("Admin")
         self.appbuilder.sm.add_user(
@@ -1457,9 +1477,9 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
 
-    def test_permission_override(self):
+    def test_class_method_permission_override(self):
         """
-            REST Api: Test permission name override
+            REST Api: Test class method permission name override
         """
         role = self.appbuilder.sm.add_role("Test")
         pvm = self.appbuilder.sm.find_permission_view_menu(
@@ -1473,15 +1493,56 @@ class FlaskTestCase(unittest.TestCase):
 
         client = self.app.test_client()
         token = self.login(client, "test", "test")
-        uri = "api/v1/model1permoverride/"
+        uri = "api/v1/model1permoverride1/"
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
-        uri = "api/v1/model1permoverride/_info"
+        uri = "api/v1/model1permoverride1/_info"
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
-        uri = "api/v1/model1permoverride/1"
+        uri = "api/v1/model1permoverride1/1"
         rv = self.auth_client_delete(client, token, uri)
         eq_(rv.status_code, 200)
+
+    def test_method_permission_override(self):
+        """
+            REST Api: Test method permission name override
+        """
+        role = self.appbuilder.sm.add_role("Test")
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_read",
+            "Model1PermOverride2"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm)
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+
+        client = self.app.test_client()
+        token = self.login(client, "test", "test")
+        uri = "api/v1/model1permoverride2/"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        uri = "api/v1/model1permoverride2/_info"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        uri = "api/v1/model1permoverride2/1"
+        rv = self.auth_client_delete(client, token, uri)
+        eq_(rv.status_code, 401)
+
+    def test_base_permission_override(self):
+        """
+            REST Api: Test base perms with permission name override
+        """
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_write",
+            "Model1PermOverride3"
+        )
+        eq_(pvm.permission.name, 'can_write')
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_read",
+            "Model1PermOverride3"
+        )
+        eq_(pvm, None)
 
     def test_permission_converge_compress(self):
         """

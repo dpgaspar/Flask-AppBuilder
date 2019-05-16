@@ -51,6 +51,7 @@ from ..const import (
     API_SHOW_TITLE_RES_KEY,
     API_SHOW_TITLE_RIS_KEY,
     API_URI_RIS_KEY,
+    PERMISSION_PREFIX,
 )
 from ..security.decorators import permission_name, protect
 
@@ -339,36 +340,44 @@ class BaseApi(object):
 
             Initialization of extra args
         """
+        # Init OpenAPI
         self._response_key_func_mappings = dict()
         self.apispec_parameter_schemas = self.apispec_parameter_schemas or dict()
         self._apispec_parameter_schemas = self._apispec_parameter_schemas or dict()
         self._apispec_parameter_schemas.update(self.apispec_parameter_schemas)
 
+        # Init class permission override attrs
         if not self.previous_class_permission_name and self.class_permission_name:
             self.previous_class_permission_name = self.__class__.__name__
         self.class_permission_name = (self.class_permission_name or
                                       self.__class__.__name__)
+
+        # Init previous permission override attrs
         is_collect_previous = False
         if not self.previous_method_permission_name and self.method_permission_name:
             self.previous_method_permission_name = dict()
             is_collect_previous = True
         self.method_permission_name = self.method_permission_name or dict()
 
+        # Collect base_permissions and infer previous permissions
+        is_add_base_permissions = False
         if self.base_permissions is None:
             self.base_permissions = set()
-            for attr_name in dir(self):
-                if hasattr(getattr(self, attr_name), "_permission_name"):
-                    _permission_name = self.method_permission_name.get(attr_name)
-                    if is_collect_previous:
-                        self.previous_method_permission_name[attr_name] = getattr(
-                            getattr(self, attr_name), "_permission_name"
-                        )
-                    if not _permission_name:
-                        _permission_name = getattr(
-                            getattr(self, attr_name), "_permission_name"
-                        )
-                    self.base_permissions.add("can_" + _permission_name)
-            self.base_permissions = list(self.base_permissions)
+            is_add_base_permissions = True
+        for attr_name in dir(self):
+            if hasattr(getattr(self, attr_name), "_permission_name"):
+                _permission_name = self.method_permission_name.get(attr_name)
+                if is_collect_previous:
+                    self.previous_method_permission_name[attr_name] = getattr(
+                        getattr(self, attr_name), "_permission_name"
+                    )
+                if not _permission_name:
+                    _permission_name = getattr(
+                        getattr(self, attr_name), "_permission_name"
+                    )
+                if is_add_base_permissions:
+                    self.base_permissions.add(PERMISSION_PREFIX + _permission_name)
+        self.base_permissions = list(self.base_permissions)
 
     def create_blueprint(self, appbuilder, endpoint=None, static_folder=None):
         # Store appbuilder instance
