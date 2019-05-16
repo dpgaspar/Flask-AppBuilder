@@ -1560,7 +1560,6 @@ class FlaskTestCase(unittest.TestCase):
         self.model2permoverride3 = Model2PermOverride3
         self.appbuilder.add_api(Model2PermOverride3)
 
-
         pvm = self.appbuilder.sm.find_permission_view_menu(
             "can_write",
             "Model2PermOverride3"
