@@ -366,15 +366,11 @@ class BaseApi(object):
             is_add_base_permissions = True
         for attr_name in dir(self):
             if hasattr(getattr(self, attr_name), "_permission_name"):
-                _permission_name = self.method_permission_name.get(attr_name)
                 if is_collect_previous:
                     self.previous_method_permission_name[attr_name] = getattr(
                         getattr(self, attr_name), "_permission_name"
                     )
-                if not _permission_name:
-                    _permission_name = getattr(
-                        getattr(self, attr_name), "_permission_name"
-                    )
+                _permission_name = self.get_method_permission(attr_name)
                 if is_add_base_permissions:
                     self.base_permissions.add(PERMISSION_PREFIX + _permission_name)
         self.base_permissions = list(self.base_permissions)
@@ -508,6 +504,16 @@ class BaseApi(object):
             Sets initialized inner views
         """
         pass
+
+    def get_method_permission(self, method_name: str) -> str:
+        """
+            Returns the permission name for a method
+        """
+        if self.method_permission_name:
+            return self.method_permission_name.get(method_name)
+        else:
+            return getattr(
+                getattr(self, method_name), "_permission_name")
 
     def set_response_key_mappings(self, response, func, rison_args, **kwargs):
         if not hasattr(func, "_response_key_func_mappings"):

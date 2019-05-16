@@ -19,7 +19,6 @@ from .urltools import (
 )
 from .widgets import FormWidget, ListWidget, SearchWidget, ShowWidget
 
-
 log = logging.getLogger(__name__)
 
 
@@ -125,16 +124,20 @@ class BaseView(object):
 
             Initialization of extra args
         """
+        # Init class permission override attrs
         if not self.previous_class_permission_name and self.class_permission_name:
             self.previous_class_permission_name = self.__class__.__name__
         self.class_permission_name = (self.class_permission_name or
                                       self.__class__.__name__)
+
+        # Init previous permission override attrs
         is_collect_previous = False
         if not self.previous_method_permission_name and self.method_permission_name:
             self.previous_method_permission_name = dict()
             is_collect_previous = True
         self.method_permission_name = self.method_permission_name or dict()
 
+        # Collect base_permissions and infer previous permissions
         is_add_base_permissions = False
         if self.base_permissions is None:
             self.base_permissions = set()
@@ -145,11 +148,7 @@ class BaseView(object):
                     self.previous_method_permission_name[attr_name] = getattr(
                         getattr(self, attr_name), "_permission_name"
                     )
-                _permission_name = self.method_permission_name.get(attr_name)
-                if not _permission_name:
-                    _permission_name = getattr(
-                        getattr(self, attr_name), "_permission_name"
-                    )
+                _permission_name = self.get_method_permission(attr_name)
                 if is_add_base_permissions:
                     self.base_permissions.add(PERMISSION_PREFIX + _permission_name)
         self.base_permissions = list(self.base_permissions)
@@ -292,6 +291,17 @@ class BaseView(object):
             Sets initialized inner views
         """
         pass
+
+    def get_method_permission(self, method_name: str) -> str:
+        """
+            Returns the permission name for a method
+        """
+        permission = self.method_permission_name.get(method_name)
+        if permission:
+            return permission
+        else:
+            return getattr(
+                getattr(self, method_name), "_permission_name")
 
 
 class BaseFormView(BaseView):
@@ -750,7 +760,8 @@ class BaseCRUDView(BaseModelView):
                 if self.method_permission_name.get(attr_name):
                     if not self.previous_method_permission_name.get(attr_name):
                         self.previous_method_permission_name[attr_name] = action.name
-                    permission_name = "can_" + self.method_permission_name.get(attr_name)
+                    permission_name = \
+                        PERMISSION_PREFIX + self.method_permission_name.get(attr_name)
                 if permission_name not in self.base_permissions:
                     self.base_permissions.append(permission_name)
                 self.actions[action.name] = action
@@ -861,13 +872,13 @@ class BaseCRUDView(BaseModelView):
     """
 
     def _get_related_view_widget(
-        self,
-        item,
-        related_view,
-        order_column="",
-        order_direction="",
-        page=None,
-        page_size=None,
+            self,
+            item,
+            related_view,
+            order_column="",
+            order_direction="",
+            page=None,
+            page_size=None,
     ):
 
         fk = related_view.datamodel.get_related_fk(self.datamodel.obj)
@@ -902,7 +913,7 @@ class BaseCRUDView(BaseModelView):
         )
 
     def _get_related_views_widgets(
-        self, item, orders=None, pages=None, page_sizes=None, widgets=None, **args
+            self, item, orders=None, pages=None, page_sizes=None, widgets=None, **args
     ):
         """
             :return:
@@ -936,15 +947,15 @@ class BaseCRUDView(BaseModelView):
         return self._get_list_widget(**kwargs).get("list")
 
     def _get_list_widget(
-        self,
-        filters,
-        actions=None,
-        order_column="",
-        order_direction="",
-        page=None,
-        page_size=None,
-        widgets=None,
-        **args
+            self,
+            filters,
+            actions=None,
+            order_column="",
+            order_direction="",
+            page=None,
+            page_size=None,
+            widgets=None,
+            **args
     ):
 
         """ get joined base filter and current active filter for query """
@@ -983,7 +994,7 @@ class BaseCRUDView(BaseModelView):
         return widgets
 
     def _get_show_widget(
-        self, pk, item, widgets=None, actions=None, show_fieldsets=None
+            self, pk, item, widgets=None, actions=None, show_fieldsets=None
     ):
         widgets = widgets or {}
         actions = actions or self.actions

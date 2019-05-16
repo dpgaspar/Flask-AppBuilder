@@ -135,7 +135,18 @@ class TemplateFilters(object):
                 return view
 
     @app_template_filter("is_item_visible")
-    def is_item_visible(self, permission, item):
+    def is_item_visible(self, permission: str, item: str) -> bool:
+        """
+            Check if an item is visible on the template
+            this changed with permission mapping feature.
+            This is a best effort to deliver the feature
+            and not break compatibility
+
+            permission is:
+             - 'can_' + <METHOD_NAME>: On normal routes
+             - <METHOD_NAME>: when it's an action
+
+        """
         _view = self.find_views_by_name(item)
         item = _view.class_permission_name
 
@@ -147,10 +158,6 @@ class TemplateFilters(object):
                 return self.security_manager.has_access(permission_name, item)
             else:
                 method = permission
-
-        if _view.method_permission_name:
-            permission = _view.method_permission_name.get(method)
-        else:
-            permission = getattr(getattr(_view, method), '_permission_name')
+        permission = _view.get_method_permission(method)
         return self.security_manager.has_access(
             PERMISSION_PREFIX + permission, item)
