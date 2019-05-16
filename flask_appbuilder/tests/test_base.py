@@ -1116,10 +1116,7 @@ class FlaskTestCase(unittest.TestCase):
         eq_(model.field_string, u"test1")
         eq_(model.field_integer, 1)
 
-        rv = client.get("/model1permoverride/list/")
-        eq_(rv.status_code, 200)
-
-        # Verify write links are gone from UI
+        # Verify write links are on the UI
         rv = client.get("/model1permoverride/list/")
         eq_(rv.status_code, 200)
         data = rv.data.decode("utf-8")
@@ -1151,6 +1148,74 @@ class FlaskTestCase(unittest.TestCase):
         ok_("/model1permoverride/add/" not in data)
         ok_("/model1permoverride/edit/1" not in data)
         ok_("/model1permoverride/show/1" in data)
+
+    def test_action_permission_override(self):
+        """
+            MVC: Test action permission name override
+        """
+        from flask_appbuilder import action, ModelView
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+        class Model1PermOverride(ModelView):
+            datamodel = SQLAInterface(Model1)
+            method_permission_name = {
+                "list": "read",
+                "show": "read",
+                "edit": "write",
+                "add": "write",
+                "delete": "write",
+                "download": "read",
+                "api_readvalues": "read",
+                "api_column_edit": "write",
+                "api_column_add": "write",
+                "api_delete": "write",
+                "api_update": "write",
+                "api_create": "write",
+                "api_get": "read",
+                "api_read": "read",
+                "api": "read",
+                "action_one": "write"
+            }
+
+            @action("action1", "Action1", "", "fa-lock", multiple=True)
+            def action_one(self, item):
+                return "ACTION ONE"
+
+        self.model1permoverride = Model1PermOverride
+        self.appbuilder.add_view_no_menu(Model1PermOverride)
+
+        # Add a user and login before enabling CSRF
+        role = self.appbuilder.sm.add_role("Test")
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+        pvm_read = self.appbuilder.sm.find_permission_view_menu(
+            "can_read",
+            "Model1PermOverride"
+        )
+        pvm_write = self.appbuilder.sm.find_permission_view_menu(
+            "can_write",
+            "Model1PermOverride"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm_read)
+        self.appbuilder.sm.add_permission_role(role, pvm_write)
+
+        client = self.app.test_client()
+        self.login(client, "test", "test")
+
+        rv = client.get("/model1permoverride/action/action1/1")
+        eq_(rv.status_code, 200)
+
+        # Delete write permission from Test Role
+        role = self.appbuilder.sm.find_role('Test')
+        pvm_write = self.appbuilder.sm.find_permission_view_menu(
+            "can_write",
+            "Model1PermOverride"
+        )
+        self.appbuilder.sm.del_permission_role(role, pvm_write)
+
+        rv = client.get("/model1permoverride/action/action1/1")
+        eq_(rv.status_code, 302)
 
     def test_permission_converge_compress(self):
         """
