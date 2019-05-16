@@ -54,6 +54,8 @@ class FlaskTestCase(unittest.TestCase):
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.models.sqla.interface import SQLAInterface
         from flask_appbuilder.views import ModelView
+        from sqlalchemy.engine import Engine
+        from sqlalchemy import event
 
         self.app = Flask(__name__)
         self.app.jinja_env.undefined = jinja2.StrictUndefined
@@ -69,6 +71,14 @@ class FlaskTestCase(unittest.TestCase):
                 [".*", "can_show"]
             ]
         }
+        logging.basicConfig(level=logging.ERROR)
+
+        @event.listens_for(Engine, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            # Will force sqllite contraint foreign keys
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -131,17 +141,17 @@ class FlaskTestCase(unittest.TestCase):
 
             def post_add_redirect(self):
                 return redirect(
-                    "model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
+                    "/model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
                 )
 
             def post_edit_redirect(self):
                 return redirect(
-                    "model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
+                    "/model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
                 )
 
             def post_delete_redirect(self):
                 return redirect(
-                    "model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
+                    "/model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
                 )
 
         class Model1Filtered1View(ModelView):
@@ -212,30 +222,6 @@ class FlaskTestCase(unittest.TestCase):
 
         class ModelWithEnumsView(ModelView):
             datamodel = SQLAInterface(ModelWithEnums)
-
-        class Model1PermOverride(ModelView):
-            datamodel = SQLAInterface(Model1)
-            class_permission_name = 'view'
-            method_permission_name = {
-                "list": "access",
-                "show": "access",
-                "edit": "access",
-                "add": "access",
-                "delete": "access",
-                "download": "access",
-                "api_readvalues": "access",
-                "api_column_edit": "access",
-                "api_column_add": "access",
-                "api_delete": "access",
-                "api_update": "access",
-                "api_create": "access",
-                "api_get": "access",
-                "api_read": "access",
-                "api": "access"
-            }
-
-        self.model1permoverride = Model1PermOverride
-        self.appbuilder.add_view_no_menu(Model1PermOverride)
 
         self.appbuilder.add_view(Model1View, "Model1", category="Model1")
         self.appbuilder.add_view(
@@ -354,7 +340,7 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 35)
+        eq_(len(self.appbuilder.baseviews), 34)
 
     def test_back(self):
         """
@@ -1004,10 +990,37 @@ class FlaskTestCase(unittest.TestCase):
         eq_(item.field_string, "zzz")
         eq_(item.field_integer, field_integer_before)
 
-    def test_permission_override(self):
+    def test_class_method_permission_override(self):
         """
-            MVC: Test permission name override
+            MVC: Test class method permission name override
         """
+        from flask_appbuilder import ModelView
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+        class Model1PermOverride(ModelView):
+            datamodel = SQLAInterface(Model1)
+            class_permission_name = 'view'
+            method_permission_name = {
+                "list": "access",
+                "show": "access",
+                "edit": "access",
+                "add": "access",
+                "delete": "access",
+                "download": "access",
+                "api_readvalues": "access",
+                "api_column_edit": "access",
+                "api_column_add": "access",
+                "api_delete": "access",
+                "api_update": "access",
+                "api_create": "access",
+                "api_get": "access",
+                "api_read": "access",
+                "api": "access"
+            }
+
+        self.model1permoverride = Model1PermOverride
+        self.appbuilder.add_view_no_menu(Model1PermOverride)
+
         role = self.appbuilder.sm.add_role("Test")
         pvm = self.appbuilder.sm.find_permission_view_menu(
             "can_access",
@@ -1038,6 +1051,106 @@ class FlaskTestCase(unittest.TestCase):
         model = self.db.session.query(Model1).first()
         eq_(model.field_string, u"test1")
         eq_(model.field_integer, 1)
+
+    def test_method_permission_override(self):
+        """
+            MVC: Test method permission name override
+        """
+        from flask_appbuilder import ModelView
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+        class Model1PermOverride(ModelView):
+            datamodel = SQLAInterface(Model1)
+            method_permission_name = {
+                "list": "read",
+                "show": "read",
+                "edit": "write",
+                "add": "write",
+                "delete": "write",
+                "download": "read",
+                "api_readvalues": "read",
+                "api_column_edit": "write",
+                "api_column_add": "write",
+                "api_delete": "write",
+                "api_update": "write",
+                "api_create": "write",
+                "api_get": "read",
+                "api_read": "read",
+                "api": "read"
+            }
+
+        self.model1permoverride = Model1PermOverride
+        self.appbuilder.add_view_no_menu(Model1PermOverride)
+
+        role = self.appbuilder.sm.add_role("Test")
+        pvm_read = self.appbuilder.sm.find_permission_view_menu(
+            "can_read",
+            "Model1PermOverride"
+        )
+        pvm_write = self.appbuilder.sm.find_permission_view_menu(
+            "can_write",
+            "Model1PermOverride"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm_read)
+        self.appbuilder.sm.add_permission_role(role, pvm_write)
+
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+
+        client = self.app.test_client()
+        self.login(client, "test", "test")
+
+        rv = client.post(
+            "/model1permoverride/add",
+            data=dict(
+                field_string="test1",
+                field_integer="1",
+                field_float="0.12",
+                field_date="2014-01-01",
+            ),
+            follow_redirects=True,
+        )
+        eq_(rv.status_code, 200)
+        model = self.db.session.query(Model1).first()
+        eq_(model.field_string, u"test1")
+        eq_(model.field_integer, 1)
+
+        rv = client.get("/model1permoverride/list/")
+        eq_(rv.status_code, 200)
+
+        # Verify write links are gone from UI
+        rv = client.get("/model1permoverride/list/")
+        eq_(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        ok_("/model1permoverride/delete/1" in data)
+        ok_("/model1permoverride/add" in data)
+        ok_("/model1permoverride/edit/1" in data)
+        ok_("/model1permoverride/show/1" in data)
+
+        # Delete write permission from Test Role
+        role = self.appbuilder.sm.find_role('Test')
+        pvm_write = self.appbuilder.sm.find_permission_view_menu(
+            "can_write",
+            "Model1PermOverride"
+        )
+        self.appbuilder.sm.del_permission_role(role, pvm_write)
+
+        # Unauthorized delete
+        rv = client.get("/model1permoverride/delete/1")
+        eq_(rv.status_code, 302)
+        model = self.db.session.query(Model1).first()
+        eq_(model.field_string, u"test1")
+        eq_(model.field_integer, 1)
+
+        # Verify write links are gone from UI
+        rv = client.get("/model1permoverride/list/")
+        eq_(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        ok_("/model1permoverride/delete/1" not in data)
+        ok_("/model1permoverride/add/" not in data)
+        ok_("/model1permoverride/edit/1" not in data)
+        ok_("/model1permoverride/show/1" in data)
 
     def test_permission_converge_compress(self):
         """
@@ -1087,10 +1200,6 @@ class FlaskTestCase(unittest.TestCase):
         # Remove previous class, Hack to test code change
         for i, baseview in enumerate(self.appbuilder.baseviews):
             if baseview.__class__.__name__ == "Model1View":
-                break
-        self.appbuilder.baseviews.pop(i)
-        for i, baseview in enumerate(self.appbuilder.baseviews):
-            if baseview.__class__.__name__ == "Model1PermOverride":
                 break
         self.appbuilder.baseviews.pop(i)
 
