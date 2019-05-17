@@ -1071,7 +1071,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 username=userinfo['username'],
                 first_name=userinfo['username'],
                 last_name='-',
-                email=username + '@email.notfound',
+                email=userinfo['username'] + '@email.notfound',
                 role=self.find_role(self.auth_user_registration_role),
             )
 
