@@ -1302,7 +1302,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             Converges overridden permissions on all registered views/api
             will compute all necessary operations from `class_permissions_name`,
             `previous_class_permission_name`, method_permission_name`,
-            `previous_permissions_name` class attributes.
+            `previous_method_permission_name` class attributes.
 
         :param baseviews: List of registered views/apis
         :param menus: List of menu items
