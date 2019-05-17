@@ -1315,7 +1315,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if not state_transitions:
             log.info("No state transitions found")
             return dict()
-        log.info(f"State transitions: {state_transitions}")
+        log.debug(f"State transitions: {state_transitions}")
         roles = self.get_all_roles()
         for role in roles:
             permissions = list(role.permissions)
@@ -1335,7 +1335,6 @@ class BaseSecurityManager(AbstractSecurityManager):
                 ]:
                     self.del_permission_role(role, pvm)
         for pvm in state_transitions['del_role_pvm']:
-
             self.del_permission_view_menu(pvm[1], pvm[0], cascade=False)
         for view_name in state_transitions['del_views']:
             self.del_view_menu(view_name)
