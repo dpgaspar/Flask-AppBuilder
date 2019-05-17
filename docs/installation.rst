@@ -137,3 +137,5 @@ Python 2 and 3 Compatibility
 
 The framework removed support for python 2 since version 1.13.X
 
+For version 2.1.1, the minimum supported Python version is 3.6.
+
