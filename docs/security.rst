@@ -21,7 +21,7 @@ The session is preserved and encrypted using Flask-Login, OpenID requires Flask-
 Role based
 ----------
 
-Each user has multiple roles, and a role holds permissions on views/API and menus,
+Each user may have multiple roles, and a role holds permissions on views/API and menus,
 so a user has permissions on views/API and menus.
 
 Roles can be user defined (backed by the backend) and builtin readonly. Builtin readonly roles
@@ -122,8 +122,8 @@ generate the following permissions:
 - can delete on MyApi
 - can info on MyApi
 
-If you extend your view with some exposed method via the @expose decorator and you want to protect it
-use the @has_access decorator::
+If you extend your view with some exposed method via the ``@expose`` decorator and you want to protect it
+use the ``@has_access`` decorator::
 
     class MyModelView(ModelView):
         datamodel = SQLAInterface(Group)
