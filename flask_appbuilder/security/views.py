@@ -747,7 +747,7 @@ class AuthCASView(AuthView):
     def __init__(self):
         super(AuthCASView, self).__init__()
 
-    def _get_url_for_login_external(self):
+    def _get_service_url(self):
         redirect_url_config = self.appbuilder.sm.cas_url_redirect_route
         return redirect_url_config if redirect_url_config is not None \
             else url_for('%s.%s' % (self.endpoint, 'login'), _external=True)
@@ -772,7 +772,7 @@ class AuthCASView(AuthView):
 
         cas_token_session_key = self.appbuilder.sm.cas_token_session_key
 
-        service_url = self._get_url_for_login_external()
+        service_url = self._get_service_url()
         client = self._get_cas_client(service_url)
         redirect_url = client.get_login_url()
 
@@ -812,7 +812,7 @@ class AuthCASView(AuthView):
         if cas_attributes_session_key in session:
             del session[cas_attributes_session_key]
 
-        service_url = self._get_url_for_login_external()
+        service_url = self._get_service_url()
         client = self._get_cas_client(service_url)
         redirect_url = client.get_logout_url(cas_after_logout)
         logout_user()
@@ -820,13 +820,22 @@ class AuthCASView(AuthView):
 
         return redirect(redirect_url)
 
+    # TODO: add support Single-Logout callback
+    @expose('/cas/callback', methods=['POST'])
+    def callback(self):
+        """
+        Read PGT and PGTIOU sent by CAS
+        """
+        if 'logoutRequest' in request.args:
+            pass
+
     def validate(self, ticket):
         """Verifies CAS ticket and get CAS userinfo"""
         cas_username_session_key = self.appbuilder.sm.cas_username_session_key
         cas_attributes_session_key = self.appbuilder.sm.cas_attributes_session_key
 
         log.debug("validating token {0}".format(ticket))
-        service_url = self._get_url_for_login_external()
+        service_url = self._get_service_url()
         client = self._get_cas_client(service_url)
         username, attributes, _ = client.verify_ticket(ticket)
 
