@@ -375,7 +375,7 @@ class BaseApi(object):
         self.appbuilder = appbuilder
         # If endpoint name is not provided, get it from the class name
         self.endpoint = endpoint or self.__class__.__name__
-        self.resource_name = self.resource_name or self.__class__.__name__
+        self.resource_name = self.resource_name or self.__class__.__name__.lower()
 
         if self.route_base is None:
             self.route_base = "/api/{}/{}".format(
