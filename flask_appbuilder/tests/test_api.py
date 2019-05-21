@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-import unittest
 
 from flask_appbuilder import SQLA
 from flask_appbuilder.const import (
@@ -24,10 +23,6 @@ from flask_appbuilder.const import (
     API_PERMISSIONS_RIS_KEY,
     API_RESULT_RES_KEY,
     API_SECURITY_ACCESS_TOKEN_KEY,
-    API_SECURITY_PASSWORD_KEY,
-    API_SECURITY_PROVIDER_KEY,
-    API_SECURITY_USERNAME_KEY,
-    API_SECURITY_VERSION,
     API_SELECT_COLUMNS_RIS_KEY,
     API_SELECT_KEYS_RIS_KEY,
     API_SHOW_COLUMNS_RIS_KEY,
@@ -38,6 +33,7 @@ from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
 from nose.tools import eq_
 import prison
 
+from .base import FABTestCase
 from .sqla.models import (
     insert_data,
     Model1,
@@ -62,7 +58,37 @@ USERNAME_READONLY = "readonly"
 PASSWORD_READONLY = "readonly"
 
 
-class FlaskTestCase(unittest.TestCase):
+class APICSRFTestCase(FABTestCase):
+    def setUp(self):
+        from flask import Flask
+        from flask_wtf import CSRFProtect
+        from flask_appbuilder import AppBuilder
+
+        self.app = Flask(__name__)
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
+        self.app.config["SECRET_KEY"] = "thisismyscretkey"
+        self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        self.app.config["WTF_CSRF_ENABLED"] = True
+
+        self.csrf = CSRFProtect(self.app)
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        self.create_admin_user(self.appbuilder, USERNAME, PASSWORD)
+
+    def test_auth_login(self):
+        """
+            REST Api: Test auth login CSRF
+        """
+        client = self.app.test_client()
+        rv = self._login(client, USERNAME, PASSWORD)
+        eq_(rv.status_code, 200)
+        assert json.loads(rv.data.decode("utf-8")).get(
+            API_SECURITY_ACCESS_TOKEN_KEY, False
+        )
+
+
+class APITestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
         from flask_appbuilder import AppBuilder
@@ -226,84 +252,21 @@ class FlaskTestCase(unittest.TestCase):
         self.model1permoverride = Model1PermOverride
         self.appbuilder.add_api(Model1PermOverride)
 
-        role_admin = self.appbuilder.sm.find_role("Admin")
-        self.appbuilder.sm.add_user(
-            USERNAME, "admin", "user", "admin@fab.org", role_admin, PASSWORD
-        )
-        role_read_only = self.appbuilder.sm.find_role("ReadOnly")
-        self.appbuilder.sm.add_user(
+        self.create_admin_user(self.appbuilder, USERNAME, PASSWORD)
+        self.create_user(
+            self.appbuilder,
             USERNAME_READONLY,
-            "readonly",
-            "readonly",
-            "readonly@fab.org",
-            role_read_only,
-            PASSWORD_READONLY
+            PASSWORD_READONLY,
+            "ReadOnly",
+            first_name="readonly",
+            last_name="readonly",
+            email="readonly@fab.org"
         )
 
     def tearDown(self):
         self.appbuilder = None
         self.app = None
         self.db = None
-
-    @staticmethod
-    def auth_client_get(client, token, uri):
-        return client.get(uri, headers={"Authorization": "Bearer {}".format(token)})
-
-    @staticmethod
-    def auth_client_delete(client, token, uri):
-        return client.delete(uri, headers={"Authorization": "Bearer {}".format(token)})
-
-    @staticmethod
-    def auth_client_put(client, token, uri, json):
-        return client.put(
-            uri, json=json, headers={"Authorization": "Bearer {}".format(token)}
-        )
-
-    @staticmethod
-    def auth_client_post(client, token, uri, json):
-        return client.post(
-            uri, json=json, headers={"Authorization": "Bearer {}".format(token)}
-        )
-
-    @staticmethod
-    def _login(client, username, password):
-        """
-            Login help method
-        :param client: Flask test client
-        :param username: username
-        :param password: password
-        :return: Flask client response class
-        """
-        return client.post(
-            "api/{}/security/login".format(API_SECURITY_VERSION),
-            data=json.dumps(
-                {
-                    API_SECURITY_USERNAME_KEY: username,
-                    API_SECURITY_PASSWORD_KEY: password,
-                    API_SECURITY_PROVIDER_KEY: "db",
-                }
-            ),
-            content_type="application/json",
-        )
-
-    def login(self, client, username, password):
-        # Login with default admin
-        rv = self._login(client, username, password)
-        try:
-            return json.loads(rv.data.decode("utf-8")).get("access_token")
-        except Exception:
-            return rv
-
-    def browser_login(self, client, username, password):
-        # Login with default admin
-        return client.post(
-            "/login/",
-            data=dict(username=username, password=password),
-            follow_redirects=True,
-        )
-
-    def browser_logout(self, client):
-        return client.get("/logout/")
 
     def test_auth_login(self):
         """
