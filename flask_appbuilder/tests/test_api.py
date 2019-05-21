@@ -42,6 +42,7 @@ from .sqla.models import (
     ModelMMParent,
     ModelMMParentRequired,
     ModelWithEnums,
+    ModelWithProperty,
     TmpEnum,
     validate_name
 )
@@ -251,6 +252,13 @@ class APITestCase(FABTestCase):
 
         self.model1permoverride = Model1PermOverride
         self.appbuilder.add_api(Model1PermOverride)
+
+        class ModelWithPropertyApi(ModelRestApi):
+            datamodel = SQLAInterface(ModelWithProperty)
+            list_columns = ['field_string', 'custom_property']
+
+        self.model1permoverride = ModelWithPropertyApi
+        self.appbuilder.add_api(ModelWithPropertyApi)
 
         self.create_admin_user(self.appbuilder, USERNAME, PASSWORD)
         self.create_user(
@@ -722,7 +730,6 @@ class APITestCase(FABTestCase):
             "order_direction": "asc",
         }
         uri = "api/v1/model1api/?{}={}".format(API_URI_RIS_KEY, prison.dumps(arguments))
-        print("URI {}".format(uri))
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         eq_(len(data[API_RESULT_RES_KEY]), MAX_PAGE_SIZE)
@@ -1398,6 +1405,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME, PASSWORD)
         uri = "api/v1/model1funcapi/"
         rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
         data = json.loads(rv.data.decode("utf-8"))
         # Tests count property
         eq_(data["count"], MODEL1_DATA_SIZE)
@@ -1408,6 +1416,27 @@ class APITestCase(FABTestCase):
             eq_(
                 item["full_concat"],
                 "{}.{}.{}.{}".format("test" + str(i - 1), i - 1, float(i - 1), None),
+            )
+
+    def test_get_list_col_property(self):
+        """
+            REST Api: Test get list of objects with columns as property
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        uri = "api/v1/modelwithpropertyapi/"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        # Tests count property
+        eq_(data["count"], MODEL1_DATA_SIZE)
+        # Tests data result default page size
+        eq_(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        for i in range(1, self.model1api.page_size):
+            item = data[API_RESULT_RES_KEY][i - 1]
+            eq_(
+                item["custom_property"],
+                "{}_custom".format(str(i - 1)),
             )
 
     def test_openapi(self):
