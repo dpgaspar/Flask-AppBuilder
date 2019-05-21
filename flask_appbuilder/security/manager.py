@@ -14,17 +14,17 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from .api import SecurityApi
 from .registerviews import (
+    RegisterUserCASView,
     RegisterUserDBView,
     RegisterUserOAuthView,
-    RegisterUserOIDView,
-    RegisterUserCASView
+    RegisterUserOIDView
 )
 from .views import (
+    AuthCASView,
     AuthDBView,
     AuthLDAPView,
     AuthOAuthView,
     AuthOIDView,
-    AuthCASView,
     AuthRemoteUserView,
     PermissionModelView,
     PermissionViewModelView,
@@ -32,11 +32,11 @@ from .views import (
     ResetMyPasswordView,
     ResetPasswordView,
     RoleModelView,
+    UserCASModelView,
     UserDBModelView,
     UserInfoEditView,
     UserLDAPModelView,
     UserOAuthModelView,
-    UserCASModelView,
     UserOIDModelView,
     UserRemoteUserModelView,
     UserStatsChartView,
@@ -44,12 +44,12 @@ from .views import (
 )
 from ..basemanager import BaseManager
 from ..const import (
+    AUTH_CAS,
     AUTH_DB,
     AUTH_LDAP,
     AUTH_OAUTH,
     AUTH_OID,
     AUTH_REMOTE_USER,
-    AUTH_CAS,
     LOGMSG_ERR_SEC_AUTH_LDAP,
     LOGMSG_ERR_SEC_AUTH_LDAP_TLS,
     LOGMSG_WAR_SEC_LOGIN_FAILED,

@@ -4,7 +4,6 @@ from unittest.mock import patch
 from flask import Flask, session
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.security.manager import AUTH_CAS
-from flask_appbuilder.security.views import AuthCASView
 
 
 class CASTestCase(unittest.TestCase):

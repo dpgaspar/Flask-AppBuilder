@@ -2,15 +2,16 @@ import datetime
 import logging
 import re
 
+from cas import CASClient
 from flask import (
     abort,
     flash,
     g,
+    jsonify,
     make_response,
     redirect,
     request,
     session,
-    jsonify,
     url_for)
 from flask_babel import lazy_gettext
 from flask_login import login_user, logout_user
@@ -18,7 +19,6 @@ import jwt
 from werkzeug.security import generate_password_hash
 from wtforms import PasswordField, validators
 from wtforms.validators import EqualTo
-from cas import CASClient
 
 from .decorators import has_access
 from .forms import LoginForm_db, LoginForm_oid, ResetPasswordForm, UserInfoEdit
