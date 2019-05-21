@@ -752,9 +752,6 @@ class AuthCASView(AuthView):
         return redirect_url_config if redirect_url_config is not None \
             else url_for('%s.%s' % (self.endpoint, 'login'), _external=True)
 
-    def successful_login(self):
-        return redirect(self.appbuilder.get_url_for_index)
-
     def _get_cas_client(self, service_url):
         server_url = self.appbuilder.sm.cas_server
         return CASClient(
