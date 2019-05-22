@@ -1,6 +1,7 @@
 import logging
 from flask import Flask
 from flask_appbuilder import SQLA, AppBuilder
+from flask_session import Session
 
 """
  Logging configuration
@@ -11,6 +12,8 @@ logging.getLogger().setLevel(logging.DEBUG)
 
 app = Flask(__name__)
 app.config.from_object("config")
+sess = Session(app)
+sess.app.session_interface.db.create_all()
 db = SQLA(app)
 appbuilder = AppBuilder(app, db.session)
 
@@ -28,4 +31,4 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.close()
 """
 
-from app import views
+from . import views

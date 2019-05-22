@@ -41,7 +41,8 @@ CSRF_ENABLED = True
 AUTH_TYPE = AUTH_CAS
 
 CAS_SERVER = 'https://casserver.herokuapp.com/cas/'
-CAS_AFTER_LOGOUT = 'http://localhost:8080/login'
+CAS_AFTER_LOGOUT = 'http://localhost:8080'
+CAS_VERSION = '3'
 
 # Uncomment to setup Full admin role name
 # AUTH_ROLE_ADMIN = 'Admin'
@@ -113,3 +114,5 @@ IMG_UPLOAD_URL = "/static/uploads/"
 # APP_THEME = "spacelab.css"
 # APP_THEME = "united.css"
 # APP_THEME = "yeti.css"
+
+SESSION_TYPE = 'sqlalchemy'

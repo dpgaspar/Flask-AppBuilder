@@ -1,10 +1,17 @@
-from flask import session, flash
+from flask import session, request
+from flask_appbuilder.api import BaseApi, expose
 
-from app import appbuilder, db
-
-
-
+from . import appbuilder
 
 
+class CasApi(BaseApi):
+    @expose('/cas/callback', methods=['POST'])
+    def callback(self):
+        """
+        Read PGT and PGTIOU sent by CAS(Single-Logout callback)
+        """
+        if 'logoutRequest' in request.args:
+            pass
 
-db.create_all()
+
+appbuilder.add_api(CasApi)
