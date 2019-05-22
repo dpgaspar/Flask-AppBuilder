@@ -226,7 +226,11 @@ class BaseApi(object):
         default is False.
     """
     extra_args = None
-
+    
+    csrf_exempt = True
+    """
+        If using flask-wtf CSRFProtect exempt the API from check
+    """
     apispec_parameter_schemas = None
     """
         Set your custom Rison parameter schemas here so that
@@ -350,7 +354,11 @@ class BaseApi(object):
                 self.version, self.resource_name.lower()
             )
         self.blueprint = Blueprint(self.endpoint, __name__, url_prefix=self.route_base)
-
+        # Exempt API from CSRF protect
+        if self.csrf_exempt:
+            csrf = self.appbuilder.app.extensions.get('csrf')
+            if csrf:
+                csrf.exempt(self.blueprint)
         self._register_urls()
         return self.blueprint
 
