@@ -1,5 +1,6 @@
 from functools import reduce
 import logging
+from typing import Dict
 
 from flask import Blueprint, current_app, url_for
 
@@ -134,10 +135,10 @@ class AppBuilder(object):
         self.baseviews = []
         self._addon_managers = []
         self.addon_managers = {}
-        self.menu = menu or Menu()
+        self.menu = menu
         self.base_template = base_template
         self.security_manager_class = security_manager_class
-        self.indexview = indexview or IndexView
+        self.indexview = indexview
         self.static_folder = static_folder
         self.static_url_path = static_url_path
         self.app = app
@@ -160,7 +161,39 @@ class AppBuilder(object):
         app.config.setdefault("LANGUAGES", {"en": {"flag": "gb", "name": "English"}})
         app.config.setdefault("ADDON_MANAGERS", [])
         app.config.setdefault("FAB_API_MAX_PAGE_SIZE", 20)
+        app.config.setdefault("FAB_BASE_TEMPLATE", self.base_template)
+        app.config.setdefault("FAB_STATIC_FOLDER", self.static_folder)
+        app.config.setdefault("FAB_STATIC_URL_PATH", self.static_url_path)
+
         self.app = app
+
+        self.base_template = app.config.get(
+            "FAB_BASE_TEMPLATE",
+            self.base_template,
+        )
+        self.static_folder = app.config.get(
+            "FAB_STATIC_FOLDER",
+            self.static_folder,
+        )
+        self.static_url_path = app.config.get(
+            "FAB_STATIC_URL_PATH",
+            self.static_url_path,
+        )
+        _index_view = app.config.get('FAB_INDEX_VIEW', None)
+        if _index_view is not None:
+            self.indexview = dynamic_class_import(
+                _index_view
+            )
+        else:
+            self.indexview = self.indexview or IndexView
+        _menu = app.config.get('FAB_MENU', None)
+        if _menu is not None:
+            self.menu = dynamic_class_import(
+                _menu
+            )
+        else:
+            self.menu = self.menu or Menu()
+
         if self.update_perms:  # default is True, if False takes precedence from config
             self.update_perms = app.config.get('FAB_UPDATE_PERMS', True)
         _security_manager_class_name = app.config.get('FAB_SECURITY_MANAGER_CLASS', None)
@@ -513,6 +546,22 @@ class AppBuilder(object):
         """
         self.sm.security_cleanup(self.baseviews, self.menu)
 
+    def security_converge(self, dry=False) -> Dict:
+        """
+            This method is useful when you use:
+
+            - `class_permission_name`
+            - `previous_class_permission_name`
+            - `method_permission_name`
+            - `previous_method_permission_name`
+
+            migrates all permissions to the new names on all the Roles
+
+        :param dry: If True will not change DB
+        :return: Dict with all computed necessary operations
+        """
+        return self.sm.security_converge(self.baseviews, self.menu, dry)
+
     @property
     def get_url_for_login(self):
         return url_for("%s.%s" % (self.sm.auth_view.endpoint, "login"))
@@ -545,7 +594,7 @@ class AppBuilder(object):
         if self.update_perms or update_perms:
             try:
                 self.sm.add_permissions_view(
-                    baseview.base_permissions, baseview.__class__.__name__
+                    baseview.base_permissions, baseview.class_permission_name
                 )
             except Exception as e:
                 log.exception(e)

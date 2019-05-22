@@ -65,6 +65,15 @@ class Model3(Model):
         return str(self.field_string)
 
 
+class ModelWithProperty(Model):
+    id = Column(Integer, primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+
+    @property
+    def custom_property(self):
+        return self.field_string + "_custom"
+
+
 class TmpEnum(enum.Enum):
     e1 = "a"
     e2 = 2
@@ -181,5 +190,11 @@ def insert_data(session, count):
         model = ModelMMParentRequired()
         model.field_string = str(i)
         model.children = children_required
+        session.add(model)
+        session.commit()
+
+    for i in range(count):
+        model = ModelWithProperty()
+        model.field_string = str(i)
         session.add(model)
         session.commit()

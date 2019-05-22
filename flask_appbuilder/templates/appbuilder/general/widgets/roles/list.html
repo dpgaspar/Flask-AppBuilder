@@ -1,0 +1,81 @@
+{% import 'appbuilder/general/lib.html' as lib %}
+{% extends 'appbuilder/general/widgets/base_list.html' %}
+
+
+    {% block begin_content scoped %}
+        <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+    {% endblock %}
+
+    {% block begin_loop_header scoped %}
+        <thead>
+        <tr>
+        {% if actions %}
+        <th class="action_checkboxes">
+            <input id="check_all" class="action_check_all" name="check_all" type="checkbox">
+        </th>
+        {% endif %}
+
+        {% if can_show or can_edit or can_delete %}
+            <th class="col-md-1 col-lg-1 col-sm-1" ></th>
+        {% endif %}
+
+        {% for item in include_columns %}
+            {% if item in order_columns %}
+                {% set res = item | get_link_order(modelview_name) %}
+                    {% if res == 2 %}
+                    <th><a href={{ item | link_order(modelview_name) }}>{{label_columns.get(item)}}
+                    <i class="fa fa-chevron-up pull-right"></i></a></th>
+                {% elif res == 1 %}
+                    <th><a href={{ item | link_order(modelview_name) }}>{{label_columns.get(item)}}
+                    <i class="fa fa-chevron-down pull-right"></i></a></th>
+                {% else %}
+                    <th><a href={{ item | link_order(modelview_name) }}>{{label_columns.get(item)}}
+                    <i class="fa fa-arrows-v pull-right"></i></a></th>
+                {% endif %}
+            {% else %}
+                <th>{{label_columns.get(item)}}</th>
+            {% endif %}
+        {% endfor %}
+        </tr>
+        </thead>
+    {% endblock %}
+
+    {% block begin_loop_values scoped %}
+        {% for item in value_columns %}
+            {% set pk = pks[loop.index-1] %}
+            {% set is_builtin_role = appbuilder.sm.builtin_roles.get(item['name']) %}
+            <tr>
+                {% if actions %}
+                <td>
+                    {% if not is_builtin_role %}
+                        <input id="{{pk}}" class="action_check" name="rowid" value="{{pk}}" type="checkbox">
+                    {% endif %}
+                </td>
+                {% endif %}
+                {% if can_show or can_edit or can_delete %}
+                    <td><center>
+                        {% if not is_builtin_role %}
+                            {{ lib.btn_crud(can_show, can_edit, can_delete, pk, modelview_name, filters) }}
+                        {% else %}
+                            {{ lib.btn_crud(can_show, False, False, pk, modelview_name, filters) }}
+                        {% endif %}
+                    </center></td>
+                {% endif %}
+                {% for value in include_columns %}
+                    {% if value=='name' %}
+                        <td>{{ item[value] }}</td>
+                    {% elif not is_builtin_role %}
+                        <td>{{ item[value] }}</td>
+                    {% elif is_builtin_role and value=='permissions' %}
+                        <td>{{appbuilder.sm.builtin_roles.get(item['name'])}}</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    {% endblock %}
+
+    {% block end_content scoped %}
+        </table>
+        </div>
+    {% endblock %}

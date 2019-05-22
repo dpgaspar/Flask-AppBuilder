@@ -5,6 +5,7 @@ import re
 from cas import CASClient
 from flask import (
     abort,
+    current_app,
     flash,
     g,
     jsonify,
@@ -28,7 +29,7 @@ from ..baseviews import BaseView
 from ..charts.views import DirectByChartView
 from ..fieldwidgets import BS3PasswordFieldWidget
 from ..views import expose, ModelView, SimpleFormView
-
+from ..widgets import ListWidget, ShowWidget
 
 log = logging.getLogger(__name__)
 
@@ -418,6 +419,22 @@ class UserStatsChartView(DirectByChartView):
     ]
 
 
+class RoleListWidget(ListWidget):
+    template = 'appbuilder/general/widgets/roles/list.html'
+
+    def __init__(self, **kwargs):
+        kwargs['appbuilder'] = current_app.appbuilder
+        super().__init__(**kwargs)
+
+
+class RoleShowWidget(ShowWidget):
+    template = 'appbuilder/general/widgets/roles/show.html'
+
+    def __init__(self, **kwargs):
+        kwargs['appbuilder'] = current_app.appbuilder
+        super().__init__(**kwargs)
+
+
 class RoleModelView(ModelView):
     route_base = "/roles"
 
@@ -426,11 +443,17 @@ class RoleModelView(ModelView):
     add_title = lazy_gettext("Add Role")
     edit_title = lazy_gettext("Edit Role")
 
+    list_widget = RoleListWidget
+    show_widget = RoleShowWidget
+
     label_columns = {
         "name": lazy_gettext("Name"),
         "permissions": lazy_gettext("Permissions"),
     }
     list_columns = ["name", "permissions"]
+    show_columns = ["name", "permissions"]
+    edit_columns = ["name", "permissions"]
+    add_columns = edit_columns
     order_columns = ["name"]
 
     @action(

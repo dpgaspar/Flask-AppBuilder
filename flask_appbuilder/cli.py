@@ -133,6 +133,32 @@ def security_cleanup():
     click.echo(click.style("Finished security cleanup", fg="green"))
 
 
+@fab.command("security-converge")
+@click.option('--dry-run', '-d', is_flag=True, help="Dry run & print state transitions.")
+@with_appcontext
+def security_converge(dry_run=False):
+    """
+        Converges security deletes previous_class_permission_name
+    """
+    state_transitions = current_app.appbuilder.security_converge(dry=dry_run)
+    if dry_run:
+        click.echo(click.style("Computed security converge:", fg="green"))
+        click.echo(click.style("Add to Roles:", fg="green"))
+        for _from, _to in state_transitions['add'].items():
+            click.echo(f"Where {_from} add {_to}")
+        click.echo(click.style("Del from Roles:", fg="green"))
+        for pvm in state_transitions['del_role_pvm']:
+            click.echo(pvm)
+        click.echo(click.style("Remove views:", fg="green"))
+        for views in state_transitions['del_views']:
+            click.echo(views)
+        click.echo(click.style("Remove permissions:", fg="green"))
+        for perms in state_transitions['del_perms']:
+            click.echo(perms)
+    else:
+        click.echo(click.style("Finished security converge", fg="green"))
+
+
 @fab.command("create-permissions")
 @with_appcontext
 def create_permissions():

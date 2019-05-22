@@ -16,7 +16,7 @@ flask-babel==0.12.2
 flask-jwt-extended==3.18.0
 flask-login==0.4.1
 flask-openid==1.2.5
-flask-sqlalchemy==2.3.2
+flask-sqlalchemy==2.4.0
 flask-wtf==0.14.2
 flask==1.0.2
 idna==2.8                 # via requests
@@ -28,8 +28,8 @@ markupsafe==1.1.1         # via jinja2
 marshmallow-enum==1.4.1
 marshmallow-sqlalchemy==0.16.2
 marshmallow==2.18.0
-prison==0.1.0
-pyjwt==1.7.1
+prison==0.1.1
+pyjwt==1.7.1              # via flask-jwt-extended
 pyrsistent==0.14.11       # via jsonschema
 python-cas==1.4.0
 python-dateutil==2.8.0

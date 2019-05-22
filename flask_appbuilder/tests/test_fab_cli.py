@@ -1,14 +1,17 @@
 import logging
+import os
 import unittest
 
 from click.testing import CliRunner
-from flask_appbuilder.console import create_app, create_user
+from flask_appbuilder.cli import create_app, create_user
 from nose.tools import ok_
 
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
 log = logging.getLogger(__name__)
+
+APP_DIR = 'myapp'
 
 
 class FlaskTestCase(unittest.TestCase):
@@ -22,25 +25,21 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test create app
         """
+        os.environ['FLASK_APP'] = "app:app"
         runner = CliRunner()
         with runner.isolated_filesystem():
-            result = runner.invoke(create_app, input="myapp\nSQLAlchemy\n")
+            result = runner.invoke(
+                create_app,
+                [
+                    f'--name={APP_DIR}',
+                    '--engine=SQLAlchemy'
+                ]
+            )
             ok_("Downloaded the skeleton app, good coding!" in result.output)
-
-            with open("myapp/__init__.py", "w") as f:
-                for line in [
-                    "from flask import Flask\n",
-                    "from flask_appbuilder import AppBuilder, SQLA\n",
-                    "app = Flask(__name__)\n",
-                    "db = SQLA(app)\n",
-                    "appbuilder = AppBuilder(app, db.session)\n",
-                ]:
-                    f.write(line)
-
+            os.chdir(APP_DIR)
             result = runner.invoke(
                 create_user,
                 [
-                    "--app=myapp",
                     "--username=bob",
                     "--role=Public",
                     "--firstname=Bob",
@@ -49,8 +48,5 @@ class FlaskTestCase(unittest.TestCase):
                     "--password=foo",
                 ],
             )
+            log.info(result.output)
             ok_("User bob created." in result.output)
-
-        with runner.isolated_filesystem():
-            result = runner.invoke(create_app, input="myapp\nMongoEngine\n")
-            ok_("Downloaded the skeleton app, good coding!" in result.output)

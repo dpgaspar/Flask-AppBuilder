@@ -1,6 +1,32 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.3
+-----------------------------------
+
+- Fix, Index view override on class instantiation is discarded
+
+Improvements and Bug fixes on 2.1.2
+-----------------------------------
+
+- Fix, #993 App factory pattern, AppBuilder object can be fully configured using config keys
+- Fix, #994 If builtin role don't check db also, higher permission on DB would allow access
+
+Improvements and Bug fixes on 2.1.1
+-----------------------------------
+
+- Fix, #991 Make Admin builtin optional, only if declared on config
+
+Improvements and Bug fixes on 2.1.0
+-----------------------------------
+
+- New, #977 flask-sqlalchemy bump to 2.4.0 (new config options)
+- New, #986 Builtin roles using regex, Admin role is now one of these
+- New, #969 Override class and method permission names and procedure to converge/migrate
+- Fix, #985 Deprecation warning EOL version was wrong
+- New, #976 pRison version bump
+- Fix, #966 Change the default email value for auth_remote_user in security manager
+
 Improvements and Bug fixes on 2.0.0
 -----------------------------------
 

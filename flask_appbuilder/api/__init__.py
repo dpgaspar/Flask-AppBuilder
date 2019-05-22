@@ -220,13 +220,41 @@ class BaseApi(object):
                 base_permissions = ['can_get']
 
     """
+    class_permission_name = None
+    """
+        Override class permission name default fallback to self.__class__.__name__
+    """
+    previous_class_permission_name = None
+    """
+        If set security converge will replace all permissions tuples
+        with this name by the class_permission_name or self.__class__.__name__
+    """
+    method_permission_name = None
+    """
+        Override method permission names, example::
+
+            method_permissions_name = {
+                'get_list': 'read',
+                'get': 'read',
+                'put': 'write',
+                'post': 'write',
+                'delete': 'write'
+            }
+    """
+    previous_method_permission_name = None
+    """
+        Use same structure as method_permission_name. If set security converge
+        will replace all method permissions by the new ones
+    """
     allow_browser_login = False
     """
         Will allow flask-login cookie authorization on the API
         default is False.
     """
-    extra_args = None
-
+    csrf_exempt = True
+    """
+        If using flask-wtf CSRFProtect exempt the API from check
+    """
     apispec_parameter_schemas = None
     """
         Set your custom Rison parameter schemas here so that
@@ -308,7 +336,6 @@ class BaseApi(object):
     """
         Override custom OpenApi responses
     """
-
     def __init__(self):
         """
             Initialization of base permissions
@@ -320,36 +347,50 @@ class BaseApi(object):
         self.apispec_parameter_schemas = self.apispec_parameter_schemas or dict()
         self._apispec_parameter_schemas = self._apispec_parameter_schemas or dict()
         self._apispec_parameter_schemas.update(self.apispec_parameter_schemas)
+
+        if not self.previous_class_permission_name and self.class_permission_name:
+            self.previous_class_permission_name = self.__class__.__name__
+        self.class_permission_name = (self.class_permission_name or
+                                      self.__class__.__name__)
+        is_collect_previous = False
+        if not self.previous_method_permission_name and self.method_permission_name:
+            self.previous_method_permission_name = dict()
+            is_collect_previous = True
+        self.method_permission_name = self.method_permission_name or dict()
+
         if self.base_permissions is None:
             self.base_permissions = set()
             for attr_name in dir(self):
                 if hasattr(getattr(self, attr_name), "_permission_name"):
-                    _permission_name = getattr(
-                        getattr(self, attr_name), "_permission_name"
-                    )
+                    _permission_name = self.method_permission_name.get(attr_name)
+                    if is_collect_previous:
+                        self.previous_method_permission_name[attr_name] = getattr(
+                            getattr(self, attr_name), "_permission_name"
+                        )
+                    if not _permission_name:
+                        _permission_name = getattr(
+                            getattr(self, attr_name), "_permission_name"
+                        )
                     self.base_permissions.add("can_" + _permission_name)
             self.base_permissions = list(self.base_permissions)
-        if not self.extra_args:
-            self.extra_args = dict()
-        self._apis = dict()
-        for attr_name in dir(self):
-            if hasattr(getattr(self, attr_name), "_extra"):
-                _extra = getattr(getattr(self, attr_name), "_extra")
-                for key in _extra:
-                    self._apis[key] = _extra[key]
 
     def create_blueprint(self, appbuilder, endpoint=None, static_folder=None):
         # Store appbuilder instance
         self.appbuilder = appbuilder
         # If endpoint name is not provided, get it from the class name
         self.endpoint = endpoint or self.__class__.__name__
-        self.resource_name = self.resource_name or self.__class__.__name__
+        self.resource_name = self.resource_name or self.__class__.__name__.lower()
 
         if self.route_base is None:
             self.route_base = "/api/{}/{}".format(
                 self.version, self.resource_name.lower()
             )
         self.blueprint = Blueprint(self.endpoint, __name__, url_prefix=self.route_base)
+        # Exempt API from CSRF protect
+        if self.csrf_exempt:
+            csrf = self.appbuilder.app.extensions.get('csrf')
+            if csrf:
+                csrf.exempt(self.blueprint)
 
         self._register_urls()
         return self.blueprint
@@ -483,7 +524,14 @@ class BaseApi(object):
     def merge_current_user_permissions(self, response, **kwargs):
         response[
             API_PERMISSIONS_RES_KEY
-        ] = self.appbuilder.sm.get_user_permissions_on_view(self.__class__.__name__)
+        ] = [
+            permission
+            for permission in self.base_permissions
+            if self.appbuilder.sm.has_access(
+                permission,
+                self.class_permission_name,
+            )
+        ]
 
     @staticmethod
     def response(code, **kwargs):

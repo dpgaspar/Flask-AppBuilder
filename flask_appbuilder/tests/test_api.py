@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-import unittest
 
 from flask_appbuilder import SQLA
 from flask_appbuilder.const import (
@@ -24,10 +23,6 @@ from flask_appbuilder.const import (
     API_PERMISSIONS_RIS_KEY,
     API_RESULT_RES_KEY,
     API_SECURITY_ACCESS_TOKEN_KEY,
-    API_SECURITY_PASSWORD_KEY,
-    API_SECURITY_PROVIDER_KEY,
-    API_SECURITY_USERNAME_KEY,
-    API_SECURITY_VERSION,
     API_SELECT_COLUMNS_RIS_KEY,
     API_SELECT_KEYS_RIS_KEY,
     API_SHOW_COLUMNS_RIS_KEY,
@@ -38,6 +33,7 @@ from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
 from nose.tools import eq_
 import prison
 
+from .base import FABTestCase
 from .sqla.models import (
     insert_data,
     Model1,
@@ -46,6 +42,7 @@ from .sqla.models import (
     ModelMMParent,
     ModelMMParentRequired,
     ModelWithEnums,
+    ModelWithProperty,
     TmpEnum,
     validate_name
 )
@@ -58,9 +55,41 @@ MODEL2_DATA_SIZE = 30
 USERNAME = "testadmin"
 PASSWORD = "password"
 MAX_PAGE_SIZE = 25
+USERNAME_READONLY = "readonly"
+PASSWORD_READONLY = "readonly"
 
 
-class FlaskTestCase(unittest.TestCase):
+class APICSRFTestCase(FABTestCase):
+    def setUp(self):
+        from flask import Flask
+        from flask_wtf import CSRFProtect
+        from flask_appbuilder import AppBuilder
+
+        self.app = Flask(__name__)
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
+        self.app.config["SECRET_KEY"] = "thisismyscretkey"
+        self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        self.app.config["WTF_CSRF_ENABLED"] = True
+
+        self.csrf = CSRFProtect(self.app)
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        self.create_admin_user(self.appbuilder, USERNAME, PASSWORD)
+
+    def test_auth_login(self):
+        """
+            REST Api: Test auth login CSRF
+        """
+        client = self.app.test_client()
+        rv = self._login(client, USERNAME, PASSWORD)
+        eq_(rv.status_code, 200)
+        assert json.loads(rv.data.decode("utf-8")).get(
+            API_SECURITY_ACCESS_TOKEN_KEY, False
+        )
+
+
+class APITestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
         from flask_appbuilder import AppBuilder
@@ -74,6 +103,12 @@ class FlaskTestCase(unittest.TestCase):
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
         self.app.config["WTF_CSRF_ENABLED"] = False
+        self.app.config["FAB_ROLES"] = {
+            "ReadOnly": [
+                [".*", "can_get"],
+                [".*", "can_info"]
+            ]
+        }
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -203,75 +238,43 @@ class FlaskTestCase(unittest.TestCase):
         self.model2apifilteredrelfields = Model2ApiFilteredRelFields
         self.appbuilder.add_api(Model2ApiFilteredRelFields)
 
-        role_admin = self.appbuilder.sm.find_role("Admin")
-        self.appbuilder.sm.add_user(
-            USERNAME, "admin", "user", "admin@fab.org", role_admin, PASSWORD
+        class Model1PermOverride(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            class_permission_name = 'api'
+            method_permission_name = {
+                "get_list": "access",
+                "get": "access",
+                "put": "access",
+                "post": "access",
+                "delete": "access",
+                "info": "access"
+            }
+
+        self.model1permoverride = Model1PermOverride
+        self.appbuilder.add_api(Model1PermOverride)
+
+        class ModelWithPropertyApi(ModelRestApi):
+            datamodel = SQLAInterface(ModelWithProperty)
+            list_columns = ['field_string', 'custom_property']
+
+        self.model1permoverride = ModelWithPropertyApi
+        self.appbuilder.add_api(ModelWithPropertyApi)
+
+        self.create_admin_user(self.appbuilder, USERNAME, PASSWORD)
+        self.create_user(
+            self.appbuilder,
+            USERNAME_READONLY,
+            PASSWORD_READONLY,
+            "ReadOnly",
+            first_name="readonly",
+            last_name="readonly",
+            email="readonly@fab.org"
         )
 
     def tearDown(self):
         self.appbuilder = None
         self.app = None
         self.db = None
-
-    @staticmethod
-    def auth_client_get(client, token, uri):
-        return client.get(uri, headers={"Authorization": "Bearer {}".format(token)})
-
-    @staticmethod
-    def auth_client_delete(client, token, uri):
-        return client.delete(uri, headers={"Authorization": "Bearer {}".format(token)})
-
-    @staticmethod
-    def auth_client_put(client, token, uri, json):
-        return client.put(
-            uri, json=json, headers={"Authorization": "Bearer {}".format(token)}
-        )
-
-    @staticmethod
-    def auth_client_post(client, token, uri, json):
-        return client.post(
-            uri, json=json, headers={"Authorization": "Bearer {}".format(token)}
-        )
-
-    @staticmethod
-    def _login(client, username, password):
-        """
-            Login help method
-        :param client: Flask test client
-        :param username: username
-        :param password: password
-        :return: Flask client response class
-        """
-        return client.post(
-            "api/{}/security/login".format(API_SECURITY_VERSION),
-            data=json.dumps(
-                {
-                    API_SECURITY_USERNAME_KEY: username,
-                    API_SECURITY_PASSWORD_KEY: password,
-                    API_SECURITY_PROVIDER_KEY: "db",
-                }
-            ),
-            content_type="application/json",
-        )
-
-    def login(self, client, username, password):
-        # Login with default admin
-        rv = self._login(client, username, password)
-        try:
-            return json.loads(rv.data.decode("utf-8")).get("access_token")
-        except Exception:
-            return rv
-
-    def browser_login(self, client, username, password):
-        # Login with default admin
-        return client.post(
-            "/login/",
-            data=dict(username=username, password=password),
-            follow_redirects=True,
-        )
-
-    def browser_logout(self, client):
-        return client.get("/logout/")
 
     def test_auth_login(self):
         """
@@ -348,8 +351,41 @@ class FlaskTestCase(unittest.TestCase):
         uri = "api/v1/model1apirestrictedpermissions/"
         rv = self.auth_client_post(client, token, uri, item)
         eq_(rv.status_code, 401)
-        # Test unauthorized GET
+        # Test authorized GET
         uri = "api/v1/model1apirestrictedpermissions/1"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+
+    def test_auth_builtin_roles(self):
+        """
+            REST Api: Test auth readonly builtin role
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_READONLY, PASSWORD_READONLY)
+        # Test unauthorized DELETE
+        pk = 1
+        uri = "api/v1/model1api/{}".format(pk)
+        rv = self.auth_client_delete(client, token, uri)
+        eq_(rv.status_code, 401)
+
+        # Test unauthorized POST
+        item = dict(
+            field_string="test{}".format(MODEL1_DATA_SIZE + 1),
+            field_integer=MODEL1_DATA_SIZE + 1,
+            field_float=float(MODEL1_DATA_SIZE + 1),
+            field_date=None,
+        )
+        uri = "api/v1/model1api/"
+        rv = self.auth_client_post(client, token, uri, item)
+        eq_(rv.status_code, 401)
+
+        # Test authorized GET
+        uri = "api/v1/model1api/1"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+
+        # Test authorized INFO
+        uri = "api/v1/model1api/_info"
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
 
@@ -694,7 +730,6 @@ class FlaskTestCase(unittest.TestCase):
             "order_direction": "asc",
         }
         uri = "api/v1/model1api/?{}={}".format(API_URI_RIS_KEY, prison.dumps(arguments))
-        print("URI {}".format(uri))
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         eq_(len(data[API_RESULT_RES_KEY]), MAX_PAGE_SIZE)
@@ -1370,6 +1405,7 @@ class FlaskTestCase(unittest.TestCase):
         token = self.login(client, USERNAME, PASSWORD)
         uri = "api/v1/model1funcapi/"
         rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
         data = json.loads(rv.data.decode("utf-8"))
         # Tests count property
         eq_(data["count"], MODEL1_DATA_SIZE)
@@ -1382,6 +1418,27 @@ class FlaskTestCase(unittest.TestCase):
                 "{}.{}.{}.{}".format("test" + str(i - 1), i - 1, float(i - 1), None),
             )
 
+    def test_get_list_col_property(self):
+        """
+            REST Api: Test get list of objects with columns as property
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        uri = "api/v1/modelwithpropertyapi/"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        # Tests count property
+        eq_(data["count"], MODEL1_DATA_SIZE)
+        # Tests data result default page size
+        eq_(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        for i in range(1, self.model1api.page_size):
+            item = data[API_RESULT_RES_KEY][i - 1]
+            eq_(
+                item["custom_property"],
+                "{}_custom".format(str(i - 1)),
+            )
+
     def test_openapi(self):
         """
             REST Api: Test OpenAPI spec
@@ -1391,3 +1448,160 @@ class FlaskTestCase(unittest.TestCase):
         uri = "api/v1/_openapi"
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
+
+    def test_permission_override(self):
+        """
+            REST Api: Test permission name override
+        """
+        role = self.appbuilder.sm.add_role("Test")
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_access",
+            "api"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm)
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+
+        client = self.app.test_client()
+        token = self.login(client, "test", "test")
+        uri = "api/v1/model1permoverride/"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        uri = "api/v1/model1permoverride/_info"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        uri = "api/v1/model1permoverride/1"
+        rv = self.auth_client_delete(client, token, uri)
+        eq_(rv.status_code, 200)
+
+    def test_permission_converge_compress(self):
+        """
+            REST Api: Test permission name converge compress
+        """
+        from flask_appbuilder import ModelRestApi
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+        class Model1PermConverge(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            class_permission_name = 'api2'
+            previous_class_permission_name = 'Model1Api'
+            method_permission_name = {
+                "get_list": "access2",
+                "get": "access2",
+                "put": "access2",
+                "post": "access2",
+                "delete": "access2",
+                "info": "access2"
+            }
+
+        self.appbuilder.add_api(Model1PermConverge)
+        role = self.appbuilder.sm.add_role("Test")
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_get",
+            "Model1Api"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm)
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+        # Remove previous class, Hack to test code change
+        for i, baseview in enumerate(self.appbuilder.baseviews):
+            if baseview.__class__.__name__ == "Model1Api":
+                break
+        self.appbuilder.baseviews.pop(i)
+        for i, baseview in enumerate(self.appbuilder.baseviews):
+            if baseview.__class__.__name__ == "Model1PermOverride":
+                break
+        self.appbuilder.baseviews.pop(i)
+
+        target_state_transitions = {
+            'add': {
+                ('Model1Api', 'can_get'): {('api2', 'can_access2')},
+                ('Model1Api', 'can_delete'): {('api2', 'can_access2')},
+                ('Model1Api', 'can_info'): {('api2', 'can_access2')},
+                ('Model1Api', 'can_put'): {('api2', 'can_access2')},
+                ('Model1Api', 'can_post'): {('api2', 'can_access2')}
+            },
+            'del_role_pvm': {
+                ('Model1Api', 'can_put'),
+                ('Model1Api', 'can_delete'),
+                ('Model1Api', 'can_get'),
+                ('Model1Api', 'can_info'),
+                ('Model1Api', 'can_post')
+            },
+            'del_views': {'Model1Api'},
+            'del_perms': set()
+        }
+        state_transitions = self.appbuilder.security_converge()
+        eq_(state_transitions, target_state_transitions)
+        role = self.appbuilder.sm.find_role("Test")
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_access2",
+            "api2"
+        )
+        assert pvm in role.permissions
+        eq_(len(role.permissions), 1)
+
+    def test_permission_converge_expand(self):
+        """
+            REST Api: Test permission name converge expand
+        """
+        from flask_appbuilder import ModelRestApi
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+        class Model1PermConverge(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            class_permission_name = 'Model1PermOverride'
+            previous_class_permission_name = 'api'
+            method_permission_name = {
+                "get_list": "get",
+                "get": "get",
+                "put": "put",
+                "post": "post",
+                "delete": "delete",
+                "info": "info"
+            }
+            previous_method_permission_name = {
+                "get_list": "access",
+                "get": "access",
+                "put": "access",
+                "post": "access",
+                "delete": "access",
+                "info": "access"
+            }
+
+        self.appbuilder.add_api(Model1PermConverge)
+        role = self.appbuilder.sm.add_role("Test")
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_access",
+            "api"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm)
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+        # Remove previous class, Hack to test code change
+        for i, baseview in enumerate(self.appbuilder.baseviews):
+            if baseview.__class__.__name__ == "Model1PermOverride":
+                break
+        self.appbuilder.baseviews.pop(i)
+
+        target_state_transitions = {
+            'add': {
+                ('api', 'can_access'): {
+                    ('Model1PermOverride', 'can_get'),
+                    ('Model1PermOverride', 'can_post'),
+                    ('Model1PermOverride', 'can_put'),
+                    ('Model1PermOverride', 'can_delete'),
+                    ('Model1PermOverride', 'can_info')
+                }
+            },
+            'del_role_pvm': {('api', 'can_access')},
+            'del_views': {'api'},
+            'del_perms': {'can_access'}
+        }
+        state_transitions = self.appbuilder.security_converge()
+        eq_(state_transitions, target_state_transitions)
+        role = self.appbuilder.sm.find_role("Test")
+        eq_(len(role.permissions), 5)
