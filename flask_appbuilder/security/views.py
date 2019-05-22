@@ -817,15 +817,6 @@ class AuthCASView(AuthView):
 
         return redirect(redirect_url)
 
-    # TODO: add support Single-Logout callback
-    @expose('/cas/callback', methods=['POST'])
-    def callback(self):
-        """
-        Read PGT and PGTIOU sent by CAS
-        """
-        if 'logoutRequest' in request.args:
-            pass
-
     def validate(self, ticket):
         """Verifies CAS ticket and get CAS userinfo"""
         cas_username_session_key = self.appbuilder.sm.cas_username_session_key
