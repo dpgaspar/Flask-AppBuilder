@@ -15,13 +15,14 @@ Use config.py to configure the following parameters. By default it will use SQLL
 +-----------------------------------+--------------------------------------------+-----------+
 | MONGODB_SETTINGS                  | DB connection string (flask-mongoengine)   |   Cond.   |
 +-----------------------------------+--------------------------------------------+-----------+
-| AUTH_TYPE = 0 | 1 | 2 | 3 | 4     | This is the authentication type            |   Yes     |
+| AUTH_TYPE = 0 | 1 | 2 | 3 | 4 | 5 | This is the authentication type            |   Yes     |
 |           or                      |  - 0 = Open ID                             |           |
 | AUTH_TYPE = AUTH_OID, AUTH_DB,    |  - 1 = Database style (user/password)      |           |
 |            AUTH_LDAP, AUTH_REMOTE |  - 2 = LDAP, use AUTH_LDAP_SERVER also     |           |
-|            AUTH_OAUTH             |  - 3 = uses web server environ var         |           |
+|            AUTH_OAUTH, AUTH_CAS   |  - 3 = uses web server environ var         |           |
 |                                   |        REMOTE_USER                         |           |
 |                                   |  - 4 = USE ONE OR MANY OAUTH PROVIDERS     |           |
+|                                   |  - 5 = CAS, Support protocols(CAS, SAML)   |           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_USER_REGISTRATION =          | Set to True to enable user self            |   No      |
 | True|False                        | registration                               |           |
@@ -156,6 +157,39 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | AUTH_LDAP_USERNAME_FORMAT="format-%s".     |           |
 |                                   |                                            |           |
 |                                   | It authenticates with "format-userexample".|           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_CAS_SERVER                   | define your cas server when AUTH_TYPE=5    |   Cond.   |
+|                                   | example:                                   |           |
+|                                   |                                            |           |
+|                                   | AUTH_TYPE = 5                              |           |
+|                                   |                                            |           |
+|                                   | AUTH_CAS_SERVER = "http://cas.server.com"  |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_CAS_VERSION = '1', '2', '3', | define your CAS protocol version           |   No      |
+|                   'CAS_2_SAML_1_0'| when AUTH_TYPE=5.                          |           |
+|                                   | Default is '3'.                            |           |
+|                                   |                                            |           |
+|                                   |  - '1' = CAS 1.0                           |           |
+|                                   |  - '2' = CAS 2.0                           |           |
+|                                   |  - '3' = CAS 3.0                           |           |
+|                                   |  - 'CAS_2_SAML_1_0' = SAML                 |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_CAS_TOKEN_SESSION_KEY        | define the session key to store CAS ticket.|   No      |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_CAS_USERNAME_SESSION_KEY     | define the session key to store username.  |   No      |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_CAS_ATTRIBUTES_SESSION_KEY   | define the session key to store CAS        |   No      |
+|                                   | attributes                                 |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_CAS_AFTER_LOGOUT             | When logging out of CAS, it will redirect  |   No      |
+|                                   | to AUTH_CAS_AFTER_LOGOUT.                  |           |
+|                                   | It can be relative or absolute url         |           |
++-----------------------------------+--------------------------------------------+-----------+
+| AUTH_CAS_EXTRA_LOGIN_PARAMS       | Extra URL parameters to add to the login   |   No      |
+|                                   | URL when redirecting the user.             |           |
+|                                   | example:                                   |           |
+|                                   |                                            |           |
+|                                   | AUTH_CAS_EXTRA_LOGIN_PARAMS={'renew': true}|           |
 +-----------------------------------+--------------------------------------------+-----------+
 | AUTH_ROLE_ADMIN                   | Configure the name of the admin role.      |   No      |
 +-----------------------------------+--------------------------------------------+-----------+

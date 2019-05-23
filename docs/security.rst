@@ -13,6 +13,8 @@ You have four types of authentication methods
        It's the web server responsibility to authenticate the user, useful for intranet sites, when the server (Apache, Nginx)
        is configured to use kerberos, no need for the user to login with username and password on F.A.B.
 :OAUTH: Authentication using OAUTH (v1 or v2). You need to install flask-oauthlib.
+:CAS: Authentication using CAS (suport protocols 1.0, 2.0, 3.0, SAML). You need to install python-cas.
+      It is  True SSO(Single Sign-On).
 
 Configure the authentication type on config.py, take a look at :doc:`config`
 
@@ -319,7 +321,7 @@ Authentication Methods
 ----------------------
 
 We are now looking at the authentication methods, and how you can configure them and customize them.
-The framework has 5 authentication methods and you choose one of them, you configure the method to be used
+The framework has 6 authentication methods and you choose one of them, you configure the method to be used
 on the **config.py** (when using the create-app, or following the proposed app structure). First the
 configuration imports the constants for the authentication methods::
 
@@ -328,7 +330,8 @@ configuration imports the constants for the authentication methods::
         AUTH_LDAP,
         AUTH_OAUTH,
         AUTH_OID,
-        AUTH_REMOTE_USER
+        AUTH_REMOTE_USER,
+        AUTH_CAS
     )
 
 Next you will use the **AUTH_TYPE** key to choose the type::
@@ -495,6 +498,36 @@ this provider with, **response** is the response.
 
 Take a look at the `example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/oauth>`_
 
+Authentication: CAS
+--------------------
+
+True SSO can be easily implemented with CAS, The method supporting protocols such as CAS 1.0, CAS 2.0, CAS 3.0, SAML. The protocols can be refered to `CAS Protocol Overview <https://apereo.github.io/cas/6.0.x/protocol/Protocol-Overview.html>`_.
+ALL configuration is set on **config.py**::
+
+    AUTH_TYPE = AUTH_CAS
+    AUTH_CAS_SERVER = 'https://casserver.herokuapp.com/cas/'
+    AUTH_CAS_AFTER_LOGOUT = '/'
+    AUTH_CAS_VERSION = '3'
+
+
+Detailed descriptions of items related to CAS configuration are as follows:
+
+:AUTH_CAS_SERVER: It's required when AUTH_TYPE=True. It MUST BE the root url of the cas server.
+
+:AUTH_CAS_VERSION: Default is '3'. It can be '1', '2', '3', 'CAS_2_SAML_1_0', represent protocols of **CAS 1.0**, **CAS 2.0**, **CAS 3.0**, **SAML** .
+
+:AUTH_CAS_TOKEN_SESSION_KEY: Default is '_CAS_TOKEN', session key to store CAS ticket.
+
+:AUTH_CAS_USERNAME_SESSION_KEY: Default is 'CAS_USERNAME', session key to store username.
+ 
+:AUTH_CAS_ATTRIBUTES_SESSION_KEY: Default is 'CAS_ATTRIBUTES', session key to store CAS attributes.
+
+:AUTH_CAS_AFTER_LOGOUT: Default is '/', When logging out of CAS, it will redirect to AUTH_CAS_AFTER_LOGOUT. If AUTH_CAS_AFTER_LOGOUT=None, the CAS will not redirect and stay on logout page of CAS.
+
+:AUTH_CAS_EXTRA_LOGIN_PARAMS: Default is {}.  Extra URL parameters to add to the login URL when redirecting the user. Refer:`CAS /login <https://apereo.github.io/cas/6.0.x/protocol/CAS-Protocol-Specification.html#21-login-as-credential-requestor>`_.
+
+Take a look at the `Cas example <https://github.com/dpgaspar/Flask-AppBuilder/tree/master/examples/cas>`_
+
 Your Custom Security
 --------------------
 
@@ -570,6 +603,7 @@ If you're using:
 :AUTH_REMOTE_USER: Extend UserRemoteUserModelView
 :AUTH_OID: Extend UserOIDModelView
 :AUTH_OAUTH: Extend UserOAuthModelView
+:AUTH_CAS: Extend UserCASModelView
 
 So using AUTH_DB::
 
@@ -645,6 +679,7 @@ Note that this is for AUTH_DB, so if you're using:
 :AUTH_LDAP: Override userldapmodelview
 :AUTH_REMOTE_USER: Override userremoteusermodelview
 :AUTH_OID: Override useroidmodelview
+:AUTH_CAS: Override userCASmodelview
 
 Finally (as shown on the previous example) tell F.A.B. to use your SecurityManager class, so when initializing
 **AppBuilder** (on __init__.py)::
