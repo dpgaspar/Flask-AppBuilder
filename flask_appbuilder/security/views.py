@@ -771,17 +771,15 @@ class AuthCASView(AuthView):
         super(AuthCASView, self).__init__()
 
     def _get_service_url(self):
-        redirect_url_config = self.appbuilder.sm.cas_url_redirect_route
-        return redirect_url_config if redirect_url_config is not None \
-            else url_for('%s.%s' % (self.endpoint, 'login'), _external=True)
+        return url_for('%s.%s' % (self.endpoint, 'login'), _external=True)
 
     def _get_cas_client(self, service_url):
-        server_url = self.appbuilder.sm.cas_server
+        server_url = self.appbuilder.sm.auth_cas_server
         return CASClient(
             service_url=service_url,
-            version=self.appbuilder.sm.cas_version,
+            version=self.appbuilder.sm.auth_cas_version,
             server_url=server_url,
-            extra_login_params=self.appbuilder.sm.cas_extra_login_params
+            extra_login_params=self.appbuilder.sm.auth_cas_extra_login_params
         )
 
     @expose('/login/')
@@ -790,17 +788,17 @@ class AuthCASView(AuthView):
             log.debug("Already authenticated {0}".format(g.user))
             return redirect(self.appbuilder.get_url_for_index)
 
-        cas_token_session_key = self.appbuilder.sm.cas_token_session_key
+        auth_cas_token_session_key = self.appbuilder.sm.auth_cas_token_session_key
 
         service_url = self._get_service_url()
         client = self._get_cas_client(service_url)
         redirect_url = client.get_login_url()
 
         if 'ticket' in request.args:
-            session[cas_token_session_key] = request.args['ticket']
+            session[auth_cas_token_session_key] = request.args['ticket']
 
-        if cas_token_session_key in session:
-            userinfo = self.validate(session[cas_token_session_key])
+        if auth_cas_token_session_key in session:
+            userinfo = self.validate(session[auth_cas_token_session_key])
             if userinfo is not None:
                 user = self.appbuilder.sm.auth_user_cas(userinfo)
                 if user is None:
@@ -810,7 +808,7 @@ class AuthCASView(AuthView):
                     login_user(user)
                     redirect_url = self.appbuilder.get_url_for_index
             else:
-                del session[cas_token_session_key]
+                del session[auth_cas_token_session_key]
 
         log.debug('Redirecting to: {0}'.format(redirect_url))
 
@@ -818,23 +816,24 @@ class AuthCASView(AuthView):
 
     @expose('/logout/')
     def logout(self):
-        cas_token_session_key = self.appbuilder.sm.cas_token_session_key
-        cas_username_session_key = self.appbuilder.sm.cas_username_session_key
-        cas_attributes_session_key = self.appbuilder.sm.cas_attributes_session_key
-        cas_after_logout = self.appbuilder.sm.cas_after_logout
+        auth_cas_token_session_key = self.appbuilder.sm.auth_cas_token_session_key
+        auth_cas_username_session_key = self.appbuilder.sm.auth_cas_username_session_key
+        auth_cas_attributes_session_key = self.appbuilder.sm\
+                                                         .auth_cas_attributes_session_key
+        auth_cas_after_logout = self.appbuilder.sm.auth_cas_after_logout
 
-        if cas_token_session_key in session:
-            del session[cas_token_session_key]
+        if auth_cas_token_session_key in session:
+            del session[auth_cas_token_session_key]
 
-        if cas_username_session_key in session:
-            del session[cas_username_session_key]
+        if auth_cas_username_session_key in session:
+            del session[auth_cas_username_session_key]
 
-        if cas_attributes_session_key in session:
-            del session[cas_attributes_session_key]
+        if auth_cas_attributes_session_key in session:
+            del session[auth_cas_attributes_session_key]
 
         service_url = self._get_service_url()
         client = self._get_cas_client(service_url)
-        redirect_url = client.get_logout_url(cas_after_logout)
+        redirect_url = client.get_logout_url(auth_cas_after_logout)
         logout_user()
         log.debug('Redirecting to: '.format(redirect_url))
 
@@ -842,8 +841,9 @@ class AuthCASView(AuthView):
 
     def validate(self, ticket):
         """Verifies CAS ticket and get CAS userinfo"""
-        cas_username_session_key = self.appbuilder.sm.cas_username_session_key
-        cas_attributes_session_key = self.appbuilder.sm.cas_attributes_session_key
+        auth_cas_username_session_key = self.appbuilder.sm.auth_cas_username_session_key
+        auth_cas_attributes_session_key = self.appbuilder.sm\
+                                                         .auth_cas_attributes_session_key
 
         log.debug("validating token {0}".format(ticket))
         service_url = self._get_service_url()
@@ -851,8 +851,8 @@ class AuthCASView(AuthView):
         username, attributes, _ = client.verify_ticket(ticket)
 
         if username:
-            session[cas_username_session_key] = username
-            session[cas_attributes_session_key] = attributes
+            session[auth_cas_username_session_key] = username
+            session[auth_cas_attributes_session_key] = attributes
             userinfo = {
                 'username': username,
                 'attributes': attributes

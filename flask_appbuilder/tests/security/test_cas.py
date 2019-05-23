@@ -14,7 +14,7 @@ class CASTestCase(unittest.TestCase):
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         self.app.config['SECRET_KEY'] = 'thisismyscretkey'
         self.app.config['AUTH_TYPE'] = AUTH_CAS
-        self.app.config['CAS_SERVER'] = 'http://cas.server.com'
+        self.app.config['AUTH_CAS_SERVER'] = 'http://cas.server.com'
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -63,7 +63,7 @@ class CASTestCase(unittest.TestCase):
         ticket = 'ticket-cas'
         with self.app.test_client() as client:
             with client.session_transaction() as s:
-                s[self.appbuilder.sm.cas_token_session_key] = ticket
+                s[self.appbuilder.sm.auth_cas_token_session_key] = ticket
             rv = client.get('/login/')
             self.assertEqual(rv.status_code, 403)
 
@@ -88,7 +88,7 @@ class CASTestCase(unittest.TestCase):
                 rv.headers['Location'],
                 'http://localhost/')
             self.assertEqual(
-                session.get(self.appbuilder.sm.cas_token_session_key),
+                session.get(self.appbuilder.sm.auth_cas_token_session_key),
                 ticket)
 
     @patch('flask_appbuilder.security.views.AuthCASView.validate', return_value={
@@ -120,7 +120,7 @@ class CASTestCase(unittest.TestCase):
                 'http://cas.server.com/login?service=http%3A%2F%2Flocalhost%2Flogin%2F')
 
     def test_logout(self):
-        self.app.config['CAS_AFTER_LOGOUT'] = 'http://localhost:5000'
+        self.app.config['AUTH_CAS_AFTER_LOGOUT'] = 'http://localhost:5000'
         with self.app.test_client() as client:
             rv = client.get('/logout/')
             self.assertEqual(rv.status_code, 302)
@@ -128,9 +128,11 @@ class CASTestCase(unittest.TestCase):
                 rv.headers['Location'],
                 'http://cas.server.com/logout?service=http%3A%2F%2Flocalhost%3A5000'
             )
-            self.assertTrue(self.appbuilder.sm.cas_token_session_key not in session)
-            self.assertTrue(self.appbuilder.sm.cas_username_session_key not in session)
-            self.assertTrue(self.appbuilder.sm.cas_attributes_session_key not in session)
+            self.assertTrue(self.appbuilder.sm.auth_cas_token_session_key not in session)
+            self.assertTrue(
+                self.appbuilder.sm.auth_cas_username_session_key not in session)
+            self.assertTrue(
+                self.appbuilder.sm.auth_cas_attributes_session_key not in session)
 
     @patch('cas.CASClientV2.verify_ticket', return_value=(
         'casuser',
@@ -152,7 +154,7 @@ class CASTestCase(unittest.TestCase):
                 rv.headers['Location'],
                 'http://localhost/')
             self.assertEqual(
-                session.get(self.appbuilder.sm.cas_token_session_key),
+                session.get(self.appbuilder.sm.auth_cas_token_session_key),
                 ticket)
 
     @patch('cas.CASClientV2.verify_ticket', return_value=(None, None, None))
@@ -165,4 +167,4 @@ class CASTestCase(unittest.TestCase):
                 rv.headers['Location'],
                 'http://cas.server.com/login?service=http%3A%2F%2Flocalhost%2Flogin%2F')
             self.assertTrue(
-                self.appbuilder.sm.cas_token_session_key not in session)
+                self.appbuilder.sm.auth_cas_token_session_key not in session)

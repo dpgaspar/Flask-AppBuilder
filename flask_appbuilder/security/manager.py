@@ -254,16 +254,17 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault("AUTH_LDAP_EMAIL_FIELD", "mail")
 
         if self.auth_type == AUTH_CAS:
-            if 'CAS_SERVER' not in app.config:
+            if 'AUTH_CAS_SERVER' not in app.config:
                 raise Exception(
-                    "No CAS_SERVER defined on config with AUTH_CAS authentication type.")
-            app.config.setdefault('CAS_TOKEN_SESSION_KEY', '_CAS_TOKEN')
-            app.config.setdefault('CAS_USERNAME_SESSION_KEY', 'CAS_USERNAME')
-            app.config.setdefault('CAS_ATTRIBUTES_SESSION_KEY', 'CAS_ATTRIBUTES')
-            app.config.setdefault('CAS_AFTER_LOGOUT', None)
-            app.config.setdefault('CAS_URL_REDIRECT_ROUTE', None)
-            app.config.setdefault('CAS_VERSION', '3')
-            app.config.setdefault('CAS_EXTRA_LOGIN_PARAMS', {})
+                    "No AUTH_CAS_SERVER defined on config with AUTH_CAS \
+                    authentication type.")
+            app.config.setdefault('AUTH_CAS_TOKEN_SESSION_KEY', '_CAS_TOKEN')
+            app.config.setdefault('AUTH_CAS_USERNAME_SESSION_KEY', 'CAS_USERNAME')
+            app.config.setdefault('AUTH_CAS_ATTRIBUTES_SESSION_KEY', 'CAS_ATTRIBUTES')
+            app.config.setdefault('AUTH_CAS_AFTER_LOGOUT', None)
+            app.config.setdefault('AUTH_CAS_URL_REDIRECT_ROUTE', None)
+            app.config.setdefault('AUTH_CAS_VERSION', '3')
+            app.config.setdefault('AUTH_CAS_EXTRA_LOGIN_PARAMS', {})
         if self.auth_type == AUTH_OID:
             self.oid = OpenID(app)
         if self.auth_type == AUTH_OAUTH:
@@ -441,37 +442,32 @@ class BaseSecurityManager(AbstractSecurityManager):
         return self.appbuilder.get_app.config["OAUTH_PROVIDERS"]
 
     @property
-    def cas_server(self):
-        return self.appbuilder.get_app.config['CAS_SERVER']
+    def auth_cas_server(self):
+        return self.appbuilder.get_app.config['AUTH_CAS_SERVER']
 
     @property
-    def cas_version(self):
-        return self.appbuilder.get_app.config['CAS_VERSION']
+    def auth_cas_version(self):
+        return self.appbuilder.get_app.config['AUTH_CAS_VERSION']
 
     @property
-    def cas_token_session_key(self):
-        return self.appbuilder.get_app.config['CAS_TOKEN_SESSION_KEY']
+    def auth_cas_token_session_key(self):
+        return self.appbuilder.get_app.config['AUTH_CAS_TOKEN_SESSION_KEY']
 
     @property
-    def cas_username_session_key(self):
-        return self.appbuilder.get_app.config['CAS_USERNAME_SESSION_KEY']
+    def auth_cas_username_session_key(self):
+        return self.appbuilder.get_app.config['AUTH_CAS_USERNAME_SESSION_KEY']
 
     @property
-    def cas_attributes_session_key(self):
-        return self.appbuilder.get_app.config['CAS_ATTRIBUTES_SESSION_KEY']
+    def auth_cas_attributes_session_key(self):
+        return self.appbuilder.get_app.config['AUTH_CAS_ATTRIBUTES_SESSION_KEY']
 
     @property
-    def cas_after_logout(self):
-        return self.appbuilder.get_app.config['CAS_AFTER_LOGOUT']
+    def auth_cas_after_logout(self):
+        return self.appbuilder.get_app.config['AUTH_CAS_AFTER_LOGOUT']
 
     @property
-    def cas_extra_login_params(self):
-        return self.appbuilder.get_app.config['CAS_EXTRA_LOGIN_PARAMS']
-
-    # Test only to use fiddler to intercept redirect URL for testing purpose
-    @property
-    def cas_url_redirect_route(self):
-        return self.appbuilder.get_app.config['CAS_URL_REDIRECT_ROUTE']
+    def auth_cas_extra_login_params(self):
+        return self.appbuilder.get_app.config['AUTH_CAS_EXTRA_LOGIN_PARAMS']
 
     def oauth_user_info_getter(self, f):
         """
