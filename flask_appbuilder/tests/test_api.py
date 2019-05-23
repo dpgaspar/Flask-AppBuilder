@@ -95,6 +95,8 @@ class APITestCase(FABTestCase):
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.models.sqla.interface import SQLAInterface
         from flask_appbuilder import ModelRestApi
+        from sqlalchemy.engine import Engine
+        from sqlalchemy import event
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
@@ -109,6 +111,13 @@ class APITestCase(FABTestCase):
                 [".*", "can_info"]
             ]
         }
+
+        @event.listens_for(Engine, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            # Will force sqllite contraint foreign keys
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -1055,10 +1064,10 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME, PASSWORD)
 
         pk = 2
-        uri = "api/v1/model1api/{}".format(pk)
+        uri = "api/v1/model2api/{}".format(pk)
         rv = self.auth_client_delete(client, token, uri)
         eq_(rv.status_code, 200)
-        model = self.db.session.query(Model1).get(pk)
+        model = self.db.session.query(Model2).get(pk)
         eq_(model, None)
 
     def test_delete_item_not_found(self):
@@ -1449,10 +1458,28 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
 
-    def test_permission_override(self):
+    def test_class_method_permission_override(self):
         """
-            REST Api: Test permission name override
+            REST Api: Test class method permission name override
         """
+        from flask_appbuilder import ModelRestApi
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+        class Model2PermOverride1(ModelRestApi):
+            datamodel = SQLAInterface(Model2)
+            class_permission_name = 'api'
+            method_permission_name = {
+                "get_list": "access",
+                "get": "access",
+                "put": "access",
+                "post": "access",
+                "delete": "access",
+                "info": "access"
+            }
+
+        self.model2permoverride1 = Model2PermOverride1
+        self.appbuilder.add_api(Model2PermOverride1)
+
         role = self.appbuilder.sm.add_role("Test")
         pvm = self.appbuilder.sm.find_permission_view_menu(
             "can_access",
@@ -1465,15 +1492,91 @@ class APITestCase(FABTestCase):
 
         client = self.app.test_client()
         token = self.login(client, "test", "test")
-        uri = "api/v1/model1permoverride/"
+        uri = "api/v1/model2permoverride1/"
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
-        uri = "api/v1/model1permoverride/_info"
+        uri = "api/v1/model2permoverride1/_info"
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
-        uri = "api/v1/model1permoverride/1"
+        uri = "api/v1/model2permoverride1/1"
         rv = self.auth_client_delete(client, token, uri)
         eq_(rv.status_code, 200)
+
+    def test_method_permission_override(self):
+        """
+            REST Api: Test method permission name override
+        """
+        from flask_appbuilder import ModelRestApi
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+        class Model2PermOverride2(ModelRestApi):
+            datamodel = SQLAInterface(Model2)
+            method_permission_name = {
+                "get_list": "read",
+                "get": "read",
+                "put": "write",
+                "post": "write",
+                "delete": "write",
+                "info": "read"
+            }
+
+        self.model2permoverride2 = Model2PermOverride2
+        self.appbuilder.add_api(Model2PermOverride2)
+
+        role = self.appbuilder.sm.add_role("Test")
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_read",
+            "Model2PermOverride2"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm)
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+
+        client = self.app.test_client()
+        token = self.login(client, "test", "test")
+        uri = "api/v1/model2permoverride2/"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        uri = "api/v1/model2permoverride2/_info"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        uri = "api/v1/model2permoverride2/1"
+        rv = self.auth_client_delete(client, token, uri)
+        eq_(rv.status_code, 401)
+
+    def test_base_permission_override(self):
+        """
+            REST Api: Test base perms with permission name override
+        """
+        from flask_appbuilder import ModelRestApi
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+        class Model2PermOverride3(ModelRestApi):
+            datamodel = SQLAInterface(Model2)
+            method_permission_name = {
+                "get_list": "read",
+                "get": "read",
+                "put": "write",
+                "post": "write",
+                "delete": "write",
+                "info": "read"
+            }
+            base_permissions = ['can_write']
+
+        self.model2permoverride3 = Model2PermOverride3
+        self.appbuilder.add_api(Model2PermOverride3)
+
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_write",
+            "Model2PermOverride3"
+        )
+        eq_(pvm.permission.name, 'can_write')
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_read",
+            "Model2PermOverride3"
+        )
+        eq_(pvm, None)
 
     def test_permission_converge_compress(self):
         """

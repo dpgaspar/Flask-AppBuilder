@@ -1,11 +1,4 @@
 class ActionItem(object):
-    name = ""
-    text = ""
-    confirmation = ""
-    icon = ""
-    multiple = True
-    func = None
-
     def __init__(self, name, text, confirmation, icon, multiple, single, func):
         self.name = name
         self.text = text or name

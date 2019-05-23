@@ -1,4 +1,6 @@
-from flask import request, url_for
+from flask import current_app, request, url_for
+
+from .const import PERMISSION_PREFIX
 
 
 def app_template_filter(filter_name=""):
@@ -126,6 +128,36 @@ class TemplateFilters(object):
     def is_menu_visible(self, item):
         return self.security_manager.has_access("menu_access", item.name)
 
+    @staticmethod
+    def find_views_by_name(view_name):
+        for view in current_app.appbuilder.baseviews:
+            if view.__class__.__name__ == view_name:
+                return view
+
     @app_template_filter("is_item_visible")
-    def is_item_visible(self, permission, item):
-        return self.security_manager.has_access(permission, item)
+    def is_item_visible(self, permission: str, item: str) -> bool:
+        """
+            Check if an item is visible on the template
+            this changed with permission mapping feature.
+            This is a best effort to deliver the feature
+            and not break compatibility
+
+            permission is:
+             - 'can_' + <METHOD_NAME>: On normal routes
+             - <METHOD_NAME>: when it's an action
+
+        """
+        _view = self.find_views_by_name(item)
+        item = _view.class_permission_name
+
+        if PERMISSION_PREFIX in permission:
+            method = permission.split(PERMISSION_PREFIX)[1]
+        else:
+            if hasattr(_view, 'actions') and _view.actions.get(permission):
+                permission_name = _view.get_action_permission_name(permission)
+                return self.security_manager.has_access(permission_name, item)
+            else:
+                method = permission
+        permission = _view.get_method_permission(method)
+        return self.security_manager.has_access(
+            PERMISSION_PREFIX + permission, item)
