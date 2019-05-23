@@ -1613,6 +1613,10 @@ class APITestCase(FABTestCase):
             if baseview.__class__.__name__ == "Model1Api":
                 break
         self.appbuilder.baseviews.pop(i)
+        for i, baseview in enumerate(self.appbuilder.baseviews):
+            if baseview.__class__.__name__ == "Model1PermOverride":
+                break
+        self.appbuilder.baseviews.pop(i)
 
         target_state_transitions = {
             'add': {
@@ -1649,20 +1653,6 @@ class APITestCase(FABTestCase):
         from flask_appbuilder import ModelRestApi
         from flask_appbuilder.models.sqla.interface import SQLAInterface
 
-        class Model2PermOverride1(ModelRestApi):
-            datamodel = SQLAInterface(Model2)
-            class_permission_name = 'api'
-            method_permission_name = {
-                "get_list": "access",
-                "get": "access",
-                "put": "access",
-                "post": "access",
-                "delete": "access",
-                "info": "access"
-            }
-
-        self.appbuilder.add_api(Model2PermOverride1)
-
         class Model1PermConverge(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             class_permission_name = 'Model1PermOverride'
@@ -1694,10 +1684,9 @@ class APITestCase(FABTestCase):
         self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
         )
-
         # Remove previous class, Hack to test code change
         for i, baseview in enumerate(self.appbuilder.baseviews):
-            if baseview.__class__.__name__ == "Model2PermOverride1":
+            if baseview.__class__.__name__ == "Model1PermOverride":
                 break
         self.appbuilder.baseviews.pop(i)
 
