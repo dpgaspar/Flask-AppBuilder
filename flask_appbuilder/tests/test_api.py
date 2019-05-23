@@ -30,7 +30,7 @@ from flask_appbuilder.const import (
     API_URI_RIS_KEY
 )
 from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
-from nose.tools import eq_, ok_
+from nose.tools import eq_
 import prison
 
 from .base import FABTestCase
