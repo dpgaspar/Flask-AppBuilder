@@ -824,7 +824,7 @@ class AuthCASView(AuthView):
         auth_cas_after_logout = urllib.parse.urljoin(
             request.host_url,
             self.appbuilder.sm.auth_cas_after_logout
-        )
+        ) if self.appbuilder.sm.auth_cas_after_logout else None
 
         if auth_cas_token_session_key in session:
             del session[auth_cas_token_session_key]

@@ -261,8 +261,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault('AUTH_CAS_TOKEN_SESSION_KEY', '_CAS_TOKEN')
             app.config.setdefault('AUTH_CAS_USERNAME_SESSION_KEY', 'CAS_USERNAME')
             app.config.setdefault('AUTH_CAS_ATTRIBUTES_SESSION_KEY', 'CAS_ATTRIBUTES')
-            app.config.setdefault('AUTH_CAS_AFTER_LOGOUT', None)
-            app.config.setdefault('AUTH_CAS_URL_REDIRECT_ROUTE', None)
+            app.config.setdefault('AUTH_CAS_AFTER_LOGOUT', '/')
             app.config.setdefault('AUTH_CAS_VERSION', '3')
             app.config.setdefault('AUTH_CAS_EXTRA_LOGIN_PARAMS', {})
         if self.auth_type == AUTH_OID:
