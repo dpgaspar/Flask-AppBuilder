@@ -4,7 +4,6 @@ import logging
 import os
 import random
 import string
-import unittest
 
 from flask import redirect, request, session
 from flask_appbuilder import SQLA
