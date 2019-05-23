@@ -251,6 +251,10 @@ class BaseApi(object):
         Will allow flask-login cookie authorization on the API
         default is False.
     """
+    csrf_exempt = True
+    """
+        If using flask-wtf CSRFProtect exempt the API from check
+    """
     apispec_parameter_schemas = None
     """
         Set your custom Rison parameter schemas here so that
@@ -375,13 +379,18 @@ class BaseApi(object):
         self.appbuilder = appbuilder
         # If endpoint name is not provided, get it from the class name
         self.endpoint = endpoint or self.__class__.__name__
-        self.resource_name = self.resource_name or self.__class__.__name__
+        self.resource_name = self.resource_name or self.__class__.__name__.lower()
 
         if self.route_base is None:
             self.route_base = "/api/{}/{}".format(
                 self.version, self.resource_name.lower()
             )
         self.blueprint = Blueprint(self.endpoint, __name__, url_prefix=self.route_base)
+        # Exempt API from CSRF protect
+        if self.csrf_exempt:
+            csrf = self.appbuilder.app.extensions.get('csrf')
+            if csrf:
+                csrf.exempt(self.blueprint)
 
         self._register_urls()
         return self.blueprint

@@ -115,7 +115,11 @@ class SQLAInterface(BaseInterface):
                         Load(model_relation).load_only(column.split(".")[1])
                     )
                 else:
-                    if not self.is_relation(column) and not hasattr(
+                    # is a custom property method field?
+                    if hasattr(getattr(self.obj, column), "fget"):
+                        pass
+                    # is not a relation and not a function?
+                    elif not self.is_relation(column) and not hasattr(
                         getattr(self.obj, column), "__call__"
                     ):
                         _load_options.append(Load(self.obj).load_only(column))
