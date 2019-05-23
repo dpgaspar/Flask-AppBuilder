@@ -1,6 +1,7 @@
 import datetime
 import logging
 import re
+import urllib.parse
 
 from cas import CASClient
 from flask import (
@@ -820,7 +821,10 @@ class AuthCASView(AuthView):
         auth_cas_username_session_key = self.appbuilder.sm.auth_cas_username_session_key
         auth_cas_attributes_session_key = self.appbuilder.sm\
                                                          .auth_cas_attributes_session_key
-        auth_cas_after_logout = self.appbuilder.sm.auth_cas_after_logout
+        auth_cas_after_logout = urllib.parse.urljoin(
+            request.host_url,
+            self.appbuilder.sm.auth_cas_after_logout
+        )
 
         if auth_cas_token_session_key in session:
             del session[auth_cas_token_session_key]

@@ -134,6 +134,21 @@ class CASTestCase(unittest.TestCase):
             self.assertTrue(
                 self.appbuilder.sm.auth_cas_attributes_session_key not in session)
 
+    def test_logout_for_relative_path(self):
+        self.app.config['AUTH_CAS_AFTER_LOGOUT'] = '/login'
+        with self.app.test_client() as client:
+            rv = client.get('/logout/')
+            self.assertEqual(rv.status_code, 302)
+            self.assertEqual(
+                rv.headers['Location'],
+                'http://cas.server.com/logout?service=http%3A%2F%2Flocalhost%2Flogin'
+            )
+            self.assertTrue(self.appbuilder.sm.auth_cas_token_session_key not in session)
+            self.assertTrue(
+                self.appbuilder.sm.auth_cas_username_session_key not in session)
+            self.assertTrue(
+                self.appbuilder.sm.auth_cas_attributes_session_key not in session)
+
     @patch('cas.CASClientV2.verify_ticket', return_value=(
         'casuser',
         {'credentialType': 'UsernamePasswordCredential',
