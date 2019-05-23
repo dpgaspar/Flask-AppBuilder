@@ -30,7 +30,7 @@ from flask_appbuilder.const import (
     API_URI_RIS_KEY
 )
 from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
-from nose.tools import eq_
+from nose.tools import eq_, ok_
 import prison
 
 from .base import FABTestCase
@@ -105,6 +105,7 @@ class APITestCase(FABTestCase):
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
         self.app.config["WTF_CSRF_ENABLED"] = False
+        self.app.config["FAB_API_SWAGGER_UI"] = True
         self.app.config["FAB_ROLES"] = {
             "ReadOnly": [
                 [".*", "can_get"],
@@ -1456,6 +1457,16 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME, PASSWORD)
         uri = "api/v1/_openapi"
         rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+
+    def test_swagger_ui(self):
+        """
+            REST Api: Test Swagger UI
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME, PASSWORD)
+        uri = "swaggerview/v1"
+        rv = client.get(uri)
         eq_(rv.status_code, 200)
 
     def test_class_method_permission_override(self):
