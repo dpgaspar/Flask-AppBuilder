@@ -477,7 +477,7 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 400)
 
-        # Rison Schema validation
+        # Rison Schema validation required field
         arguments = {"numbers": 1}
         uri = "api/v1/base1api/test1?{}={}".format(
             API_URI_RIS_KEY, prison.dumps(arguments)
