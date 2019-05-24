@@ -139,9 +139,9 @@ class APITestCase(FABTestCase):
 
         class Base1Api(BaseApi):
             @expose('/test1')
-            @rison(rison_schema)
+            @protect()
             @safe
-            @protect
+            @rison(rison_schema)
             def test1(self, **kwargs):
                 return self.response(
                     200,
@@ -149,8 +149,8 @@ class APITestCase(FABTestCase):
                 )
 
             @expose('/test2')
+            @protect()
             @safe
-            @protect
             def test2(self, **kwargs):
                 raise Exception
 
