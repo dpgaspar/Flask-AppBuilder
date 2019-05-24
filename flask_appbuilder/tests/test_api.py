@@ -94,7 +94,9 @@ class APITestCase(FABTestCase):
         from flask import Flask
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.models.sqla.interface import SQLAInterface
-        from flask_appbuilder import ModelRestApi
+        from flask_appbuilder.api import (
+            BaseApi, ModelRestApi, protect, expose, rison, safe
+        )
         from sqlalchemy.engine import Engine
         from sqlalchemy import event
 
@@ -124,6 +126,35 @@ class APITestCase(FABTestCase):
         self.appbuilder = AppBuilder(self.app, self.db.session)
         # Create models and insert data
         insert_data(self.db.session, MODEL1_DATA_SIZE)
+
+        rison_schema = {
+            "type": "object",
+            "required": ["number"],
+            "properties": {
+                "number": {
+                    "type": "number"
+                }
+            }
+        }
+
+        class Base1Api(BaseApi):
+            @expose('/test1')
+            @rison(rison_schema)
+            @safe
+            @protect
+            def test1(self, **kwargs):
+                return self.response(
+                    200,
+                    message=f"{kwargs['rison']['number'] + 1}"
+                )
+
+            @expose('/test2')
+            @safe
+            @protect
+            def test2(self, **kwargs):
+                raise Exception
+
+        self.appbuilder.add_api(Base1Api)
 
         class Model1Api(ModelRestApi):
             datamodel = SQLAInterface(Model1)
@@ -415,6 +446,49 @@ class APITestCase(FABTestCase):
         eq_(rv.status_code, 400)
         data = json.loads(rv.data.decode("utf-8"))
         eq_(data, {"message": "Not a valid rison argument"})
+
+    def test_base_rison_schema(self):
+        """
+            REST Api: Test rison schema validation
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        arguments = {"number": 1}
+        uri = "api/v1/base1api/test1?{}={}".format(
+            API_URI_RIS_KEY, prison.dumps(arguments)
+        )
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(data, {"message": "2"})
+
+        # Rison Schema type validation
+        arguments = {"number": "1"}
+        uri = "api/v1/base1api/test1?{}={}".format(
+            API_URI_RIS_KEY, prison.dumps(arguments)
+        )
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 400)
+
+        # Rison Schema validation
+        arguments = {"numbers": 1}
+        uri = "api/v1/base1api/test1?{}={}".format(
+            API_URI_RIS_KEY, prison.dumps(arguments)
+        )
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 400)
+
+    def test_base_safe(self):
+        """
+            REST Api: Test safe decorator 500
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        uri = "api/v1/base1api/test2"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 500)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(data, {"message": "Fatal error"})
 
     def test_get_item(self):
         """
@@ -1087,6 +1161,20 @@ class APITestCase(FABTestCase):
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model2).get(pk)
         eq_(model, None)
+
+    def test_delete_item_integrity(self):
+        """
+            REST Api: Test delete item integrity
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        pk = 1
+        uri = "api/v1/model1api/{}".format(pk)
+        rv = self.auth_client_delete(client, token, uri)
+        eq_(rv.status_code, 422)
+        model = self.db.session.query(Model2).get(pk)
+        assert model
 
     def test_delete_item_not_found(self):
         """
