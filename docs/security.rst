@@ -21,7 +21,7 @@ The session is preserved and encrypted using Flask-Login, OpenID requires Flask-
 Role based
 ----------
 
-Each user has multiple roles, and a role holds permissions on views/API and menus,
+Each user may have multiple roles, and a role holds permissions on views/API and menus,
 so a user has permissions on views/API and menus.
 
 Roles can be user defined (backed by the backend) and builtin readonly. Builtin readonly roles
@@ -104,7 +104,7 @@ In the case of CRUD REST API:
 - can info
 
 These base permissions will be associated to your view or API, so if you create a view named ``MyModelView``
-you can assign to any role these permissions:
+you can assign to any role the following permissions:
 
 - can list on MyModelView
 - can show on MyModelView
@@ -113,7 +113,8 @@ you can assign to any role these permissions:
 - can delete on MyModelView
 - can download on MyModelView
 
-In case your developing a backend REST API subclassing ``ModelRestApi`` and create a class named ``MyApi``:
+In case your developing a backend REST API subclassing ``ModelRestApi`` with a class named ``MyApi`` will
+generate the following permissions:
 
 - can get on MyApi
 - can put on MyApi
@@ -121,8 +122,8 @@ In case your developing a backend REST API subclassing ``ModelRestApi`` and crea
 - can delete on MyApi
 - can info on MyApi
 
-If you extend your view with some exposed method via the @expose decorator and you want to protect it
-use the @has_access decorator::
+If you extend your view with some exposed method via the ``@expose`` decorator and you want to protect it
+use the ``@has_access`` decorator::
 
     class MyModelView(ModelView):
         datamodel = SQLAInterface(Group)
@@ -133,14 +134,14 @@ use the @has_access decorator::
             # do something
             pass
 
-The framework will create the following access based on your method's name:
+The framework will create the following access, based on your method's name:
 
 - can mymethod on MyModelView
 	
 You can aggregate some of your method's on a single permission, this can simplify the security configuration
-if there is no need for granular permissions on a group of methods, for this use @permission_name decorator.
+if there is no need for granular permissions on a group of methods, for this use ``@permission_name`` decorator.
 
-You can use the @permission_name to override the permission's name to whatever you like.
+You can use the ``@permission_name`` to override the permission's name to whatever you like.
 
 Take a look at :doc:`api`
 
@@ -168,6 +169,9 @@ The previous example will generate half the default permissions, by just creatin
 - can post on api
 - can delete on api
 - can info on api
+
+The ``class_permission_name`` property is available also on BaseViews and their children ``ModelView``,
+``MultipleView``, ``MasterDetailView``, ``FormView``, etc.
 
 You can also aggregate method permissions by using ``method_permission_name`` attribute.
 Use the following ``Dict`` structure::
@@ -233,19 +237,45 @@ about what were your last permissions, so that the security converge procedure k
             "info": "access"
         }
 
+An example for compressing permissions using MVC Model Views::
 
-Then run the following FAB cli command::
+    class OneView(ModelView):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "view"
+        method_permission_name = {
+            'add': 'write',
+            'delete': 'write',
+            'download': 'write',
+            'edit': 'write',
+            'list': 'read',
+            'muldelete': 'write',
+            'show': 'read',
+            'api': 'read',
+            'api_column_add': 'write',
+            'api_column_edit': 'write',
+            'api_create': 'write',
+            'api_delete': 'write',
+            'api_get': 'read',
+            'api_read': 'read',
+            'api_readvalues': 'read',
+            'api_update': 'write'
+        }
+
+Note that if your changing an already existing application, you need to migrate the old permission names to the new
+ones. Before doing that you should disable the boot automatic create/delete permissions,
+so set ``FAB_UPDATE_PERMS = False``. Then run the following FAB cli command::
 
     $ flask fab security-converge
 
 
 Security converge will migrate all your permissions from the previous names to the current names, and
 also change all your roles, so you can migrate smoothly to your new security naming. After converging
-you can delete all your ``previous_*`` attributes.
+you can delete all your ``previous_*`` attributes if you have set them.
 
 You can also migrate back by switching ``previous_*`` attributes to their target, ie switch
 ``previous_method_permission_name`` by ``method_permission_name`` and
-``previous_class_permission_name`` by ``class_permission_name``. Then run security converge will expand back all permissions
+``previous_class_permission_name`` by ``class_permission_name``.
+Then run security converge will expand back all permissions
 on all your Roles.
 
 :note: You should backup your production database before migrating your permissions. Also note that you

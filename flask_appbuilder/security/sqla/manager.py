@@ -285,7 +285,7 @@ class SecurityManager(BaseSecurityManager):
                 self.get_session.rollback()
         return perm
 
-    def del_permission(self, name):
+    def del_permission(self, name: str) -> bool:
         """
             Deletes a permission from the backend, model permission
 
@@ -293,13 +293,23 @@ class SecurityManager(BaseSecurityManager):
                 name of the permission: 'can_add','can_edit' etc...
         """
         perm = self.find_permission(name)
-        if perm:
-            try:
-                self.get_session.delete(perm)
-                self.get_session.commit()
-            except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
-                self.get_session.rollback()
+        if not perm:
+            log.warning(c.LOGMSG_WAR_SEC_DEL_PERMISSION.format(name))
+            return False
+        try:
+            pvms = self.get_session.query(self.permissionview_model).filter(
+                self.permissionview_model.permission == perm
+            ).all()
+            if pvms:
+                log.warning(c.LOGMSG_WAR_SEC_DEL_PERM_PVM.format(perm, pvms))
+                return False
+            self.get_session.delete(perm)
+            self.get_session.commit()
+            return True
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
+            self.get_session.rollback()
+            return False
 
     """
     ----------------------
@@ -335,7 +345,7 @@ class SecurityManager(BaseSecurityManager):
                 self.get_session.rollback()
         return view_menu
 
-    def del_view_menu(self, name):
+    def del_view_menu(self, name: str) -> bool:
         """
             Deletes a ViewMenu from the backend
 
@@ -343,14 +353,23 @@ class SecurityManager(BaseSecurityManager):
                 name of the ViewMenu
         """
         view_menu = self.find_view_menu(name)
-        if view_menu:
-            try:
-                self.get_session.delete(view_menu)
-                self.get_session.commit()
-            except Exception as e:
-                log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
-                self.get_session.rollback()
-
+        if not view_menu:
+            log.warning(c.LOGMSG_WAR_SEC_DEL_VIEWMENU.format(name))
+            return False
+        try:
+            pvms = self.get_session.query(self.permissionview_model).filter(
+                self.permissionview_model.view_menu == view_menu
+            ).all()
+            if pvms:
+                log.warning(c.LOGMSG_WAR_SEC_DEL_VIEWMENU_PVM.format(view_menu, pvms))
+                return False
+            self.get_session.delete(view_menu)
+            self.get_session.commit()
+            return True
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
+            self.get_session.rollback()
+            return False
     """
     ----------------------
      PERMISSION VIEW MENU
