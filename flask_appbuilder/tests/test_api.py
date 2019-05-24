@@ -1393,6 +1393,31 @@ class APITestCase(FABTestCase):
         data = json.loads(rv.data.decode("utf-8"))
         eq_(rv.status_code, 201)
 
+    def test_1_create_item_custom_schema(self):
+        """
+            REST Api: Test create item custom schema
+        """
+        from .sqla.models import Model1CustomSchema
+
+        class Model1ApiCustomSchema(self.model1api):
+            add_model_schema = Model1CustomSchema()
+
+        self.appbuilder.add_api(Model1ApiCustomSchema)
+
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        item = dict(
+            field_string="test{}".format(MODEL1_DATA_SIZE + 1),
+            field_integer=MODEL1_DATA_SIZE + 1,
+            field_float=float(MODEL1_DATA_SIZE + 1),
+            field_date=None,
+        )
+        uri = "api/v1/model1customvalidationapi/"
+        rv = self.auth_client_post(client, token, uri, item)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(rv.status_code, 422)
+        eq_(data, {"message": {"field_string": ["Name must start with an A"]}})
+
     def test_create_item_val_size(self):
         """
             REST Api: Test create validate size
