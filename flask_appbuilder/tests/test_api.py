@@ -264,6 +264,13 @@ class APITestCase(FABTestCase):
         self.model2api = Model2Api
         self.appbuilder.add_api(Model2Api)
 
+        class Model2DottedNotationApi(ModelRestApi):
+            datamodel = SQLAInterface(Model2)
+            list_columns = ["field_string", "group.field_string"]
+            show_columns = list_columns
+
+        self.appbuilder.add_api(Model2DottedNotationApi)
+
         class Model2ApiFilteredRelFields(ModelRestApi):
             datamodel = SQLAInterface(Model2)
             list_columns = ["group"]
@@ -547,6 +554,22 @@ class APITestCase(FABTestCase):
             eq_(data[API_LABEL_COLUMNS_RES_KEY], {"field_integer": "Field Integer"})
             eq_(rv.status_code, 200)
 
+    def test_get_item_dotted_notation(self):
+        """
+            REST Api: Test get item with dotted notation
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        i = 1
+        uri = "api/v1/model2dottednotationapi/{}".format(i)
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(
+            data[API_RESULT_RES_KEY],
+            {'field_string': 'test0', 'group': {'field_string': 'test0'}}
+        )
+        eq_(rv.status_code, 200)
+
     def test_get_item_select_meta_data(self):
         """
             REST Api: Test get item select meta data
@@ -688,6 +711,26 @@ class APITestCase(FABTestCase):
             },
         )
         eq_(rv.status_code, 200)
+
+    def test_1_get_list_dotted_notation(self):
+        """
+            REST Api: Test get list with dotted notation
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        rv = self.auth_client_get(client, token, "api/v1/model2dottednotationapi/")
+
+        data = json.loads(rv.data.decode("utf-8"))
+        # Tests count property
+        eq_(data["count"], MODEL1_DATA_SIZE)
+        # Tests data result default page size
+        eq_(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        i = 0
+        eq_(
+            data[API_RESULT_RES_KEY][i],
+            {'field_string': 'test0', 'group': {'field_string': 'test0'}}
+        )
 
     def test_get_list_order(self):
         """
@@ -1393,7 +1436,7 @@ class APITestCase(FABTestCase):
         data = json.loads(rv.data.decode("utf-8"))
         eq_(rv.status_code, 201)
 
-    def test_1_create_item_custom_schema(self):
+    def test_create_item_custom_schema(self):
         """
             REST Api: Test create item custom schema
         """
