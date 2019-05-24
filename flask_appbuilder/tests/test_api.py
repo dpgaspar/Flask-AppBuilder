@@ -399,6 +399,23 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
 
+    def test_base_rison_argument(self):
+        """
+            REST Api: Test not a valid rison argument
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        uri = "api/v1/model1api/?{}={}".format(API_URI_RIS_KEY, "(columns!(not_valid))")
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 400)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(data, {"message": "Not a valid rison argument"})
+        uri = "api/v1/model1api/1?{}={}".format(API_URI_RIS_KEY, "(columns!(not_valid))")
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 400)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(data, {"message": "Not a valid rison argument"})
+
     def test_get_item(self):
         """
             REST Api: Test get item
