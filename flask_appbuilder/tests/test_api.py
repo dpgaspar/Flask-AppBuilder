@@ -712,7 +712,7 @@ class APITestCase(FABTestCase):
         )
         eq_(rv.status_code, 200)
 
-    def test_1_get_list_dotted_notation(self):
+    def test_get_list_dotted_notation(self):
         """
             REST Api: Test get list with dotted notation
         """
@@ -730,6 +730,32 @@ class APITestCase(FABTestCase):
         eq_(
             data[API_RESULT_RES_KEY][i],
             {'field_string': 'test0', 'group': {'field_string': 'test0'}}
+        )
+
+    def test_get_list_dotted_order(self):
+        """
+            REST Api: Test get list and order dotted notation
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        arguments = {
+            "order_column": "group.field_string",
+            "order_direction": "desc"
+        }
+        uri = "api/v1/model2dottednotationapi/?{}={}".format(
+            API_URI_RIS_KEY, prison.dumps(arguments)
+        )
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        # Tests count property
+        eq_(data["count"], MODEL1_DATA_SIZE)
+        # Tests data result default page size
+        eq_(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        i = 0
+        eq_(
+            data[API_RESULT_RES_KEY][i],
+            {'field_string': 'test9', 'group': {'field_string': 'test9'}}
         )
 
     def test_get_list_order(self):
@@ -1407,6 +1433,26 @@ class APITestCase(FABTestCase):
         eq_(model.field_string, "test{}".format(MODEL1_DATA_SIZE + 1))
         eq_(model.field_integer, MODEL1_DATA_SIZE + 1)
         eq_(model.field_float, float(MODEL1_DATA_SIZE + 1))
+
+    def test_create_item_bad_request(self):
+        """
+            REST Api: Test create item with bad request
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        item = dict(
+            field_string="test{}".format(MODEL1_DATA_SIZE + 1),
+            field_integer=MODEL1_DATA_SIZE + 1,
+            field_float=float(MODEL1_DATA_SIZE + 1),
+            field_date=None,
+        )
+        uri = "api/v1/model1api/"
+        rv = client.post(
+            uri, data=item, headers={"Authorization": "Bearer {}".format(token)}
+        )
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(rv.status_code, 400)
+        eq_(data, {'message': 'Request is not JSON'})
 
     def test_create_item_custom_validation(self):
         """
