@@ -11,8 +11,8 @@ Flask App Builder
 .. image:: https://img.shields.io/badge/pyversions-3.6%2C3.7-blue.svg
         :target: https://www.python.org/
 
-.. image:: https://coveralls.io/repos/dpgaspar/Flask-AppBuilder/badge.png?branch=master
-        :target: https://coveralls.io/r/dpgaspar/Flask-AppBuilder
+.. image:: https://codecov.io/github/dpgaspar/Flask-AppBuilder/coverage.svg?branch=master
+        :target: https://codecov.io/github/dpgaspar/Flask-AppBuilder
 
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
