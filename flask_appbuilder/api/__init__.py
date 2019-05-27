@@ -1366,7 +1366,7 @@ class ModelRestApi(BaseModelApi):
     @safe
     @permission_name("put")
     def put(self, pk):
-        """POST item to Model
+        """PUT item to Model
         ---
         put:
           parameters:

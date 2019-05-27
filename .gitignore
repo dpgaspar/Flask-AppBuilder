@@ -1,4 +1,5 @@
 .coverage
+coverage.xml
 *.egg-info
 .eggs/
 *.pyc
