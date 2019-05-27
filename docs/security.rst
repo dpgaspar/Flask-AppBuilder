@@ -488,6 +488,19 @@ key is just the configuration for flask-oauthlib::
                 'request_token_url':None,
                 'access_token_url':'https://accounts.google.com/o/oauth2/token',
                 'authorize_url':'https://accounts.google.com/o/oauth2/auth'}
+        },
+        # NB: When using Github Enterprise - the base_url will become http(s)://<your_enterprise_domain>/api/v3
+        {'name':'github', 'icon':'fa-google', 'token_key':'access_token',
+            'remote_app': {
+                'consumer_key':'GITHUB_KEY',
+                'consumer_secret':'GITHUB SECRET',
+                'base_url':'https://api.github.com',
+                'request_token_params':{
+                  'scope': 'read:user,user:email'
+                },
+                'request_token_url':None,
+                'access_token_url':'https://GITHUB_DOMAIN/login/oauth/access_token',
+                'authorize_url':'https://GITHUB_DOMAIN/login/oauth/authorize'}
         }
     ]
 
