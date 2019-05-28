@@ -167,6 +167,10 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             field = EnumField(enum_class, dump_by=enum_dump_by, required=required)
             field.unique = datamodel.is_unique(column.data)
             return field
+        # is custom property method field?
+        if hasattr(getattr(_model, column.data), 'fget'):
+            return fields.Str(dump_only=True)
+        # is a normal model field not a function?
         if not hasattr(getattr(_model, column.data), '__call__'):
             field = field_for(_model, column.data)
             field.unique = datamodel.is_unique(column.data)

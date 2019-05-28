@@ -51,6 +51,7 @@ from ..const import (
     API_SHOW_TITLE_RES_KEY,
     API_SHOW_TITLE_RIS_KEY,
     API_URI_RIS_KEY,
+    PERMISSION_PREFIX,
 )
 from ..security.decorators import permission_name, protect
 
@@ -251,6 +252,10 @@ class BaseApi(object):
         Will allow flask-login cookie authorization on the API
         default is False.
     """
+    csrf_exempt = True
+    """
+        If using flask-wtf CSRFProtect exempt the API from check
+    """
     apispec_parameter_schemas = None
     """
         Set your custom Rison parameter schemas here so that
@@ -339,49 +344,58 @@ class BaseApi(object):
 
             Initialization of extra args
         """
+        # Init OpenAPI
         self._response_key_func_mappings = dict()
         self.apispec_parameter_schemas = self.apispec_parameter_schemas or dict()
         self._apispec_parameter_schemas = self._apispec_parameter_schemas or dict()
         self._apispec_parameter_schemas.update(self.apispec_parameter_schemas)
 
+        # Init class permission override attrs
         if not self.previous_class_permission_name and self.class_permission_name:
             self.previous_class_permission_name = self.__class__.__name__
         self.class_permission_name = (self.class_permission_name or
                                       self.__class__.__name__)
+
+        # Init previous permission override attrs
         is_collect_previous = False
         if not self.previous_method_permission_name and self.method_permission_name:
             self.previous_method_permission_name = dict()
             is_collect_previous = True
         self.method_permission_name = self.method_permission_name or dict()
 
+        # Collect base_permissions and infer previous permissions
+        is_add_base_permissions = False
         if self.base_permissions is None:
             self.base_permissions = set()
-            for attr_name in dir(self):
-                if hasattr(getattr(self, attr_name), "_permission_name"):
-                    _permission_name = self.method_permission_name.get(attr_name)
-                    if is_collect_previous:
-                        self.previous_method_permission_name[attr_name] = getattr(
-                            getattr(self, attr_name), "_permission_name"
-                        )
-                    if not _permission_name:
-                        _permission_name = getattr(
-                            getattr(self, attr_name), "_permission_name"
-                        )
-                    self.base_permissions.add("can_" + _permission_name)
-            self.base_permissions = list(self.base_permissions)
+            is_add_base_permissions = True
+        for attr_name in dir(self):
+            if hasattr(getattr(self, attr_name), "_permission_name"):
+                if is_collect_previous:
+                    self.previous_method_permission_name[attr_name] = getattr(
+                        getattr(self, attr_name), "_permission_name"
+                    )
+                _permission_name = self.get_method_permission(attr_name)
+                if is_add_base_permissions:
+                    self.base_permissions.add(PERMISSION_PREFIX + _permission_name)
+        self.base_permissions = list(self.base_permissions)
 
     def create_blueprint(self, appbuilder, endpoint=None, static_folder=None):
         # Store appbuilder instance
         self.appbuilder = appbuilder
         # If endpoint name is not provided, get it from the class name
         self.endpoint = endpoint or self.__class__.__name__
-        self.resource_name = self.resource_name or self.__class__.__name__
+        self.resource_name = self.resource_name or self.__class__.__name__.lower()
 
         if self.route_base is None:
             self.route_base = "/api/{}/{}".format(
                 self.version, self.resource_name.lower()
             )
         self.blueprint = Blueprint(self.endpoint, __name__, url_prefix=self.route_base)
+        # Exempt API from CSRF protect
+        if self.csrf_exempt:
+            csrf = self.appbuilder.app.extensions.get('csrf')
+            if csrf:
+                csrf.exempt(self.blueprint)
 
         self._register_urls()
         return self.blueprint
@@ -499,6 +513,16 @@ class BaseApi(object):
             Sets initialized inner views
         """
         pass
+
+    def get_method_permission(self, method_name: str) -> str:
+        """
+            Returns the permission name for a method
+        """
+        if self.method_permission_name:
+            return self.method_permission_name.get(method_name)
+        else:
+            return getattr(
+                getattr(self, method_name), "_permission_name")
 
     def set_response_key_mappings(self, response, func, rison_args, **kwargs):
         if not hasattr(func, "_response_key_func_mappings"):
@@ -1342,7 +1366,7 @@ class ModelRestApi(BaseModelApi):
     @safe
     @permission_name("put")
     def put(self, pk):
-        """POST item to Model
+        """PUT item to Model
         ---
         put:
           parameters:

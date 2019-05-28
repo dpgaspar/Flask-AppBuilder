@@ -1,7 +1,7 @@
 import enum
 
 from flask_appbuilder import Model
-from marshmallow import ValidationError
+from marshmallow import fields, post_load, Schema, ValidationError
 from sqlalchemy import (
     Column,
     Date,
@@ -38,6 +38,19 @@ class Model1(Model):
         )
 
 
+def validate_field_string(n):
+    if n[0] != 'A':
+        raise ValidationError('Name must start with an A')
+
+
+class Model1CustomSchema(Schema):
+    name = fields.Str(validate=validate_name)
+
+    @post_load
+    def process(self, data):
+        return Model1(**data)
+
+
 class Model2(Model):
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
@@ -63,6 +76,15 @@ class Model3(Model):
 
     def __repr__(self):
         return str(self.field_string)
+
+
+class ModelWithProperty(Model):
+    id = Column(Integer, primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+
+    @property
+    def custom_property(self):
+        return self.field_string + "_custom"
 
 
 class TmpEnum(enum.Enum):
@@ -181,5 +203,11 @@ def insert_data(session, count):
         model = ModelMMParentRequired()
         model.field_string = str(i)
         model.children = children_required
+        session.add(model)
+        session.commit()
+
+    for i in range(count):
+        model = ModelWithProperty()
+        model.field_string = str(i)
         session.add(model)
         session.commit()

@@ -7,6 +7,7 @@ from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Load
 from sqlalchemy.orm.descriptor_props import SynonymProperty
+from sqlalchemy_utils.types.uuid import UUIDType
 
 from . import filters
 from ..base import BaseInterface
@@ -114,7 +115,11 @@ class SQLAInterface(BaseInterface):
                         Load(model_relation).load_only(column.split(".")[1])
                     )
                 else:
-                    if not self.is_relation(column) and not hasattr(
+                    # is a custom property method field?
+                    if hasattr(getattr(self.obj, column), "fget"):
+                        pass
+                    # is not a relation and not a function?
+                    elif not self.is_relation(column) and not hasattr(
                         getattr(self.obj, column), "__call__"
                     ):
                         _load_options.append(Load(self.obj).load_only(column))
@@ -215,7 +220,8 @@ class SQLAInterface(BaseInterface):
 
     def is_string(self, col_name):
         try:
-            return _is_sqla_type(self.list_columns[col_name].type, sa.types.String)
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.String) or \
+                self.list_columns[col_name].type.__class__ == UUIDType
         except Exception:
             return False
 

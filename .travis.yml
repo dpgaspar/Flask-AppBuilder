@@ -11,7 +11,8 @@ services:
   - mongodb
 install:
   - pip install tox
+  - pip install codecov
 script:
   - tox
 after_success:
-  coveralls
+  - codecov
