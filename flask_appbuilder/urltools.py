@@ -115,7 +115,8 @@ def get_prefixed_request_url(request):
 
 
 def prefixed_redirect(location, *args, **kwargs):
-    return partial(redirect, get_url_prefix() + location)(*args, **kwargs)
+    target = location if location.startswith('/') else '/' + location
+    return partial(redirect, get_url_prefix() + target)(*args, **kwargs)
 
 
 def prefixed_url(url):

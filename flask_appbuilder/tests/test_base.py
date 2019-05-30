@@ -19,7 +19,6 @@ from flask_appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
 from flask_appbuilder.models.sqla.filters import FilterEqual, FilterStartsWith
-from flask_appbuilder.urltools import prefixed_redirect
 from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView
 import jinja2
 from nose.tools import eq_, ok_
@@ -54,6 +53,7 @@ class FlaskTestCase(FABTestCase):
         from flask import Flask
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.models.sqla.interface import SQLAInterface
+        from flask_appbuilder.urltools import prefixed_redirect
         from flask_appbuilder.views import ModelView
         from sqlalchemy.engine import Engine
         from sqlalchemy import event
@@ -1283,3 +1283,119 @@ class FlaskTestCase(FABTestCase):
         eq_(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
         eq_(len(role.permissions), 1)
+
+
+class FlaskTestCasePrefixed(FABTestCase):
+    def setUp(self):
+        from flask import Flask, url_for
+        from flask_appbuilder import AppBuilder, expose
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+        from flask_appbuilder.urltools import prefixed_redirect, prefixed_external_url
+        from flask_appbuilder.views import ModelView, BaseView
+        from sqlalchemy.engine import Engine
+        from sqlalchemy import event
+
+        self.app = Flask(__name__)
+        self.app.jinja_env.undefined = jinja2.StrictUndefined
+        self.basedir = os.path.abspath(os.path.dirname(__file__))
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
+        self.app.config["CSRF_ENABLED"] = False
+        self.app.config["SECRET_KEY"] = "thisismyscretkey"
+        self.app.config["WTF_CSRF_ENABLED"] = False
+        self.app.config["FAB_URL_PREFIX"] = "/test"
+        self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        self.app.config["FAB_ROLES"] = {
+            "ReadOnly": [
+                [".*", "can_list"],
+                [".*", "can_show"]
+            ]
+        }
+        logging.basicConfig(level=logging.ERROR)
+
+        @event.listens_for(Engine, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            # Will force sqllite contraint foreign keys
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
+
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        class RedirectView(BaseView):
+            route_base = "/redirectview"
+
+            @expose('/in')
+            def inner(self):
+                return prefixed_redirect("login")
+
+            @expose('/ext')
+            def external(self):
+                return str(prefixed_external_url(
+                    url_for("AuthDBView.login", _external=True,)))
+
+        class Model2View(ModelView):
+            datamodel = SQLAInterface(Model2)
+            list_columns = [
+                "field_integer",
+                "field_float",
+                "field_string",
+                "field_method",
+                "group.field_string",
+            ]
+            edit_form_query_rel_fields = {
+                "group": [["field_string", FilterEqual, "G2"]]
+            }
+            add_form_query_rel_fields = {"group": [["field_string", FilterEqual, "G1"]]}
+
+        class Model1View(ModelView):
+            datamodel = SQLAInterface(Model1)
+            related_views = [Model2View]
+            list_columns = ["field_string", "field_file"]
+
+        self.appbuilder.add_view(Model1View, "Model1", category="Model1")
+        self.appbuilder.add_view(Model2View, "Model2")
+        self.appbuilder.add_view_no_menu(RedirectView())
+        role_admin = self.appbuilder.sm.find_role("Admin")
+        self.appbuilder.sm.add_user(
+            "admin", "admin", "user", "admin@fab.org", role_admin, "general"
+        )
+        role_read_only = self.appbuilder.sm.find_role("ReadOnly")
+        self.appbuilder.sm.add_user(
+            USERNAME_READONLY,
+            "readonly",
+            "readonly",
+            "readonly@fab.org",
+            role_read_only,
+            PASSWORD_READONLY
+        )
+
+    def tearDown(self):
+        self.appbuilder = None
+        self.app = None
+        self.db = None
+        log.debug("TEAR DOWN")
+
+    def test_back_prefixed(self):
+        """
+            Test Back functionality with url prefix
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+            c.get("/model1view/list/?_flt_0_field_string=f")
+            c.get("/model2view/list/")
+            rv = c.get("/back")
+            assert self.app.config["FAB_URL_PREFIX"] in rv.location
+
+    def test_redirect_prefixed(self):
+        """
+            Test Back functionality with url prefix
+        """
+        with self.app.test_client() as c:
+            self.browser_login(c, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+            rv = c.get("/redirectview/in")
+            rv2 = c.get("/redirectview/ext")
+            eq_(rv.status_code, 302)
+            eq_(rv2.status_code, 200)
+            assert self.app.config["FAB_URL_PREFIX"] in rv.location
+            assert self.app.config["FAB_URL_PREFIX"] in rv2.data.decode("utf-8")
