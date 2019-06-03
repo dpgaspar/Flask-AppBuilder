@@ -75,7 +75,7 @@ class SQLAInterface(BaseInterface):
         return self.obj.__name__
 
     @staticmethod
-    def is_model_already_joinded(query, model):
+    def is_model_already_joined(query, model):
         return model in [mapper.class_ for mapper in query._join_entities]
 
     def _get_base_query(
@@ -107,10 +107,16 @@ class SQLAInterface(BaseInterface):
         if select_columns:
             _load_options = list()
             for column in select_columns:
-                if "." in column:
-                    model_relation = self.get_related_model(column.split(".")[0])
-                    if not self.is_model_already_joinded(query, model_relation):
-                        query = query.join(model_relation)
+                if len(column.split('.')) >= 2:
+                    for join_relation in column.split('.')[:-1]:
+                        relation_tuple = self.get_related_model_and_join(join_relation)
+                        model_relation, relation_join = relation_tuple
+                        if not self.is_model_already_joined(query, model_relation):
+                            query = query.join(
+                                model_relation,
+                                relation_join,
+                                isouter=True
+                            )
                     _load_options.append(
                         Load(model_relation).load_only(column.split(".")[1])
                     )
@@ -157,7 +163,7 @@ class SQLAInterface(BaseInterface):
             for join_relation in order_column.split('.')[:-1]:
                 relation_tuple = self.get_related_model_and_join(join_relation)
                 model_relation, relation_join = relation_tuple
-                if not self.is_model_already_joinded(query, model_relation):
+                if not self.is_model_already_joined(query, model_relation):
                     query = query.join(model_relation, relation_join, isouter=True)
         query_count = self.session.query(func.count('*')).select_from(self.obj)
 
