@@ -1389,7 +1389,7 @@ class FlaskTestCasePrefixed(FABTestCase):
 
     def test_redirect_prefixed(self):
         """
-            Test Back functionality with url prefix
+            Test Redirect functionality with url prefix
         """
         with self.app.test_client() as c:
             self.browser_login(c, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
