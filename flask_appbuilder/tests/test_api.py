@@ -2,7 +2,7 @@ import json
 import logging
 import os
 
-from flask_appbuilder import SQLA
+from flask_appbuilder import ModelRestApi, SQLA
 from flask_appbuilder.const import (
     API_ADD_COLUMNS_RES_KEY,
     API_ADD_COLUMNS_RIS_KEY,
@@ -27,9 +27,10 @@ from flask_appbuilder.const import (
     API_SELECT_KEYS_RIS_KEY,
     API_SHOW_COLUMNS_RIS_KEY,
     API_SHOW_TITLE_RIS_KEY,
-    API_URI_RIS_KEY
+    API_URI_RIS_KEY,
 )
 from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
+from flask_appbuilder.models.sqla.interface import SQLAInterface
 from nose.tools import eq_
 import prison
 
@@ -38,13 +39,14 @@ from .sqla.models import (
     insert_data,
     Model1,
     Model2,
+    Model4,
     ModelMMChild,
     ModelMMParent,
     ModelMMParentRequired,
     ModelWithEnums,
     ModelWithProperty,
     TmpEnum,
-    validate_name
+    validate_name,
 )
 
 
@@ -756,6 +758,71 @@ class APITestCase(FABTestCase):
         eq_(
             data[API_RESULT_RES_KEY][i],
             {'field_string': 'test9', 'group': {'field_string': 'test9'}}
+        )
+
+    def test_get_list_multiple_dotted_order(self):
+        """
+            REST Api: Test get list order multiple dotted notation
+        """
+        class Model4Api(ModelRestApi):
+            datamodel = SQLAInterface(Model4)
+            list_columns = [
+                'field_string',
+                'model1_1.field_string',
+                'model1_2.field_string',
+            ]
+
+        self.appbuilder.add_api(Model4Api)
+
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        # Test order asc for model1_1
+        arguments = {
+            "order_column": "model1_1.field_string",
+            "order_direction": "desc"
+        }
+        uri = "api/v1/model4api/?{}={}".format(
+            API_URI_RIS_KEY, prison.dumps(arguments)
+        )
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        # Tests count property
+        eq_(data["count"], MODEL1_DATA_SIZE)
+        # Tests data result default page size
+        eq_(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        i = 0
+        eq_(
+            data[API_RESULT_RES_KEY][i],
+            {
+                'field_string': 'test9',
+                'model1_1': {'field_string': 'test9'},
+                'model1_2': {'field_string': 'test9'}
+            }
+        )
+
+        # Test order desc for model1_2
+        arguments = {
+            "order_column": "model1_2.field_string",
+            "order_direction": "asc"
+        }
+        uri = "api/v1/model4api/?{}={}".format(
+            API_URI_RIS_KEY, prison.dumps(arguments)
+        )
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        # Tests count property
+        eq_(data["count"], MODEL1_DATA_SIZE)
+        # Tests data result default page size
+        eq_(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        i = 0
+        eq_(
+            data[API_RESULT_RES_KEY][i],
+            {
+                'field_string': 'test0',
+                'model1_1': {'field_string': 'test0'},
+                'model1_2': {'field_string': 'test0'}
+            }
         )
 
     def test_get_list_order(self):
@@ -1692,9 +1759,6 @@ class APITestCase(FABTestCase):
         """
             REST Api: Test class method permission name override
         """
-        from flask_appbuilder import ModelRestApi
-        from flask_appbuilder.models.sqla.interface import SQLAInterface
-
         class Model2PermOverride1(ModelRestApi):
             datamodel = SQLAInterface(Model2)
             class_permission_name = 'api'
@@ -1736,9 +1800,6 @@ class APITestCase(FABTestCase):
         """
             REST Api: Test method permission name override
         """
-        from flask_appbuilder import ModelRestApi
-        from flask_appbuilder.models.sqla.interface import SQLAInterface
-
         class Model2PermOverride2(ModelRestApi):
             datamodel = SQLAInterface(Model2)
             method_permission_name = {
@@ -1779,9 +1840,6 @@ class APITestCase(FABTestCase):
         """
             REST Api: Test base perms with permission name override
         """
-        from flask_appbuilder import ModelRestApi
-        from flask_appbuilder.models.sqla.interface import SQLAInterface
-
         class Model2PermOverride3(ModelRestApi):
             datamodel = SQLAInterface(Model2)
             method_permission_name = {
@@ -1812,9 +1870,6 @@ class APITestCase(FABTestCase):
         """
             REST Api: Test permission name converge compress
         """
-        from flask_appbuilder import ModelRestApi
-        from flask_appbuilder.models.sqla.interface import SQLAInterface
-
         class Model1PermConverge(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             class_permission_name = 'api2'
@@ -1880,9 +1935,6 @@ class APITestCase(FABTestCase):
         """
             REST Api: Test permission name converge expand
         """
-        from flask_appbuilder import ModelRestApi
-        from flask_appbuilder.models.sqla.interface import SQLAInterface
-
         class Model1PermConverge(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             class_permission_name = 'Model1PermOverride'
