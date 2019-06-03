@@ -4,6 +4,7 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 2.1.4
 -----------------------------------
 
+- Fix, #1027 API dotted notation joins to same table
 - Fix, #1012 API default resource name must be lower case
 - Fix, #1013 Use csrf exempt by default when CSRFProtect is registered has a Flask extension
 - Fix, #1007 API Support for property decorated functions has models fields
