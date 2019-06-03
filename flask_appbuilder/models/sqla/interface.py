@@ -101,12 +101,15 @@ class SQLAInterface(BaseInterface):
             for join_relation in column.split('.')[:-1]:
                 relation_tuple = self.get_related_model_and_join(join_relation)
                 model_relation, relation_join = relation_tuple
+                print(f"MODEL {model_relation} {relation_join}")
                 if not self.is_model_already_joined(query, model_relation):
                     query = query.join(
                         model_relation,
                         relation_join,
                         isouter=True
                     )
+                else:
+                    print(f"ALREADY JOINED")
         return query, relation_tuple
 
     def _query_select_options(self, query, select_columns=None):
@@ -168,8 +171,8 @@ class SQLAInterface(BaseInterface):
 
         """
         query = self.session.query(self.obj)
-        query = self._query_select_options(query, select_columns)
         query, relation_tuple = self._query_join_dotted_column(query, order_column)
+        query = self._query_select_options(query, select_columns)
         query_count = self.session.query(func.count('*')).select_from(self.obj)
 
         query_count = self._get_base_query(query=query_count, filters=filters)
