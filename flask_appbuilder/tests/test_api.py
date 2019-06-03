@@ -2,9 +2,7 @@ import json
 import logging
 import os
 
-from flask_appbuilder import ModelRestApi
-from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder import SQLA
+from flask_appbuilder import ModelRestApi, SQLA
 from flask_appbuilder.const import (
     API_ADD_COLUMNS_RES_KEY,
     API_ADD_COLUMNS_RIS_KEY,
@@ -32,6 +30,7 @@ from flask_appbuilder.const import (
     API_URI_RIS_KEY,
 )
 from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
+from flask_appbuilder.models.sqla.interface import SQLAInterface
 from nose.tools import eq_
 import prison
 
