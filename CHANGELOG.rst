@@ -5,7 +5,7 @@ Improvements and Bug fixes on 2.1.4
 -----------------------------------
 
 - Fix, #1012 API default resource name must be lower case
-- Fix, #1013 Use csrf exempt be default when CSRFProtect is registered has a Flask extension
+- Fix, #1013 Use csrf exempt by default when CSRFProtect is registered has a Flask extension
 - Fix, #1007 API Support for property decorated functions has models fields
 - Fix, #1002 Permission mapping
 - New, #1010 Support for UUID sqlalchemy fields has string fields on WTForms
