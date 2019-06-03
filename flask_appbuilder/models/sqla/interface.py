@@ -75,7 +75,7 @@ class SQLAInterface(BaseInterface):
         return self.obj.__name__
 
     @staticmethod
-    def is_model_already_joinded(query, model):
+    def is_model_already_joined(query, model):
         return model in [mapper.class_ for mapper in query._join_entities]
 
     def _get_base_query(
@@ -95,6 +95,20 @@ class SQLAInterface(BaseInterface):
                 query = query.order_by(self._get_attr(order_column).desc())
         return query
 
+    def _query_join_dotted_column(self, query, column) -> (object, tuple):
+        relation_tuple = tuple()
+        if len(column.split('.')) >= 2:
+            for join_relation in column.split('.')[:-1]:
+                relation_tuple = self.get_related_model_and_join(join_relation)
+                model_relation, relation_join = relation_tuple
+                if not self.is_model_already_joined(query, model_relation):
+                    query = query.join(
+                        model_relation,
+                        relation_join,
+                        isouter=True
+                    )
+        return query, relation_tuple
+
     def _query_select_options(self, query, select_columns=None):
         """
             Add select load options to query. The goal
@@ -107,10 +121,12 @@ class SQLAInterface(BaseInterface):
         if select_columns:
             _load_options = list()
             for column in select_columns:
-                if "." in column:
-                    model_relation = self.get_related_model(column.split(".")[0])
-                    if not self.is_model_already_joinded(query, model_relation):
-                        query = query.join(model_relation)
+                query, relation_tuple = self._query_join_dotted_column(
+                    query,
+                    column,
+                )
+                model_relation, relation_join = relation_tuple or (None, None)
+                if model_relation:
                     _load_options.append(
                         Load(model_relation).load_only(column.split(".")[1])
                     )
@@ -152,13 +168,8 @@ class SQLAInterface(BaseInterface):
 
         """
         query = self.session.query(self.obj)
+        query, relation_tuple = self._query_join_dotted_column(query, order_column)
         query = self._query_select_options(query, select_columns)
-        if len(order_column.split('.')) >= 2:
-            for join_relation in order_column.split('.')[:-1]:
-                relation_tuple = self.get_related_model_and_join(join_relation)
-                model_relation, relation_join = relation_tuple
-                if not self.is_model_already_joinded(query, model_relation):
-                    query = query.join(model_relation, relation_join, isouter=True)
         query_count = self.session.query(func.count('*')).select_from(self.obj)
 
         query_count = self._get_base_query(query=query_count, filters=filters)
