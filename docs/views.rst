@@ -209,6 +209,7 @@ On your form_post method, you can also return None, or a Flask response to rende
 
 ::
 
+    from flask import flash
     from flask_appbuilder import SimpleFormView
     from flask_babel import lazy_gettext as _
 
