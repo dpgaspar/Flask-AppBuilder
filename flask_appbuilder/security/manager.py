@@ -229,6 +229,9 @@ class BaseSecurityManager(AbstractSecurityManager):
             app.config.setdefault("AUTH_LDAP_APPEND_DOMAIN", "")
             app.config.setdefault("AUTH_LDAP_USERNAME_FORMAT", "")
             app.config.setdefault("AUTH_LDAP_BIND_PASSWORD", "")
+            app.config.setdefault("AUTH_LDAP_GROUP_SEARCH_BASE", "")
+            app.config.setdefault("AUTH_LDAP_GROUP_SEARCH_FILTER", "")
+            app.config.setdefault("AUTH_LDAP_GROUP_MEMBER_FIELD", "member")
             # TLS options
             app.config.setdefault("AUTH_LDAP_USE_TLS", False)
             app.config.setdefault("AUTH_LDAP_ALLOW_SELF_SIGNED", False)
@@ -418,6 +421,18 @@ class BaseSecurityManager(AbstractSecurityManager):
     @property
     def oauth_providers(self):
         return self.appbuilder.get_app.config["OAUTH_PROVIDERS"]
+
+    @property
+    def auth_ldap_group_search_base(self):
+        return self.appbuilder.get_app.config["AUTH_LDAP_GROUP_SEARCH_BASE"]
+
+    @property
+    def auth_ldap_group_member_field(self):
+        return self.appbuilder.get_app.config["AUTH_LDAP_GROUP_MEMBER_FIELD"]
+
+    @property
+    def auth_ldap_group_search_filter(self):
+        return self.appbuilder.get_app.config["AUTH_LDAP_GROUP_SEARCH_FILTER"]
 
     def oauth_user_info_getter(self, f):
         """
@@ -899,6 +914,10 @@ class BaseSecurityManager(AbstractSecurityManager):
                 elif not user and self.auth_user_registration:
                     self._bind_indirect_user(ldap, con)
                     new_user = self._search_ldap(ldap, con, username)
+                    if self.auth_ldap_group_search_base:
+                        roles = self._search_ldap_group_roles(ldap, con, username)
+                        if not roles:
+                            return None
                     if not new_user:
                         log.warning(LOGMSG_WAR_SEC_NOLDAP_OBJ.format(username))
                         return None
@@ -1564,3 +1583,32 @@ class BaseSecurityManager(AbstractSecurityManager):
     @staticmethod
     def before_request():
         g.user = current_user
+
+    def _search_ldap_group_roles(self, ldap, con, username):
+        """
+            Searches LDAP for group roles, assumes ldap_group_search_base is set.
+
+            :param ldap: The ldap module reference
+            :param con: The ldap connection
+            :param username: username to match group member
+            :return: ldap object array
+        """
+        username = self.auth_ldap_username_format % username
+
+        if self.auth_ldap_group_search_filter:
+            filter_str = "(&%s(%s=%s))" % (
+                self.auth_ldap_group_search_filter,
+                self.auth_ldap_group_member_field,
+                username,
+            )
+        else:
+            filter_str = "(%s=%s)" % (self.auth_ldap_group_member_field, username)
+        roles = con.search_s(
+            self.auth_ldap_group_search_base,
+            ldap.SCOPE_SUBTREE,
+            filter_str
+        )
+        if roles:
+            if not roles[0][0]:
+                return None
+        return roles
