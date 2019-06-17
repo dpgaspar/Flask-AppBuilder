@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 import operator
 
 from wtforms import widgets
-from wtforms.compat import text_type, string_types
-from wtforms.fields import SelectFieldBase, Field, SelectField
+from wtforms.compat import string_types, text_type
+from wtforms.fields import Field, SelectField, SelectFieldBase
 from wtforms.validators import ValidationError
 
 
@@ -18,10 +18,20 @@ class AJAXSelectField(Field):
         :param validators: A list of form validators
         :param: datamodel: An initialized SQLAInterface with a model
         :param: col_name: The column that maps to the model
-        :param: is_related: If the model column is a relationship or direct on this case use col_name with the pk
+        :param: is_related:
+            If the model column is a relationship or direct on
+            this case use col_name with the pk
     """
 
-    def __init__(self, label=None, validators=None, datamodel=None, col_name=None, is_related=True, **kwargs):
+    def __init__(
+        self,
+        label=None,
+        validators=None,
+        datamodel=None,
+        col_name=None,
+        is_related=True,
+        **kwargs
+    ):
         super(AJAXSelectField, self).__init__(label, validators, **kwargs)
         self.datamodel = datamodel
         self.col_name = col_name
@@ -39,7 +49,9 @@ class AJAXSelectField(Field):
         """
         if value:
             if self.is_related:
-                self.data = self.datamodel.get_related_interface(self.col_name).get_pk_value(value)
+                self.data = self.datamodel.get_related_interface(
+                    self.col_name
+                ).get_pk_value(value)
             else:
                 self.data = self.datamodel.get(value)
         else:
@@ -57,7 +69,9 @@ class AJAXSelectField(Field):
         """
         if valuelist:
             if self.is_related:
-                self.data = self.datamodel.get_related_interface(self.col_name).get(valuelist[0])
+                self.data = self.datamodel.get_related_interface(self.col_name).get(
+                    valuelist[0]
+                )
             else:
                 self.data = self.datamodel.get(valuelist[0])
 
@@ -66,11 +80,20 @@ class QuerySelectField(SelectFieldBase):
     """
         Based on WTForms QuerySelectField
     """
+
     widget = widgets.Select()
 
-    def __init__(self, label=None, validators=None, query_func=None,
-                 get_pk_func=None, get_label=None, allow_blank=False,
-                 blank_text='', **kwargs):
+    def __init__(
+        self,
+        label=None,
+        validators=None,
+        query_func=None,
+        get_pk_func=None,
+        get_label=None,
+        allow_blank=False,
+        blank_text="",
+        **kwargs
+    ):
         super(QuerySelectField, self).__init__(label, validators, **kwargs)
         self.query_func = query_func
         self.get_pk_func = get_pk_func
@@ -103,19 +126,21 @@ class QuerySelectField(SelectFieldBase):
     def _get_object_list(self):
         if self._object_list is None:
             objs = self.query_func()
-            self._object_list = list((text_type(self.get_pk_func(obj)), obj) for obj in objs)
+            self._object_list = list(
+                (text_type(self.get_pk_func(obj)), obj) for obj in objs
+            )
         return self._object_list
 
     def iter_choices(self):
         if self.allow_blank:
-            yield ('__None', self.blank_text, self.data is None)
+            yield ("__None", self.blank_text, self.data is None)
 
         for pk, obj in self._get_object_list():
             yield (pk, self.get_label(obj), obj == self.data)
 
     def process_formdata(self, valuelist):
         if valuelist:
-            if self.allow_blank and valuelist[0] == '__None':
+            if self.allow_blank and valuelist[0] == "__None":
                 self.data = None
             else:
                 self._data = None
@@ -128,9 +153,9 @@ class QuerySelectField(SelectFieldBase):
                 if data == obj:
                     break
             else:
-                raise ValidationError(self.gettext('Not a valid choice'))
+                raise ValidationError(self.gettext("Not a valid choice"))
         elif self._formdata or not self.allow_blank:
-            raise ValidationError(self.gettext('Not a valid choice'))
+            raise ValidationError(self.gettext("Not a valid choice"))
 
 
 class QuerySelectMultipleField(QuerySelectField):
@@ -141,15 +166,21 @@ class QuerySelectMultipleField(QuerySelectField):
     If any of the items in the data list or submitted form data cannot be
     found in the query, this will result in a validation error.
     """
+
     widget = widgets.Select(multiple=True)
 
     def __init__(self, label=None, validators=None, default=None, **kwargs):
         if default is None:
             default = []
-        super(QuerySelectMultipleField, self).__init__(label, validators, default=default, **kwargs)
-        if kwargs.get('allow_blank', False):
+        super(QuerySelectMultipleField, self).__init__(
+            label, validators, default=default, **kwargs
+        )
+        if kwargs.get("allow_blank", False):
             import warnings
-            warnings.warn('allow_blank=True does not do anything for QuerySelectMultipleField.')
+
+            warnings.warn(
+                "allow_blank=True does not do anything for QuerySelectMultipleField."
+            )
         self._invalid_formdata = False
 
     def _get_data(self):
@@ -182,34 +213,39 @@ class QuerySelectMultipleField(QuerySelectField):
 
     def pre_validate(self, form):
         if self._invalid_formdata:
-            raise ValidationError(self.gettext('Not a valid choice'))
+            raise ValidationError(self.gettext("Not a valid choice"))
         elif self.data:
             obj_list = list(x[1] for x in self._get_object_list())
             if not isinstance(self.data, list):
                 self.data = [self.data]
             for v in self.data:
                 if v not in obj_list:
-                    raise ValidationError(self.gettext('Not a valid choice'))
+                    raise ValidationError(self.gettext("Not a valid choice"))
 
 
 class EnumField(SelectField):
     """Selection field for Sqlalchemy Enum type.
 
-    The meaning of enum_class and enums is the same as for attributes on sqlalchemy.types.Enum:
+    The meaning of enum_class and enums is the same as for
+    attributes on sqlalchemy.types.Enum:
 
     :param enum_class: either None or a subclass of Python enum.Enum
-    :param enums: a sequence of strings, if enum_class is not Null than it should be 
+    :param enums: a sequence of strings, if enum_class is not Null than it should be
                   `list(enum_class.__members__)`
     """
 
-    def __init__(self, enum_class, enums, label=None, validators=None, default=None, **kwargs):
+    def __init__(
+        self, enum_class, enums, label=None, validators=None, default=None, **kwargs
+    ):
         self._enum_class = enum_class
         self._enums = enums
 
         # Column(Enum(enum.Enum)) case
         if enum_class is not None:
-            labels = [text_type(enum_class.__members__[enum_member].value)
-                      for enum_member in enums]
+            labels = [
+                text_type(enum_class.__members__[enum_member].value)
+                for enum_member in enums
+            ]
 
             def coerce(value):
                 if value is None:
@@ -218,7 +254,6 @@ class EnumField(SelectField):
                     return value
                 else:
                     return enum_class.__members__[value]
-
 
         # Column(Enum(*enums)) case
         else:
@@ -231,12 +266,18 @@ class EnumField(SelectField):
 
         choices = list(zip(enums, labels))
 
-        super(EnumField, self).__init__(label=label, validators=validators, default=default,
-                                        coerce=coerce, choices=choices, **kwargs)
+        super(EnumField, self).__init__(
+            label=label,
+            validators=validators,
+            default=default,
+            coerce=coerce,
+            choices=choices,
+            **kwargs
+        )
 
     def pre_validate(self, form):
         for v, _ in self.choices:
             if self.data == self.coerce(v):
                 break
         else:
-            raise ValueError(self.gettext('Not a valid choice'))
+            raise ValueError(self.gettext("Not a valid choice"))

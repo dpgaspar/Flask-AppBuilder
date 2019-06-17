@@ -21,21 +21,70 @@ The session is preserved and encrypted using Flask-Login, OpenID requires Flask-
 Role based
 ----------
 
-Each user has multiple roles, and a role holds permissions on views and menus, so a user has permissions on views and menus.
+Each user may have multiple roles, and a role holds permissions on views/API and menus,
+so a user has permissions on views/API and menus.
+
+Roles can be user defined (backed by the backend) and builtin readonly. Builtin readonly roles
+support regex for views/API and permissions, this simplifies security management and
+improve performance since the many to many permissions between a role and it's permissions
+does not need to be fetched from the backend.
+
+Builtin roles are defined on the config using ``FAB_ROLES`` key and respect the following data structure::
+
+    FAB_ROLES = {
+        "<ROLE NAME>": [
+            ["<VIEW/MENU/API NAME>", "PERMISSION NAME"],
+            ....
+        ],
+        ...
+    }
+
+So for example a **Read Only** role might look like::
+
+    FAB_ROLES = {
+        "ReadOnly": [
+            [".*", "can_list"],
+            [".*", "can_show"],
+            [".*", "menu_access"],
+            [".*", "can_get"],
+            [".*", "can_info"]
+        ]
+    }
+
+These roles are inserted automatically to the database (only their name is added), and
+can be associated to users just like a "normal"/user defined role.
+
+If you want to later on change the name of these roles, you can map these roles by their backend id::
+
+    FAB_ROLES = {
+        "ReadOnly_Altered": [
+            [".*", "can_list"],
+            [".*", "can_show"],
+            [".*", "menu_access"],
+            [".*", "can_get"],
+            [".*", "can_info"]
+        ]
+    }
+
+    FAB_ROLES_MAPPING = {
+        1: "ReadOnly_Altered"
+    }
+
 
 There are two special roles, you can define their names on the :doc:`config`
 
-:Admin Role: The framework will assign all the existing permission on views and menus to this role, automatically, this role is for authenticated users only.
-:Public Role: This is a special role for non authenticated users, you can assign all the permissions on views and menus to this role, and everyone will access specific parts of you application.
-	
-Of course you can create any additional role you want and configure them as you like.
+:Admin Role: Special builtin read only Role, will have full access.
+:Public Role: This is a special role for non authenticated users,
+    you can assign all the permissions on views and menus to this role,
+    and everyone will access specific parts of you application.
 
-.. note:: User's with multiple roles is only possible since 1.3.0 version.
+Of course you can create any additional role you want and configure them as you like.
 
 Permissions
 -----------
 
-The framework automatically creates for you all the possible existing permissions on your views or menus, by "inspecting" your code.
+The framework automatically creates for you all the possible existing permissions on your views, API or menus,
+by "inspecting" your code.
 
 Each time you create a new view based on a model (inherit from ModelView) it will create the following permissions:
 
@@ -45,8 +94,17 @@ Each time you create a new view based on a model (inherit from ModelView) it wil
 - can edit
 - can delete
 - can download
-	
-These base permissions will be associated to your view, so if you create a view named "MyModelView" you can assign to any role these permissions:
+
+In the case of CRUD REST API:
+
+- can get
+- can put
+- can post
+- can delete
+- can info
+
+These base permissions will be associated to your view or API, so if you create a view named ``MyModelView``
+you can assign to any role the following permissions:
 
 - can list on MyModelView
 - can show on MyModelView
@@ -54,9 +112,18 @@ These base permissions will be associated to your view, so if you create a view 
 - can edit on MyModelView
 - can delete on MyModelView
 - can download on MyModelView
-	
-If you extend your view with some exposed method via the @expose decorator and you want to protect it
-use the @has_access decorator::
+
+In case your developing a backend REST API subclassing ``ModelRestApi`` with a class named ``MyApi`` will
+generate the following permissions:
+
+- can get on MyApi
+- can put on MyApi
+- can post on MyApi
+- can delete on MyApi
+- can info on MyApi
+
+If you extend your view with some exposed method via the ``@expose`` decorator and you want to protect it
+use the ``@has_access`` decorator::
 
     class MyModelView(ModelView):
         datamodel = SQLAInterface(Group)
@@ -67,16 +134,153 @@ use the @has_access decorator::
             # do something
             pass
 
-The framework will create the following access based on your method's name:
+The framework will create the following access, based on your method's name:
 
 - can mymethod on MyModelView
 	
 You can aggregate some of your method's on a single permission, this can simplify the security configuration
-if there is no need for granular permissions on a group of methods, for this use @permission_name decorator.
+if there is no need for granular permissions on a group of methods, for this use ``@permission_name`` decorator.
 
-You can use the @permission_name to override the permission's name to whatever you like.
+You can use the ``@permission_name`` to override the permission's name to whatever you like.
 
 Take a look at :doc:`api`
+
+
+Permission Customization
+------------------------
+
+The default view/menu, permissions are highly granular, this is a good default since it enables a high level
+of customization, but on medium to large application the amount of permission pairs generated can get a bit daunting.
+You can fully customize the generated permission names generated and if you wish aggregate them::
+
+    class OneApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "api"
+
+
+    class TwoApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "api"
+
+The previous example will generate half the default permissions, by just creating the following:
+
+- can get on api
+- can put on api
+- can post on api
+- can delete on api
+- can info on api
+
+The ``class_permission_name`` property is available also on BaseViews and their children ``ModelView``,
+``MultipleView``, ``MasterDetailView``, ``FormView``, etc.
+
+You can also aggregate method permissions by using ``method_permission_name`` attribute.
+Use the following ``Dict`` structure::
+
+    method_permission_name = {
+        "<METHOD_NAME>": "<PERMISSION_NAME>",
+        ...
+    }
+
+Example::
+
+    class OneApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "api"
+        method_permission_name = {
+            "get_list": "access",
+            "get": "access",
+            "post": "access",
+            "put": "access",
+            "delete": "access",
+            "info": "access"
+        }
+
+
+    class TwoApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "api"
+        method_permission_name = {
+            "get_list": "access",
+            "get": "access",
+            "post": "access",
+            "put": "access",
+            "delete": "access",
+            "info": "access"
+        }
+
+Now FAB will only generate one permission pair:
+
+- can access on api
+
+If you want to revert back your permission names override, or change just them again, you need to hint FAB
+about what were your last permissions, so that the security converge procedure knows what to do::
+
+
+    class OneApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "OneApi"
+        previous_class_permission_name = "api"
+        method_permission_name = {
+            "get_list": "get",
+            "get": "get",
+            "post": "post",
+            "put": "put",
+            "delete": "delete",
+            "info": "info"
+        }
+        previous_method_permission_name = {
+            "get_list": "access",
+            "get": "access",
+            "post": "access",
+            "put": "access",
+            "delete": "access",
+            "info": "access"
+        }
+
+An example for compressing permissions using MVC Model Views::
+
+    class OneView(ModelView):
+        datamodel = SQLAInterface(Contact)
+        class_permission_name = "view"
+        method_permission_name = {
+            'add': 'write',
+            'delete': 'write',
+            'download': 'write',
+            'edit': 'write',
+            'list': 'read',
+            'muldelete': 'write',
+            'show': 'read',
+            'api': 'read',
+            'api_column_add': 'write',
+            'api_column_edit': 'write',
+            'api_create': 'write',
+            'api_delete': 'write',
+            'api_get': 'read',
+            'api_read': 'read',
+            'api_readvalues': 'read',
+            'api_update': 'write'
+        }
+
+Note that if your changing an already existing application, you need to migrate the old permission names to the new
+ones. Before doing that you should disable the boot automatic create/delete permissions,
+so set ``FAB_UPDATE_PERMS = False``. Then run the following FAB cli command::
+
+    $ flask fab security-converge
+
+
+Security converge will migrate all your permissions from the previous names to the current names, and
+also change all your roles, so you can migrate smoothly to your new security naming. After converging
+you can delete all your ``previous_*`` attributes if you have set them.
+
+You can also migrate back by switching ``previous_*`` attributes to their target, ie switch
+``previous_method_permission_name`` by ``method_permission_name`` and
+``previous_class_permission_name`` by ``class_permission_name``.
+Then run security converge will expand back all permissions
+on all your Roles.
+
+:note: You should backup your production database before migrating your permissions. Also note that you
+       can run ``flask fab security-converge --dry-run`` to get a list of operations the converge will perform.
+
 
 Automatic Cleanup
 -----------------
@@ -149,10 +353,13 @@ The framework has 5 authentication methods and you choose one of them, you confi
 on the **config.py** (when using the create-app, or following the proposed app structure). First the
 configuration imports the constants for the authentication methods::
 
-    from flask_appbuilder.security.manager import AUTH_OID, \ 
-                                              AUTH_REMOTE_USER, \ 
-                                              AUTH_DB, AUTH_LDAP, \ 
-                                              AUTH_OAUTH
+    from flask_appbuilder.security.manager import (
+        AUTH_DB,
+        AUTH_LDAP,
+        AUTH_OAUTH,
+        AUTH_OID,
+        AUTH_REMOTE_USER
+    )
 
 Next you will use the **AUTH_TYPE** key to choose the type::
 
@@ -169,7 +376,7 @@ Finally you can allow users to self register (take a look at the following chapt
     AUTH_USER_REGISTRATION_ROLE = "My Public Role Name"
 
 These settings can apply to all the authentication methods. When you create your first admin user
-using **fabmanager** command line, this user will be authenticated using the authentication method
+using **flask fab** command line, this user will be authenticated using the authentication method
 defined on your **config.py**.
 
 Authentication: Database
@@ -192,7 +399,8 @@ on **config.py** using OPENID_PROVIDERS key, just add or remove from the list th
         { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
         { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
         { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
-        { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }]
+        { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }
+    ]
 
 Each list entry is a dict with a readable OpenID name and it's url, if the url needs an username just add it using <username>.
 The login template for this method will provide a text box for the user to fillout his/her username.
@@ -227,11 +435,17 @@ this will allow users to authenticate using 'someuser' be setting::
 
 When using self user registration, you can use the following to config further:
 
-- AUTH_LDAP_UID_FIELD: Default to 'uid' will be used to search the user on the LDAP server. For MSFT AD you can set it to 'userPrincipalName'
-- AUTH_LDAP_FIRSTNAME_FIELD: Default to 'givenName' will use MSFT AD attribute to register first_name on the db.
-- AUTH_LDAP_LASTTNAME_FIELD: Default to 'sn' will use MSFT AD attribute to register last_name on the db.
-- AUTH_LDAP_EMAIL_FIELD: Default to 'mail' will use MSFT AD attribute to register email on the db. If this attribute is null the framework will register <username + '@email.notfound'>
-- AUTH_LDAP_SEARCH: This must be set when using self user registration.
+:AUTH_LDAP_UID_FIELD: Default to 'uid' will be used to search the user on the LDAP server.
+    For MSFT AD you can set it to 'userPrincipalName'
+
+:AUTH_LDAP_FIRSTNAME_FIELD: Default to 'givenName' will use MSFT AD attribute to register first_name on the db.
+
+:AUTH_LDAP_LASTTNAME_FIELD: Default to 'sn' will use MSFT AD attribute to register last_name on the db.
+
+:AUTH_LDAP_EMAIL_FIELD: Default to 'mail' will use MSFT AD attribute to register email on the db.
+    If this attribute is null the framework will register <username + '@email.notfound'>
+
+:AUTH_LDAP_SEARCH: This must be set when using self user registration.
 
 
 Authentication: OAuth
@@ -342,11 +556,16 @@ Then on the __init__.py initialize AppBuilder with you own security class::
     appbuilder = AppBuilder(app, db.session, security_manager_class=MySecurityManager)
 
 
+Alternatively since 1.13.1 you can declare your custom **SecurityManager** on the config.
+This is a must have if your using the factory app pattern, on the config declare you class the following way::
+
+    FAB_SECURITY_MANAGER_CLASS='app.security.MySecurityManager'
+
 F.A.B. uses a different user view for each authentication method
 
-- UserDBModelView - for database auth method
-- UserOIDModelView - for Open ID auth method
-- UserLDAPModelView - for LDAP auth method
+:UserDBModelView: For database auth method
+:UserOIDModelView: For Open ID auth method
+:UserLDAPModelView: For LDAP auth method
 
 You can extend or create from scratch your own, and then tell F.A.B. to use them instead, by overriding their
 correspondent lower case properties on **SecurityManager** (just like on the given example).
@@ -376,13 +595,13 @@ First extend the User Model (create a sec_models.py file)::
 Next define a new User view, just like the default User view but with the extra column (create a sec_view.py)
 If you're using:
 
-- AUTH_DB extend UserDBModelView
-- AUTH_LDAP extend UserLDAPModelView
-- AUTH_REMOTE_USER extend UserRemoteUserModelView
-- AUTH_OID extend UserOIDModelView
-- AUTH_OAUTH extend UserOAuthModelView
+:AUTH_DB: Extend UserDBModelView
+:AUTH_LDAP: Extend UserLDAPModelView
+:AUTH_REMOTE_USER: Extend UserRemoteUserModelView
+:AUTH_OID: Extend UserOIDModelView
+:AUTH_OAUTH: Extend UserOAuthModelView
 
-::
+So using AUTH_DB::
 
     from flask_appbuilder.security.views import UserDBModelView
     from flask_babelpkg import lazy_gettext
@@ -411,9 +630,34 @@ If you're using:
              {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
         ]
 
-        add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'extra', 'password', 'conf_password']
-        list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles']
-        edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'extra']
+        add_columns = [
+            'first_name',
+            'last_name',
+            'username',
+            'active',
+            'email',
+            'roles',
+            'extra',
+            'password',
+            'conf_password'
+        ]
+        list_columns = [
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'active',
+            'roles'
+        ]
+        edit_columns = [
+            'first_name',
+            'last_name',
+            'username',
+            'active',
+            'email',
+            'roles',
+            'extra'
+        ]
 
 Next create your own SecurityManager class, overriding your model and view for User (create a sec.py)::
 
@@ -427,10 +671,10 @@ Next create your own SecurityManager class, overriding your model and view for U
 
 Note that this is for AUTH_DB, so if you're using:
 
-- AUTH_DB override userdbmodelview
-- AUTH_LDAP override userldapmodelview
-- AUTH_REMOTE_USER override userremoteusermodelview
-- AUTH_OID override useroidmodelview
+:AUTH_DB: Override userdbmodelview
+:AUTH_LDAP: Override userldapmodelview
+:AUTH_REMOTE_USER: Override userremoteusermodelview
+:AUTH_OID: Override useroidmodelview
 
 Finally (as shown on the previous example) tell F.A.B. to use your SecurityManager class, so when initializing
 **AppBuilder** (on __init__.py)::

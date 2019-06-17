@@ -11,4 +11,3 @@ class DirectChartWidget(RenderTemplateWidget):
 
 class MultipleChartWidget(RenderTemplateWidget):
     template = 'appbuilder/general/widgets/multiple_chart.html'
-

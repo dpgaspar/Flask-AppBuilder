@@ -65,10 +65,10 @@ This simple example will register your view with two routing urls on:
 No menu will be created for this and no security permissions will be created.
 If you want to enable detailed security access for your methods use the **@has_access** decorator.
 
-Now run this example
-::
+Now run this example::
 
-    $ fabmanager run
+    $ export FLASK_APP=app
+    $ flask run
 
 You can test your methods using the following urls:
 
@@ -209,6 +209,7 @@ On your form_post method, you can also return None, or a Flask response to rende
 
 ::
 
+    from flask import flash
     from flask_appbuilder import SimpleFormView
     from flask_babel import lazy_gettext as _
 

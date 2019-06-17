@@ -34,6 +34,21 @@ LOGMSG_ERR_SEC_ADD_PERMVIEW = "Creation of Permission View Error: {0}"
 """ Error adding permission view, format with err message """
 LOGMSG_ERR_SEC_DEL_PERMVIEW = "Remove Permission from View Error: {0}"
 """ Error deleting permission view, format with err message """
+LOGMSG_WAR_SEC_DEL_PERMVIEW = (
+    "Refused to delete permission view, assoc with role exists {}.{} {}"
+)
+LOGMSG_WAR_SEC_DEL_PERMISSION = (
+    "Refused to delete, permission {} does not exist"
+)
+LOGMSG_WAR_SEC_DEL_VIEWMENU = (
+    "Refused to delete, view menu {} does not exist"
+)
+LOGMSG_WAR_SEC_DEL_PERM_PVM = (
+    "Refused to delete permission {}, PVM exists {}"
+)
+LOGMSG_WAR_SEC_DEL_VIEWMENU_PVM = (
+    "Refused to delete view menu {}, PVM exists {}"
+)
 LOGMSG_ERR_SEC_ADD_PERMROLE = "Add Permission to Role Error: {0}"
 """ Error adding permission to role, format with err message """
 LOGMSG_ERR_SEC_DEL_PERMROLE = "Remove Permission to Role Error: {0}"
@@ -46,24 +61,30 @@ LOGMSG_ERR_SEC_NO_REGISTER_HASH = "Attempt to activate user with false hash: {0}
 """ Attempt to activate user with not registered hash, format with hash """
 LOGMSG_ERR_SEC_AUTH_LDAP = "LDAP Error {0}"
 """ Generic LDAP error, format with err message """
-LOGMSG_ERR_SEC_AUTH_LDAP_TLS = "LDAP Could not activate TLS on established connection with {0}"
+LOGMSG_ERR_SEC_AUTH_LDAP_TLS = (
+    "LDAP Could not activate TLS on established connection with {0}"
+)
 """ LDAP Could not activate TLS on established connection with server """
 LOGMSG_ERR_SEC_ADD_USER = "Error adding new user to database. {0}"
 """ Error adding user, format with err message """
 LOGMSG_ERR_SEC_UPD_USER = "Error updating user to database. {0} "
 """ Error updating user, format with err message """
-LOGMSG_WAR_SEC_NO_USER = "No user yet created, use fabmanager command to do it."
+LOGMSG_WAR_SEC_NO_USER = "No user yet created, use flask fab command to do it."
 """ Warning when app starts if no user exists on db """
-LOGMSG_WAR_SEC_NOLDAP_OBJ = "User self registration failed no LDAP object found for: {0}"
+LOGMSG_WAR_SEC_NOLDAP_OBJ = (
+    "User self registration failed no LDAP object found for: {0}"
+)
 
 LOGMSG_INF_SEC_ADD_PERMVIEW = "Created Permission View: {0}"
 """ Info when adding permission view, format with permission view class string """
 LOGMSG_INF_SEC_DEL_PERMVIEW = "Removed Permission View: {0} on {1}"
 """ Info when deleting permission view, format with permission name and view name """
 LOGMSG_INF_SEC_ADD_PERMROLE = "Added Permission {0} to role {1}"
-""" Info when adding permission to role, format with permission view class string and role name """
+""" Info when adding permission to role,
+format with permission view class string and role name """
 LOGMSG_INF_SEC_DEL_PERMROLE = "Removed Permission {0} to role {1}"
-""" Info when deleting permission to role, format with permission view class string and role name """
+""" Info when deleting permission to role,
+format with permission view class string and role name """
 LOGMSG_INF_SEC_ADD_ROLE = "Inserted Role: {0}"
 """ Info when added role, format with role name """
 LOGMSG_INF_SEC_NO_DB = "Security DB not found Creating all Models from Base"
@@ -72,13 +93,20 @@ LOGMSG_INF_SEC_ADD_USER = "Added user {0}"
 """ User added, format with username """
 LOGMSG_INF_SEC_UPD_USER = "Updated user {0}"
 """ User updated, format with username """
+LOGMSG_INF_SEC_UPD_ROLE = "Updated role {0}"
+""" Role updated, format with role name """
+LOGMSG_ERR_SEC_UPD_ROLE = "An error occurred updating role {0}"
+""" Role updated Error, format with role name """
 
 LOGMSG_INF_FAB_ADDON_ADDED = "Registered AddOn: {0}"
 """ Addon imported and registered """
 LOGMSG_ERR_FAB_ADDON_IMPORT = "An error occurred when importing declared addon {0}: {1}"
 """ Error on addon import, format with addon class path and error message """
-LOGMSG_ERR_FAB_ADDON_PROCESS = "An error occurred when processing declared addon {0}: {1}"
-""" Error on addon processing (pre, register, post), format with addon class path and error message """
+LOGMSG_ERR_FAB_ADDON_PROCESS = (
+    "An error occurred when processing declared addon {0}: {1}"
+)
+""" Error on addon processing (pre, register, post),
+format with addon class path and error message """
 
 
 LOGMSG_ERR_FAB_ADD_PERMISSION_MENU = "Add Permission on Menu Error: {0}"
@@ -107,12 +135,11 @@ LOGMSG_INF_FAB_ADD_VIEW = "Registering class {0} on menu {1}"
 """ Inform that view class was added, format with class name, name"""
 
 
-
 FLAMSG_ERR_SEC_ACCESS_DENIED = lazy_gettext("Access is Denied")
 """ Access denied flash message """
 
 
-PERMISSION_PREFIX = 'can_'
+PERMISSION_PREFIX = "can_"
 """ Prefix to be concatenated to permission names, and inserted in the backend """
 
 AUTH_OID = 0
@@ -121,3 +148,58 @@ AUTH_LDAP = 2
 AUTH_REMOTE_USER = 3
 AUTH_OAUTH = 4
 """ Constants for supported authentication types """
+
+# -----------------------------------
+#  REST API Constants
+# -----------------------------------
+
+API_SECURITY_VERSION = "v1"
+API_SECURITY_PROVIDER_DB = "db"
+API_SECURITY_PROVIDER_LDAP = "ldap"
+API_SECURITY_USERNAME_KEY = "username"
+API_SECURITY_PASSWORD_KEY = "password"
+API_SECURITY_PROVIDER_KEY = "provider"
+API_SECURITY_REFRESH_KEY = "refresh"
+API_SECURITY_ACCESS_TOKEN_KEY = "access_token"
+API_SECURITY_REFRESH_TOKEN_KEY = "refresh_token"
+# Response keys
+
+API_ORDER_COLUMNS_RES_KEY = "order_columns"
+API_LABEL_COLUMNS_RES_KEY = "label_columns"
+API_LIST_COLUMNS_RES_KEY = "list_columns"
+API_SHOW_COLUMNS_RES_KEY = "show_columns"
+API_ADD_COLUMNS_RES_KEY = "add_columns"
+API_EDIT_COLUMNS_RES_KEY = "edit_columns"
+API_DESCRIPTION_COLUMNS_RES_KEY = "description_columns"
+API_RESULT_RES_KEY = "result"
+API_FILTERS_RES_KEY = "filters"
+API_PERMISSIONS_RES_KEY = "permissions"
+
+API_LIST_TITLE_RES_KEY = "list_title"
+API_ADD_TITLE_RES_KEY = "add_title"
+API_EDIT_TITLE_RES_KEY = "edit_title"
+API_SHOW_TITLE_RES_KEY = "show_title"
+
+# Request Rison keys
+
+API_URI_RIS_KEY = "q"
+API_ORDER_COLUMNS_RIS_KEY = "order_columns"
+API_LABEL_COLUMNS_RIS_KEY = "label_columns"
+API_LIST_COLUMNS_RIS_KEY = "list_columns"
+API_SHOW_COLUMNS_RIS_KEY = "show_columns"
+API_ADD_COLUMNS_RIS_KEY = "add_columns"
+API_EDIT_COLUMNS_RIS_KEY = "edit_columns"
+API_DESCRIPTION_COLUMNS_RIS_KEY = "description_columns"
+API_FILTERS_RIS_KEY = "filters"
+API_PERMISSIONS_RIS_KEY = "permissions"
+API_SELECT_COLUMNS_RIS_KEY = "columns"
+API_SELECT_KEYS_RIS_KEY = "keys"
+API_ORDER_COLUMN_RIS_KEY = "order_column"
+API_ORDER_DIRECTION_RIS_KEY = "order_direction"
+API_PAGE_INDEX_RIS_KEY = "page"
+API_PAGE_SIZE_RIS_KEY = "page_size"
+
+API_LIST_TITLE_RIS_KEY = "list_title"
+API_ADD_TITLE_RIS_KEY = "add_title"
+API_EDIT_TITLE_RIS_KEY = "edit_title"
+API_SHOW_TITLE_RIS_KEY = "show_title"

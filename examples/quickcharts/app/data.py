@@ -1,15 +1,25 @@
-import logging
 import datetime
+import logging
 import random
-from app import db
-from .models import CountryStats, Country, PoliticalType
+
+from . import db
+from .models import Country, CountryStats, PoliticalType
 
 log = logging.getLogger(__name__)
 
 
 def fill_data():
-    countries = ['Portugal', 'Germany', 'Spain', 'France', 'USA', 'China', 'Russia', 'Japan']
-    politicals = ['Democratic', 'Authorative']
+    countries = [
+        "Portugal",
+        "Germany",
+        "Spain",
+        "France",
+        "USA",
+        "China",
+        "Russia",
+        "Japan",
+    ]
+    politicals = ["Democratic", "Authorative"]
     for country in countries:
         c = Country(name=country)
         try:
@@ -43,4 +53,3 @@ def fill_data():
     except Exception as e:
         log.error("Update ViewMenu error: {0}".format(str(e)))
         db.session.rollback()
-

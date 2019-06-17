@@ -1,9 +1,0 @@
-{% extends "appbuilder/general/model/list.html" %}
-
-
-{% block list_list scoped %}
-    <div>
-        {{ widget_arg }}
-		{{ widgets.get('list')(widget_arg=widget_arg)|safe }}
-    </div>
-{% endblock %}
