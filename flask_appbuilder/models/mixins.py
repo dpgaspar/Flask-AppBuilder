@@ -49,7 +49,11 @@ class AuditMixin(object):
     def datetime_now_without_microseconds():
         return datetime.datetime.now().replace(microsecond=0)
 
-    created_on = Column(DateTime, default=datetime_now_without_microseconds, nullable=False)
+    created_on = Column(
+        DateTime, 
+        default=datetime_now_without_microseconds, 
+        nullable=False,
+    )
     changed_on = Column(
         DateTime,
         default=datetime_now_without_microseconds,
