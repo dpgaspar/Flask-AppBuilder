@@ -46,11 +46,14 @@ class AuditMixin(object):
         :changed by:
     """
 
-    created_on = Column(DateTime, default=datetime.datetime.now, nullable=False)
+    def datetime_now_without_microseconds():
+        return datetime.datetime.now().replace(microsecond=0)
+
+    created_on = Column(DateTime, default=datetime_now_without_microseconds, nullable=False)
     changed_on = Column(
         DateTime,
-        default=datetime.datetime.now,
-        onupdate=datetime.datetime.now,
+        default=datetime_now_without_microseconds,
+        onupdate=datetime_now_without_microseconds,
         nullable=False,
     )
 
