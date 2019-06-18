@@ -50,8 +50,8 @@ class AuditMixin(object):
         return datetime.datetime.now().replace(microsecond=0)
 
     created_on = Column(
-        DateTime, 
-        default=datetime_now_without_microseconds, 
+        DateTime,
+        default=datetime_now_without_microseconds,
         nullable=False,
     )
     changed_on = Column(
