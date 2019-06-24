@@ -279,8 +279,8 @@ class SecurityManager(BaseSecurityManager):
             .join(
                 assoc_permissionview_role,
                 and_(
-                    (self.permissionview_model.id
-                     == assoc_permissionview_role.c.permission_view_id)
+                    (self.permissionview_model.id ==
+                     assoc_permissionview_role.c.permission_view_id)
                 ),
             )
             .join(self.role_model)
