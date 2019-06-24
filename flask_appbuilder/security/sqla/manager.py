@@ -325,11 +325,9 @@ class SecurityManager(BaseSecurityManager):
             log.warning(c.LOGMSG_WAR_SEC_DEL_PERMISSION.format(name))
             return False
         try:
-            pvms = (
-                self.get_session.query(self.permissionview_model)
-                .filter(self.permissionview_model.permission == perm)
-                .all()
-            )
+            pvms = self.get_session.query(self.permissionview_model).filter(
+                self.permissionview_model.permission == perm
+            ).all()
             if pvms:
                 log.warning(c.LOGMSG_WAR_SEC_DEL_PERM_PVM.format(perm, pvms))
                 return False
@@ -387,11 +385,9 @@ class SecurityManager(BaseSecurityManager):
             log.warning(c.LOGMSG_WAR_SEC_DEL_VIEWMENU.format(name))
             return False
         try:
-            pvms = (
-                self.get_session.query(self.permissionview_model)
-                .filter(self.permissionview_model.view_menu == view_menu)
-                .all()
-            )
+            pvms = self.get_session.query(self.permissionview_model).filter(
+                self.permissionview_model.view_menu == view_menu
+            ).all()
             if pvms:
                 log.warning(c.LOGMSG_WAR_SEC_DEL_VIEWMENU_PVM.format(view_menu, pvms))
                 return False
@@ -446,7 +442,10 @@ class SecurityManager(BaseSecurityManager):
         """
         if not (permission_name and view_menu_name):
             return None
-        pv = self.find_permission_view_menu(permission_name, view_menu_name)
+        pv = self.find_permission_view_menu(
+            permission_name,
+            view_menu_name
+        )
         if pv:
             return pv
         vm = self.add_view_menu(view_menu_name)
@@ -468,11 +467,9 @@ class SecurityManager(BaseSecurityManager):
         pv = self.find_permission_view_menu(permission_name, view_menu_name)
         if not pv:
             return
-        roles_pvs = (
-            self.get_session.query(self.role_model)
-            .filter(self.role_model.permissions.contains(pv))
-            .first()
-        )
+        roles_pvs = self.get_session.query(self.role_model).filter(
+            self.role_model.permissions.contains(pv)
+        ).first()
         if roles_pvs:
             log.warning(
                 c.LOGMSG_WAR_SEC_DEL_PERMVIEW.format(
