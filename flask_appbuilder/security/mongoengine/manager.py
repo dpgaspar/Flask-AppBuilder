@@ -193,9 +193,9 @@ class SecurityManager(BaseSecurityManager):
         """
         return self.permission_model.objects(name=name).first()
 
-    def find_permissions_for_roles(self, view_name, permission_name, role_names):
-        for role_name in role_names:
-            role = self.find_role(role_name)
+    def find_permissions_for_roles(self, view_name, permission_name, role_ids):
+        for role_id in role_ids:
+            role = self.role_model.objects(id=role_id).first()
             permissions = role.permissions
             if permissions:
                 for permission in permissions:

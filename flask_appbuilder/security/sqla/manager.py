@@ -273,22 +273,23 @@ class SecurityManager(BaseSecurityManager):
             self.get_session.query(self.permission_model).filter_by(name=name).first()
         )
 
-    def find_permissions_for_roles(self, view_name, permission_name, role_names):
+    def find_permissions_for_roles(self, view_name, permission_name, role_ids):
         return (
-            self.appbuilder.get_session.query(PermissionView)
+            self.appbuilder.get_session.query(self.permissionview_model)
             .join(
                 assoc_permissionview_role,
                 and_(
-                    PermissionView.id == assoc_permissionview_role.c.permission_view_id
+                    (self.permissionview_model.id
+                     == assoc_permissionview_role.c.permission_view_id)
                 ),
             )
-            .join(Role)
-            .join(Permission)
-            .join(ViewMenu)
+            .join(self.role_model)
+            .join(self.permission_model)
+            .join(self.viewmenu_model)
             .filter(
-                ViewMenu.name == view_name,
-                Permission.name == permission_name,
-                Role.name.in_(role_names),
+                self.viewmenu_model.name == view_name,
+                self.permission_model.name == permission_name,
+                self.role_model.id.in_(role_ids),
             )
             .all()
         )
