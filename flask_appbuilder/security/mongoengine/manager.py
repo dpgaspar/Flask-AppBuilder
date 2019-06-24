@@ -193,6 +193,18 @@ class SecurityManager(BaseSecurityManager):
         """
         return self.permission_model.objects(name=name).first()
 
+    def find_permissions_for_roles(self, view_name, permission_name, role_names):
+        for role_name in role_names:
+            role = self.find_role(role_name)
+            permissions = role.permissions
+            if permissions:
+                for permission in permissions:
+                    if (view_name == permission.view_menu.name) and (
+                            permission_name == permission.permission.name
+                    ):
+                        return True
+        return False
+
     def add_permission(self, name):
         """
             Adds a permission to the backend, model permission

@@ -1058,7 +1058,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def _has_view_access(self, user, permission_name, view_name):
         roles = user.roles
-
+        db_role_names = list()
         # First check against builtin (statically configured) roles
         # because no database query is needed
         for role in roles:
@@ -1069,18 +1069,15 @@ class BaseSecurityManager(AbstractSecurityManager):
                         view_name
                 ):
                     return True
+            else:
+                db_role_names.append(role.name)
 
         # Then check against database-stored roles
-        for role in roles:
-            permissions = role.permissions
-            if permissions:
-                for permission in permissions:
-                    if (view_name == permission.view_menu.name) and (
-                        permission_name == permission.permission.name
-                    ):
-                        return True
-
-        return False
+        return self.find_permissions_for_roles(
+            view_name,
+            permission_name,
+            db_role_names,
+        )
 
     def has_access(self, permission_name, view_name):
         """
@@ -1447,6 +1444,12 @@ class BaseSecurityManager(AbstractSecurityManager):
     def find_permission(self, name):
         """
             Finds and returns a Permission by name
+        """
+        raise NotImplementedError
+
+    def find_permissions_for_roles(self, view_name, permission_name, role_names):
+        """
+            Finds and returns permission views for a group of roles
         """
         raise NotImplementedError
 
