@@ -1059,6 +1059,9 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def _has_view_access(self, user, permission_name, view_name):
         roles = user.roles
+
+        # First check against builtin (statically configured) roles
+        # because no database query is needed
         for role in roles:
             if role.name in self.builtin_roles:
                 if self._has_access_builtin_roles(
@@ -1067,8 +1070,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                         view_name
                 ):
                     return True
-                else:
-                    continue
+
+        # Then check against database-stored roles
+        for role in roles:
             permissions = role.permissions
             if permissions:
                 for permission in permissions:
@@ -1076,6 +1080,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                         permission_name == permission.permission.name
                     ):
                         return True
+
         return False
 
     def has_access(self, permission_name, view_name):
