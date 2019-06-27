@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import Optional, List
 import uuid
 
 from sqlalchemy import and_, func
@@ -273,14 +273,28 @@ class SecurityManager(BaseSecurityManager):
             self.get_session.query(self.permission_model).filter_by(name=name).first()
         )
 
-    def find_permissions_for_roles(self, view_name, permission_name, role_ids):
-        return (
+    def exist_permission_on_roles(
+            self,
+            view_name: str,
+            permission_name: str,
+            role_ids: List[int],
+    ) -> bool:
+        """
+            Method to efficiently check if a certain permission exists
+            on a list of role id's. This is used by `has_access`
+
+        :param view_name: The view's name to check if exists on one of the roles
+        :param permission_name: The permission name to check if exists
+        :param role_ids: a list of Role ids
+        :return: Boolean
+        """
+        q = (
             self.appbuilder.get_session.query(self.permissionview_model)
             .join(
                 assoc_permissionview_role,
                 and_(
                     (self.permissionview_model.id ==
-                     assoc_permissionview_role.c.permission_view_id)
+                     assoc_permissionview_role.c.permission_view_id),
                 ),
             )
             .join(self.role_model)
@@ -291,8 +305,9 @@ class SecurityManager(BaseSecurityManager):
                 self.permission_model.name == permission_name,
                 self.role_model.id.in_(role_ids),
             )
-            .all()
+            .exists()
         )
+        return self.appbuilder.get_session.query(q).scalar()
 
     def add_permission(self, name):
         """
