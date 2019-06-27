@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import List, Optional
 import uuid
 
 from werkzeug.security import generate_password_hash
@@ -193,7 +193,12 @@ class SecurityManager(BaseSecurityManager):
         """
         return self.permission_model.objects(name=name).first()
 
-    def find_permissions_for_roles(self, view_name, permission_name, role_ids):
+    def exist_permission_on_roles(
+            self,
+            view_name: str,
+            permission_name: str,
+            role_ids: List[int],
+    ) -> bool:
         for role_id in role_ids:
             role = self.role_model.objects(id=role_id).first()
             permissions = role.permissions

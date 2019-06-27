@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, List
+from typing import List, Optional
 import uuid
 
 from sqlalchemy import and_, func
