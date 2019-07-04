@@ -1110,9 +1110,9 @@ class BaseCRUDView(BaseModelView):
             if form.validate():
                 self.process_form(form, True)
                 item = self.datamodel.obj()
-                form.populate_obj(item)
 
                 try:
+                    form.populate_obj(item)
                     self.pre_add(item)
                 except Exception as e:
                     flash(str(e), "danger")
@@ -1154,8 +1154,9 @@ class BaseCRUDView(BaseModelView):
             form._id = pk
             if form.validate():
                 self.process_form(form, False)
-                form.populate_obj(item)
+
                 try:
+                    form.populate_obj(item)
                     self.pre_update(item)
                 except Exception as e:
                     flash(str(e), "danger")
