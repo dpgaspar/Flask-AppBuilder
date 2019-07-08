@@ -473,7 +473,10 @@ class BaseApi(object):
                 )
             )
             if yaml_doc_string:
-                operations[method.lower()] = yaml_doc_string.get(method.lower(), {})
+                operation_spec = yaml_doc_string.get(method.lower(), {})
+                if self.get_method_permission(func.__name__):
+                    operation_spec['security'] = [{'jwt': []}]
+                operations[method.lower()] = operation_spec
             else:
                 operations[method.lower()] = {}
 
@@ -521,8 +524,9 @@ class BaseApi(object):
         if self.method_permission_name:
             return self.method_permission_name.get(method_name)
         else:
-            return getattr(
-                getattr(self, method_name), "_permission_name")
+            if hasattr(getattr(self, method_name), "_permission_name"):
+                return getattr(
+                    getattr(self, method_name), "_permission_name")
 
     def set_response_key_mappings(self, response, func, rison_args, **kwargs):
         if not hasattr(func, "_response_key_func_mappings"):

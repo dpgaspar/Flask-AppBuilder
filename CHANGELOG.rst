@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.5
+-----------------------------------
+
+- New, #1040, #1041 Bump prison to 0.1.2 and remove requests dependency
+- Fix, #1042 is_item_visible confusing behaviour with base_permissions when perm is still on DB
+
 Improvements and Bug fixes on 2.1.4
 -----------------------------------
 
