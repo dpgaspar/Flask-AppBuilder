@@ -1,6 +1,14 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.6
+-----------------------------------
+
+- Fix, #1050 Catch exceptions on populating forms
+- Fix, #1046 API include openapi security spec on paths
+- Fix, #1048 API include refresh token on openapi security specs
+- Fix, #1045, #1044 Performance improvement on permission checks
+
 Improvements and Bug fixes on 2.1.5
 -----------------------------------
 
