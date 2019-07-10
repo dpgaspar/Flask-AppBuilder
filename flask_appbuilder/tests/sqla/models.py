@@ -1,7 +1,7 @@
 import enum
 
 from flask_appbuilder import Model
-from marshmallow import ValidationError
+from marshmallow import fields, post_load, Schema, ValidationError
 from sqlalchemy import (
     Column,
     Date,
@@ -38,6 +38,19 @@ class Model1(Model):
         )
 
 
+def validate_field_string(n):
+    if n[0] != 'A':
+        raise ValidationError('Name must start with an A')
+
+
+class Model1CustomSchema(Schema):
+    name = fields.Str(validate=validate_name)
+
+    @post_load
+    def process(self, data):
+        return Model1(**data)
+
+
 class Model2(Model):
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
@@ -63,6 +76,27 @@ class Model3(Model):
 
     def __repr__(self):
         return str(self.field_string)
+
+
+class Model4(Model):
+    id = Column(Integer(), primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+    model1_1_id = Column(Integer, ForeignKey("model1.id"), nullable=False)
+    model1_1 = relationship("Model1", foreign_keys=[model1_1_id])
+    model1_2_id = Column(Integer, ForeignKey("model1.id"), nullable=False)
+    model1_2 = relationship("Model1", foreign_keys=[model1_2_id])
+
+    def __repr__(self):
+        return str(self.field_string)
+
+
+class ModelWithProperty(Model):
+    id = Column(Integer, primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+
+    @property
+    def custom_property(self):
+        return self.field_string + "_custom"
 
 
 class TmpEnum(enum.Enum):
@@ -133,6 +167,7 @@ class ModelMMChildRequired(Model):
 
 def insert_data(session, count):
     model1_collection = list()
+    # Fill model1
     for i in range(count):
         model = Model1()
         model.field_string = "test{}".format(i)
@@ -141,6 +176,7 @@ def insert_data(session, count):
         session.add(model)
         session.commit()
         model1_collection.append(model)
+    # Fill model2
     for i in range(count):
         model = Model2()
         model.field_string = "test{}".format(i)
@@ -149,10 +185,19 @@ def insert_data(session, count):
         model.group = model1_collection[i]
         session.add(model)
         session.commit()
+    # Fill model with enums
     for i in range(count):
         model = ModelWithEnums()
         model.enum1 = "e1"
         model.enum2 = TmpEnum.e2
+        session.add(model)
+        session.commit()
+    # Fill Model4
+    for i in range(count):
+        model = Model4()
+        model.field_string = "test{}".format(i)
+        model.model1_1 = model1_collection[i]
+        model.model1_2 = model1_collection[i]
         session.add(model)
         session.commit()
 
@@ -181,5 +226,11 @@ def insert_data(session, count):
         model = ModelMMParentRequired()
         model.field_string = str(i)
         model.children = children_required
+        session.add(model)
+        session.commit()
+
+    for i in range(count):
+        model = ModelWithProperty()
+        model.field_string = str(i)
         session.add(model)
         session.commit()

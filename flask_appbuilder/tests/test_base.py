@@ -4,7 +4,6 @@ import logging
 import os
 import random
 import string
-import unittest
 
 from flask import redirect, request, session
 from flask_appbuilder import SQLA
@@ -24,6 +23,7 @@ from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView
 import jinja2
 from nose.tools import eq_, ok_
 
+from .base import FABTestCase
 from .sqla.models import Model1, Model2, Model3, ModelWithEnums, TmpEnum
 
 
@@ -48,12 +48,14 @@ PASSWORD_READONLY = "readonly"
 log = logging.getLogger(__name__)
 
 
-class FlaskTestCase(unittest.TestCase):
+class FlaskTestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.models.sqla.interface import SQLAInterface
         from flask_appbuilder.views import ModelView
+        from sqlalchemy.engine import Engine
+        from sqlalchemy import event
 
         self.app = Flask(__name__)
         self.app.jinja_env.undefined = jinja2.StrictUndefined
@@ -69,6 +71,14 @@ class FlaskTestCase(unittest.TestCase):
                 [".*", "can_show"]
             ]
         }
+        logging.basicConfig(level=logging.ERROR)
+
+        @event.listens_for(Engine, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            # Will force sqllite contraint foreign keys
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -131,17 +141,17 @@ class FlaskTestCase(unittest.TestCase):
 
             def post_add_redirect(self):
                 return redirect(
-                    "model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
+                    "/model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
                 )
 
             def post_edit_redirect(self):
                 return redirect(
-                    "model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
+                    "/model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
                 )
 
             def post_delete_redirect(self):
                 return redirect(
-                    "model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
+                    "/model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
                 )
 
         class Model1Filtered1View(ModelView):
@@ -213,30 +223,6 @@ class FlaskTestCase(unittest.TestCase):
         class ModelWithEnumsView(ModelView):
             datamodel = SQLAInterface(ModelWithEnums)
 
-        class Model1PermOverride(ModelView):
-            datamodel = SQLAInterface(Model1)
-            class_permission_name = 'view'
-            method_permission_name = {
-                "list": "access",
-                "show": "access",
-                "edit": "access",
-                "add": "access",
-                "delete": "access",
-                "download": "access",
-                "api_readvalues": "access",
-                "api_column_edit": "access",
-                "api_column_add": "access",
-                "api_delete": "access",
-                "api_update": "access",
-                "api_create": "access",
-                "api_get": "access",
-                "api_read": "access",
-                "api": "access"
-            }
-
-        self.model1permoverride = Model1PermOverride
-        self.appbuilder.add_view_no_menu(Model1PermOverride)
-
         self.appbuilder.add_view(Model1View, "Model1", category="Model1")
         self.appbuilder.add_view(
             Model1ViewWithRedirects, "Model1ViewWithRedirects", category="Model1"
@@ -295,18 +281,6 @@ class FlaskTestCase(unittest.TestCase):
             TEST HELPER FUNCTIONS
         ---------------------------------
     """
-
-    def login(self, client, username, password):
-        # Login with default admin
-        return client.post(
-            "/login/",
-            data=dict(username=username, password=password),
-            follow_redirects=True,
-        )
-
-    def logout(self, client):
-        return client.get("/logout/")
-
     def insert_data(self):
         for x, i in zip(string.ascii_letters[:23], range(23)):
             model = Model1(field_string="%stest" % (x), field_integer=i)
@@ -354,14 +328,14 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 35)
+        eq_(len(self.appbuilder.baseviews), 34)
 
     def test_back(self):
         """
             Test Back functionality
         """
         with self.app.test_client() as c:
-            self.login(c, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+            self.browser_login(c, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
             c.get("/model1view/list/?_flt_0_field_string=f")
             c.get("/model2view/list/")
             c.get("/back", follow_redirects=True)
@@ -406,21 +380,21 @@ class FlaskTestCase(unittest.TestCase):
         eq_(rv.status_code, 302)
 
         # Login and list with admin
-        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         rv = client.get("/model1view/list/")
         eq_(rv.status_code, 200)
         rv = client.get("/model2view/list/")
         eq_(rv.status_code, 200)
 
         # Logout and and try to list
-        self.logout(client)
+        self.browser_logout(client)
         rv = client.get("/model1view/list/")
         eq_(rv.status_code, 302)
         rv = client.get("/model2view/list/")
         eq_(rv.status_code, 302)
 
         # Invalid Login
-        rv = self.login(client, DEFAULT_ADMIN_USER, "password")
+        rv = self.browser_login(client, DEFAULT_ADMIN_USER, "password")
         data = rv.data.decode("utf-8")
         ok_(INVALID_LOGIN_STRING in data)
 
@@ -430,7 +404,7 @@ class FlaskTestCase(unittest.TestCase):
         """
         self.insert_data()
         client = self.app.test_client()
-        self.login(client, USERNAME_READONLY, PASSWORD_READONLY)
+        self.browser_login(client, USERNAME_READONLY, PASSWORD_READONLY)
         # Test unauthorized GET
         rv = client.get("/model1view/list/")
         eq_(rv.status_code, 200)
@@ -455,7 +429,7 @@ class FlaskTestCase(unittest.TestCase):
         ok_(ACCESS_IS_DENIED in data)
 
         # Reset My password
-        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         rv = client.get("/users/action/resetmypassword/1", follow_redirects=True)
         data = rv.data.decode("utf-8")
         ok_("Reset Password Form" in data)
@@ -465,8 +439,8 @@ class FlaskTestCase(unittest.TestCase):
             follow_redirects=True,
         )
         eq_(rv.status_code, 200)
-        self.logout(client)
-        self.login(client, DEFAULT_ADMIN_USER, "password")
+        self.browser_logout(client)
+        self.browser_login(client, DEFAULT_ADMIN_USER, "password")
         rv = client.post(
             "/resetmypassword/form",
             data=dict(
@@ -494,7 +468,7 @@ class FlaskTestCase(unittest.TestCase):
             Test Generic Interface for generic-alter datasource
         """
         client = self.app.test_client()
-        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         rv = client.get("/psview/list")
         rv.data.decode("utf-8")
 
@@ -503,7 +477,7 @@ class FlaskTestCase(unittest.TestCase):
             Test Model add, delete, edit
         """
         client = self.app.test_client()
-        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
         rv = client.post(
             "/model1view/add",
@@ -548,7 +522,7 @@ class FlaskTestCase(unittest.TestCase):
             from urllib.parse import quote
 
         client = self.app.test_client()
-        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
         rv = client.post(
             "/model3view/add",
@@ -587,7 +561,7 @@ class FlaskTestCase(unittest.TestCase):
             Test Model add, delete, edit for Model with Enum Columns
         """
         client = self.app.test_client()
-        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
         data = {"enum1": u"e1", "enum2": "e1"}
         rv = client.post("/modelwithenumsview/add", data=data, follow_redirects=True)
@@ -615,7 +589,7 @@ class FlaskTestCase(unittest.TestCase):
             Test ModelView's formatters_columns
         """
         client = self.app.test_client()
-        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data()
         rv = client.get("/model1formattedview/list/")
         eq_(rv.status_code, 200)
@@ -631,7 +605,7 @@ class FlaskTestCase(unittest.TestCase):
             Test Model redirects after add, delete, edit
         """
         client = self.app.test_client()
-        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
         model1 = Model1(field_string="Test Redirects")
         self.db.session.add(model1)
@@ -679,7 +653,7 @@ class FlaskTestCase(unittest.TestCase):
             Test add_exclude_columns, edit_exclude_columns, show_exclude_columns
         """
         client = self.app.test_client()
-        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         rv = client.get("/model22view/add")
         eq_(rv.status_code, 200)
         data = rv.data.decode("utf-8")
@@ -711,7 +685,7 @@ class FlaskTestCase(unittest.TestCase):
             Test add and edit form related fields filter
         """
         client = self.app.test_client()
-        rv = self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data2()
 
         # Base filter string starts with
@@ -733,7 +707,7 @@ class FlaskTestCase(unittest.TestCase):
         self.insert_data()
 
         client = self.app.test_client()
-        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
         rv = client.post(
             "/model1view/list?_oc_Model1View=field_string&_od_Model1View=asc",
@@ -759,7 +733,7 @@ class FlaskTestCase(unittest.TestCase):
             Test Model add validations
         """
         client = self.app.test_client()
-        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
         rv = client.post(
             "/model1view/add",
@@ -797,7 +771,7 @@ class FlaskTestCase(unittest.TestCase):
             Test Model edit validations
         """
         client = self.app.test_client()
-        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
         client.post(
             "/model1view/add",
@@ -832,7 +806,7 @@ class FlaskTestCase(unittest.TestCase):
             Test Model base filtered views
         """
         client = self.app.test_client()
-        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data()
         models = self.db.session.query(Model1).all()
         eq_(len(models), 23)
@@ -854,7 +828,7 @@ class FlaskTestCase(unittest.TestCase):
             Tests a model's field has a method
         """
         client = self.app.test_client()
-        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data2()
         rv = client.get("/model2view/list/")
         eq_(rv.status_code, 200)
@@ -866,7 +840,7 @@ class FlaskTestCase(unittest.TestCase):
             Test CompactCRUD Mixin view
         """
         client = self.app.test_client()
-        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data2()
         rv = client.get("/model1compactview/list/")
         eq_(rv.status_code, 200)
@@ -898,7 +872,7 @@ class FlaskTestCase(unittest.TestCase):
             Test form_action in add, form_action in edit (CompactCRUDMixin)
         """
         client = self.app.test_client()
-        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
 
         # Make sure we have something to edit.
         self.insert_data()
@@ -923,7 +897,7 @@ class FlaskTestCase(unittest.TestCase):
             Test Various Chart views
         """
         client = self.app.test_client()
-        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data2()
         log.info("CHART TEST")
         rv = client.get("/model2chartview/chart/")
@@ -943,7 +917,7 @@ class FlaskTestCase(unittest.TestCase):
             Test Master detail view
         """
         client = self.app.test_client()
-        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data2()
         rv = client.get("/model1masterview/list/")
         eq_(rv.status_code, 200)
@@ -960,7 +934,7 @@ class FlaskTestCase(unittest.TestCase):
         Testing the api/read endpoint
         """
         client = self.app.test_client()
-        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data()
         rv = client.get("/model1formattedview/api/read")
         eq_(rv.status_code, 200)
@@ -974,7 +948,7 @@ class FlaskTestCase(unittest.TestCase):
         Testing the api/create endpoint
         """
         client = self.app.test_client()
-        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         rv = client.post(
             "/model1view/api/create",
             data=dict(field_string="zzz"),
@@ -990,7 +964,7 @@ class FlaskTestCase(unittest.TestCase):
         POST data
         """
         client = self.app.test_client()
-        self.login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
         self.insert_data()
         item = self.db.session.query(Model1).filter_by(id=1).one()
         field_integer_before = item.field_integer
@@ -1004,10 +978,37 @@ class FlaskTestCase(unittest.TestCase):
         eq_(item.field_string, "zzz")
         eq_(item.field_integer, field_integer_before)
 
-    def test_permission_override(self):
+    def test_class_method_permission_override(self):
         """
-            MVC: Test permission name override
+            MVC: Test class method permission name override
         """
+        from flask_appbuilder import ModelView
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+        class Model1PermOverride(ModelView):
+            datamodel = SQLAInterface(Model1)
+            class_permission_name = 'view'
+            method_permission_name = {
+                "list": "access",
+                "show": "access",
+                "edit": "access",
+                "add": "access",
+                "delete": "access",
+                "download": "access",
+                "api_readvalues": "access",
+                "api_column_edit": "access",
+                "api_column_add": "access",
+                "api_delete": "access",
+                "api_update": "access",
+                "api_create": "access",
+                "api_get": "access",
+                "api_read": "access",
+                "api": "access"
+            }
+
+        self.model1permoverride = Model1PermOverride
+        self.appbuilder.add_view_no_menu(Model1PermOverride)
+
         role = self.appbuilder.sm.add_role("Test")
         pvm = self.appbuilder.sm.find_permission_view_menu(
             "can_access",
@@ -1020,7 +1021,7 @@ class FlaskTestCase(unittest.TestCase):
 
         client = self.app.test_client()
 
-        self.login(client, "test", "test")
+        self.browser_login(client, "test", "test")
         rv = client.get("/model1permoverride/list/")
         eq_(rv.status_code, 200)
         rv = client.post(
@@ -1038,6 +1039,171 @@ class FlaskTestCase(unittest.TestCase):
         model = self.db.session.query(Model1).first()
         eq_(model.field_string, u"test1")
         eq_(model.field_integer, 1)
+
+    def test_method_permission_override(self):
+        """
+            MVC: Test method permission name override
+        """
+        from flask_appbuilder import ModelView
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+        class Model1PermOverride(ModelView):
+            datamodel = SQLAInterface(Model1)
+            method_permission_name = {
+                "list": "read",
+                "show": "read",
+                "edit": "write",
+                "add": "write",
+                "delete": "write",
+                "download": "read",
+                "api_readvalues": "read",
+                "api_column_edit": "write",
+                "api_column_add": "write",
+                "api_delete": "write",
+                "api_update": "write",
+                "api_create": "write",
+                "api_get": "read",
+                "api_read": "read",
+                "api": "read"
+            }
+
+        self.model1permoverride = Model1PermOverride
+        self.appbuilder.add_view_no_menu(Model1PermOverride)
+
+        role = self.appbuilder.sm.add_role("Test")
+        pvm_read = self.appbuilder.sm.find_permission_view_menu(
+            "can_read",
+            "Model1PermOverride"
+        )
+        pvm_write = self.appbuilder.sm.find_permission_view_menu(
+            "can_write",
+            "Model1PermOverride"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm_read)
+        self.appbuilder.sm.add_permission_role(role, pvm_write)
+
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+
+        client = self.app.test_client()
+        self.browser_login(client, "test", "test")
+
+        rv = client.post(
+            "/model1permoverride/add",
+            data=dict(
+                field_string="test1",
+                field_integer="1",
+                field_float="0.12",
+                field_date="2014-01-01",
+            ),
+            follow_redirects=True,
+        )
+        eq_(rv.status_code, 200)
+        model = self.db.session.query(Model1).first()
+        eq_(model.field_string, u"test1")
+        eq_(model.field_integer, 1)
+
+        # Verify write links are on the UI
+        rv = client.get("/model1permoverride/list/")
+        eq_(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        ok_("/model1permoverride/delete/1" in data)
+        ok_("/model1permoverride/add" in data)
+        ok_("/model1permoverride/edit/1" in data)
+        ok_("/model1permoverride/show/1" in data)
+
+        # Delete write permission from Test Role
+        role = self.appbuilder.sm.find_role('Test')
+        pvm_write = self.appbuilder.sm.find_permission_view_menu(
+            "can_write",
+            "Model1PermOverride"
+        )
+        self.appbuilder.sm.del_permission_role(role, pvm_write)
+
+        # Unauthorized delete
+        rv = client.get("/model1permoverride/delete/1")
+        eq_(rv.status_code, 302)
+        model = self.db.session.query(Model1).first()
+        eq_(model.field_string, u"test1")
+        eq_(model.field_integer, 1)
+
+        # Verify write links are gone from UI
+        rv = client.get("/model1permoverride/list/")
+        eq_(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        ok_("/model1permoverride/delete/1" not in data)
+        ok_("/model1permoverride/add/" not in data)
+        ok_("/model1permoverride/edit/1" not in data)
+        ok_("/model1permoverride/show/1" in data)
+
+    def test_action_permission_override(self):
+        """
+            MVC: Test action permission name override
+        """
+        from flask_appbuilder import action, ModelView
+        from flask_appbuilder.models.sqla.interface import SQLAInterface
+
+        class Model1PermOverride(ModelView):
+            datamodel = SQLAInterface(Model1)
+            method_permission_name = {
+                "list": "read",
+                "show": "read",
+                "edit": "write",
+                "add": "write",
+                "delete": "write",
+                "download": "read",
+                "api_readvalues": "read",
+                "api_column_edit": "write",
+                "api_column_add": "write",
+                "api_delete": "write",
+                "api_update": "write",
+                "api_create": "write",
+                "api_get": "read",
+                "api_read": "read",
+                "api": "read",
+                "action_one": "write"
+            }
+
+            @action("action1", "Action1", "", "fa-lock", multiple=True)
+            def action_one(self, item):
+                return "ACTION ONE"
+
+        self.model1permoverride = Model1PermOverride
+        self.appbuilder.add_view_no_menu(Model1PermOverride)
+
+        # Add a user and login before enabling CSRF
+        role = self.appbuilder.sm.add_role("Test")
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+        pvm_read = self.appbuilder.sm.find_permission_view_menu(
+            "can_read",
+            "Model1PermOverride"
+        )
+        pvm_write = self.appbuilder.sm.find_permission_view_menu(
+            "can_write",
+            "Model1PermOverride"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm_read)
+        self.appbuilder.sm.add_permission_role(role, pvm_write)
+
+        client = self.app.test_client()
+        self.browser_login(client, "test", "test")
+
+        rv = client.get("/model1permoverride/action/action1/1")
+        eq_(rv.status_code, 200)
+
+        # Delete write permission from Test Role
+        role = self.appbuilder.sm.find_role('Test')
+        pvm_write = self.appbuilder.sm.find_permission_view_menu(
+            "can_write",
+            "Model1PermOverride"
+        )
+        self.appbuilder.sm.del_permission_role(role, pvm_write)
+
+        rv = client.get("/model1permoverride/action/action1/1")
+        eq_(rv.status_code, 302)
 
     def test_permission_converge_compress(self):
         """
@@ -1087,10 +1253,6 @@ class FlaskTestCase(unittest.TestCase):
         # Remove previous class, Hack to test code change
         for i, baseview in enumerate(self.appbuilder.baseviews):
             if baseview.__class__.__name__ == "Model1View":
-                break
-        self.appbuilder.baseviews.pop(i)
-        for i, baseview in enumerate(self.appbuilder.baseviews):
-            if baseview.__class__.__name__ == "Model1PermOverride":
                 break
         self.appbuilder.baseviews.pop(i)
 

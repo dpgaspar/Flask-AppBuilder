@@ -1,9 +1,8 @@
 import json
 import logging
 import os
-import unittest
 
-from flask_appbuilder import SQLA
+from flask_appbuilder import ModelRestApi, SQLA
 from flask_appbuilder.const import (
     API_ADD_COLUMNS_RES_KEY,
     API_ADD_COLUMNS_RIS_KEY,
@@ -24,30 +23,30 @@ from flask_appbuilder.const import (
     API_PERMISSIONS_RIS_KEY,
     API_RESULT_RES_KEY,
     API_SECURITY_ACCESS_TOKEN_KEY,
-    API_SECURITY_PASSWORD_KEY,
-    API_SECURITY_PROVIDER_KEY,
-    API_SECURITY_USERNAME_KEY,
-    API_SECURITY_VERSION,
     API_SELECT_COLUMNS_RIS_KEY,
     API_SELECT_KEYS_RIS_KEY,
     API_SHOW_COLUMNS_RIS_KEY,
     API_SHOW_TITLE_RIS_KEY,
-    API_URI_RIS_KEY
+    API_URI_RIS_KEY,
 )
 from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
+from flask_appbuilder.models.sqla.interface import SQLAInterface
 from nose.tools import eq_
 import prison
 
+from .base import FABTestCase
 from .sqla.models import (
     insert_data,
     Model1,
     Model2,
+    Model4,
     ModelMMChild,
     ModelMMParent,
     ModelMMParentRequired,
     ModelWithEnums,
+    ModelWithProperty,
     TmpEnum,
-    validate_name
+    validate_name,
 )
 
 
@@ -62,12 +61,46 @@ USERNAME_READONLY = "readonly"
 PASSWORD_READONLY = "readonly"
 
 
-class FlaskTestCase(unittest.TestCase):
+class APICSRFTestCase(FABTestCase):
+    def setUp(self):
+        from flask import Flask
+        from flask_wtf import CSRFProtect
+        from flask_appbuilder import AppBuilder
+
+        self.app = Flask(__name__)
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
+        self.app.config["SECRET_KEY"] = "thisismyscretkey"
+        self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        self.app.config["WTF_CSRF_ENABLED"] = True
+
+        self.csrf = CSRFProtect(self.app)
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        self.create_admin_user(self.appbuilder, USERNAME, PASSWORD)
+
+    def test_auth_login(self):
+        """
+            REST Api: Test auth login CSRF
+        """
+        client = self.app.test_client()
+        rv = self._login(client, USERNAME, PASSWORD)
+        eq_(rv.status_code, 200)
+        assert json.loads(rv.data.decode("utf-8")).get(
+            API_SECURITY_ACCESS_TOKEN_KEY, False
+        )
+
+
+class APITestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.models.sqla.interface import SQLAInterface
-        from flask_appbuilder import ModelRestApi
+        from flask_appbuilder.api import (
+            BaseApi, ModelRestApi, protect, expose, rison, safe
+        )
+        from sqlalchemy.engine import Engine
+        from sqlalchemy import event
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
@@ -76,6 +109,7 @@ class FlaskTestCase(unittest.TestCase):
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
         self.app.config["WTF_CSRF_ENABLED"] = False
+        self.app.config["FAB_API_SWAGGER_UI"] = True
         self.app.config["FAB_ROLES"] = {
             "ReadOnly": [
                 [".*", "can_get"],
@@ -83,10 +117,46 @@ class FlaskTestCase(unittest.TestCase):
             ]
         }
 
+        @event.listens_for(Engine, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            # Will force sqllite contraint foreign keys
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
+
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
         # Create models and insert data
         insert_data(self.db.session, MODEL1_DATA_SIZE)
+
+        rison_schema = {
+            "type": "object",
+            "required": ["number"],
+            "properties": {
+                "number": {
+                    "type": "number"
+                }
+            }
+        }
+
+        class Base1Api(BaseApi):
+            @expose('/test1')
+            @protect()
+            @safe
+            @rison(rison_schema)
+            def test1(self, **kwargs):
+                return self.response(
+                    200,
+                    message=f"{kwargs['rison']['number'] + 1}"
+                )
+
+            @expose('/test2')
+            @protect()
+            @safe
+            def test2(self, **kwargs):
+                raise Exception
+
+        self.appbuilder.add_api(Base1Api)
 
         class Model1Api(ModelRestApi):
             datamodel = SQLAInterface(Model1)
@@ -196,6 +266,13 @@ class FlaskTestCase(unittest.TestCase):
         self.model2api = Model2Api
         self.appbuilder.add_api(Model2Api)
 
+        class Model2DottedNotationApi(ModelRestApi):
+            datamodel = SQLAInterface(Model2)
+            list_columns = ["field_string", "group.field_string"]
+            show_columns = list_columns
+
+        self.appbuilder.add_api(Model2DottedNotationApi)
+
         class Model2ApiFilteredRelFields(ModelRestApi):
             datamodel = SQLAInterface(Model2)
             list_columns = ["group"]
@@ -226,84 +303,28 @@ class FlaskTestCase(unittest.TestCase):
         self.model1permoverride = Model1PermOverride
         self.appbuilder.add_api(Model1PermOverride)
 
-        role_admin = self.appbuilder.sm.find_role("Admin")
-        self.appbuilder.sm.add_user(
-            USERNAME, "admin", "user", "admin@fab.org", role_admin, PASSWORD
-        )
-        role_read_only = self.appbuilder.sm.find_role("ReadOnly")
-        self.appbuilder.sm.add_user(
+        class ModelWithPropertyApi(ModelRestApi):
+            datamodel = SQLAInterface(ModelWithProperty)
+            list_columns = ['field_string', 'custom_property']
+
+        self.model1permoverride = ModelWithPropertyApi
+        self.appbuilder.add_api(ModelWithPropertyApi)
+
+        self.create_admin_user(self.appbuilder, USERNAME, PASSWORD)
+        self.create_user(
+            self.appbuilder,
             USERNAME_READONLY,
-            "readonly",
-            "readonly",
-            "readonly@fab.org",
-            role_read_only,
-            PASSWORD_READONLY
+            PASSWORD_READONLY,
+            "ReadOnly",
+            first_name="readonly",
+            last_name="readonly",
+            email="readonly@fab.org"
         )
 
     def tearDown(self):
         self.appbuilder = None
         self.app = None
         self.db = None
-
-    @staticmethod
-    def auth_client_get(client, token, uri):
-        return client.get(uri, headers={"Authorization": "Bearer {}".format(token)})
-
-    @staticmethod
-    def auth_client_delete(client, token, uri):
-        return client.delete(uri, headers={"Authorization": "Bearer {}".format(token)})
-
-    @staticmethod
-    def auth_client_put(client, token, uri, json):
-        return client.put(
-            uri, json=json, headers={"Authorization": "Bearer {}".format(token)}
-        )
-
-    @staticmethod
-    def auth_client_post(client, token, uri, json):
-        return client.post(
-            uri, json=json, headers={"Authorization": "Bearer {}".format(token)}
-        )
-
-    @staticmethod
-    def _login(client, username, password):
-        """
-            Login help method
-        :param client: Flask test client
-        :param username: username
-        :param password: password
-        :return: Flask client response class
-        """
-        return client.post(
-            "api/{}/security/login".format(API_SECURITY_VERSION),
-            data=json.dumps(
-                {
-                    API_SECURITY_USERNAME_KEY: username,
-                    API_SECURITY_PASSWORD_KEY: password,
-                    API_SECURITY_PROVIDER_KEY: "db",
-                }
-            ),
-            content_type="application/json",
-        )
-
-    def login(self, client, username, password):
-        # Login with default admin
-        rv = self._login(client, username, password)
-        try:
-            return json.loads(rv.data.decode("utf-8")).get("access_token")
-        except Exception:
-            return rv
-
-    def browser_login(self, client, username, password):
-        # Login with default admin
-        return client.post(
-            "/login/",
-            data=dict(username=username, password=password),
-            follow_redirects=True,
-        )
-
-    def browser_logout(self, client):
-        return client.get("/logout/")
 
     def test_auth_login(self):
         """
@@ -418,6 +439,66 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
 
+    def test_base_rison_argument(self):
+        """
+            REST Api: Test not a valid rison argument
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        uri = "api/v1/model1api/?{}={}".format(API_URI_RIS_KEY, "(columns!(not_valid))")
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 400)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(data, {"message": "Not a valid rison argument"})
+        uri = "api/v1/model1api/1?{}={}".format(API_URI_RIS_KEY, "(columns!(not_valid))")
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 400)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(data, {"message": "Not a valid rison argument"})
+
+    def test_base_rison_schema(self):
+        """
+            REST Api: Test rison schema validation
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        arguments = {"number": 1}
+        uri = "api/v1/base1api/test1?{}={}".format(
+            API_URI_RIS_KEY, prison.dumps(arguments)
+        )
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(data, {"message": "2"})
+
+        # Rison Schema type validation
+        arguments = {"number": "1"}
+        uri = "api/v1/base1api/test1?{}={}".format(
+            API_URI_RIS_KEY, prison.dumps(arguments)
+        )
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 400)
+
+        # Rison Schema validation required field
+        arguments = {"numbers": 1}
+        uri = "api/v1/base1api/test1?{}={}".format(
+            API_URI_RIS_KEY, prison.dumps(arguments)
+        )
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 400)
+
+    def test_base_safe(self):
+        """
+            REST Api: Test safe decorator 500
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        uri = "api/v1/base1api/test2"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 500)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(data, {"message": "Fatal error"})
+
     def test_get_item(self):
         """
             REST Api: Test get item
@@ -474,6 +555,22 @@ class FlaskTestCase(unittest.TestCase):
             )
             eq_(data[API_LABEL_COLUMNS_RES_KEY], {"field_integer": "Field Integer"})
             eq_(rv.status_code, 200)
+
+    def test_get_item_dotted_notation(self):
+        """
+            REST Api: Test get item with dotted notation
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        i = 1
+        uri = "api/v1/model2dottednotationapi/{}".format(i)
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(
+            data[API_RESULT_RES_KEY],
+            {'field_string': 'test0', 'group': {'field_string': 'test0'}}
+        )
+        eq_(rv.status_code, 200)
 
     def test_get_item_select_meta_data(self):
         """
@@ -617,6 +714,117 @@ class FlaskTestCase(unittest.TestCase):
         )
         eq_(rv.status_code, 200)
 
+    def test_get_list_dotted_notation(self):
+        """
+            REST Api: Test get list with dotted notation
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        rv = self.auth_client_get(client, token, "api/v1/model2dottednotationapi/")
+
+        data = json.loads(rv.data.decode("utf-8"))
+        # Tests count property
+        eq_(data["count"], MODEL1_DATA_SIZE)
+        # Tests data result default page size
+        eq_(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        i = 0
+        eq_(
+            data[API_RESULT_RES_KEY][i],
+            {'field_string': 'test0', 'group': {'field_string': 'test0'}}
+        )
+
+    def test_get_list_dotted_order(self):
+        """
+            REST Api: Test get list and order dotted notation
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        arguments = {
+            "order_column": "group.field_string",
+            "order_direction": "desc"
+        }
+        uri = "api/v1/model2dottednotationapi/?{}={}".format(
+            API_URI_RIS_KEY, prison.dumps(arguments)
+        )
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        # Tests count property
+        eq_(data["count"], MODEL1_DATA_SIZE)
+        # Tests data result default page size
+        eq_(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        i = 0
+        eq_(
+            data[API_RESULT_RES_KEY][i],
+            {'field_string': 'test9', 'group': {'field_string': 'test9'}}
+        )
+
+    def test_get_list_multiple_dotted_order(self):
+        """
+            REST Api: Test get list order multiple dotted notation
+        """
+        class Model4Api(ModelRestApi):
+            datamodel = SQLAInterface(Model4)
+            list_columns = [
+                'field_string',
+                'model1_1.field_string',
+                'model1_2.field_string',
+            ]
+
+        self.appbuilder.add_api(Model4Api)
+
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        # Test order asc for model1_1
+        arguments = {
+            "order_column": "model1_1.field_string",
+            "order_direction": "desc"
+        }
+        uri = "api/v1/model4api/?{}={}".format(
+            API_URI_RIS_KEY, prison.dumps(arguments)
+        )
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        # Tests count property
+        eq_(data["count"], MODEL1_DATA_SIZE)
+        # Tests data result default page size
+        eq_(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        i = 0
+        eq_(
+            data[API_RESULT_RES_KEY][i],
+            {
+                'field_string': 'test9',
+                'model1_1': {'field_string': 'test9'},
+                'model1_2': {'field_string': 'test9'}
+            }
+        )
+
+        # Test order desc for model1_2
+        arguments = {
+            "order_column": "model1_2.field_string",
+            "order_direction": "asc"
+        }
+        uri = "api/v1/model4api/?{}={}".format(
+            API_URI_RIS_KEY, prison.dumps(arguments)
+        )
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        # Tests count property
+        eq_(data["count"], MODEL1_DATA_SIZE)
+        # Tests data result default page size
+        eq_(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        i = 0
+        eq_(
+            data[API_RESULT_RES_KEY][i],
+            {
+                'field_string': 'test0',
+                'model1_1': {'field_string': 'test0'},
+                'model1_2': {'field_string': 'test0'}
+            }
+        )
+
     def test_get_list_order(self):
         """
             REST Api: Test get list order params
@@ -759,7 +967,6 @@ class FlaskTestCase(unittest.TestCase):
             "order_direction": "asc",
         }
         uri = "api/v1/model1api/?{}={}".format(API_URI_RIS_KEY, prison.dumps(arguments))
-        print("URI {}".format(uri))
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         eq_(len(data[API_RESULT_RES_KEY]), MAX_PAGE_SIZE)
@@ -1085,11 +1292,25 @@ class FlaskTestCase(unittest.TestCase):
         token = self.login(client, USERNAME, PASSWORD)
 
         pk = 2
-        uri = "api/v1/model1api/{}".format(pk)
+        uri = "api/v1/model2api/{}".format(pk)
         rv = self.auth_client_delete(client, token, uri)
         eq_(rv.status_code, 200)
-        model = self.db.session.query(Model1).get(pk)
+        model = self.db.session.query(Model2).get(pk)
         eq_(model, None)
+
+    def test_delete_item_integrity(self):
+        """
+            REST Api: Test delete item integrity
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        pk = 1
+        uri = "api/v1/model1api/{}".format(pk)
+        rv = self.auth_client_delete(client, token, uri)
+        eq_(rv.status_code, 422)
+        model = self.db.session.query(Model2).get(pk)
+        assert model
 
     def test_delete_item_not_found(self):
         """
@@ -1280,6 +1501,26 @@ class FlaskTestCase(unittest.TestCase):
         eq_(model.field_integer, MODEL1_DATA_SIZE + 1)
         eq_(model.field_float, float(MODEL1_DATA_SIZE + 1))
 
+    def test_create_item_bad_request(self):
+        """
+            REST Api: Test create item with bad request
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        item = dict(
+            field_string="test{}".format(MODEL1_DATA_SIZE + 1),
+            field_integer=MODEL1_DATA_SIZE + 1,
+            field_float=float(MODEL1_DATA_SIZE + 1),
+            field_date=None,
+        )
+        uri = "api/v1/model1api/"
+        rv = client.post(
+            uri, data=item, headers={"Authorization": "Bearer {}".format(token)}
+        )
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(rv.status_code, 400)
+        eq_(data, {'message': 'Request is not JSON'})
+
     def test_create_item_custom_validation(self):
         """
             REST Api: Test create item custom validation
@@ -1307,6 +1548,31 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.auth_client_post(client, token, uri, item)
         data = json.loads(rv.data.decode("utf-8"))
         eq_(rv.status_code, 201)
+
+    def test_create_item_custom_schema(self):
+        """
+            REST Api: Test create item custom schema
+        """
+        from .sqla.models import Model1CustomSchema
+
+        class Model1ApiCustomSchema(self.model1api):
+            add_model_schema = Model1CustomSchema()
+
+        self.appbuilder.add_api(Model1ApiCustomSchema)
+
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        item = dict(
+            field_string="test{}".format(MODEL1_DATA_SIZE + 1),
+            field_integer=MODEL1_DATA_SIZE + 1,
+            field_float=float(MODEL1_DATA_SIZE + 1),
+            field_date=None,
+        )
+        uri = "api/v1/model1customvalidationapi/"
+        rv = self.auth_client_post(client, token, uri, item)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(rv.status_code, 422)
+        eq_(data, {"message": {"field_string": ["Name must start with an A"]}})
 
     def test_create_item_val_size(self):
         """
@@ -1435,6 +1701,7 @@ class FlaskTestCase(unittest.TestCase):
         token = self.login(client, USERNAME, PASSWORD)
         uri = "api/v1/model1funcapi/"
         rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
         data = json.loads(rv.data.decode("utf-8"))
         # Tests count property
         eq_(data["count"], MODEL1_DATA_SIZE)
@@ -1447,6 +1714,27 @@ class FlaskTestCase(unittest.TestCase):
                 "{}.{}.{}.{}".format("test" + str(i - 1), i - 1, float(i - 1), None),
             )
 
+    def test_get_list_col_property(self):
+        """
+            REST Api: Test get list of objects with columns as property
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+        uri = "api/v1/modelwithpropertyapi/"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        # Tests count property
+        eq_(data["count"], MODEL1_DATA_SIZE)
+        # Tests data result default page size
+        eq_(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
+        for i in range(1, self.model1api.page_size):
+            item = data[API_RESULT_RES_KEY][i - 1]
+            eq_(
+                item["custom_property"],
+                "{}_custom".format(str(i - 1)),
+            )
+
     def test_openapi(self):
         """
             REST Api: Test OpenAPI spec
@@ -1457,10 +1745,35 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
 
-    def test_permission_override(self):
+    def test_swagger_ui(self):
         """
-            REST Api: Test permission name override
+            REST Api: Test Swagger UI
         """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME, PASSWORD)
+        uri = "swaggerview/v1"
+        rv = client.get(uri)
+        eq_(rv.status_code, 200)
+
+    def test_class_method_permission_override(self):
+        """
+            REST Api: Test class method permission name override
+        """
+        class Model2PermOverride1(ModelRestApi):
+            datamodel = SQLAInterface(Model2)
+            class_permission_name = 'api'
+            method_permission_name = {
+                "get_list": "access",
+                "get": "access",
+                "put": "access",
+                "post": "access",
+                "delete": "access",
+                "info": "access"
+            }
+
+        self.model2permoverride1 = Model2PermOverride1
+        self.appbuilder.add_api(Model2PermOverride1)
+
         role = self.appbuilder.sm.add_role("Test")
         pvm = self.appbuilder.sm.find_permission_view_menu(
             "can_access",
@@ -1473,23 +1786,90 @@ class FlaskTestCase(unittest.TestCase):
 
         client = self.app.test_client()
         token = self.login(client, "test", "test")
-        uri = "api/v1/model1permoverride/"
+        uri = "api/v1/model2permoverride1/"
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
-        uri = "api/v1/model1permoverride/_info"
+        uri = "api/v1/model2permoverride1/_info"
         rv = self.auth_client_get(client, token, uri)
         eq_(rv.status_code, 200)
-        uri = "api/v1/model1permoverride/1"
+        uri = "api/v1/model2permoverride1/1"
         rv = self.auth_client_delete(client, token, uri)
         eq_(rv.status_code, 200)
+
+    def test_method_permission_override(self):
+        """
+            REST Api: Test method permission name override
+        """
+        class Model2PermOverride2(ModelRestApi):
+            datamodel = SQLAInterface(Model2)
+            method_permission_name = {
+                "get_list": "read",
+                "get": "read",
+                "put": "write",
+                "post": "write",
+                "delete": "write",
+                "info": "read"
+            }
+
+        self.model2permoverride2 = Model2PermOverride2
+        self.appbuilder.add_api(Model2PermOverride2)
+
+        role = self.appbuilder.sm.add_role("Test")
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_read",
+            "Model2PermOverride2"
+        )
+        self.appbuilder.sm.add_permission_role(role, pvm)
+        self.appbuilder.sm.add_user(
+            "test", "test", "user", "test@fab.org", role, "test"
+        )
+
+        client = self.app.test_client()
+        token = self.login(client, "test", "test")
+        uri = "api/v1/model2permoverride2/"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        uri = "api/v1/model2permoverride2/_info"
+        rv = self.auth_client_get(client, token, uri)
+        eq_(rv.status_code, 200)
+        uri = "api/v1/model2permoverride2/1"
+        rv = self.auth_client_delete(client, token, uri)
+        eq_(rv.status_code, 401)
+
+    def test_base_permission_override(self):
+        """
+            REST Api: Test base perms with permission name override
+        """
+        class Model2PermOverride3(ModelRestApi):
+            datamodel = SQLAInterface(Model2)
+            method_permission_name = {
+                "get_list": "read",
+                "get": "read",
+                "put": "write",
+                "post": "write",
+                "delete": "write",
+                "info": "read"
+            }
+            base_permissions = ['can_write']
+
+        self.model2permoverride3 = Model2PermOverride3
+        self.appbuilder.add_api(Model2PermOverride3)
+
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_write",
+            "Model2PermOverride3"
+        )
+        eq_(pvm.permission.name, 'can_write')
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_read",
+            "Model2PermOverride3"
+        )
+        eq_(pvm, None)
 
     def test_permission_converge_compress(self):
         """
             REST Api: Test permission name converge compress
         """
-        from flask_appbuilder import ModelRestApi
-        from flask_appbuilder.models.sqla.interface import SQLAInterface
-
         class Model1PermConverge(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             class_permission_name = 'api2'
@@ -1555,9 +1935,6 @@ class FlaskTestCase(unittest.TestCase):
         """
             REST Api: Test permission name converge expand
         """
-        from flask_appbuilder import ModelRestApi
-        from flask_appbuilder.models.sqla.interface import SQLAInterface
-
         class Model1PermConverge(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             class_permission_name = 'Model1PermOverride'

@@ -1,6 +1,41 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.6
+-----------------------------------
+
+- Fix, #1050 Catch exceptions on populating forms
+- Fix, #1046 API include openapi security spec on paths
+- Fix, #1048 API include refresh token on openapi security specs
+- Fix, #1045, #1044 Performance improvement on permission checks
+
+Improvements and Bug fixes on 2.1.5
+-----------------------------------
+
+- New, #1040, #1041 Bump prison to 0.1.2 and remove requests dependency
+- Fix, #1042 is_item_visible confusing behaviour with base_permissions when perm is still on DB
+
+Improvements and Bug fixes on 2.1.4
+-----------------------------------
+
+- Fix, #1027 API dotted notation joins to same table
+- Fix, #1012 API default resource name must be lower case
+- Fix, #1013 Use csrf exempt by default when CSRFProtect is registered has a Flask extension
+- Fix, #1007 API Support for property decorated functions has models fields
+- Fix, #1002 Permission mapping
+- New, #1010 Support for UUID sqlalchemy fields has string fields on WTForms
+
+Improvements and Bug fixes on 2.1.3
+-----------------------------------
+
+- Fix, Index view override on class instantiation is discarded
+
+Improvements and Bug fixes on 2.1.2
+-----------------------------------
+
+- Fix, #993 App factory pattern, AppBuilder object can be fully configured using config keys
+- Fix, #994 If builtin role don't check db also, higher permission on DB would allow access
+
 Improvements and Bug fixes on 2.1.1
 -----------------------------------
 

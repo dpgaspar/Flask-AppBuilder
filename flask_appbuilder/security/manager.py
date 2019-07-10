@@ -1038,34 +1038,48 @@ class BaseSecurityManager(AbstractSecurityManager):
         else:
             return False
 
-    def _has_access_builtin_roles(self, role, permission_name, view_name):
-        for builtin_role_name, builtin_pvms in self.builtin_roles.items():
-            if role.name == builtin_role_name:
-                for pvm in builtin_pvms:
-                    _view_name = pvm[0]
-                    _permission_name = pvm[1]
-                    if (re.match(_view_name, view_name) and
-                            re.match(_permission_name, permission_name)):
-                        return True
+    def _has_access_builtin_roles(
+            self,
+            role,
+            permission_name: str,
+            view_name: str
+    ) -> bool:
+        """
+            Checks permission on builtin role
+        """
+        builtin_pvms = self.builtin_roles.get(role.name, [])
+        for pvm in builtin_pvms:
+            _view_name = pvm[0]
+            _permission_name = pvm[1]
+            if (re.match(_view_name, view_name) and
+                    re.match(_permission_name, permission_name)):
+                return True
         return False
 
-    def _has_view_access(self, user, permission_name, view_name):
+    def _has_view_access(
+            self, user: object, permission_name: str, view_name: str
+    ) -> bool:
         roles = user.roles
+        db_role_ids = list()
+        # First check against builtin (statically configured) roles
+        # because no database query is needed
         for role in roles:
-            if self._has_access_builtin_roles(
-                    role,
-                    permission_name,
-                    view_name
-            ):
-                return True
-            permissions = role.permissions
-            if permissions:
-                for permission in permissions:
-                    if (view_name == permission.view_menu.name) and (
-                        permission_name == permission.permission.name
-                    ):
-                        return True
-        return False
+            if role.name in self.builtin_roles:
+                if self._has_access_builtin_roles(
+                        role,
+                        permission_name,
+                        view_name
+                ):
+                    return True
+            else:
+                db_role_ids.append(role.id)
+
+        # Then check against database-stored roles
+        return self.exist_permission_on_roles(
+            view_name,
+            permission_name,
+            db_role_ids,
+        )
 
     def has_access(self, permission_name, view_name):
         """
@@ -1132,9 +1146,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         pv = self.find_permission_view_menu("menu_access", view_menu_name)
         if not pv:
             pv = self.add_permission_view_menu("menu_access", view_menu_name)
-            if self.auth_role_admin not in self.builtin_roles:
-                role_admin = self.find_role(self.auth_role_admin)
-                self.add_permission_role(role_admin, pv)
+        if self.auth_role_admin not in self.builtin_roles:
+            role_admin = self.find_role(self.auth_role_admin)
+            self.add_permission_role(role_admin, pv)
 
     def security_cleanup(self, baseviews, menus):
         """
@@ -1165,22 +1179,27 @@ class BaseSecurityManager(AbstractSecurityManager):
         self.security_converge(baseviews, menus)
 
     @staticmethod
-    def _get_new_old_permissions(
-            method_permission_name: Dict,
-            previous_permission_name: Dict,
-    ) -> Dict:
+    def _get_new_old_permissions(baseview) -> Dict:
         ret = dict()
-        for method_name, permission_name in method_permission_name.items():
-            old_permission_name = previous_permission_name.get(method_name)
+        for method_name, permission_name in baseview.method_permission_name.items():
+            old_permission_name = baseview.previous_method_permission_name.get(
+                method_name
+            )
+            # Actions do not get prefix when normally defined
+            if (hasattr(baseview, 'actions') and
+                    baseview.actions.get(old_permission_name)):
+                permission_prefix = ''
+            else:
+                permission_prefix = PERMISSION_PREFIX
             if old_permission_name:
                 if PERMISSION_PREFIX + permission_name not in ret:
                     ret[
                         PERMISSION_PREFIX + permission_name
-                    ] = {PERMISSION_PREFIX + old_permission_name, }
+                    ] = {permission_prefix + old_permission_name, }
                 else:
                     ret[
                         PERMISSION_PREFIX + permission_name
-                    ].add(PERMISSION_PREFIX + old_permission_name)
+                    ].add(permission_prefix + old_permission_name)
         return ret
 
     @staticmethod
@@ -1250,10 +1269,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         for baseview in baseviews:
             add_all_flag = False
             new_view_name = baseview.class_permission_name
-            permission_mapping = self._get_new_old_permissions(
-                baseview.method_permission_name,
-                baseview.previous_method_permission_name,
-            )
+            permission_mapping = self._get_new_old_permissions(baseview)
             if baseview.previous_class_permission_name:
                 old_view_name = baseview.previous_class_permission_name
                 add_all_flag = True
@@ -1290,7 +1306,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             Converges overridden permissions on all registered views/api
             will compute all necessary operations from `class_permissions_name`,
             `previous_class_permission_name`, method_permission_name`,
-            `previous_permissions_name` class attributes.
+            `previous_method_permission_name` class attributes.
 
         :param baseviews: List of registered views/apis
         :param menus: List of menu items
@@ -1303,7 +1319,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         if not state_transitions:
             log.info("No state transitions found")
             return dict()
-        log.info(f"State transitions: {state_transitions}")
+        log.debug(f"State transitions: {state_transitions}")
         roles = self.get_all_roles()
         for role in roles:
             permissions = list(role.permissions)
@@ -1323,7 +1339,6 @@ class BaseSecurityManager(AbstractSecurityManager):
                 ]:
                     self.del_permission_role(role, pvm)
         for pvm in state_transitions['del_role_pvm']:
-
             self.del_permission_view_menu(pvm[1], pvm[0], cascade=False)
         for view_name in state_transitions['del_views']:
             self.del_view_menu(view_name)
@@ -1431,6 +1446,17 @@ class BaseSecurityManager(AbstractSecurityManager):
     def find_permission(self, name):
         """
             Finds and returns a Permission by name
+        """
+        raise NotImplementedError
+
+    def exist_permission_on_roles(
+        self,
+        view_name: str,
+        permission_name: str,
+        role_ids: List[int],
+    ) -> bool:
+        """
+            Finds and returns permission views for a group of roles
         """
         raise NotImplementedError
 

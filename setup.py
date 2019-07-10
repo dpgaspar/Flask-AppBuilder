@@ -64,8 +64,9 @@ setup(
         'marshmallow-enum>=1.4.1,<2',
         'marshmallow-sqlalchemy>=0.16.1<1',
         'python-dateutil>=2.3,<3',
-        'prison>=0.1.0<1.0.0'
-        'PyJWT>=1.7.1'
+        'prison>=0.1.2<1.0.0',
+        'PyJWT>=1.7.1',
+        'sqlalchemy-utils>=0.32.21<1'
     ],
     tests_require=[
         'nose>=1.0',
