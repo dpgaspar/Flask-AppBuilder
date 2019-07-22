@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.7
+-----------------------------------
+
+- Fix, #1065 setup version cap on apispec, jsonschema, marshmallow-sqlalchemy, prison
+
 Improvements and Bug fixes on 2.1.6
 -----------------------------------
 
