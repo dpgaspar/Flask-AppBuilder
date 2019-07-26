@@ -724,14 +724,12 @@ class BaseModelApi(BaseApi):
         self._base_filters = self.datamodel.get_filters().add_filter_list(
             self.base_filters
         )
-        list_cols = self.datamodel.get_columns_list()
         search_columns = self.datamodel.get_search_columns_list()
         if not self.search_columns:
             self.search_columns = [
                 x for x in search_columns if x not in self.search_exclude_columns
             ]
-
-        self._gen_labels_columns(list_cols)
+        self._gen_labels_columns(self.datamodel.get_columns_list())
         self._filters = self.datamodel.get_filters(self.search_columns)
 
     def _init_titles(self):
@@ -1038,7 +1036,8 @@ class ModelRestApi(BaseModelApi):
         if _pruned_select_cols:
             _show_columns = _pruned_select_cols
         else:
-            _show_columns = self.show_columns
+            # Send all labels if cols are or request pruned
+            _show_columns = self.label_columns
         response[API_LABEL_COLUMNS_RES_KEY] = self._label_columns_json(_show_columns)
 
     def merge_show_columns(self, response, **kwargs):
@@ -1055,8 +1054,9 @@ class ModelRestApi(BaseModelApi):
                 _pruned_select_cols
             )
         else:
+            # Send all descriptions if cols are or request pruned
             response[API_DESCRIPTION_COLUMNS_RES_KEY] = self._description_columns_json(
-                self.show_columns
+                self.description_columns
             )
 
     def merge_list_columns(self, response, **kwargs):
