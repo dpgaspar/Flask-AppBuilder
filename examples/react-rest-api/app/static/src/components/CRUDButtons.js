@@ -98,8 +98,7 @@ export class ShowButton extends Component {
   }
 
   onClick() {
-    this.props.setCurrentId(this.props.id);
-    this.props.onOpenShowForm();
+    this.props.onOpenShowForm(this.props.id);
   }
 
   render() {

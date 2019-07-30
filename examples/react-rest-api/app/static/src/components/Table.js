@@ -102,20 +102,23 @@ class Table extends Component {
     this.onOrderBy = this.onOrderBy.bind(this);
     this.onOpenShowForm = this.onOpenShowForm.bind(this);
     this.onCloseShowForm = this.onCloseShowForm.bind(this);
-    this.getData = this.getData.bind(this);
     this.onAdd = this.onAdd.bind(this);
     this.onDelete = this.onDelete.bind(this);
     this.setCurrentId = this.setCurrentId.bind(this);
   }
 
   setCurrentId(id) {
-    this.getData(id);
-    this.setState({ currentId: id });
-  }
-
-  onOpenShowForm() {
     this.setState(
       {
+        currentId: id
+      });
+  }
+
+  onOpenShowForm(id) {
+    this.getItem(id);
+    this.setState(
+      {
+        currentId: id,
         showShowForm: true
       });
   }
@@ -218,8 +221,8 @@ class Table extends Component {
       })
   }
 
-  getData(id) {
-    this.api.getItem(this.props.resource, this.state.currentId)
+  getItem(id) {
+    this.api.getItem(this.props.resource, id)
       .then(response => {
         this.setState(
           {

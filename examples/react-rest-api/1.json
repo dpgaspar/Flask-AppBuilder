@@ -1,0 +1,2862 @@
+{
+  "components": {
+    "parameters": {
+      "get_info_schema": {
+        "in": "query",
+        "name": "q",
+        "schema": {
+          "properties": {
+            "add_columns": {
+              "additionalProperties": {
+                "properties": {
+                  "page": {
+                    "type": "integer"
+                  },
+                  "page_size": {
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "object"
+            },
+            "keys": {
+              "items": {
+                "enum": [
+                  "add_columns",
+                  "edit_columns",
+                  "filters",
+                  "permissions",
+                  "add_title",
+                  "edit_title",
+                  "none"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "get_item_schema": {
+        "in": "query",
+        "name": "q",
+        "schema": {
+          "properties": {
+            "columns": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "keys": {
+              "items": {
+                "enum": [
+                  "show_columns",
+                  "description_columns",
+                  "label_columns",
+                  "show_title",
+                  "none"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "get_list_schema": {
+        "in": "query",
+        "name": "q",
+        "schema": {
+          "properties": {
+            "columns": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "filters": {
+              "items": {
+                "properties": {
+                  "col": {
+                    "type": "string"
+                  },
+                  "opr": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "boolean"
+                      }
+                    ]
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "keys": {
+              "items": {
+                "enum": [
+                  "list_columns",
+                  "order_columns",
+                  "label_columns",
+                  "description_columns",
+                  "list_title",
+                  "none"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "order_column": {
+              "type": "string"
+            },
+            "order_direction": {
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "type": "string"
+            },
+            "page": {
+              "type": "integer"
+            },
+            "page_size": {
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    "responses": {
+      "400": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "description": "Bad request"
+      },
+      "401": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "description": "Unauthorized"
+      },
+      "404": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "description": "Not found"
+      },
+      "422": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "description": "Could not process entity"
+      },
+      "500": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "description": "Fatal error"
+      }
+    },
+    "schemas": {
+      "ContactModelApi.get": {
+        "properties": {
+          "address": {
+            "maxLength": 564,
+            "nullable": true,
+            "type": "string"
+          },
+          "birthday": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "contact_group": {
+            "properties": {
+              "id": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "name": {
+                "maxLength": 50,
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "type": "object"
+          },
+          "gender": {
+            "properties": {
+              "id": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "name": {
+                "maxLength": 50,
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "type": "object"
+          },
+          "name": {
+            "maxLength": 150,
+            "type": "string"
+          },
+          "personal_celphone": {
+            "maxLength": 20,
+            "nullable": true,
+            "type": "string"
+          },
+          "personal_phone": {
+            "maxLength": 20,
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "contact_group",
+          "gender",
+          "name"
+        ],
+        "type": "object"
+      },
+      "ContactModelApi.get_list": {
+        "properties": {
+          "address": {
+            "maxLength": 564,
+            "nullable": true,
+            "type": "string"
+          },
+          "birthday": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "contact_group": {
+            "properties": {
+              "id": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "name": {
+                "maxLength": 50,
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "type": "object"
+          },
+          "gender": {
+            "properties": {
+              "id": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "name": {
+                "maxLength": 50,
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "type": "object"
+          },
+          "name": {
+            "maxLength": 150,
+            "type": "string"
+          },
+          "personal_celphone": {
+            "maxLength": 20,
+            "nullable": true,
+            "type": "string"
+          },
+          "personal_phone": {
+            "maxLength": 20,
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "contact_group",
+          "gender",
+          "name"
+        ],
+        "type": "object"
+      },
+      "ContactModelApi.post": {
+        "properties": {
+          "address": {
+            "maxLength": 564,
+            "nullable": true,
+            "type": "string"
+          },
+          "birthday": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "contact_group": {
+            "nullable": true,
+            "type": "string"
+          },
+          "gender": {
+            "nullable": true,
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 150,
+            "type": "string"
+          },
+          "personal_celphone": {
+            "maxLength": 20,
+            "nullable": true,
+            "type": "string"
+          },
+          "personal_phone": {
+            "maxLength": 20,
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "contact_group",
+          "gender",
+          "name"
+        ],
+        "type": "object"
+      },
+      "ContactModelApi.put": {
+        "properties": {
+          "address": {
+            "maxLength": 564,
+            "nullable": true,
+            "type": "string"
+          },
+          "birthday": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "contact_group": {
+            "nullable": true,
+            "type": "string"
+          },
+          "gender": {
+            "nullable": true,
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 150,
+            "type": "string"
+          },
+          "personal_celphone": {
+            "maxLength": 20,
+            "nullable": true,
+            "type": "string"
+          },
+          "personal_phone": {
+            "maxLength": 20,
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "contact_group",
+          "gender",
+          "name"
+        ],
+        "type": "object"
+      },
+      "GroupModelApi.get": {
+        "properties": {
+          "name": {
+            "maxLength": 50,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "GroupModelApi.get_list": {
+        "properties": {
+          "name": {
+            "maxLength": 50,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "GroupModelApi.post": {
+        "properties": {
+          "name": {
+            "maxLength": 50,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "GroupModelApi.put": {
+        "properties": {
+          "name": {
+            "maxLength": 50,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "Meta": {
+        "properties": {
+          "id": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "name": {
+            "maxLength": 50,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "Meta1": {
+        "properties": {
+          "id": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "name": {
+            "maxLength": 50,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "Meta2": {
+        "properties": {
+          "id": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "name": {
+            "maxLength": 50,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "Meta3": {
+        "properties": {
+          "id": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "name": {
+            "maxLength": 50,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "get_info_schema": {
+        "properties": {
+          "add_columns": {
+            "additionalProperties": {
+              "properties": {
+                "page": {
+                  "type": "integer"
+                },
+                "page_size": {
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "type": "object"
+          },
+          "keys": {
+            "items": {
+              "enum": [
+                "add_columns",
+                "edit_columns",
+                "filters",
+                "permissions",
+                "add_title",
+                "edit_title",
+                "none"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "get_item_schema": {
+        "properties": {
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "keys": {
+            "items": {
+              "enum": [
+                "show_columns",
+                "description_columns",
+                "label_columns",
+                "show_title",
+                "none"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "get_list_schema": {
+        "properties": {
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "filters": {
+            "items": {
+              "properties": {
+                "col": {
+                  "type": "string"
+                },
+                "opr": {
+                  "type": "string"
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "keys": {
+            "items": {
+              "enum": [
+                "list_columns",
+                "order_columns",
+                "label_columns",
+                "description_columns",
+                "list_title",
+                "none"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "order_column": {
+            "type": "string"
+          },
+          "order_direction": {
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "type": "string"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "page_size": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "jwt": {
+        "bearerFormat": "JWT",
+        "scheme": "bearer",
+        "type": "http"
+      },
+      "jwt_refresh": {
+        "bearerFormat": "JWT",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "F.A.B. Example",
+    "title": "F.A.B. Example",
+    "version": "v1"
+  },
+  "openapi": "3.0.2",
+  "paths": {
+    "/contact/": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "properties": {
+                "columns": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "filters": {
+                  "items": {
+                    "properties": {
+                      "col": {
+                        "type": "string"
+                      },
+                      "opr": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "anyOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "boolean"
+                          }
+                        ]
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "keys": {
+                  "items": {
+                    "enum": [
+                      "list_columns",
+                      "order_columns",
+                      "label_columns",
+                      "description_columns",
+                      "list_title",
+                      "none"
+                    ],
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "order_column": {
+                  "type": "string"
+                },
+                "order_direction": {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ],
+                  "type": "string"
+                },
+                "page": {
+                  "type": "integer"
+                },
+                "page_size": {
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "description_columns": {
+                      "type": "object"
+                    },
+                    "ids": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "label_columns": {
+                      "type": "object"
+                    },
+                    "list_columns": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "list_title": {
+                      "type": "string"
+                    },
+                    "order_columns": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "result": {
+                      "items": {
+                        "properties": {
+                          "address": {
+                            "maxLength": 564,
+                            "nullable": true,
+                            "type": "string"
+                          },
+                          "birthday": {
+                            "format": "date",
+                            "nullable": true,
+                            "type": "string"
+                          },
+                          "contact_group": {
+                            "properties": {
+                              "id": {
+                                "format": "int32",
+                                "type": "integer"
+                              },
+                              "name": {
+                                "maxLength": 50,
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "name"
+                            ],
+                            "type": "object"
+                          },
+                          "gender": {
+                            "properties": {
+                              "id": {
+                                "format": "int32",
+                                "type": "integer"
+                              },
+                              "name": {
+                                "maxLength": 50,
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "name"
+                            ],
+                            "type": "object"
+                          },
+                          "name": {
+                            "maxLength": 150,
+                            "type": "string"
+                          },
+                          "personal_celphone": {
+                            "maxLength": 20,
+                            "nullable": true,
+                            "type": "string"
+                          },
+                          "personal_phone": {
+                            "maxLength": 20,
+                            "nullable": true,
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "contact_group",
+                          "gender",
+                          "name"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Items from Model"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Could not process entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "ContactModelApi"
+        ]
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "address": {
+                    "maxLength": 564,
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "birthday": {
+                    "format": "date",
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "contact_group": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "gender": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "name": {
+                    "maxLength": 150,
+                    "type": "string"
+                  },
+                  "personal_celphone": {
+                    "maxLength": 20,
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "personal_phone": {
+                    "maxLength": 20,
+                    "nullable": true,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contact_group",
+                  "gender",
+                  "name"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "description": "Model schema",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "result": {
+                      "properties": {
+                        "address": {
+                          "maxLength": 564,
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "birthday": {
+                          "format": "date",
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "contact_group": {
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "gender": {
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "name": {
+                          "maxLength": 150,
+                          "type": "string"
+                        },
+                        "personal_celphone": {
+                          "maxLength": 20,
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "personal_phone": {
+                          "maxLength": 20,
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "contact_group",
+                        "gender",
+                        "name"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Item inserted"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Could not process entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "ContactModelApi"
+        ]
+      }
+    },
+    "/contact/_info": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "properties": {
+                "add_columns": {
+                  "additionalProperties": {
+                    "properties": {
+                      "page": {
+                        "type": "integer"
+                      },
+                      "page_size": {
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "type": "object"
+                },
+                "keys": {
+                  "items": {
+                    "enum": [
+                      "add_columns",
+                      "edit_columns",
+                      "filters",
+                      "permissions",
+                      "add_title",
+                      "edit_title",
+                      "none"
+                    ],
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "add_columns": {
+                      "type": "object"
+                    },
+                    "edit_columns": {
+                      "type": "object"
+                    },
+                    "filters": {
+                      "type": "object"
+                    },
+                    "permissions": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Item from Model"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Could not process entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "ContactModelApi"
+        ]
+      }
+    },
+    "/contact/{pk}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pk",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Item deleted"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Could not process entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "ContactModelApi"
+        ]
+      },
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pk",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "properties": {
+                "columns": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "keys": {
+                  "items": {
+                    "enum": [
+                      "show_columns",
+                      "description_columns",
+                      "label_columns",
+                      "show_title",
+                      "none"
+                    ],
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "description_columns": {
+                      "type": "object"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "label_columns": {
+                      "type": "object"
+                    },
+                    "result": {
+                      "properties": {
+                        "address": {
+                          "maxLength": 564,
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "birthday": {
+                          "format": "date",
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "contact_group": {
+                          "properties": {
+                            "id": {
+                              "format": "int32",
+                              "type": "integer"
+                            },
+                            "name": {
+                              "maxLength": 50,
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name"
+                          ],
+                          "type": "object"
+                        },
+                        "gender": {
+                          "properties": {
+                            "id": {
+                              "format": "int32",
+                              "type": "integer"
+                            },
+                            "name": {
+                              "maxLength": 50,
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name"
+                          ],
+                          "type": "object"
+                        },
+                        "name": {
+                          "maxLength": 150,
+                          "type": "string"
+                        },
+                        "personal_celphone": {
+                          "maxLength": 20,
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "personal_phone": {
+                          "maxLength": 20,
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "contact_group",
+                        "gender",
+                        "name"
+                      ],
+                      "type": "object"
+                    },
+                    "show_columns": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "show_title": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Item from Model"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Could not process entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "ContactModelApi"
+        ]
+      },
+      "put": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pk",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "address": {
+                    "maxLength": 564,
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "birthday": {
+                    "format": "date",
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "contact_group": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "gender": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "name": {
+                    "maxLength": 150,
+                    "type": "string"
+                  },
+                  "personal_celphone": {
+                    "maxLength": 20,
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "personal_phone": {
+                    "maxLength": 20,
+                    "nullable": true,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contact_group",
+                  "gender",
+                  "name"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "description": "Model schema",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "result": {
+                      "properties": {
+                        "address": {
+                          "maxLength": 564,
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "birthday": {
+                          "format": "date",
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "contact_group": {
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "gender": {
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "name": {
+                          "maxLength": 150,
+                          "type": "string"
+                        },
+                        "personal_celphone": {
+                          "maxLength": 20,
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "personal_phone": {
+                          "maxLength": 20,
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "contact_group",
+                        "gender",
+                        "name"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Item changed"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Could not process entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "ContactModelApi"
+        ]
+      }
+    },
+    "/group/": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "properties": {
+                "columns": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "filters": {
+                  "items": {
+                    "properties": {
+                      "col": {
+                        "type": "string"
+                      },
+                      "opr": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "anyOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "boolean"
+                          }
+                        ]
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "keys": {
+                  "items": {
+                    "enum": [
+                      "list_columns",
+                      "order_columns",
+                      "label_columns",
+                      "description_columns",
+                      "list_title",
+                      "none"
+                    ],
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "order_column": {
+                  "type": "string"
+                },
+                "order_direction": {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ],
+                  "type": "string"
+                },
+                "page": {
+                  "type": "integer"
+                },
+                "page_size": {
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "description_columns": {
+                      "type": "object"
+                    },
+                    "ids": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "label_columns": {
+                      "type": "object"
+                    },
+                    "list_columns": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "list_title": {
+                      "type": "string"
+                    },
+                    "order_columns": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "result": {
+                      "items": {
+                        "properties": {
+                          "name": {
+                            "maxLength": 50,
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Items from Model"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Could not process entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "GroupModelApi"
+        ]
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "name": {
+                    "maxLength": 50,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "description": "Model schema",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "result": {
+                      "properties": {
+                        "name": {
+                          "maxLength": 50,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Item inserted"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Could not process entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "GroupModelApi"
+        ]
+      }
+    },
+    "/group/_info": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "properties": {
+                "add_columns": {
+                  "additionalProperties": {
+                    "properties": {
+                      "page": {
+                        "type": "integer"
+                      },
+                      "page_size": {
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "type": "object"
+                },
+                "keys": {
+                  "items": {
+                    "enum": [
+                      "add_columns",
+                      "edit_columns",
+                      "filters",
+                      "permissions",
+                      "add_title",
+                      "edit_title",
+                      "none"
+                    ],
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "add_columns": {
+                      "type": "object"
+                    },
+                    "edit_columns": {
+                      "type": "object"
+                    },
+                    "filters": {
+                      "type": "object"
+                    },
+                    "permissions": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Item from Model"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Could not process entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "GroupModelApi"
+        ]
+      }
+    },
+    "/group/{pk}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pk",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Item deleted"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Could not process entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "GroupModelApi"
+        ]
+      },
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pk",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "properties": {
+                "columns": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "keys": {
+                  "items": {
+                    "enum": [
+                      "show_columns",
+                      "description_columns",
+                      "label_columns",
+                      "show_title",
+                      "none"
+                    ],
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "description_columns": {
+                      "type": "object"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "label_columns": {
+                      "type": "object"
+                    },
+                    "result": {
+                      "properties": {
+                        "name": {
+                          "maxLength": 50,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name"
+                      ],
+                      "type": "object"
+                    },
+                    "show_columns": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "show_title": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Item from Model"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Could not process entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "GroupModelApi"
+        ]
+      },
+      "put": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pk",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "name": {
+                    "maxLength": 50,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "description": "Model schema",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "result": {
+                      "properties": {
+                        "name": {
+                          "maxLength": 50,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Item changed"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Could not process entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "GroupModelApi"
+        ]
+      }
+    },
+    "/openapi/{version}/_openapi": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Item from Model"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "OpenApi"
+        ]
+      }
+    },
+    "/security/login": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "password": {
+                    "type": "string"
+                  },
+                  "provider": {
+                    "enum": [
+                      "db",
+                      "ldap"
+                    ],
+                    "type": "string"
+                  },
+                  "refresh": {
+                    "type": "boolean"
+                  },
+                  "username": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "access_token": {
+                      "type": "string"
+                    },
+                    "refresh_token": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Authentication Successful"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "tags": [
+          "SecurityApi"
+        ]
+      }
+    },
+    "/security/refresh": {
+      "post": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "refresh_token": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Refresh Successful"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Fatal error"
+          }
+        },
+        "security": [
+          {
+            "jwt_refresh": []
+          }
+        ],
+        "tags": [
+          "SecurityApi"
+        ]
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/api/v1"
+    }
+  ]
+}
+
