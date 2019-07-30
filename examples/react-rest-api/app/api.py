@@ -23,7 +23,14 @@ class ContactModelApi(ModelRestApi):
     datamodel = SQLAInterface(Contact)
     allow_browser_login = True
     list_columns = ["name", "address", 'birthday', 'contact_group.name']
-    show_columns = ["name", "address", 'birthday', 'contact_group.name']
+    show_columns = [
+            "name",
+            "address",
+            'birthday',
+            'contact_group.name',
+            "personal_celphone",
+            "personal_phone",
+            "gender.name"]
 
 
 appbuilder.add_api(ContactModelApi)
