@@ -1,70 +1,152 @@
 import React, { Component } from 'react';
 
 
-export class AddButtom extends Component {
-
-    constructor(props) {
-        super(props);
-    }
-
-    render () {
-        return (
-            <a
-                href={this.props.resource + "/add"}
-                class="btn btn-sm btn-primary"
-                data-toggle="tooltip"
-                rel="tooltip"
-                title=""
-                data-original-title="Add a new record"
-            >
-                <i class="fa fa-plus"></i>
-            </a>
-        );
-    }
+export class AddButton extends Component {
+  render() {
+    return (
+      <a
+        class="btn btn-sm btn-primary confirm"
+        rel="tooltip"
+        href="#"
+        data-toggle="modal"
+        data-original-title="Add a new record"
+        data-target={"#" + this.props.modalId}
+      >
+        <i class="fa fa-plus"></i>
+      </a>
+    );
+  }
 }
 
-export class EditButtom extends Component {
+export class EditButton extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
-    render () {
-        return (
-            <a
-                href={this.props.resource + "/edit/" + this.props.id}
-                class="btn btn-sm btn-default"
-                data-toggle="tooltip"
-                rel="tooltip"
-                title=""
-                data-original-title="Edit record"
-             >
-                <i class="fa fa-edit"></i>
-             </a>
-        );
-    }
+  render() {
+    return (
+      <a
+        href={this.props.resource + "/edit/" + this.props.id}
+        class="btn btn-sm btn-default"
+        data-toggle="tooltip"
+        rel="tooltip"
+        title=""
+        data-original-title="Edit record"
+      >
+        <i class="fa fa-edit"></i>
+      </a>
+    );
+  }
 }
 
-export class DeleteButtom extends Component {
+export class DeleteModal extends Component {
 
-    constructor(props) {
-        super(props);
-    }
+  render() {
+    return (
+      <div class="modal fade" id={this.props.modalId} tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="myModalLabel">
+                User confirmation needed
+              </h4>
+            </div>
+            <div class="modal-body">
+              <div class="modal-text">
+                Do you want to delete the {this.props.resource} record {this.props.id}
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button type="button" onClick={this.props.onOk} class="btn btn-danger" data-dismiss="modal">OK</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
 
-    render () {
-        return (
-            <a
-                data-text="You sure you want to delete this item?"
-                href={this.props.resource + "/edit/" + this.props.id}
-                class="btn btn-sm btn-default confirm"
-                rel="tooltip" title=""
-                data-toggle="modal"
-                data-target="#modal-confirm"
-                href="#"
-                data-original-title="Delete record"
-            >
-                <i class="fa fa-eraser"></i>
-            </a>
-        );
-    }
+export class DeleteButton extends Component {
+
+  constructor(props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+
+  onClick() {
+    this.props.setCurrentId(this.props.id);
+  }
+
+  render() {
+    return (
+      <a
+        class="btn btn-sm btn-default confirm"
+        rel="tooltip"
+        href="#"
+        data-toggle="modal"
+        onClick={this.onClick}
+        data-target={"#" + this.props.modalId}
+      >
+        <i class="fa fa-eraser"></i>
+      </a>
+    );
+  }
+}
+
+export class ShowButton extends Component {
+  constructor(props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+
+  onClick() {
+    this.props.setCurrentId(this.props.id);
+    this.props.onOpenShowForm();
+  }
+
+  render() {
+    return (
+      <a
+        class="btn btn-sm btn-default confirm"
+        rel="tooltip"
+        href="#"
+        data-toggle="modal"
+        onClick={this.onClick}
+        data-original-title="Show record"
+      >
+        <i class="fa fa-search"></i>
+      </a>
+    );
+  }
+}
+
+export class CRUDRowButtons extends Component {
+
+  render() {
+    const showButton = 
+      <ShowButton 
+        resource={this.props.resource}
+        id={this.props.id}
+        modalId="show-modal"
+        setCurrentId={this.props.setCurrentId}
+        onOpenShowForm={this.props.onOpenShowForm}
+        />
+    const editButton = <EditButton resource={this.props.resource} id={this.props.id} />
+    const deleteButton =
+      <DeleteButton
+        resource={this.props.resource}
+        id={this.props.id}
+        modalId="delete-modal"
+        setCurrentId={this.props.setCurrentId}
+      />
+    return (
+      <td class="col-md-1 col-lg-1 col-sm-1">
+        <center>
+          <div class="btn-group btn-group-xs" style={{ display: 'flex' }}>
+            {showButton}
+            {editButton}
+            {deleteButton}
+          </div>
+        </center>
+      </td>
+    );
+  }
 }
