@@ -1148,6 +1148,7 @@ class ModelRestApi(BaseModelApi):
         return self.response(200, **_response)
 
     @expose("/<pk>", methods=["GET"])
+    @expose("/<pk>/<operation>", methods=["GET"])
     @protect()
     @safe
     @permission_name("get")
@@ -1156,7 +1157,7 @@ class ModelRestApi(BaseModelApi):
     @merge_response_func(merge_show_columns, API_SHOW_COLUMNS_RIS_KEY)
     @merge_response_func(merge_description_columns, API_DESCRIPTION_COLUMNS_RIS_KEY)
     @merge_response_func(merge_show_title, API_SHOW_TITLE_RIS_KEY)
-    def get(self, pk, **kwargs):
+    def get(self, pk, operation='show', **kwargs):
         """Get item from Model
         ---
         get:
@@ -1206,7 +1207,11 @@ class ModelRestApi(BaseModelApi):
         _response = dict()
         _args = kwargs.get("rison", {})
         select_cols = _args.get(API_SELECT_COLUMNS_RIS_KEY, [])
-        _pruned_select_cols = [col for col in select_cols if col in self.show_columns]
+
+        if operation == 'show':
+            _pruned_select_cols = [col for col in select_cols if col in self.show_columns]
+        elif operation == 'edit':
+            _pruned_select_cols = [col for col in select_cols if col in self.edit_columns]
         self.set_response_key_mappings(
             _response,
             self.get,
@@ -1214,12 +1219,15 @@ class ModelRestApi(BaseModelApi):
             **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols},
         )
         if _pruned_select_cols:
-            _show_model_schema = self.model2schemaconverter.convert(_pruned_select_cols)
+            _model_schema = self.model2schemaconverter.convert(_pruned_select_cols)
         else:
-            _show_model_schema = self.show_model_schema
+            if operation == 'show':
+                _model_schema = self.show_model_schema
+            elif operation == 'edit':
+                _model_schema = self.edit_model_schema
 
         _response["id"] = pk
-        _response[API_RESULT_RES_KEY] = _show_model_schema.dump(item, many=False).data
+        _response[API_RESULT_RES_KEY] = _model_schema.dump(item, many=False).data
         self.pre_get(_response)
         return self.response(200, **_response)
 
