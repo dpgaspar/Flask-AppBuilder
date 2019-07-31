@@ -1510,8 +1510,9 @@ class ModelRestApi(BaseModelApi):
     def _sanitize_page_args(self, page, page_size):
         _page = page or 0
         _page_size = page_size or self.page_size
-        max_page_size = (self.max_page_size or
-                         current_app.config.get("FAB_API_MAX_PAGE_SIZE"))
+        max_page_size = self.max_page_size or current_app.config.get(
+            "FAB_API_MAX_PAGE_SIZE"
+        )
         # Accept special -1 to uncap the page size
         if max_page_size == -1:
             return _page, _page_size
