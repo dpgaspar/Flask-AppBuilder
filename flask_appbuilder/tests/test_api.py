@@ -955,7 +955,7 @@ class APITestCase(FABTestCase):
         """
             REST Api: Test get list max page size config setting
         """
-        page_size = 100  # Max is globally set to MAX_PAGE_SIZE
+        page_size = 200  # Max is globally set to MAX_PAGE_SIZE
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
 
@@ -967,6 +967,47 @@ class APITestCase(FABTestCase):
             "order_direction": "asc",
         }
         uri = "api/v1/model1api/?{}={}".format(API_URI_RIS_KEY, prison.dumps(arguments))
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        eq_(len(data[API_RESULT_RES_KEY]), MAX_PAGE_SIZE)
+
+    def test_get_list_max_page_size_override(self):
+        """
+            REST Api: Test get list max page size property override
+        """
+
+        class Model1PageSizeOverride(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            max_page_size = -1
+            list_columns = [
+                "field_integer",
+                "field_float",
+                "field_string",
+                "field_date",
+            ]
+            description_columns = {
+                "field_integer": "Field Integer",
+                "field_float": "Field Float",
+                "field_string": "Field String",
+            }
+
+        self.model1api = Model1PageSizeOverride
+        self.appbuilder.add_api(Model1PageSizeOverride)
+
+        page_size = 200  # Max is globally set to MAX_PAGE_SIZE
+        client = self.app.test_client()
+        token = self.login(client, USERNAME, PASSWORD)
+
+        # test page zero
+        arguments = {
+            "page_size": page_size,
+            "page": 0,
+            "order_column": "field_integer",
+            "order_direction": "asc",
+        }
+        uri = "api/v1/model1pagesizeoverride/?{}={}".format(
+            API_URI_RIS_KEY, prison.dumps(arguments)
+        )
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         eq_(len(data[API_RESULT_RES_KEY]), MAX_PAGE_SIZE)
