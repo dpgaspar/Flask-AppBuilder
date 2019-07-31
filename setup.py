@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 
 with io.open("flask_appbuilder/__init__.py", "rt", encoding="utf8") as f:
-    version = re.search(r"__version__ = \'(.*?)\'", f.read()).group(1)
+    version = re.search(r"__version__ = \"(.*?)\"", f.read()).group(1)
 
 
 def fpath(name):
