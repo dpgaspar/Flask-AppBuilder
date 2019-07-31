@@ -1010,7 +1010,7 @@ class APITestCase(FABTestCase):
         )
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
-        eq_(len(data[API_RESULT_RES_KEY]), MAX_PAGE_SIZE)
+        eq_(len(data[API_RESULT_RES_KEY]), MODEL1_DATA_SIZE)
 
     def test_get_list_filters(self):
         """
