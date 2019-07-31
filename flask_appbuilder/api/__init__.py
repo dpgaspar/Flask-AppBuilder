@@ -1031,16 +1031,16 @@ class ModelRestApi(BaseModelApi):
     def merge_label_columns(self, response, **kwargs):
         _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if _pruned_select_cols:
-            _show_columns = _pruned_select_cols
+            columns = _pruned_select_cols
         else:
             # Send the exact labels for the caller operation
             if kwargs.get("caller") == "list":
-                _show_columns = self.list_columns
+                columns = self.list_columns
             elif kwargs.get("caller") == "show":
-                _show_columns = self.show_columns
+                columns = self.show_columns
             else:
-                _show_columns = self.label_columns
-        response[API_LABEL_COLUMNS_RES_KEY] = self._label_columns_json(_show_columns)
+                columns = self.label_columns
+        response[API_LABEL_COLUMNS_RES_KEY] = self._label_columns_json(columns)
 
     def merge_list_label_columns(self, response, **kwargs):
         self.merge_label_columns(response, caller="list", **kwargs)
