@@ -54,27 +54,24 @@ export class AddForm extends Component {
 
   render() {
     return (
-      <div class="modal fade" id={this.props.modalId} tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title" id="myModalLabel">
-                {this.props.info.addTitle}
-              </h4>
-            </div>
-            <div class="modal-body">
-              <form>
-                {this.form()}
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-              <button type="button" onClick={this.props.onAdd} class="btn btn-primary" data-dismiss="modal">Save</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+      <Modal show={this.props.show} onHide={this.props.onClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {this.props.info.addTitle}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form>
+            {this.form()}
+          </form>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button onClick={this.props.onClose}>Close</Button>
+          <Button onClick={this.props.onAdd}>Save</Button>
+        </Modal.Footer>
+      </Modal>
+    )
   }
 }
 

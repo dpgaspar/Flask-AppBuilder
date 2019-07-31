@@ -1,19 +1,21 @@
 import React, { Component } from 'react';
-
+import { Button } from 'react-bootstrap';
 
 export class AddButton extends Component {
+  constructor(props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+
+  onClick() {
+    this.props.onOpenAddForm();
+  }
+
   render() {
     return (
-      <a
-        class="btn btn-sm btn-primary confirm"
-        rel="tooltip"
-        href="#"
-        data-toggle="modal"
-        data-original-title="Add a new record"
-        data-target={"#" + this.props.modalId}
-      >
-        <i class="fa fa-plus"></i>
-      </a>
+      <Button bsStyle="primary" bsSize="sm" onClick={this.onClick}>
+      <i class="fa fa-plus"></i>
+      </Button>
     );
   }
 }

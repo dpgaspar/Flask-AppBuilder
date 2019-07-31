@@ -1,7 +1,92 @@
 import React, { Component } from 'react';
 import { AddButton, CRUDRowButtons, DeleteModal } from './CRUDButtons';
 import { AddForm, ShowForm } from './Forms';
+import { Pagination, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
 import Api from '../api/Api';
+
+class TablePagination extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentPage: 0
+    };
+    this.onFirst = this.onFirst.bind(this);
+    this.onNext = this.onNext.bind(this);
+    this.onPrev = this.onPrev.bind(this);
+    this.onLast = this.onLast.bind(this);
+  }
+
+  onClick(page) {
+    this.setState({currentPage: page});
+    this.props.onChangePage(page);
+  }
+
+  onFirst() {
+    this.setState({currentPage: 0});
+    this.props.onChangePage(0);
+  }
+
+  onLast() {
+    this.setState({currentPage: Math.floor(this.props.count / this.props.size)});
+    this.props.onChangePage(Math.floor(this.props.count / this.props.size));
+  }
+
+  onPrev() {
+    let page = this.state.currentPage;
+    if (page != 0) {
+      this.setState({currentPage: page-1});
+    }
+    this.props.onChangePage(page-1);
+  }
+
+  onNext() {
+    let page = this.state.currentPage;
+    if (page != this.props.count / this.props.size) {
+      this.setState({currentPage: page+1});
+    }
+    this.props.onChangePage(page+1);
+  }
+
+  items() {
+    let items = [];
+    let actualNumPages = Math.floor(this.props.count / this.props.size);
+    let maxNumPages = 10;
+    let numPages = 10;
+    let firstPage = 0;
+    if (maxNumPages > actualNumPages) {
+      numPages = actualNumPages;
+    }
+    if (this.state.currentPage > (numPages / 2)) {
+      firstPage = this.state.currentPage - (numPages / 2);
+      numPages = numPages + this.state.currentPage - (numPages / 2);
+    }
+    
+    for (let number = firstPage; number <= (numPages); number++) {
+      items.push(
+        <Pagination.Item
+          onClick={() => this.onClick(number)}
+          key={number}
+          active={number === this.state.currentPage}
+        >
+          {number}
+        </Pagination.Item>,
+      );
+    }
+    return items;
+  }
+
+  render() {
+    return (
+      <Pagination bsSize="small" style={{margin: 0}}>
+        <Pagination.First onClick={this.onFirst}/>
+        <Pagination.Prev onClick={this.onPrev} />
+        {this.items()}
+        <Pagination.Next onClick={this.onNext}/>
+        <Pagination.Last onClick={this.onLast}/>
+      </Pagination>
+    );
+  }
+}
 
 class TableRecordCount extends Component {
 
@@ -49,7 +134,7 @@ class TableHeader extends Component {
         </th>
     )
     return (
-      <thead><tr><th></th>{row}</tr></thead>
+      <thead><tr><th>#</th>{row}</tr></thead>
     );
   }
 }
@@ -89,10 +174,12 @@ class Table extends Component {
     }
     this.state = {
       showShowForm: false,
+      showAddForm: false,
       currentId: null,
       currentItem: null,
       count: 0,
       ids: [],
+      page: 0,
       data: [],
       listColumns: [],
       labelColumns: [],
@@ -100,8 +187,11 @@ class Table extends Component {
       orderByDir: '-'
     };
     this.onOrderBy = this.onOrderBy.bind(this);
+    this.onChangePage = this.onChangePage.bind(this);
     this.onOpenShowForm = this.onOpenShowForm.bind(this);
     this.onCloseShowForm = this.onCloseShowForm.bind(this);
+    this.onOpenAddForm = this.onOpenAddForm.bind(this);
+    this.onCloseAddForm = this.onCloseAddForm.bind(this);
     this.onAdd = this.onAdd.bind(this);
     this.onDelete = this.onDelete.bind(this);
     this.setCurrentId = this.setCurrentId.bind(this);
@@ -130,6 +220,20 @@ class Table extends Component {
       });
   }
 
+  onOpenAddForm(id) {
+    this.setState(
+      {
+        showAddForm: true
+      });
+  }
+
+  onCloseAddForm() {
+    this.setState(
+      {
+        showAddForm: false
+      });
+  }
+
   onAdd() {
     alert('add');
   }
@@ -153,6 +257,13 @@ class Table extends Component {
       {
         orderByCol: column,
         orderByDir: newOrder
+      }, () => this.refresh());
+  }
+
+  onChangePage(page) {
+    this.setState(
+      {
+        page: page
       }, () => this.refresh());
   }
 
@@ -205,7 +316,7 @@ class Table extends Component {
   }
 
   refresh() {
-    this.api.get(this.props.resource, [], this.prepareOrder())
+    this.api.get(this.props.resource, [], this.prepareOrder(), this.state.page)
       .then(response => {
         this.setState(
           {
@@ -248,6 +359,7 @@ class Table extends Component {
         id={this.state.ids[i]}
         setCurrentId={this.setCurrentId}
         onOpenShowForm={this.onOpenShowForm}
+        onOpenAddForm={this.onOpenAddForm}
       />;
     }, this);
   }
@@ -256,11 +368,22 @@ class Table extends Component {
     return (
       <div>
         <div class="well well-sm">
-          <AddButton resource={this.props.resource} modalId="add-modal" />
+          <ButtonToolbar>
+            <ButtonGroup>
+          <AddButton 
+            resource={this.props.resource} 
+            onOpenAddForm={this.onOpenAddForm} 
+          />
+          </ButtonGroup>
+          <ButtonGroup>
+          <TablePagination onChangePage={this.onChangePage} size={this.state.ids.length} count={this.state.count}/>
+          </ButtonGroup>
           <TableRecordCount count={this.state.count} />
+          </ButtonToolbar>
+          
         </div>
         <div class="table-responsive">
-          <table className="table table-bordered table-hover">
+          <table className="table table-hover">
             <TableHeader
               listColumns={this.state.listColumns}
               labelColumns={this.state.labelColumns}
@@ -280,7 +403,9 @@ class Table extends Component {
           id={this.state.currentId}
         />
         <AddForm
-          modalId='add-modal'
+          show={this.state.showAddForm}
+          onOpen={this.onOpenAddForm}
+          onClose={this.onCloseAddForm}
           onAdd={this.onAdd}
           info={this.info}
         />

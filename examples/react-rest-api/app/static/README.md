@@ -1,4 +1,4 @@
-Use this React app with the quickhowto example.
-quickhowto provides the REST api that the React app will consume
+- FAB changes:
+  - get REST endpoint must return edit_columns also so we can render a form with values on the client
 
 
