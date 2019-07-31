@@ -517,7 +517,7 @@ class BaseApi(object):
         """
             Sets initialized inner views
         """
-        pass
+        pass  # pragma: no cover
 
     def get_method_permission(self, method_name: str) -> str:
         """
@@ -531,7 +531,7 @@ class BaseApi(object):
 
     def set_response_key_mappings(self, response, func, rison_args, **kwargs):
         if not hasattr(func, "_response_key_func_mappings"):
-            return
+            return  # pragma: no cover
         _keys = rison_args.get("keys", None)
         if not _keys:
             for k, v in func._response_key_func_mappings.items():
@@ -1044,7 +1044,7 @@ class ModelRestApi(BaseModelApi):
             elif kwargs.get("caller") == "show":
                 columns = self.show_columns
             else:
-                columns = self.label_columns
+                columns = self.label_columns  # pragma: no cover
         response[API_LABEL_COLUMNS_RES_KEY] = self._label_columns_json(columns)
 
     def merge_list_label_columns(self, response, **kwargs):
