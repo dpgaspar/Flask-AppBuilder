@@ -12,6 +12,7 @@ from . const import (
     AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_OID, AUTH_REMOTE_USER
 )
 
+import certifi
 
 SQLA_REPO_URL = (
     "https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/archive/master.zip"
@@ -218,10 +219,10 @@ def create_app(name, engine):
     """
     try:
         if engine.lower() == "sqlalchemy":
-            url = urlopen(SQLA_REPO_URL)
+            url = urlopen(SQLA_REPO_URL, cafile=certifi.where())
             dirname = "Flask-AppBuilder-Skeleton-master"
         elif engine.lower() == "mongoengine":
-            url = urlopen(MONGOENGIE_REPO_URL)
+            url = urlopen(MONGOENGIE_REPO_URL, cafile=certifi.where())
             dirname = "Flask-AppBuilder-Skeleton-me-master"
         zipfile = ZipFile(BytesIO(url.read()))
         zipfile.extractall()
@@ -258,7 +259,7 @@ def create_addon(name):
     try:
         full_name = "fab_addon_" + name
         dirname = "Flask-AppBuilder-Skeleton-AddOn-master"
-        url = urlopen(ADDON_REPO_URL)
+        url = urlopen(ADDON_REPO_URL, cafile=certifi.where())
         zipfile = ZipFile(BytesIO(url.read()))
         zipfile.extractall()
         os.rename(dirname, full_name)
