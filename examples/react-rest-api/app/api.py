@@ -49,11 +49,12 @@ class ReactRenderView(BaseView):
     @expose('/<string:param1>')
     @has_access
     def render_react(self, param1):
+        self.update_redirect()
         return self.render_template('react.html',
                                     param1 = param1)
 
 
 appbuilder.add_view_no_menu(ReactRenderView)
-appbuilder.add_link("Contacts", href='/reactrenderview/contact#', category='Contacts')
-appbuilder.add_link("Groups", href='/reactrenderview/group#', category='Contacts')
+appbuilder.add_link("Contacts", href='/reactrenderview/contact', category='Contacts')
+appbuilder.add_link("Groups", href='/reactrenderview/group', category='Contacts')
 
