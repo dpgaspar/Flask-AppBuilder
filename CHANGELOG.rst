@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.8
+-----------------------------------
+
+- Fix, #1069 API label_columns for get item returning labels for list columns
+- Fix, #1072 API max_page_size class property override for FAB_API_MAX_SIZE
+
 Improvements and Bug fixes on 2.1.7
 -----------------------------------
 
