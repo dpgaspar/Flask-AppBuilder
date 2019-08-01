@@ -12,6 +12,7 @@ from marshmallow_sqlalchemy.fields import Related, RelatedList
 import prison
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequest
+from werkzeug.routing import BaseConverter
 import yaml
 
 from .convert import Model2SchemaConverter
@@ -56,6 +57,12 @@ from ..const import (
 from ..security.decorators import permission_name, protect
 
 log = logging.getLogger(__name__)
+
+
+class RegexConverter(BaseConverter):
+    def __init__(self, url_map, *items):
+        super(RegexConverter, self).__init__(url_map)
+        self.regex = items[0]
 
 
 def get_error_msg():
@@ -384,7 +391,9 @@ class BaseApi(object):
     def create_blueprint(self, appbuilder, endpoint=None, static_folder=None):
         # Store appbuilder instance
         self.appbuilder = appbuilder
-        # If endpoint name is not provided, get it from the class name
+        self.appbuilder.get_app.url_map.converters['regex'] = RegexConverter
+
+    # If endpoint name is not provided, get it from the class name
         self.endpoint = endpoint or self.__class__.__name__
         self.resource_name = self.resource_name or self.__class__.__name__.lower()
 
@@ -1148,7 +1157,7 @@ class ModelRestApi(BaseModelApi):
         return self.response(200, **_response)
 
     @expose("/<pk>", methods=["GET"])
-    @expose("/<pk>/<operation>", methods=["GET"])
+    @expose("/<pk>/<regex('show|edit'):operation>", methods=["GET"])
     @protect()
     @safe
     @permission_name("get")
