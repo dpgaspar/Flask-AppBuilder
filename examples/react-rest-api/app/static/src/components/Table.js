@@ -41,10 +41,10 @@ class TablePagination extends Component {
 
   onNext() {
     let page = this.state.currentPage;
-    if (page != this.props.count / this.props.size) {
+    if (page != Math.floor(this.props.count / this.props.size)) {
       this.setState({currentPage: page+1});
+      this.props.onChangePage(page+1);
     }
-    this.props.onChangePage(page+1);
   }
 
   items() {
@@ -56,7 +56,11 @@ class TablePagination extends Component {
     if (maxNumPages > actualNumPages) {
       numPages = actualNumPages;
     }
-    if (this.state.currentPage > (numPages / 2)) {
+    if ((actualNumPages - this.state.currentPage) <= (numPages / 2)) {
+      firstPage = actualNumPages - numPages;
+      numPages = actualNumPages;
+    }
+    else if (this.state.currentPage > (numPages / 2)) {
       firstPage = this.state.currentPage - (numPages / 2);
       numPages = numPages + this.state.currentPage - (numPages / 2);
     }
