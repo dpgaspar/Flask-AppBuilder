@@ -2,6 +2,7 @@ import functools
 import logging
 import re
 import traceback
+from typing import NamedTuple
 
 from apispec import yaml_utils
 from flask import Blueprint, current_app, jsonify, make_response, request
@@ -34,6 +35,8 @@ from ..const import (
     API_LABEL_COLUMNS_RIS_KEY,
     API_LIST_COLUMNS_RES_KEY,
     API_LIST_COLUMNS_RIS_KEY,
+    API_LIST_PAGE_INDEX_RES_KEY,
+    API_LIST_PAGE_SIZE_RES_KEY,
     API_LIST_TITLE_RES_KEY,
     API_LIST_TITLE_RIS_KEY,
     API_ORDER_COLUMN_RIS_KEY,
@@ -184,6 +187,13 @@ def merge_response_func(func, key):
         return f
 
     return wrap
+
+
+class RelatedFieldResult(NamedTuple):
+    count: int
+    page: int
+    page_size: int
+    result: list
 
 
 class BaseApi(object):
@@ -1265,6 +1275,12 @@ class ModelRestApi(BaseModelApi):
                         type: array
                         items:
                           type: string
+                      count:
+                        type: number
+                      page:
+                        type: number
+                      page_size:
+                        type: number
                       result:
                           type: array
                           items:
@@ -1314,6 +1330,8 @@ class ModelRestApi(BaseModelApi):
         _response[API_RESULT_RES_KEY] = _list_model_schema.dump(lst, many=True).data
         _response["ids"] = pks
         _response["count"] = count
+        _response[API_LIST_PAGE_INDEX_RES_KEY] = page_index
+        _response[API_LIST_PAGE_SIZE_RES_KEY] = page_size
         self.pre_get_list(_response)
         return self.response(200, **_response)
 
@@ -1566,9 +1584,13 @@ class ModelRestApi(BaseModelApi):
         ret["description"] = self.description_columns.get(field.name, "")
         # Handles related fields
         if isinstance(field, Related) or isinstance(field, RelatedList):
-            ret["count"], ret["values"] = self._get_list_related_field(
+            related_field_res = self._get_list_related_field(
                 field, filter_rel_field, page=page, page_size=page_size
             )
+            ret["count"] = related_field_res.count
+            ret[API_LIST_PAGE_INDEX_RES_KEY] = related_field_res.page
+            ret[API_LIST_PAGE_SIZE_RES_KEY] = related_field_res.page_size
+            ret["values"] = related_field_res.result
         if field.validate and isinstance(field.validate, list):
             ret["validate"] = [str(v) for v in field.validate]
         elif field.validate:
@@ -1609,7 +1631,7 @@ class ModelRestApi(BaseModelApi):
 
     def _get_list_related_field(
         self, field, filter_rel_field, page=None, page_size=None
-    ):
+    ) -> RelatedFieldResult:
         """
             Return a list of values for a related field
 
@@ -1617,7 +1639,7 @@ class ModelRestApi(BaseModelApi):
         :param filter_rel_field: Filters for the related field
         :param page: The page index
         :param page_size: The page size
-        :return: (int, list) total record count and list of dict with id and value
+        :return: total record count, page info, and list of dict with id and value
         """
         ret = list()
         if isinstance(field, Related) or isinstance(field, RelatedList):
@@ -1636,7 +1658,7 @@ class ModelRestApi(BaseModelApi):
             )
             for value in values:
                 ret.append({"id": datamodel.get_pk_value(value), "value": str(value)})
-        return count, ret
+            return RelatedFieldResult(count, page, page_size, ret)
 
     def _merge_update_item(self, model_item, data):
         """

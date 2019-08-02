@@ -176,6 +176,8 @@ API_FILTERS_RES_KEY = "filters"
 API_PERMISSIONS_RES_KEY = "permissions"
 
 API_LIST_TITLE_RES_KEY = "list_title"
+API_LIST_PAGE_INDEX_RES_KEY = "page"
+API_LIST_PAGE_SIZE_RES_KEY = "page_size"
 API_ADD_TITLE_RES_KEY = "add_title"
 API_EDIT_TITLE_RES_KEY = "edit_title"
 API_SHOW_TITLE_RES_KEY = "show_title"
