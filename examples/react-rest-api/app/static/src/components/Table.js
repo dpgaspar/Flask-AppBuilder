@@ -1,8 +1,38 @@
 import React, { Component } from 'react';
 import { AddButton, CRUDRowButtons, DeleteModal } from './CRUDButtons';
 import { AddForm, ShowForm } from './Forms';
-import { DropdownButton, MenuItem, Pagination, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
+import { Panel, DropdownButton, MenuItem, Pagination, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
 import Api from '../api/Api';
+
+
+class TableFilters extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentPage: 0
+    };
+  }
+
+  filterItems() {
+    let items = []
+    for (let item in this.props.filters) {
+      items.push(
+        <MenuItem eventKey="{item}">{item}</MenuItem>  
+      );
+    }
+    return items;
+  }
+
+  render() {
+    return (
+      <DropdownButton
+        title="Add Filter"
+      >
+        {this.filterItems()}
+      </DropdownButton>
+     );
+  }
+}
 
 class TablePagination extends Component {
   constructor(props) {
@@ -227,6 +257,7 @@ class Table extends Component {
       showAddForm: false,
       currentId: null,
       currentItem: null,
+      currentFilters: [],
       count: 0,
       ids: [],
       page: 0,
@@ -435,27 +466,34 @@ class Table extends Component {
   render() {
     return (
       <div>
-        <div class="well well-sm">
-          <ButtonToolbar>
-            <ButtonGroup>
-              <AddButton
-                resource={this.props.resource}
-                onOpenAddForm={this.onOpenAddForm}
-              />
-            </ButtonGroup>
-            <ButtonGroup>
-              <TablePagination
-                onChangePage={this.onChangePage}
-                onChangePageSize={this.onChangePageSize}
-                size={this.state.ids.length}
-                count={this.state.count}
-                pageSize={this.state.pageSize}
-              />
-            </ButtonGroup>
-            <TableRecordCount count={this.state.count} />
-          </ButtonToolbar>
-
-        </div>
+        <Panel>
+          <Panel.Heading>Filters</Panel.Heading>
+          <Panel.Body>
+            <TableFilters filters={this.info.filters} />
+          </Panel.Body>
+        </Panel>
+        <Panel>
+          <Panel.Body>
+            <ButtonToolbar>
+              <ButtonGroup>
+                <AddButton
+                  resource={this.props.resource}
+                  onOpenAddForm={this.onOpenAddForm}
+                />
+              </ButtonGroup>
+              <ButtonGroup>
+                <TablePagination
+                  onChangePage={this.onChangePage}
+                  onChangePageSize={this.onChangePageSize}
+                  size={this.state.ids.length}
+                  count={this.state.count}
+                  pageSize={this.state.pageSize}
+                />
+              </ButtonGroup>
+              <TableRecordCount count={this.state.count} />
+            </ButtonToolbar>
+          </Panel.Body>
+        </Panel>
         <div class="table-responsive">
           <table className="table table-hover">
             <TableHeader
