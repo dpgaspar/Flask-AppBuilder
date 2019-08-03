@@ -1562,8 +1562,8 @@ class ModelRestApi(BaseModelApi):
         """
         ret = dict()
         ret["name"] = field.name
-        ret["label"] = self.label_columns.get(field.name, "")
-        ret["description"] = self.description_columns.get(field.name, "")
+        ret["label"] = _(self.label_columns.get(field.name, ""))
+        ret["description"] = _(self.description_columns.get(field.name, ""))
         # Handles related fields
         if isinstance(field, Related) or isinstance(field, RelatedList):
             ret["count"], ret["values"] = self._get_list_related_field(
