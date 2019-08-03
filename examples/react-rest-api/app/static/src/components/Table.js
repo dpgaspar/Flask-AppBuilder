@@ -90,23 +90,23 @@ class TablePagination extends Component {
     for (let i in pageSizes) {
       if (this.props.pageSize == pageSizes[i]) {
         items.push(
-          <MenuItem 
+          <MenuItem
             eventKey="1"
             onClick={() => this.onPageSize(pageSizes[i])}
             active
           >
-          {pageSizes[i]}
-          </MenuItem>  
+            {pageSizes[i]}
+          </MenuItem>
         )
       }
       else {
         items.push(
-          <MenuItem 
+          <MenuItem
             eventKey="1"
             onClick={() => this.onPageSize(pageSizes[i])}
           >
-          {pageSizes[i]}
-          </MenuItem>  
+            {pageSizes[i]}
+          </MenuItem>
         )
       }
     }
@@ -117,20 +117,20 @@ class TablePagination extends Component {
     if (this.props.count > this.props.size) {
       return (
         <div>
-        <Pagination bsSize="small" style={{ margin: 0 }}>
-          <Pagination.First onClick={this.onFirst} />
-          <Pagination.Prev onClick={this.onPrev} />
-          {this.pageItems()}
-          <Pagination.Next onClick={this.onNext} />
-          <Pagination.Last onClick={this.onLast} />
-        </Pagination>
-        <DropdownButton
-          bsSize="small"
-          title="Page size"
-          style={{ margin: 0 }}
-        >
-          {this.pageSizeItems()}
-        </DropdownButton>
+          <Pagination bsSize="small" style={{ margin: 0 }}>
+            <Pagination.First onClick={this.onFirst} />
+            <Pagination.Prev onClick={this.onPrev} />
+            {this.pageItems()}
+            <Pagination.Next onClick={this.onNext} />
+            <Pagination.Last onClick={this.onLast} />
+          </Pagination>
+          <DropdownButton
+            bsSize="small"
+            title="Page size"
+            style={{ margin: 0 }}
+          >
+            {this.pageSizeItems()}
+          </DropdownButton>
         </div>
       );
     }
@@ -374,8 +374,17 @@ class Table extends Component {
       })
   }
 
+  getRequestParameters() {
+    return {
+      ...(this.state.orderByCol != '-') && { order_column: this.state.orderByCol },
+      ...(this.state.orderByDir != '-') && { order_direction: this.state.orderByDir },
+      page: this.state.page,
+      page_size: this.state.pageSize
+    }
+  }
+
   refresh() {
-    this.api.get(this.props.resource, [], this.prepareOrder(), this.state.page, this.state.pageSize)
+    this.api.get(this.props.resource, this.getRequestParameters())
       .then(response => {
         this.setState(
           {
