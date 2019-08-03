@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { AddButton, CRUDRowButtons, DeleteModal } from './CRUDButtons';
 import { AddForm, ShowForm } from './Forms';
-import { Pagination, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
+import { DropdownButton, MenuItem, Pagination, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
 import Api from '../api/Api';
 
 class TablePagination extends Component {
@@ -14,40 +14,45 @@ class TablePagination extends Component {
     this.onNext = this.onNext.bind(this);
     this.onPrev = this.onPrev.bind(this);
     this.onLast = this.onLast.bind(this);
+    this.onPageSize = this.onPageSize.bind(this);
   }
 
   onClick(page) {
-    this.setState({currentPage: page});
+    this.setState({ currentPage: page });
     this.props.onChangePage(page);
   }
 
+  onPageSize(pageSize) {
+    this.props.onChangePageSize(pageSize);
+  }
+
   onFirst() {
-    this.setState({currentPage: 0});
+    this.setState({ currentPage: 0 });
     this.props.onChangePage(0);
   }
 
   onLast() {
-    this.setState({currentPage: Math.floor(this.props.count / this.props.pageSize)});
+    this.setState({ currentPage: Math.floor(this.props.count / this.props.pageSize) });
     this.props.onChangePage(Math.floor(this.props.count / this.props.pageSize));
   }
 
   onPrev() {
     let page = this.state.currentPage;
     if (page != 0) {
-      this.setState({currentPage: page-1});
+      this.setState({ currentPage: page - 1 });
     }
-    this.props.onChangePage(page-1);
+    this.props.onChangePage(page - 1);
   }
 
   onNext() {
     let page = this.state.currentPage;
     if (page != Math.floor(this.props.count / this.props.pageSize)) {
-      this.setState({currentPage: page+1});
-      this.props.onChangePage(page+1);
+      this.setState({ currentPage: page + 1 });
+      this.props.onChangePage(page + 1);
     }
   }
 
-  items() {
+  pageItems() {
     let items = [];
     let actualNumPages = Math.floor(this.props.count / this.props.pageSize);
     let maxNumPages = 10;
@@ -64,7 +69,7 @@ class TablePagination extends Component {
       firstPage = this.state.currentPage - (numPages / 2);
       numPages = numPages + this.state.currentPage - (numPages / 2);
     }
-    
+
     for (let number = firstPage; number <= (numPages); number++) {
       items.push(
         <Pagination.Item
@@ -79,18 +84,56 @@ class TablePagination extends Component {
     return items;
   }
 
+  pageSizeItems() {
+    let items = [];
+    let pageSizes = [10, 20, 50, 100];
+    for (let i in pageSizes) {
+      if (this.props.pageSize == pageSizes[i]) {
+        items.push(
+          <MenuItem 
+            eventKey="1"
+            onClick={() => this.onPageSize(pageSizes[i])}
+            active
+          >
+          {pageSizes[i]}
+          </MenuItem>  
+        )
+      }
+      else {
+        items.push(
+          <MenuItem 
+            eventKey="1"
+            onClick={() => this.onPageSize(pageSizes[i])}
+          >
+          {pageSizes[i]}
+          </MenuItem>  
+        )
+      }
+    }
+    return items;
+  }
+
   render() {
     if (this.props.count > this.props.size) {
       return (
-        <Pagination bsSize="small" style={{margin: 0}}>
-          <Pagination.First onClick={this.onFirst}/>
+        <div>
+        <Pagination bsSize="small" style={{ margin: 0 }}>
+          <Pagination.First onClick={this.onFirst} />
           <Pagination.Prev onClick={this.onPrev} />
-          {this.items()}
-          <Pagination.Next onClick={this.onNext}/>
-          <Pagination.Last onClick={this.onLast}/>
+          {this.pageItems()}
+          <Pagination.Next onClick={this.onNext} />
+          <Pagination.Last onClick={this.onLast} />
         </Pagination>
+        <DropdownButton
+          bsSize="small"
+          title="Page size"
+          style={{ margin: 0 }}
+        >
+          {this.pageSizeItems()}
+        </DropdownButton>
+        </div>
       );
-      }
+    }
     return ('');
   }
 }
@@ -196,6 +239,7 @@ class Table extends Component {
     };
     this.onOrderBy = this.onOrderBy.bind(this);
     this.onChangePage = this.onChangePage.bind(this);
+    this.onChangePageSize = this.onChangePageSize.bind(this);
     this.onOpenShowForm = this.onOpenShowForm.bind(this);
     this.onCloseShowForm = this.onCloseShowForm.bind(this);
     this.onOpenAddForm = this.onOpenAddForm.bind(this);
@@ -272,6 +316,13 @@ class Table extends Component {
     this.setState(
       {
         page: page
+      }, () => this.refresh());
+  }
+
+  onChangePageSize(pageSize) {
+    this.setState(
+      {
+        pageSize: pageSize
       }, () => this.refresh());
   }
 
@@ -378,22 +429,23 @@ class Table extends Component {
         <div class="well well-sm">
           <ButtonToolbar>
             <ButtonGroup>
-          <AddButton 
-            resource={this.props.resource} 
-            onOpenAddForm={this.onOpenAddForm} 
-          />
-          </ButtonGroup>
-          <ButtonGroup>
-          <TablePagination 
-            onChangePage={this.onChangePage}
-            size={this.state.ids.length}
-            count={this.state.count}
-            pageSize={this.state.pageSize}
-          />
-          </ButtonGroup>
-          <TableRecordCount count={this.state.count} />
+              <AddButton
+                resource={this.props.resource}
+                onOpenAddForm={this.onOpenAddForm}
+              />
+            </ButtonGroup>
+            <ButtonGroup>
+              <TablePagination
+                onChangePage={this.onChangePage}
+                onChangePageSize={this.onChangePageSize}
+                size={this.state.ids.length}
+                count={this.state.count}
+                pageSize={this.state.pageSize}
+              />
+            </ButtonGroup>
+            <TableRecordCount count={this.state.count} />
           </ButtonToolbar>
-          
+
         </div>
         <div class="table-responsive">
           <table className="table table-hover">
