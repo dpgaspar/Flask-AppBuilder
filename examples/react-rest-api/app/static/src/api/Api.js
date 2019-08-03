@@ -10,13 +10,13 @@ class Api {
     this.client = axios.create({ baseURL: apiUrl });
   }
 
-  get(resource, filters = [], order = {}, page = 0) {
+  get(resource, filters = [], order = {}, page = 0, pageSize = 20) {
     var query = '(';
     if (order.column !== undefined) {
       query = query + 'order_column:' + order.column + ',order_direction:' + order.direction + ',';
     }
 
-    query = query + 'page:' + page + ')';
+    query = query + 'page:' + page + ',page_size:' + pageSize + ')';
     if (query == '') {
       return this.client.get(resource, { withCredentials: true });
     }

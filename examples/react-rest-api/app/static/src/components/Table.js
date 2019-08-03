@@ -27,8 +27,8 @@ class TablePagination extends Component {
   }
 
   onLast() {
-    this.setState({currentPage: Math.floor(this.props.count / this.props.size)});
-    this.props.onChangePage(Math.floor(this.props.count / this.props.size));
+    this.setState({currentPage: Math.floor(this.props.count / this.props.pageSize)});
+    this.props.onChangePage(Math.floor(this.props.count / this.props.pageSize));
   }
 
   onPrev() {
@@ -41,7 +41,7 @@ class TablePagination extends Component {
 
   onNext() {
     let page = this.state.currentPage;
-    if (page != Math.floor(this.props.count / this.props.size)) {
+    if (page != Math.floor(this.props.count / this.props.pageSize)) {
       this.setState({currentPage: page+1});
       this.props.onChangePage(page+1);
     }
@@ -49,7 +49,7 @@ class TablePagination extends Component {
 
   items() {
     let items = [];
-    let actualNumPages = Math.floor(this.props.count / this.props.size);
+    let actualNumPages = Math.floor(this.props.count / this.props.pageSize);
     let maxNumPages = 10;
     let numPages = 10;
     let firstPage = 0;
@@ -80,15 +80,18 @@ class TablePagination extends Component {
   }
 
   render() {
-    return (
-      <Pagination bsSize="small" style={{margin: 0}}>
-        <Pagination.First onClick={this.onFirst}/>
-        <Pagination.Prev onClick={this.onPrev} />
-        {this.items()}
-        <Pagination.Next onClick={this.onNext}/>
-        <Pagination.Last onClick={this.onLast}/>
-      </Pagination>
-    );
+    if (this.props.count > this.props.size) {
+      return (
+        <Pagination bsSize="small" style={{margin: 0}}>
+          <Pagination.First onClick={this.onFirst}/>
+          <Pagination.Prev onClick={this.onPrev} />
+          {this.items()}
+          <Pagination.Next onClick={this.onNext}/>
+          <Pagination.Last onClick={this.onLast}/>
+        </Pagination>
+      );
+      }
+    return ('');
   }
 }
 
@@ -184,6 +187,7 @@ class Table extends Component {
       count: 0,
       ids: [],
       page: 0,
+      pageSize: 20,
       data: [],
       listColumns: [],
       labelColumns: [],
@@ -320,7 +324,7 @@ class Table extends Component {
   }
 
   refresh() {
-    this.api.get(this.props.resource, [], this.prepareOrder(), this.state.page)
+    this.api.get(this.props.resource, [], this.prepareOrder(), this.state.page, this.state.pageSize)
       .then(response => {
         this.setState(
           {
@@ -380,7 +384,12 @@ class Table extends Component {
           />
           </ButtonGroup>
           <ButtonGroup>
-          <TablePagination onChangePage={this.onChangePage} size={this.state.ids.length} count={this.state.count}/>
+          <TablePagination 
+            onChangePage={this.onChangePage}
+            size={this.state.ids.length}
+            count={this.state.count}
+            pageSize={this.state.pageSize}
+          />
           </ButtonGroup>
           <TableRecordCount count={this.state.count} />
           </ButtonToolbar>
