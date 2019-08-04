@@ -22,7 +22,7 @@ export class FormFieldFilter extends Component {
           <tr>
             <td class="col-lg-1 col-md-1">
               <a onClick={this.props.onClick} href="#" class="btn remove-filter">
-                <span class="close-icon">×</span>&nbsp;Name
+                <span class="close-icon">×</span>&nbsp;{this.props.label}
               </a>
             </td>
             <td>
@@ -32,7 +32,6 @@ export class FormFieldFilter extends Component {
                 id={this.props.name}
                 name={this.props.name}
                 placeholder={this.props.label}
-                required
                 type="text"
               />              
             </td>
