@@ -1,36 +1,79 @@
 import React, { Component } from 'react';
 import { AddButton, CRUDRowButtons, DeleteModal } from './CRUDButtons';
-import { AddForm, ShowForm } from './Forms';
-import { Panel, DropdownButton, MenuItem, Pagination, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
+import { AddForm, ShowForm, FormFieldFilter } from './Forms';
+import {
+  Panel,
+  DropdownButton,
+  MenuItem,
+  Pagination,
+  ButtonToolbar,
+  ButtonGroup,
+  Button
+} from 'react-bootstrap';
 import Api from '../api/Api';
 
 
 class TableFilters extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      currentPage: 0
-    };
+    this.onAddFilter = this.onAddFilter.bind(this);
+    this.onChangeFilter = this.onChangeFilter.bind(this);
+    this.onRemoveFilter = this.onRemoveFilter.bind(this);
   }
 
   filterItems() {
     let items = []
     for (let item in this.props.filters) {
       items.push(
-        <MenuItem eventKey="{item}">{item}</MenuItem>  
+        <MenuItem onClick={() => this.onAddFilter(item)} eventKey="{item}">{item}</MenuItem>
       );
     }
     return items;
   }
 
+  currentFilterItems() {
+    let items = []
+    for (let item in this.props.currentFilters) {
+      items.push(
+          <FormFieldFilter
+            onChange={this.onChangeFilter}
+            onClick={() => this.onRemoveFilter(this.props.currentFilters[item].col)}
+            name={this.props.currentFilters[item].col}
+            label={this.props.currentFilters[item].col}
+          />
+      );
+    }
+    return items;
+  }
+
+  onChangeFilter(e) {
+    this.props.onChangeFilter(e.target.id, 'sw', e.target.value);
+  }
+
+  onAddFilter(colName) {
+    this.props.onAddFilter(colName, 'sw', '');
+  }
+
+  onRemoveFilter(colName) {
+    this.props.onRemoveFilter(colName);
+  }
+
   render() {
     return (
-      <DropdownButton
-        title="Add Filter"
-      >
-        {this.filterItems()}
-      </DropdownButton>
-     );
+      <Panel bsStyle="success" id="collapsible-panel-example-2">
+        <Panel.Heading>
+          <Panel.Title toggle>Filters</Panel.Title>
+        </Panel.Heading>
+        <Panel.Body collapsible>
+          <DropdownButton
+            title="Add Filter"
+          >
+            {this.filterItems()}
+          </DropdownButton>
+          {this.currentFilterItems()}
+        </Panel.Body>
+      </Panel>
+    );
   }
 }
 
@@ -271,6 +314,9 @@ class Table extends Component {
     this.onOrderBy = this.onOrderBy.bind(this);
     this.onChangePage = this.onChangePage.bind(this);
     this.onChangePageSize = this.onChangePageSize.bind(this);
+    this.onAddFilter = this.onAddFilter.bind(this);
+    this.onRemoveFilter = this.onRemoveFilter.bind(this);
+    this.onChangeFilter = this.onChangeFilter.bind(this);
     this.onOpenShowForm = this.onOpenShowForm.bind(this);
     this.onCloseShowForm = this.onCloseShowForm.bind(this);
     this.onOpenAddForm = this.onOpenAddForm.bind(this);
@@ -301,6 +347,49 @@ class Table extends Component {
       {
         showShowForm: false
       });
+  }
+
+  onChangeFilter(colName, opr = "sw", value) {
+    let currentFilters = [...this.state.currentFilters];
+    for (let key in this.info.filters) {
+      if (key == colName) {
+        for (let i in currentFilters) {
+          if (currentFilters[i].col == colName) {
+            currentFilters[i] = { col: colName, opr: opr, value: value };    
+          }
+        }
+      }
+    }
+    this.setState(
+      {
+        currentFilters: currentFilters
+      }, () => this.refresh());
+  }
+
+
+  onAddFilter(colName, opr = "sw", value = "") {
+    let currentFilters = [...this.state.currentFilters];
+    for (let key in this.info.filters) {
+      if (key == colName) {
+        currentFilters.push({ col: colName, opr: opr, value: value });
+      }
+    }
+    this.setState(
+      {
+        currentFilters: currentFilters
+      }, () => this.refresh());
+  }
+
+  onRemoveFilter(colName, opr = "sw", value = "") {
+    let currentFilters = [];
+    for (let item in this.state.currentFilters) {
+      if (this.state.currentFilters[item].col != colName)
+        currentFilters.push(this.state.currentFilters[item]);
+    }
+    this.setState(
+      {
+        currentFilters: currentFilters
+      }, () => this.refresh());
   }
 
   onOpenAddForm(id) {
@@ -407,6 +496,7 @@ class Table extends Component {
 
   getRequestParameters() {
     return {
+      ...(this.state.currentFilters != []) && {filters: this.state.currentFilters},
       ...(this.state.orderByCol != '-') && { order_column: this.state.orderByCol },
       ...(this.state.orderByDir != '-') && { order_direction: this.state.orderByDir },
       page: this.state.page,
@@ -466,12 +556,13 @@ class Table extends Component {
   render() {
     return (
       <div>
-        <Panel>
-          <Panel.Heading>Filters</Panel.Heading>
-          <Panel.Body>
-            <TableFilters filters={this.info.filters} />
-          </Panel.Body>
-        </Panel>
+            <TableFilters
+              filters={this.info.filters}
+              currentFilters={this.state.currentFilters}
+              onChangeFilter={this.onChangeFilter}
+              onAddFilter={this.onAddFilter}
+              onRemoveFilter={this.onRemoveFilter}
+            />
         <Panel>
           <Panel.Body>
             <ButtonToolbar>

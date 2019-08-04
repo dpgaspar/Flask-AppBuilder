@@ -13,7 +13,38 @@ class ShowField extends Component {
   }
 }
 
-class FormField extends Component {
+
+export class FormFieldFilter extends Component {
+  render() {
+    return (
+      <table class="table table-responsive table-hover filters">
+        <tbody>
+          <tr>
+            <td class="col-lg-1 col-md-1">
+              <a onClick={this.props.onClick} href="#" class="btn remove-filter">
+                <span class="close-icon">×</span>&nbsp;Name
+              </a>
+            </td>
+            <td>
+              <input
+                onChange={this.props.onChange}
+                class="form-control"
+                id={this.props.name}
+                name={this.props.name}
+                placeholder={this.props.label}
+                required
+                type="text"
+              />              
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    );
+  }
+}
+
+
+export class FormField extends Component {
   render() {
     return (
       <div class="form-group">
@@ -24,6 +55,7 @@ class FormField extends Component {
           {this.props.label}:
         </label>
         <input
+          onChange={this.props.onChange}
           class="form-control"
           id={this.props.name}
           name={this.props.name}
