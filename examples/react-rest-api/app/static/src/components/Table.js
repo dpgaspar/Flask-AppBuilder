@@ -282,7 +282,8 @@ class TableRow extends Component {
   }
 }
 
-class Table extends Component {
+
+class CRUDTable extends Component {
 
   constructor(props) {
     super(props);
@@ -538,7 +539,7 @@ class Table extends Component {
       })
   }
 
-  rows() {
+  tableRows() {
     const listColumns = this.state.listColumns
     return this.state.data.map(function (object, i) {
       return <TableRow
@@ -553,39 +554,36 @@ class Table extends Component {
     }, this);
   }
 
-  render() {
+  tableControl() {
     return (
-      <div>
-            <TableFilters
-              filters={this.info.filters}
-              currentFilters={this.state.currentFilters}
-              onChangeFilter={this.onChangeFilter}
-              onAddFilter={this.onAddFilter}
-              onRemoveFilter={this.onRemoveFilter}
+      <Panel>
+      <Panel.Body>
+        <ButtonToolbar>
+          <ButtonGroup>
+            <AddButton
+              resource={this.props.resource}
+              onOpenAddForm={this.onOpenAddForm}
             />
-        <Panel>
-          <Panel.Body>
-            <ButtonToolbar>
-              <ButtonGroup>
-                <AddButton
-                  resource={this.props.resource}
-                  onOpenAddForm={this.onOpenAddForm}
-                />
-              </ButtonGroup>
-              <ButtonGroup>
-                <TablePagination
-                  onChangePage={this.onChangePage}
-                  onChangePageSize={this.onChangePageSize}
-                  size={this.state.ids.length}
-                  count={this.state.count}
-                  pageSize={this.state.pageSize}
-                />
-              </ButtonGroup>
-              <TableRecordCount count={this.state.count} />
-            </ButtonToolbar>
-          </Panel.Body>
-        </Panel>
-        <div class="table-responsive">
+          </ButtonGroup>
+          <ButtonGroup>
+            <TablePagination
+              onChangePage={this.onChangePage}
+              onChangePageSize={this.onChangePageSize}
+              size={this.state.ids.length}
+              count={this.state.count}
+              pageSize={this.state.pageSize}
+            />
+          </ButtonGroup>
+          <TableRecordCount count={this.state.count} />
+        </ButtonToolbar>
+      </Panel.Body>
+    </Panel>
+    );
+  }
+
+  tableContent() {
+    return(
+      <div class="table-responsive">
           <table className="table table-hover">
             <TableHeader
               listColumns={this.state.listColumns}
@@ -595,10 +593,25 @@ class Table extends Component {
               onOrderBy={this.onOrderBy}
             />
             <tbody>
-              {this.rows()}
+              {this.tableRows()}
             </tbody>
           </table>
         </div>
+    );
+  }
+
+  render() {
+    return (
+      <div>
+        <TableFilters
+          filters={this.info.filters}
+          currentFilters={this.state.currentFilters}
+          onChangeFilter={this.onChangeFilter}
+          onAddFilter={this.onAddFilter}
+          onRemoveFilter={this.onRemoveFilter}
+        />
+        {this.tableControl()}
+        {this.tableContent()}
         <DeleteModal
           modalId='delete-modal'
           resource={this.props.resource}
@@ -625,4 +638,4 @@ class Table extends Component {
   }
 }
 
-export default Table;
+export default CRUDTable;
