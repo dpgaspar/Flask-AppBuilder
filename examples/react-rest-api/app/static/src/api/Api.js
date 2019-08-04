@@ -41,6 +41,14 @@ class Api {
       { withCredentials: true }
     );
   }
+
+  post(resource, data) {
+    return this.client.post(
+      resource,
+      data,
+      { withCredentials: true }
+    );
+  }
 }
 
 export default Api

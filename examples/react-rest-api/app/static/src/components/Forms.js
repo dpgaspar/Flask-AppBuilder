@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-
+import Select from 'react-select';
 
 class ShowField extends Component {
   render() {
@@ -44,6 +44,43 @@ export class FormFieldFilter extends Component {
 
 
 export class FormField extends Component {
+
+  constructor(props) {
+    super(props);
+  }
+  
+  convertOptions() {
+    let options = []; 
+    for (let i in this.props.options) {
+      options.push({label: this.props.options[i].value, value: this.props.options[i].id});
+    }
+    return options;
+  }
+
+  dynamicField() {
+    if (this.props.type == "Related") {
+      return (
+      <Select
+        id={this.props.name}
+        name={this.props.name}
+        required={this.props.required}
+        options={this.convertOptions()}
+      />);
+    }
+    else {
+      return (
+      <input
+          onChange={this.props.onChange}
+          class="form-control"
+          id={this.props.name}
+          name={this.props.name}
+          placeholder={this.props.label}
+          required={this.props.required}
+          type="text"
+        />);
+    }
+  }
+
   render() {
     return (
       <div class="form-group">
@@ -53,15 +90,7 @@ export class FormField extends Component {
         >
           {this.props.label}:
         </label>
-        <input
-          onChange={this.props.onChange}
-          class="form-control"
-          id={this.props.name}
-          name={this.props.name}
-          placeholder={this.props.label}
-          required
-          type="text"
-        />
+        {this.dynamicField()}     
       </div>
     );
   }
@@ -72,6 +101,7 @@ export class AddForm extends Component {
 
   constructor(props) {
     super(props);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   form() {
@@ -79,8 +109,23 @@ export class AddForm extends Component {
       return <FormField
         name={object.name}
         label={object.label}
+        required={object.required}
+        type={object.type}
+        options={object.values}
       />;
     }, this);
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    let formObject = {};
+    console.dir(event.target.elements);
+    for (let i in event.target.elements) {
+      if (event.target.elements[i].nodeName == 'INPUT' && event.target.elements[i].name != '') {
+        formObject[event.target.elements[i].name] = event.target.elements[i].value;
+      }
+    }
+    this.props.onAdd(formObject);
   }
 
   render() {
@@ -92,15 +137,13 @@ export class AddForm extends Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form>
+          <form onSubmit={this.handleSubmit}>
             {this.form()}
-          </form>
+          <Button onClick={this.props.onClose}>Close</Button>
+          <Button bsStyle="primary" type="submit">Save</Button>
+          </form>          
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button onClick={this.props.onClose}>Close</Button>
-          <Button onClick={this.props.onAdd}>Save</Button>
-        </Modal.Footer>
       </Modal>
     )
   }

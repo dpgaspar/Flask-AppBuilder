@@ -407,8 +407,15 @@ class CRUDTable extends Component {
       });
   }
 
-  onAdd() {
-    alert('add');
+  onAdd(data) {
+    this.api.post(this.props.resource, data)
+      .then(response => {
+        this.refresh();
+      })
+      .catch(function (error) {
+        alert(JSON.stringify(error.response.data, null, 4));
+      })
+      this.onCloseAddForm();
   }
 
   onDelete(id) {
