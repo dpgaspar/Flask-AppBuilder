@@ -36,6 +36,7 @@ import prison
 
 from .base import FABTestCase
 from .sqla.models import (
+    delete_data,
     insert_data,
     Model1,
     Model2,
@@ -68,7 +69,11 @@ class APICSRFTestCase(FABTestCase):
         from flask_appbuilder import AppBuilder
 
         self.app = Flask(__name__)
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
+        if os.environ.get('SQLALCHEMY_DATABASE_URI'):
+            self.app.config["SQLALCHEMY_DATABASE_URI"] = \
+                os.environ.get('SQLALCHEMY_DATABASE_URI')
+        else:
+            self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
         self.app.config["SECRET_KEY"] = "thisismyscretkey"
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         self.app.config["WTF_CSRF_ENABLED"] = True
@@ -104,7 +109,11 @@ class APITestCase(FABTestCase):
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
+        if os.environ.get('SQLALCHEMY_DATABASE_URI'):
+            self.app.config["SQLALCHEMY_DATABASE_URI"] = \
+                os.environ.get('SQLALCHEMY_DATABASE_URI')
+        else:
+            self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
         self.app.config["SECRET_KEY"] = "thisismyscretkey"
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
@@ -117,16 +126,18 @@ class APITestCase(FABTestCase):
             ]
         }
 
-        @event.listens_for(Engine, "connect")
-        def set_sqlite_pragma(dbapi_connection, connection_record):
-            # Will force sqllite contraint foreign keys
-            cursor = dbapi_connection.cursor()
-            cursor.execute("PRAGMA foreign_keys=ON")
-            cursor.close()
+        if os.environ.get('SQLALCHEMY_DATABASE_URI') is None:
+            @event.listens_for(Engine, "connect")
+            def set_sqlite_pragma(dbapi_connection, connection_record):
+                # Will force sqllite contraint foreign keys
+                cursor = dbapi_connection.cursor()
+                cursor.execute("PRAGMA foreign_keys=ON")
+                cursor.close()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
         # Create models and insert data
+        delete_data(self.db.session)
         insert_data(self.db.session, MODEL1_DATA_SIZE)
 
         rison_schema = {

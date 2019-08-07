@@ -106,7 +106,6 @@ class TmpEnum(enum.Enum):
 
 class ModelWithEnums(Model):
     id = Column(Integer, primary_key=True)
-    enum1 = Column(Enum("e1", "e2"))
     enum2 = Column(Enum(TmpEnum), info={"enum_class": TmpEnum})
 
 
@@ -114,8 +113,8 @@ assoc_parent_child = Table(
     "parent_child",
     Model.metadata,
     Column("id", Integer, primary_key=True),
-    Column("parent_id", Integer, ForeignKey("parent.id")),
-    Column("child_id", Integer, ForeignKey("child.id")),
+    Column("parent_id", Integer, ForeignKey("parent.id", ondelete='CASCADE')),
+    Column("child_id", Integer, ForeignKey("child.id", ondelete='CASCADE')),
     UniqueConstraint("parent_id", "child_id"),
 )
 
@@ -137,8 +136,8 @@ assoc_parent_child_required = Table(
     "parent_child_required",
     Model.metadata,
     Column("id", Integer, primary_key=True),
-    Column("parent_id", Integer, ForeignKey("parent_required.id")),
-    Column("child_id", Integer, ForeignKey("child_required.id")),
+    Column("parent_id", Integer, ForeignKey("parent_required.id", ondelete='CASCADE')),
+    Column("child_id", Integer, ForeignKey("child_required.id",  ondelete='CASCADE')),
     UniqueConstraint("parent_id", "child_id"),
 )
 
@@ -150,6 +149,7 @@ class ModelMMParentRequired(Model):
     children = relationship(
         "ModelMMChildRequired",
         secondary=assoc_parent_child_required,
+        cascade="all,delete",
         info={"required": True}
     )
 
@@ -165,9 +165,26 @@ class ModelMMChildRequired(Model):
     """
 
 
+def delete_data(session):
+
+    session.query(ModelMMChildRequired).delete()
+    session.query(ModelMMParentRequired).delete()
+    session.query(ModelMMChild).delete()
+    session.query(ModelMMParent).delete()
+
+    session.query(ModelWithEnums).delete()
+    session.query(ModelWithProperty).delete()
+
+    session.query(Model4).delete()
+    session.query(Model3).delete()
+    session.query(Model2).delete()
+    session.query(Model1).delete()
+
+
 def insert_data(session, count):
     model1_collection = list()
     # Fill model1
+
     for i in range(count):
         model = Model1()
         model.field_string = "test{}".format(i)
@@ -188,7 +205,6 @@ def insert_data(session, count):
     # Fill model with enums
     for i in range(count):
         model = ModelWithEnums()
-        model.enum1 = "e1"
         model.enum2 = TmpEnum.e2
         session.add(model)
         session.commit()

@@ -60,7 +60,11 @@ class FlaskTestCase(FABTestCase):
         self.app = Flask(__name__)
         self.app.jinja_env.undefined = jinja2.StrictUndefined
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
+        if os.environ.get('SQLALCHEMY_DATABASE_URI'):
+            self.app.config["SQLALCHEMY_DATABASE_URI"] = \
+                os.environ.get('SQLALCHEMY_DATABASE_URI')
+        else:
+            self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
         self.app.config["CSRF_ENABLED"] = False
         self.app.config["SECRET_KEY"] = "thisismyscretkey"
         self.app.config["WTF_CSRF_ENABLED"] = False
