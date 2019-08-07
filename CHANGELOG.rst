@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.9
+-----------------------------------
+
+- Fix, #1078 API unlimited page size with unlimited max_page_size issues SQL with negative LIMIT
+
 Improvements and Bug fixes on 2.1.8
 -----------------------------------
 
