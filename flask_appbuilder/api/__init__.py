@@ -1515,7 +1515,10 @@ class ModelRestApi(BaseModelApi):
         )
         # Accept special -1 to uncap the page size
         if max_page_size == -1:
-            return _page, _page_size
+            if _page_size == -1:
+                return None, None
+            else:
+                return _page, _page_size
         if _page_size > max_page_size or _page_size < 1:
             _page_size = max_page_size
         return _page, _page_size
