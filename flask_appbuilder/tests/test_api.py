@@ -91,6 +91,31 @@ class APICSRFTestCase(FABTestCase):
         )
 
 
+class APIDisableSecViewTestCase(FABTestCase):
+    def setUp(self):
+        from flask import Flask
+        from flask_wtf import CSRFProtect
+        from flask_appbuilder import AppBuilder
+
+        self.app = Flask(__name__)
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
+        self.app.config["SECRET_KEY"] = "thisismyscretkey"
+        self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        self.app.config["FAB_ADD_SECURITY_VIEWS"] = False
+
+        self.csrf = CSRFProtect(self.app)
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        self.create_admin_user(self.appbuilder, USERNAME, PASSWORD)
+
+    def test_disabled_security_views(self):
+        """
+            REST Api: Test disabled security views
+        """
+        eq_(self.appbuilder.get_app.url_map, [])
+
+
 class APITestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
