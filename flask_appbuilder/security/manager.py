@@ -579,7 +579,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         return jwt_decoded_payload
 
     def register_views(self):
-
+        if not self.appbuilder.app.config.get('FAB_ADD_SECURITY_VIEWS', True):
+            return
         # Security APIs
         self.appbuilder.add_api(self.security_api)
 
