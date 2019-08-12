@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.10
+------------------------------------
+
+- Fix, #1079 Make it possible to override register_views when using FAB_ADD_SECURITY_VIEWS
+
 Improvements and Bug fixes on 2.1.9
 -----------------------------------
 
