@@ -2,7 +2,7 @@ import logging
 from typing import List, Optional
 import uuid
 
-from sqlalchemy import and_, func
+from sqlalchemy import and_, func, literal
 from sqlalchemy.engine.reflection import Inspector
 from werkzeug.security import generate_password_hash
 
@@ -307,7 +307,7 @@ class SecurityManager(BaseSecurityManager):
             )
             .exists()
         )
-        return self.appbuilder.get_session.query(q).scalar()
+        return self.appbuilder.get_session.query(literal(True)).filter(q).scalar()
 
     def add_permission(self, name):
         """
