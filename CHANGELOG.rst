@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.11
+------------------------------------
+
+- Fix, #1092 Has access query fails on MSSQL
+
 Improvements and Bug fixes on 2.1.10
 ------------------------------------
 
