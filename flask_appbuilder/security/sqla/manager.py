@@ -1,12 +1,20 @@
 import logging
-from typing import Optional
+from typing import List, Optional
 import uuid
 
-from sqlalchemy import func
+from sqlalchemy import and_, func, literal
 from sqlalchemy.engine.reflection import Inspector
 from werkzeug.security import generate_password_hash
 
-from .models import Permission, PermissionView, RegisterUser, Role, User, ViewMenu
+from .models import (
+    assoc_permissionview_role,
+    Permission,
+    PermissionView,
+    RegisterUser,
+    Role,
+    User,
+    ViewMenu,
+)
 from ..manager import BaseSecurityManager
 from ... import const as c
 from ...models.sqla import Base
@@ -265,6 +273,42 @@ class SecurityManager(BaseSecurityManager):
             self.get_session.query(self.permission_model).filter_by(name=name).first()
         )
 
+    def exist_permission_on_roles(
+            self,
+            view_name: str,
+            permission_name: str,
+            role_ids: List[int],
+    ) -> bool:
+        """
+            Method to efficiently check if a certain permission exists
+            on a list of role id's. This is used by `has_access`
+
+        :param view_name: The view's name to check if exists on one of the roles
+        :param permission_name: The permission name to check if exists
+        :param role_ids: a list of Role ids
+        :return: Boolean
+        """
+        q = (
+            self.appbuilder.get_session.query(self.permissionview_model)
+            .join(
+                assoc_permissionview_role,
+                and_(
+                    (self.permissionview_model.id ==
+                     assoc_permissionview_role.c.permission_view_id),
+                ),
+            )
+            .join(self.role_model)
+            .join(self.permission_model)
+            .join(self.viewmenu_model)
+            .filter(
+                self.viewmenu_model.name == view_name,
+                self.permission_model.name == permission_name,
+                self.role_model.id.in_(role_ids),
+            )
+            .exists()
+        )
+        return self.appbuilder.get_session.query(literal(True)).filter(q).scalar()
+
     def add_permission(self, name):
         """
             Adds a permission to the backend, model permission
@@ -370,6 +414,7 @@ class SecurityManager(BaseSecurityManager):
             log.error(c.LOGMSG_ERR_SEC_DEL_PERMISSION.format(str(e)))
             self.get_session.rollback()
             return False
+
     """
     ----------------------
      PERMISSION VIEW MENU
@@ -442,9 +487,11 @@ class SecurityManager(BaseSecurityManager):
             self.role_model.permissions.contains(pv)
         ).first()
         if roles_pvs:
-            log.warning(c.LOGMSG_WAR_SEC_DEL_PERMVIEW.format(
-                view_menu_name, permission_name, roles_pvs
-            ))
+            log.warning(
+                c.LOGMSG_WAR_SEC_DEL_PERMVIEW.format(
+                    view_menu_name, permission_name, roles_pvs
+                )
+            )
             return
         try:
             # delete permission on view

@@ -1,5 +1,5 @@
 __author__ = "Daniel Vaz Gaspar"
-__version__ = '2.1.3'
+__version__ = "2.1.10"
 
 from .actions import action  # noqa: F401
 from .api import ModelRestApi  # noqa: F401
@@ -17,5 +17,5 @@ from .views import (  # noqa: F401
     MultipleView,
     PublicFormView,
     RestCRUDView,
-    SimpleFormView
+    SimpleFormView,
 )  # noqa: F401

@@ -155,9 +155,12 @@ class TemplateFilters(object):
         else:
             if hasattr(_view, 'actions') and _view.actions.get(permission):
                 permission_name = _view.get_action_permission_name(permission)
+                if permission_name not in _view.base_permissions:
+                    return False
                 return self.security_manager.has_access(permission_name, item)
             else:
                 method = permission
-        permission = _view.get_method_permission(method)
-        return self.security_manager.has_access(
-            PERMISSION_PREFIX + permission, item)
+        permission_name = PERMISSION_PREFIX + _view.get_method_permission(method)
+        if permission_name not in _view.base_permissions:
+            return False
+        return self.security_manager.has_access(permission_name, item)

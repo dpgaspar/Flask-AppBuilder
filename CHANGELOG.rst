@@ -1,6 +1,52 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.10
+------------------------------------
+
+- Fix, #1079 Make it possible to override register_views when using FAB_ADD_SECURITY_VIEWS
+
+Improvements and Bug fixes on 2.1.9
+-----------------------------------
+
+- Fix, #1078 API unlimited page size with unlimited max_page_size issues SQL with negative LIMIT
+
+Improvements and Bug fixes on 2.1.8
+-----------------------------------
+
+- Fix, #1077 API Info not translating labels and description
+- Fix, #1069 API label_columns for get item returning labels for list columns
+- Fix, #1072 API max_page_size class property override for FAB_API_MAX_SIZE
+
+Improvements and Bug fixes on 2.1.7
+-----------------------------------
+
+- Fix, #1065 setup version cap on apispec, jsonschema, marshmallow-sqlalchemy, prison
+
+Improvements and Bug fixes on 2.1.6
+-----------------------------------
+
+- Fix, #1050 Catch exceptions on populating forms
+- Fix, #1046 API include openapi security spec on paths
+- Fix, #1048 API include refresh token on openapi security specs
+- Fix, #1045, #1044 Performance improvement on permission checks
+
+Improvements and Bug fixes on 2.1.5
+-----------------------------------
+
+- New, #1040, #1041 Bump prison to 0.1.2 and remove requests dependency
+- Fix, #1042 is_item_visible confusing behaviour with base_permissions when perm is still on DB
+
+Improvements and Bug fixes on 2.1.4
+-----------------------------------
+
+- Fix, #1027 API dotted notation joins to same table
+- Fix, #1012 API default resource name must be lower case
+- Fix, #1013 Use csrf exempt by default when CSRFProtect is registered has a Flask extension
+- Fix, #1007 API Support for property decorated functions has models fields
+- Fix, #1002 Permission mapping
+- New, #1010 Support for UUID sqlalchemy fields has string fields on WTForms
+
 Improvements and Bug fixes on 2.1.3
 -----------------------------------
 

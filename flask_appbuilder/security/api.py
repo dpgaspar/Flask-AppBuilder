@@ -30,6 +30,7 @@ class SecurityApi(BaseApi):
         super(SecurityApi, self).add_apispec_components(api_spec)
         jwt_scheme = {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
         api_spec.components.security_scheme("jwt", jwt_scheme)
+        api_spec.components.security_scheme("jwt_refresh", jwt_scheme)
 
     @expose("/login", methods=["POST"])
     @safe
@@ -128,6 +129,8 @@ class SecurityApi(BaseApi):
               $ref: '#/components/responses/401'
             500:
               $ref: '#/components/responses/500'
+          security:
+            - jwt_refresh: []
         """
         resp = {
             API_SECURITY_REFRESH_TOKEN_KEY: create_access_token(
