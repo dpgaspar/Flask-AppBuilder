@@ -718,7 +718,7 @@ class AuthOAuthView(AuthView):
                 raise Exception("State signature is not valid!")
 
             try:
-                next_url = state["next"][0]
+                next_url = state["next"][0] or self.appbuilder.get_url_for_index
             except (KeyError, IndexError):
                 next_url = self.appbuilder.get_url_for_index
 
