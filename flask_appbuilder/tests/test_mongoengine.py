@@ -319,15 +319,6 @@ class FlaskTestCase(FABTestCase):
         )
         self.assertEqual(rv.status_code, 200)
 
-    def test_generic_interface(self):
-        """
-            Test Generic Interface for generic-alter datasource
-        """
-        client = self.app.test_client()
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        rv = client.get("/psview/list", follow_redirects=True)
-        self.assertEqual(rv.status_code, 200)
-
     def test_model_crud(self):
         """
             Test Model add, delete, edit
