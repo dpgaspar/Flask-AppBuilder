@@ -1,6 +1,13 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.12
+------------------------------------
+
+- Fix, #1096 Bootstrap and Bootswatch bump to 3.4.1
+- Fix, #1097 python version restriction on setup > 3.6 < 4
+- Fix, #1095 OAuth set fallback when next url in state is empty
+
 Improvements and Bug fixes on 2.1.11
 ------------------------------------
 
