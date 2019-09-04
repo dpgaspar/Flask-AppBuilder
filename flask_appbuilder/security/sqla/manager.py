@@ -307,7 +307,10 @@ class SecurityManager(BaseSecurityManager):
             )
             .exists()
         )
-        return self.appbuilder.get_session.query(literal(True)).filter(q).scalar()
+        # Special case for MSSQL (works on PG and MySQL > 8)
+        if self.appbuilder.get_session.bind.dialect.name == "mssql":
+            return self.appbuilder.get_session.query(literal(True)).filter(q).scalar()
+        return self.appbuilder.get_session.query(q).scalar()
 
     def add_permission(self, name):
         """
