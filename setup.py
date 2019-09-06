@@ -48,7 +48,7 @@ setup(
         'python-dateutil>=2.3,<3',
         'marshmallow>=2.18.0,<2.20',
         'marshmallow-enum>=1.4.1,<2',
-        'marshmallow-sqlalchemy>=0.16.1<1',
+        "marshmallow-sqlalchemy>=0.16.1, <0.19.0",
         'prison==0.1.0',
         'jsonschema>=3.0.1<4',
         'PyJWT>=1.7.1'
