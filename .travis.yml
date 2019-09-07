@@ -4,11 +4,15 @@ language: python
 matrix:
   include:
     - python: 3.6
-      env: TOXENV=py36,flake8,tests
+      env: TOXENV=flake8
+    - python: 3.6
+      env: TOXENV=py36,tests
     - python: 3.7
-      env: TOXENV=py37,flake8,tests
+      env: TOXENV=py36,tests
 services:
   - mongodb
+  - mysql
+  - postgresql
 install:
   - pip install tox
   - pip install codecov
