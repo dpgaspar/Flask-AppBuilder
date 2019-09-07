@@ -68,9 +68,7 @@ class APICSRFTestCase(FABTestCase):
         from flask_appbuilder import AppBuilder
 
         self.app = Flask(__name__)
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
-        self.app.config["SECRET_KEY"] = "thisismyscretkey"
-        self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        self.app.config.from_object('flask_appbuilder.tests.config_api')
         self.app.config["WTF_CSRF_ENABLED"] = True
 
         self.csrf = CSRFProtect(self.app)
@@ -97,9 +95,7 @@ class APIDisableSecViewTestCase(FABTestCase):
         from flask_appbuilder import AppBuilder
 
         self.app = Flask(__name__)
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
-        self.app.config["SECRET_KEY"] = "thisismyscretkey"
-        self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        self.app.config.from_object('flask_appbuilder.tests.config_api')
         self.app.config["FAB_ADD_SECURITY_VIEWS"] = False
 
         self.db = SQLA(self.app)
@@ -131,30 +127,11 @@ class APITestCase(FABTestCase):
         from flask_appbuilder.api import (
             BaseApi, ModelRestApi, protect, expose, rison, safe
         )
-        from sqlalchemy.engine import Engine
-        from sqlalchemy import event
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
-        self.app.config["SECRET_KEY"] = "thisismyscretkey"
-        self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        self.app.config.from_object('flask_appbuilder.tests.config_api')
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
-        self.app.config["WTF_CSRF_ENABLED"] = False
-        self.app.config["FAB_API_SWAGGER_UI"] = True
-        self.app.config["FAB_ROLES"] = {
-            "ReadOnly": [
-                [".*", "can_get"],
-                [".*", "can_info"]
-            ]
-        }
-
-        @event.listens_for(Engine, "connect")
-        def set_sqlite_pragma(dbapi_connection, connection_record):
-            # Will force sqllite contraint foreign keys
-            cursor = dbapi_connection.cursor()
-            cursor.execute("PRAGMA foreign_keys=ON")
-            cursor.close()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
