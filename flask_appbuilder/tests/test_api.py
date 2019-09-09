@@ -136,7 +136,7 @@ class APITestCase(FABTestCase):
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
         # Create models and insert data
-        insert_data(self.db.session, MODEL1_DATA_SIZE)
+        # insert_data(self.db.session, MODEL1_DATA_SIZE)
 
         rison_schema = {
             "type": "object",
@@ -331,7 +331,9 @@ class APITestCase(FABTestCase):
         )
 
     def tearDown(self):
-        self.db.drop_all()
+        self.appbuilder = None
+        self.app = None
+        self.db = None
 
     def test_auth_login(self):
         """
