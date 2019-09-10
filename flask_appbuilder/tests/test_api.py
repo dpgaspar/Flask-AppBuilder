@@ -35,16 +35,15 @@ import prison
 
 from .base import FABTestCase
 from .const import (
-    MODEL1_DATA_SIZE,
     MAX_PAGE_SIZE,
-    PASSWORD,
-    USERNAME,
-    PASSWORD_READONLY,
-    USERNAME_READONLY,
+    MODEL1_DATA_SIZE,
     MODEL2_DATA_SIZE,
+    PASSWORD,
+    PASSWORD_READONLY,
+    USERNAME,
+    USERNAME_READONLY
 )
 from .sqla.models import (
-    insert_data,
     insert_model1,
     insert_model2,
     insert_model_mm_parent,
