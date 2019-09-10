@@ -12,7 +12,7 @@ from sqlalchemy import (
     Integer,
     String,
     Table,
-    UniqueConstraint
+    UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
 
@@ -39,8 +39,8 @@ class Model1(Model):
 
 
 def validate_field_string(n):
-    if n[0] != 'A':
-        raise ValidationError('Name must start with an A')
+    if n[0] != "A":
+        raise ValidationError("Name must start with an A")
 
 
 class Model1CustomSchema(Schema):
@@ -150,7 +150,7 @@ class ModelMMParentRequired(Model):
     children = relationship(
         "ModelMMChildRequired",
         secondary=assoc_parent_child_required,
-        info={"required": True}
+        info={"required": True},
     )
 
 
@@ -165,26 +165,60 @@ class ModelMMChildRequired(Model):
     """
 
 
+def insert_model1(session, i=0):
+    add_flag = False
+    model = session.query(Model1).filter_by(id=i + 1).first()
+    if not model:
+        model = Model1()
+        add_flag = True
+    model.field_string = "test{}".format(i)
+    model.field_integer = i
+    model.field_float = float(i)
+    if add_flag:
+        session.add(model)
+    session.commit()
+    return model
+
+
+def insert_model2(session, i=0, model1_collection=None):
+    if not model1_collection:
+        model1 = session.query(Model1).filter_by(id=i + 1).first()
+    else:
+        model1 = model1_collection[i]
+    model = Model2()
+    model.field_string = "test{}".format(i)
+    model.field_integer = i
+    model.field_float = float(i)
+    model.group = model1
+    session.add(model)
+    session.commit()
+    return model
+
+
+def insert_model_mm_parent(session, i=0, children=None):
+    add_flag = False
+    model = session.query(ModelMMParent).filter_by(id=i + 1).first()
+    if not model:
+        model = ModelMMParent()
+        add_flag = True
+    model.field_string = str(i)
+    if children:
+        model.children = children
+    if add_flag:
+        session.add(model)
+    session.commit()
+    return model
+
+
 def insert_data(session, count):
     model1_collection = list()
     # Fill model1
     for i in range(count):
-        model = Model1()
-        model.field_string = "test{}".format(i)
-        model.field_integer = i
-        model.field_float = float(i)
-        session.add(model)
-        session.commit()
+        model = insert_model1(session, i)
         model1_collection.append(model)
     # Fill model2
     for i in range(count):
-        model = Model2()
-        model.field_string = "test{}".format(i)
-        model.field_integer = i
-        model.field_float = float(i)
-        model.group = model1_collection[i]
-        session.add(model)
-        session.commit()
+        insert_model2(session, i=i, model1_collection=model1_collection)
     # Fill model with enums
     for i in range(count):
         model = ModelWithEnums()
@@ -217,11 +251,7 @@ def insert_data(session, count):
         session.commit()
 
     for i in range(count):
-        model = ModelMMParent()
-        model.field_string = str(i)
-        model.children = children
-        session.add(model)
-        session.commit()
+        insert_model_mm_parent(session, i=i, children=children)
 
         model = ModelMMParentRequired()
         model.field_string = str(i)

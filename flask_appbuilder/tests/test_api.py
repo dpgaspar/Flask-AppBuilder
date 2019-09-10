@@ -34,8 +34,20 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 import prison
 
 from .base import FABTestCase
+from .const import (
+    MODEL1_DATA_SIZE,
+    MAX_PAGE_SIZE,
+    PASSWORD,
+    USERNAME,
+    PASSWORD_READONLY,
+    USERNAME_READONLY,
+    MODEL2_DATA_SIZE,
+)
 from .sqla.models import (
     insert_data,
+    insert_model1,
+    insert_model2,
+    insert_model_mm_parent,
     Model1,
     Model2,
     Model4,
@@ -51,14 +63,6 @@ from .sqla.models import (
 
 log = logging.getLogger(__name__)
 
-MODEL1_DATA_SIZE = 30
-MODEL2_DATA_SIZE = 30
-USERNAME = "testadmin"
-PASSWORD = "password"
-MAX_PAGE_SIZE = 25
-USERNAME_READONLY = "readonly"
-PASSWORD_READONLY = "readonly"
-
 
 class APICSRFTestCase(FABTestCase):
     def setUp(self):
@@ -67,7 +71,7 @@ class APICSRFTestCase(FABTestCase):
         from flask_appbuilder import AppBuilder
 
         self.app = Flask(__name__)
-        self.app.config.from_object('flask_appbuilder.tests.config_api')
+        self.app.config.from_object("flask_appbuilder.tests.config_api")
         self.app.config["WTF_CSRF_ENABLED"] = True
 
         self.csrf = CSRFProtect(self.app)
@@ -89,18 +93,6 @@ class APICSRFTestCase(FABTestCase):
 
 
 class APIDisableSecViewTestCase(FABTestCase):
-    def setUp(self):
-        from flask import Flask
-        from flask_appbuilder import AppBuilder
-
-        self.app = Flask(__name__)
-        self.app.config.from_object('flask_appbuilder.tests.config_api')
-        self.app.config["FAB_ADD_SECURITY_VIEWS"] = False
-
-        self.db = SQLA(self.app)
-        self.appbuilder = AppBuilder(self.app, self.db.session)
-
-        self.create_admin_user(self.appbuilder, USERNAME, PASSWORD)
 
     base_fab_endpoint = [
         "IndexView.index",
@@ -109,6 +101,17 @@ class APIDisableSecViewTestCase(FABTestCase):
         "LocaleView.index",
         "UtilView.back",
     ]
+
+    def setUp(self):
+        from flask import Flask
+        from flask_appbuilder import AppBuilder
+
+        self.app = Flask(__name__)
+        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config["FAB_ADD_SECURITY_VIEWS"] = False
+
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
 
     def test_disabled_security_views(self):
         """
@@ -119,18 +122,22 @@ class APIDisableSecViewTestCase(FABTestCase):
 
 
 class APITestCase(FABTestCase):
-
     def setUp(self):
         from flask import Flask
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.models.sqla.interface import SQLAInterface
         from flask_appbuilder.api import (
-            BaseApi, ModelRestApi, protect, expose, rison, safe
+            BaseApi,
+            ModelRestApi,
+            protect,
+            expose,
+            rison,
+            safe,
         )
 
         self.app = Flask(__name__)
         self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config.from_object('flask_appbuilder.tests.config_api')
+        self.app.config.from_object("flask_appbuilder.tests.config_api")
         self.app.config["FAB_API_MAX_PAGE_SIZE"] = MAX_PAGE_SIZE
 
         self.db = SQLA(self.app)
@@ -141,25 +148,18 @@ class APITestCase(FABTestCase):
         rison_schema = {
             "type": "object",
             "required": ["number"],
-            "properties": {
-                "number": {
-                    "type": "number"
-                }
-            }
+            "properties": {"number": {"type": "number"}},
         }
 
         class Base1Api(BaseApi):
-            @expose('/test1')
+            @expose("/test1")
             @protect()
             @safe
             @rison(rison_schema)
             def test1(self, **kwargs):
-                return self.response(
-                    200,
-                    message=f"{kwargs['rison']['number'] + 1}"
-                )
+                return self.response(200, message=f"{kwargs['rison']['number'] + 1}")
 
-            @expose('/test2')
+            @expose("/test2")
             @protect()
             @safe
             def test2(self, **kwargs):
@@ -299,14 +299,14 @@ class APITestCase(FABTestCase):
 
         class Model1PermOverride(ModelRestApi):
             datamodel = SQLAInterface(Model1)
-            class_permission_name = 'api'
+            class_permission_name = "api"
             method_permission_name = {
                 "get_list": "access",
                 "get": "access",
                 "put": "access",
                 "post": "access",
                 "delete": "access",
-                "info": "access"
+                "info": "access",
             }
 
         self.model1permoverride = Model1PermOverride
@@ -314,21 +314,10 @@ class APITestCase(FABTestCase):
 
         class ModelWithPropertyApi(ModelRestApi):
             datamodel = SQLAInterface(ModelWithProperty)
-            list_columns = ['field_string', 'custom_property']
+            list_columns = ["field_string", "custom_property"]
 
         self.model1permoverride = ModelWithPropertyApi
         self.appbuilder.add_api(ModelWithPropertyApi)
-
-        self.create_admin_user(self.appbuilder, USERNAME, PASSWORD)
-        self.create_user(
-            self.appbuilder,
-            USERNAME_READONLY,
-            PASSWORD_READONLY,
-            "ReadOnly",
-            first_name="readonly",
-            last_name="readonly",
-            email="readonly@fab.org"
-        )
 
     def tearDown(self):
         self.appbuilder = None
@@ -459,7 +448,9 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 400)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(data, {"message": "Not a valid rison argument"})
-        uri = "api/v1/model1api/1?{}={}".format(API_URI_RIS_KEY, "(columns!(not_valid))")
+        uri = "api/v1/model1api/1?{}={}".format(
+            API_URI_RIS_KEY, "(columns!(not_valid))"
+        )
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 400)
         data = json.loads(rv.data.decode("utf-8"))
@@ -531,7 +522,9 @@ class APITestCase(FABTestCase):
             },
         )
         # test descriptions
-        self.assertEqual(data["description_columns"], self.model1api.description_columns)
+        self.assertEqual(
+            data["description_columns"], self.model1api.description_columns
+        )
         # test labels
         self.assertEqual(
             data[API_LABEL_COLUMNS_RES_KEY],
@@ -562,7 +555,9 @@ class APITestCase(FABTestCase):
                 data[API_DESCRIPTION_COLUMNS_RES_KEY],
                 {"field_integer": "Field Integer"},
             )
-            self.assertEqual(data[API_LABEL_COLUMNS_RES_KEY], {"field_integer": "Field Integer"})
+            self.assertEqual(
+                data[API_LABEL_COLUMNS_RES_KEY], {"field_integer": "Field Integer"}
+            )
             self.assertEqual(rv.status_code, 200)
 
     def test_get_item_dotted_notation(self):
@@ -577,7 +572,7 @@ class APITestCase(FABTestCase):
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(
             data[API_RESULT_RES_KEY],
-            {'field_string': 'test0', 'group': {'field_string': 'test0'}}
+            {"field_string": "test0", "group": {"field_string": "test0"}},
         )
         self.assertEqual(rv.status_code, 200)
 
@@ -739,7 +734,7 @@ class APITestCase(FABTestCase):
         i = 0
         self.assertEqual(
             data[API_RESULT_RES_KEY][i],
-            {'field_string': 'test0', 'group': {'field_string': 'test0'}}
+            {"field_string": "test0", "group": {"field_string": "test0"}},
         )
 
     def test_get_list_dotted_order(self):
@@ -749,10 +744,7 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
 
-        arguments = {
-            "order_column": "group.field_string",
-            "order_direction": "desc"
-        }
+        arguments = {"order_column": "group.field_string", "order_direction": "desc"}
         uri = "api/v1/model2dottednotationapi/?{}={}".format(
             API_URI_RIS_KEY, prison.dumps(arguments)
         )
@@ -765,19 +757,20 @@ class APITestCase(FABTestCase):
         i = 0
         self.assertEqual(
             data[API_RESULT_RES_KEY][i],
-            {'field_string': 'test9', 'group': {'field_string': 'test9'}}
+            {"field_string": "test9", "group": {"field_string": "test9"}},
         )
 
     def test_get_list_multiple_dotted_order(self):
         """
             REST Api: Test get list order multiple dotted notation
         """
+
         class Model4Api(ModelRestApi):
             datamodel = SQLAInterface(Model4)
             list_columns = [
-                'field_string',
-                'model1_1.field_string',
-                'model1_2.field_string',
+                "field_string",
+                "model1_1.field_string",
+                "model1_2.field_string",
             ]
 
         self.appbuilder.add_api(Model4Api)
@@ -786,13 +779,8 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME, PASSWORD)
 
         # Test order asc for model1_1
-        arguments = {
-            "order_column": "model1_1.field_string",
-            "order_direction": "desc"
-        }
-        uri = "api/v1/model4api/?{}={}".format(
-            API_URI_RIS_KEY, prison.dumps(arguments)
-        )
+        arguments = {"order_column": "model1_1.field_string", "order_direction": "desc"}
+        uri = "api/v1/model4api/?{}={}".format(API_URI_RIS_KEY, prison.dumps(arguments))
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         # Tests count property
@@ -803,20 +791,15 @@ class APITestCase(FABTestCase):
         self.assertEqual(
             data[API_RESULT_RES_KEY][i],
             {
-                'field_string': 'test9',
-                'model1_1': {'field_string': 'test9'},
-                'model1_2': {'field_string': 'test9'}
-            }
+                "field_string": "test9",
+                "model1_1": {"field_string": "test9"},
+                "model1_2": {"field_string": "test9"},
+            },
         )
 
         # Test order desc for model1_2
-        arguments = {
-            "order_column": "model1_2.field_string",
-            "order_direction": "asc"
-        }
-        uri = "api/v1/model4api/?{}={}".format(
-            API_URI_RIS_KEY, prison.dumps(arguments)
-        )
+        arguments = {"order_column": "model1_2.field_string", "order_direction": "asc"}
+        uri = "api/v1/model4api/?{}={}".format(API_URI_RIS_KEY, prison.dumps(arguments))
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         # Tests count property
@@ -827,10 +810,10 @@ class APITestCase(FABTestCase):
         self.assertEqual(
             data[API_RESULT_RES_KEY][i],
             {
-                'field_string': 'test0',
-                'model1_1': {'field_string': 'test0'},
-                'model1_2': {'field_string': 'test0'}
-            }
+                "field_string": "test0",
+                "model1_1": {"field_string": "test0"},
+                "model1_2": {"field_string": "test0"},
+            },
         )
 
     def test_get_list_order(self):
@@ -1069,8 +1052,12 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(data[API_RESULT_RES_KEY][0], {"field_integer": 0})
-        self.assertEqual(data[API_LABEL_COLUMNS_RES_KEY], {"field_integer": "Field Integer"})
-        self.assertEqual(data[API_DESCRIPTION_COLUMNS_RES_KEY], {"field_integer": "Field Integer"})
+        self.assertEqual(
+            data[API_LABEL_COLUMNS_RES_KEY], {"field_integer": "Field Integer"}
+        )
+        self.assertEqual(
+            data[API_DESCRIPTION_COLUMNS_RES_KEY], {"field_integer": "Field Integer"}
+        )
         self.assertEqual(data[API_LIST_COLUMNS_RES_KEY], ["field_integer"])
         self.assertEqual(rv.status_code, 200)
 
@@ -1347,6 +1334,9 @@ class APITestCase(FABTestCase):
         model = self.db.session.query(Model2).get(pk)
         self.assertEqual(model, None)
 
+        # Revert data changes
+        insert_model2(self.appbuilder.get_session, i=pk)
+
     def test_delete_item_integrity(self):
         """
             REST Api: Test delete item integrity
@@ -1401,6 +1391,9 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_integer, 0)
         self.assertEqual(model.field_float, 0.0)
 
+        # Revert data changes
+        insert_model1(self.appbuilder.get_session, i=pk)
+
     def test_update_custom_validation(self):
         """
             REST Api: Test update item custom validation
@@ -1418,6 +1411,9 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_put(client, token, uri, item)
         self.assertEqual(rv.status_code, 200)
 
+        # Revert data changes
+        insert_model1(self.appbuilder.get_session, i=pk)
+
     def test_update_item_base_filters(self):
         """
             REST Api: Test update item with base filters
@@ -1433,6 +1429,10 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_string, "test_Put")
         self.assertEqual(model.field_integer, 3)
         self.assertEqual(model.field_float, 3.0)
+
+        # Revert data changes
+        insert_model1(self.appbuilder.get_session, i=pk)
+
         # We can't update an item that is base filtered
         pk = 1
         uri = "api/v1/model1apifiltered/{}".format(pk)
@@ -1464,25 +1464,49 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_put(client, token, uri, item)
         self.assertEqual(rv.status_code, 422)
         data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data["message"]["field_string"][0], "Longer than maximum length 50.")
+        self.assertEqual(
+            data["message"]["field_string"][0], "Longer than maximum length 50."
+        )
 
     def test_update_mm_field(self):
         """
             REST Api: Test update m-m field
         """
+        pk = 1
+        # Fetching children so that we can revert the changes
+        original_model = (
+            self.appbuilder.get_session.query(ModelMMParent).filter_by(id=pk).first()
+        )
+        original_children_ids = [child.id for child in original_model.children]
+
         model = ModelMMChild()
         model.field_string = "update_m,m"
         self.appbuilder.get_session.add(model)
         self.appbuilder.get_session.commit()
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
-        pk = 1
         item = dict(children=[4])
         uri = "api/v1/modelmmapi/{}".format(pk)
         rv = self.auth_client_put(client, token, uri, item)
         self.assertEqual(rv.status_code, 200)
         data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data[API_RESULT_RES_KEY], {"children": [4], "field_string": "0"})
+        self.assertEqual(
+            data[API_RESULT_RES_KEY], {"children": [4], "field_string": "0"}
+        )
+
+        # Revert data changes
+        original_children = list()
+        for child_id in original_children_ids:
+            original_children.append(
+                self.appbuilder.get_session.query(ModelMMChild)
+                .filter_by(id=child_id)
+                .first()
+            )
+        insert_model_mm_parent(
+            self.appbuilder.get_session, i=pk - 1, children=original_children
+        )
+        self.appbuilder.get_session.query(ModelMMChild).filter_by(id=4).delete()
+        self.appbuilder.get_session.commit()
 
     def test_update_item_val_type(self):
         """
@@ -1524,6 +1548,9 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_float, 0.0)
         self.assertEqual(model.field_date, None)
 
+        # Revert data changes
+        insert_model1(self.appbuilder.get_session, i=pk)
+
     def test_create_item(self):
         """
             REST Api: Test create item
@@ -1550,6 +1577,10 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_integer, MODEL1_DATA_SIZE + 1)
         self.assertEqual(model.field_float, float(MODEL1_DATA_SIZE + 1))
 
+        # Revert data changes
+        self.appbuilder.get_session.delete(model)
+        self.appbuilder.get_session.commit()
+
     def test_create_item_bad_request(self):
         """
             REST Api: Test create item with bad request
@@ -1568,7 +1599,7 @@ class APITestCase(FABTestCase):
         )
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 400)
-        self.assertEqual(data, {'message': 'Request is not JSON'})
+        self.assertEqual(data, {"message": "Request is not JSON"})
 
     def test_create_item_custom_validation(self):
         """
@@ -1586,7 +1617,9 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_post(client, token, uri, item)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 422)
-        self.assertEqual(data, {"message": {"field_string": ["Name must start with an A"]}})
+        self.assertEqual(
+            data, {"message": {"field_string": ["Name must start with an A"]}}
+        )
         item = dict(
             field_string="A{}".format(MODEL1_DATA_SIZE + 1),
             field_integer=MODEL1_DATA_SIZE + 1,
@@ -1621,7 +1654,9 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_post(client, token, uri, item)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 422)
-        self.assertEqual(data, {"message": {"field_string": ["Name must start with an A"]}})
+        self.assertEqual(
+            data, {"message": {"field_string": ["Name must start with an A"]}}
+        )
 
     def test_create_item_val_size(self):
         """
@@ -1639,7 +1674,9 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_post(client, token, uri, item)
         self.assertEqual(rv.status_code, 422)
         data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data["message"]["field_string"][0], "Longer than maximum length 50.")
+        self.assertEqual(
+            data["message"]["field_string"][0], "Longer than maximum length 50."
+        )
 
     def test_create_item_val_type(self):
         """
@@ -1714,33 +1751,32 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
-        item = dict(
-            field_string='new1',
-            children=[1, 2]
-        )
+        item = dict(field_string="new1", children=[1, 2])
         uri = "api/v1/modelmmapi/"
         rv = self.auth_client_post(client, token, uri, item)
         self.assertEqual(rv.status_code, 201)
         data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data[API_RESULT_RES_KEY], {"children": [1, 2], "field_string": "new1"})
+        self.assertEqual(
+            data[API_RESULT_RES_KEY], {"children": [1, 2], "field_string": "new1"}
+        )
         # Test without M-M field data, default is not required
-        item = dict(
-            field_string='new2'
-        )
+        item = dict(field_string="new2")
         uri = "api/v1/modelmmapi/"
         rv = self.auth_client_post(client, token, uri, item)
         self.assertEqual(rv.status_code, 201)
         data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data[API_RESULT_RES_KEY], {"children": [], "field_string": "new2"})
-        # Test without M-M field data, default is required
-        item = dict(
-            field_string='new1'
+        self.assertEqual(
+            data[API_RESULT_RES_KEY], {"children": [], "field_string": "new2"}
         )
+        # Test without M-M field data, default is required
+        item = dict(field_string="new1")
         uri = "api/v1/modelmmrequiredapi/"
         rv = self.auth_client_post(client, token, uri, item)
         self.assertEqual(rv.status_code, 422)
         data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data, {"message": {"children": ["Missing data for required field."]}})
+        self.assertEqual(
+            data, {"message": {"children": ["Missing data for required field."]}}
+        )
 
     def test_get_list_col_function(self):
         """
@@ -1779,10 +1815,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
         for i in range(1, self.model1api.page_size):
             item = data[API_RESULT_RES_KEY][i - 1]
-            self.assertEqual(
-                item["custom_property"],
-                "{}_custom".format(str(i - 1)),
-            )
+            self.assertEqual(item["custom_property"], "{}_custom".format(str(i - 1)))
 
     def test_openapi(self):
         """
@@ -1808,26 +1841,24 @@ class APITestCase(FABTestCase):
         """
             REST Api: Test class method permission name override
         """
+
         class Model2PermOverride1(ModelRestApi):
             datamodel = SQLAInterface(Model2)
-            class_permission_name = 'api'
+            class_permission_name = "api"
             method_permission_name = {
                 "get_list": "access",
                 "get": "access",
                 "put": "access",
                 "post": "access",
                 "delete": "access",
-                "info": "access"
+                "info": "access",
             }
 
         self.model2permoverride1 = Model2PermOverride1
         self.appbuilder.add_api(Model2PermOverride1)
 
         role = self.appbuilder.sm.add_role("Test")
-        pvm = self.appbuilder.sm.find_permission_view_menu(
-            "can_access",
-            "api"
-        )
+        pvm = self.appbuilder.sm.find_permission_view_menu("can_access", "api")
         self.appbuilder.sm.add_permission_role(role, pvm)
         self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
@@ -1849,6 +1880,7 @@ class APITestCase(FABTestCase):
         """
             REST Api: Test method permission name override
         """
+
         class Model2PermOverride2(ModelRestApi):
             datamodel = SQLAInterface(Model2)
             method_permission_name = {
@@ -1857,7 +1889,7 @@ class APITestCase(FABTestCase):
                 "put": "write",
                 "post": "write",
                 "delete": "write",
-                "info": "read"
+                "info": "read",
             }
 
         self.model2permoverride2 = Model2PermOverride2
@@ -1865,8 +1897,7 @@ class APITestCase(FABTestCase):
 
         role = self.appbuilder.sm.add_role("Test")
         pvm = self.appbuilder.sm.find_permission_view_menu(
-            "can_read",
-            "Model2PermOverride2"
+            "can_read", "Model2PermOverride2"
         )
         self.appbuilder.sm.add_permission_role(role, pvm)
         self.appbuilder.sm.add_user(
@@ -1889,6 +1920,7 @@ class APITestCase(FABTestCase):
         """
             REST Api: Test base perms with permission name override
         """
+
         class Model2PermOverride3(ModelRestApi):
             datamodel = SQLAInterface(Model2)
             method_permission_name = {
@@ -1897,21 +1929,19 @@ class APITestCase(FABTestCase):
                 "put": "write",
                 "post": "write",
                 "delete": "write",
-                "info": "read"
+                "info": "read",
             }
-            base_permissions = ['can_write']
+            base_permissions = ["can_write"]
 
         self.model2permoverride3 = Model2PermOverride3
         self.appbuilder.add_api(Model2PermOverride3)
 
         pvm = self.appbuilder.sm.find_permission_view_menu(
-            "can_write",
-            "Model2PermOverride3"
+            "can_write", "Model2PermOverride3"
         )
-        self.assertEqual(pvm.permission.name, 'can_write')
+        self.assertEqual(pvm.permission.name, "can_write")
         pvm = self.appbuilder.sm.find_permission_view_menu(
-            "can_read",
-            "Model2PermOverride3"
+            "can_read", "Model2PermOverride3"
         )
         self.assertEqual(pvm, None)
 
@@ -1919,25 +1949,23 @@ class APITestCase(FABTestCase):
         """
             REST Api: Test permission name converge compress
         """
+
         class Model1PermConverge(ModelRestApi):
             datamodel = SQLAInterface(Model1)
-            class_permission_name = 'api2'
-            previous_class_permission_name = 'Model1Api'
+            class_permission_name = "api2"
+            previous_class_permission_name = "Model1Api"
             method_permission_name = {
                 "get_list": "access2",
                 "get": "access2",
                 "put": "access2",
                 "post": "access2",
                 "delete": "access2",
-                "info": "access2"
+                "info": "access2",
             }
 
         self.appbuilder.add_api(Model1PermConverge)
         role = self.appbuilder.sm.add_role("Test")
-        pvm = self.appbuilder.sm.find_permission_view_menu(
-            "can_get",
-            "Model1Api"
-        )
+        pvm = self.appbuilder.sm.find_permission_view_menu("can_get", "Model1Api")
         self.appbuilder.sm.add_permission_role(role, pvm)
         self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
@@ -1953,30 +1981,27 @@ class APITestCase(FABTestCase):
         self.appbuilder.baseviews.pop(i)
 
         target_state_transitions = {
-            'add': {
-                ('Model1Api', 'can_get'): {('api2', 'can_access2')},
-                ('Model1Api', 'can_delete'): {('api2', 'can_access2')},
-                ('Model1Api', 'can_info'): {('api2', 'can_access2')},
-                ('Model1Api', 'can_put'): {('api2', 'can_access2')},
-                ('Model1Api', 'can_post'): {('api2', 'can_access2')}
+            "add": {
+                ("Model1Api", "can_get"): {("api2", "can_access2")},
+                ("Model1Api", "can_delete"): {("api2", "can_access2")},
+                ("Model1Api", "can_info"): {("api2", "can_access2")},
+                ("Model1Api", "can_put"): {("api2", "can_access2")},
+                ("Model1Api", "can_post"): {("api2", "can_access2")},
             },
-            'del_role_pvm': {
-                ('Model1Api', 'can_put'),
-                ('Model1Api', 'can_delete'),
-                ('Model1Api', 'can_get'),
-                ('Model1Api', 'can_info'),
-                ('Model1Api', 'can_post')
+            "del_role_pvm": {
+                ("Model1Api", "can_put"),
+                ("Model1Api", "can_delete"),
+                ("Model1Api", "can_get"),
+                ("Model1Api", "can_info"),
+                ("Model1Api", "can_post"),
             },
-            'del_views': {'Model1Api'},
-            'del_perms': set()
+            "del_views": {"Model1Api"},
+            "del_perms": set(),
         }
         state_transitions = self.appbuilder.security_converge()
         self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
-        pvm = self.appbuilder.sm.find_permission_view_menu(
-            "can_access2",
-            "api2"
-        )
+        pvm = self.appbuilder.sm.find_permission_view_menu("can_access2", "api2")
         assert pvm in role.permissions
         self.assertEqual(len(role.permissions), 1)
 
@@ -1984,17 +2009,18 @@ class APITestCase(FABTestCase):
         """
             REST Api: Test permission name converge expand
         """
+
         class Model1PermConverge(ModelRestApi):
             datamodel = SQLAInterface(Model1)
-            class_permission_name = 'Model1PermOverride'
-            previous_class_permission_name = 'api'
+            class_permission_name = "Model1PermOverride"
+            previous_class_permission_name = "api"
             method_permission_name = {
                 "get_list": "get",
                 "get": "get",
                 "put": "put",
                 "post": "post",
                 "delete": "delete",
-                "info": "info"
+                "info": "info",
             }
             previous_method_permission_name = {
                 "get_list": "access",
@@ -2002,15 +2028,12 @@ class APITestCase(FABTestCase):
                 "put": "access",
                 "post": "access",
                 "delete": "access",
-                "info": "access"
+                "info": "access",
             }
 
         self.appbuilder.add_api(Model1PermConverge)
         role = self.appbuilder.sm.add_role("Test")
-        pvm = self.appbuilder.sm.find_permission_view_menu(
-            "can_access",
-            "api"
-        )
+        pvm = self.appbuilder.sm.find_permission_view_menu("can_access", "api")
         self.appbuilder.sm.add_permission_role(role, pvm)
         self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
@@ -2022,18 +2045,18 @@ class APITestCase(FABTestCase):
         self.appbuilder.baseviews.pop(i)
 
         target_state_transitions = {
-            'add': {
-                ('api', 'can_access'): {
-                    ('Model1PermOverride', 'can_get'),
-                    ('Model1PermOverride', 'can_post'),
-                    ('Model1PermOverride', 'can_put'),
-                    ('Model1PermOverride', 'can_delete'),
-                    ('Model1PermOverride', 'can_info')
+            "add": {
+                ("api", "can_access"): {
+                    ("Model1PermOverride", "can_get"),
+                    ("Model1PermOverride", "can_post"),
+                    ("Model1PermOverride", "can_put"),
+                    ("Model1PermOverride", "can_delete"),
+                    ("Model1PermOverride", "can_info"),
                 }
             },
-            'del_role_pvm': {('api', 'can_access')},
-            'del_views': {'api'},
-            'del_perms': {'can_access'}
+            "del_role_pvm": {("api", "can_access")},
+            "del_views": {"api"},
+            "del_perms": {"can_access"},
         }
         state_transitions = self.appbuilder.security_converge()
         self.assertEqual(state_transitions, target_state_transitions)
