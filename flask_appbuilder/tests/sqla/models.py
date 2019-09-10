@@ -171,7 +171,7 @@ def insert_model1(session, i=0):
     if not model:
         model = Model1()
         add_flag = True
-    model.field_string = "test{}".format(i)
+    model.field_string = f"test{i}"
     model.field_integer = i
     model.field_float = float(i)
     if add_flag:
@@ -186,7 +186,7 @@ def insert_model2(session, i=0, model1_collection=None):
     else:
         model1 = model1_collection[i]
     model = Model2()
-    model.field_string = "test{}".format(i)
+    model.field_string = f"test{i}"
     model.field_integer = i
     model.field_float = float(i)
     model.group = model1

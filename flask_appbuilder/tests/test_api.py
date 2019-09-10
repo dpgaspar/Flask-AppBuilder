@@ -565,8 +565,11 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
-        i = 1
-        uri = "api/v1/model2dottednotationapi/{}".format(i)
+        model2 = self.appbuilder.get_session.query(Model2).filter_by(
+            field_string="test0"
+        ).scalar()
+        pk = model2.id
+        uri = f"api/v1/model2dottednotationapi/{pk}"
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(
@@ -641,7 +644,7 @@ class APITestCase(FABTestCase):
         # This one is ok pk=4 field_integer=3 2>3<4
         pk = 4
         rv = self.auth_client_get(
-            client, token, "api/v1/model1apifiltered/{}".format(pk)
+            client, token, f"api/v1/model1apifiltered/{pk}"
         )
         self.assertEqual(rv.status_code, 200)
 
@@ -653,8 +656,11 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME, PASSWORD)
 
         # We can't get a base filtered item
-        pk = 1
-        rv = self.auth_client_get(client, token, "api/v1/model2api/{}".format(pk))
+        model2 = self.appbuilder.get_session.query(Model2).filter_by(
+            field_string="test0"
+        ).scalar()
+        pk = model2.id
+        rv = self.auth_client_get(client, token, f"api/v1/model2api/{pk}")
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 200)
         expected_rel_field = {
@@ -701,20 +707,6 @@ class APITestCase(FABTestCase):
         self.assertEqual(data["count"], MODEL1_DATA_SIZE)
         # Tests data result default page size
         self.assertEqual(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
-        for i in range(1, self.model1api.page_size):
-            self.assert_get_list(rv, data[API_RESULT_RES_KEY][i - 1], i - 1)
-
-    def assert_get_list(self, rv, data, value):
-        self.assertEqual(
-            data,
-            {
-                "field_date": None,
-                "field_float": float(value),
-                "field_integer": value,
-                "field_string": "test{}".format(value),
-            },
-        )
-        self.assertEqual(rv.status_code, 200)
 
     def test_get_list_dotted_notation(self):
         """
@@ -874,9 +866,7 @@ class APITestCase(FABTestCase):
         )
         # Test override
         arguments = {"order_column": "field_integer", "order_direction": "asc"}
-        uri = "api/v1/model1apiorder/?{}={}".format(
-            API_URI_RIS_KEY, prison.dumps(arguments)
-        )
+        uri = f"api/v1/model1apiorder/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(
@@ -1334,7 +1324,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(model, None)
 
         # Revert data changes
-        insert_model2(self.appbuilder.get_session, i=pk)
+        insert_model2(self.appbuilder.get_session, i=pk-1)
 
     def test_delete_item_integrity(self):
         """
@@ -1347,8 +1337,8 @@ class APITestCase(FABTestCase):
         uri = "api/v1/model1api/{}".format(pk)
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 422)
-        model = self.db.session.query(Model2).get(pk)
-        assert model
+        model = self.db.session.query(Model1).get(pk)
+        self.assertIsNotNone(model)
 
     def test_delete_item_not_found(self):
         """
@@ -1380,9 +1370,12 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
-        pk = 3
+        model1 = self.appbuilder.get_session.query(Model1).filter_by(
+            field_string="test2"
+        ).scalar()
+        pk = model1.id
         item = dict(field_string="test_Put", field_integer=0, field_float=0.0)
-        uri = "api/v1/model1api/{}".format(pk)
+        uri = f"api/v1/model1api/{pk}"
         rv = self.auth_client_put(client, token, uri, item)
         self.assertEqual(rv.status_code, 200)
         model = self.db.session.query(Model1).get(pk)
@@ -1391,7 +1384,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_float, 0.0)
 
         # Revert data changes
-        insert_model1(self.appbuilder.get_session, i=pk)
+        insert_model1(self.appbuilder.get_session, i=pk-1)
 
     def test_update_custom_validation(self):
         """
@@ -1399,7 +1392,10 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
-        pk = 3
+        model1 = self.appbuilder.get_session.query(Model1).filter_by(
+            field_string="test2"
+        ).scalar()
+        pk = model1.id
         item = dict(field_string="test_Put", field_integer=0, field_float=0.0)
         uri = "api/v1/model1customvalidationapi/{}".format(pk)
         rv = self.auth_client_put(client, token, uri, item)
@@ -1411,7 +1407,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 200)
 
         # Revert data changes
-        insert_model1(self.appbuilder.get_session, i=pk)
+        insert_model1(self.appbuilder.get_session, i=pk-1)
 
     def test_update_item_base_filters(self):
         """
@@ -1419,7 +1415,10 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
-        pk = 4
+        model1 = self.appbuilder.get_session.query(Model1).filter_by(
+            field_string="test3"
+        ).scalar()
+        pk = model1.id
         item = dict(field_string="test_Put", field_integer=3, field_float=3.0)
         uri = "api/v1/model1apifiltered/{}".format(pk)
         rv = self.auth_client_put(client, token, uri, item)
@@ -1430,7 +1429,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_float, 3.0)
 
         # Revert data changes
-        insert_model1(self.appbuilder.get_session, i=pk)
+        insert_model1(self.appbuilder.get_session, i=pk-1)
 
         # We can't update an item that is base filtered
         pk = 1
@@ -1513,13 +1512,17 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
-        pk = 1
+
+        model1 = self.appbuilder.get_session.query(Model1).filter_by(
+            field_string="test0"
+        ).scalar()
+        pk = model1.id
         item = dict(
-            field_string="test{}".format(MODEL1_DATA_SIZE + 1),
-            field_integer="test{}".format(MODEL1_DATA_SIZE + 1),
+            field_string=f"test{MODEL1_DATA_SIZE + 1}",
+            field_integer=f"test{MODEL1_DATA_SIZE + 1}",
             field_float=11.0,
         )
-        uri = "api/v1/model1api/{}".format(pk)
+        uri = f"api/v1/model1api/{pk}"
         rv = self.auth_client_put(client, token, uri, item)
         self.assertEqual(rv.status_code, 422)
         data = json.loads(rv.data.decode("utf-8"))
@@ -1548,7 +1551,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_date, None)
 
         # Revert data changes
-        insert_model1(self.appbuilder.get_session, i=pk)
+        insert_model1(self.appbuilder.get_session, i=pk-1)
 
     def test_create_item(self):
         """
@@ -1607,7 +1610,7 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
         item = dict(
-            field_string="test{}".format(MODEL1_DATA_SIZE + 1),
+            field_string=f"test{MODEL1_DATA_SIZE + 1}",
             field_integer=MODEL1_DATA_SIZE + 1,
             field_float=float(MODEL1_DATA_SIZE + 1),
             field_date=None,
@@ -1629,6 +1632,12 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_post(client, token, uri, item)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 201)
+
+        # Revert test data
+        self.appbuilder.get_session.query(Model1).filter_by(
+            field_string=f"A{MODEL1_DATA_SIZE + 1}"
+        ).delete()
+        self.appbuilder.get_session.commit()
 
     def test_create_item_custom_schema(self):
         """
@@ -1730,6 +1739,15 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_float, None)
         self.assertEqual(model.field_date, None)
 
+        # Revert test data
+        self.appbuilder.get_session.query(Model1).filter_by(
+            field_string=f"test{MODEL1_DATA_SIZE + 1}"
+        ).delete()
+        self.appbuilder.get_session.query(Model1).filter_by(
+            field_string=f"test{MODEL1_DATA_SIZE + 2}"
+        ).delete()
+        self.appbuilder.get_session.commit()
+
     def test_create_item_with_enum(self):
         """
             REST Api: Test create item with enum
@@ -1743,6 +1761,15 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 201)
         model = self.db.session.query(ModelWithEnums).get(data["id"])
         self.assertEqual(model.enum2, TmpEnum.e1)
+
+        # Revert test data
+        self.appbuilder.get_session.query(Model1).filter_by(
+            field_string=f"test{MODEL1_DATA_SIZE + 1}"
+        ).delete()
+        self.appbuilder.get_session.query(Model1).filter_by(
+            field_string=f"test{MODEL1_DATA_SIZE + 2}"
+        ).delete()
+        self.appbuilder.get_session.commit()
 
     def test_create_item_mm_field(self):
         """
@@ -1874,6 +1901,9 @@ class APITestCase(FABTestCase):
         uri = "api/v1/model2permoverride1/1"
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 200)
+
+        # Revert test data
+        insert_model2(self.appbuilder.get_session, i=0)
 
     def test_method_permission_override(self):
         """
