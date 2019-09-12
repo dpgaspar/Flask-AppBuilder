@@ -715,8 +715,11 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME, PASSWORD)
 
-        rv = self.auth_client_get(client, token, "api/v1/model2dottednotationapi/")
-
+        arguments = {"order_column": "field_string", "order_direction": "asc"}
+        uri = "api/v1/model2dottednotationapi/?{}={}".format(
+            API_URI_RIS_KEY, prison.dumps(arguments)
+        )
+        rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         # Tests count property
         self.assertEqual(data["count"], MODEL1_DATA_SIZE)
@@ -1841,7 +1844,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(len(data[API_RESULT_RES_KEY]), self.model1api.page_size)
         for i in range(1, self.model1api.page_size):
             item = data[API_RESULT_RES_KEY][i - 1]
-            self.assertEqual(item["custom_property"], "{}_custom".format(str(i - 1)))
+            self.assertEqual(item["custom_property"], f"{item['field_string']}_custom")
 
     def test_openapi(self):
         """
@@ -1904,6 +1907,9 @@ class APITestCase(FABTestCase):
 
         # Revert test data
         insert_model2(self.appbuilder.get_session, i=0)
+        self.appbuilder.get_session.delete(self.appbuilder.sm.find_user(username="test"))
+        self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
+        self.appbuilder.get_session.commit()
 
     def test_method_permission_override(self):
         """
@@ -1944,6 +1950,11 @@ class APITestCase(FABTestCase):
         uri = "api/v1/model2permoverride2/1"
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 401)
+
+        # Revert test data
+        self.appbuilder.get_session.delete(self.appbuilder.sm.find_user(username="test"))
+        self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
+        self.appbuilder.get_session.commit()
 
     def test_base_permission_override(self):
         """
@@ -2033,6 +2044,11 @@ class APITestCase(FABTestCase):
         pvm = self.appbuilder.sm.find_permission_view_menu("can_access2", "api2")
         assert pvm in role.permissions
         self.assertEqual(len(role.permissions), 1)
+
+        # Revert test data
+        self.appbuilder.get_session.delete(self.appbuilder.sm.find_user(username="test"))
+        self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
+        self.appbuilder.get_session.commit()
 
     def test_permission_converge_expand(self):
         """
