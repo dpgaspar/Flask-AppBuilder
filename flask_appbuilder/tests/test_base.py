@@ -1,9 +1,6 @@
 import datetime
 import json
 import logging
-import os
-import random
-import string
 
 from flask import redirect, request, session
 from flask_appbuilder import SQLA
@@ -24,6 +21,15 @@ import jinja2
 from nose.tools import eq_, ok_
 
 from .base import FABTestCase
+from .const import (
+    MAX_PAGE_SIZE,
+    MODEL1_DATA_SIZE,
+    MODEL2_DATA_SIZE,
+    PASSWORD,
+    PASSWORD_READONLY,
+    USERNAME,
+    USERNAME_READONLY
+)
 from .sqla.models import Model1, Model2, Model3, ModelWithEnums, TmpEnum
 
 
@@ -39,8 +45,8 @@ INVALID_LOGIN_STRING = "Invalid login"
 ACCESS_IS_DENIED = "Access is Denied"
 UNIQUE_VALIDATION_STRING = "Already exists"
 NOTNULL_VALIDATION_STRING = "This field is required"
-DEFAULT_ADMIN_USER = "admin"
-DEFAULT_ADMIN_PASSWORD = "general"
+#DEFAULT_ADMIN_USER = "admin"
+#DEFAULT_ADMIN_PASSWORD = "general"
 REDIRECT_OBJ_ID = 1
 USERNAME_READONLY = "readonly"
 PASSWORD_READONLY = "readonly"
@@ -54,31 +60,11 @@ class FlaskTestCase(FABTestCase):
         from flask_appbuilder import AppBuilder
         from flask_appbuilder.models.sqla.interface import SQLAInterface
         from flask_appbuilder.views import ModelView
-        from sqlalchemy.engine import Engine
-        from sqlalchemy import event
 
         self.app = Flask(__name__)
         self.app.jinja_env.undefined = jinja2.StrictUndefined
-        self.basedir = os.path.abspath(os.path.dirname(__file__))
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
-        self.app.config["CSRF_ENABLED"] = False
-        self.app.config["SECRET_KEY"] = "thisismyscretkey"
-        self.app.config["WTF_CSRF_ENABLED"] = False
-        self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-        self.app.config["FAB_ROLES"] = {
-            "ReadOnly": [
-                [".*", "can_list"],
-                [".*", "can_show"]
-            ]
-        }
+        self.app.config.from_object("flask_appbuilder.tests.config_api")
         logging.basicConfig(level=logging.ERROR)
-
-        @event.listens_for(Engine, "connect")
-        def set_sqlite_pragma(dbapi_connection, connection_record):
-            # Will force sqllite contraint foreign keys
-            cursor = dbapi_connection.cursor()
-            cursor.execute("PRAGMA foreign_keys=ON")
-            cursor.close()
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
@@ -281,48 +267,48 @@ class FlaskTestCase(FABTestCase):
             TEST HELPER FUNCTIONS
         ---------------------------------
     """
-    def insert_data(self):
-        for x, i in zip(string.ascii_letters[:23], range(23)):
-            model = Model1(field_string="%stest" % (x), field_integer=i)
-            self.db.session.add(model)
-            self.db.session.commit()
-
-    def insert_data2(self):
-        models1 = [
-            Model1(field_string="G1"),
-            Model1(field_string="G2"),
-            Model1(field_string="G3"),
-        ]
-        for model1 in models1:
-            try:
-                self.db.session.add(model1)
-                self.db.session.commit()
-                for x, i in zip(string.ascii_letters[:10], range(10)):
-                    model = Model2(
-                        field_string="%stest" % (x),
-                        field_integer=random.randint(1, 10),
-                        field_float=random.uniform(0.0, 1.0),
-                        group=model1,
-                    )
-                    year = random.choice(range(1900, 2012))
-                    month = random.choice(range(1, 12))
-                    day = random.choice(range(1, 28))
-                    model.field_date = datetime.datetime(year, month, day)
-
-                    self.db.session.add(model)
-                    self.db.session.commit()
-            except Exception as e:
-                print("ERROR {0}".format(str(e)))
-                self.db.session.rollback()
-
-    def insert_data3(self):
-        model3 = Model3(pk1=3, pk2=datetime.datetime(2017, 3, 3), field_string="foo")
-        try:
-            self.db.session.add(model3)
-            self.db.session.commit()
-        except Exception as e:
-            print("Error {0}".format(str(e)))
-            self.db.session.rollback()
+    # def insert_data(self):
+    #     for x, i in zip(string.ascii_letters[:23], range(23)):
+    #         model = Model1(field_string="%stest" % (x), field_integer=i)
+    #         self.db.session.add(model)
+    #         self.db.session.commit()
+    #
+    # def insert_data2(self):
+    #     models1 = [
+    #         Model1(field_string="G1"),
+    #         Model1(field_string="G2"),
+    #         Model1(field_string="G3"),
+    #     ]
+    #     for model1 in models1:
+    #         try:
+    #             self.db.session.add(model1)
+    #             self.db.session.commit()
+    #             for x, i in zip(string.ascii_letters[:10], range(10)):
+    #                 model = Model2(
+    #                     field_string="%stest" % (x),
+    #                     field_integer=random.randint(1, 10),
+    #                     field_float=random.uniform(0.0, 1.0),
+    #                     group=model1,
+    #                 )
+    #                 year = random.choice(range(1900, 2012))
+    #                 month = random.choice(range(1, 12))
+    #                 day = random.choice(range(1, 28))
+    #                 model.field_date = datetime.datetime(year, month, day)
+    #
+    #                 self.db.session.add(model)
+    #                 self.db.session.commit()
+    #         except Exception as e:
+    #             print("ERROR {0}".format(str(e)))
+    #             self.db.session.rollback()
+    #
+    # def insert_data3(self):
+    #     model3 = Model3(pk1=3, pk2=datetime.datetime(2017, 3, 3), field_string="foo")
+    #     try:
+    #         self.db.session.add(model3)
+    #         self.db.session.commit()
+    #     except Exception as e:
+    #         print("Error {0}".format(str(e)))
+    #         self.db.session.rollback()
 
     def test_fab_views(self):
         """
@@ -351,10 +337,10 @@ class FlaskTestCase(FABTestCase):
         engine = self.db.session.get_bind(mapper=None, clause=None)
         inspector = Inspector.from_engine(engine)
         # Check if tables exist
-        ok_("model1" in inspector.get_table_names())
-        ok_("model2" in inspector.get_table_names())
-        ok_("model3" in inspector.get_table_names())
-        ok_("model_with_enums" in inspector.get_table_names())
+        self.assertIn("model1", inspector.get_table_names())
+        self.assertIn("model2", inspector.get_table_names())
+        self.assertIn("model3", inspector.get_table_names())
+        self.assertIn("model_with_enums", inspector.get_table_names())
 
     def test_index(self):
         """

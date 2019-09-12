@@ -6,8 +6,8 @@ from flask_appbuilder import SQLA
 from .base import FABTestCase
 from .const import (
     MODEL1_DATA_SIZE,
-    PASSWORD,
-    USERNAME,
+    PASSWORD_ADMIN,
+    USERNAME_ADMIN,
     PASSWORD_READONLY,
     USERNAME_READONLY,
 )
@@ -29,7 +29,7 @@ class TestData(FABTestCase):
         insert_data(self.db.session, MODEL1_DATA_SIZE)
 
     def test_create_admin(self):
-        self.create_admin_user(self.appbuilder, USERNAME, PASSWORD)
+        self.create_admin_user(self.appbuilder, USERNAME_ADMIN, PASSWORD_ADMIN)
 
     def test_create_ro_user(self):
         self.create_user(
