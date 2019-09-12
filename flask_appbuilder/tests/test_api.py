@@ -113,6 +113,7 @@ class APIDisableSecViewTestCase(FABTestCase):
         "static",
         "LocaleView.index",
         "UtilView.back",
+        "MenuApi.get_menu_data",
     ]
 
     def test_disabled_security_views(self):

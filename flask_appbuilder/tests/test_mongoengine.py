@@ -179,6 +179,7 @@ class FlaskTestCase(FABTestCase):
             TEST HELPER FUNCTIONS
         ---------------------------------
     """
+
     def insert_data(self):
         for x, i in zip(string.ascii_letters[:23], range(23)):
             model = Model1(field_string="%stest" % (x), field_integer=i)
@@ -217,7 +218,7 @@ class FlaskTestCase(FABTestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 26)  # current minimal views are 26
+        eq_(len(self.appbuilder.baseviews), 27)  # current minimal views are 26
 
     def test_index(self):
         """
