@@ -8,6 +8,8 @@ FAB_API_SWAGGER_UI = True
 FAB_ROLES = {
     "ReadOnly": [
         [".*", "can_get"],
-        [".*", "can_info"]
-    ]
+        [".*", "can_info"],
+        [".*", "can_list"],
+        [".*", "can_show"],
+    ],
 }

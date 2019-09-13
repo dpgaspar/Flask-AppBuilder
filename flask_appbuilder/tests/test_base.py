@@ -25,12 +25,14 @@ from .const import (
     MAX_PAGE_SIZE,
     MODEL1_DATA_SIZE,
     MODEL2_DATA_SIZE,
-    PASSWORD,
+    PASSWORD_ADMIN,
     PASSWORD_READONLY,
-    USERNAME,
+    USERNAME_ADMIN,
     USERNAME_READONLY
 )
-from .sqla.models import Model1, Model2, Model3, ModelWithEnums, TmpEnum
+from .sqla.models import (
+    Model1, Model2, Model3, ModelWithEnums, TmpEnum, insert_model1, insert_model2
+)
 
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
@@ -45,11 +47,7 @@ INVALID_LOGIN_STRING = "Invalid login"
 ACCESS_IS_DENIED = "Access is Denied"
 UNIQUE_VALIDATION_STRING = "Already exists"
 NOTNULL_VALIDATION_STRING = "This field is required"
-#DEFAULT_ADMIN_USER = "admin"
-#DEFAULT_ADMIN_PASSWORD = "general"
 REDIRECT_OBJ_ID = 1
-USERNAME_READONLY = "readonly"
-PASSWORD_READONLY = "readonly"
 
 log = logging.getLogger(__name__)
 
@@ -321,7 +319,7 @@ class FlaskTestCase(FABTestCase):
             Test Back functionality
         """
         with self.app.test_client() as c:
-            self.browser_login(c, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+            self.browser_login(c, USERNAME_ADMIN, PASSWORD_ADMIN)
             c.get("/model1view/list/?_flt_0_field_string=f")
             c.get("/model2view/list/")
             c.get("/back", follow_redirects=True)
@@ -366,7 +364,7 @@ class FlaskTestCase(FABTestCase):
         eq_(rv.status_code, 302)
 
         # Login and list with admin
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.get("/model1view/list/")
         eq_(rv.status_code, 200)
         rv = client.get("/model2view/list/")
@@ -380,7 +378,7 @@ class FlaskTestCase(FABTestCase):
         eq_(rv.status_code, 302)
 
         # Invalid Login
-        rv = self.browser_login(client, DEFAULT_ADMIN_USER, "password")
+        rv = self.browser_login(client, USERNAME_ADMIN, "password")
         data = rv.data.decode("utf-8")
         ok_(INVALID_LOGIN_STRING in data)
 
@@ -388,15 +386,15 @@ class FlaskTestCase(FABTestCase):
         """
             Test Security builtin roles readonly
         """
-        self.insert_data()
         client = self.app.test_client()
         self.browser_login(client, USERNAME_READONLY, PASSWORD_READONLY)
-        # Test unauthorized GET
+        # Test authorized GET
         rv = client.get("/model1view/list/")
         eq_(rv.status_code, 200)
-        # Test unauthorized EDIT
+        # Test authorized SHOW
         rv = client.get("/model1view/show/1")
         eq_(rv.status_code, 200)
+        # Test unauthorized EDIT
         rv = client.get("/model1view/edit/1")
         eq_(rv.status_code, 302)
         # Test unauthorized DELETE
@@ -418,7 +416,7 @@ class FlaskTestCase(FABTestCase):
         self.assertEqual(rv.status_code, 404)
 
         # Reset My password
-        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.get("/users/action/resetmypassword/1", follow_redirects=True)
         data = rv.data.decode("utf-8")
         ok_("Reset Password Form" in data)
@@ -429,11 +427,11 @@ class FlaskTestCase(FABTestCase):
         )
         self.assertEqual(rv.status_code, 200)
         self.browser_logout(client)
-        self.browser_login(client, DEFAULT_ADMIN_USER, "password")
+        self.browser_login(client, USERNAME_ADMIN, "password")
         rv = client.post(
             "/resetmypassword/form",
             data=dict(
-                password=DEFAULT_ADMIN_PASSWORD, conf_password=DEFAULT_ADMIN_PASSWORD
+                password=PASSWORD_ADMIN, conf_password=PASSWORD_ADMIN
             ),
             follow_redirects=True,
         )
@@ -446,7 +444,7 @@ class FlaskTestCase(FABTestCase):
         rv = client.post(
             "/resetmypassword/form",
             data=dict(
-                password=DEFAULT_ADMIN_PASSWORD, conf_password=DEFAULT_ADMIN_PASSWORD
+                password=PASSWORD_ADMIN, conf_password=PASSWORD_ADMIN
             ),
             follow_redirects=True,
         )
@@ -457,7 +455,7 @@ class FlaskTestCase(FABTestCase):
             Test Generic Interface for generic-alter datasource
         """
         client = self.app.test_client()
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.get("/psview/list", follow_redirects=True)
         self.assertEqual(rv.status_code, 200)
 
@@ -466,7 +464,7 @@ class FlaskTestCase(FABTestCase):
             Test Model add, delete, edit
         """
         client = self.app.test_client()
-        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         rv = client.post(
             "/model1view/add",
@@ -511,7 +509,7 @@ class FlaskTestCase(FABTestCase):
             from urllib.parse import quote
 
         client = self.app.test_client()
-        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         rv = client.post(
             "/model3view/add",
@@ -550,7 +548,7 @@ class FlaskTestCase(FABTestCase):
             Test Model add, delete, edit for Model with Enum Columns
         """
         client = self.app.test_client()
-        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         data = {"enum1": u"e1", "enum2": "e1"}
         rv = client.post("/modelwithenumsview/add", data=data, follow_redirects=True)
@@ -578,8 +576,7 @@ class FlaskTestCase(FABTestCase):
             Test ModelView's formatters_columns
         """
         client = self.app.test_client()
-        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        self.insert_data()
+        rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.get("/model1formattedview/list/")
         eq_(rv.status_code, 200)
         data = rv.data.decode("utf-8")
@@ -594,7 +591,7 @@ class FlaskTestCase(FABTestCase):
             Test Model redirects after add, delete, edit
         """
         client = self.app.test_client()
-        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         model1 = Model1(field_string="Test Redirects")
         self.db.session.add(model1)
@@ -642,7 +639,7 @@ class FlaskTestCase(FABTestCase):
             Test add_exclude_columns, edit_exclude_columns, show_exclude_columns
         """
         client = self.app.test_client()
-        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.get("/model22view/add")
         eq_(rv.status_code, 200)
         data = rv.data.decode("utf-8")
@@ -651,7 +648,7 @@ class FlaskTestCase(FABTestCase):
         ok_("field_float" in data)
         ok_("field_date" in data)
         ok_("excluded_string" not in data)
-        self.insert_data2()
+        #self.insert_data2()
         rv = client.get("/model22view/edit/1")
         eq_(rv.status_code, 200)
         data = rv.data.decode("utf-8")
@@ -674,8 +671,8 @@ class FlaskTestCase(FABTestCase):
             Test add and edit form related fields filter
         """
         client = self.app.test_client()
-        rv = self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        self.insert_data2()
+        rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        #self.insert_data2()
 
         # Base filter string starts with
         rv = client.get("/model2view/add")
@@ -693,10 +690,8 @@ class FlaskTestCase(FABTestCase):
         """
             Test Model order on lists
         """
-        self.insert_data()
-
         client = self.app.test_client()
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         rv = client.post(
             "/model1view/list?_oc_Model1View=field_string&_od_Model1View=asc",
@@ -722,7 +717,7 @@ class FlaskTestCase(FABTestCase):
             Test Model add validations
         """
         client = self.app.test_client()
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         rv = client.post(
             "/model1view/add",
@@ -760,7 +755,7 @@ class FlaskTestCase(FABTestCase):
             Test Model edit validations
         """
         client = self.app.test_client()
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         client.post(
             "/model1view/add",
@@ -795,8 +790,7 @@ class FlaskTestCase(FABTestCase):
             Test Model base filtered views
         """
         client = self.app.test_client()
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        self.insert_data()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         models = self.db.session.query(Model1).all()
         eq_(len(models), 23)
 
@@ -817,8 +811,8 @@ class FlaskTestCase(FABTestCase):
             Tests a model's field has a method
         """
         client = self.app.test_client()
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        self.insert_data2()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        #self.insert_data2()
         rv = client.get("/model2view/list/")
         eq_(rv.status_code, 200)
         data = rv.data.decode("utf-8")
@@ -829,8 +823,8 @@ class FlaskTestCase(FABTestCase):
             Test CompactCRUD Mixin view
         """
         client = self.app.test_client()
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        self.insert_data2()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        #self.insert_data2()
         rv = client.get("/model1compactview/list/")
         eq_(rv.status_code, 200)
 
@@ -861,11 +855,9 @@ class FlaskTestCase(FABTestCase):
             Test form_action in add, form_action in edit (CompactCRUDMixin)
         """
         client = self.app.test_client()
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         # Make sure we have something to edit.
-        self.insert_data()
-
         prefix = "/some-prefix"
         base_url = "http://localhost" + prefix
         session_form_action_key = "Model1CompactView__session_form_action"
@@ -886,8 +878,8 @@ class FlaskTestCase(FABTestCase):
             Test Various Chart views
         """
         client = self.app.test_client()
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        self.insert_data2()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        #self.insert_data2()
         log.info("CHART TEST")
         rv = client.get("/model2chartview/chart/")
         eq_(rv.status_code, 200)
@@ -906,8 +898,8 @@ class FlaskTestCase(FABTestCase):
             Test Master detail view
         """
         client = self.app.test_client()
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        self.insert_data2()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        #self.insert_data2()
         rv = client.get("/model1masterview/list/")
         eq_(rv.status_code, 200)
         rv = client.get("/model1masterview/list/1")
@@ -923,8 +915,7 @@ class FlaskTestCase(FABTestCase):
         Testing the api/read endpoint
         """
         client = self.app.test_client()
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        self.insert_data()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.get("/model1formattedview/api/read")
         eq_(rv.status_code, 200)
         data = json.loads(rv.data.decode("utf-8"))
@@ -937,15 +928,19 @@ class FlaskTestCase(FABTestCase):
         Testing the api/create endpoint
         """
         client = self.app.test_client()
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.post(
             "/model1view/api/create",
             data=dict(field_string="zzz"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
-        objs = self.db.session.query(Model1).all()
-        eq_(len(objs), 1)
+        self.assertEqual(rv.status_code, 200)
+        model1 = self.db.session.query(Model1).filter_by(field_string="zzz").scalar()
+        self.assertIsNotNone(model1)
+
+        # Revert data changes
+        self.appbuilder.get_session.delete(model1)
+        self.appbuilder.get_session.commit()
 
     def test_api_update(self):
         """
@@ -953,8 +948,7 @@ class FlaskTestCase(FABTestCase):
         POST data
         """
         client = self.app.test_client()
-        self.browser_login(client, DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASSWORD)
-        self.insert_data()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         item = self.db.session.query(Model1).filter_by(id=1).one()
         field_integer_before = item.field_integer
         rv = client.put(
@@ -964,8 +958,11 @@ class FlaskTestCase(FABTestCase):
         )
         eq_(rv.status_code, 200)
         item = self.db.session.query(Model1).filter_by(id=1).one()
-        eq_(item.field_string, "zzz")
-        eq_(item.field_integer, field_integer_before)
+        self.assertEqual(item.field_string, "zzz")
+        self.assertEqual(item.field_integer, field_integer_before)
+
+        # Revert data changes
+        insert_model1(self.appbuilder.get_session, i=0)
 
     def test_class_method_permission_override(self):
         """

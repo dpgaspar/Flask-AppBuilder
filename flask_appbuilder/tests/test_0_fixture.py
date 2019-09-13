@@ -20,7 +20,6 @@ class TestData(FABTestCase):
         from flask_appbuilder import AppBuilder
 
         self.app = Flask(__name__)
-        self.basedir = os.path.abspath(os.path.dirname(__file__))
         self.app.config.from_object("flask_appbuilder.tests.config_api")
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
