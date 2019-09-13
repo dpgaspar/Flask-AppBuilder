@@ -359,28 +359,28 @@ class FlaskTestCase(FABTestCase):
 
         # Try to List and Redirect to Login
         rv = client.get("/model1view/list/")
-        eq_(rv.status_code, 302)
+        self.assertEqual(rv.status_code, 302)
         rv = client.get("/model2view/list/")
-        eq_(rv.status_code, 302)
+        self.assertEqual(rv.status_code, 302)
 
         # Login and list with admin
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.get("/model1view/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         rv = client.get("/model2view/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
 
         # Logout and and try to list
         self.browser_logout(client)
         rv = client.get("/model1view/list/")
-        eq_(rv.status_code, 302)
+        self.assertEqual(rv.status_code, 302)
         rv = client.get("/model2view/list/")
-        eq_(rv.status_code, 302)
+        self.assertEqual(rv.status_code, 302)
 
         # Invalid Login
-        rv = self.browser_login(client, USERNAME_ADMIN, "password")
+        rv = self.browser_login(client, USERNAME_ADMIN, "wrong_password")
         data = rv.data.decode("utf-8")
-        ok_(INVALID_LOGIN_STRING in data)
+        self.assertIn(INVALID_LOGIN_STRING, data)
 
     def test_auth_builtin_roles(self):
         """
@@ -390,16 +390,16 @@ class FlaskTestCase(FABTestCase):
         self.browser_login(client, USERNAME_READONLY, PASSWORD_READONLY)
         # Test authorized GET
         rv = client.get("/model1view/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         # Test authorized SHOW
         rv = client.get("/model1view/show/1")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         # Test unauthorized EDIT
         rv = client.get("/model1view/edit/1")
-        eq_(rv.status_code, 302)
+        self.assertEqual(rv.status_code, 302)
         # Test unauthorized DELETE
         rv = client.get("/model1view/delete/1")
-        eq_(rv.status_code, 302)
+        self.assertEqual(rv.status_code, 302)
 
     def test_sec_reset_password(self):
         """
