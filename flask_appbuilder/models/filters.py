@@ -20,6 +20,7 @@ class BaseFilter(object):
     model = None
     name = ""
     is_related_view = False
+    case_sensitive = True
     """
         Sets this filter to a special kind for related views.
         If true this filter was not set by the user
@@ -32,7 +33,7 @@ class BaseFilter(object):
         REST API use
     """
 
-    def __init__(self, column_name, datamodel, is_related_view=False):
+    def __init__(self, column_name, datamodel, is_related_view=False, case_sensitive=True):
         """
             Constructor.
 
@@ -47,6 +48,7 @@ class BaseFilter(object):
         self.datamodel = datamodel
         self.model = datamodel.obj
         self.is_related_view = is_related_view
+        self.case_sensitive = case_sensitive
         if self.arg_name:
             map_args_filter[self.arg_name] = self.__class__
 
