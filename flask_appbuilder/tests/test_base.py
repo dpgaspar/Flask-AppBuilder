@@ -47,7 +47,7 @@ INVALID_LOGIN_STRING = "Invalid login"
 ACCESS_IS_DENIED = "Access is Denied"
 UNIQUE_VALIDATION_STRING = "Already exists"
 NOTNULL_VALIDATION_STRING = "This field is required"
-REDIRECT_OBJ_ID = 1
+REDIRECT_OBJ_ID = 1000
 
 log = logging.getLogger(__name__)
 
@@ -119,28 +119,28 @@ class FlaskTestCase(FABTestCase):
         class Model3CompactView(CompactCRUDMixin, ModelView):
             datamodel = SQLAInterface(Model3)
 
-        class Model1ViewWithRedirects(ModelView):
-            datamodel = SQLAInterface(Model1)
-            obj_id = 1
+        class Model2ViewWithRedirects(ModelView):
+            datamodel = SQLAInterface(Model2)
+            obj_id = REDIRECT_OBJ_ID
 
             def post_add_redirect(self):
                 return redirect(
-                    "/model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
+                    "/model2viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
                 )
 
             def post_edit_redirect(self):
                 return redirect(
-                    "/model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
+                    "/model2viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
                 )
 
             def post_delete_redirect(self):
                 return redirect(
-                    "/model1viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
+                    "/model2viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
                 )
 
         class Model1Filtered1View(ModelView):
             datamodel = SQLAInterface(Model1)
-            base_filters = [["field_string", FilterStartsWith, "a"]]
+            base_filters = [["field_string", FilterStartsWith, "test2"]]
 
         class Model1MasterView(MasterDetailView):
             datamodel = SQLAInterface(Model1)
@@ -209,7 +209,7 @@ class FlaskTestCase(FABTestCase):
 
         self.appbuilder.add_view(Model1View, "Model1", category="Model1")
         self.appbuilder.add_view(
-            Model1ViewWithRedirects, "Model1ViewWithRedirects", category="Model1"
+            Model2ViewWithRedirects, "Model2ViewWithRedirects", category="Model1"
         )
         self.appbuilder.add_view(Model1CompactView, "Model1Compact", category="Model1")
         self.appbuilder.add_view(Model1MasterView, "Model1Master", category="Model1")
@@ -312,7 +312,7 @@ class FlaskTestCase(FABTestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 34)
+        eq_(len(self.appbuilder.baseviews), 35)
 
     def test_back(self):
         """
@@ -459,44 +459,88 @@ class FlaskTestCase(FABTestCase):
         rv = client.get("/psview/list", follow_redirects=True)
         self.assertEqual(rv.status_code, 200)
 
-    def test_model_crud(self):
+    def test_model_crud_add(self):
         """
-            Test Model add, delete, edit
+            Test ModelView CRUD Add
         """
         client = self.app.test_client()
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
+        field_string = f"test{MODEL1_DATA_SIZE+1}"
         rv = client.post(
             "/model1view/add",
             data=dict(
-                field_string="test1",
-                field_integer="1",
-                field_float="0.12",
+                field_string=field_string,
+                field_integer=f"{MODEL1_DATA_SIZE}",
+                field_float=f"{float(MODEL1_DATA_SIZE)}",
                 field_date="2014-01-01",
             ),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
 
-        model = self.db.session.query(Model1).first()
-        eq_(model.field_string, u"test1")
-        eq_(model.field_integer, 1)
+        model = self.db.session.query(Model1).filter_by(
+            field_string=field_string).scalar()
+        self.assertEqual(model.field_string, field_string)
+        self.assertEqual(model.field_integer, MODEL1_DATA_SIZE)
 
+        # Revert data changes
+        self.appbuilder.get_session.delete(model)
+        self.appbuilder.get_session.commit()
+
+    def test_model_crud_edit(self):
+        """
+            Test ModelView CRUD Edit
+        """
+        client = self.app.test_client()
+        rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        model = self.appbuilder.get_session.query(Model1).filter_by(
+            field_string="test0").scalar()
+        pk = model.id
         rv = client.post(
-            "/model1view/edit/1",
-            data=dict(field_string="test2", field_integer="2"),
+            f"/model1view/edit/{pk}",
+            data=dict(field_string="test_edit", field_integer="200"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
 
-        model = self.db.session.query(Model1).first()
-        eq_(model.field_string, u"test2")
-        eq_(model.field_integer, 2)
+        model = self.db.session.query(Model1).filter_by(
+            id=pk).scalar()
+        self.assertEqual(model.field_string, u"test_edit")
+        self.assertEqual(model.field_integer, 200)
 
-        rv = client.get("/model1view/delete/1", follow_redirects=True)
-        eq_(rv.status_code, 200)
-        model = self.db.session.query(Model1).first()
-        eq_(model, None)
+        # Revert data changes
+        insert_model1(self.appbuilder.get_session, i=pk-1)
+
+    def test_model_crud_delete(self):
+        """
+            Test Model CRUD delete
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        pk = 1
+        rv = client.get(f"/model2view/delete/{pk}", follow_redirects=True)
+
+        self.assertEqual(rv.status_code, 200)
+        model = self.db.session.query(Model2).filter_by(id=pk).scalar()
+        self.assertEqual(model, None)
+
+        # Revert data changes
+        insert_model2(self.appbuilder.get_session, i=pk-1)
+
+    def test_model_delete_integrity(self):
+        """
+            Test Model CRUD delete integrity validation
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        pk = 1
+        rv = client.get(f"/model1view/delete/{pk}", follow_redirects=True)
+
+        self.assertEqual(rv.status_code, 200)
+        model = self.db.session.query(Model2).filter_by(id=pk).scalar()
+        self.assertNotEqual(model, None)
 
     def test_model_crud_composite_pk(self):
         """
@@ -586,20 +630,20 @@ class FlaskTestCase(FABTestCase):
         data = rv.data.decode("utf-8")
         ok_("FORMATTED_STRING" in data)
 
-    def test_model_redirects(self):
+    def test_1_modelview_add_redirects(self):
         """
-            Test Model redirects after add, delete, edit
+            Test ModelView redirects after add
         """
         client = self.app.test_client()
-        rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        model1 = Model1(field_string="Test Redirects")
-        self.db.session.add(model1)
-        model1.id = REDIRECT_OBJ_ID
-        self.db.session.flush()
+        # model2 = Model2(field_string="Test Redirects", group_id=1)
+        # self.db.session.add(model2)
+        #model2.id = REDIRECT_OBJ_ID
+        #self.db.session.flush()
 
         rv = client.post(
-            "/model1viewwithredirects/add",
+            "/model2viewwithredirects/add",
             data=dict(
                 field_string="test_redirect",
                 field_integer="1",
@@ -609,62 +653,105 @@ class FlaskTestCase(FABTestCase):
             follow_redirects=True,
         )
 
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_("Test Redirects" in data)
+        self.assertIn("test_redirect", data)
 
+        # Revert data changes
+        model2 = self.appbuilder.get_session.query(Model2).filter_by(
+            field_string="test_redirect").scalar()
+        self.appbuilder.get_session.delete(model2)
+        self.appbuilder.get_session.commit()
+
+    def test_2_modelview_edit_redirects(self):
+        """
+            Test ModelView redirects after edit
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model_id = (
-            self.db.session.query(Model1)
-            .filter_by(field_string="test_redirect")
+            self.db.session.query(Model2)
+            .filter_by(field_string="test0")
             .first()
             .id
         )
         rv = client.post(
-            "/model1viewwithredirects/edit/{0}".format(model_id),
-            data=dict(field_string="test_redirect_2", field_integer="2"),
+            "/model2viewwithredirects/edit/{0}".format(model_id),
+            data=dict(field_string="test_redirect", field_integer="200"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
-        ok_("Test Redirects" in data)
+        data = rv.data.decode("utf-8")
+        self.assertEqual(rv.status_code, 200)
+        self.assertIn("test_redirect", data)
 
-        rv = client.get(
-            "/model1viewwithredirects/delete/{0}".format(model_id),
-            follow_redirects=True,
-        )
-        eq_(rv.status_code, 200)
-        ok_("Test Redirects" in data)
+        # Revert data changes
+        insert_model2(self.appbuilder.get_session, i=model_id-1)
 
-    def test_excluded_cols(self):
+    def test_3_modelview_delete_redirects(self):
         """
-            Test add_exclude_columns, edit_exclude_columns, show_exclude_columns
+            Test ModelView redirects after delete
         """
         client = self.app.test_client()
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        model_id = (
+            self.db.session.query(Model2)
+                .filter_by(field_string="test0")
+                .first()
+                .id
+        )
+        rv = client.get(
+            "/model2viewwithredirects/delete/{0}".format(model_id),
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        self.assertEqual(rv.status_code, 200)
+        # Revert data changes
+        insert_model2(self.appbuilder.get_session, i=model_id-1)
+
+    def test_add_excluded_cols(self):
+        """
+            Test add_exclude_columns
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.get("/model22view/add")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_("field_string" in data)
-        ok_("field_integer" in data)
-        ok_("field_float" in data)
-        ok_("field_date" in data)
-        ok_("excluded_string" not in data)
-        #self.insert_data2()
+        self.assertIn("field_string", data)
+        self.assertIn("field_integer", data)
+        self.assertIn("field_float", data)
+        self.assertIn("field_date", data)
+        self.assertNotIn("excluded_string", data)
+
+    def test_edit_excluded_cols(self):
+        """
+            Test edit_exclude_columns
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.get("/model22view/edit/1")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_("field_string" in data)
-        ok_("field_integer" in data)
-        ok_("field_float" in data)
-        ok_("field_date" in data)
-        ok_("excluded_string" not in data)
-        rv = client.get("/model22view/show/1")
-        eq_(rv.status_code, 200)
+        self.assertIn("field_string", data)
+        self.assertIn("field_integer", data)
+        self.assertIn("field_float", data)
+        self.assertIn("field_date", data)
+        self.assertNotIn("excluded_string", data)
+
+    def test_show_excluded_cols(self):
+        """
+            Test show_exclude_columns
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        rv = client.get("/model22view/add")
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_("Field String" in data)
-        ok_("Field Integer" in data)
-        ok_("Field Float" in data)
-        ok_("Field Date" in data)
-        ok_("Excluded String" not in data)
+        self.assertIn("Field String", data)
+        self.assertIn("Field Integer", data)
+        self.assertIn("Field Float", data)
+        self.assertIn("Field Date", data)
+        self.assertNotIn("Excluded String", data)
 
     def test_query_rel_fields(self):
         """
@@ -712,78 +799,77 @@ class FlaskTestCase(FABTestCase):
         # TODO
         # VALIDATE LIST IS ORDERED
 
-    def test_model_add_validation(self):
+    def test_model_add_unique_validation(self):
         """
-            Test Model add validations
+            Test Model add unique field validation
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        rv = client.post(
-            "/model1view/add",
-            data=dict(field_string="test1", field_integer="1"),
-            follow_redirects=True,
-        )
-        eq_(rv.status_code, 200)
-
+        # Test unique constraint
         rv = client.post(
             "/model1view/add",
             data=dict(field_string="test1", field_integer="2"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_(UNIQUE_VALIDATION_STRING in data)
+        self.assertIn(UNIQUE_VALIDATION_STRING, data)
 
         model = self.db.session.query(Model1).all()
-        eq_(len(model), 1)
+        self.assertEqual(len(model), MODEL1_DATA_SIZE)
 
+    def test_model_add_required_validation(self):
+        """
+            Test Model add required fields validation
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # Test field required
         rv = client.post(
             "/model1view/add",
             data=dict(field_string="", field_integer="1"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_(NOTNULL_VALIDATION_STRING in data)
+        self.assertIn(NOTNULL_VALIDATION_STRING, data)
 
         model = self.db.session.query(Model1).all()
-        eq_(len(model), 1)
+        self.assertEqual(len(model), MODEL1_DATA_SIZE)
 
-    def test_model_edit_validation(self):
+    def test_model_edit_unique_validation(self):
         """
-            Test Model edit validations
+            Test Model edit unique validation
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        client.post(
-            "/model1view/add",
-            data=dict(field_string="test1", field_integer="1"),
-            follow_redirects=True,
-        )
-        client.post(
-            "/model1view/add",
-            data=dict(field_string="test2", field_integer="1"),
-            follow_redirects=True,
-        )
         rv = client.post(
             "/model1view/edit/1",
             data=dict(field_string="test2", field_integer="2"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_(UNIQUE_VALIDATION_STRING in data)
+        self.assertIn(UNIQUE_VALIDATION_STRING, data)
+
+    def test_model_edit_required_validation(self):
+        """
+            Test Model edit required validation
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         rv = client.post(
             "/model1view/edit/1",
             data=dict(field_string="", field_integer="2"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_(NOTNULL_VALIDATION_STRING in data)
+        self.assertIn(NOTNULL_VALIDATION_STRING, data)
 
     def test_model_base_filter(self):
         """
@@ -792,19 +878,19 @@ class FlaskTestCase(FABTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         models = self.db.session.query(Model1).all()
-        eq_(len(models), 23)
+        self.assertEqual(len(models), MODEL1_DATA_SIZE)
 
         # Base filter string starts with
         rv = client.get("/model1filtered1view/list/")
         data = rv.data.decode("utf-8")
-        ok_("atest" in data)
-        ok_("btest" not in data)
+        self.assertIn("test2", data)
+        self.assertNotIn("test0", data)
 
         # Base filter integer equals
         rv = client.get("/model1filtered2view/list/")
         data = rv.data.decode("utf-8")
-        ok_("atest" in data)
-        ok_("btest" not in data)
+        self.assertIn("test0", data)
+        self.assertNotIn("test1", data)
 
     def test_model_list_method_field(self):
         """
