@@ -120,7 +120,7 @@ class FilterNotEndsWith(BaseFilter):
         if self.case_sensitive:
             return query.filter(~field.like("%" + value))
         else:
-            return query.filter(~field.ilike("%" + value))            
+            return query.filter(~field.ilike("%" + value))
 
 
 class FilterContains(BaseFilter):
