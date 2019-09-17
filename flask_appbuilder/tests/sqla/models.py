@@ -102,11 +102,12 @@ class ModelWithProperty(Model):
 class TmpEnum(enum.Enum):
     e1 = "a"
     e2 = 2
+    e3 = 3
 
 
 class ModelWithEnums(Model):
     id = Column(Integer, primary_key=True)
-    enum1 = Column(Enum("e1", "e2"))
+    enum1 = Column(Enum("e1", "e2", "e3"))
     enum2 = Column(Enum(TmpEnum), info={"enum_class": TmpEnum})
 
 
@@ -204,6 +205,20 @@ def insert_model_mm_parent(session, i=0, children=None):
     model.field_string = str(i)
     if children:
         model.children = children
+    if add_flag:
+        session.add(model)
+    session.commit()
+    return model
+
+
+def insert_model_with_enums(session, i=0):
+    add_flag = False
+    model = session.query(ModelWithEnums).filter_by(id=i + 1).first()
+    if not model:
+        model = ModelWithEnums()
+        add_flag = True
+    model.enum1 = "e1"
+    model.enum2 = TmpEnum.e2
     if add_flag:
         session.add(model)
     session.commit()

@@ -22,16 +22,21 @@ from nose.tools import eq_, ok_
 
 from .base import FABTestCase
 from .const import (
-    MAX_PAGE_SIZE,
     MODEL1_DATA_SIZE,
-    MODEL2_DATA_SIZE,
     PASSWORD_ADMIN,
     PASSWORD_READONLY,
     USERNAME_ADMIN,
     USERNAME_READONLY
 )
 from .sqla.models import (
-    Model1, Model2, Model3, ModelWithEnums, TmpEnum, insert_model1, insert_model2
+    Model1,
+    Model2,
+    Model3,
+    ModelWithEnums,
+    TmpEnum,
+    insert_model1,
+    insert_model2,
+    insert_model_with_enums,
 )
 
 
@@ -47,7 +52,6 @@ INVALID_LOGIN_STRING = "Invalid login"
 ACCESS_IS_DENIED = "Access is Denied"
 UNIQUE_VALIDATION_STRING = "Already exists"
 NOTNULL_VALIDATION_STRING = "This field is required"
-REDIRECT_OBJ_ID = 1000
 
 log = logging.getLogger(__name__)
 
@@ -119,24 +123,17 @@ class FlaskTestCase(FABTestCase):
         class Model3CompactView(CompactCRUDMixin, ModelView):
             datamodel = SQLAInterface(Model3)
 
-        class Model2ViewWithRedirects(ModelView):
-            datamodel = SQLAInterface(Model2)
-            obj_id = REDIRECT_OBJ_ID
+        class Model1ViewWithRedirects(ModelView):
+            datamodel = SQLAInterface(Model1)
 
             def post_add_redirect(self):
-                return redirect(
-                    "/model2viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
-                )
+                return redirect("/")
 
             def post_edit_redirect(self):
-                return redirect(
-                    "/model2viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
-                )
+                return redirect("/")
 
             def post_delete_redirect(self):
-                return redirect(
-                    "/model2viewwithredirects/show/{0}".format(REDIRECT_OBJ_ID)
-                )
+                return redirect("/")
 
         class Model1Filtered1View(ModelView):
             datamodel = SQLAInterface(Model1)
@@ -209,7 +206,7 @@ class FlaskTestCase(FABTestCase):
 
         self.appbuilder.add_view(Model1View, "Model1", category="Model1")
         self.appbuilder.add_view(
-            Model2ViewWithRedirects, "Model2ViewWithRedirects", category="Model1"
+            Model1ViewWithRedirects, "Model1ViewWithRedirects", category="Model1"
         )
         self.appbuilder.add_view(Model1CompactView, "Model1Compact", category="Model1")
         self.appbuilder.add_view(Model1MasterView, "Model1Master", category="Model1")
@@ -587,33 +584,48 @@ class FlaskTestCase(FABTestCase):
         model = self.db.session.query(Model3).first()
         eq_(model, None)
 
-    def test_model_crud_with_enum(self):
+    def test_1_model_crud_add_with_enum(self):
         """
-            Test Model add, delete, edit for Model with Enum Columns
+            Test Model add for Model with Enum Columns
         """
         client = self.app.test_client()
-        rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        data = {"enum1": u"e1", "enum2": "e1"}
-        rv = client.post("/modelwithenumsview/add", data=data, follow_redirects=True)
-        eq_(rv.status_code, 200)
+        data = {"enum1": u"e3", "enum2": "e3"}
+        rv = client.post(
+            "/modelwithenumsview/add", data=data, follow_redirects=True
+        )
+        self.assertEqual(rv.status_code, 200)
 
-        model = self.db.session.query(ModelWithEnums).first()
-        eq_(model.enum1, u"e1")
-        eq_(model.enum2, TmpEnum.e1)
+        model = self.appbuilder.get_session.query(ModelWithEnums).filter_by(
+            enum1="e3"
+        ).scalar()
+        self.assertIsNotNone(model)
+        self.assertEqual(model.enum2, TmpEnum.e3)
 
-        data = {"enum1": u"e2", "enum2": "e2"}
-        rv = client.post("/modelwithenumsview/edit/1", data=data, follow_redirects=True)
-        eq_(rv.status_code, 200)
+        # Revert data changes
+        model = self.appbuilder.get_session.query(ModelWithEnums).filter_by(enum1="e3").scalar()
+        self.appbuilder.get_session.delete(model)
+        self.appbuilder.get_session.commit()
 
-        model = self.db.session.query(ModelWithEnums).first()
-        eq_(model.enum1, u"e2")
-        eq_(model.enum2, TmpEnum.e2)
+    def test_2_model_crud_edit_with_enum(self):
+        """
+            Test Model edit for Model with Enum Columns
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        rv = client.get("/modelwithenumsview/delete/1", follow_redirects=True)
-        eq_(rv.status_code, 200)
-        model = self.db.session.query(ModelWithEnums).first()
-        eq_(model, None)
+        data = {"enum1": u"e3", "enum2": "e3"}
+        pk = 1
+        rv = client.post(f"/modelwithenumsview/edit/{pk}", data=data, follow_redirects=True)
+        self.assertEqual(rv.status_code, 200)
+
+        model = self.appbuilder.get_session.query(ModelWithEnums).filter_by(enum1="e3").scalar()
+        self.assertIsNotNone(model)
+        self.assertEqual(model.enum2, TmpEnum.e3)
+
+        # Revert data changes
+        insert_model_with_enums(self.appbuilder.get_session, i=pk - 1)
 
     def test_formatted_cols(self):
         """
@@ -630,83 +642,65 @@ class FlaskTestCase(FABTestCase):
         data = rv.data.decode("utf-8")
         ok_("FORMATTED_STRING" in data)
 
-    def test_1_modelview_add_redirects(self):
+    def test_modelview_add_redirects(self):
         """
             Test ModelView redirects after add
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        # model2 = Model2(field_string="Test Redirects", group_id=1)
-        # self.db.session.add(model2)
-        #model2.id = REDIRECT_OBJ_ID
-        #self.db.session.flush()
-
         rv = client.post(
-            "/model2viewwithredirects/add",
-            data=dict(
-                field_string="test_redirect",
-                field_integer="1",
-                field_float="0.12",
-                field_date="2014-01-01",
-            ),
-            follow_redirects=True,
+            "/model1viewwithredirects/add", data=dict(field_string="test_redirect")
         )
 
-        self.assertEqual(rv.status_code, 200)
-        data = rv.data.decode("utf-8")
-        self.assertIn("test_redirect", data)
+        self.assertEqual(rv.status_code, 302)
+        self.assertEqual("http://localhost/", rv.headers["Location"])
 
         # Revert data changes
-        model2 = self.appbuilder.get_session.query(Model2).filter_by(
+        model1 = self.appbuilder.get_session.query(Model1).filter_by(
             field_string="test_redirect").scalar()
-        self.appbuilder.get_session.delete(model2)
+        self.appbuilder.get_session.delete(model1)
         self.appbuilder.get_session.commit()
 
-    def test_2_modelview_edit_redirects(self):
+    def test_modelview_edit_redirects(self):
         """
             Test ModelView redirects after edit
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model_id = (
-            self.db.session.query(Model2)
+            self.db.session.query(Model1)
             .filter_by(field_string="test0")
-            .first()
+            .scalar()
             .id
         )
         rv = client.post(
-            "/model2viewwithredirects/edit/{0}".format(model_id),
-            data=dict(field_string="test_redirect", field_integer="200"),
-            follow_redirects=True,
+            f"/model1viewwithredirects/edit/{model_id}",
+            data=dict(field_string="test_redirect", field_integer="200")
         )
-        data = rv.data.decode("utf-8")
-        self.assertEqual(rv.status_code, 200)
-        self.assertIn("test_redirect", data)
+        self.assertEqual(rv.status_code, 302)
+        self.assertEqual("http://localhost/", rv.headers["Location"])
 
         # Revert data changes
-        insert_model2(self.appbuilder.get_session, i=model_id-1)
+        insert_model1(self.appbuilder.get_session, i=model_id-1)
 
-    def test_3_modelview_delete_redirects(self):
+    def test_modelview_delete_redirects(self):
         """
             Test ModelView redirects after delete
         """
         client = self.app.test_client()
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model_id = (
-            self.db.session.query(Model2)
+            self.db.session.query(Model1)
                 .filter_by(field_string="test0")
                 .first()
                 .id
         )
-        rv = client.get(
-            "/model2viewwithredirects/delete/{0}".format(model_id),
-            follow_redirects=True,
-        )
-        data = rv.data.decode("utf-8")
-        self.assertEqual(rv.status_code, 200)
+        rv = client.get(f"/model1viewwithredirects/delete/{model_id}")
+        self.assertEqual(rv.status_code, 302)
+        self.assertEqual("http://localhost/", rv.headers["Location"])
         # Revert data changes
-        insert_model2(self.appbuilder.get_session, i=model_id-1)
+        insert_model1(self.appbuilder.get_session, i=model_id-1)
 
     def test_add_excluded_cols(self):
         """
