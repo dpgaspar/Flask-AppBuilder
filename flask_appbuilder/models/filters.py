@@ -33,7 +33,7 @@ class BaseFilter(object):
         REST API use
     """
 
-    def __init__(self, column_name, datamodel, is_related_view=False,
+    def __init__(self, column_name, datamodel, is_related_view=False,\
                  case_sensitive=True):
         """
             Constructor.
