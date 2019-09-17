@@ -766,31 +766,27 @@ class FlaskTestCase(FABTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn(f"test1", data)
 
-    def test_1_model_list_order(self):
+    def test_model_list_order(self):
         """
             Test Model order on lists
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        rv = client.post(
+        rv = client.get(
             "/model1view/list?_oc_Model1View=field_string&_od_Model1View=asc",
-            follow_redirects=True,
+            follow_redirects=True
         )
-        # TODO: Fix this 405 error
-        # eq_(rv.status_code, 200)
-        rv.data.decode("utf-8")
-        # TODO
-        # VALIDATE LIST IS ORDERED
-        rv = client.post(
+        self.assertEqual(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        self.assertIn("test0", data)
+        rv = client.get(
             "/model1view/list?_oc_Model1View=field_string&_od_Model1View=desc",
-            follow_redirects=True,
+            follow_redirects=True
         )
-        # TODO: Fix this 405 error
-        # eq_(rv.status_code, 200)
-        rv.data.decode("utf-8")
-        # TODO
-        # VALIDATE LIST IS ORDERED
+        self.assertEqual(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        self.assertIn(f"test{MODEL1_DATA_SIZE-1}", data)
 
     def test_model_add_unique_validation(self):
         """
@@ -891,13 +887,12 @@ class FlaskTestCase(FABTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        #self.insert_data2()
         rv = client.get("/model2view/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_("field_method_value" in data)
+        self.assertIn("field_method_value", data)
 
-    def test_compactCRUDMixin(self):
+    def test_1_compactCRUDMixin(self):
         """
             Test CompactCRUD Mixin view
         """
@@ -913,7 +908,7 @@ class FlaskTestCase(FABTestCase):
         except Exception:
             from urllib.parse import quote
 
-        self.insert_data3()
+        #self.insert_data3()
         pk = '[3, {"_type": "datetime", "value": "2017-03-03T00:00:00"}]'
         rv = client.post(
             "/model3compactview/edit/" + quote(pk),
