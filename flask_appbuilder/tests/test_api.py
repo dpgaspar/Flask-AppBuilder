@@ -565,7 +565,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model2 = self.appbuilder.get_session.query(Model2).filter_by(
             field_string="test0"
-        ).scalar()
+        ).one_or_none()
         pk = model2.id
         uri = f"api/v1/model2dottednotationapi/{pk}"
         rv = self.auth_client_get(client, token, uri)
@@ -656,7 +656,7 @@ class APITestCase(FABTestCase):
         # We can't get a base filtered item
         model2 = self.appbuilder.get_session.query(Model2).filter_by(
             field_string="test0"
-        ).scalar()
+        ).one_or_none()
         pk = model2.id
         rv = self.auth_client_get(client, token, f"api/v1/model2api/{pk}")
         data = json.loads(rv.data.decode("utf-8"))
@@ -1373,7 +1373,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model1 = self.appbuilder.get_session.query(Model1).filter_by(
             field_string="test2"
-        ).scalar()
+        ).one_or_none()
         pk = model1.id
         item = dict(field_string="test_Put", field_integer=0, field_float=0.0)
         uri = f"api/v1/model1api/{pk}"
@@ -1395,7 +1395,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model1 = self.appbuilder.get_session.query(Model1).filter_by(
             field_string="test2"
-        ).scalar()
+        ).one_or_none()
         pk = model1.id
         item = dict(field_string="test_Put", field_integer=0, field_float=0.0)
         uri = "api/v1/model1customvalidationapi/{}".format(pk)
@@ -1418,7 +1418,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model1 = self.appbuilder.get_session.query(Model1).filter_by(
             field_string="test3"
-        ).scalar()
+        ).one_or_none()
         pk = model1.id
         item = dict(field_string="test_Put", field_integer=3, field_float=3.0)
         uri = "api/v1/model1apifiltered/{}".format(pk)
@@ -1516,7 +1516,7 @@ class APITestCase(FABTestCase):
 
         model1 = self.appbuilder.get_session.query(Model1).filter_by(
             field_string="test0"
-        ).scalar()
+        ).one_or_none()
         pk = model1.id
         item = dict(
             field_string=f"test{MODEL1_DATA_SIZE + 1}",

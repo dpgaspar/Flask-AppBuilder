@@ -168,7 +168,7 @@ class ModelMMChildRequired(Model):
 
 def insert_model1(session, i=0):
     add_flag = False
-    model = session.query(Model1).filter_by(id=i + 1).first()
+    model = session.query(Model1).filter_by(id=i + 1).one_or_none()
     if not model:
         model = Model1()
         add_flag = True
@@ -183,7 +183,7 @@ def insert_model1(session, i=0):
 
 def insert_model2(session, i=0, model1_collection=None):
     if not model1_collection:
-        model1 = session.query(Model1).filter_by(id=i + 1).first()
+        model1 = session.query(Model1).filter_by(id=i + 1).one_or_none()
     else:
         model1 = model1_collection[i]
     model = Model2()
@@ -196,9 +196,22 @@ def insert_model2(session, i=0, model1_collection=None):
     return model
 
 
+def insert_model3(session, i=0):
+    add_flag = False
+    model = session.query(Model3).filter_by(id=i + 1).one_or_none()
+    if not model:
+        model = Model3()
+        add_flag = True
+    model.field_string = f"test{i}"
+    if add_flag:
+        session.add(model)
+    session.commit()
+    return model
+
+
 def insert_model_mm_parent(session, i=0, children=None):
     add_flag = False
-    model = session.query(ModelMMParent).filter_by(id=i + 1).first()
+    model = session.query(ModelMMParent).filter_by(id=i + 1).one_or_none()
     if not model:
         model = ModelMMParent()
         add_flag = True
@@ -213,7 +226,7 @@ def insert_model_mm_parent(session, i=0, children=None):
 
 def insert_model_with_enums(session, i=0):
     add_flag = False
-    model = session.query(ModelWithEnums).filter_by(id=i + 1).first()
+    model = session.query(ModelWithEnums).filter_by(id=i + 1).one_or_none()
     if not model:
         model = ModelWithEnums()
         add_flag = True
@@ -234,6 +247,9 @@ def insert_data(session, count):
     # Fill model2
     for i in range(count):
         insert_model2(session, i=i, model1_collection=model1_collection)
+    # # Fill model3
+    # for i in range(count):
+    #     insert_model3(session, i=i)
     # Fill model with enums
     for i in range(count):
         model = ModelWithEnums()

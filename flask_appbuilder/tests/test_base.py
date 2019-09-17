@@ -477,7 +477,7 @@ class FlaskTestCase(FABTestCase):
         self.assertEqual(rv.status_code, 200)
 
         model = self.db.session.query(Model1).filter_by(
-            field_string=field_string).scalar()
+            field_string=field_string).one_or_none()
         self.assertEqual(model.field_string, field_string)
         self.assertEqual(model.field_integer, MODEL1_DATA_SIZE)
 
@@ -493,7 +493,7 @@ class FlaskTestCase(FABTestCase):
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         model = self.appbuilder.get_session.query(Model1).filter_by(
-            field_string="test0").scalar()
+            field_string="test0").one_or_none()
         pk = model.id
         rv = client.post(
             f"/model1view/edit/{pk}",
@@ -503,14 +503,14 @@ class FlaskTestCase(FABTestCase):
         self.assertEqual(rv.status_code, 200)
 
         model = self.db.session.query(Model1).filter_by(
-            id=pk).scalar()
+            id=pk).one_or_none()
         self.assertEqual(model.field_string, u"test_edit")
         self.assertEqual(model.field_integer, 200)
 
         # Revert data changes
         insert_model1(self.appbuilder.get_session, i=pk-1)
 
-    def test_model_crud_delete(self):
+    def test_1_model_crud_delete(self):
         """
             Test Model CRUD delete
         """
@@ -520,7 +520,7 @@ class FlaskTestCase(FABTestCase):
         rv = client.get(f"/model2view/delete/{pk}", follow_redirects=True)
 
         self.assertEqual(rv.status_code, 200)
-        model = self.db.session.query(Model2).filter_by(id=pk).scalar()
+        model = self.db.session.query(Model2).filter_by(id=pk).one_or_none()
         self.assertEqual(model, None)
 
         # Revert data changes
@@ -536,7 +536,7 @@ class FlaskTestCase(FABTestCase):
         rv = client.get(f"/model1view/delete/{pk}", follow_redirects=True)
 
         self.assertEqual(rv.status_code, 200)
-        model = self.db.session.query(Model2).filter_by(id=pk).scalar()
+        model = self.db.session.query(Model2).filter_by(id=pk).one_or_none()
         self.assertNotEqual(model, None)
 
     def test_model_crud_composite_pk(self):
@@ -599,12 +599,12 @@ class FlaskTestCase(FABTestCase):
 
         model = self.appbuilder.get_session.query(ModelWithEnums).filter_by(
             enum1="e3"
-        ).scalar()
+        ).one_or_none()
         self.assertIsNotNone(model)
         self.assertEqual(model.enum2, TmpEnum.e3)
 
         # Revert data changes
-        model = self.appbuilder.get_session.query(ModelWithEnums).filter_by(enum1="e3").scalar()
+        model = self.appbuilder.get_session.query(ModelWithEnums).filter_by(enum1="e3").one_or_none()
         self.appbuilder.get_session.delete(model)
         self.appbuilder.get_session.commit()
 
@@ -620,7 +620,7 @@ class FlaskTestCase(FABTestCase):
         rv = client.post(f"/modelwithenumsview/edit/{pk}", data=data, follow_redirects=True)
         self.assertEqual(rv.status_code, 200)
 
-        model = self.appbuilder.get_session.query(ModelWithEnums).filter_by(enum1="e3").scalar()
+        model = self.appbuilder.get_session.query(ModelWithEnums).filter_by(enum1="e3").one_or_none()
         self.assertIsNotNone(model)
         self.assertEqual(model.enum2, TmpEnum.e3)
 
@@ -658,7 +658,7 @@ class FlaskTestCase(FABTestCase):
 
         # Revert data changes
         model1 = self.appbuilder.get_session.query(Model1).filter_by(
-            field_string="test_redirect").scalar()
+            field_string="test_redirect").one_or_none()
         self.appbuilder.get_session.delete(model1)
         self.appbuilder.get_session.commit()
 
@@ -671,7 +671,7 @@ class FlaskTestCase(FABTestCase):
         model_id = (
             self.db.session.query(Model1)
             .filter_by(field_string="test0")
-            .scalar()
+            .one_or_none()
             .id
         )
         rv = client.post(
@@ -760,7 +760,7 @@ class FlaskTestCase(FABTestCase):
         self.assertIn("test0", data)
         self.assertNotIn(f"test1", data)
 
-        model2 = self.appbuilder.get_session.query(Model2).filter_by(field_string="test0").scalar()
+        model2 = self.appbuilder.get_session.query(Model2).filter_by(field_string="test0").one_or_none()
         # Base filter string starts with
         rv = client.get(f"/model2view/edit/{model2.id}")
         data = rv.data.decode("utf-8")
@@ -1009,7 +1009,7 @@ class FlaskTestCase(FABTestCase):
             follow_redirects=True,
         )
         self.assertEqual(rv.status_code, 200)
-        model1 = self.db.session.query(Model1).filter_by(field_string="zzz").scalar()
+        model1 = self.db.session.query(Model1).filter_by(field_string="zzz").one_or_none()
         self.assertIsNotNone(model1)
 
         # Revert data changes
