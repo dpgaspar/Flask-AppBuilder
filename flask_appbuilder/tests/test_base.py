@@ -89,9 +89,9 @@ class FlaskTestCase(FABTestCase):
                 "group.field_string",
             ]
             edit_form_query_rel_fields = {
-                "group": [["field_string", FilterEqual, "G2"]]
+                "group": [["field_string", FilterEqual, "test1"]]
             }
-            add_form_query_rel_fields = {"group": [["field_string", FilterEqual, "G1"]]}
+            add_form_query_rel_fields = {"group": [["field_string", FilterEqual, "test0"]]}
 
         class Model22View(ModelView):
             datamodel = SQLAInterface(Model2)
@@ -584,7 +584,7 @@ class FlaskTestCase(FABTestCase):
         model = self.db.session.query(Model3).first()
         eq_(model, None)
 
-    def test_1_model_crud_add_with_enum(self):
+    def test_model_crud_add_with_enum(self):
         """
             Test Model add for Model with Enum Columns
         """
@@ -608,7 +608,7 @@ class FlaskTestCase(FABTestCase):
         self.appbuilder.get_session.delete(model)
         self.appbuilder.get_session.commit()
 
-    def test_2_model_crud_edit_with_enum(self):
+    def test_model_crud_edit_with_enum(self):
         """
             Test Model edit for Model with Enum Columns
         """
@@ -752,22 +752,21 @@ class FlaskTestCase(FABTestCase):
             Test add and edit form related fields filter
         """
         client = self.app.test_client()
-        rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        #self.insert_data2()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         # Base filter string starts with
         rv = client.get("/model2view/add")
         data = rv.data.decode("utf-8")
-        ok_("G1" in data)
-        ok_("G2" not in data)
+        self.assertIn("test0", data)
+        self.assertNotIn(f"test1", data)
 
+        model2 = self.appbuilder.get_session.query(Model2).filter_by(field_string="test0").scalar()
         # Base filter string starts with
-        rv = client.get("/model2view/edit/1")
+        rv = client.get(f"/model2view/edit/{model2.id}")
         data = rv.data.decode("utf-8")
-        ok_("G2" in data)
-        ok_("G1" not in data)
+        self.assertIn(f"test1", data)
 
-    def test_model_list_order(self):
+    def test_1_model_list_order(self):
         """
             Test Model order on lists
         """
