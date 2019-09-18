@@ -533,7 +533,10 @@ class FlaskTestCase(FABTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        pk = 1
+        model1 = self.appbuilder.get_session.query(Model1).filter_by(
+            field_string="test1"
+        ).one_or_none()
+        pk = model1.id
         rv = client.get(f"/model1view/delete/{pk}", follow_redirects=True)
 
         self.assertEqual(rv.status_code, 200)
@@ -542,7 +545,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_model_crud_composite_pk(self):
         """
-            Test Generic Interface for generic-alter datasource where model has composite
+            MVC CRUD generic-alter datasource where model has composite
             primary keys
         """
         try:
@@ -555,17 +558,20 @@ class FlaskTestCase(FABTestCase):
 
         rv = client.post(
             "/model3view/add",
-            data=dict(pk1="1", pk2="2017-01-01 00:00:00", field_string="foo"),
+            data=dict(pk1="1", pk2=datetime.datetime(2017, 1, 1), field_string="foo2"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
-        model = self.db.session.query(Model3).first()
-        eq_(model.pk1, 1)
-        eq_(model.pk2, datetime.datetime(2017, 1, 1))
-        eq_(model.field_string, u"foo")
+
+        self.assertEqual(rv.status_code, 200)
+        model = self.appbuilder.get_session.query(Model3).filter_by(
+            pk1="1",
+        ).one_or_none()
+        self.assertEqual(model.pk1, 1)
+        self.assertEqual(model.pk2, datetime.datetime(2017, 1, 1))
+        self.assertEqual(model.field_string, u"foo2")
 
         pk = '[1, {"_type": "datetime", "value": "2017-01-01T00:00:00.000000"}]'
-        rv = client.get("/model3view/show/" + quote(pk), follow_redirects=True)
+        rv = client.get(f"/model3view/show/{quote(pk)}", follow_redirects=True)
         eq_(rv.status_code, 200)
 
         rv = client.post(
@@ -574,16 +580,20 @@ class FlaskTestCase(FABTestCase):
             follow_redirects=True,
         )
         eq_(rv.status_code, 200)
-        model = self.db.session.query(Model3).first()
-        eq_(model.pk1, 2)
-        eq_(model.pk2, datetime.datetime(2017, 2, 2))
-        eq_(model.field_string, u"bar")
+
+        model = self.appbuilder.get_session.query(Model3).filter_by(
+            pk1="2",
+            pk2="2017-02-02 00:00:00"
+        ).one_or_none()
+        self.assertEqual(model.pk1, 2)
+        self.assertEqual(model.pk2, datetime.datetime(2017, 2, 2))
+        self.assertEqual(model.field_string, u"bar")
 
         pk = '[2, {"_type": "datetime", "value": "2017-02-02T00:00:00.000000"}]'
         rv = client.get("/model3view/delete/" + quote(pk), follow_redirects=True)
-        eq_(rv.status_code, 200)
-        model = self.db.session.query(Model3).first()
-        eq_(model, None)
+        self.assertEqual(rv.status_code, 200)
+        model = self.db.session.query(Model3).filter_by(pk1=2).one_or_none()
+        self.assertEqual(model, None)
 
     def test_model_crud_add_with_enum(self):
         """
@@ -1098,7 +1108,9 @@ class FlaskTestCase(FABTestCase):
         )
         eq_(rv.status_code, 200)
 
-        model = self.db.session.query(Model1).first()
+        model = self.db.session.query(Model1).filter_by(
+            field_string="test1"
+        ).one_or_none()
         eq_(model.field_string, u"test1")
         eq_(model.field_integer, 1)
 
@@ -1154,26 +1166,31 @@ class FlaskTestCase(FABTestCase):
         rv = client.post(
             "/model1permoverride/add",
             data=dict(
-                field_string="test1",
+                field_string=f"test{MODEL1_DATA_SIZE+1}",
                 field_integer="1",
                 field_float="0.12",
                 field_date="2014-01-01",
             ),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
-        model = self.db.session.query(Model1).first()
-        eq_(model.field_string, u"test1")
-        eq_(model.field_integer, 1)
+        self.assertEqual(rv.status_code, 200)
+        model1 = self.appbuilder.get_session.query(Model1).filter_by(
+            field_string=f"test{MODEL1_DATA_SIZE+1}"
+        ).one_or_none()
+        self.assertIsNotNone(model1)
+
+        # Revert data changes
+        self.appbuilder.get_session.delete(model1)
+        self.appbuilder.get_session.commit()
 
         # Verify write links are on the UI
         rv = client.get("/model1permoverride/list/")
         eq_(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_("/model1permoverride/delete/1" in data)
-        ok_("/model1permoverride/add" in data)
-        ok_("/model1permoverride/edit/1" in data)
-        ok_("/model1permoverride/show/1" in data)
+        self.assertIn("/model1permoverride/delete/1", data)
+        self.assertIn("/model1permoverride/add", data)
+        self.assertIn("/model1permoverride/edit/1", data)
+        self.assertIn("/model1permoverride/show/1", data)
 
         # Delete write permission from Test Role
         role = self.appbuilder.sm.find_role('Test')
@@ -1184,20 +1201,27 @@ class FlaskTestCase(FABTestCase):
         self.appbuilder.sm.del_permission_role(role, pvm_write)
 
         # Unauthorized delete
-        rv = client.get("/model1permoverride/delete/1")
-        eq_(rv.status_code, 302)
-        model = self.db.session.query(Model1).first()
-        eq_(model.field_string, u"test1")
-        eq_(model.field_integer, 1)
+        model1 = self.appbuilder.get_session.query(Model1).filter_by(
+            field_string=f"test1"
+        ).one_or_none()
+        pk = model1.id
+        rv = client.get(f"/model1permoverride/delete/{pk}")
+        self.assertEqual(rv.status_code, 302)
+        model = self.db.session.query(Model1).filter_by(id=pk).one_or_none()
+        self.assertEqual(model.field_string, u"test1")
 
         # Verify write links are gone from UI
         rv = client.get("/model1permoverride/list/")
         eq_(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_("/model1permoverride/delete/1" not in data)
-        ok_("/model1permoverride/add/" not in data)
-        ok_("/model1permoverride/edit/1" not in data)
-        ok_("/model1permoverride/show/1" in data)
+        self.assertNotIn("/model1permoverride/delete/1", data)
+        self.assertNotIn("/model1permoverride/add/", data)
+        self.assertNotIn("/model1permoverride/edit/1", data)
+        self.assertIn("/model1permoverride/show/1", data)
+
+        # Revert data changes
+        self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
+        self.appbuilder.get_session.commit()
 
     def test_action_permission_override(self):
         """
@@ -1253,8 +1277,12 @@ class FlaskTestCase(FABTestCase):
         client = self.app.test_client()
         self.browser_login(client, "test", "test")
 
-        rv = client.get("/model1permoverride/action/action1/1")
-        eq_(rv.status_code, 200)
+        model1 = self.appbuilder.get_session.query(Model1).filter_by(
+            field_string="test0"
+        ).one_or_none()
+        pk = model1.id
+        rv = client.get(f"/model1permoverride/action/action1/{pk}")
+        self.assertEqual(rv.status_code, 200)
 
         # Delete write permission from Test Role
         role = self.appbuilder.sm.find_role('Test')
