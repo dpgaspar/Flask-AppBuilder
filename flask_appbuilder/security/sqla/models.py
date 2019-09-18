@@ -45,19 +45,6 @@ class ViewMenu(Model):
         return self.name
 
 
-class PermissionView(Model):
-    __tablename__ = "ab_permission_view"
-    __table_args__ = (UniqueConstraint("permission_id", "view_menu_id"),)
-    id = Column(Integer, Sequence("ab_permission_view_id_seq"), primary_key=True)
-    permission_id = Column(Integer, ForeignKey("ab_permission.id"))
-    permission = relationship("Permission")
-    view_menu_id = Column(Integer, ForeignKey("ab_view_menu.id"))
-    view_menu = relationship("ViewMenu")
-
-    def __repr__(self):
-        return str(self.permission).replace("_", " ") + " on " + str(self.view_menu)
-
-
 assoc_permissionview_role = Table(
     "ab_permission_view_role",
     Model.metadata,
@@ -79,6 +66,19 @@ class Role(Model):
 
     def __repr__(self):
         return self.name
+
+
+class PermissionView(Model):
+    __tablename__ = "ab_permission_view"
+    __table_args__ = (UniqueConstraint("permission_id", "view_menu_id"),)
+    id = Column(Integer, Sequence("ab_permission_view_id_seq"), primary_key=True)
+    permission_id = Column(Integer, ForeignKey("ab_permission.id"))
+    permission = relationship("Permission")
+    view_menu_id = Column(Integer, ForeignKey("ab_view_menu.id"))
+    view_menu = relationship("ViewMenu")
+
+    def __repr__(self):
+        return str(self.permission).replace("_", " ") + " on " + str(self.view_menu)
 
 
 assoc_user_role = Table(

@@ -594,7 +594,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         return jwt_decoded_payload
 
     def register_views(self):
-
+        if not self.appbuilder.app.config.get('FAB_ADD_SECURITY_VIEWS', True):
+            return
         # Security APIs
         self.appbuilder.add_api(self.security_api)
 
@@ -943,7 +944,10 @@ class BaseSecurityManager(AbstractSecurityManager):
                 return user
 
             except ldap.LDAPError as e:
-                if type(e.message) == dict and "desc" in e.message:
+                msg = None
+                if isinstance(e, dict):
+                    msg = getattr(e, 'message', None)
+                if msg is not None and "desc" in msg:
                     log.error(LOGMSG_ERR_SEC_AUTH_LDAP.format(e.message["desc"]))
                     return None
                 else:
@@ -1075,8 +1079,13 @@ class BaseSecurityManager(AbstractSecurityManager):
                 return True
         return False
 
-    def _has_view_access(self, user, permission_name, view_name):
+    def _has_view_access(
+            self, user: object, permission_name: str, view_name: str
+    ) -> bool:
         roles = user.roles
+        db_role_ids = list()
+        # First check against builtin (statically configured) roles
+        # because no database query is needed
         for role in roles:
             if role.name in self.builtin_roles:
                 if self._has_access_builtin_roles(
@@ -1085,16 +1094,15 @@ class BaseSecurityManager(AbstractSecurityManager):
                         view_name
                 ):
                     return True
-                else:
-                    continue
-            permissions = role.permissions
-            if permissions:
-                for permission in permissions:
-                    if (view_name == permission.view_menu.name) and (
-                        permission_name == permission.permission.name
-                    ):
-                        return True
-        return False
+            else:
+                db_role_ids.append(role.id)
+
+        # Then check against database-stored roles
+        return self.exist_permission_on_roles(
+            view_name,
+            permission_name,
+            db_role_ids,
+        )
 
     def has_access(self, permission_name, view_name):
         """
@@ -1461,6 +1469,17 @@ class BaseSecurityManager(AbstractSecurityManager):
     def find_permission(self, name):
         """
             Finds and returns a Permission by name
+        """
+        raise NotImplementedError
+
+    def exist_permission_on_roles(
+        self,
+        view_name: str,
+        permission_name: str,
+        role_ids: List[int],
+    ) -> bool:
+        """
+            Finds and returns permission views for a group of roles
         """
         raise NotImplementedError
 

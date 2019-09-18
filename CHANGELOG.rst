@@ -1,6 +1,60 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.13
+------------------------------------
+
+- Fix, #1105 Has access query fails on MySQL < 8
+
+Improvements and Bug fixes on 2.1.12
+------------------------------------
+
+- Fix, #1104 Preserve custom property return type on ModelRestApi
+- Fix, #1096 Bootstrap and Bootswatch bump to 3.4.1
+- Fix, #1097 python version restriction on setup > 3.6 < 4
+- Fix, #1095 OAuth set fallback when next url in state is empty
+
+Improvements and Bug fixes on 2.1.11
+------------------------------------
+
+- Fix, #1092 Has access query fails on MSSQL
+
+Improvements and Bug fixes on 2.1.10
+------------------------------------
+
+- Fix, #1079 Make it possible to override register_views when using FAB_ADD_SECURITY_VIEWS
+
+Improvements and Bug fixes on 2.1.9
+-----------------------------------
+
+- Fix, #1078 API unlimited page size with unlimited max_page_size issues SQL with negative LIMIT
+
+Improvements and Bug fixes on 2.1.8
+-----------------------------------
+
+- Fix, #1077 API Info not translating labels and description
+- Fix, #1069 API label_columns for get item returning labels for list columns
+- Fix, #1072 API max_page_size class property override for FAB_API_MAX_SIZE
+
+Improvements and Bug fixes on 2.1.7
+-----------------------------------
+
+- Fix, #1065 setup version cap on apispec, jsonschema, marshmallow-sqlalchemy, prison
+
+Improvements and Bug fixes on 2.1.6
+-----------------------------------
+
+- Fix, #1050 Catch exceptions on populating forms
+- Fix, #1046 API include openapi security spec on paths
+- Fix, #1048 API include refresh token on openapi security specs
+- Fix, #1045, #1044 Performance improvement on permission checks
+
+Improvements and Bug fixes on 2.1.5
+-----------------------------------
+
+- New, #1040, #1041 Bump prison to 0.1.2 and remove requests dependency
+- Fix, #1042 is_item_visible confusing behaviour with base_permissions when perm is still on DB
+
 Improvements and Bug fixes on 2.1.4
 -----------------------------------
 

@@ -160,7 +160,7 @@ class AppBuilder(object):
         app.config.setdefault("APP_ICON", "")
         app.config.setdefault("LANGUAGES", {"en": {"flag": "gb", "name": "English"}})
         app.config.setdefault("ADDON_MANAGERS", [])
-        app.config.setdefault("FAB_API_MAX_PAGE_SIZE", 20)
+        app.config.setdefault("FAB_API_MAX_PAGE_SIZE", 100)
         app.config.setdefault("FAB_BASE_TEMPLATE", self.base_template)
         app.config.setdefault("FAB_STATIC_FOLDER", self.static_folder)
         app.config.setdefault("FAB_STATIC_URL_PATH", self.static_url_path)
@@ -320,10 +320,8 @@ class AppBuilder(object):
         self.add_view_no_menu(self.indexview)
         self.add_view_no_menu(UtilView())
         self.bm.register_views()
-        if self.get_app.config.get('FAB_ADD_SECURITY_VIEWS', True):
-            self.sm.register_views()
-        if self.get_app.config.get('FAB_ADD_OPENAPI_VIEWS', True):
-            self.openapi_manager.register_views()
+        self.sm.register_views()
+        self.openapi_manager.register_views()
 
     def _add_addon_views(self):
         """

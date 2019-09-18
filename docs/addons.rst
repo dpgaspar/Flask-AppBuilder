@@ -1,7 +1,7 @@
 AddOn development
 =================
 
-Using AddOn's with the framework it a great way to develop your application
+Using AddOn's with the framework it is a great way to develop your application
 and make public openSource contributions to the community.
 
 With it you can use a more modular design on your application, you can add functionality,
