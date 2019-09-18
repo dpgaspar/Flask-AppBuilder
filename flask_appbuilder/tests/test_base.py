@@ -36,6 +36,7 @@ from .sqla.models import (
     TmpEnum,
     insert_model1,
     insert_model2,
+    insert_model3,
     insert_model_with_enums,
 )
 
@@ -510,7 +511,7 @@ class FlaskTestCase(FABTestCase):
         # Revert data changes
         insert_model1(self.appbuilder.get_session, i=pk-1)
 
-    def test_1_model_crud_delete(self):
+    def test_model_crud_delete(self):
         """
             Test Model CRUD delete
         """
@@ -892,13 +893,12 @@ class FlaskTestCase(FABTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn("field_method_value", data)
 
-    def test_1_compactCRUDMixin(self):
+    def test_compactCRUDMixin(self):
         """
-            Test CompactCRUD Mixin view
+            Test CompactCRUD Mixin view with composite keys
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        #self.insert_data2()
         rv = client.get("/model1compactview/list/")
         eq_(rv.status_code, 200)
 
@@ -908,7 +908,6 @@ class FlaskTestCase(FABTestCase):
         except Exception:
             from urllib.parse import quote
 
-        #self.insert_data3()
         pk = '[3, {"_type": "datetime", "value": "2017-03-03T00:00:00"}]'
         rv = client.post(
             "/model3compactview/edit/" + quote(pk),
@@ -923,6 +922,9 @@ class FlaskTestCase(FABTestCase):
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model3).first()
         eq_(model, None)
+
+        # Revert data changes
+        insert_model3(self.appbuilder.get_session)
 
     def test_edit_add_form_action_prefix_for_compactCRUDMixin(self):
         """

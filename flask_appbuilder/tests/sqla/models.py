@@ -1,3 +1,4 @@
+import datetime
 import enum
 
 from flask_appbuilder import Model
@@ -196,17 +197,14 @@ def insert_model2(session, i=0, model1_collection=None):
     return model
 
 
-def insert_model3(session, i=0):
-    add_flag = False
-    model = session.query(Model3).filter_by(id=i + 1).one_or_none()
-    if not model:
-        model = Model3()
-        add_flag = True
-    model.field_string = f"test{i}"
-    if add_flag:
-        session.add(model)
-    session.commit()
-    return model
+def insert_model3(session):
+    model3 = Model3(pk1=3, pk2=datetime.datetime(2017, 3, 3), field_string="foo")
+    try:
+        session.add(model3)
+        session.commit()
+    except Exception as e:
+        print("Error {0}".format(str(e)))
+        session.rollback()
 
 
 def insert_model_mm_parent(session, i=0, children=None):
@@ -247,10 +245,8 @@ def insert_data(session, count):
     # Fill model2
     for i in range(count):
         insert_model2(session, i=i, model1_collection=model1_collection)
-    # # Fill model3
-    # for i in range(count):
-    #     insert_model3(session, i=i)
-    # Fill model with enums
+    insert_model3(session)
+
     for i in range(count):
         model = ModelWithEnums()
         model.enum1 = "e1"
