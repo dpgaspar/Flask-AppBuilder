@@ -6,7 +6,7 @@ matrix:
     - python: 3.6
       env: TOXENV=flake8
     - python: 3.6
-      env: TOXENV=test-mysql
+      env: TOXENV=api-mysql,mvc-mysql
       services:
         - mysql
       before_script:
@@ -14,7 +14,7 @@ matrix:
         - mysql -u root -e "CREATE USER 'mysqluser'@'localhost' IDENTIFIED BY 'mysqluserpassword';"
         - mysql -u root -e "GRANT ALL ON app.* TO 'mysqluser'@'localhost';"
     - python: 3.7
-      env: TOXENV=test-postgres
+      env: TOXENV=api-postgres
       services:
         - postgresql
       before_script:
