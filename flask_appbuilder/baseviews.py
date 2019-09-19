@@ -427,6 +427,13 @@ class BaseModelView(BaseView):
 
     """
 
+    marshmallow_exclude_columns = None
+    """
+        List or tuple of column names to exclude from serialization.
+        If any ModelRestApi classes refer to this model, these columns will
+        not be accessible via the API created.
+    """
+
     label_columns = None
     """
         Dictionary of labels for your columns,
