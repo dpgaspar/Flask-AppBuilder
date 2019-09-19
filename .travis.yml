@@ -7,16 +7,7 @@ matrix:
       env: TOXENV=flake8
 
     - python: 3.6
-      env: TOXENV=api-mysql
-      services:
-        - mysql
-      before_script:
-        - mysql -u root -e "DROP DATABASE IF EXISTS app; CREATE DATABASE app DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"
-        - mysql -u root -e "CREATE USER 'mysqluser'@'localhost' IDENTIFIED BY 'mysqluserpassword';"
-        - mysql -u root -e "GRANT ALL ON app.* TO 'mysqluser'@'localhost';"
-
-    - python: 3.6
-      env: TOXENV=mvc-mysql
+      env: TOXENV=api-mysql,mvc-mysql
       services:
         - mysql
       before_script:
