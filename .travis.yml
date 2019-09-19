@@ -6,7 +6,7 @@ matrix:
     - python: 3.6
       env: TOXENV=flake8
     - python: 3.6
-      env: TOXENV=api-mysql,mvc-mysql
+      env: TOXENV=api-mysql
       services:
         - mysql
       before_script:
