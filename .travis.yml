@@ -25,6 +25,8 @@ matrix:
         - docker ps
         - sleep 60
         - docker logs -t mssql
+      after_failure:
+        - docker logs -t mssql
     - python: 3.7
       env: TOXENV=postgres
       services:
