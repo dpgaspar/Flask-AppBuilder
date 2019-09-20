@@ -7,7 +7,7 @@ matrix:
       env: TOXENV=flake8
 
     - python: 3.6
-      env: TOXENV=api-mysql,mvc-mysql
+      env: TOXENV=mysql
       services:
         - mysql
       before_script:
@@ -16,14 +16,17 @@ matrix:
         - mysql -u root -e "GRANT ALL ON app.* TO 'mysqluser'@'localhost';"
 
     - python: 3.7
-      env: TOXENV=api-postgres
+      env: TOXENV=postgres
       services:
         - postgresql
       before_script:
         - psql -U postgres -c "CREATE DATABASE app;"
         - psql -U postgres -c "CREATE USER pguser WITH PASSWORD 'pguserpassword';"
-services:
-  - mongodb
+
+    - python: 3.6
+      env: TOXENV=mongodb
+      services:
+        - mongodb
 install:
   - pip install tox
   - pip install codecov

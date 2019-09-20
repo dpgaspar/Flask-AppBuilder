@@ -347,7 +347,7 @@ class FlaskTestCase(FABTestCase):
         # Check for Welcome Message
         rv = client.get("/")
         data = rv.data.decode("utf-8")
-        ok_(DEFAULT_INDEX_STRING in data)
+        self.assertIn(DEFAULT_INDEX_STRING, data)
 
     def test_sec_login(self):
         """
@@ -417,7 +417,7 @@ class FlaskTestCase(FABTestCase):
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.get("/users/action/resetmypassword/1", follow_redirects=True)
         data = rv.data.decode("utf-8")
-        ok_("Reset Password Form" in data)
+        self.assertIn("Reset Password Form", data)
         rv = client.post(
             "/resetmypassword/form",
             data=dict(password="password", conf_password="password"),
@@ -517,15 +517,19 @@ class FlaskTestCase(FABTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        pk = 1
+
+        model = self.appbuilder.get_session.query(Model2).filter_by(
+            field_string="test0"
+        ).one_or_none()
+        pk = model.id
         rv = client.get(f"/model2view/delete/{pk}", follow_redirects=True)
 
         self.assertEqual(rv.status_code, 200)
-        model = self.db.session.query(Model2).filter_by(id=pk).one_or_none()
+        model = self.db.session.query(Model2).get(pk)
         self.assertEqual(model, None)
 
         # Revert data changes
-        insert_model2(self.appbuilder.get_session, i=pk-1)
+        insert_model2(self.appbuilder.get_session, i=0)
 
     def test_model_delete_integrity(self):
         """
@@ -540,7 +544,7 @@ class FlaskTestCase(FABTestCase):
         rv = client.get(f"/model1view/delete/{pk}", follow_redirects=True)
 
         self.assertEqual(rv.status_code, 200)
-        model = self.db.session.query(Model2).filter_by(id=pk).one_or_none()
+        model = self.db.session.query(Model1).filter_by(id=pk).one_or_none()
         self.assertNotEqual(model, None)
 
     def test_model_crud_composite_pk(self):
@@ -572,14 +576,14 @@ class FlaskTestCase(FABTestCase):
 
         pk = '[1, {"_type": "datetime", "value": "2017-01-01T00:00:00.000000"}]'
         rv = client.get(f"/model3view/show/{quote(pk)}", follow_redirects=True)
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
 
         rv = client.post(
             "/model3view/edit/" + quote(pk),
             data=dict(pk1="2", pk2="2017-02-02 00:00:00", field_string="bar"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
 
         model = self.appbuilder.get_session.query(Model3).filter_by(
             pk1="2",
@@ -645,13 +649,13 @@ class FlaskTestCase(FABTestCase):
         client = self.app.test_client()
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.get("/model1formattedview/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_("FORMATTED_STRING" in data)
+        self.assertIn("FORMATTED_STRING", data)
         rv = client.get("/model1formattedview/show/1")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
-        ok_("FORMATTED_STRING" in data)
+        self.assertIn("FORMATTED_STRING", data)
 
     def test_modelview_add_redirects(self):
         """
@@ -734,7 +738,11 @@ class FlaskTestCase(FABTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        rv = client.get("/model22view/edit/1")
+
+        model = self.appbuilder.get_session.query(Model2).filter_by(
+            field_string='test0'
+        ).one_or_none()
+        rv = client.get(f"/model22view/edit/{model.id}")
         self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
         self.assertIn("field_string", data)
@@ -749,7 +757,10 @@ class FlaskTestCase(FABTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        rv = client.get("/model22view/add")
+        model = self.appbuilder.get_session.query(Model2).filter_by(
+            field_string='test0'
+        ).one_or_none()
+        rv = client.get(f"/model22view/show/{model.id}")
         self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
         self.assertIn("Field String", data)
@@ -910,7 +921,7 @@ class FlaskTestCase(FABTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.get("/model1compactview/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
 
         # test with composite pk
         try:
@@ -926,12 +937,12 @@ class FlaskTestCase(FABTestCase):
         )
         eq_(rv.status_code, 200)
         model = self.db.session.query(Model3).first()
-        eq_(model.field_string, u"bar")
+        self.assertEqual(model.field_string, u"bar")
 
         rv = client.get("/model3compactview/delete/" + quote(pk), follow_redirects=True)
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         model = self.db.session.query(Model3).first()
-        eq_(model, None)
+        self.assertEqual(model, None)
 
         # Revert data changes
         insert_model3(self.appbuilder.get_session)
@@ -987,14 +998,14 @@ class FlaskTestCase(FABTestCase):
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         #self.insert_data2()
         rv = client.get("/model1masterview/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         rv = client.get("/model1masterview/list/1")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
 
         rv = client.get("/model1masterchartview/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         rv = client.get("/model1masterchartview/list/1")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
 
     def test_api_read(self):
         """
@@ -1003,10 +1014,10 @@ class FlaskTestCase(FABTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = client.get("/model1formattedview/api/read")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = json.loads(rv.data.decode("utf-8"))
-        assert "result" in data
-        assert "pks" in data
+        self.assertIn("result", data)
+        self.assertIn("pks", data)
         assert len(data.get("result")) > 10
 
     def test_api_create(self):
@@ -1095,7 +1106,7 @@ class FlaskTestCase(FABTestCase):
 
         self.browser_login(client, "test", "test")
         rv = client.get("/model1permoverride/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         rv = client.post(
             "/model1permoverride/add",
             data=dict(
@@ -1106,7 +1117,7 @@ class FlaskTestCase(FABTestCase):
             ),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
 
         model = self.db.session.query(Model1).filter_by(
             field_string="test1"
