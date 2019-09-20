@@ -22,7 +22,8 @@ matrix:
       before_install:
         - docker pull mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
         - docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Password_123" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
-
+        - docker logs
+        - docker ps
     - python: 3.7
       env: TOXENV=postgres
       services:
