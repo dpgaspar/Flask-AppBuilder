@@ -50,3 +50,7 @@ th.action_checkboxes {
 .btn.filter {
     text-align: left;
 }
+
+#loginbox #username {
+	cursor: auto;
+}
