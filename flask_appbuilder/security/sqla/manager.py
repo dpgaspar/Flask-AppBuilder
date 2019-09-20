@@ -263,7 +263,9 @@ class SecurityManager(BaseSecurityManager):
             .filter_by(name=self.auth_role_public)
             .first()
         )
-        return role.permissions
+        if role:
+            return role.permissions
+        return []
 
     def find_permission(self, name):
         """
