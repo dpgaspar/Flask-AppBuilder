@@ -41,7 +41,7 @@ from .const import (
     PASSWORD_ADMIN,
     PASSWORD_READONLY,
     USERNAME_ADMIN,
-    USERNAME_READONLY
+    USERNAME_READONLY,
 )
 from .sqla.models import (
     insert_model1,
@@ -563,9 +563,11 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        model2 = self.appbuilder.get_session.query(Model2).filter_by(
-            field_string="test0"
-        ).one_or_none()
+        model2 = (
+            self.appbuilder.get_session.query(Model2)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
         pk = model2.id
         uri = f"api/v1/model2dottednotationapi/{pk}"
         rv = self.auth_client_get(client, token, uri)
@@ -641,9 +643,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 404)
         # This one is ok pk=4 field_integer=3 2>3<4
         pk = 4
-        rv = self.auth_client_get(
-            client, token, f"api/v1/model1apifiltered/{pk}"
-        )
+        rv = self.auth_client_get(client, token, f"api/v1/model1apifiltered/{pk}")
         self.assertEqual(rv.status_code, 200)
 
     def test_get_item_1m_field(self):
@@ -654,9 +654,11 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         # We can't get a base filtered item
-        model2 = self.appbuilder.get_session.query(Model2).filter_by(
-            field_string="test0"
-        ).one_or_none()
+        model2 = (
+            self.appbuilder.get_session.query(Model2)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
         pk = model2.id
         rv = self.auth_client_get(client, token, f"api/v1/model2api/{pk}")
         data = json.loads(rv.data.decode("utf-8"))
@@ -1325,7 +1327,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(model, None)
 
         # Revert data changes
-        insert_model2(self.appbuilder.get_session, i=pk-1)
+        insert_model2(self.appbuilder.get_session, i=pk - 1)
 
     def test_delete_item_integrity(self):
         """
@@ -1371,9 +1373,11 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        model1 = self.appbuilder.get_session.query(Model1).filter_by(
-            field_string="test2"
-        ).one_or_none()
+        model1 = (
+            self.appbuilder.get_session.query(Model1)
+            .filter_by(field_string="test2")
+            .one_or_none()
+        )
         pk = model1.id
         item = dict(field_string="test_Put", field_integer=0, field_float=0.0)
         uri = f"api/v1/model1api/{pk}"
@@ -1385,7 +1389,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_float, 0.0)
 
         # Revert data changes
-        insert_model1(self.appbuilder.get_session, i=pk-1)
+        insert_model1(self.appbuilder.get_session, i=pk - 1)
 
     def test_update_custom_validation(self):
         """
@@ -1393,9 +1397,11 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        model1 = self.appbuilder.get_session.query(Model1).filter_by(
-            field_string="test2"
-        ).one_or_none()
+        model1 = (
+            self.appbuilder.get_session.query(Model1)
+            .filter_by(field_string="test2")
+            .one_or_none()
+        )
         pk = model1.id
         item = dict(field_string="test_Put", field_integer=0, field_float=0.0)
         uri = "api/v1/model1customvalidationapi/{}".format(pk)
@@ -1408,7 +1414,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 200)
 
         # Revert data changes
-        insert_model1(self.appbuilder.get_session, i=pk-1)
+        insert_model1(self.appbuilder.get_session, i=pk - 1)
 
     def test_update_item_base_filters(self):
         """
@@ -1416,9 +1422,11 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        model1 = self.appbuilder.get_session.query(Model1).filter_by(
-            field_string="test3"
-        ).one_or_none()
+        model1 = (
+            self.appbuilder.get_session.query(Model1)
+            .filter_by(field_string="test3")
+            .one_or_none()
+        )
         pk = model1.id
         item = dict(field_string="test_Put", field_integer=3, field_float=3.0)
         uri = "api/v1/model1apifiltered/{}".format(pk)
@@ -1430,7 +1438,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_float, 3.0)
 
         # Revert data changes
-        insert_model1(self.appbuilder.get_session, i=pk-1)
+        insert_model1(self.appbuilder.get_session, i=pk - 1)
 
         # We can't update an item that is base filtered
         pk = 1
@@ -1514,9 +1522,11 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        model1 = self.appbuilder.get_session.query(Model1).filter_by(
-            field_string="test0"
-        ).one_or_none()
+        model1 = (
+            self.appbuilder.get_session.query(Model1)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
         pk = model1.id
         item = dict(
             field_string=f"test{MODEL1_DATA_SIZE + 1}",
@@ -1552,7 +1562,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(model.field_date, None)
 
         # Revert data changes
-        insert_model1(self.appbuilder.get_session, i=pk-1)
+        insert_model1(self.appbuilder.get_session, i=pk - 1)
 
     def test_create_item(self):
         """
@@ -1905,7 +1915,9 @@ class APITestCase(FABTestCase):
 
         # Revert test data
         insert_model2(self.appbuilder.get_session, i=0)
-        self.appbuilder.get_session.delete(self.appbuilder.sm.find_user(username="test"))
+        self.appbuilder.get_session.delete(
+            self.appbuilder.sm.find_user(username="test")
+        )
         self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
         self.appbuilder.get_session.commit()
 
@@ -1950,7 +1962,9 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 401)
 
         # Revert test data
-        self.appbuilder.get_session.delete(self.appbuilder.sm.find_user(username="test"))
+        self.appbuilder.get_session.delete(
+            self.appbuilder.sm.find_user(username="test")
+        )
         self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
         self.appbuilder.get_session.commit()
 
@@ -2044,7 +2058,9 @@ class APITestCase(FABTestCase):
         self.assertEqual(len(role.permissions), 1)
 
         # Revert test data
-        self.appbuilder.get_session.delete(self.appbuilder.sm.find_user(username="test"))
+        self.appbuilder.get_session.delete(
+            self.appbuilder.sm.find_user(username="test")
+        )
         self.appbuilder.get_session.delete(self.appbuilder.sm.find_role("Test"))
         self.appbuilder.get_session.commit()
 

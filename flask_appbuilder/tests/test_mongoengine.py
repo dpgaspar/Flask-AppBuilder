@@ -7,7 +7,7 @@ import string
 from flask_appbuilder.charts.views import (
     DirectByChartView,
     DirectChartView,
-    GroupByChartView
+    GroupByChartView,
 )
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
 from flask_appbuilder.models.mongoengine.filters import FilterEqual, FilterStartsWith
@@ -179,6 +179,7 @@ class FlaskTestCase(FABTestCase):
             TEST HELPER FUNCTIONS
         ---------------------------------
     """
+
     def insert_data(self):
         for x, i in zip(string.ascii_letters[:23], range(23)):
             model = Model1(field_string="%stest" % (x), field_integer=i)

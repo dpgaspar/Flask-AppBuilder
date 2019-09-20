@@ -18,7 +18,6 @@ from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggreg
 from flask_appbuilder.models.sqla.filters import FilterEqual, FilterStartsWith
 from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView
 import jinja2
-from nose.tools import eq_, ok_
 
 from .base import FABTestCase
 from .const import (
@@ -26,18 +25,18 @@ from .const import (
     PASSWORD_ADMIN,
     PASSWORD_READONLY,
     USERNAME_ADMIN,
-    USERNAME_READONLY
+    USERNAME_READONLY,
 )
 from .sqla.models import (
+    insert_model1,
+    insert_model2,
+    insert_model3,
+    insert_model_with_enums,
     Model1,
     Model2,
     Model3,
     ModelWithEnums,
     TmpEnum,
-    insert_model1,
-    insert_model2,
-    insert_model3,
-    insert_model_with_enums,
 )
 
 
@@ -92,7 +91,9 @@ class FlaskTestCase(FABTestCase):
             edit_form_query_rel_fields = {
                 "group": [["field_string", FilterEqual, "test1"]]
             }
-            add_form_query_rel_fields = {"group": [["field_string", FilterEqual, "test0"]]}
+            add_form_query_rel_fields = {
+                "group": [["field_string", FilterEqual, "test0"]]
+            }
 
         class Model22View(ModelView):
             datamodel = SQLAInterface(Model2)
@@ -250,7 +251,7 @@ class FlaskTestCase(FABTestCase):
             "readonly",
             "readonly@fab.org",
             role_read_only,
-            PASSWORD_READONLY
+            PASSWORD_READONLY,
         )
 
     def tearDown(self):
@@ -310,7 +311,7 @@ class FlaskTestCase(FABTestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 35)
+        self.assertEqual(len(self.appbuilder.baseviews), 35)
 
     def test_back(self):
         """
@@ -321,7 +322,7 @@ class FlaskTestCase(FABTestCase):
             c.get("/model1view/list/?_flt_0_field_string=f")
             c.get("/model2view/list/")
             c.get("/back", follow_redirects=True)
-            assert request.args["_flt_0_field_string"] == u"f"
+            assert request.args["_flt_0_field_string"] == "f"
             assert "/model1view/list/" == request.path
 
     def test_model_creation(self):
@@ -428,9 +429,7 @@ class FlaskTestCase(FABTestCase):
         self.browser_login(client, USERNAME_ADMIN, "password")
         rv = client.post(
             "/resetmypassword/form",
-            data=dict(
-                password=PASSWORD_ADMIN, conf_password=PASSWORD_ADMIN
-            ),
+            data=dict(password=PASSWORD_ADMIN, conf_password=PASSWORD_ADMIN),
             follow_redirects=True,
         )
         self.assertEqual(rv.status_code, 200)
@@ -441,9 +440,7 @@ class FlaskTestCase(FABTestCase):
         self.assertIn("Reset Password Form", data)
         rv = client.post(
             "/resetmypassword/form",
-            data=dict(
-                password=PASSWORD_ADMIN, conf_password=PASSWORD_ADMIN
-            ),
+            data=dict(password=PASSWORD_ADMIN, conf_password=PASSWORD_ADMIN),
             follow_redirects=True,
         )
         self.assertEqual(rv.status_code, 200)
@@ -477,8 +474,11 @@ class FlaskTestCase(FABTestCase):
         )
         self.assertEqual(rv.status_code, 200)
 
-        model = self.db.session.query(Model1).filter_by(
-            field_string=field_string).one_or_none()
+        model = (
+            self.db.session.query(Model1)
+            .filter_by(field_string=field_string)
+            .one_or_none()
+        )
         self.assertEqual(model.field_string, field_string)
         self.assertEqual(model.field_integer, MODEL1_DATA_SIZE)
 
@@ -493,8 +493,11 @@ class FlaskTestCase(FABTestCase):
         client = self.app.test_client()
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        model = self.appbuilder.get_session.query(Model1).filter_by(
-            field_string="test0").one_or_none()
+        model = (
+            self.appbuilder.get_session.query(Model1)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
         pk = model.id
         rv = client.post(
             f"/model1view/edit/{pk}",
@@ -503,13 +506,12 @@ class FlaskTestCase(FABTestCase):
         )
         self.assertEqual(rv.status_code, 200)
 
-        model = self.db.session.query(Model1).filter_by(
-            id=pk).one_or_none()
-        self.assertEqual(model.field_string, u"test_edit")
+        model = self.db.session.query(Model1).filter_by(id=pk).one_or_none()
+        self.assertEqual(model.field_string, "test_edit")
         self.assertEqual(model.field_integer, 200)
 
         # Revert data changes
-        insert_model1(self.appbuilder.get_session, i=pk-1)
+        insert_model1(self.appbuilder.get_session, i=pk - 1)
 
     def test_model_crud_delete(self):
         """
@@ -518,9 +520,11 @@ class FlaskTestCase(FABTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        model = self.appbuilder.get_session.query(Model2).filter_by(
-            field_string="test0"
-        ).one_or_none()
+        model = (
+            self.appbuilder.get_session.query(Model2)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
         pk = model.id
         rv = client.get(f"/model2view/delete/{pk}", follow_redirects=True)
 
@@ -537,9 +541,11 @@ class FlaskTestCase(FABTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        model1 = self.appbuilder.get_session.query(Model1).filter_by(
-            field_string="test1"
-        ).one_or_none()
+        model1 = (
+            self.appbuilder.get_session.query(Model1)
+            .filter_by(field_string="test1")
+            .one_or_none()
+        )
         pk = model1.id
         rv = client.get(f"/model1view/delete/{pk}", follow_redirects=True)
 
@@ -567,12 +573,12 @@ class FlaskTestCase(FABTestCase):
         )
 
         self.assertEqual(rv.status_code, 200)
-        model = self.appbuilder.get_session.query(Model3).filter_by(
-            pk1="1",
-        ).one_or_none()
+        model = (
+            self.appbuilder.get_session.query(Model3).filter_by(pk1="1").one_or_none()
+        )
         self.assertEqual(model.pk1, 1)
         self.assertEqual(model.pk2, datetime.datetime(2017, 1, 1))
-        self.assertEqual(model.field_string, u"foo2")
+        self.assertEqual(model.field_string, "foo2")
 
         pk = '[1, {"_type": "datetime", "value": "2017-01-01T00:00:00.000000"}]'
         rv = client.get(f"/model3view/show/{quote(pk)}", follow_redirects=True)
@@ -585,13 +591,14 @@ class FlaskTestCase(FABTestCase):
         )
         self.assertEqual(rv.status_code, 200)
 
-        model = self.appbuilder.get_session.query(Model3).filter_by(
-            pk1="2",
-            pk2="2017-02-02 00:00:00"
-        ).one_or_none()
+        model = (
+            self.appbuilder.get_session.query(Model3)
+            .filter_by(pk1="2", pk2="2017-02-02 00:00:00")
+            .one_or_none()
+        )
         self.assertEqual(model.pk1, 2)
         self.assertEqual(model.pk2, datetime.datetime(2017, 2, 2))
-        self.assertEqual(model.field_string, u"bar")
+        self.assertEqual(model.field_string, "bar")
 
         pk = '[2, {"_type": "datetime", "value": "2017-02-02T00:00:00.000000"}]'
         rv = client.get("/model3view/delete/" + quote(pk), follow_redirects=True)
@@ -606,20 +613,24 @@ class FlaskTestCase(FABTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        data = {"enum1": u"e3", "enum2": "e3"}
-        rv = client.post(
-            "/modelwithenumsview/add", data=data, follow_redirects=True
-        )
+        data = {"enum1": "e3", "enum2": "e3"}
+        rv = client.post("/modelwithenumsview/add", data=data, follow_redirects=True)
         self.assertEqual(rv.status_code, 200)
 
-        model = self.appbuilder.get_session.query(ModelWithEnums).filter_by(
-            enum1="e3"
-        ).one_or_none()
+        model = (
+            self.appbuilder.get_session.query(ModelWithEnums)
+            .filter_by(enum1="e3")
+            .one_or_none()
+        )
         self.assertIsNotNone(model)
         self.assertEqual(model.enum2, TmpEnum.e3)
 
         # Revert data changes
-        model = self.appbuilder.get_session.query(ModelWithEnums).filter_by(enum1="e3").one_or_none()
+        model = (
+            self.appbuilder.get_session.query(ModelWithEnums)
+            .filter_by(enum1="e3")
+            .one_or_none()
+        )
         self.appbuilder.get_session.delete(model)
         self.appbuilder.get_session.commit()
 
@@ -630,12 +641,18 @@ class FlaskTestCase(FABTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        data = {"enum1": u"e3", "enum2": "e3"}
+        data = {"enum1": "e3", "enum2": "e3"}
         pk = 1
-        rv = client.post(f"/modelwithenumsview/edit/{pk}", data=data, follow_redirects=True)
+        rv = client.post(
+            f"/modelwithenumsview/edit/{pk}", data=data, follow_redirects=True
+        )
         self.assertEqual(rv.status_code, 200)
 
-        model = self.appbuilder.get_session.query(ModelWithEnums).filter_by(enum1="e3").one_or_none()
+        model = (
+            self.appbuilder.get_session.query(ModelWithEnums)
+            .filter_by(enum1="e3")
+            .one_or_none()
+        )
         self.assertIsNotNone(model)
         self.assertEqual(model.enum2, TmpEnum.e3)
 
@@ -672,8 +689,11 @@ class FlaskTestCase(FABTestCase):
         self.assertEqual("http://localhost/", rv.headers["Location"])
 
         # Revert data changes
-        model1 = self.appbuilder.get_session.query(Model1).filter_by(
-            field_string="test_redirect").one_or_none()
+        model1 = (
+            self.appbuilder.get_session.query(Model1)
+            .filter_by(field_string="test_redirect")
+            .one_or_none()
+        )
         self.appbuilder.get_session.delete(model1)
         self.appbuilder.get_session.commit()
 
@@ -691,13 +711,13 @@ class FlaskTestCase(FABTestCase):
         )
         rv = client.post(
             f"/model1viewwithredirects/edit/{model_id}",
-            data=dict(field_string="test_redirect", field_integer="200")
+            data=dict(field_string="test_redirect", field_integer="200"),
         )
         self.assertEqual(rv.status_code, 302)
         self.assertEqual("http://localhost/", rv.headers["Location"])
 
         # Revert data changes
-        insert_model1(self.appbuilder.get_session, i=model_id-1)
+        insert_model1(self.appbuilder.get_session, i=model_id - 1)
 
     def test_modelview_delete_redirects(self):
         """
@@ -706,16 +726,13 @@ class FlaskTestCase(FABTestCase):
         client = self.app.test_client()
         rv = self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model_id = (
-            self.db.session.query(Model1)
-                .filter_by(field_string="test0")
-                .first()
-                .id
+            self.db.session.query(Model1).filter_by(field_string="test0").first().id
         )
         rv = client.get(f"/model1viewwithredirects/delete/{model_id}")
         self.assertEqual(rv.status_code, 302)
         self.assertEqual("http://localhost/", rv.headers["Location"])
         # Revert data changes
-        insert_model1(self.appbuilder.get_session, i=model_id-1)
+        insert_model1(self.appbuilder.get_session, i=model_id - 1)
 
     def test_add_excluded_cols(self):
         """
@@ -739,9 +756,11 @@ class FlaskTestCase(FABTestCase):
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        model = self.appbuilder.get_session.query(Model2).filter_by(
-            field_string='test0'
-        ).one_or_none()
+        model = (
+            self.appbuilder.get_session.query(Model2)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
         rv = client.get(f"/model22view/edit/{model.id}")
         self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
@@ -757,9 +776,11 @@ class FlaskTestCase(FABTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        model = self.appbuilder.get_session.query(Model2).filter_by(
-            field_string='test0'
-        ).one_or_none()
+        model = (
+            self.appbuilder.get_session.query(Model2)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
         rv = client.get(f"/model22view/show/{model.id}")
         self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
@@ -782,7 +803,11 @@ class FlaskTestCase(FABTestCase):
         self.assertIn("test0", data)
         self.assertNotIn(f"test1", data)
 
-        model2 = self.appbuilder.get_session.query(Model2).filter_by(field_string="test0").one_or_none()
+        model2 = (
+            self.appbuilder.get_session.query(Model2)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
         # Base filter string starts with
         rv = client.get(f"/model2view/edit/{model2.id}")
         data = rv.data.decode("utf-8")
@@ -797,14 +822,14 @@ class FlaskTestCase(FABTestCase):
 
         rv = client.get(
             "/model1view/list?_oc_Model1View=field_string&_od_Model1View=asc",
-            follow_redirects=True
+            follow_redirects=True,
         )
         self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
         self.assertIn("test0", data)
         rv = client.get(
             "/model1view/list?_oc_Model1View=field_string&_od_Model1View=desc",
-            follow_redirects=True
+            follow_redirects=True,
         )
         self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
@@ -935,9 +960,9 @@ class FlaskTestCase(FABTestCase):
             data=dict(field_string="bar"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         model = self.db.session.query(Model3).first()
-        self.assertEqual(model.field_string, u"bar")
+        self.assertEqual(model.field_string, "bar")
 
         rv = client.get("/model3compactview/delete/" + quote(pk), follow_redirects=True)
         self.assertEqual(rv.status_code, 200)
@@ -963,12 +988,12 @@ class FlaskTestCase(FABTestCase):
             expected_form_action = prefix + "/model1compactview/add/?"
 
             c.get("/model1compactview/add/", base_url=base_url)
-            ok_(session[session_form_action_key] == expected_form_action)
+            self.assertEqual(session[session_form_action_key], expected_form_action)
 
             expected_form_action = prefix + "/model1compactview/edit/1?"
             c.get("/model1compactview/edit/1", base_url=base_url)
 
-            ok_(session[session_form_action_key] == expected_form_action)
+            self.assertEqual(session[session_form_action_key], expected_form_action)
 
     def test_charts_view(self):
         """
@@ -976,7 +1001,7 @@ class FlaskTestCase(FABTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        #self.insert_data2()
+        # self.insert_data2()
         rv = client.get("/model2chartview/chart/")
         self.assertEqual(rv.status_code, 200)
         rv = client.get("/model2groupbychartview/chart/")
@@ -985,10 +1010,10 @@ class FlaskTestCase(FABTestCase):
         self.assertEqual(rv.status_code, 200)
         # TODO: fix this
         # rv = client.get("/model2timechartview/chart/")
-        # eq_(rv.status_code, 200)
+        # self.assertEqual(rv.status_code, 200)
         # TODO: fix this
         # rv = client.get('/model2directchartview/chart/')
-        # eq_(rv.status_code, 200)
+        # self.assertEqual(rv.status_code, 200)
 
     def test_master_detail_view(self):
         """
@@ -996,7 +1021,7 @@ class FlaskTestCase(FABTestCase):
         """
         client = self.app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        #self.insert_data2()
+        # self.insert_data2()
         rv = client.get("/model1masterview/list/")
         self.assertEqual(rv.status_code, 200)
         rv = client.get("/model1masterview/list/1")
@@ -1032,7 +1057,9 @@ class FlaskTestCase(FABTestCase):
             follow_redirects=True,
         )
         self.assertEqual(rv.status_code, 200)
-        model1 = self.db.session.query(Model1).filter_by(field_string="zzz").one_or_none()
+        model1 = (
+            self.db.session.query(Model1).filter_by(field_string="zzz").one_or_none()
+        )
         self.assertIsNotNone(model1)
 
         # Revert data changes
@@ -1053,7 +1080,7 @@ class FlaskTestCase(FABTestCase):
             data=dict(field_string="zzz"),
             follow_redirects=True,
         )
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         item = self.db.session.query(Model1).filter_by(id=1).one()
         self.assertEqual(item.field_string, "zzz")
         self.assertEqual(item.field_integer, field_integer_before)
@@ -1070,7 +1097,7 @@ class FlaskTestCase(FABTestCase):
 
         class Model1PermOverride(ModelView):
             datamodel = SQLAInterface(Model1)
-            class_permission_name = 'view'
+            class_permission_name = "view"
             method_permission_name = {
                 "list": "access",
                 "show": "access",
@@ -1086,17 +1113,14 @@ class FlaskTestCase(FABTestCase):
                 "api_create": "access",
                 "api_get": "access",
                 "api_read": "access",
-                "api": "access"
+                "api": "access",
             }
 
         self.model1permoverride = Model1PermOverride
         self.appbuilder.add_view_no_menu(Model1PermOverride)
 
         role = self.appbuilder.sm.add_role("Test")
-        pvm = self.appbuilder.sm.find_permission_view_menu(
-            "can_access",
-            "view"
-        )
+        pvm = self.appbuilder.sm.find_permission_view_menu("can_access", "view")
         self.appbuilder.sm.add_permission_role(role, pvm)
         self.appbuilder.sm.add_user(
             "test", "test", "user", "test@fab.org", role, "test"
@@ -1119,11 +1143,11 @@ class FlaskTestCase(FABTestCase):
         )
         self.assertEqual(rv.status_code, 200)
 
-        model = self.db.session.query(Model1).filter_by(
-            field_string="test1"
-        ).one_or_none()
-        eq_(model.field_string, u"test1")
-        eq_(model.field_integer, 1)
+        model = (
+            self.db.session.query(Model1).filter_by(field_string="test1").one_or_none()
+        )
+        self.assertEqual(model.field_string, "test1")
+        self.assertEqual(model.field_integer, 1)
 
     def test_method_permission_override(self):
         """
@@ -1149,7 +1173,7 @@ class FlaskTestCase(FABTestCase):
                 "api_create": "write",
                 "api_get": "read",
                 "api_read": "read",
-                "api": "read"
+                "api": "read",
             }
 
         self.model1permoverride = Model1PermOverride
@@ -1157,12 +1181,10 @@ class FlaskTestCase(FABTestCase):
 
         role = self.appbuilder.sm.add_role("Test")
         pvm_read = self.appbuilder.sm.find_permission_view_menu(
-            "can_read",
-            "Model1PermOverride"
+            "can_read", "Model1PermOverride"
         )
         pvm_write = self.appbuilder.sm.find_permission_view_menu(
-            "can_write",
-            "Model1PermOverride"
+            "can_write", "Model1PermOverride"
         )
         self.appbuilder.sm.add_permission_role(role, pvm_read)
         self.appbuilder.sm.add_permission_role(role, pvm_write)
@@ -1185,9 +1207,11 @@ class FlaskTestCase(FABTestCase):
             follow_redirects=True,
         )
         self.assertEqual(rv.status_code, 200)
-        model1 = self.appbuilder.get_session.query(Model1).filter_by(
-            field_string=f"test{MODEL1_DATA_SIZE+1}"
-        ).one_or_none()
+        model1 = (
+            self.appbuilder.get_session.query(Model1)
+            .filter_by(field_string=f"test{MODEL1_DATA_SIZE+1}")
+            .one_or_none()
+        )
         self.assertIsNotNone(model1)
 
         # Revert data changes
@@ -1196,7 +1220,7 @@ class FlaskTestCase(FABTestCase):
 
         # Verify write links are on the UI
         rv = client.get("/model1permoverride/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
         self.assertIn("/model1permoverride/delete/1", data)
         self.assertIn("/model1permoverride/add", data)
@@ -1204,26 +1228,27 @@ class FlaskTestCase(FABTestCase):
         self.assertIn("/model1permoverride/show/1", data)
 
         # Delete write permission from Test Role
-        role = self.appbuilder.sm.find_role('Test')
+        role = self.appbuilder.sm.find_role("Test")
         pvm_write = self.appbuilder.sm.find_permission_view_menu(
-            "can_write",
-            "Model1PermOverride"
+            "can_write", "Model1PermOverride"
         )
         self.appbuilder.sm.del_permission_role(role, pvm_write)
 
         # Unauthorized delete
-        model1 = self.appbuilder.get_session.query(Model1).filter_by(
-            field_string=f"test1"
-        ).one_or_none()
+        model1 = (
+            self.appbuilder.get_session.query(Model1)
+            .filter_by(field_string=f"test1")
+            .one_or_none()
+        )
         pk = model1.id
         rv = client.get(f"/model1permoverride/delete/{pk}")
         self.assertEqual(rv.status_code, 302)
         model = self.db.session.query(Model1).filter_by(id=pk).one_or_none()
-        self.assertEqual(model.field_string, u"test1")
+        self.assertEqual(model.field_string, "test1")
 
         # Verify write links are gone from UI
         rv = client.get("/model1permoverride/list/")
-        eq_(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200)
         data = rv.data.decode("utf-8")
         self.assertNotIn("/model1permoverride/delete/1", data)
         self.assertNotIn("/model1permoverride/add/", data)
@@ -1259,7 +1284,7 @@ class FlaskTestCase(FABTestCase):
                 "api_get": "read",
                 "api_read": "read",
                 "api": "read",
-                "action_one": "write"
+                "action_one": "write",
             }
 
             @action("action1", "Action1", "", "fa-lock", multiple=True)
@@ -1275,12 +1300,10 @@ class FlaskTestCase(FABTestCase):
             "test", "test", "user", "test@fab.org", role, "test"
         )
         pvm_read = self.appbuilder.sm.find_permission_view_menu(
-            "can_read",
-            "Model1PermOverride"
+            "can_read", "Model1PermOverride"
         )
         pvm_write = self.appbuilder.sm.find_permission_view_menu(
-            "can_write",
-            "Model1PermOverride"
+            "can_write", "Model1PermOverride"
         )
         self.appbuilder.sm.add_permission_role(role, pvm_read)
         self.appbuilder.sm.add_permission_role(role, pvm_write)
@@ -1288,23 +1311,24 @@ class FlaskTestCase(FABTestCase):
         client = self.app.test_client()
         self.browser_login(client, "test", "test")
 
-        model1 = self.appbuilder.get_session.query(Model1).filter_by(
-            field_string="test0"
-        ).one_or_none()
+        model1 = (
+            self.appbuilder.get_session.query(Model1)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
         pk = model1.id
         rv = client.get(f"/model1permoverride/action/action1/{pk}")
         self.assertEqual(rv.status_code, 200)
 
         # Delete write permission from Test Role
-        role = self.appbuilder.sm.find_role('Test')
+        role = self.appbuilder.sm.find_role("Test")
         pvm_write = self.appbuilder.sm.find_permission_view_menu(
-            "can_write",
-            "Model1PermOverride"
+            "can_write", "Model1PermOverride"
         )
         self.appbuilder.sm.del_permission_role(role, pvm_write)
 
         rv = client.get("/model1permoverride/action/action1/1")
-        eq_(rv.status_code, 302)
+        self.assertEqual(rv.status_code, 302)
 
     def test_permission_converge_compress(self):
         """
@@ -1315,8 +1339,8 @@ class FlaskTestCase(FABTestCase):
 
         class Model1PermConverge(ModelView):
             datamodel = SQLAInterface(Model1)
-            class_permission_name = 'view2'
-            previous_class_permission_name = 'Model1View'
+            class_permission_name = "view2"
+            previous_class_permission_name = "Model1View"
             method_permission_name = {
                 "list": "access",
                 "show": "access",
@@ -1332,20 +1356,14 @@ class FlaskTestCase(FABTestCase):
                 "api_create": "access",
                 "api_get": "access",
                 "api_read": "access",
-                "api": "access"
+                "api": "access",
             }
 
         self.appbuilder.add_view_no_menu(Model1PermConverge)
         role = self.appbuilder.sm.add_role("Test")
-        pvm = self.appbuilder.sm.find_permission_view_menu(
-            "can_list",
-            "Model1View"
-        )
+        pvm = self.appbuilder.sm.find_permission_view_menu("can_list", "Model1View")
         self.appbuilder.sm.add_permission_role(role, pvm)
-        pvm = self.appbuilder.sm.find_permission_view_menu(
-            "can_add",
-            "Model1View"
-        )
+        pvm = self.appbuilder.sm.find_permission_view_menu("can_add", "Model1View")
         self.appbuilder.sm.add_permission_role(role, pvm)
         role = self.appbuilder.sm.find_role("Test")
         self.appbuilder.sm.add_user(
@@ -1358,28 +1376,26 @@ class FlaskTestCase(FABTestCase):
         self.appbuilder.baseviews.pop(i)
 
         target_state_transitions = {
-            'add': {
-                ('Model1View', 'can_edit'): {('view2', 'can_access')},
-                ('Model1View', 'can_add'): {('view2', 'can_access')},
-                ('Model1View', 'can_list'): {('view2', 'can_access')},
-                ('Model1View', 'can_download'): {('view2', 'can_access')},
-                ('Model1View', 'can_show'): {('view2', 'can_access')},
-                ('Model1View', 'can_delete'): {('view2', 'can_access')}
+            "add": {
+                ("Model1View", "can_edit"): {("view2", "can_access")},
+                ("Model1View", "can_add"): {("view2", "can_access")},
+                ("Model1View", "can_list"): {("view2", "can_access")},
+                ("Model1View", "can_download"): {("view2", "can_access")},
+                ("Model1View", "can_show"): {("view2", "can_access")},
+                ("Model1View", "can_delete"): {("view2", "can_access")},
             },
-            'del_role_pvm': {
-                ('Model1View', 'can_show'),
-                ('Model1View', 'can_add'),
-                ('Model1View', 'can_download'),
-                ('Model1View', 'can_list'),
-                ('Model1View', 'can_edit'),
-                ('Model1View', 'can_delete')
+            "del_role_pvm": {
+                ("Model1View", "can_show"),
+                ("Model1View", "can_add"),
+                ("Model1View", "can_download"),
+                ("Model1View", "can_list"),
+                ("Model1View", "can_edit"),
+                ("Model1View", "can_delete"),
             },
-            'del_views': {
-                'Model1View'
-            },
-            'del_perms': set()
+            "del_views": {"Model1View"},
+            "del_perms": set(),
         }
         state_transitions = self.appbuilder.security_converge()
-        eq_(state_transitions, target_state_transitions)
+        self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
-        eq_(len(role.permissions), 1)
+        self.assertEqual(len(role.permissions), 1)
