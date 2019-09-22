@@ -260,53 +260,6 @@ class FlaskTestCase(FABTestCase):
         self.db = None
         log.debug("TEAR DOWN")
 
-    """ ---------------------------------
-            TEST HELPER FUNCTIONS
-        ---------------------------------
-    """
-    # def insert_data(self):
-    #     for x, i in zip(string.ascii_letters[:23], range(23)):
-    #         model = Model1(field_string="%stest" % (x), field_integer=i)
-    #         self.db.session.add(model)
-    #         self.db.session.commit()
-    #
-    # def insert_data2(self):
-    #     models1 = [
-    #         Model1(field_string="G1"),
-    #         Model1(field_string="G2"),
-    #         Model1(field_string="G3"),
-    #     ]
-    #     for model1 in models1:
-    #         try:
-    #             self.db.session.add(model1)
-    #             self.db.session.commit()
-    #             for x, i in zip(string.ascii_letters[:10], range(10)):
-    #                 model = Model2(
-    #                     field_string="%stest" % (x),
-    #                     field_integer=random.randint(1, 10),
-    #                     field_float=random.uniform(0.0, 1.0),
-    #                     group=model1,
-    #                 )
-    #                 year = random.choice(range(1900, 2012))
-    #                 month = random.choice(range(1, 12))
-    #                 day = random.choice(range(1, 28))
-    #                 model.field_date = datetime.datetime(year, month, day)
-    #
-    #                 self.db.session.add(model)
-    #                 self.db.session.commit()
-    #         except Exception as e:
-    #             print("ERROR {0}".format(str(e)))
-    #             self.db.session.rollback()
-    #
-    # def insert_data3(self):
-    #     model3 = Model3(pk1=3, pk2=datetime.datetime(2017, 3, 3), field_string="foo")
-    #     try:
-    #         self.db.session.add(model3)
-    #         self.db.session.commit()
-    #     except Exception as e:
-    #         print("Error {0}".format(str(e)))
-    #         self.db.session.rollback()
-
     def test_fab_views(self):
         """
             Test views creation and registration
