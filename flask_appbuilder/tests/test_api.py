@@ -1319,7 +1319,7 @@ class APITestCase(FABTestCase):
         model = (
             self.appbuilder.get_session.query(Model2)
             .filter_by(field_string="test2")
-            .one_or_node()
+            .one_or_none()
         )
         pk = model.id
         uri = f"api/v1/model2api/{pk}"
@@ -1341,7 +1341,7 @@ class APITestCase(FABTestCase):
         model = (
             self.appbuilder.get_session.query(Model2)
             .filter_by(field_string="test0")
-            .one_or_node()
+            .one_or_none()
         )
         pk = model.id
         uri = f"api/v1/model1api/{pk}"
@@ -1360,7 +1360,7 @@ class APITestCase(FABTestCase):
         model = (
             self.appbuilder.get_session.query(Model2)
             .filter_by(field_string=f"test{MODEL1_DATA_SIZE + 1}")
-            .one_or_node()
+            .one_or_none()
         )
         pk = model.id
         uri = f"api/v1/model1api/{pk}"
@@ -1377,7 +1377,7 @@ class APITestCase(FABTestCase):
         model = (
             self.appbuilder.get_session.query(Model2)
             .filter_by(field_integer=2)
-            .one_or_node()
+            .one_or_none()
         )
 
         # Try to delete a filtered item
