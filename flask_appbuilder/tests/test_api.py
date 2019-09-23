@@ -889,12 +889,6 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        # test simple page test, mainly because of MSSQL dialect
-        arguments = {"page_size": page_size, "page": 1}
-        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
-        rv = self.auth_client_get(client, token, uri)
-        self.assertEquals(rv.status_code, 200)
-
         # test page zero
         arguments = {
             "page_size": page_size,
@@ -938,6 +932,12 @@ class APITestCase(FABTestCase):
         )
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(len(data[API_RESULT_RES_KEY]), page_size)
+
+        # test simple page test, mainly because of MSSQL dialect
+        arguments = {"page_size": page_size, "page": 1}
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEquals(rv.status_code, 200)
 
     def test_get_list_max_page_size(self):
         """
