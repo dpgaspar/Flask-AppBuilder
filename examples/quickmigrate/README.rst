@@ -12,16 +12,13 @@ Use of Flask-Migrate (Use Flask>0.11.0)::
     $ flask db upgrate --sql
     $ flask db upgrade
 
-Create an Admin user::
-
-    $ fabmanager create-admin
-
 Insert test data::
 
     $ python testdata.py
 
 Run it::
 
-    $ fabmanager run
-
+    $ export FLASK_APP=app/__init__.py
+    $ flask fab create-admin
+    $ flask run
 

@@ -1,4 +1,5 @@
 .coverage
+coverage.xml
 *.egg-info
 .eggs/
 *.pyc
@@ -13,4 +14,4 @@ env
 venv
 *.sublime*
 .vscode/
-
+.tox

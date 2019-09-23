@@ -1,10 +1,13 @@
 import logging
+from typing import List, Optional
 import uuid
+
 from werkzeug.security import generate_password_hash
-from ...models.mongoengine.interface import MongoEngineInterface
-from .models import User, Role, PermissionView, Permission, ViewMenu, RegisterUser
+
+from .models import Permission, PermissionView, RegisterUser, Role, User, ViewMenu
 from ..manager import BaseSecurityManager
 from ... import const as c
+from ...models.mongoengine.interface import MongoEngineInterface
 
 log = logging.getLogger(__name__)
 
@@ -17,6 +20,7 @@ class SecurityManager(BaseSecurityManager):
         If you want to change anything just inherit and override, then
         pass your own security manager to AppBuilder.
     """
+
     user_model = User
     """ Override to set your own User Model """
     role_model = Role
@@ -47,18 +51,26 @@ class SecurityManager(BaseSecurityManager):
 
         self.userstatschartview.datamodel = MongoEngineInterface(self.user_model)
         if self.auth_user_registration:
-            self.registerusermodelview.datamodel = MongoEngineInterface(self.registeruser_model)
+            self.registerusermodelview.datamodel = MongoEngineInterface(
+                self.registeruser_model
+            )
 
         self.rolemodelview.datamodel = MongoEngineInterface(self.role_model)
-        self.permissionmodelview.datamodel=MongoEngineInterface(self.permission_model)
-        self.viewmenumodelview.datamodel=MongoEngineInterface(self.viewmenu_model)
-        self.permissionviewmodelview.datamodel=MongoEngineInterface(self.permissionview_model)
+        self.permissionmodelview.datamodel = MongoEngineInterface(self.permission_model)
+        self.viewmenumodelview.datamodel = MongoEngineInterface(self.viewmenu_model)
+        self.permissionviewmodelview.datamodel = MongoEngineInterface(
+            self.permissionview_model
+        )
         self.create_db()
 
     def find_register_user(self, registration_hash):
-        return self.registeruser_model.objects(registration_hash=registration_hash).first()
+        return self.registeruser_model.objects(
+            registration_hash=registration_hash
+        ).first()
 
-    def add_register_user(self, username, first_name, last_name, email, password='', hashed_password=''):
+    def add_register_user(
+        self, username, first_name, last_name, email, password="", hashed_password=""
+    ):
         try:
             register_user = self.registeruser_model()
             register_user.first_name = first_name
@@ -91,7 +103,16 @@ class SecurityManager(BaseSecurityManager):
     def get_all_users(self):
         return User.objects
 
-    def add_user(self, username, first_name, last_name, email, role, password='', hashed_password=''):
+    def add_user(
+        self,
+        username,
+        first_name,
+        last_name,
+        email,
+        role,
+        password="",
+        hashed_password="",
+    ):
         """
             Generic function to create user
         """
@@ -135,6 +156,7 @@ class SecurityManager(BaseSecurityManager):
      PERMISSION MANAGEMENT
     -----------------------
     """
+
     def add_role(self, name):
         role = self.find_role(name)
         if role is None:
@@ -146,6 +168,14 @@ class SecurityManager(BaseSecurityManager):
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_ADD_ROLE.format(str(e)))
         return role
+
+    def update_role(self, pk, name: str) -> Optional[Role]:
+        try:
+            role = self.role_model.objects(id=pk).update(name=name)
+            log.info(c.LOGMSG_INF_SEC_UPD_ROLE.format(role))
+        except Exception as e:
+            log.error(c.LOGMSG_ERR_SEC_UPD_ROLE.format(str(e)))
+            return
 
     def find_role(self, name):
         return self.role_model.objects(name=name).first()
@@ -163,10 +193,27 @@ class SecurityManager(BaseSecurityManager):
         """
         return self.permission_model.objects(name=name).first()
 
+    def exist_permission_on_roles(
+            self,
+            view_name: str,
+            permission_name: str,
+            role_ids: List[int],
+    ) -> bool:
+        for role_id in role_ids:
+            role = self.role_model.objects(id=role_id).first()
+            permissions = role.permissions
+            if permissions:
+                for permission in permissions:
+                    if (view_name == permission.view_menu.name) and (
+                            permission_name == permission.permission.name
+                    ):
+                        return True
+        return False
+
     def add_permission(self, name):
         """
             Adds a permission to the backend, model permission
-            
+
             :param name:
                 name of the permission: 'can_add','can_edit' etc...
         """
@@ -199,6 +246,7 @@ class SecurityManager(BaseSecurityManager):
      PRIMITIVES VIEW MENU
     ----------------------
     """
+
     def find_view_menu(self, name):
         """
             Finds and returns a ViewMenu by name
@@ -243,13 +291,17 @@ class SecurityManager(BaseSecurityManager):
      PERMISSION VIEW MENU
     ----------------------
     """
+
     def find_permission_view_menu(self, permission_name, view_menu_name):
         """
             Finds and returns a PermissionView by names
         """
         permission = self.find_permission(permission_name)
         view_menu = self.find_view_menu(view_menu_name)
-        return self.permissionview_model.objects(permission=permission, view_menu=view_menu).first()
+        if permission and view_menu:
+            return self.permissionview_model.objects(
+                permission=permission, view_menu=view_menu
+            ).first()
 
     def find_permissions_view_menu(self, view_menu):
         """
@@ -263,12 +315,20 @@ class SecurityManager(BaseSecurityManager):
     def add_permission_view_menu(self, permission_name, view_menu_name):
         """
             Adds a permission on a view or menu to the backend
-            
+
             :param permission_name:
                 name of the permission to add: 'can_add','can_edit' etc...
             :param view_menu_name:
                 name of the view menu to add
         """
+        if not (permission_name and view_menu_name):
+            return None
+        pv = self.find_permission_view_menu(
+            permission_name,
+            view_menu_name
+        )
+        if pv:
+            return pv
         vm = self.add_view_menu(view_menu_name)
         perm = self.add_permission(permission_name)
         pv = self.permissionview_model()
@@ -280,16 +340,20 @@ class SecurityManager(BaseSecurityManager):
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_ADD_PERMVIEW.format(str(e)))
 
-    def del_permission_view_menu(self, permission_name, view_menu_name):
+    def del_permission_view_menu(self, permission_name, view_menu_name, cascade=True):
         try:
             pv = self.find_permission_view_menu(permission_name, view_menu_name)
             # delete permission on view
             pv.delete()
+            if not cascade:
+                return
             # if no more permission on permission view, delete permission
             pv = self.permissionview_model.objects(permission=pv.permission)
             if not pv:
                 self.del_permission(pv.permission.name)
-            log.info(c.LOGMSG_INF_SEC_DEL_PERMVIEW.format(permission_name, view_menu_name))
+            log.info(
+                c.LOGMSG_INF_SEC_DEL_PERMVIEW.format(permission_name, view_menu_name)
+            )
         except Exception as e:
             log.error(c.LOGMSG_ERR_SEC_DEL_PERMVIEW.format(str(e)))
 
@@ -308,24 +372,26 @@ class SecurityManager(BaseSecurityManager):
     def add_permission_role(self, role, perm_view):
         """
             Add permission-ViewMenu object to Role
-            
+
             :param role:
                 The role object
             :param perm_view:
                 The PermissionViewMenu object
         """
-        if perm_view not in role.permissions:
+        if perm_view and perm_view not in role.permissions:
             try:
                 role.permissions.append(perm_view)
                 role.save()
-                log.info(c.LOGMSG_INF_SEC_ADD_PERMROLE.format(str(perm_view), role.name))
+                log.info(
+                    c.LOGMSG_INF_SEC_ADD_PERMROLE.format(str(perm_view), role.name)
+                )
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_ADD_PERMROLE.format(str(e)))
 
     def del_permission_role(self, role, perm_view):
         """
             Remove permission-ViewMenu object to Role
-            
+
             :param role:
                 The role object
             :param perm_view:
@@ -335,6 +401,8 @@ class SecurityManager(BaseSecurityManager):
             try:
                 role.permissions.remove(perm_view)
                 role.save()
-                log.info(c.LOGMSG_INF_SEC_DEL_PERMROLE.format(str(perm_view), role.name))
+                log.info(
+                    c.LOGMSG_INF_SEC_DEL_PERMROLE.format(str(perm_view), role.name)
+                )
             except Exception as e:
                 log.error(c.LOGMSG_ERR_SEC_DEL_PERMROLE.format(str(e)))

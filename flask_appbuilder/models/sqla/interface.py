@@ -1,21 +1,28 @@
 # -*- coding: utf-8 -*-
-import sys
 import logging
+import sys
+
 import sqlalchemy as sa
+from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Load
+from sqlalchemy.orm.descriptor_props import SynonymProperty
+from sqlalchemy_utils.types.uuid import UUIDType
 
 from . import filters
-from sqlalchemy.orm import joinedload
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy import func
-from sqlalchemy.orm.properties import SynonymProperty
-
 from ..base import BaseInterface
-from ..group import GroupByDateYear, GroupByDateMonth, GroupByCol
+from ..group import GroupByCol, GroupByDateMonth, GroupByDateYear
 from ..mixins import FileColumn, ImageColumn
-from ...filemanager import FileManager, ImageManager
 from ..._compat import as_unicode
-from ...const import LOGMSG_ERR_DBI_ADD_GENERIC, LOGMSG_ERR_DBI_EDIT_GENERIC, LOGMSG_ERR_DBI_DEL_GENERIC, \
-    LOGMSG_WAR_DBI_ADD_INTEGRITY, LOGMSG_WAR_DBI_EDIT_INTEGRITY, LOGMSG_WAR_DBI_DEL_INTEGRITY
+from ...const import (
+    LOGMSG_ERR_DBI_ADD_GENERIC,
+    LOGMSG_ERR_DBI_DEL_GENERIC,
+    LOGMSG_ERR_DBI_EDIT_GENERIC,
+    LOGMSG_WAR_DBI_ADD_INTEGRITY,
+    LOGMSG_WAR_DBI_DEL_INTEGRITY,
+    LOGMSG_WAR_DBI_EDIT_INTEGRITY
+)
+from ...filemanager import FileManager, ImageManager
 
 log = logging.getLogger(__name__)
 
@@ -25,9 +32,13 @@ def _include_filters(obj):
         if not hasattr(obj, key):
             setattr(obj, key, getattr(filters, key))
 
+
 def _is_sqla_type(obj, sa_type):
-    return isinstance(obj, sa_type) or \
-        isinstance(obj, sa.types.TypeDecorator) and isinstance(obj.impl, sa_type)
+    return (
+        isinstance(obj, sa_type) or
+        isinstance(obj, sa.types.TypeDecorator) and
+        isinstance(obj.impl, sa_type)
+    )
 
 
 class SQLAInterface(BaseInterface):
@@ -35,6 +46,7 @@ class SQLAInterface(BaseInterface):
     SQLAModel
     Implements SQLA support methods for views
     """
+
     session = None
 
     filter_converter_class = filters.SQLAFilterConverter
@@ -62,23 +74,85 @@ class SQLAInterface(BaseInterface):
         """
         return self.obj.__name__
 
-    def _get_base_query(self, query=None, filters=None, order_column='', order_direction=''):
+    @staticmethod
+    def is_model_already_joined(query, model):
+        return model in [mapper.class_ for mapper in query._join_entities]
+
+    def _get_base_query(
+        self, query=None, filters=None, order_column="", order_direction=""
+    ):
         if filters:
             query = filters.apply_all(query)
-        if order_column != '':
+        if order_column != "":
             # if Model has custom decorator **renders('<COL_NAME>')**
             # this decorator will add a property to the method named *_col_name*
             if hasattr(self.obj, order_column):
-                if hasattr(getattr(self.obj, order_column), '_col_name'):
-                    order_column = getattr(self._get_attr(order_column), '_col_name')
-            if order_direction == 'asc':
+                if hasattr(getattr(self.obj, order_column), "_col_name"):
+                    order_column = getattr(self._get_attr(order_column), "_col_name")
+            if order_direction == "asc":
                 query = query.order_by(self._get_attr(order_column).asc())
             else:
                 query = query.order_by(self._get_attr(order_column).desc())
         return query
 
-    def query(self, filters=None, order_column='', order_direction='',
-              page=None, page_size=None):
+    def _query_join_dotted_column(self, query, column) -> (object, tuple):
+        relation_tuple = tuple()
+        if len(column.split('.')) >= 2:
+            for join_relation in column.split('.')[:-1]:
+                relation_tuple = self.get_related_model_and_join(join_relation)
+                model_relation, relation_join = relation_tuple
+                if not self.is_model_already_joined(query, model_relation):
+                    query = query.join(
+                        model_relation,
+                        relation_join,
+                        isouter=True
+                    )
+        return query, relation_tuple
+
+    def _query_select_options(self, query, select_columns=None):
+        """
+            Add select load options to query. The goal
+            is to only SQL select what is requested
+
+        :param query: SQLAlchemy Query obj
+        :param select_columns: (list) of columns
+        :return: SQLAlchemy Query obj
+        """
+        if select_columns:
+            _load_options = list()
+            for column in select_columns:
+                query, relation_tuple = self._query_join_dotted_column(
+                    query,
+                    column,
+                )
+                model_relation, relation_join = relation_tuple or (None, None)
+                if model_relation:
+                    _load_options.append(
+                        Load(model_relation).load_only(column.split(".")[1])
+                    )
+                else:
+                    # is a custom property method field?
+                    if hasattr(getattr(self.obj, column), "fget"):
+                        pass
+                    # is not a relation and not a function?
+                    elif not self.is_relation(column) and not hasattr(
+                        getattr(self.obj, column), "__call__"
+                    ):
+                        _load_options.append(Load(self.obj).load_only(column))
+                    else:
+                        _load_options.append(Load(self.obj))
+            query = query.options(*tuple(_load_options))
+        return query
+
+    def query(
+        self,
+        filters=None,
+        order_column="",
+        order_direction="",
+        page=None,
+        page_size=None,
+        select_columns=None,
+    ):
         """
             QUERY
             :param filters:
@@ -94,23 +168,17 @@ class SQLAInterface(BaseInterface):
 
         """
         query = self.session.query(self.obj)
-        if len(order_column.split('.')) >= 2:
-            tmp_order_column = ''
-            for join_relation in order_column.split('.')[:-1]:
-                model_relation = self.get_related_model(join_relation)
-                query = query.join(model_relation)
-                # redefine order column name, because relationship can have a different name
-                # from the related table name.
-                tmp_order_column = tmp_order_column + model_relation.__tablename__ + '.'
-            order_column = tmp_order_column + order_column.split('.')[-1]
+        query, relation_tuple = self._query_join_dotted_column(query, order_column)
+        query = self._query_select_options(query, select_columns)
         query_count = self.session.query(func.count('*')).select_from(self.obj)
 
-        query_count = self._get_base_query(query=query_count,
-                                           filters=filters)
-        query = self._get_base_query(query=query,
-                                     filters=filters,
-                                     order_column=order_column,
-                                     order_direction=order_direction)
+        query_count = self._get_base_query(query=query_count, filters=filters)
+        query = self._get_base_query(
+            query=query,
+            filters=filters,
+            order_column=order_column,
+            order_direction=order_direction,
+        )
 
         count = query_count.scalar()
 
@@ -118,28 +186,29 @@ class SQLAInterface(BaseInterface):
             query = query.offset(page * page_size)
         if page_size:
             query = query.limit(page_size)
-
         return count, query.all()
 
-    def query_simple_group(self, group_by='', aggregate_func=None, aggregate_col=None, filters=None):
+    def query_simple_group(
+        self, group_by="", aggregate_func=None, aggregate_col=None, filters=None
+    ):
         query = self.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
         query_result = query.all()
-        group = GroupByCol(group_by, 'Group by')
+        group = GroupByCol(group_by, "Group by")
         return group.apply(query_result)
 
-    def query_month_group(self, group_by='', filters=None):
+    def query_month_group(self, group_by="", filters=None):
         query = self.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
         query_result = query.all()
-        group = GroupByDateMonth(group_by, 'Group by Month')
+        group = GroupByDateMonth(group_by, "Group by Month")
         return group.apply(query_result)
 
-    def query_year_group(self, group_by='', filters=None):
+    def query_year_group(self, group_by="", filters=None):
         query = self.session.query(self.obj)
         query = self._get_base_query(query=query, filters=filters)
         query_result = query.all()
-        group_year = GroupByDateYear(group_by, 'Group by Year')
+        group_year = GroupByDateYear(group_by, "Group by Year")
         return group_year.apply(query_result)
 
     """
@@ -151,107 +220,110 @@ class SQLAInterface(BaseInterface):
     def is_image(self, col_name):
         try:
             return isinstance(self.list_columns[col_name].type, ImageColumn)
-        except:
+        except Exception:
             return False
 
     def is_file(self, col_name):
         try:
             return isinstance(self.list_columns[col_name].type, FileColumn)
-        except:
+        except Exception:
             return False
 
     def is_string(self, col_name):
         try:
-            return _is_sqla_type(self.list_columns[col_name].type, sa.types.String)
-        except:
+            return _is_sqla_type(self.list_columns[col_name].type, sa.types.String) or \
+                self.list_columns[col_name].type.__class__ == UUIDType
+        except Exception:
             return False
 
     def is_text(self, col_name):
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Text)
-        except:
+        except Exception:
             return False
 
     def is_binary(self, col_name):
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.LargeBinary)
-        except:
+        except Exception:
             return False
 
     def is_integer(self, col_name):
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Integer)
-        except:
+        except Exception:
             return False
 
     def is_numeric(self, col_name):
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Numeric)
-        except:
+        except Exception:
             return False
 
     def is_float(self, col_name):
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Float)
-        except:
+        except Exception:
             return False
 
     def is_boolean(self, col_name):
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Boolean)
-        except:
+        except Exception:
             return False
 
     def is_date(self, col_name):
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Date)
-        except:
+        except Exception:
             return False
 
     def is_datetime(self, col_name):
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.DateTime)
-        except:
+        except Exception:
             return False
 
     def is_enum(self, col_name):
         try:
             return _is_sqla_type(self.list_columns[col_name].type, sa.types.Enum)
-        except:
+        except Exception:
             return False
 
     def is_relation(self, col_name):
         try:
-            return isinstance(self.list_properties[col_name], sa.orm.properties.RelationshipProperty)
-        except:
+            return isinstance(
+                self.list_properties[col_name], sa.orm.properties.RelationshipProperty
+            )
+        except Exception:
             return False
 
     def is_relation_many_to_one(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'MANYTOONE'
-        except:
+                return self.list_properties[col_name].direction.name == "MANYTOONE"
+        except Exception:
             return False
 
     def is_relation_many_to_many(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'MANYTOMANY'
-        except:
+                return self.list_properties[col_name].direction.name == "MANYTOMANY"
+        except Exception:
             return False
 
     def is_relation_one_to_one(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'ONETOONE'
-        except:
+                return self.list_properties[col_name].direction.name == "ONETOONE"
+        except Exception:
             return False
 
     def is_relation_one_to_many(self, col_name):
         try:
             if self.is_relation(col_name):
-                return self.list_properties[col_name].direction.name == 'ONETOMANY'
-        except:
+                return self.list_properties[col_name].direction.name == "ONETOMANY"
+        except Exception:
             return False
 
     def is_nullable(self, col_name):
@@ -260,28 +332,28 @@ class SQLAInterface(BaseInterface):
             return col.nullable
         try:
             return self.list_columns[col_name].nullable
-        except:
+        except Exception:
             return False
 
     def is_unique(self, col_name):
         try:
-            return self.list_columns[col_name].unique
-        except:
+            return self.list_columns[col_name].unique is True
+        except Exception:
             return False
 
     def is_pk(self, col_name):
         try:
             return self.list_columns[col_name].primary_key
-        except:
+        except Exception:
             return False
 
     def is_pk_composite(self):
-         return len(self.obj.__mapper__.primary_key) > 1
+        return len(self.obj.__mapper__.primary_key) > 1
 
     def is_fk(self, col_name):
         try:
             return self.list_columns[col_name].foreign_keys
-        except:
+        except Exception:
             return False
 
     def get_max_length(self, col_name):
@@ -293,7 +365,7 @@ class SQLAInterface(BaseInterface):
                 return col.type.length
             else:
                 return -1
-        except:
+        except Exception:
             return -1
 
     """
@@ -302,56 +374,77 @@ class SQLAInterface(BaseInterface):
     -------------------------------
     """
 
-    def add(self, item):
+    def add(self, item, raise_exception=False):
         try:
             self.session.add(item)
             self.session.commit()
-            self.message = (as_unicode(self.add_row_message), 'success')
+            self.message = (as_unicode(self.add_row_message), "success")
             return True
         except IntegrityError as e:
-            self.message = (as_unicode(self.add_integrity_error_message), 'warning')
+            self.message = (as_unicode(self.add_integrity_error_message), "warning")
             log.warning(LOGMSG_WAR_DBI_ADD_INTEGRITY.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
         except Exception as e:
-            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (
+                as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
+                "danger",
+            )
             log.exception(LOGMSG_ERR_DBI_ADD_GENERIC.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
 
-    def edit(self, item):
+    def edit(self, item, raise_exception=False):
         try:
             self.session.merge(item)
             self.session.commit()
-            self.message = (as_unicode(self.edit_row_message), 'success')
+            self.message = (as_unicode(self.edit_row_message), "success")
             return True
         except IntegrityError as e:
-            self.message = (as_unicode(self.edit_integrity_error_message), 'warning')
+            self.message = (as_unicode(self.edit_integrity_error_message), "warning")
             log.warning(LOGMSG_WAR_DBI_EDIT_INTEGRITY.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
         except Exception as e:
-            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (
+                as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
+                "danger",
+            )
             log.exception(LOGMSG_ERR_DBI_EDIT_GENERIC.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
 
-    def delete(self, item):
+    def delete(self, item, raise_exception=False):
         try:
             self._delete_files(item)
             self.session.delete(item)
             self.session.commit()
-            self.message = (as_unicode(self.delete_row_message), 'success')
+            self.message = (as_unicode(self.delete_row_message), "success")
             return True
         except IntegrityError as e:
-            self.message = (as_unicode(self.delete_integrity_error_message), 'warning')
+            self.message = (as_unicode(self.delete_integrity_error_message), "warning")
             log.warning(LOGMSG_WAR_DBI_DEL_INTEGRITY.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
         except Exception as e:
-            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (
+                as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
+                "danger",
+            )
             log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
             self.session.rollback()
+            if raise_exception:
+                raise e
             return False
 
     def delete_all(self, items):
@@ -360,15 +453,18 @@ class SQLAInterface(BaseInterface):
                 self._delete_files(item)
                 self.session.delete(item)
             self.session.commit()
-            self.message = (as_unicode(self.delete_row_message), 'success')
+            self.message = (as_unicode(self.delete_row_message), "success")
             return True
         except IntegrityError as e:
-            self.message = (as_unicode(self.delete_integrity_error_message), 'warning')
+            self.message = (as_unicode(self.delete_integrity_error_message), "warning")
             log.warning(LOGMSG_WAR_DBI_DEL_INTEGRITY.format(str(e)))
             self.session.rollback()
             return False
         except Exception as e:
-            self.message = (as_unicode(self.general_error_message + ' ' + str(sys.exc_info()[0])), 'danger')
+            self.message = (
+                as_unicode(self.general_error_message + " " + str(sys.exc_info()[0])),
+                "danger",
+            )
             log.exception(LOGMSG_ERR_DBI_DEL_GENERIC.format(str(e)))
             self.session.rollback()
             return False
@@ -408,19 +504,23 @@ class SQLAInterface(BaseInterface):
     """
 
     def get_col_default(self, col_name):
-        default = getattr(self.list_columns[col_name], 'default', None)
+        default = getattr(self.list_columns[col_name], "default", None)
         if default is not None:
-            value = getattr(default, 'arg', None)
+            value = getattr(default, "arg", None)
             if value is not None:
-                if getattr(default, 'is_callable', False):
+                if getattr(default, "is_callable", False):
                     return lambda: default.arg(None)
                 else:
-                    if not getattr(default, 'is_scalar', True):
+                    if not getattr(default, "is_scalar", True):
                         return None
                 return value
 
     def get_related_model(self, col_name):
         return self.list_properties[col_name].mapper.class_
+
+    def get_related_model_and_join(self, col_name):
+        relation = self.list_properties[col_name]
+        return relation.mapper.class_, relation.primaryjoin
 
     def query_model_relation(self, col_name):
         model = self.get_related_model(col_name)
@@ -442,8 +542,12 @@ class SQLAInterface(BaseInterface):
                 if model == self.get_related_model(col_name):
                     return col_name
 
+    def get_info(self, col_name):
+        if col_name in self.list_properties:
+            return self.list_properties[col_name].info
+        return {}
     """
-    ------------- 
+    -------------
      GET METHODS
     -------------
     """
@@ -470,11 +574,13 @@ class SQLAInterface(BaseInterface):
         for col_name in self.get_columns_list():
             if not self.is_relation(col_name):
                 tmp_prop = self.get_property_first_col(col_name).name
-                if (not self.is_pk(tmp_prop)) and \
-                        (not self.is_fk(tmp_prop)) and \
-                        (not self.is_image(col_name)) and \
-                        (not self.is_file(col_name)) and \
-                        (not self.is_boolean(col_name)):
+                if (
+                    (not self.is_pk(tmp_prop)) and
+                        (not self.is_fk(tmp_prop)) and
+                        (not self.is_image(col_name)) and
+                        (not self.is_file(col_name)) and
+                        (not self.is_boolean(col_name))
+                ):
                     ret_lst.append(col_name)
             else:
                 ret_lst.append(col_name)
@@ -492,18 +598,27 @@ class SQLAInterface(BaseInterface):
         for col_name in list_columns:
             if not self.is_relation(col_name):
                 if hasattr(self.obj, col_name):
-                    if (not hasattr(getattr(self.obj, col_name), '__call__') or
-                            hasattr(getattr(self.obj, col_name), '_col_name')):
+                    if not hasattr(getattr(self.obj, col_name), "__call__") or hasattr(
+                        getattr(self.obj, col_name), "_col_name"
+                    ):
                         ret_lst.append(col_name)
                 else:
                     ret_lst.append(col_name)
         return ret_lst
 
     def get_file_column_list(self):
-        return [i.name for i in self.obj.__mapper__.columns if isinstance(i.type, FileColumn)]
+        return [
+            i.name
+            for i in self.obj.__mapper__.columns
+            if isinstance(i.type, FileColumn)
+        ]
 
     def get_image_column_list(self):
-        return [i.name for i in self.obj.__mapper__.columns if isinstance(i.type, ImageColumn)]
+        return [
+            i.name
+            for i in self.obj.__mapper__.columns
+            if isinstance(i.type, ImageColumn)
+        ]
 
     def get_property_first_col(self, col_name):
         # support for only one col for pk and fk
@@ -515,7 +630,7 @@ class SQLAInterface(BaseInterface):
 
     def get(self, id, filters=None):
         if filters:
-            query = query = self.session.query(self.obj)
+            query = self.session.query(self.obj)
             _filters = filters.copy()
             pk = self.get_pk_name()
             if self.is_pk_composite():

@@ -62,17 +62,18 @@ Using pip
         (venv)$ pip install flask-appbuilder
 
 
-    Once you have virtualenv installed, use **fabmanager** the command line tool to create your first app.
+    Once you have virtualenv installed, use **Flask** the command line tool to create your first app.
     So create a skeleton application and the first admin user:
 
     ::
 
-        (venv)$ fabmanager create-app
+        (venv)$ flask fab create-app
         Your new app name: first_app
         Your engine type, SQLAlchemy or MongoEngine [SQLAlchemy]:
         Downloaded the skeleton app, good coding!
         (venv)$ cd first_app
-        (venv)$ fabmanager create-admin
+        (venv)$ export FLASK_APP=app
+        (venv)$ flask fab create-admin
         Username [admin]:
         User first name [admin]:
         User last name [user]:
@@ -88,7 +89,7 @@ Using pip
 
     ::
 
-        (venv)$ fabmanager run
+        (venv)$ flask run
 
     This will start a web development server
 
@@ -104,8 +105,8 @@ When starting your application for the first time,
 all AppBuilder security tables will be created for you.
 All your models can easily be created too (optionally).
 
-.. note:: Since version 1.3.0 no admin user is automatically created, you must use **fabmanager** to do it.
-    There are lot's of other useful options you can use with **fabmanager** like reset user's password,
+.. note:: Since version 1.3.0 no admin user is automatically created, you must use **flask fab cli** to do it.
+    There are lot's of other useful options you can use with **flask fab** like reset user's password,
     list all your users and views, etc.
 
 Installation Requirements
@@ -134,4 +135,7 @@ or::
 Python 2 and 3 Compatibility
 ----------------------------
 
-The framework itself is compatible and has been tested for Python 2.7 and 3.6.
+The framework removed support for python 2 since version 1.13.X
+
+For version 2.1.1, the minimum supported Python version is 3.6.
+

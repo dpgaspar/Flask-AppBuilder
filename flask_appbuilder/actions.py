@@ -1,12 +1,4 @@
-
 class ActionItem(object):
-    name = ""
-    text = ""
-    confirmation = ""
-    icon = ""
-    multiple = True
-    func = None
-
     def __init__(self, name, text, confirmation, icon, multiple, single, func):
         self.name = name
         self.text = text or name
@@ -17,12 +9,15 @@ class ActionItem(object):
         self.func = func
 
     def __repr__(self):
-        return "Action name:%s; text:%s; confirmation:%s; func:%s;" % \
-                (self.name, self.text, self.confirmation, self.func.__name__)
+        return "Action name:%s; text:%s; confirmation:%s; func:%s;" % (
+            self.name,
+            self.text,
+            self.confirmation,
+            self.func.__name__,
+        )
 
 
-def action(name, text, confirmation=None, icon=None,
-            multiple=True, single=True):
+def action(name, text, confirmation=None, icon=None, multiple=True, single=True):
     """
         Use this decorator to expose actions
 
@@ -40,6 +35,7 @@ def action(name, text, confirmation=None, icon=None,
         :param single:
             If true will display action on show view
     """
+
     def wrap(f):
         f._action = (name, text, confirmation, icon, multiple, single)
         return f
