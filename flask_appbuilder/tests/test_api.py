@@ -1099,7 +1099,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         arguments = {"order_column": "field_integer", "order_direction": "desc"}
-        uri = "api/v1/model1apifiltered/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+        uri = f"api/v1/model1apifiltered/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         expected_result = [
@@ -1316,9 +1316,11 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        model = self.appbuilder.get_session.query(Model2).filter_by(
-            field_string="test2"
-        ).one_or_node()
+        model = (
+            self.appbuilder.get_session.query(Model2)
+            .filter_by(field_string="test2")
+            .one_or_node()
+        )
         pk = model.id
         uri = f"api/v1/model2api/{pk}"
         rv = self.auth_client_delete(client, token, uri)
@@ -1336,9 +1338,11 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        model = self.appbuilder.get_session.query(Model2).filter_by(
-            field_string="test0"
-        ).one_or_node()
+        model = (
+            self.appbuilder.get_session.query(Model2)
+            .filter_by(field_string="test0")
+            .one_or_node()
+        )
         pk = model.id
         uri = f"api/v1/model1api/{pk}"
         rv = self.auth_client_delete(client, token, uri)
@@ -1353,11 +1357,13 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        model = self.appbuilder.get_session.query(Model2).filter_by(
-            field_string=f"test{MODEL1_DATA_SIZE + 1}"
-        ).one_or_node()
+        model = (
+            self.appbuilder.get_session.query(Model2)
+            .filter_by(field_string=f"test{MODEL1_DATA_SIZE + 1}")
+            .one_or_node()
+        )
         pk = model.id
-        uri = "api/v1/model1api/{pk}"
+        uri = f"api/v1/model1api/{pk}"
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 404)
 
@@ -1368,9 +1374,11 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        model = self.appbuilder.get_session.query(Model2).filter_by(
-            field_integer=2
-        ).one_or_node()
+        model = (
+            self.appbuilder.get_session.query(Model2)
+            .filter_by(field_integer=2)
+            .one_or_node()
+        )
 
         # Try to delete a filtered item
         pk = model.id
@@ -1454,8 +1462,8 @@ class APITestCase(FABTestCase):
         # We can't update an item that is base filtered
         model1 = (
             self.appbuilder.get_session.query(Model1)
-                .filter_by(field_integer=1)
-                .one_or_none()
+            .filter_by(field_integer=1)
+            .one_or_none()
         )
         pk = model1.id
         uri = f"api/v1/model1apifiltered/{pk}"
@@ -1470,7 +1478,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         model1 = (
-        self.appbuilder.get_session.query(Model1)
+            self.appbuilder.get_session.query(Model1)
             .filter_by(field_string=f"test{MODEL1_DATA_SIZE + 1}")
             .one_or_none()
         )
@@ -1488,8 +1496,8 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model1 = (
             self.appbuilder.get_session.query(Model1)
-                .filter_by(field_string=f"test0")
-                .one_or_none()
+            .filter_by(field_string=f"test0")
+            .one_or_none()
         )
         pk = model1.id
         field_string = "a" * 51
@@ -1581,8 +1589,8 @@ class APITestCase(FABTestCase):
 
         model1 = (
             self.appbuilder.get_session.query(Model1)
-                .filter_by(field_string="test0")
-                .one_or_none()
+            .filter_by(field_string="test0")
+            .one_or_none()
         )
         pk = model1.id
         item = dict(field_string="test_Put", field_integer=1000)
@@ -1864,8 +1872,7 @@ class APITestCase(FABTestCase):
         for i in range(1, self.model1api.page_size):
             item = data[API_RESULT_RES_KEY][i - 1]
             self.assertEqual(
-                item["full_concat"],
-                f"test{str(i - 1)}.{i - 1}.{float(i - 1)}.{None}",
+                item["full_concat"], f"test{str(i - 1)}.{i - 1}.{float(i - 1)}.{None}"
             )
 
     def test_get_list_col_property(self):
