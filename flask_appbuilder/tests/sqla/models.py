@@ -192,6 +192,13 @@ def insert_model2(session, i=0, model1_collection=None):
     model.field_integer = i
     model.field_float = float(i)
     model.group = model1
+
+    import random
+    year = random.choice(range(1900, 2012))
+    month = random.choice(range(1, 12))
+    day = random.choice(range(1, 28))
+    model.field_date = datetime.datetime(year, month, day)
+
     session.add(model)
     session.commit()
     return model

@@ -962,11 +962,8 @@ class FlaskTestCase(FABTestCase):
         rv = client.get("/model2directbychartview/chart/")
         self.assertEqual(rv.status_code, 200)
         # TODO: fix this
-        # rv = client.get("/model2timechartview/chart/")
-        # self.assertEqual(rv.status_code, 200)
-        # TODO: fix this
-        # rv = client.get('/model2directchartview/chart/')
-        # self.assertEqual(rv.status_code, 200)
+        rv = client.get("/model2timechartview/chart/")
+        self.assertEqual(rv.status_code, 200)
 
     def test_master_detail_view(self):
         """
