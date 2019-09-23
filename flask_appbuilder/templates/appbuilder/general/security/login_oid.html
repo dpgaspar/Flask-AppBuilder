@@ -105,7 +105,7 @@ function registerUser() {
                     <span class="help-inline">{{_('Please choose a provider')}}</span><br>
                 {% endfor %}
                 <label class="hidden control-label" id="label-username" for="username">{{_("Enter your OpenID Username")}}:</label>
-                {{ form.username(size = 80, class = "hidden form-control") }}
+                {{ form.username(size = 80, class = "hidden form-control", autofocus = true) }}
             </div>
         </div>
         <div class="control-group">
