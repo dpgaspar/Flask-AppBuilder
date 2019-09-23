@@ -32,6 +32,7 @@ from flask_appbuilder.const import (
 from flask_appbuilder.models.sqla.filters import FilterGreater, FilterSmaller
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 import prison
+from sqlalchemy.sql.expression import func
 
 from .base import FABTestCase
 from .const import (
@@ -1339,7 +1340,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         model = (
-            self.appbuilder.get_session.query(Model2)
+            self.appbuilder.get_session.query(Model1)
             .filter_by(field_string="test0")
             .one_or_none()
         )
@@ -1357,12 +1358,8 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        model = (
-            self.appbuilder.get_session.query(Model2)
-            .filter_by(field_string=f"test{MODEL1_DATA_SIZE + 1}")
-            .one_or_none()
-        )
-        pk = model.id
+        max_id = self.appbuilder.get_session.query(func.max(Model1.id)).scalar()
+        pk = max_id + 1
         uri = f"api/v1/model1api/{pk}"
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 404)
@@ -1375,7 +1372,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         model = (
-            self.appbuilder.get_session.query(Model2)
+            self.appbuilder.get_session.query(Model1)
             .filter_by(field_integer=2)
             .one_or_none()
         )
@@ -1477,12 +1474,8 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        model1 = (
-            self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string=f"test{MODEL1_DATA_SIZE + 1}")
-            .one_or_none()
-        )
-        pk = model1.id
+        max_id = self.appbuilder.get_session.query(func.max(Model1.id)).scalar()
+        pk = max_id + 1
         item = dict(field_string="test_Put", field_integer=0, field_float=0.0)
         uri = f"api/v1/model1api/{pk}"
         rv = self.auth_client_put(client, token, uri, item)
