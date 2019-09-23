@@ -139,8 +139,6 @@ class APITestCase(FABTestCase):
 
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
-        # Create models and insert data
-        # insert_data(self.db.session, MODEL1_DATA_SIZE)
 
         rison_schema = {
             "type": "object",
@@ -892,7 +890,7 @@ class APITestCase(FABTestCase):
 
         # test simple page test, mainly because of MSSQL dialect
         arguments = {"page_size": page_size, "page": 1}
-        uri = "api/v1/model1api/?{}={}".format(API_URI_RIS_KEY, prison.dumps(arguments))
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
         rv = self.auth_client_get(client, token, uri)
         self.assertEquals(rv.status_code, 200)
 
@@ -903,7 +901,7 @@ class APITestCase(FABTestCase):
             "order_column": "field_integer",
             "order_direction": "asc",
         }
-        uri = "api/v1/model1api/?{}={}".format(API_URI_RIS_KEY, prison.dumps(arguments))
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(
@@ -924,7 +922,7 @@ class APITestCase(FABTestCase):
             "order_column": "field_integer",
             "order_direction": "asc",
         }
-        uri = "api/v1/model1api/?{}={}".format(API_URI_RIS_KEY, prison.dumps(arguments))
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
         rv = self.auth_client_get(client, token, uri)
 
         data = json.loads(rv.data.decode("utf-8"))
@@ -955,7 +953,7 @@ class APITestCase(FABTestCase):
             "order_column": "field_integer",
             "order_direction": "asc",
         }
-        uri = "api/v1/model1api/?{}={}".format(API_URI_RIS_KEY, prison.dumps(arguments))
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(len(data[API_RESULT_RES_KEY]), MAX_PAGE_SIZE)
@@ -994,9 +992,8 @@ class APITestCase(FABTestCase):
             "order_column": "field_integer",
             "order_direction": "asc",
         }
-        uri = "api/v1/model1pagesizeoverride/?{}={}".format(
-            API_URI_RIS_KEY, prison.dumps(arguments)
-        )
+        endpoint = "api/v1/model1pagesizeoverride/"
+        uri = f"{endpoint}?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(len(data[API_RESULT_RES_KEY]), MODEL1_DATA_SIZE)
@@ -1018,7 +1015,7 @@ class APITestCase(FABTestCase):
             "order_direction": "asc",
         }
 
-        uri = "api/v1/model1api/?{}={}".format(API_URI_RIS_KEY, prison.dumps(arguments))
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
 
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
@@ -1046,7 +1043,7 @@ class APITestCase(FABTestCase):
             "order_direction": "asc",
         }
 
-        uri = "api/v1/model1api/?{}={}".format(API_URI_RIS_KEY, prison.dumps(argument))
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(argument)}"
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(data[API_RESULT_RES_KEY][0], {"field_integer": 0})
@@ -1075,9 +1072,7 @@ class APITestCase(FABTestCase):
         ]
         for selectable_key in selectable_keys:
             argument = {API_SELECT_KEYS_RIS_KEY: [selectable_key]}
-            uri = "api/v1/model1api/?{}={}".format(
-                API_URI_RIS_KEY, prison.dumps(argument)
-            )
+            uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(argument)}"
             rv = self.auth_client_get(client, token, uri)
             data = json.loads(rv.data.decode("utf-8"))
             self.assertEqual(len(data.keys()), 1 + 3)  # always exist count, ids, result
@@ -1104,9 +1099,7 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
         arguments = {"order_column": "field_integer", "order_direction": "desc"}
-        uri = "api/v1/model1apifiltered/?{}={}".format(
-            API_URI_RIS_KEY, prison.dumps(arguments)
-        )
+        uri = "api/v1/model1apifiltered/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
         expected_result = [
@@ -1309,9 +1302,7 @@ class APITestCase(FABTestCase):
         ]
         for selectable_key in selectable_keys:
             arguments = {API_SELECT_KEYS_RIS_KEY: [selectable_key]}
-            uri = "api/v1/model1api/_info?{}={}".format(
-                API_URI_RIS_KEY, prison.dumps(arguments)
-            )
+            uri = f"api/v1/model1api/_info?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
             rv = self.auth_client_get(client, token, uri)
             data = json.loads(rv.data.decode("utf-8"))
             self.assertEqual(len(data.keys()), 1)
@@ -1325,8 +1316,11 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        pk = 2
-        uri = "api/v1/model2api/{}".format(pk)
+        model = self.appbuilder.get_session.query(Model2).filter_by(
+            field_string="test2"
+        ).one_or_node()
+        pk = model.id
+        uri = f"api/v1/model2api/{pk}"
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 200)
         model = self.db.session.query(Model2).get(pk)
@@ -1342,8 +1336,11 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        pk = 1
-        uri = "api/v1/model1api/{}".format(pk)
+        model = self.appbuilder.get_session.query(Model2).filter_by(
+            field_string="test0"
+        ).one_or_node()
+        pk = model.id
+        uri = f"api/v1/model1api/{pk}"
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 422)
         model = self.db.session.query(Model1).get(pk)
@@ -1356,8 +1353,11 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        pk = MODEL1_DATA_SIZE + 1
-        uri = "api/v1/model1api/{}".format(pk)
+        model = self.appbuilder.get_session.query(Model2).filter_by(
+            field_string=f"test{MODEL1_DATA_SIZE + 1}"
+        ).one_or_node()
+        pk = model.id
+        uri = "api/v1/model1api/{pk}"
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 404)
 
@@ -1367,8 +1367,13 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        model = self.appbuilder.get_session.query(Model2).filter_by(
+            field_integer=2
+        ).one_or_node()
+
         # Try to delete a filtered item
-        pk = 1
+        pk = model.id
         uri = "api/v1/model1apifiltered/{}".format(pk)
         rv = self.auth_client_delete(client, token, uri)
         self.assertEqual(rv.status_code, 404)
@@ -1410,12 +1415,12 @@ class APITestCase(FABTestCase):
         )
         pk = model1.id
         item = dict(field_string="test_Put", field_integer=0, field_float=0.0)
-        uri = "api/v1/model1customvalidationapi/{}".format(pk)
+        uri = f"api/v1/model1customvalidationapi/{pk}"
         rv = self.auth_client_put(client, token, uri, item)
         self.assertEqual(rv.status_code, 422)
         pk = 3
         item = dict(field_string="Atest_Put", field_integer=0, field_float=0.0)
-        uri = "api/v1/model1customvalidationapi/{}".format(pk)
+        uri = f"api/v1/model1customvalidationapi/{pk}"
         rv = self.auth_client_put(client, token, uri, item)
         self.assertEqual(rv.status_code, 200)
 
@@ -1430,12 +1435,12 @@ class APITestCase(FABTestCase):
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         model1 = (
             self.appbuilder.get_session.query(Model1)
-            .filter_by(field_string="test3")
+            .filter_by(field_integer=3)
             .one_or_none()
         )
         pk = model1.id
         item = dict(field_string="test_Put", field_integer=3, field_float=3.0)
-        uri = "api/v1/model1apifiltered/{}".format(pk)
+        uri = f"api/v1/model1apifiltered/{pk}"
         rv = self.auth_client_put(client, token, uri, item)
         self.assertEqual(rv.status_code, 200)
         model = self.db.session.query(Model1).get(pk)
@@ -1447,8 +1452,13 @@ class APITestCase(FABTestCase):
         insert_model1(self.appbuilder.get_session, i=pk - 1)
 
         # We can't update an item that is base filtered
-        pk = 1
-        uri = "api/v1/model1apifiltered/{}".format(pk)
+        model1 = (
+            self.appbuilder.get_session.query(Model1)
+                .filter_by(field_integer=1)
+                .one_or_none()
+        )
+        pk = model1.id
+        uri = f"api/v1/model1apifiltered/{pk}"
         rv = self.auth_client_put(client, token, uri, item)
         self.assertEqual(rv.status_code, 404)
 
@@ -1458,9 +1468,15 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        pk = MODEL1_DATA_SIZE + 1
+
+        model1 = (
+        self.appbuilder.get_session.query(Model1)
+            .filter_by(field_string=f"test{MODEL1_DATA_SIZE + 1}")
+            .one_or_none()
+        )
+        pk = model1.id
         item = dict(field_string="test_Put", field_integer=0, field_float=0.0)
-        uri = "api/v1/model1api/{}".format(pk)
+        uri = f"api/v1/model1api/{pk}"
         rv = self.auth_client_put(client, token, uri, item)
         self.assertEqual(rv.status_code, 404)
 
@@ -1470,10 +1486,15 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        pk = 1
+        model1 = (
+            self.appbuilder.get_session.query(Model1)
+                .filter_by(field_string=f"test0")
+                .one_or_none()
+        )
+        pk = model1.id
         field_string = "a" * 51
         item = dict(field_string=field_string, field_integer=11, field_float=11.0)
-        uri = "api/v1/model1api/{}".format(pk)
+        uri = f"api/v1/model1api/{pk}"
         rv = self.auth_client_put(client, token, uri, item)
         self.assertEqual(rv.status_code, 422)
         data = json.loads(rv.data.decode("utf-8"))
@@ -1557,9 +1578,15 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        pk = 1
+
+        model1 = (
+            self.appbuilder.get_session.query(Model1)
+                .filter_by(field_string="test0")
+                .one_or_none()
+        )
+        pk = model1.id
         item = dict(field_string="test_Put", field_integer=1000)
-        uri = "api/v1/model1apiexcludecols/{}".format(pk)
+        uri = f"api/v1/model1apiexcludecols/{pk}"
         rv = self.auth_client_put(client, token, uri, item)
         self.assertEqual(rv.status_code, 200)
         model = self.db.session.query(Model1).get(pk)
@@ -1592,7 +1619,7 @@ class APITestCase(FABTestCase):
             .filter_by(field_string="test{}".format(MODEL1_DATA_SIZE + 1))
             .first()
         )
-        self.assertEqual(model.field_string, "test{}".format(MODEL1_DATA_SIZE + 1))
+        self.assertEqual(model.field_string, f"test{MODEL1_DATA_SIZE + 1}")
         self.assertEqual(model.field_integer, MODEL1_DATA_SIZE + 1)
         self.assertEqual(model.field_float, float(MODEL1_DATA_SIZE + 1))
 
@@ -1640,12 +1667,11 @@ class APITestCase(FABTestCase):
             data, {"message": {"field_string": ["Name must start with an A"]}}
         )
         item = dict(
-            field_string="A{}".format(MODEL1_DATA_SIZE + 1),
+            field_string=f"A{MODEL1_DATA_SIZE + 1}",
             field_integer=MODEL1_DATA_SIZE + 1,
             field_float=float(MODEL1_DATA_SIZE + 1),
             field_date=None,
         )
-        uri = "api/v1/model1customvalidationapi/"
         rv = self.auth_client_post(client, token, uri, item)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(rv.status_code, 201)
@@ -1670,7 +1696,7 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         item = dict(
-            field_string="test{}".format(MODEL1_DATA_SIZE + 1),
+            field_string=f"test{MODEL1_DATA_SIZE + 1}",
             field_integer=MODEL1_DATA_SIZE + 1,
             field_float=float(MODEL1_DATA_SIZE + 1),
             field_date=None,
@@ -1711,8 +1737,8 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         item = dict(
-            field_string="test{}".format(MODEL1_DATA_SIZE),
-            field_integer="test{}".format(MODEL1_DATA_SIZE),
+            field_string=f"test{MODEL1_DATA_SIZE}",
+            field_integer=f"test{MODEL1_DATA_SIZE}",
             field_float=float(MODEL1_DATA_SIZE),
         )
         uri = "api/v1/model1api/"
@@ -1737,7 +1763,7 @@ class APITestCase(FABTestCase):
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        item = dict(field_string="test{}".format(MODEL1_DATA_SIZE + 1))
+        item = dict(field_string=f"test{MODEL1_DATA_SIZE + 1}")
         uri = "api/v1/model1apiexcludecols/"
         rv = self.auth_client_post(client, token, uri, item)
         self.assertEqual(rv.status_code, 201)
@@ -1749,7 +1775,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 201)
         model = (
             self.db.session.query(Model1)
-            .filter_by(field_string="test{}".format(MODEL1_DATA_SIZE + 1))
+            .filter_by(field_string=f"test{MODEL1_DATA_SIZE + 1}")
             .first()
         )
         self.assertEqual(model.field_integer, None)
@@ -1839,7 +1865,7 @@ class APITestCase(FABTestCase):
             item = data[API_RESULT_RES_KEY][i - 1]
             self.assertEqual(
                 item["full_concat"],
-                "{}.{}.{}.{}".format("test" + str(i - 1), i - 1, float(i - 1), None),
+                f"test{str(i - 1)}.{i - 1}.{float(i - 1)}.{None}",
             )
 
     def test_get_list_col_property(self):
