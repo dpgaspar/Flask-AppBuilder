@@ -72,29 +72,19 @@ class FABTestCase(unittest.TestCase):
         return client.get("/logout/")
 
     def create_admin_user(self, appbuilder, username, password):
-        self.create_user(
-            appbuilder,
-            username,
-            password,
-            "Admin",
-        )
+        self.create_user(appbuilder, username, password, "Admin")
 
     @staticmethod
     def create_user(
-            appbuilder,
-            username,
-            password,
-            role_name,
-            first_name='admin',
-            last_name='user',
-            email='admin@fab.org',
+        appbuilder,
+        username,
+        password,
+        role_name,
+        first_name="admin",
+        last_name="user",
+        email="admin@fab.org",
     ):
         role_admin = appbuilder.sm.find_role(role_name)
         appbuilder.sm.add_user(
-            username,
-            first_name,
-            last_name,
-            email,
-            role_admin,
-            password
+            username, first_name, last_name, email, role_admin, password
         )
