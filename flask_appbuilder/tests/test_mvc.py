@@ -264,7 +264,7 @@ class FlaskTestCase(FABTestCase):
         """
             Test views creation and registration
         """
-        self.assertEqual(len(self.appbuilder.baseviews), 35)
+        self.assertEqual(len(self.appbuilder.baseviews), 36)
 
     def test_back(self):
         """
