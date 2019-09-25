@@ -10,7 +10,6 @@ matrix:
       env: TOXENV=mysql
       services:
         - mysql
-        - mongodb
       before_script:
         - mysql -u root -e "DROP DATABASE IF EXISTS app; CREATE DATABASE app DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"
         - mysql -u root -e "CREATE USER 'mysqluser'@'localhost' IDENTIFIED BY 'mysqluserpassword';"
@@ -20,7 +19,6 @@ matrix:
       env: TOXENV=mssql
       services:
         - docker
-        - mongodb
       before_install:
         - docker pull mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
         - docker run --name mssql -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Password_123" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
@@ -33,7 +31,6 @@ matrix:
       env: TOXENV=postgres
       services:
         - postgresql
-        - mongodb
       before_script:
         - psql -U postgres -c "CREATE DATABASE app;"
         - psql -U postgres -c "CREATE USER pguser WITH PASSWORD 'pguserpassword';"
