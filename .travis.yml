@@ -35,10 +35,10 @@ matrix:
         - psql -U postgres -c "CREATE DATABASE app;"
         - psql -U postgres -c "CREATE USER pguser WITH PASSWORD 'pguserpassword';"
 
-#    - python: 3.6
-#      env: TOXENV=mongodb
-#      services:
-#        - mongodb
+    - python: 3.6
+      env: TOXENV=mongodb
+      services:
+        - mongodb
 install:
   - pip install tox
   - pip install codecov
