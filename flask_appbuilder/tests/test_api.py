@@ -321,6 +321,26 @@ class APITestCase(FABTestCase):
         self.app = None
         self.db = None
 
+    def test_babel(self):
+        """
+            REST Api: Test babel simple test
+        """
+        client = self.app.test_client()
+        rv = self._login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        uri = "api/v1/model1api/?_l_=en"
+        rv = client.get(uri)
+        self.assertEqual(rv.status_code, 200)
+
+    def test_babel_wrong_language(self):
+        """
+            REST Api: Test babel with a wrong languge
+        """
+        client = self.app.test_client()
+        rv = self._login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        uri = "api/v1/model1api/?_l_=xx"
+        rv = client.get(uri)
+        self.assertEqual(rv.status_code, 200)
+
     def test_auth_login(self):
         """
             REST Api: Test auth login

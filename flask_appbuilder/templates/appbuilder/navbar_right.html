@@ -4,12 +4,12 @@
 {% if not locale %}
     {% set locale = 'en' %}
 {% endif %}
+{% if languages.keys()|length > 1 %}
 <li class="dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
        <div class="f16"><i class="flag {{languages[locale].get('flag')}}"></i><b class="caret"></b>
        </div>
     </a>
-    {% if languages.keys()|length > 1 %}
     <ul class="dropdown-menu">
     <li class="dropdown">
         {% for lang in languages %}
@@ -17,12 +17,12 @@
                 <a tabindex="-1" href="{{appbuilder.get_url_for_locale(lang)}}">
                   <div class="f16"><i class="flag {{languages[lang].get('flag')}}"></i> - {{languages[lang].get('name')}}
                 </div></a>
-                {% endif %}
-            {% endfor %}
+            {% endif %}
+        {% endfor %}
         </li>
         </ul>
-    {% endif %}
 </li>
+{% endif %}
 {% endmacro %}
 
 
