@@ -56,6 +56,52 @@ NOTNULL_VALIDATION_STRING = "This field is required"
 log = logging.getLogger(__name__)
 
 
+class AMVCBabelTestCase(FABTestCase):
+    def test_babel_empty_languages(self):
+        """
+            MVC: Test babel empty languages
+        """
+        from flask import Flask
+        from flask_appbuilder import AppBuilder
+
+        app = Flask(__name__)
+        app.config.from_object("flask_appbuilder.tests.config_api")
+        app.config["LANGUAGES"] = {}
+        db = SQLA(app)
+        appbuilder = AppBuilder(app, db.session)
+
+        client = app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        rv = client.get("/users/list/")
+        self.assertEqual(rv.status_code, 200)
+
+        data = rv.data.decode("utf-8")
+        self.assertNotIn('class="f16', data)
+
+    def test_babel_languages(self):
+        """
+            MVC: Test babel languages
+        """
+        from flask import Flask
+        from flask_appbuilder import AppBuilder
+
+        app = Flask(__name__)
+        app.config.from_object("flask_appbuilder.tests.config_api")
+        app.config["LANGUAGES"] = {
+            "en": {"flag": "gb", "name": "English"},
+            "pt": {"flag": "pt", "name": "Portuguese"},
+        }
+        db = SQLA(app)
+        appbuilder = AppBuilder(app, db.session)
+
+        client = app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        rv = client.get("/users/list/")
+        self.assertEqual(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        self.assertIn('href="/lang/pt"', data)
+
+
 class FlaskTestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
