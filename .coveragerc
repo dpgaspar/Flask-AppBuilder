@@ -5,3 +5,4 @@ omit =
   *messages.py*
   *baseapp.py*
   *tests/*
+  *console.py*
