@@ -68,7 +68,7 @@ class AMVCBabelTestCase(FABTestCase):
         app.config.from_object("flask_appbuilder.tests.config_api")
         app.config["LANGUAGES"] = {}
         db = SQLA(app)
-        appbuilder = AppBuilder(app, db.session)
+        AppBuilder(app, db.session)
 
         client = app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -92,7 +92,7 @@ class AMVCBabelTestCase(FABTestCase):
             "pt": {"flag": "pt", "name": "Portuguese"},
         }
         db = SQLA(app)
-        appbuilder = AppBuilder(app, db.session)
+        AppBuilder(app, db.session)
 
         client = app.test_client()
         self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
