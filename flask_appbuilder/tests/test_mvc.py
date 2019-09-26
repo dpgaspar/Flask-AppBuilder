@@ -101,6 +101,12 @@ class AMVCBabelTestCase(FABTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn('href="/lang/pt"', data)
 
+        # Test babel language switch endpoint
+        rv = client.get("/lang/pt")
+        self.assertEqual(rv.status_code, 302)
+
+
+
 
 class FlaskTestCase(FABTestCase):
     def setUp(self):
