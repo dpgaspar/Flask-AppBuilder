@@ -16,6 +16,8 @@ class BabelManager(BaseManager):
         super(BabelManager, self).__init__(appbuilder)
         app = appbuilder.get_app
         app.config.setdefault("BABEL_DEFAULT_LOCALE", "en")
+        if not app.config.get("LANGUAGES"):
+            app.config["LANGUAGES"] = {"en": {"flag": "us", "name": "English"}}
         appbuilder_parent_dir = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), os.pardir
         )
@@ -43,12 +45,19 @@ class BabelManager(BaseManager):
     def babel_default_locale(self):
         return self.appbuilder.get_app.config["BABEL_DEFAULT_LOCALE"]
 
+    @property
+    def languages(self):
+        return self.appbuilder.get_app.config["LANGUAGES"]
+
     def get_locale(self):
         if has_request_context():
             # locale selector for API searches for request args
             for arg, value in request.args.items():
                 if arg == "_l_":
-                    return value
+                    if value in self.languages:
+                        return value
+                    else:
+                        return self.babel_default_locale
             locale = session.get("locale")
             if locale:
                 return locale
