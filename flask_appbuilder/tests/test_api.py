@@ -341,16 +341,6 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 200)
 
-    def test_babel_wrong_language(self):
-        """
-            REST Api: Test babel with a wrong language
-        """
-        client = self.app.test_client()
-        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        uri = "api/v1/model1api/?_l_=xx"
-        rv = self.auth_client_get(client, token, uri)
-        self.assertEqual(rv.status_code, 200)
-
     def test_auth_login(self):
         """
             REST Api: Test auth login
