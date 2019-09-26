@@ -16,6 +16,7 @@ class BabelManager(BaseManager):
         super(BabelManager, self).__init__(appbuilder)
         app = appbuilder.get_app
         app.config.setdefault("BABEL_DEFAULT_LOCALE", "en")
+        app.config.setdefault("LANGUAGES", {"en": {"flag": "us", "name": "English"}})
         appbuilder_parent_dir = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), os.pardir
         )
