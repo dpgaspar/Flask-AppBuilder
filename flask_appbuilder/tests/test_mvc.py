@@ -106,8 +106,6 @@ class AMVCBabelTestCase(FABTestCase):
         self.assertEqual(rv.status_code, 302)
 
 
-
-
 class FlaskTestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
