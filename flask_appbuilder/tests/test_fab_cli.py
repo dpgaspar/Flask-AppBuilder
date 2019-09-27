@@ -2,7 +2,9 @@ import logging
 import os
 
 from click.testing import CliRunner
-from flask_appbuilder.cli import create_app, create_user, list_users, list_views
+from flask_appbuilder.cli import (
+    create_app, create_permissions, create_user, list_users, list_views,
+)
 
 from .base import FABTestCase
 
@@ -47,8 +49,9 @@ class FlaskTestCase(FABTestCase):
             self.assertIn("User bob created.", result.output)
 
             result = runner.invoke(list_users, [])
-            log.info(result.output)
             self.assertIn("bob", result.output)
+
+            result = runner.invoke(create_permissions, [])
 
     def test_list_views(self):
         """
