@@ -7,10 +7,10 @@ class BaseManager(object):
         self.appbuilder = appbuilder
 
     def register_views(self):
-        pass
+        pass  # pragma: no cover
 
     def pre_process(self):
-        pass
+        pass  # pragma: no cover
 
     def post_process(self):
-        pass
+        pass  # pragma: no cover

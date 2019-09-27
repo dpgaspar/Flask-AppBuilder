@@ -271,7 +271,7 @@ class DirectByChartView(GroupByChartView):
 # -------------------------------------------------------
 
 
-class BaseSimpleGroupByChartView(BaseChartView):
+class BaseSimpleGroupByChartView(BaseChartView):  # pragma: no cover
     group_by_columns = []
     """ A list of columns to be possibly grouped by, this list must be filled """
 
@@ -315,7 +315,7 @@ class BaseSimpleGroupByChartView(BaseChartView):
         return widgets
 
 
-class BaseSimpleDirectChartView(BaseChartView):
+class BaseSimpleDirectChartView(BaseChartView):  # pragma: no cover
     direct_columns = []
     """
         Make chart using the column on the dict
@@ -375,7 +375,7 @@ class BaseSimpleDirectChartView(BaseChartView):
         return widgets
 
 
-class ChartView(BaseSimpleGroupByChartView):
+class ChartView(BaseSimpleGroupByChartView):  # pragma: no cover
     """
         **DEPRECATED**
 
@@ -408,7 +408,7 @@ class ChartView(BaseSimpleGroupByChartView):
         )
 
 
-class TimeChartView(BaseSimpleGroupByChartView):
+class TimeChartView(BaseSimpleGroupByChartView):  # pragma: no cover
     """
         **DEPRECATED**
 
@@ -485,7 +485,7 @@ class TimeChartView(BaseSimpleGroupByChartView):
         )
 
 
-class DirectChartView(BaseSimpleDirectChartView):
+class DirectChartView(BaseSimpleDirectChartView):  # pragma: no cover
     """
         **DEPRECATED**
 
