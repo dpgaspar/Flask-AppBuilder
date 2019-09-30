@@ -579,7 +579,8 @@ class BaseSecurityManager(AbstractSecurityManager):
         return jwt_decoded_payload
 
     def register_views(self):
-
+        if not self.appbuilder.app.config.get('FAB_ADD_SECURITY_VIEWS', True):
+            return
         # Security APIs
         self.appbuilder.add_api(self.security_api)
 
@@ -924,7 +925,10 @@ class BaseSecurityManager(AbstractSecurityManager):
                 return user
 
             except ldap.LDAPError as e:
-                if type(e.message) == dict and "desc" in e.message:
+                msg = None
+                if isinstance(e, dict):
+                    msg = getattr(e, 'message', None)
+                if msg is not None and "desc" in msg:
                     log.error(LOGMSG_ERR_SEC_AUTH_LDAP.format(e.message["desc"]))
                     return None
                 else:

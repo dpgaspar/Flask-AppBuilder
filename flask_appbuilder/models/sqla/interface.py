@@ -20,7 +20,7 @@ from ...const import (
     LOGMSG_ERR_DBI_EDIT_GENERIC,
     LOGMSG_WAR_DBI_ADD_INTEGRITY,
     LOGMSG_WAR_DBI_DEL_INTEGRITY,
-    LOGMSG_WAR_DBI_EDIT_INTEGRITY
+    LOGMSG_WAR_DBI_EDIT_INTEGRITY,
 )
 from ...filemanager import FileManager, ImageManager
 
@@ -35,9 +35,9 @@ def _include_filters(obj):
 
 def _is_sqla_type(obj, sa_type):
     return (
-        isinstance(obj, sa_type) or
-        isinstance(obj, sa.types.TypeDecorator) and
-        isinstance(obj.impl, sa_type)
+        isinstance(obj, sa_type)
+        or isinstance(obj, sa.types.TypeDecorator)
+        and isinstance(obj.impl, sa_type)
     )
 
 
@@ -97,16 +97,12 @@ class SQLAInterface(BaseInterface):
 
     def _query_join_dotted_column(self, query, column) -> (object, tuple):
         relation_tuple = tuple()
-        if len(column.split('.')) >= 2:
-            for join_relation in column.split('.')[:-1]:
+        if len(column.split(".")) >= 2:
+            for join_relation in column.split(".")[:-1]:
                 relation_tuple = self.get_related_model_and_join(join_relation)
                 model_relation, relation_join = relation_tuple
                 if not self.is_model_already_joined(query, model_relation):
-                    query = query.join(
-                        model_relation,
-                        relation_join,
-                        isouter=True
-                    )
+                    query = query.join(model_relation, relation_join, isouter=True)
         return query, relation_tuple
 
     def _query_select_options(self, query, select_columns=None):
@@ -121,10 +117,7 @@ class SQLAInterface(BaseInterface):
         if select_columns:
             _load_options = list()
             for column in select_columns:
-                query, relation_tuple = self._query_join_dotted_column(
-                    query,
-                    column,
-                )
+                query, relation_tuple = self._query_join_dotted_column(query, column)
                 model_relation, relation_join = relation_tuple or (None, None)
                 if model_relation:
                     _load_options.append(
@@ -170,9 +163,20 @@ class SQLAInterface(BaseInterface):
         query = self.session.query(self.obj)
         query, relation_tuple = self._query_join_dotted_column(query, order_column)
         query = self._query_select_options(query, select_columns)
-        query_count = self.session.query(func.count('*')).select_from(self.obj)
+        query_count = self.session.query(func.count("*")).select_from(self.obj)
 
         query_count = self._get_base_query(query=query_count, filters=filters)
+
+        # MSSQL exception page/limit must have an order by
+        if (
+                page
+                and page_size
+                and not order_column
+                and self.session.bind.dialect.name == "mssql"
+        ):
+            pk_name = self.get_pk_name()
+            query = query.order_by(pk_name)
+
         query = self._get_base_query(
             query=query,
             filters=filters,
@@ -182,7 +186,7 @@ class SQLAInterface(BaseInterface):
 
         count = query_count.scalar()
 
-        if page:
+        if page and page_size:
             query = query.offset(page * page_size)
         if page_size:
             query = query.limit(page_size)
@@ -231,8 +235,10 @@ class SQLAInterface(BaseInterface):
 
     def is_string(self, col_name):
         try:
-            return _is_sqla_type(self.list_columns[col_name].type, sa.types.String) or \
-                self.list_columns[col_name].type.__class__ == UUIDType
+            return (
+                _is_sqla_type(self.list_columns[col_name].type, sa.types.String)
+                or self.list_columns[col_name].type.__class__ == UUIDType
+            )
         except Exception:
             return False
 
@@ -546,6 +552,7 @@ class SQLAInterface(BaseInterface):
         if col_name in self.list_properties:
             return self.list_properties[col_name].info
         return {}
+
     """
     -------------
      GET METHODS
@@ -575,11 +582,11 @@ class SQLAInterface(BaseInterface):
             if not self.is_relation(col_name):
                 tmp_prop = self.get_property_first_col(col_name).name
                 if (
-                    (not self.is_pk(tmp_prop)) and
-                        (not self.is_fk(tmp_prop)) and
-                        (not self.is_image(col_name)) and
-                        (not self.is_file(col_name)) and
-                        (not self.is_boolean(col_name))
+                    (not self.is_pk(tmp_prop))
+                    and (not self.is_fk(tmp_prop))
+                    and (not self.is_image(col_name))
+                    and (not self.is_file(col_name))
+                    and (not self.is_boolean(col_name))
                 ):
                     ret_lst.append(col_name)
             else:

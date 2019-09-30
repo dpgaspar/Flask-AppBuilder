@@ -1,6 +1,41 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.1.13
+------------------------------------
+
+- Fix, #1105 Has access query fails on MySQL < 8
+
+Improvements and Bug fixes on 2.1.12
+------------------------------------
+
+- Fix, #1104 Preserve custom property return type on ModelRestApi
+- Fix, #1096 Bootstrap and Bootswatch bump to 3.4.1
+- Fix, #1097 python version restriction on setup > 3.6 < 4
+- Fix, #1095 OAuth set fallback when next url in state is empty
+
+Improvements and Bug fixes on 2.1.11
+------------------------------------
+
+- Fix, #1092 Has access query fails on MSSQL
+
+Improvements and Bug fixes on 2.1.10
+------------------------------------
+
+- Fix, #1079 Make it possible to override register_views when using FAB_ADD_SECURITY_VIEWS
+
+Improvements and Bug fixes on 2.1.9
+-----------------------------------
+
+- Fix, #1078 API unlimited page size with unlimited max_page_size issues SQL with negative LIMIT
+
+Improvements and Bug fixes on 2.1.8
+-----------------------------------
+
+- Fix, #1077 API Info not translating labels and description
+- Fix, #1069 API label_columns for get item returning labels for list columns
+- Fix, #1072 API max_page_size class property override for FAB_API_MAX_SIZE
+
 Improvements and Bug fixes on 2.1.7
 -----------------------------------
 

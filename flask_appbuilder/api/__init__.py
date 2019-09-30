@@ -1515,7 +1515,10 @@ class ModelRestApi(BaseModelApi):
         )
         # Accept special -1 to uncap the page size
         if max_page_size == -1:
-            return _page, _page_size
+            if _page_size == -1:
+                return None, None
+            else:
+                return _page, _page_size
         if _page_size > max_page_size or _page_size < 1:
             _page_size = max_page_size
         return _page, _page_size
@@ -1562,8 +1565,8 @@ class ModelRestApi(BaseModelApi):
         """
         ret = dict()
         ret["name"] = field.name
-        ret["label"] = self.label_columns.get(field.name, "")
-        ret["description"] = self.description_columns.get(field.name, "")
+        ret["label"] = _(self.label_columns.get(field.name, ""))
+        ret["description"] = _(self.description_columns.get(field.name, ""))
         # Handles related fields
         if isinstance(field, Related) or isinstance(field, RelatedList):
             ret["count"], ret["values"] = self._get_list_related_field(
