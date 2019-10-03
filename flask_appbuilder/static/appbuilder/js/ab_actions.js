@@ -20,7 +20,7 @@ var AdminActions = function() {
         multiple = true;
         action_name = name;
         action_confirmation = confirmation;
-        var selected = $('input.action_check:checked').size();
+        var selected = $('input.action_check:checked').length;
 
         if (selected == 0) {
             ab_alert('No row selected');

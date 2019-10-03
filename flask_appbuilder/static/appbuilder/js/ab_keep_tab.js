@@ -14,7 +14,7 @@ $(function()
     //go to the latest tab, if it exists:
     var lastTab = localStorage.getItem('lastTab');
     if (lastTab) {
-        $('a[href=' + lastTab + ']').tab('show');
+        $('a[href="' + lastTab + '"]').tab('show');
     }
     else
     {
