@@ -170,18 +170,21 @@ class SecurityManager(BaseSecurityManager):
         role,
         password="",
         hashed_password="",
+        roles=None
     ):
         """
             Generic function to create user
         """
         try:
+            if roles is None:
+                roles = [role]
             user = self.user_model()
             user.first_name = first_name
             user.last_name = last_name
             user.username = username
             user.email = email
             user.active = True
-            user.roles.append(role)
+            user.roles.extend(roles)
             if hashed_password:
                 user.password = hashed_password
             else:
