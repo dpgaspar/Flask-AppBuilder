@@ -1103,12 +1103,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         that a user has access to. Mainly used to fetch all menu permissions
         on a single db call, will also check public permissions and builtin roles
         """
-        roles = user.roles
-        # include public role
         db_role_ids = list()
-        public_role = self.get_public_role()
-        if public_role:
-            db_role_ids.append(public_role.id)
+        if user is None:
+            # include public role
+            roles = [self.get_public_role()]
+        else:
+            roles = user.roles
         # First check against builtin (statically configured) roles
         # because no database query is needed
         result = set()
@@ -1149,6 +1149,9 @@ class BaseSecurityManager(AbstractSecurityManager):
         elif current_user_jwt:
             return self._get_user_permission_view_menus(
                 current_user_jwt, "menu_access", view_menus_name=menu_names)
+        else:
+            return self._get_user_permission_view_menus(
+                None, "menu_access", view_menus_name=menu_names)
 
     def add_permissions_view(self, base_permissions, view_menu):
         """
