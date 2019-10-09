@@ -257,12 +257,15 @@ class SecurityManager(BaseSecurityManager):
     def get_all_roles(self):
         return self.get_session.query(self.role_model).all()
 
-    def get_public_permissions(self):
-        role = (
+    def get_public_role(self):
+        return (
             self.get_session.query(self.role_model)
             .filter_by(name=self.auth_role_public)
             .first()
         )
+
+    def get_public_permissions(self):
+        role = self.get_public_role()
         if role:
             return role.permissions
         return []

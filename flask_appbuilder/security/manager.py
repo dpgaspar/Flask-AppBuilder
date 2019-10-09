@@ -419,6 +419,13 @@ class BaseSecurityManager(AbstractSecurityManager):
     def oauth_providers(self):
         return self.appbuilder.get_app.config["OAUTH_PROVIDERS"]
 
+    @property
+    def current_user(self):
+        if current_user.is_authenticated:
+            return g.user
+        elif current_user_jwt:
+            return current_user_jwt
+
     def oauth_user_info_getter(self, f):
         """
             Decorator function to be the OAuth user info getter
@@ -1091,8 +1098,17 @@ class BaseSecurityManager(AbstractSecurityManager):
         permission_name: str,
         view_menus_name: List[str]
     ) -> Set[str]:
+        """
+        Return a set of view menu names with a certain permission name
+        that a user has access to. Mainly used to fetch all menu permissions
+        on a single db call, will also check public permissions and builtin roles
+        """
         roles = user.roles
+        # include public role
         db_role_ids = list()
+        public_role = self.get_public_role()
+        if public_role:
+            db_role_ids.append(public_role.id)
         # First check against builtin (statically configured) roles
         # because no database query is needed
         result = set()
@@ -1126,14 +1142,13 @@ class BaseSecurityManager(AbstractSecurityManager):
         else:
             return self.is_item_public(permission_name, view_name)
 
-    def get_user_menu_access(self, menu_names: List[str] = None):
+    def get_user_menu_access(self, menu_names: List[str] = None) -> Set[str]:
         if current_user.is_authenticated:
             return self._get_user_permission_view_menus(
                 g.user, "menu_access", view_menus_name=menu_names)
         elif current_user_jwt:
-            raise Exception("NOP")
-        else:
-            raise Exception("NOP")
+            return self._get_user_permission_view_menus(
+                current_user_jwt, "menu_access", view_menus_name=menu_names)
 
     def add_permissions_view(self, base_permissions, view_menu):
         """
@@ -1479,6 +1494,12 @@ class BaseSecurityManager(AbstractSecurityManager):
      PRIMITIVES FOR PERMISSIONS
     ----------------------------
     """
+
+    def get_public_role(self):
+        """
+            returns all permissions from public role
+        """
+        raise NotImplementedError
 
     def get_public_permissions(self):
         """
