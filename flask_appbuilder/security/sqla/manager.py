@@ -314,6 +314,24 @@ class SecurityManager(BaseSecurityManager):
             return self.appbuilder.get_session.query(literal(True)).filter(q).scalar()
         return self.appbuilder.get_session.query(q).scalar()
 
+    def find_roles_permission_view_menus(self, permission_name: str, role_ids: List[int]):
+        return (
+            self.appbuilder.get_session.query(self.permissionview_model)
+            .join(
+                assoc_permissionview_role,
+                and_(
+                    (self.permissionview_model.id ==
+                     assoc_permissionview_role.c.permission_view_id),
+                ),
+            )
+            .join(self.role_model)
+            .join(self.permission_model)
+            .join(self.viewmenu_model)
+            .filter(
+                self.permission_model.name == permission_name,
+                self.role_model.id.in_(role_ids))
+        ).all()
+
     def add_permission(self, name):
         """
             Adds a permission to the backend, model permission

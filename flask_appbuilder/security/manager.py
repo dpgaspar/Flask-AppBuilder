@@ -3,7 +3,7 @@ import datetime
 import json
 import logging
 import re
-from typing import Dict, List
+from typing import Dict, List, Set
 
 from flask import g, session, url_for
 from flask_babel import lazy_gettext as _
@@ -1085,6 +1085,36 @@ class BaseSecurityManager(AbstractSecurityManager):
             db_role_ids,
         )
 
+    def _get_user_permission_view_menus(
+        self,
+        user: object,
+        permission_name: str,
+        view_menus_name: List[str]
+    ) -> Set[str]:
+        roles = user.roles
+        db_role_ids = list()
+        # First check against builtin (statically configured) roles
+        # because no database query is needed
+        result = set()
+        for role in roles:
+            if role.name in self.builtin_roles:
+                for view_menu_name in view_menus_name:
+                    if self._has_access_builtin_roles(
+                            role,
+                            permission_name,
+                            view_menu_name
+                    ):
+                        result.add(view_menu_name)
+            else:
+                db_role_ids.append(role.id)
+        # Then check against database-stored roles
+        pvms_names = [
+            pvm.view_menu.name
+            for pvm in self.find_roles_permission_view_menus(permission_name, db_role_ids)
+        ]
+        result.update(pvms_names)
+        return result
+
     def has_access(self, permission_name, view_name):
         """
             Check if current user or public has access to view or menu
@@ -1095,6 +1125,15 @@ class BaseSecurityManager(AbstractSecurityManager):
             return self._has_view_access(current_user_jwt, permission_name, view_name)
         else:
             return self.is_item_public(permission_name, view_name)
+
+    def get_user_menu_access(self, menu_names: List[str] = None):
+        if current_user.is_authenticated:
+            return self._get_user_permission_view_menus(
+                g.user, "menu_access", view_menus_name=menu_names)
+        elif current_user_jwt:
+            raise Exception("NOP")
+        else:
+            raise Exception("NOP")
 
     def add_permissions_view(self, base_permissions, view_menu):
         """
@@ -1451,6 +1490,13 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
             Finds and returns a Permission by name
         """
+        raise NotImplementedError
+
+    def find_roles_permission_view_menus(
+        self,
+        permission_name: str,
+        role_ids: List[int],
+    ):
         raise NotImplementedError
 
     def exist_permission_on_roles(
