@@ -194,6 +194,8 @@ Use config.py to configure the following parameters. By default it will use SQLL
 |                                   | the existing languages with the countries  |           |
 |                                   | name and flag                              |           |
 +-----------------------------------+--------------------------------------------+-----------+
+| LOGOUT_REDIRECT_URL               | The location to redirect to after logout   |   No      |
++-----------------------------------+--------------------------------------------+-----------+
 | FAB_API_SHOW_STACKTRACE           | Sends api stack trace on uncaught          |   No      |
 |                                   | exceptions. (Boolean)                      |           |
 +-----------------------------------+--------------------------------------------+-----------+

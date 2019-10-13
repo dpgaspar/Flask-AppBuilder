@@ -102,3 +102,22 @@ class FlaskTestCase(FABTestCase):
         data = rv.data.decode('utf-8')
         self.assertIn("Security", data)
         self.assertIn("Model1", data)
+
+    def test_redirect_after_logout(self):
+        """
+            REST Api: Test redirect after logout
+        """
+        client = self.app.test_client()
+
+        self.login(client, LIMITED_USER, LIMITED_USER_PASSWORD)
+        rv = self.browser_logout(client)
+
+        # make sure that browser is redirected to /
+        self.assertEqual(rv.headers["Location"].split('/')[-1], '')
+
+        self.login(client, LIMITED_USER, LIMITED_USER_PASSWORD)
+        self.app.config["LOGOUT_REDIRECT_URL"] = "/logged_out"
+        rv = self.browser_logout(client)
+
+        # make sure that browser is redirected to LOGOUT_REDIRECT_URL
+        self.assertEqual(rv.headers["Location"].split('/')[-1], 'logged_out')
