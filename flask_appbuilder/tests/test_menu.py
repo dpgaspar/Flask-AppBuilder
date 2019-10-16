@@ -61,7 +61,6 @@ class FlaskTestCase(FABTestCase):
         data = rv.data.decode("utf-8")
         self.assertIn("Security", data)
         self.assertIn("Model1", data)
-        self.assertIn("List Model1", data)
 
     def test_menu_api_limited(self):
         """
