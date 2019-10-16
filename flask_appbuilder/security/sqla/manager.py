@@ -238,7 +238,6 @@ class SecurityManager(BaseSecurityManager):
 
     def update_role(self, pk, name: str) -> Optional[Role]:
         role = self.get_session.query(self.role_model).get(pk)
-        print(f"Update role {role} {pk}")
         if not role:
             return
         try:

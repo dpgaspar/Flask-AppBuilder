@@ -50,7 +50,7 @@ class FlaskTestCase(FABTestCase):
 
     def test_menu_api(self):
         """
-            REST Api: Test limited menu data
+            REST Api: Test menu data
         """
         uri = "/api/v1/menu/"
         client = self.app.test_client()
@@ -96,4 +96,27 @@ class FlaskTestCase(FABTestCase):
             self.appbuilder.sm.find_user(username=limited_user)
         )
         self.appbuilder.get_session.delete(self.appbuilder.sm.find_role(limited_role))
+        self.appbuilder.get_session.commit()
+
+    def test_menu_api_public(self):
+        """
+            REST Api: Test public menu data
+        """
+        role = self.appbuilder.sm.find_role("Public")
+        pvm = self.appbuilder.sm.find_permission_view_menu("menu_access", "Model1")
+        self.appbuilder.sm.add_permission_role(role, pvm)
+        pvm = self.appbuilder.sm.find_permission_view_menu("can_get", "MenuApi")
+        self.appbuilder.sm.add_permission_role(role, pvm)
+
+        uri = "/api/v1/menu/"
+        client = self.app.test_client()
+        # as limited user
+        rv = client.get(uri)
+        self.assertEqual(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        self.assertIn("Model1", data)
+
+        # Revert test data
+        role = self.appbuilder.sm.find_role("Public")
+        role.permissions = []
         self.appbuilder.get_session.commit()
