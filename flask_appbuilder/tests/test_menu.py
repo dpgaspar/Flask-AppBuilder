@@ -5,17 +5,13 @@ from flask_appbuilder import SQLA
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
 from .base import FABTestCase
-from .const import (
-    MAX_PAGE_SIZE,
-    PASSWORD_ADMIN,
-    USERNAME_ADMIN,
-)
+from .const import MAX_PAGE_SIZE, PASSWORD_ADMIN, USERNAME_ADMIN
 from .sqla.models import Model1
+
 log = logging.getLogger(__name__)
 
 
 class FlaskTestCase(FABTestCase):
-
     def setUp(self):
         from flask import Flask
         from flask_appbuilder import AppBuilder
@@ -45,7 +41,7 @@ class FlaskTestCase(FABTestCase):
             REST Api: Test menu logged out access denied
         :return:
         """
-        uri = '/api/v1/menu/'
+        uri = "/api/v1/menu/"
         client = self.app.test_client()
 
         # as logged out user
@@ -56,13 +52,13 @@ class FlaskTestCase(FABTestCase):
         """
             REST Api: Test limited menu data
         """
-        uri = '/api/v1/menu/'
+        uri = "/api/v1/menu/"
         client = self.app.test_client()
 
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 200)
-        data = rv.data.decode('utf-8')
+        data = rv.data.decode("utf-8")
         self.assertIn("Security", data)
         self.assertIn("Model1", data)
         self.assertIn("List Model1", data)
@@ -73,34 +69,24 @@ class FlaskTestCase(FABTestCase):
         """
         limited_user = "user1"
         limited_password = "user1"
+        limited_role = "Limited"
 
-        role_limited = self.appbuilder.sm.add_role("LimitedUser")
-        pvm = self.appbuilder.sm.find_permission_view_menu(
-            "menu_access",
-            "Model1"
-        )
-        self.appbuilder.sm.add_permission_role(role_limited, pvm)
-        pvm = self.appbuilder.sm.find_permission_view_menu(
-            "can_get",
-            "MenuApi"
-        )
-        self.appbuilder.sm.add_permission_role(role_limited, pvm)
+        role = self.appbuilder.sm.add_role(limited_role)
+        pvm = self.appbuilder.sm.find_permission_view_menu("menu_access", "Model1")
+        self.appbuilder.sm.add_permission_role(role, pvm)
+        pvm = self.appbuilder.sm.find_permission_view_menu("can_get", "MenuApi")
+        self.appbuilder.sm.add_permission_role(role, pvm)
         self.appbuilder.sm.add_user(
-            limited_user,
-            "user1",
-            "user1",
-            "user1@fab.org",
-            role_limited,
-            limited_password
+            limited_user, "user1", "user1", "user1@fab.org", role, limited_password
         )
 
-        uri = '/api/v1/menu/'
+        uri = "/api/v1/menu/"
         client = self.app.test_client()
         # as limited user
         token = self.login(client, limited_user, limited_password)
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 200)
-        data = rv.data.decode('utf-8')
+        data = rv.data.decode("utf-8")
         self.assertNotIn("Security", data)
         self.assertIn("Model1", data)
 
@@ -110,5 +96,5 @@ class FlaskTestCase(FABTestCase):
         self.appbuilder.get_session.delete(
             self.appbuilder.sm.find_user(username=limited_user)
         )
-        self.appbuilder.get_session.delete(self.appbuilder.sm.find_role(role_limited))
+        self.appbuilder.get_session.delete(self.appbuilder.sm.find_role(limited_role))
         self.appbuilder.get_session.commit()
