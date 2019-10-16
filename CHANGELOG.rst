@@ -1,8 +1,8 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
-Improvements and Bug fixes on 2.2.0
------------------------------------
+Improvements and Bug fixes on 2.2.0rc2
+--------------------------------------
 
 - Fix, #1157 Improve API get menu data performance
 - Fix, #1143 [mvc] pagination
