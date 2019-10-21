@@ -1,6 +1,19 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.2.0
+-----------------------------------
+
+- Fix, #1157 Improve API get menu data performance
+- Fix, #1143 [mvc] pagination UI bug
+- Fix, #1147 [babel] crash with empty LANGUAGES config key
+- New, #1116 Expose menu data as serializable objects
+- Fix, #1127 MSSQL issue with pagination
+- Fix, #1132 Add autofocus for login screen (#1132)
+- Fix, #1125 Support absence of the public role (#1125)
+- New, #1124 hide tabs when only 'Detail' (no related_views)
+- Fix, #1119 ldap: safely retrieve error object when loggin exception
+
 Improvements and Bug fixes on 2.1.13
 ------------------------------------
 
