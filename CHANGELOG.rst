@@ -5,7 +5,7 @@ Improvements and Bug fixes on 2.2.0
 -----------------------------------
 
 - Fix, #1157 Improve API get menu data performance
-- Fix, #1143 [mvc] pagination
+- Fix, #1143 [mvc] pagination UI bug
 - Fix, #1147 [babel] crash with empty LANGUAGES config key
 - New, #1116 Expose menu data as serializable objects
 - Fix, #1127 MSSQL issue with pagination
