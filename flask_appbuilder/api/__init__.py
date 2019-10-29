@@ -2,6 +2,7 @@ import functools
 import logging
 import re
 import traceback
+from collections import defaultdict
 
 from apispec import yaml_utils
 from flask import Blueprint, current_app, jsonify, make_response, request
@@ -16,6 +17,7 @@ import yaml
 
 from .convert import Model2SchemaConverter
 from .schemas import get_info_schema, get_item_schema, get_list_schema
+from .util import requested_type
 from .._compat import as_unicode
 from ..const import (
     API_ADD_COLUMNS_RES_KEY,
@@ -856,22 +858,22 @@ class ModelRestApi(BaseModelApi):
                     'gender': ('name', 'asc')
                 }
     """
-    list_model_schema = None
+    list_model_schema = defaultdict(lambda: None)
     """
         Override to provide your own marshmallow Schema
         for JSON to SQLA dumps
     """
-    add_model_schema = None
+    add_model_schema = defaultdict(lambda: None)
     """
         Override to provide your own marshmallow Schema
         for JSON to SQLA dumps
     """
-    edit_model_schema = None
+    edit_model_schema = defaultdict(lambda: None)
     """
         Override to provide your own marshmallow Schema
         for JSON to SQLA dumps
     """
-    show_model_schema = None
+    show_model_schema = defaultdict(lambda: None)
     """
         Override to provide your own marshmallow Schema
         for JSON to SQLA dumps
@@ -902,38 +904,47 @@ class ModelRestApi(BaseModelApi):
         super(ModelRestApi, self).add_apispec_components(api_spec)
         api_spec.components.schema(
             "{}.{}".format(self.__class__.__name__, "get_list"),
-            schema=self.list_model_schema,
+            schema=self.list_model_schema[requested_type],
         )
         api_spec.components.schema(
             "{}.{}".format(self.__class__.__name__, "post"),
-            schema=self.add_model_schema,
+            schema=self.add_model_schema[requested_type()],
         )
         api_spec.components.schema(
             "{}.{}".format(self.__class__.__name__, "put"),
-            schema=self.edit_model_schema,
+            schema=self.edit_model_schema[requested_type()],
         )
         api_spec.components.schema(
             "{}.{}".format(self.__class__.__name__, "get"),
-            schema=self.show_model_schema,
+            schema=self.show_model_schema[requested_type()],
         )
 
     def _init_model_schemas(self):
         # Create Marshmalow schemas if one is not specified
-        if self.list_model_schema is None:
-            self.list_model_schema = self.model2schemaconverter.convert(
-                self.list_columns
+        # The actual initialisations of the schemas is deferred by a
+        # defaultdict, indexed with a request's Accept header (which is
+        # read as a side-effect by model2schemaconverter.convert), so
+        # that a separate schema can be initialised per requested
+        # response mimetype.
+        if self.list_model_schema[requested_type()] is None:
+            self.list_model_schema = defaultdict(
+                lambda: self.model2schemaconverter.convert(self.list_columns)
             )
-        if self.add_model_schema is None:
-            self.add_model_schema = self.model2schemaconverter.convert(
-                self.add_columns, nested=False, enum_dump_by_name=True
+        if self.add_model_schema[requested_type()] is None:
+            self.add_model_schema = defaultdict(
+                lambda: self.model2schemaconverter.convert(
+                    self.add_columns, nested=False, enum_dump_by_name=True
+                )
             )
-        if self.edit_model_schema is None:
-            self.edit_model_schema = self.model2schemaconverter.convert(
-                self.edit_columns, nested=False, enum_dump_by_name=True
+        if self.edit_model_schema [requested_type()]is None:
+            self.edit_model_schema = defaultdict(
+                lambda: self.model2schemaconverter.convert(
+                    self.edit_columns, nested=False, enum_dump_by_name=True
+                )
             )
-        if self.show_model_schema is None:
-            self.show_model_schema = self.model2schemaconverter.convert(
-                self.show_columns
+        if self.show_model_schema[requested_type()] is None:
+            self.show_model_schema = defaultdict(
+                lambda: self.model2schemaconverter.convert(self.show_columns)
             )
 
     def _init_titles(self):
@@ -966,8 +977,8 @@ class ModelRestApi(BaseModelApi):
         self.order_rel_fields = self.order_rel_fields or {}
         # Generate base props
         list_cols = self.datamodel.get_user_columns_list()
-        if not self.list_columns and self.list_model_schema:
-            list(self.list_model_schema._declared_fields.keys())
+        if not self.list_columns and self.list_model_schema[requested_type()]:
+            list(self.list_model_schema[requested_type()]._declared_fields.keys())
         else:
             self.list_columns = self.list_columns or [
                 x
@@ -1002,7 +1013,7 @@ class ModelRestApi(BaseModelApi):
         _kwargs = kwargs.get("add_columns", {})
         response[API_ADD_COLUMNS_RES_KEY] = self._get_fields_info(
             self.add_columns,
-            self.add_model_schema,
+            self.add_model_schema[requested_type()],
             self.add_query_rel_fields,
             **_kwargs,
         )
@@ -1011,7 +1022,7 @@ class ModelRestApi(BaseModelApi):
         _kwargs = kwargs.get("edit_columns", {})
         response[API_EDIT_COLUMNS_RES_KEY] = self._get_fields_info(
             self.edit_columns,
-            self.edit_model_schema,
+            self.edit_model_schema[requested_type()],
             self.edit_query_rel_fields,
             **_kwargs,
         )
@@ -1216,7 +1227,7 @@ class ModelRestApi(BaseModelApi):
         if _pruned_select_cols:
             _show_model_schema = self.model2schemaconverter.convert(_pruned_select_cols)
         else:
-            _show_model_schema = self.show_model_schema
+            _show_model_schema = self.show_model_schema[requested_type()]
 
         _response["id"] = pk
         _response[API_RESULT_RES_KEY] = _show_model_schema.dump(item, many=False).data
@@ -1293,7 +1304,7 @@ class ModelRestApi(BaseModelApi):
         if _pruned_select_cols:
             _list_model_schema = self.model2schemaconverter.convert(_pruned_select_cols)
         else:
-            _list_model_schema = self.list_model_schema
+            _list_model_schema = self.list_model_schema[requested_type()]
         # handle filters
         joined_filters = self._handle_filters_args(_args)
         # handle base order
@@ -1356,7 +1367,7 @@ class ModelRestApi(BaseModelApi):
         if not request.is_json:
             return self.response_400(message="Request is not JSON")
         try:
-            item = self.add_model_schema.load(request.json)
+            item = self.add_model_schema[requested_type()].load(request.json)
         except ValidationError as err:
             return self.response_422(message=err.messages)
         # This validates custom Schema with custom validations
@@ -1369,7 +1380,7 @@ class ModelRestApi(BaseModelApi):
             return self.response(
                 201,
                 **{
-                    API_RESULT_RES_KEY: self.add_model_schema.dump(
+                    API_RESULT_RES_KEY: self.add_model_schema[requested_type()].dump(
                         item.data, many=False
                     ).data,
                     "id": self.datamodel.get_pk_value(item.data),
@@ -1426,7 +1437,7 @@ class ModelRestApi(BaseModelApi):
             return self.response_404()
         try:
             data = self._merge_update_item(item, request.json)
-            item = self.edit_model_schema.load(data, instance=item)
+            item = self.edit_model_schema[requested_type()].load(data, instance=item)
         except ValidationError as err:
             return self.response_422(message=err.messages)
         # This validates custom Schema with custom validations
@@ -1439,7 +1450,7 @@ class ModelRestApi(BaseModelApi):
             return self.response(
                 200,
                 **{
-                    API_RESULT_RES_KEY: self.edit_model_schema.dump(
+                    API_RESULT_RES_KEY: self.edit_model_schema[requested_type()].dump(
                         item.data, many=False
                     ).data
                 },
@@ -1649,7 +1660,9 @@ class ModelRestApi(BaseModelApi):
         :param data: python data structure
         :return: python data structure
         """
-        data_item = self.edit_model_schema.dump(model_item, many=False).data
+        data_item = self.edit_model_schema[requested_type()].dump(
+            model_item, many=False
+        ).data
         for _col in self.edit_columns:
             if _col not in data.keys():
                 data[_col] = data_item[_col]
