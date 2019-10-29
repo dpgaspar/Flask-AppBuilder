@@ -94,20 +94,17 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         :return: ModelSchema
         """
         _model = model
+        attrs = {}
+        meta_attrs = {
+            "model": _model,
+            "strict": True,
+            "sqla_session": self.datamodel.session,
+        }
+        parent_classes = (ModelSchema, class_mixin)
         if columns:
-            class MetaSchema(ModelSchema, class_mixin):
-                class Meta:
-                    model = _model
-                    fields = columns
-                    strict = True
-                    sqla_session = self.datamodel.session
-        else:
-            class MetaSchema(ModelSchema, class_mixin):
-                class Meta:
-                    model = _model
-                    strict = True
-                    sqla_session = self.datamodel.session
-        return MetaSchema
+            meta_attrs["fields"] = columns
+        attrs["Meta"] = type("Meta", (), meta_attrs)
+        return type("MetaSchema", parent_classes, attrs)
 
     def _column2field(self, datamodel, column, nested=True, enum_dump_by_name=False):
         """
