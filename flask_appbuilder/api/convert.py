@@ -1,7 +1,14 @@
 from marshmallow import fields
+from marshmallow_jsonapi import (
+    fields as jsonapi_fields,
+    Schema as JsonApiSchema,
+    SchemaOpts as JsonApiSchemaOpts,
+)
 from marshmallow_enum import EnumField
 from marshmallow_sqlalchemy import field_for
-from marshmallow_sqlalchemy.schema import ModelSchema
+from marshmallow_sqlalchemy.schema import ModelSchema, ModelSchemaOpts
+
+from .util import jsonapi_requested
 
 
 class TreeNode:
@@ -68,6 +75,13 @@ class BaseModel2SchemaConverter(object):
         pass
 
 
+class JsonApiSqlAlchemySchemaOpts(ModelSchemaOpts, JsonApiSchemaOpts):
+    """
+    A schema options class necessary to make marshmallow-sqlalchemy and
+    marshmallow-jsonapi play nice together.
+    """
+
+
 class Model2SchemaConverter(BaseModel2SchemaConverter):
     """
         Class that converts Models to marshmallow Schemas
@@ -103,6 +117,13 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         parent_classes = (ModelSchema, class_mixin)
         if columns:
             meta_attrs["fields"] = columns
+        if jsonapi_requested():
+            meta_attrs["type_"] = _model.__name__
+            attrs["OPTIONS_CLASS"] = JsonApiSqlAlchemySchemaOpts
+            parent_classes = (ModelSchema, JsonApiSchema, class_mixin)
+            if columns:
+                primary_keys = self.datamodel.get_primary_key_columns()
+                columns.extend(col for col in primary_keys if col not in columns)
         attrs["Meta"] = type("Meta", (), meta_attrs)
         return type("MetaSchema", parent_classes, attrs)
 
@@ -116,6 +137,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         :return: Schema.field
         """
         _model = datamodel.obj
+        fields_module = jsonapi_fields if jsonapi_requested() else fields
         # Handle relations
         if datamodel.is_relation(column.data) and nested:
             required = not datamodel.is_nullable(column.data)
@@ -133,7 +155,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                 required = False
             else:
                 many = False
-            field = fields.Nested(nested_schema, many=many, required=required)
+            field = fields_module.Nested(nested_schema, many=many, required=required)
             field.unique = datamodel.is_unique(column.data)
             return field
         # Handle bug on marshmallow-sqlalchemy #163
@@ -166,7 +188,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             return field
         # is custom property method field?
         if hasattr(getattr(_model, column.data), 'fget'):
-            return fields.Raw(dump_only=True)
+            return fields_module.Raw(dump_only=True)
         # is a normal model field not a function?
         if not hasattr(getattr(_model, column.data), '__call__'):
             field = field_for(_model, column.data)

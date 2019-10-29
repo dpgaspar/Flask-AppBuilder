@@ -565,6 +565,9 @@ class SQLAInterface(BaseInterface):
         """
         return list(self.list_properties.keys())
 
+    def get_primary_key_columns(self):
+        return [pk.name for pk in self.obj.__mapper__.primary_key]
+
     def get_user_columns_list(self):
         """
             Returns all model's columns except pk or fk
@@ -650,7 +653,7 @@ class SQLAInterface(BaseInterface):
         return self.session.query(self.obj).get(id)
 
     def get_pk_name(self):
-        pk = [pk.name for pk in self.obj.__mapper__.primary_key]
+        pk = self.get_primary_key_columns()
         if pk:
             return pk if self.is_pk_composite() else pk[0]
 

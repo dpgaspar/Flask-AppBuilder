@@ -17,7 +17,7 @@ import yaml
 
 from .convert import Model2SchemaConverter
 from .schemas import get_info_schema, get_item_schema, get_list_schema
-from .util import requested_type
+from .util import requested_type, jsonapi_requested
 from .._compat import as_unicode
 from ..const import (
     API_ADD_COLUMNS_RES_KEY,
@@ -976,6 +976,7 @@ class ModelRestApi(BaseModelApi):
         self.edit_exclude_columns = self.edit_exclude_columns or []
         self.order_rel_fields = self.order_rel_fields or {}
         # Generate base props
+        self.primary_key_columns = self.datamodel.get_primary_key_columns()
         list_cols = self.datamodel.get_user_columns_list()
         if not self.list_columns and self.list_model_schema[requested_type()]:
             list(self.list_model_schema[requested_type()]._declared_fields.keys())
@@ -1300,6 +1301,8 @@ class ModelRestApi(BaseModelApi):
             _args,
             **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols},
         )
+        if _pruned_select_cols and jsonapi_requested():
+            _pruned_select_cols.extend(self.primary_key_columns)
 
         if _pruned_select_cols:
             _list_model_schema = self.model2schemaconverter.convert(_pruned_select_cols)
