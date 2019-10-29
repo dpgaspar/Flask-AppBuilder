@@ -982,7 +982,7 @@ class ModelRestApi(BaseModelApi):
         else:
             self.list_columns = self.list_columns or [
                 x
-                for x in self.datamodel.get_user_columns_list()
+                for x in list_cols
                 if x not in self.list_exclude_columns
             ]
 
