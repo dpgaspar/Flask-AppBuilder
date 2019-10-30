@@ -1464,6 +1464,96 @@ class ModelRestApi(BaseModelApi):
         except IntegrityError as e:
             return self.response_422(message=str(e.orig))
 
+    @expose("/<pk>", methods=["PATCH"])
+    @protect()
+    @safe
+    @permission_name("patch")
+    def patch(self, pk):
+        """PATCH item to Model
+        ---
+        patch:
+          parameters:
+          - in: path
+            schema:
+              type:
+                OneOf:
+                - string
+                - integer
+            name: pk
+          requestBody:
+            description: Model schema
+            required: true
+            content:
+              application/vnd.api+json:
+                schema:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    id:
+                      type:
+                        OneOf:
+                        - string
+                        - integer
+                    attributes:
+                      $ref: '#/components/schemas/{{self.__class__.__name__}}.put'
+          responses:
+            200:
+              description: Item changed
+              content:
+                application/vnd.api+json:
+                  schema:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                          id:
+                            type:
+                              OneOf:
+                              - string
+                              - integer
+                          attributes:
+                            $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
+            400:
+              $ref: '#/components/responses/400'
+            401:
+              $ref: '#/components/responses/401'
+            404:
+              $ref: '#/components/responses/404'
+            422:
+              $ref: '#/components/responses/422'
+            500:
+              $ref: '#/components/responses/500'
+        """
+        if not jsonapi_requested():
+            raise NotImplementedError("PATCH only supported for JSON:API.")
+        if not request.is_json:
+            return self.response(400, errors=[{"detail": "Request is not JSON"}])
+        item = self.datamodel.get(pk, self._base_filters)
+        if not item:
+            return self.response_404()
+        data = request.json["data"]
+        if str(data["id"]) != pk:
+            return self.response(400, errors=[
+                {"detail": "ID mismatch between URL and body"},
+            ])
+        if data["type"] != self.datamodel.obj.__name__:
+            msg = f"Got type {data['type']}, should be {self.datamodel.obj.__name__}"
+            return self.response(400, errors=[{"detail": msg}])
+        for attrname, value in data["attributes"].items():
+            setattr(item, attrname, value)
+        self.pre_update(item)
+        try:
+            self.datamodel.edit(item, raise_exception=True)
+            self.post_update(item)
+            schema = self.edit_model_schema[requested_type()]
+            return self.response(200, **schema.dump(item, many=False).data)
+        except IntegrityError as e:
+            return self.response_422(errors=[{"detail": str(e.orig)}])
+
     @expose("/<pk>", methods=["PUT"])
     @protect()
     @safe
