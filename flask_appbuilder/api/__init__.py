@@ -1175,7 +1175,10 @@ class ModelRestApi(BaseModelApi):
           parameters:
           - in: path
             schema:
-              type: integer
+              type:
+                OneOf:
+                - string
+                - integer
             name: pk
           - $ref: '#/components/parameters/get_item_schema'
           responses:
@@ -1200,6 +1203,22 @@ class ModelRestApi(BaseModelApi):
                         type: string
                       result:
                         $ref: '#/components/schemas/{{self.__class__.__name__}}.get'
+                application/vnd.api+json:
+                  schema:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            type:
+                              OneOf:
+                              - string
+                              - integer
+                          type:
+                            type: string
+                          attributes:
+                            $ref: '#/components/schemas/{{self.__class__.__name__}}.get'
             400:
               $ref: '#/components/responses/400'
             401:
@@ -1215,23 +1234,28 @@ class ModelRestApi(BaseModelApi):
         if not item:
             return self.response_404()
 
-        _response = dict()
         _args = kwargs.get("rison", {})
         select_cols = _args.get(API_SELECT_COLUMNS_RIS_KEY, [])
         _pruned_select_cols = [col for col in select_cols if col in self.show_columns]
-        self.set_response_key_mappings(
-            _response,
-            self.get,
-            _args,
-            **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols},
-        )
         if _pruned_select_cols:
             _show_model_schema = self.model2schemaconverter.convert(_pruned_select_cols)
         else:
             _show_model_schema = self.show_model_schema[requested_type()]
+        result = _show_model_schema.dump(item, many=False).data
 
-        _response["id"] = pk
-        _response[API_RESULT_RES_KEY] = _show_model_schema.dump(item, many=False).data
+        _response = dict()
+        if jsonapi_requested():
+            _response = result
+        else:
+            self.set_response_key_mappings(
+                _response,
+                self.get,
+                _args,
+                **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols},
+            )
+
+            _response["id"] = pk
+            _response[API_RESULT_RES_KEY] = result
         self.pre_get(_response)
         return self.response(200, **_response)
 
@@ -1281,6 +1305,24 @@ class ModelRestApi(BaseModelApi):
                           type: array
                           items:
                             $ref: '#/components/schemas/{{self.__class__.__name__}}.get_list'  # noqa
+                application/vnd.api+json:
+                  schema:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type:
+                                OneOf:
+                                - string
+                                - integer
+                            type:
+                              type: string
+                            attributes:
+                              $ref: '#/components/schemas/{{self.__class__.__name__}}.get_list'  # noqa
             400:
               $ref: '#/components/responses/400'
             401:
@@ -1290,17 +1332,10 @@ class ModelRestApi(BaseModelApi):
             500:
               $ref: '#/components/responses/500'
         """
-        _response = dict()
         _args = kwargs.get("rison", {})
         # handle select columns
         select_cols = _args.get(API_SELECT_COLUMNS_RIS_KEY, [])
         _pruned_select_cols = [col for col in select_cols if col in self.list_columns]
-        self.set_response_key_mappings(
-            _response,
-            self.get_list,
-            _args,
-            **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols},
-        )
         if _pruned_select_cols and jsonapi_requested():
             _pruned_select_cols.extend(self.primary_key_columns)
 
@@ -1325,9 +1360,20 @@ class ModelRestApi(BaseModelApi):
             select_columns=query_select_columns,
         )
         pks = self.datamodel.get_keys(lst)
-        _response[API_RESULT_RES_KEY] = _list_model_schema.dump(lst, many=True).data
-        _response["ids"] = pks
-        _response["count"] = count
+        result = _list_model_schema.dump(lst, many=True).data
+        _response = dict()
+        if jsonapi_requested():
+            _response = result
+        else:
+            self.set_response_key_mappings(
+                _response,
+                self.get_list,
+                _args,
+                **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols},
+            )
+            _response[API_RESULT_RES_KEY] = result
+            _response["ids"] = pks
+            _response["count"] = count
         self.pre_get_list(_response)
         return self.response(200, **_response)
 
@@ -1346,6 +1392,17 @@ class ModelRestApi(BaseModelApi):
               application/json:
                 schema:
                   $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
+              application/vnd.api+json:
+                schema:
+                  type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        attributes:
+                          $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
           responses:
             201:
               description: Item inserted
@@ -1358,6 +1415,22 @@ class ModelRestApi(BaseModelApi):
                         type: string
                       result:
                         $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
+                application/vnd.api+json:
+                  schema:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                          id:
+                            type:
+                              OneOf:
+                              - string
+                              - integer
+                          attributes:
+                            $ref: '#/components/schemas/{{self.__class__.__name__}}.post'
             400:
               $ref: '#/components/responses/400'
             401:
@@ -1380,15 +1453,14 @@ class ModelRestApi(BaseModelApi):
         try:
             self.datamodel.add(item.data, raise_exception=True)
             self.post_add(item.data)
-            return self.response(
-                201,
-                **{
-                    API_RESULT_RES_KEY: self.add_model_schema[requested_type()].dump(
-                        item.data, many=False
-                    ).data,
-                    "id": self.datamodel.get_pk_value(item.data),
-                },
-            )
+            result = self.add_model_schema[requested_type()].dump(
+                item.data, many=False
+            ).data
+            response_body = result if jsonapi_requested() else {
+                API_RESULT_RES_KEY: result,
+                "id": self.datamodel.get_pk_value(item.data),
+            }
+            return self.response(201, **response_body)
         except IntegrityError as e:
             return self.response_422(message=str(e.orig))
 
@@ -1433,6 +1505,8 @@ class ModelRestApi(BaseModelApi):
             500:
               $ref: '#/components/responses/500'
         """
+        if jsonapi_requested():
+            raise NotImplementedError("PUT not supported for JSON:API.")
         item = self.datamodel.get(pk, self._base_filters)
         if not request.is_json:
             return self.response(400, **{"message": "Request is not JSON"})
@@ -1472,7 +1546,10 @@ class ModelRestApi(BaseModelApi):
           parameters:
           - in: path
             schema:
-              type: integer
+              type:
+                OneOf:
+                - string
+                - integer
             name: pk
           responses:
             200:
@@ -1484,6 +1561,8 @@ class ModelRestApi(BaseModelApi):
                     properties:
                       message:
                         type: string
+            204:
+              description: Item successfully deleted, nothing to report
             404:
               $ref: '#/components/responses/404'
             422:
@@ -1498,6 +1577,8 @@ class ModelRestApi(BaseModelApi):
         try:
             self.datamodel.delete(item, raise_exception=True)
             self.post_delete(item)
+            if jsonapi_requested():
+                return self.response(204)
             return self.response(200, message="OK")
         except IntegrityError as e:
             return self.response_422(message=str(e.orig))
