@@ -26,7 +26,7 @@ class Tree:
     """
 
     def __init__(self):
-        self.root = TreeNode('+')
+        self.root = TreeNode("+")
 
     def add(self, data):
         node = TreeNode(data)
@@ -52,18 +52,14 @@ class Tree:
 def columns2Tree(columns):
     tree = Tree()
     for column in columns:
-        if '.' in column:
-            tree.add_child(
-                column.split('.')[0],
-                column.split('.')[1]
-            )
+        if "." in column:
+            tree.add_child(column.split(".")[0], column.split(".")[1])
         else:
             tree.add(column)
     return tree
 
 
 class BaseModel2SchemaConverter(object):
-
     def __init__(self, datamodel, validators_columns):
         """
         :param datamodel: SQLAInterface
@@ -143,11 +139,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             required = not datamodel.is_nullable(column.data)
             nested_model = datamodel.get_related_model(column.data)
             lst = [item.data for item in column.childs]
-            nested_schema = self.convert(
-                lst,
-                nested_model,
-                nested=False
-            )
+            nested_schema = self.convert(lst, nested_model, nested=False)
             if datamodel.is_relation_many_to_one(column.data):
                 many = False
             elif datamodel.is_relation_many_to_many(column.data):
@@ -160,9 +152,10 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             return field
         # Handle bug on marshmallow-sqlalchemy #163
         elif datamodel.is_relation(column.data):
-            if (datamodel.is_relation_many_to_many(column.data) or
-                    datamodel.is_relation_one_to_many(column.data)):
-                if datamodel.get_info(column.data).get('required', False):
+            if datamodel.is_relation_many_to_many(
+                column.data
+            ) or datamodel.is_relation_one_to_many(column.data):
+                if datamodel.get_info(column.data).get("required", False):
                     required = True
                 else:
                     required = False
@@ -176,8 +169,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         elif datamodel.is_enum(column.data):
             required = not datamodel.is_nullable(column.data)
             enum_class = datamodel.list_columns[column.data].info.get(
-                'enum_class',
-                datamodel.list_columns[column.data].type
+                "enum_class", datamodel.list_columns[column.data].type
             )
             if enum_dump_by_name:
                 enum_dump_by = EnumField.NAME
@@ -187,10 +179,10 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             field.unique = datamodel.is_unique(column.data)
             return field
         # is custom property method field?
-        if hasattr(getattr(_model, column.data), 'fget'):
+        if hasattr(getattr(_model, column.data), "fget"):
             return fields_module.Raw(dump_only=True)
         # is a normal model field not a function?
-        if not hasattr(getattr(_model, column.data), '__call__'):
+        if not hasattr(getattr(_model, column.data), "__call__"):
             field = field_for(_model, column.data)
             field.unique = datamodel.is_unique(column.data)
             if column.data in self.validators_columns:
@@ -199,13 +191,13 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
 
     @staticmethod
     def get_column_child_model(column):
-        if '.' in column:
-            return column.split('.')[0]
+        if "." in column:
+            return column.split(".")[0]
         return column
 
     @staticmethod
     def is_column_dotted(column):
-        return '.' in column
+        return "." in column
 
     def convert(self, columns, model=None, nested=True, enum_dump_by_name=False):
         """
@@ -217,11 +209,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         :param nested: Generate relation with nested schemas
         :return: ModelSchema object
         """
-        super(Model2SchemaConverter, self).convert(
-            columns,
-            model=model,
-            nested=nested
-        )
+        super(Model2SchemaConverter, self).convert(columns, model=model, nested=nested)
 
         class SchemaMixin:
             pass
@@ -236,10 +224,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         for column in tree_columns.root.childs:
             # Get child model is column is dotted notation
             ma_sqla_fields_override[column.data] = self._column2field(
-                _datamodel,
-                column,
-                nested,
-                enum_dump_by_name
+                _datamodel, column, nested, enum_dump_by_name
             )
             _columns.append(column.data)
         for k, v in ma_sqla_fields_override.items():

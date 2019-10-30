@@ -936,7 +936,7 @@ class ModelRestApi(BaseModelApi):
                     self.add_columns, nested=False, enum_dump_by_name=True
                 )
             )
-        if self.edit_model_schema [requested_type()]is None:
+        if self.edit_model_schema[requested_type()] is None:
             self.edit_model_schema = defaultdict(
                 lambda: self.model2schemaconverter.convert(
                     self.edit_columns, nested=False, enum_dump_by_name=True
@@ -982,9 +982,7 @@ class ModelRestApi(BaseModelApi):
             list(self.list_model_schema[requested_type()]._declared_fields.keys())
         else:
             self.list_columns = self.list_columns or [
-                x
-                for x in list_cols
-                if x not in self.list_exclude_columns
+                x for x in list_cols if x not in self.list_exclude_columns
             ]
 
         self.order_columns = (
@@ -1453,13 +1451,17 @@ class ModelRestApi(BaseModelApi):
         try:
             self.datamodel.add(item.data, raise_exception=True)
             self.post_add(item.data)
-            result = self.add_model_schema[requested_type()].dump(
-                item.data, many=False
-            ).data
-            response_body = result if jsonapi_requested() else {
-                API_RESULT_RES_KEY: result,
-                "id": self.datamodel.get_pk_value(item.data),
-            }
+            result = (
+                self.add_model_schema[requested_type()].dump(item.data, many=False).data
+            )
+            response_body = (
+                result
+                if jsonapi_requested()
+                else {
+                    API_RESULT_RES_KEY: result,
+                    "id": self.datamodel.get_pk_value(item.data),
+                }
+            )
             return self.response(201, **response_body)
         except IntegrityError as e:
             return self.response_422(message=str(e.orig))
@@ -1537,9 +1539,9 @@ class ModelRestApi(BaseModelApi):
             return self.response_404()
         data = request.json["data"]
         if str(data["id"]) != pk:
-            return self.response(400, errors=[
-                {"detail": "ID mismatch between URL and body"},
-            ])
+            return self.response(
+                400, errors=[{"detail": "ID mismatch between URL and body"}]
+            )
         if data["type"] != self.datamodel.obj.__name__:
             msg = f"Got type {data['type']}, should be {self.datamodel.obj.__name__}"
             return self.response(400, errors=[{"detail": msg}])
@@ -1617,9 +1619,9 @@ class ModelRestApi(BaseModelApi):
             return self.response(
                 200,
                 **{
-                    API_RESULT_RES_KEY: self.edit_model_schema[requested_type()].dump(
-                        item.data, many=False
-                    ).data
+                    API_RESULT_RES_KEY: self.edit_model_schema[requested_type()]
+                    .dump(item.data, many=False)
+                    .data
                 },
             )
         except IntegrityError as e:
@@ -1834,9 +1836,9 @@ class ModelRestApi(BaseModelApi):
         :param data: python data structure
         :return: python data structure
         """
-        data_item = self.edit_model_schema[requested_type()].dump(
-            model_item, many=False
-        ).data
+        data_item = (
+            self.edit_model_schema[requested_type()].dump(model_item, many=False).data
+        )
         for _col in self.edit_columns:
             if _col not in data.keys():
                 data[_col] = data_item[_col]
