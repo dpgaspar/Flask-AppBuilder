@@ -22,6 +22,7 @@ jinja2==2.10.1            # via flask, flask-babel
 jsonschema==3.0.1
 markupsafe==1.1.1         # via jinja2
 marshmallow-enum==1.4.1
+marshmallow-jsonapi==0.22.0
 marshmallow-sqlalchemy==0.16.2
 marshmallow==2.18.0
 prison==0.1.2

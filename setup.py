@@ -58,6 +58,7 @@ setup(
         "jsonschema>=3.0.1, <4",
         "marshmallow>=2.18.0, <2.20",
         "marshmallow-enum>=1.4.1, <2",
+        "marshmallow-jsonapi<0.30,>=0.22.0",
         "marshmallow-sqlalchemy>=0.16.1, <1",
         "python-dateutil>=2.3, <3",
         "prison>=0.1.2, <1.0.0",
