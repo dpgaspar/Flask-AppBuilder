@@ -15,9 +15,15 @@ from ..._compat import as_unicode
 
 
 def get_user_id():
+    print("GET USER!!!")
+    from flask import current_app
     try:
-        return g.user.id
+        # return current_app.appbuilder.sm.current_user.id
+        id = g.user.id
+        print(f"FOUND {id}")
+        return id
     except Exception:
+        print("NOT FOUND")
         return None
 
 
@@ -85,8 +91,8 @@ class User(Document):
     created_on = DateTimeField(default=datetime.datetime.now)
     changed_on = DateTimeField(default=datetime.datetime.now)
 
-    created_by = ReferenceField("self", default=get_user_id())
-    changed_by = ReferenceField("self", default=get_user_id())
+    created_by = ReferenceField("self", default=get_user_id)
+    changed_by = ReferenceField("self", default=get_user_id)
 
     @property
     def is_authenticated(self):
