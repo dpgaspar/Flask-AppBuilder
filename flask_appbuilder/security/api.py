@@ -123,7 +123,7 @@ class SecurityApi(BaseApi):
                   schema:
                     type: object
                     properties:
-                      refresh_token:
+                      access_token:
                         type: string
             401:
               $ref: '#/components/responses/401'
@@ -133,7 +133,7 @@ class SecurityApi(BaseApi):
             - jwt_refresh: []
         """
         resp = {
-            API_SECURITY_REFRESH_TOKEN_KEY: create_access_token(
+            API_SECURITY_ACCESS_TOKEN_KEY: create_access_token(
                 identity=get_jwt_identity(), fresh=False
             )
         }
