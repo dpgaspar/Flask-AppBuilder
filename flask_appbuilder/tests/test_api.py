@@ -1,3 +1,4 @@
+from collections import defaultdict
 import json
 import logging
 import os
@@ -301,6 +302,7 @@ class APITestCase(FABTestCase):
                 "get_list": "access",
                 "get": "access",
                 "put": "access",
+                "patch": "access",
                 "post": "access",
                 "delete": "access",
                 "info": "access",
@@ -1296,6 +1298,7 @@ class APITestCase(FABTestCase):
             "can_delete",
             "can_get",
             "can_info",
+            "can_patch",
             "can_post",
             "can_put",
         ]
@@ -1711,7 +1714,7 @@ class APITestCase(FABTestCase):
         from .sqla.models import Model1CustomSchema
 
         class Model1ApiCustomSchema(self.model1api):
-            add_model_schema = Model1CustomSchema()
+            add_model_schema = defaultdict(Model1CustomSchema)
 
         self.appbuilder.add_api(Model1ApiCustomSchema)
 
@@ -1939,6 +1942,7 @@ class APITestCase(FABTestCase):
                 "get_list": "access",
                 "get": "access",
                 "put": "access",
+                "patch": "access",
                 "post": "access",
                 "delete": "access",
                 "info": "access",
@@ -1985,6 +1989,7 @@ class APITestCase(FABTestCase):
                 "get_list": "read",
                 "get": "read",
                 "put": "write",
+                "patch": "write",
                 "post": "write",
                 "delete": "write",
                 "info": "read",
@@ -2032,6 +2037,7 @@ class APITestCase(FABTestCase):
                 "get_list": "read",
                 "get": "read",
                 "put": "write",
+                "patch": "write",
                 "post": "write",
                 "delete": "write",
                 "info": "read",
@@ -2063,6 +2069,7 @@ class APITestCase(FABTestCase):
                 "get_list": "access2",
                 "get": "access2",
                 "put": "access2",
+                "patch": "access2",
                 "post": "access2",
                 "delete": "access2",
                 "info": "access2",
@@ -2091,10 +2098,12 @@ class APITestCase(FABTestCase):
                 ("Model1Api", "can_delete"): {("api2", "can_access2")},
                 ("Model1Api", "can_info"): {("api2", "can_access2")},
                 ("Model1Api", "can_put"): {("api2", "can_access2")},
+                ("Model1Api", "can_patch"): {("api2", "can_access2")},
                 ("Model1Api", "can_post"): {("api2", "can_access2")},
             },
             "del_role_pvm": {
                 ("Model1Api", "can_put"),
+                ("Model1Api", "can_patch"),
                 ("Model1Api", "can_delete"),
                 ("Model1Api", "can_get"),
                 ("Model1Api", "can_info"),
@@ -2130,6 +2139,7 @@ class APITestCase(FABTestCase):
                 "get_list": "get",
                 "get": "get",
                 "put": "put",
+                "patch": "patch",
                 "post": "post",
                 "delete": "delete",
                 "info": "info",
@@ -2138,6 +2148,7 @@ class APITestCase(FABTestCase):
                 "get_list": "access",
                 "get": "access",
                 "put": "access",
+                "patch": "access",
                 "post": "access",
                 "delete": "access",
                 "info": "access",
@@ -2162,6 +2173,7 @@ class APITestCase(FABTestCase):
                     ("Model1PermOverride", "can_get"),
                     ("Model1PermOverride", "can_post"),
                     ("Model1PermOverride", "can_put"),
+                    ("Model1PermOverride", "can_patch"),
                     ("Model1PermOverride", "can_delete"),
                     ("Model1PermOverride", "can_info"),
                 }
@@ -2173,4 +2185,4 @@ class APITestCase(FABTestCase):
         state_transitions = self.appbuilder.security_converge()
         self.assertEqual(state_transitions, target_state_transitions)
         role = self.appbuilder.sm.find_role("Test")
-        self.assertEqual(len(role.permissions), 5)
+        self.assertEqual(len(role.permissions), 6)
