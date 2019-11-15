@@ -1,10 +1,10 @@
 from marshmallow import fields
+from marshmallow_enum import EnumField
 from marshmallow_jsonapi import (
     fields as jsonapi_fields,
     Schema as JsonApiSchema,
     SchemaOpts as JsonApiSchemaOpts,
 )
-from marshmallow_enum import EnumField
 from marshmallow_sqlalchemy import field_for
 from marshmallow_sqlalchemy.schema import ModelSchema, ModelSchemaOpts
 

@@ -1,8 +1,8 @@
+from collections import defaultdict
 import functools
 import logging
 import re
 import traceback
-from collections import defaultdict
 
 from apispec import yaml_utils
 from flask import Blueprint, current_app, jsonify, make_response, request
@@ -17,7 +17,7 @@ import yaml
 
 from .convert import Model2SchemaConverter
 from .schemas import get_info_schema, get_item_schema, get_list_schema
-from .util import requested_type, jsonapi_requested
+from .util import jsonapi_requested, requested_type
 from .._compat import as_unicode
 from ..const import (
     API_ADD_COLUMNS_RES_KEY,
