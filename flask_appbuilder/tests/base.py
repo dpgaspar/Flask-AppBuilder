@@ -11,8 +11,9 @@ from flask_appbuilder.const import (
 
 class FABTestCase(unittest.TestCase):
     @staticmethod
-    def auth_client_get(client, token, uri):
-        return client.get(uri, headers={"Authorization": "Bearer {}".format(token)})
+    def auth_client_get(client, token, uri, extra_headers=None):
+        headers = {"Authorization": f"Bearer {token}", **(extra_headers or {})}
+        return client.get(uri, headers=headers)
 
     @staticmethod
     def auth_client_delete(client, token, uri):

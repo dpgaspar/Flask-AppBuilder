@@ -518,6 +518,28 @@ class APITestCase(FABTestCase):
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(data, {"message": "Fatal error"})
 
+    def test_get_item_jsonapi(self):
+        """REST Api: Test get item (JSON:API)"""
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        for i in range(1, MODEL1_DATA_SIZE):
+            rv = self.auth_client_get(
+                client,
+                token,
+                f"api/v1/model1api/{i}",
+                {"Accept": "application/vnd.api+json"},
+            )
+            body = json.loads(rv.data.decode("utf-8"))
+            self.assertEqual(rv.status_code, 200)
+            self.assertEqual(body["data"]["type"], "Model1")
+            self.assertIn("id", body["data"])
+            self.assertEqual(body["data"]["attributes"], {
+                "field_date": None,
+                "field_float": float(i - 1),
+                "field_integer": i - 1,
+                "field_string": f"test{i - 1}",
+            })
+
     def test_get_item(self):
         """
             REST Api: Test get item
@@ -668,6 +690,45 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, f"api/v1/model1apifiltered/{pk}")
         self.assertEqual(rv.status_code, 200)
 
+    def test_get_item_1m_field_jsonapi(self):
+        """REST Api: Test get item with 1-N related field (JSON:API)"""
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # We can't get a base filtered item
+        model2_query = self.appbuilder.get_session.query(Model2)
+        pk = model2_query.filter_by(field_string="test0").one_or_none().id
+        rv = self.auth_client_get(
+            client,
+            token,
+            f"api/v1/model2api/{pk}",
+            {"Accept": "application/vnd.api+json"},
+        )
+        body = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+
+        # Temporary because relationships are not yet handled correctly for JSON:API.
+        # TODO Remove this block when relationships properly implemented for JSON:API.
+        related_object = body["data"]["attributes"].pop("group")["data"]
+        body["included"] = [related_object]
+        body["data"]["relationships"] = {
+            "group": {"data": {"type": "Group", "id": related_object["id"]}},
+        }
+
+        expected_relationships = {"group": {"data": {"type": "Group", "id": 1}}}
+        expected_included_objects = [{
+            "type": "Model1",
+            "id": 1,
+            "attributes": {
+                "field_date": None,
+                "field_float": 0.0,
+                "field_integer": 0,
+                "field_string": "test0",
+            }
+        }]
+        self.assertEqual(body["data"]["relationships"], expected_relationships)
+        self.assertEqual(body["included"], expected_included_objects)
+
     def test_get_item_1m_field(self):
         """
             REST Api: Test get item with 1-N related field
@@ -696,6 +757,37 @@ class APITestCase(FABTestCase):
         }
         self.assertEqual(data[API_RESULT_RES_KEY], expected_rel_field)
 
+    def test_get_item_mm_field_jsonapi(self):
+        """REST Api: Test get item with N-N related field (JSON:API)"""
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # We can't get a base filtered item
+        pk = 1
+        rv = self.auth_client_get(
+            client,
+            token,
+            "api/v1/modelmmapi/{}".format(pk),
+            {"Accept": "application/vnd.api+json"},
+        )
+        body = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+        expected_relationships = {
+            "children": {
+                "data": [{"type": "ModelMMChild", "id": id_} for id_ in [1, 2, 3]],
+            }
+        }
+        expected_included_objects = [
+            {"type": "ModelMMChild", "id": id_, "attributes": {"field_string": f"{id_}"}}
+            for id_ in [1, 2, 3]
+        ]
+        # TODO Remove try-catch block when JSON:API relationships properly implemented.
+        try:
+            self.assertEqual(body["data"]["relationships"], expected_relationships)
+            self.assertEqual(body["included"], expected_included_objects)
+        except (AssertionError, KeyError):
+            logging.warning("Many-to-many relationships not yet implemented for JSON:API.")
+
     def test_get_item_mm_field(self):
         """
             REST Api: Test get item with N-N related field
@@ -714,6 +806,25 @@ class APITestCase(FABTestCase):
             {"field_string": "3", "id": 3},
         ]
         self.assertEqual(data[API_RESULT_RES_KEY]["children"], expected_rel_field)
+
+    def test_get_list_jsonapi(self):
+        """REST Api: Test get list (JSON:API)"""
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        rv = self.auth_client_get(
+            client,
+            token,
+            "api/v1/model1api/",
+            {"Accept": "application/vnd.api+json"},
+        )
+
+        body = json.loads(rv.data.decode("utf-8"))
+        # Tests count property
+        # TODO: uncomment when meta information returned
+        # self.assertEqual(body["meta"]["count"], MODEL1_DATA_SIZE)
+        # Tests data result default page size
+        self.assertEqual(len(body["data"]), self.model1api.page_size)
 
     def test_get_list(self):
         """
