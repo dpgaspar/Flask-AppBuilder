@@ -1,6 +1,10 @@
 {% extends "appbuilder/base.html" %}
 {% import 'appbuilder/general/lib.html' as lib %}
 
+{% block page_title %}
+{{ super() }} | {{ title }}
+{% endblock %}
+
 {% block content %}
 {{ lib.panel_begin(title) }}
 

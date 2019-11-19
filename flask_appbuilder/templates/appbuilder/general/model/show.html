@@ -1,8 +1,20 @@
 {% extends "appbuilder/base.html" %}
 {% import 'appbuilder/general/lib.html' as lib %}
+{% set wtargs = widgets.show.template_args %}
+
+{% block page_title %}
+{{ super() }} | {{ title }}
+{% if wtargs.title_column != None %}
+    | {{ wtargs.value_columns[wtargs.include_columns.index(wtargs.title_column)] }}
+{% endif %}
+{% endblock %}
 
 {% block content %}
-{{ lib.panel_begin(title, "show") }}
+{% if wtargs.title_column != None %}
+    {{ lib.panel_begin(title ~ ": " ~ wtargs.value_columns[wtargs.include_columns.index(wtargs.title_column)], "show") }}
+{% else %}
+    {{ lib.panel_begin(title, "show") }}
+{% endif %}
 
 {% if related_views is defined %}
     <ul class="nav nav-tabs"  style="{{"display: none;" if not related_views else "" }}">
