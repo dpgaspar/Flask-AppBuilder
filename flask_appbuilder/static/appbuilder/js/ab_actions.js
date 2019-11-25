@@ -20,7 +20,7 @@ var AdminActions = function() {
         multiple = true;
         action_name = name;
         action_confirmation = confirmation;
-        var selected = $('input.action_check:checked').size();
+        var selected = $('input.action_check:checked').length;
 
         if (selected == 0) {
             ab_alert('No row selected');
@@ -58,7 +58,7 @@ var AdminActions = function() {
                 form.append($(this).clone());
             });
             
-            form.submit();
+            form.trigger('submit');
 
             return false;
     }
@@ -67,7 +67,7 @@ var AdminActions = function() {
     // Event for checkbox with class "action_check_all"
     // will check all checkboxes with class "action_check
     //----------------------------------------------------
-    $('.action_check_all').click(function() {
+    $('.action_check_all').on('click', function() {
         $('.action_check').prop('checked', chkAllFlag).trigger("change");
         chkAllFlag = !chkAllFlag;
     });
@@ -76,7 +76,7 @@ var AdminActions = function() {
     // Event for checkbox with class "action_check"
     // will add class 'active' to row
     //----------------------------------------------------
-    $('.action_check').change(function() {
+    $('.action_check').on('change', function() {
         var thisClosest = $(this).closest('tr'),
         checked = this.checked;
         $(this).closest('tr').add(thisClosest )[checked ? 'addClass' : 'removeClass'](row_checked_class);
