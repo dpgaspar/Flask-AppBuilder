@@ -57,7 +57,7 @@ class BaseFilter(object):
         raise NotImplementedError
 
     def __repr__(self):
-        return self.name
+        return self.__class__.__name__
 
 
 class FilterRelation(BaseFilter):
@@ -164,8 +164,19 @@ class Filters(object):
         """
         for _filter in data:
             filter_class = map_args_filter.get(_filter["opr"], None)
-            if filter_class:
-                self.add_filter(_filter["col"], filter_class, _filter["value"])
+            if filter_class and _filter["col"] in self.search_columns:
+                if _filter["col"] not in self.search_columns:
+                    log.warning(f"Filter column: {_filter['col']} not allowed to filter")
+                elif not self._rest_check_valid_filter_operation(_filter["col"], _filter["opr"]):
+                    log.warning(f"Filter operation: {_filter['opr']} not allowed on column: {_filter['col']}")
+                else:
+                    self.add_filter(_filter["col"], filter_class, _filter["value"])
+
+    def _rest_check_valid_filter_operation(self, col, opr):
+        for filter_class in self._search_filters.get(col, []):
+            if filter_class.arg_name == opr:
+                return True
+        return False
 
     def add_filter(self, column_name, filter_class, value):
         self._add_filter(filter_class(column_name, self.datamodel), value)
