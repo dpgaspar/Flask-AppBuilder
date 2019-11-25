@@ -1,6 +1,16 @@
 Versions
 ========
 
+Improvements and Bug fixes on 1.13.2
+------------------------------------
+
+- Fix, #1111 marshmallow-sqlalchemy update breaks py2 and 3.5 compatibility
+
+Improvements and Bug fixes on 1.13.1
+------------------------------------
+
+- Fix, #1016 [api] patch version 1.x trunk with make api csrf exempt if csrf exists
+
 Improvements and Bug fixes on 1.13.0
 ------------------------------------
 
