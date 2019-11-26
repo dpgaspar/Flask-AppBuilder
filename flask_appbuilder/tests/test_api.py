@@ -1074,7 +1074,7 @@ class APITestCase(FABTestCase):
 
     def test_get_list_filters_wrong_opr(self):
         """
-            REST Api: Test get list with wrong columns
+            REST Api: Test get list with wrong operation
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1084,6 +1084,24 @@ class APITestCase(FABTestCase):
             API_FILTERS_RIS_KEY: [
                 {"col": "field_integer", "opr": "sw", "value": filter_value}
             ]
+        }
+
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 400)
+
+    def test_get_list_filters_wrong_order(self):
+        """
+            REST Api: Test get list with wrong order column
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        filter_value = 1
+        arguments = {
+            "order_column": "wrong_column",
+            "order_direction": "asc",
         }
 
         uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"

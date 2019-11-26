@@ -11,3 +11,8 @@ class InvalidColumnFilterFABException(FABException):
 class InvalidOperationFilterFABException(FABException):
     """Invalid operation for filter"""
     pass
+
+
+class InvalidOrderByColumnFABException(FABException):
+    """Invalid order by column"""
+    pass
