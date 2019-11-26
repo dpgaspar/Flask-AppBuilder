@@ -1541,8 +1541,10 @@ class ModelRestApi(BaseModelApi):
         order_column = rison_args.get(API_ORDER_COLUMN_RIS_KEY, "")
         order_direction = rison_args.get(API_ORDER_DIRECTION_RIS_KEY, "")
         if not order_column and self.base_order:
-            order_column, order_direction = self.base_order
-        if order_column not in self.order_columns:
+            return self.base_order
+        if not order_column:
+            return "", ""
+        elif order_column not in self.order_columns:
             raise InvalidOrderByColumnFABException(
                 f"Invalid order by column: {order_column}"
             )
