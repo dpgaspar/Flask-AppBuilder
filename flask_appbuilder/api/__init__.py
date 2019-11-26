@@ -343,12 +343,12 @@ class BaseApi(object):
     """
         Does not register routes for a set builtin ModelRestApi functions.
         example::
-        
+
             class ContactModelView(ModelRestApi):
                 datamodel = SQLAModel(Contact)
-                exclude_route_methods = ("info", "get_list", "get")            
-    
-        
+                exclude_route_methods = ("info", "get_list", "get")
+
+
         The previous examples will only register the `put`, `post` and `delete` routes
     """
 
