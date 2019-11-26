@@ -53,6 +53,7 @@ from ..const import (
     API_URI_RIS_KEY,
     PERMISSION_PREFIX,
 )
+from ..exceptions import FABException, InvalidOrderByColumnFABException
 from ..security.decorators import permission_name, protect
 
 log = logging.getLogger(__name__)
@@ -1295,9 +1296,15 @@ class ModelRestApi(BaseModelApi):
         else:
             _list_model_schema = self.list_model_schema
         # handle filters
-        joined_filters = self._handle_filters_args(_args)
+        try:
+            joined_filters = self._handle_filters_args(_args)
+        except FABException as e:
+            return self.response_400(message=str(e))
         # handle base order
-        order_column, order_direction = self._handle_order_args(_args)
+        try:
+            order_column, order_direction = self._handle_order_args(_args)
+        except InvalidOrderByColumnFABException as e:
+            return self.response_400(message=str(e))
         # handle pagination
         page_index, page_size = self._handle_page_args(_args)
         # Make the query
@@ -1534,9 +1541,13 @@ class ModelRestApi(BaseModelApi):
         order_column = rison_args.get(API_ORDER_COLUMN_RIS_KEY, "")
         order_direction = rison_args.get(API_ORDER_DIRECTION_RIS_KEY, "")
         if not order_column and self.base_order:
-            order_column, order_direction = self.base_order
-        if order_column not in self.order_columns:
+            return self.base_order
+        if not order_column:
             return "", ""
+        elif order_column not in self.order_columns:
+            raise InvalidOrderByColumnFABException(
+                f"Invalid order by column: {order_column}"
+            )
         return order_column, order_direction
 
     def _handle_filters_args(self, rison_args):
