@@ -339,6 +339,19 @@ class BaseApi(object):
         Override custom OpenApi responses
     """
 
+    exclude_route_methods = set()
+    """
+        Does not register routes for a set of builtin ModelRestApi functions.
+        example::
+
+            class ContactModelView(ModelRestApi):
+                datamodel = SQLAModel(Contact)
+                exclude_route_methods = ("info", "get_list", "get")
+
+
+        The previous examples will only register the `put`, `post` and `delete` routes
+    """
+
     def __init__(self):
         """
             Initialization of base permissions
@@ -372,6 +385,9 @@ class BaseApi(object):
             self.base_permissions = set()
             is_add_base_permissions = True
         for attr_name in dir(self):
+            # Don't create permission for excluded routes
+            if attr_name in self.exclude_route_methods:
+                continue
             if hasattr(getattr(self, attr_name), "_permission_name"):
                 if is_collect_previous:
                     self.previous_method_permission_name[attr_name] = getattr(
@@ -436,6 +452,9 @@ class BaseApi(object):
 
     def _register_urls(self):
         for attr_name in dir(self):
+            if attr_name in self.exclude_route_methods:
+                log.info(f"Not registering route for method {attr_name}")
+                continue
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
@@ -1148,7 +1167,7 @@ class ModelRestApi(BaseModelApi):
         self.set_response_key_mappings(_response, self.info, _args, **_args)
         return self.response(200, **_response)
 
-    @expose("/<pk>", methods=["GET"])
+    @expose("/<int:pk>", methods=["GET"])
     @protect()
     @safe
     @permission_name("get")
