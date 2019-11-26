@@ -169,7 +169,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             return field
         # is custom property method field?
         if hasattr(getattr(_model, column.data), 'fget'):
-            return fields.Str(dump_only=True)
+            return fields.Raw(dump_only=True)
         # is a normal model field not a function?
         if not hasattr(getattr(_model, column.data), '__call__'):
             field = field_for(_model, column.data)

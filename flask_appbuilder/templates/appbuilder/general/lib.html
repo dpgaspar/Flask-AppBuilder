@@ -76,10 +76,12 @@
     </button>
     <ul class="dropdown-menu" role="menu">
     	{% for sel_page_size in range(25,125,25) %}
-    	{% if sel_page_size == page_size %}
-        	<li class="active"><a href="{{sel_page_size | link_page_size(modelview_name) }}">{{sel_page_size}}</a></li>
-        {% else %}
-        	<li><a href="{{sel_page_size | link_page_size(modelview_name) }}">{{sel_page_size}}</a></li>
+        {% if page*sel_page_size <= count %}
+            {% if sel_page_size == page_size %}
+                <li class="active"><a href="{{sel_page_size | link_page_size(modelview_name) }}">{{sel_page_size}}</a></li>
+            {% else %}
+                <li><a href="{{sel_page_size | link_page_size(modelview_name) }}">{{sel_page_size}}</a></li>
+            {% endif %}
         {% endif %}
         {% endfor %}
     </ul>
@@ -235,8 +237,8 @@
 {% endif %}
 {% endmacro %}
 
-{% macro panel_begin(title) %}
-<div class="panel panel-primary">
+{% macro panel_begin(title, extra_class="") %}
+<div class="panel panel-primary {{ extra_class }}">
 	<div class="panel-heading">
 	<h4 class="panel-title">{{title}}</h4>
 	</div>

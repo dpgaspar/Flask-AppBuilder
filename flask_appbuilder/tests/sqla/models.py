@@ -1,3 +1,4 @@
+import datetime
 import enum
 
 from flask_appbuilder import Model
@@ -12,7 +13,7 @@ from sqlalchemy import (
     Integer,
     String,
     Table,
-    UniqueConstraint
+    UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
 
@@ -39,8 +40,8 @@ class Model1(Model):
 
 
 def validate_field_string(n):
-    if n[0] != 'A':
-        raise ValidationError('Name must start with an A')
+    if n[0] != "A":
+        raise ValidationError("Name must start with an A")
 
 
 class Model1CustomSchema(Schema):
@@ -102,11 +103,12 @@ class ModelWithProperty(Model):
 class TmpEnum(enum.Enum):
     e1 = "a"
     e2 = 2
+    e3 = 3
 
 
 class ModelWithEnums(Model):
     id = Column(Integer, primary_key=True)
-    enum1 = Column(Enum("e1", "e2"))
+    enum1 = Column(Enum("e1", "e2", "e3", name="enum1"))
     enum2 = Column(Enum(TmpEnum), info={"enum_class": TmpEnum})
 
 
@@ -150,7 +152,7 @@ class ModelMMParentRequired(Model):
     children = relationship(
         "ModelMMChildRequired",
         secondary=assoc_parent_child_required,
-        info={"required": True}
+        info={"required": True},
     )
 
 
@@ -165,27 +167,93 @@ class ModelMMChildRequired(Model):
     """
 
 
+def insert_model1(session, i=0):
+    add_flag = False
+    model = session.query(Model1).filter_by(id=i + 1).one_or_none()
+    if not model:
+        model = Model1()
+        add_flag = True
+    model.field_string = f"test{i}"
+    model.field_integer = i
+    model.field_float = float(i)
+    if add_flag:
+        session.add(model)
+    session.commit()
+    return model
+
+
+def insert_model2(session, i=0, model1_collection=None):
+    if not model1_collection:
+        model1 = session.query(Model1).filter_by(id=i + 1).one_or_none()
+    else:
+        model1 = model1_collection[i]
+    model = Model2()
+    model.field_string = f"test{i}"
+    model.field_integer = i
+    model.field_float = float(i)
+    model.group = model1
+
+    import random
+    year = random.choice(range(1900, 2012))
+    month = random.choice(range(1, 12))
+    day = random.choice(range(1, 28))
+    model.field_date = datetime.datetime(year, month, day)
+
+    session.add(model)
+    session.commit()
+    return model
+
+
+def insert_model3(session):
+    model3 = Model3(pk1=3, pk2=datetime.datetime(2017, 3, 3), field_string="foo")
+    try:
+        session.add(model3)
+        session.commit()
+    except Exception as e:
+        print("Error {0}".format(str(e)))
+        session.rollback()
+
+
+def insert_model_mm_parent(session, i=0, children=None):
+    add_flag = False
+    model = session.query(ModelMMParent).filter_by(id=i + 1).one_or_none()
+    if not model:
+        model = ModelMMParent()
+        add_flag = True
+    model.field_string = str(i)
+    if children:
+        model.children = children
+    if add_flag:
+        session.add(model)
+    session.commit()
+    return model
+
+
+def insert_model_with_enums(session, i=0):
+    add_flag = False
+    model = session.query(ModelWithEnums).filter_by(id=i + 1).one_or_none()
+    if not model:
+        model = ModelWithEnums()
+        add_flag = True
+    model.enum1 = "e1"
+    model.enum2 = TmpEnum.e2
+    if add_flag:
+        session.add(model)
+    session.commit()
+    return model
+
+
 def insert_data(session, count):
     model1_collection = list()
     # Fill model1
     for i in range(count):
-        model = Model1()
-        model.field_string = "test{}".format(i)
-        model.field_integer = i
-        model.field_float = float(i)
-        session.add(model)
-        session.commit()
+        model = insert_model1(session, i)
         model1_collection.append(model)
     # Fill model2
     for i in range(count):
-        model = Model2()
-        model.field_string = "test{}".format(i)
-        model.field_integer = i
-        model.field_float = float(i)
-        model.group = model1_collection[i]
-        session.add(model)
-        session.commit()
-    # Fill model with enums
+        insert_model2(session, i=i, model1_collection=model1_collection)
+    insert_model3(session)
+
     for i in range(count):
         model = ModelWithEnums()
         model.enum1 = "e1"
@@ -217,11 +285,7 @@ def insert_data(session, count):
         session.commit()
 
     for i in range(count):
-        model = ModelMMParent()
-        model.field_string = str(i)
-        model.children = children
-        session.add(model)
-        session.commit()
+        insert_model_mm_parent(session, i=i, children=children)
 
         model = ModelMMParentRequired()
         model.field_string = str(i)

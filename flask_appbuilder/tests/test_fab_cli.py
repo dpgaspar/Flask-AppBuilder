@@ -1,20 +1,21 @@
 import logging
 import os
-import unittest
 
 from click.testing import CliRunner
-from flask_appbuilder.cli import create_app, create_user
-from nose.tools import ok_
+from flask_appbuilder.cli import (
+    create_app, create_permissions, create_user, list_users, list_views,
+)
 
+from .base import FABTestCase
 
 logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
 log = logging.getLogger(__name__)
 
-APP_DIR = 'myapp'
+APP_DIR = "myapp"
 
 
-class FlaskTestCase(unittest.TestCase):
+class FlaskTestCase(FABTestCase):
     def setUp(self):
         pass
 
@@ -25,17 +26,13 @@ class FlaskTestCase(unittest.TestCase):
         """
             Test create app
         """
-        os.environ['FLASK_APP'] = "app:app"
+        os.environ["FLASK_APP"] = "app:app"
         runner = CliRunner()
         with runner.isolated_filesystem():
             result = runner.invoke(
-                create_app,
-                [
-                    f'--name={APP_DIR}',
-                    '--engine=SQLAlchemy'
-                ]
+                create_app, [f"--name={APP_DIR}", "--engine=SQLAlchemy"]
             )
-            ok_("Downloaded the skeleton app, good coding!" in result.output)
+            self.assertIn("Downloaded the skeleton app, good coding!", result.output)
             os.chdir(APP_DIR)
             result = runner.invoke(
                 create_user,
@@ -49,4 +46,22 @@ class FlaskTestCase(unittest.TestCase):
                 ],
             )
             log.info(result.output)
-            ok_("User bob created." in result.output)
+            self.assertIn("User bob created.", result.output)
+
+            result = runner.invoke(list_users, [])
+            self.assertIn("bob", result.output)
+
+            result = runner.invoke(create_permissions, [])
+
+    def test_list_views(self):
+        """
+            CLI: Test list views
+        """
+        os.environ["FLASK_APP"] = "app:app"
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            result = runner.invoke(
+                list_views, []
+            )
+            self.assertIn("List of registered views", result.output)
+            self.assertIn(" Route:/api/v1/security", result.output)

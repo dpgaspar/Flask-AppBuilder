@@ -131,7 +131,7 @@ class Filters(object):
         self.clear_filters()
         if self.search_columns:
             self._search_filters = self._get_filters(self.search_columns)
-            self._all_filters = self._get_filters(datamodel.get_columns_list())
+        self._all_filters = self._get_filters(datamodel.get_columns_list())
 
     def get_search_filters(self):
         return self._search_filters

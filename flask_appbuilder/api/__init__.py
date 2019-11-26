@@ -337,6 +337,7 @@ class BaseApi(object):
     """
         Override custom OpenApi responses
     """
+
     def __init__(self):
         """
             Initialization of base permissions
@@ -353,8 +354,9 @@ class BaseApi(object):
         # Init class permission override attrs
         if not self.previous_class_permission_name and self.class_permission_name:
             self.previous_class_permission_name = self.__class__.__name__
-        self.class_permission_name = (self.class_permission_name or
-                                      self.__class__.__name__)
+        self.class_permission_name = (
+            self.class_permission_name or self.__class__.__name__
+        )
 
         # Init previous permission override attrs
         is_collect_previous = False
@@ -393,7 +395,7 @@ class BaseApi(object):
         self.blueprint = Blueprint(self.endpoint, __name__, url_prefix=self.route_base)
         # Exempt API from CSRF protect
         if self.csrf_exempt:
-            csrf = self.appbuilder.app.extensions.get('csrf')
+            csrf = self.appbuilder.app.extensions.get("csrf")
             if csrf:
                 csrf.exempt(self.blueprint)
 
@@ -475,7 +477,7 @@ class BaseApi(object):
             if yaml_doc_string:
                 operation_spec = yaml_doc_string.get(method.lower(), {})
                 if self.get_method_permission(func.__name__):
-                    operation_spec['security'] = [{'jwt': []}]
+                    operation_spec["security"] = [{"jwt": []}]
                 operations[method.lower()] = operation_spec
             else:
                 operations[method.lower()] = {}
@@ -515,7 +517,7 @@ class BaseApi(object):
         """
             Sets initialized inner views
         """
-        pass
+        pass  # pragma: no cover
 
     def get_method_permission(self, method_name: str) -> str:
         """
@@ -525,12 +527,11 @@ class BaseApi(object):
             return self.method_permission_name.get(method_name)
         else:
             if hasattr(getattr(self, method_name), "_permission_name"):
-                return getattr(
-                    getattr(self, method_name), "_permission_name")
+                return getattr(getattr(self, method_name), "_permission_name")
 
     def set_response_key_mappings(self, response, func, rison_args, **kwargs):
         if not hasattr(func, "_response_key_func_mappings"):
-            return
+            return  # pragma: no cover
         _keys = rison_args.get("keys", None)
         if not _keys:
             for k, v in func._response_key_func_mappings.items():
@@ -541,15 +542,10 @@ class BaseApi(object):
                     v(self, response, **kwargs)
 
     def merge_current_user_permissions(self, response, **kwargs):
-        response[
-            API_PERMISSIONS_RES_KEY
-        ] = [
+        response[API_PERMISSIONS_RES_KEY] = [
             permission
             for permission in self.base_permissions
-            if self.appbuilder.sm.has_access(
-                permission,
-                self.class_permission_name,
-            )
+            if self.appbuilder.sm.has_access(permission, self.class_permission_name)
         ]
 
     @staticmethod
@@ -724,14 +720,12 @@ class BaseModelApi(BaseApi):
         self._base_filters = self.datamodel.get_filters().add_filter_list(
             self.base_filters
         )
-        list_cols = self.datamodel.get_columns_list()
         search_columns = self.datamodel.get_search_columns_list()
         if not self.search_columns:
             self.search_columns = [
                 x for x in search_columns if x not in self.search_exclude_columns
             ]
-
-        self._gen_labels_columns(list_cols)
+        self._gen_labels_columns(self.datamodel.get_columns_list())
         self._filters = self.datamodel.get_filters(self.search_columns)
 
     def _init_titles(self):
@@ -803,6 +797,11 @@ class ModelRestApi(BaseModelApi):
     page_size = 20
     """
         Use this property to change default page size
+    """
+    max_page_size = None
+    """
+        class override for the FAB_API_MAX_SIZE, use special -1 to allow for any page
+        size
     """
     description_columns = None
     """
@@ -976,10 +975,9 @@ class ModelRestApi(BaseModelApi):
                 if x not in self.list_exclude_columns
             ]
 
-        self._gen_labels_columns(self.list_columns)
         self.order_columns = (
-            self.order_columns or
-            self.datamodel.get_order_columns_list(list_columns=self.list_columns)
+            self.order_columns
+            or self.datamodel.get_order_columns_list(list_columns=self.list_columns)
         )
         # Process excluded columns
         if not self.show_columns:
@@ -994,6 +992,8 @@ class ModelRestApi(BaseModelApi):
             self.edit_columns = [
                 x for x in list_cols if x not in self.edit_exclude_columns
             ]
+        self._gen_labels_columns(self.list_columns)
+        self._gen_labels_columns(self.show_columns)
         self._filters = self.datamodel.get_filters(self.search_columns)
         self.edit_query_rel_fields = self.edit_query_rel_fields or dict()
         self.add_query_rel_fields = self.add_query_rel_fields or dict()
@@ -1004,7 +1004,7 @@ class ModelRestApi(BaseModelApi):
             self.add_columns,
             self.add_model_schema,
             self.add_query_rel_fields,
-            **_kwargs
+            **_kwargs,
         )
 
     def merge_edit_field_info(self, response, **kwargs):
@@ -1013,7 +1013,7 @@ class ModelRestApi(BaseModelApi):
             self.edit_columns,
             self.edit_model_schema,
             self.edit_query_rel_fields,
-            **_kwargs
+            **_kwargs,
         )
 
     def merge_search_filters(self, response, **kwargs):
@@ -1036,10 +1036,22 @@ class ModelRestApi(BaseModelApi):
     def merge_label_columns(self, response, **kwargs):
         _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
         if _pruned_select_cols:
-            _show_columns = _pruned_select_cols
+            columns = _pruned_select_cols
         else:
-            _show_columns = self.show_columns
-        response[API_LABEL_COLUMNS_RES_KEY] = self._label_columns_json(_show_columns)
+            # Send the exact labels for the caller operation
+            if kwargs.get("caller") == "list":
+                columns = self.list_columns
+            elif kwargs.get("caller") == "show":
+                columns = self.show_columns
+            else:
+                columns = self.label_columns  # pragma: no cover
+        response[API_LABEL_COLUMNS_RES_KEY] = self._label_columns_json(columns)
+
+    def merge_list_label_columns(self, response, **kwargs):
+        self.merge_label_columns(response, caller="list", **kwargs)
+
+    def merge_show_label_columns(self, response, **kwargs):
+        self.merge_label_columns(response, caller="show", **kwargs)
 
     def merge_show_columns(self, response, **kwargs):
         _pruned_select_cols = kwargs.get(API_SELECT_COLUMNS_RIS_KEY, [])
@@ -1055,8 +1067,9 @@ class ModelRestApi(BaseModelApi):
                 _pruned_select_cols
             )
         else:
+            # Send all descriptions if cols are or request pruned
             response[API_DESCRIPTION_COLUMNS_RES_KEY] = self._description_columns_json(
-                self.show_columns
+                self.description_columns
             )
 
     def merge_list_columns(self, response, **kwargs):
@@ -1139,7 +1152,7 @@ class ModelRestApi(BaseModelApi):
     @safe
     @permission_name("get")
     @rison(get_item_schema)
-    @merge_response_func(merge_label_columns, API_LABEL_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_show_label_columns, API_LABEL_COLUMNS_RIS_KEY)
     @merge_response_func(merge_show_columns, API_SHOW_COLUMNS_RIS_KEY)
     @merge_response_func(merge_description_columns, API_DESCRIPTION_COLUMNS_RIS_KEY)
     @merge_response_func(merge_show_title, API_SHOW_TITLE_RIS_KEY)
@@ -1198,7 +1211,7 @@ class ModelRestApi(BaseModelApi):
             _response,
             self.get,
             _args,
-            **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols}
+            **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols},
         )
         if _pruned_select_cols:
             _show_model_schema = self.model2schemaconverter.convert(_pruned_select_cols)
@@ -1216,7 +1229,7 @@ class ModelRestApi(BaseModelApi):
     @permission_name("get")
     @rison(get_list_schema)
     @merge_response_func(merge_order_columns, API_ORDER_COLUMNS_RIS_KEY)
-    @merge_response_func(merge_label_columns, API_LABEL_COLUMNS_RIS_KEY)
+    @merge_response_func(merge_list_label_columns, API_LABEL_COLUMNS_RIS_KEY)
     @merge_response_func(merge_description_columns, API_DESCRIPTION_COLUMNS_RIS_KEY)
     @merge_response_func(merge_list_columns, API_LIST_COLUMNS_RIS_KEY)
     @merge_response_func(merge_list_title, API_LIST_TITLE_RIS_KEY)
@@ -1274,7 +1287,7 @@ class ModelRestApi(BaseModelApi):
             _response,
             self.get_list,
             _args,
-            **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols}
+            **{API_SELECT_COLUMNS_RIS_KEY: _pruned_select_cols},
         )
 
         if _pruned_select_cols:
@@ -1360,7 +1373,7 @@ class ModelRestApi(BaseModelApi):
                         item.data, many=False
                     ).data,
                     "id": self.datamodel.get_pk_value(item.data),
-                }
+                },
             )
         except IntegrityError as e:
             return self.response_422(message=str(e.orig))
@@ -1429,7 +1442,7 @@ class ModelRestApi(BaseModelApi):
                     API_RESULT_RES_KEY: self.edit_model_schema.dump(
                         item.data, many=False
                     ).data
-                }
+                },
             )
         except IntegrityError as e:
             return self.response_422(message=str(e.orig))
@@ -1497,7 +1510,15 @@ class ModelRestApi(BaseModelApi):
     def _sanitize_page_args(self, page, page_size):
         _page = page or 0
         _page_size = page_size or self.page_size
-        max_page_size = current_app.config.get("FAB_API_MAX_PAGE_SIZE")
+        max_page_size = self.max_page_size or current_app.config.get(
+            "FAB_API_MAX_PAGE_SIZE"
+        )
+        # Accept special -1 to uncap the page size
+        if max_page_size == -1:
+            if _page_size == -1:
+                return None, None
+            else:
+                return _page, _page_size
         if _page_size > max_page_size or _page_size < 1:
             _page_size = max_page_size
         return _page, _page_size
@@ -1544,8 +1565,8 @@ class ModelRestApi(BaseModelApi):
         """
         ret = dict()
         ret["name"] = field.name
-        ret["label"] = self.label_columns.get(field.name, "")
-        ret["description"] = self.description_columns.get(field.name, "")
+        ret["label"] = _(self.label_columns.get(field.name, ""))
+        ret["description"] = _(self.description_columns.get(field.name, ""))
         # Handles related fields
         if isinstance(field, Related) or isinstance(field, RelatedList):
             ret["count"], ret["values"] = self._get_list_related_field(

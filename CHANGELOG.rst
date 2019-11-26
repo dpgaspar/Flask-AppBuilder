@@ -1,6 +1,59 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.2.0
+-----------------------------------
+
+- Fix, #1157 Improve API get menu data performance
+- Fix, #1143 [mvc] pagination UI bug
+- Fix, #1147 [babel] crash with empty LANGUAGES config key
+- New, #1116 Expose menu data as serializable objects
+- Fix, #1127 MSSQL issue with pagination
+- Fix, #1132 Add autofocus for login screen (#1132)
+- Fix, #1125 Support absence of the public role (#1125)
+- New, #1124 hide tabs when only 'Detail' (no related_views)
+- Fix, #1119 ldap: safely retrieve error object when loggin exception
+
+Improvements and Bug fixes on 2.1.13
+------------------------------------
+
+- Fix, #1105 Has access query fails on MySQL < 8
+
+Improvements and Bug fixes on 2.1.12
+------------------------------------
+
+- Fix, #1104 Preserve custom property return type on ModelRestApi
+- Fix, #1096 Bootstrap and Bootswatch bump to 3.4.1
+- Fix, #1097 python version restriction on setup > 3.6 < 4
+- Fix, #1095 OAuth set fallback when next url in state is empty
+
+Improvements and Bug fixes on 2.1.11
+------------------------------------
+
+- Fix, #1092 Has access query fails on MSSQL
+
+Improvements and Bug fixes on 2.1.10
+------------------------------------
+
+- Fix, #1079 Make it possible to override register_views when using FAB_ADD_SECURITY_VIEWS
+
+Improvements and Bug fixes on 2.1.9
+-----------------------------------
+
+- Fix, #1078 API unlimited page size with unlimited max_page_size issues SQL with negative LIMIT
+
+Improvements and Bug fixes on 2.1.8
+-----------------------------------
+
+- Fix, #1077 API Info not translating labels and description
+- Fix, #1069 API label_columns for get item returning labels for list columns
+- Fix, #1072 API max_page_size class property override for FAB_API_MAX_SIZE
+
+Improvements and Bug fixes on 2.1.7
+-----------------------------------
+
+- Fix, #1065 setup version cap on apispec, jsonschema, marshmallow-sqlalchemy, prison
+
 Improvements and Bug fixes on 2.1.6
 -----------------------------------
 
