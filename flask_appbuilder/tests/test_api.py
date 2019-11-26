@@ -1098,7 +1098,6 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        filter_value = 1
         arguments = {
             "order_column": "wrong_column",
             "order_direction": "asc",
