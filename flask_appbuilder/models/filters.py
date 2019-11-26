@@ -2,6 +2,7 @@ import copy
 import logging
 
 from .._compat import as_unicode
+from ..exceptions import InvalidColumnFilterFABException, InvalidOperationFilterFABException
 
 log = logging.getLogger(__name__)
 
@@ -164,13 +165,19 @@ class Filters(object):
         """
         for _filter in data:
             filter_class = map_args_filter.get(_filter["opr"], None)
-            if filter_class and _filter["col"] in self.search_columns:
+            if filter_class:
                 if _filter["col"] not in self.search_columns:
-                    log.warning(f"Filter column: {_filter['col']} not allowed to filter")
+                    raise InvalidColumnFilterFABException(f"Filter column: {_filter['col']} not allowed to filter")
                 elif not self._rest_check_valid_filter_operation(_filter["col"], _filter["opr"]):
-                    log.warning(f"Filter operation: {_filter['opr']} not allowed on column: {_filter['col']}")
+                    raise InvalidOperationFilterFABException(
+                        f"Filter operation: {_filter['opr']} not allowed on column: {_filter['col']}"
+                    )
                 else:
                     self.add_filter(_filter["col"], filter_class, _filter["value"])
+            else:
+                raise InvalidOperationFilterFABException(
+                    f"Filter operation: {_filter['opr']} not allowed on column: {_filter['col']}"
+                )
 
     def _rest_check_valid_filter_operation(self, col, opr):
         for filter_class in self._search_filters.get(col, []):

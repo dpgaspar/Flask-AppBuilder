@@ -15,6 +15,7 @@ from werkzeug.exceptions import BadRequest
 import yaml
 
 from .convert import Model2SchemaConverter
+from ..exceptions import FABException
 from .schemas import get_info_schema, get_item_schema, get_list_schema
 from .._compat import as_unicode
 from ..const import (
@@ -1295,7 +1296,10 @@ class ModelRestApi(BaseModelApi):
         else:
             _list_model_schema = self.list_model_schema
         # handle filters
-        joined_filters = self._handle_filters_args(_args)
+        try:
+            joined_filters = self._handle_filters_args(_args)
+        except FABException as e:
+            return self.response_400(message=str(e))
         # handle base order
         order_column, order_direction = self._handle_order_args(_args)
         # handle pagination
