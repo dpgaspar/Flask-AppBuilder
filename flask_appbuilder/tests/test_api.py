@@ -216,6 +216,12 @@ class APITestCase(FABTestCase):
 
         self.appbuilder.add_api(Model1ApiExcludeCols)
 
+        class Model1ApiExcludeRoutes(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            exclude_route_methods = ("info", 'delete')
+
+        self.appbuilder.add_api(Model1ApiExcludeRoutes)
+
         class Model1ApiOrder(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             base_order = ("field_integer", "desc")
@@ -515,6 +521,30 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 500)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(data, {"message": "Fatal error"})
+
+    def test_exclude_route_methods(self):
+        """
+            REST Api: Test exclude route methods
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        uri = "api/v1/model1apiexcluderoutes/_info"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 405)
+
+        uri = "api/v1/model1apiexcluderoutes/1"
+        rv = self.auth_client_delete(client, token, uri)
+        self.assertEqual(rv.status_code, 405)
+
+        # Check that permissions do not exist
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_info", "Model1ApiExcludeRoutes"
+        )
+        self.assertIsNone(pvm)
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_delete", "Model1ApiExcludeRoutes"
+        )
+        self.assertIsNone(pvm)
 
     def test_get_item(self):
         """
