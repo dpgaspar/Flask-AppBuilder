@@ -58,14 +58,13 @@ class BaseFilter(object):
         raise NotImplementedError
 
     def __repr__(self):
-        return self.__class__.__name__
+        return self.name
 
 
 class FilterRelation(BaseFilter):
     """
         Base class for all filters for relations
     """
-
     pass
 
 
@@ -84,18 +83,18 @@ class BaseFilterConverter(object):
         This will map a column type to all possible filters.
         use something like this::
 
-            (('is_text', [FilterCustomForText,
-                                     FilterNotContains,
-                                     FilterEqual,
-                                     FilterNotEqual]
-                                     ),
-                        ('is_string', [FilterContains,
-                                       FilterNotContains,
-                                       FilterEqual,
-                                       FilterNotEqual]),
-                        ('is_integer', [FilterEqual,
-                                        FilterNotEqual]),
-                        )
+            (
+                ('is_text', [FilterCustomForText,
+                         FilterNotContains,
+                         FilterEqual,
+                         FilterNotEqual]),
+                ('is_string', [FilterContains,
+                           FilterNotContains,
+                           FilterEqual,
+                           FilterNotEqual]),
+                ('is_integer', [FilterEqual,
+                            FilterNotEqual]),
+            )
 
     """
 
