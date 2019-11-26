@@ -341,7 +341,7 @@ class BaseApi(object):
 
     exclude_route_methods = set()
     """
-        Does not register routes for a set builtin ModelRestApi functions.
+        Does not register routes for a set of builtin ModelRestApi functions.
         example::
 
             class ContactModelView(ModelRestApi):
