@@ -2,7 +2,10 @@ import copy
 import logging
 
 from .._compat import as_unicode
-from ..exceptions import InvalidColumnFilterFABException, InvalidOperationFilterFABException
+from ..exceptions import (
+    InvalidColumnFilterFABException,
+    InvalidOperationFilterFABException,
+)
 
 log = logging.getLogger(__name__)
 
@@ -65,6 +68,7 @@ class FilterRelation(BaseFilter):
     """
         Base class for all filters for relations
     """
+
     pass
 
 
@@ -163,19 +167,26 @@ class Filters(object):
         :return:
         """
         for _filter in data:
-            filter_class = map_args_filter.get(_filter["opr"], None)
+            opr = _filter["opr"]
+            col = _filter["col"]
+            value = _filter["value"]
+            filter_class = map_args_filter.get(opr, None)
             if filter_class:
                 if _filter["col"] not in self.search_columns:
-                    raise InvalidColumnFilterFABException(f"Filter column: {_filter['col']} not allowed to filter")
-                elif not self._rest_check_valid_filter_operation(_filter["col"], _filter["opr"]):
+                    raise InvalidColumnFilterFABException(
+                        f"Filter column: {col} not allowed to filter"
+                    )
+                elif not self._rest_check_valid_filter_operation(
+                    col, opr
+                ):
                     raise InvalidOperationFilterFABException(
-                        f"Filter operation: {_filter['opr']} not allowed on column: {_filter['col']}"
+                        f"Filter operation: {opr} not allowed on column: {col}"
                     )
                 else:
-                    self.add_filter(_filter["col"], filter_class, _filter["value"])
+                    self.add_filter(col, filter_class, value)
             else:
                 raise InvalidOperationFilterFABException(
-                    f"Filter operation: {_filter['opr']} not allowed on column: {_filter['col']}"
+                    f"Filter operation: {opr} not allowed on column: {col}"
                 )
 
     def _rest_check_valid_filter_operation(self, col, opr):

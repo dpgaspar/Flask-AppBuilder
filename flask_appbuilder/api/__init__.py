@@ -15,7 +15,6 @@ from werkzeug.exceptions import BadRequest
 import yaml
 
 from .convert import Model2SchemaConverter
-from ..exceptions import FABException
 from .schemas import get_info_schema, get_item_schema, get_list_schema
 from .._compat import as_unicode
 from ..const import (
@@ -54,6 +53,7 @@ from ..const import (
     API_URI_RIS_KEY,
     PERMISSION_PREFIX,
 )
+from ..exceptions import FABException
 from ..security.decorators import permission_name, protect
 
 log = logging.getLogger(__name__)
