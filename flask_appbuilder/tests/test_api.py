@@ -218,7 +218,7 @@ class APITestCase(FABTestCase):
 
         class Model1ApiExcludeRoutes(ModelRestApi):
             datamodel = SQLAInterface(Model1)
-            exclude_route_methods = ("info", 'delete')
+            exclude_route_methods = ("info", "delete")
 
         self.appbuilder.add_api(Model1ApiExcludeRoutes)
 
@@ -1068,51 +1068,24 @@ class APITestCase(FABTestCase):
         }
 
         uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
-
+        expected_result = {
+            "field_date": None,
+            "field_float": float(filter_value + 1),
+            "field_integer": filter_value + 1,
+            "field_string": "test{}".format(filter_value + 1),
+        }
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(
-            data[API_RESULT_RES_KEY][0],
-            {
-                "field_date": None,
-                "field_float": float(filter_value + 1),
-                "field_integer": filter_value + 1,
-                "field_string": "test{}".format(filter_value + 1),
-            },
-        )
+        self.assertEqual(data[API_RESULT_RES_KEY][0], expected_result)
         self.assertEqual(rv.status_code, 200)
 
-    def test_get_list_json_filters(self):
-        """
-            REST Api: Test get list JSON filter params
-        """
-        client = self.app.test_client()
-        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-
-        filter_value = 5
-        # test string order asc
-        arguments = {
-            API_FILTERS_RIS_KEY: [
-                {"col": "field_integer", "opr": "gt", "value": filter_value}
-            ],
-            "order_column": "field_integer",
-            "order_direction": "asc",
-        }
+        # Test with JSON encode content
         from urllib.parse import quote
 
         uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={quote(json.dumps(arguments))}"
-
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(
-            data[API_RESULT_RES_KEY][0],
-            {
-                "field_date": None,
-                "field_float": float(filter_value + 1),
-                "field_integer": filter_value + 1,
-                "field_string": "test{}".format(filter_value + 1),
-            },
-        )
+        self.assertEqual(data[API_RESULT_RES_KEY][0], expected_result)
         self.assertEqual(rv.status_code, 200)
 
     def test_get_list_filters_wrong_col(self):
@@ -1126,7 +1099,7 @@ class APITestCase(FABTestCase):
         arguments = {
             API_FILTERS_RIS_KEY: [
                 {"col": "wrong_columns", "opr": "sw", "value": filter_value},
-                {"col": "field_string", "opr": "sw", "value": filter_value}
+                {"col": "field_string", "opr": "sw", "value": filter_value},
             ]
         }
 
@@ -1161,10 +1134,7 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        arguments = {
-            "order_column": "wrong_column",
-            "order_direction": "asc",
-        }
+        arguments = {"order_column": "wrong_column", "order_direction": "asc"}
 
         uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
 
