@@ -1,6 +1,8 @@
 import functools
+import json
 import logging
 import re
+import urllib.parse
 import traceback
 
 from apispec import yaml_utils
@@ -128,23 +130,26 @@ def rison(schema=None):
                 try:
                     kwargs["rison"] = prison.loads(value)
                 except prison.decoder.ParserException:
-                    # Rison failed try json encoded content
-                    import urllib.parse
-                    import json
-                    try:
-                        kwargs["rison"] = json.loads(
-                            urllib.parse.parse_qs(
-                                f"{API_URI_RIS_KEY}={value}"
-                            ).get(API_URI_RIS_KEY)[0]
-                        )
-                    except Exception:
+                    if current_app.config.get("FAB_API_ALLOW_JSON_QS", True):
+                        # Rison failed try json encoded content
+                        try:
+                            kwargs["rison"] = json.loads(
+                                urllib.parse.parse_qs(
+                                    f"{API_URI_RIS_KEY}={value}"
+                                ).get(API_URI_RIS_KEY)[0]
+                            )
+                        except Exception:
+                            return self.response_400(
+                                message="Not a valid rison/json argument"
+                            )
+                    else:
                         return self.response_400(message="Not a valid rison argument")
             if schema:
                 try:
                     jsonschema.validate(instance=kwargs["rison"], schema=schema)
                 except jsonschema.ValidationError as e:
                     return self.response_400(
-                        message="Not a valid rison schema {}".format(e)
+                        message=f"Not a valid rison schema {e}"
                     )
             return f(self, *args, **kwargs)
 

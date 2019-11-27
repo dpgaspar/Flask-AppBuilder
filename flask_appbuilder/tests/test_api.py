@@ -1082,6 +1082,39 @@ class APITestCase(FABTestCase):
         )
         self.assertEqual(rv.status_code, 200)
 
+    def test_get_list_json_filters(self):
+        """
+            REST Api: Test get list JSON filter params
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        filter_value = 5
+        # test string order asc
+        arguments = {
+            API_FILTERS_RIS_KEY: [
+                {"col": "field_integer", "opr": "gt", "value": filter_value}
+            ],
+            "order_column": "field_integer",
+            "order_direction": "asc",
+        }
+        from urllib.parse import quote
+
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={quote(json.dumps(arguments))}"
+
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(
+            data[API_RESULT_RES_KEY][0],
+            {
+                "field_date": None,
+                "field_float": float(filter_value + 1),
+                "field_integer": filter_value + 1,
+                "field_string": "test{}".format(filter_value + 1),
+            },
+        )
+        self.assertEqual(rv.status_code, 200)
+
     def test_get_list_filters_wrong_col(self):
         """
             REST Api: Test get list with wrong columns
