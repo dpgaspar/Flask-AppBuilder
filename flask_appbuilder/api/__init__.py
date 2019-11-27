@@ -128,7 +128,17 @@ def rison(schema=None):
                 try:
                     kwargs["rison"] = prison.loads(value)
                 except prison.decoder.ParserException:
-                    return self.response_400(message="Not a valid rison argument")
+                    # Rison failed try json encoded content
+                    import urllib.parse
+                    import json
+                    try:
+                        kwargs["rison"] = json.loads(
+                            urllib.parse.parse_qs(
+                                f"{API_URI_RIS_KEY}={value}"
+                            ).get(API_URI_RIS_KEY)[0]
+                        )
+                    except Exception:
+                        return self.response_400(message="Not a valid rison argument")
             if schema:
                 try:
                     jsonschema.validate(instance=kwargs["rison"], schema=schema)
@@ -444,7 +454,11 @@ class BaseApi(object):
                 _v = {
                     "in": "query",
                     "name": API_URI_RIS_KEY,
-                    "schema": {"$ref": "#/components/schemas/{}".format(k)},
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/{}".format(k)},
+                        }
+                    }
                 }
                 # Using private because parameter method does not behave correctly
                 api_spec.components._schemas[k] = v
