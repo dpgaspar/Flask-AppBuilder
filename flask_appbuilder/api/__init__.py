@@ -2,8 +2,8 @@ import functools
 import json
 import logging
 import re
-import urllib.parse
 import traceback
+import urllib.parse
 
 from apispec import yaml_utils
 from flask import Blueprint, current_app, jsonify, make_response, request
@@ -134,9 +134,9 @@ def rison(schema=None):
                         # Rison failed try json encoded content
                         try:
                             kwargs["rison"] = json.loads(
-                                urllib.parse.parse_qs(
-                                    f"{API_URI_RIS_KEY}={value}"
-                                ).get(API_URI_RIS_KEY)[0]
+                                urllib.parse.parse_qs(f"{API_URI_RIS_KEY}={value}").get(
+                                    API_URI_RIS_KEY
+                                )[0]
                             )
                         except Exception:
                             return self.response_400(
@@ -148,9 +148,7 @@ def rison(schema=None):
                 try:
                     jsonschema.validate(instance=kwargs["rison"], schema=schema)
                 except jsonschema.ValidationError as e:
-                    return self.response_400(
-                        message=f"Not a valid rison schema {e}"
-                    )
+                    return self.response_400(message=f"Not a valid rison schema {e}")
             return f(self, *args, **kwargs)
 
         return functools.update_wrapper(wraps, f)
@@ -461,9 +459,9 @@ class BaseApi(object):
                     "name": API_URI_RIS_KEY,
                     "content": {
                         "application/json": {
-                            "schema": {"$ref": "#/components/schemas/{}".format(k)},
+                            "schema": {"$ref": "#/components/schemas/{}".format(k)}
                         }
-                    }
+                    },
                 }
                 # Using private because parameter method does not behave correctly
                 api_spec.components._schemas[k] = v

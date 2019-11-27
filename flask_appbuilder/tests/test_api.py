@@ -470,14 +470,14 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 400)
         data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data, {"message": "Not a valid rison argument"})
+        self.assertEqual(data, {"message": "Not a valid rison/json argument"})
         uri = "api/v1/model1api/1?{}={}".format(
             API_URI_RIS_KEY, "(columns!(not_valid))"
         )
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 400)
         data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data, {"message": "Not a valid rison argument"})
+        self.assertEqual(data, {"message": "Not a valid rison/json argument"})
 
     def test_base_rison_schema(self):
         """
