@@ -614,7 +614,7 @@ class BaseCRUDView(BaseModelView):
     """
     order_columns = None
     """ Allowed order columns """
-    page_size = 10
+    page_size = 25
     """
         Use this property to change default page size
     """

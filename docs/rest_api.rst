@@ -1431,6 +1431,26 @@ on all HTTP methods. These methods are nice places to change data before submiss
         :members: pre_get, pre_get_list, pre_update, post_update, pre_add, post_add, pre_delete, post_delete
         :noindex:
 
+Excluding builtin generated routes
+----------------------------------
+
+There may be the case where you want to leverage some of the auto generated endpoints but want to disable others.
+For example you may want to just expose the GET endpoints for fetching a single record or records.
+You can declare which methods don't get registered on the Flask blueprint for the class (no permissions are created
+also, since it's like the methods do not exist)::
+
+
+    class ContactApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        exclude_route_methods = ("put", "post", "delete", "info")
+
+    appbuilder.add_api(ContactApi)
+
+
+On the previous example only the ``get`` and ``get_list`` methods are registered
+
+Note that using by normal OOP, you can override any builtin methods or create new ones
+
 Enum Fields
 -----------
 
@@ -1438,8 +1458,8 @@ Enum Fields
 on a specific way::
 
     class GenderEnum(enum.Enum):
-    male = 'Male'
-    female = 'Female'
+        male = 'Male'
+        female = 'Female'
 
 
     class Contact(Model):

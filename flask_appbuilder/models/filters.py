@@ -2,6 +2,10 @@ import copy
 import logging
 
 from .._compat import as_unicode
+from ..exceptions import (
+    InvalidColumnFilterFABException,
+    InvalidOperationFilterFABException,
+)
 
 log = logging.getLogger(__name__)
 
@@ -83,18 +87,18 @@ class BaseFilterConverter(object):
         This will map a column type to all possible filters.
         use something like this::
 
-            (('is_text', [FilterCustomForText,
-                                     FilterNotContains,
-                                     FilterEqual,
-                                     FilterNotEqual]
-                                     ),
-                        ('is_string', [FilterContains,
-                                       FilterNotContains,
-                                       FilterEqual,
-                                       FilterNotEqual]),
-                        ('is_integer', [FilterEqual,
-                                        FilterNotEqual]),
-                        )
+            (
+                ('is_text', [FilterCustomForText,
+                         FilterNotContains,
+                         FilterEqual,
+                         FilterNotEqual]),
+                ('is_string', [FilterContains,
+                           FilterNotContains,
+                           FilterEqual,
+                           FilterNotEqual]),
+                ('is_integer', [FilterEqual,
+                            FilterNotEqual]),
+            )
 
     """
 
@@ -163,9 +167,33 @@ class Filters(object):
         :return:
         """
         for _filter in data:
-            filter_class = map_args_filter.get(_filter["opr"], None)
+            opr = _filter["opr"]
+            col = _filter["col"]
+            value = _filter["value"]
+            filter_class = map_args_filter.get(opr, None)
             if filter_class:
-                self.add_filter(_filter["col"], filter_class, _filter["value"])
+                if _filter["col"] not in self.search_columns:
+                    raise InvalidColumnFilterFABException(
+                        f"Filter column: {col} not allowed to filter"
+                    )
+                elif not self._rest_check_valid_filter_operation(
+                    col, opr
+                ):
+                    raise InvalidOperationFilterFABException(
+                        f"Filter operation: {opr} not allowed on column: {col}"
+                    )
+                else:
+                    self.add_filter(col, filter_class, value)
+            else:
+                raise InvalidOperationFilterFABException(
+                    f"Filter operation: {opr} not allowed on column: {col}"
+                )
+
+    def _rest_check_valid_filter_operation(self, col, opr):
+        for filter_class in self._search_filters.get(col, []):
+            if filter_class.arg_name == opr:
+                return True
+        return False
 
     def add_filter(self, column_name, filter_class, value):
         self._add_filter(filter_class(column_name, self.datamodel), value)
