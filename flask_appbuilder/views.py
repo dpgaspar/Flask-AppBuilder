@@ -610,6 +610,14 @@ class ModelView(RestCRUDView):
             as_attachment=True,
         )
 
+    @expose("/viewfile/<string:filename>")
+    @has_access
+    @permission_name('download')
+    def viewfile(self, filename):
+        return send_file(
+            self.appbuilder.app.config["UPLOAD_FOLDER"] + filename
+        )
+
     def get_action_permission_name(self, name: str) -> str:
         """
             Get the permission name of an action name
