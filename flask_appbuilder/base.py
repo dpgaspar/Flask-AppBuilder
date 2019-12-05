@@ -157,6 +157,7 @@ class AppBuilder(object):
         """
         app.config.setdefault("APP_NAME", "F.A.B.")
         app.config.setdefault("APP_THEME", "")
+        app.config.setdefault("APP_THEME_CUSTOM", "")
         app.config.setdefault("APP_ICON", "")
         app.config.setdefault("LANGUAGES", {"en": {"flag": "gb", "name": "English"}})
         app.config.setdefault("ADDON_MANAGERS", [])
@@ -276,6 +277,15 @@ class AppBuilder(object):
             :return: String app theme name
         """
         return self.get_app.config["APP_THEME"]
+
+    @property
+    def app_theme_custom(self):
+        """
+            Get the custom App theme URL
+
+            :return: String app theme url
+        """
+        return self.get_app.config["APP_THEME_CUSTOM"]
 
     @property
     def app_icon(self):

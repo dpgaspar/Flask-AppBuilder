@@ -8,7 +8,8 @@ Even better you can develop your own widgets or templates and contribute to the 
 Changing themes
 ---------------
 
-F.A.B comes with bootswatch themes ready to use, to change bootstrap default theme just change the APP_THEME key's value.
+F.A.B comes with several bootswatch themes ready to use.
+Selecting a built-in theme is a matter of changing value of the APP_THEME key.
 
 - On config.py (from flask-appbuilder-skeleton), using spacelab theme::
 
@@ -19,6 +20,16 @@ F.A.B comes with bootswatch themes ready to use, to change bootstrap default the
 	app.config['APP_THEME'] = "spacelab.css"
  
 You can choose from the following `themes <https://github.com/dpgaspar/Flask-AppBuilder-Skeleton/blob/master/config.py>`_  
+
+As an alternative to the built-in themes, the APP_THEME_CUSTOM key can be used
+to define a URL to a personalized Bootstrap theme.
+
+For example, using a theme located in the app static directory is a matter of
+setting APP_THEME_CUSTOM like so::
+
+    APP_THEME_CUSTOM = "/static/css/myTheme.css"
+
+Please not that defining APP_THEME_CUSTOM overrides the APP_THEME setting.
 
 
 Changing the index

@@ -170,6 +170,9 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | APP_THEME                              | Various themes for you to choose           |   No      |
 |                                        | from (bootwatch).                          |           |
 +----------------------------------------+--------------------------------------------+-----------+
+| APP_THEME_CUSTOM                       | URL to custom bootstrap theme.             |   No      |
+|                                        | Note: this overrides APP_THEME, if set.    |           |
++----------------------------------------+--------------------------------------------+-----------+
 | APP_ICON                               | path of your application icons             |   No      |
 |                                        | will be shown on the left side of the menu |           |
 +----------------------------------------+--------------------------------------------+-----------+

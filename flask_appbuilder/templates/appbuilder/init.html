@@ -18,7 +18,9 @@
     {% block head_css %}
         <link href="{{url_for('appbuilder.static',filename='css/bootstrap.min.css')}}" rel="stylesheet">
         <link href="{{url_for('appbuilder.static',filename='css/font-awesome.min.css')}}" rel="stylesheet">
-        {% if appbuilder.app_theme %}
+        {% if appbuilder.app_theme_custom %}
+            <link href="{{appbuilder.app_theme_custom}}" rel="stylesheet">
+        {% elif appbuilder.app_theme %}
            <link href="{{url_for('appbuilder.static',filename='css/themes/'+ appbuilder.app_theme )}}"  rel="stylesheet">
         {% endif %}
 
