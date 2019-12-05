@@ -437,6 +437,9 @@ class BaseApi(object):
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
+                    if attr_name in self.exclude_route_methods:
+                        log.info(f"Not registering api spec for method {attr_name}")
+                        continue
                     operations = dict()
                     path = self.path_helper(path=url, operations=operations)
                     self.operation_helper(
@@ -1625,7 +1628,8 @@ class ModelRestApi(BaseModelApi):
             ret["validate"] = [str(field.validate)]
         ret["type"] = field.__class__.__name__
         ret["required"] = field.required
-        ret["unique"] = field.unique
+        # When using custom marshmallow schemas fields don't have unique property
+        ret["unique"] = getattr(field, 'unique', False)
         return ret
 
     def _get_fields_info(self, cols, model_schema, filter_rel_fields, **kwargs):
