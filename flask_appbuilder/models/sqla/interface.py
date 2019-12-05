@@ -586,7 +586,6 @@ class SQLAInterface(BaseInterface):
                     and (not self.is_fk(tmp_prop))
                     and (not self.is_image(col_name))
                     and (not self.is_file(col_name))
-                    and (not self.is_boolean(col_name))
                 ):
                     ret_lst.append(col_name)
             else:

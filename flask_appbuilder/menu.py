@@ -176,29 +176,20 @@ class MenuApi(BaseApi):
                       result:
                         type: array
                         items:
-                          oneOf:
-                            Seperator:
+                          type: object
+                          properties:
+                            name:
                               type: string
-                              enum:
-                              - '-'
-                            MenuObject:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                label:
-                                  type: string
-                                icon:
-                                  type: string
-                                url:
-                                  type: string
-                                childs:
-                                  $ref: \
-        '#/paths/menu/data/get/reponses/200/content/application/json/schema/properties/result'
-                              required:
-                                - name
-                                - url
-
+                            label:
+                              type: string
+                            icon:
+                              type: string
+                            url:
+                              type: string
+                            childs:
+                              type: array
+                              items:
+                                type: object
             401:
               $ref: '#/components/responses/401'
         """
