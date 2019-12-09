@@ -471,7 +471,7 @@ class AuthView(BaseView):
     invalid_login_message = lazy_gettext("Invalid login. Please try again.")
     title = lazy_gettext("Sign In")
 
-    def is_safe_url(self,target):
+    def is_safe_url(self, target):
         ref_url = urllib.parse.urlparse(request.host_url)
         test_url = urllib.parse.urlparse(target)
         return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
