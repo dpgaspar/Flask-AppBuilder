@@ -1,6 +1,7 @@
 import datetime
 import logging
 import re
+import urllib.parse
 
 from flask import abort, current_app, flash, g, redirect, request, session, url_for
 from flask_babel import lazy_gettext
@@ -470,6 +471,18 @@ class AuthView(BaseView):
     invalid_login_message = lazy_gettext("Invalid login. Please try again.")
     title = lazy_gettext("Sign In")
 
+    def is_safe_url(self,target):
+        ref_url = urllib.parse.urlparse(request.host_url)
+        test_url = urllib.parse.urlparse(target)
+        return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
+
+    def redirect_back(self):
+        next_url = request.args.get('next')
+        if next_url and self.is_safe_url(next_url):
+            return redirect(next_url)
+        else:
+            return redirect(self.appbuilder.get_url_for_index)
+
     @expose("/login/", methods=["GET", "POST"])
     def login(self):
         pass
@@ -486,7 +499,7 @@ class AuthDBView(AuthView):
     @expose("/login/", methods=["GET", "POST"])
     def login(self):
         if g.user is not None and g.user.is_authenticated:
-            return redirect(self.appbuilder.get_url_for_index)
+            return self.redirect_back()
         form = LoginForm_db()
         if form.validate_on_submit():
             user = self.appbuilder.sm.auth_user_db(
@@ -496,7 +509,7 @@ class AuthDBView(AuthView):
                 flash(as_unicode(self.invalid_login_message), "warning")
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
-            return redirect(self.appbuilder.get_url_for_index)
+            return self.redirect_back()
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
@@ -508,7 +521,7 @@ class AuthLDAPView(AuthView):
     @expose("/login/", methods=["GET", "POST"])
     def login(self):
         if g.user is not None and g.user.is_authenticated:
-            return redirect(self.appbuilder.get_url_for_index)
+            return self.redirect_back()
         form = LoginForm_db()
         if form.validate_on_submit():
             user = self.appbuilder.sm.auth_user_ldap(
@@ -518,7 +531,7 @@ class AuthLDAPView(AuthView):
                 flash(as_unicode(self.invalid_login_message), "warning")
                 return redirect(self.appbuilder.get_url_for_login)
             login_user(user, remember=False)
-            return redirect(self.appbuilder.get_url_for_index)
+            return self.redirect_back()
         return self.render_template(
             self.login_template, title=self.title, form=form, appbuilder=self.appbuilder
         )
@@ -584,7 +597,7 @@ class AuthOIDView(AuthView):
         @self.appbuilder.sm.oid.loginhandler
         def login_handler(self):
             if g.user is not None and g.user.is_authenticated:
-                return redirect(self.appbuilder.get_url_for_index)
+                return self.redirect_back()
             form = LoginForm_oid()
             if form.validate_on_submit():
                 session["remember_me"] = form.remember_me.data
@@ -616,7 +629,7 @@ class AuthOIDView(AuthView):
                 session.pop("remember_me", None)
 
             login_user(user, remember=remember_me)
-            return redirect(self.appbuilder.get_url_for_index)
+            return self.redirect_back()
 
         return login_handler(self)
 
@@ -631,7 +644,7 @@ class AuthOAuthView(AuthView):
         log.debug("Provider: {0}".format(provider))
         if g.user is not None and g.user.is_authenticated:
             log.debug("Already authenticated {0}".format(g.user))
-            return redirect(self.appbuilder.get_url_for_index)
+            return self.redirect_back()
         if provider is None:
             return self.render_template(
                 self.login_template,
@@ -732,7 +745,7 @@ class AuthRemoteUserView(AuthView):
     def login(self):
         username = request.environ.get("REMOTE_USER")
         if g.user is not None and g.user.is_authenticated:
-            return redirect(self.appbuilder.get_url_for_index)
+            return self.redirect_back()
         if username:
             user = self.appbuilder.sm.auth_user_remote_user(username)
             if user is None:
@@ -741,4 +754,4 @@ class AuthRemoteUserView(AuthView):
                 login_user(user)
         else:
             flash(as_unicode(self.invalid_login_message), "warning")
-        return redirect(self.appbuilder.get_url_for_index)
+        return self.redirect_back()
