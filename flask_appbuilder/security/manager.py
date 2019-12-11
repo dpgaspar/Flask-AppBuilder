@@ -1185,6 +1185,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                     if self.auth_role_admin not in self.builtin_roles:
                         self.add_permission_role(role_admin, pv)
             for perm_view in perm_views:
+                if perm_view.permission is None:
+                    # Skip this perm_view, it has a null permission
+                    continue
                 if perm_view.permission.name not in base_permissions:
                     # perm to delete
                     roles = self.get_all_roles()
