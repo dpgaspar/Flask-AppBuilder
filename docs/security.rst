@@ -4,7 +4,6 @@ Security
 Supported Authentication Types
 ------------------------------
 
-
 :Database: username and password style that is queried from the database to match. Passwords are kept hashed on the database.
 :Open ID: Uses the user's email field to authenticate on Gmail, Yahoo etc...
 :LDAP: Authentication against an LDAP server, like Microsoft Active Directory.
