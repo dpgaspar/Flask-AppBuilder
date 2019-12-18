@@ -126,6 +126,7 @@ Improvements and Bug fixes on 2.1.0
 Improvements and Bug fixes on 2.0.0
 -----------------------------------
 
+- BREAKING CHANGES, Python 3.6+ is now required 
 - Fix, #951 M-M fields are always required, now they default to not required with optional required flag on col info dict
 - Fix, #885 list view ordering problem of related model with dotted notation, fixes #884
 - Fix, #946 Factory app pattern
