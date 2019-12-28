@@ -311,8 +311,8 @@ class SecurityManager(BaseSecurityManager):
             )
             .exists()
         )
-        # Special case for MSSQL (works on PG and MySQL > 8)
-        if self.appbuilder.get_session.bind.dialect.name == "mssql":
+        # Special case for MSSQL/Oracle (works on PG and MySQL > 8)
+        if self.appbuilder.get_session.bind.dialect.name in ("mssql", "oracle"):
             return self.appbuilder.get_session.query(literal(True)).filter(q).scalar()
         return self.appbuilder.get_session.query(q).scalar()
 

@@ -9,6 +9,7 @@ def fill_gender():
     try:
         db.session.add(Gender(name="Male"))
         db.session.add(Gender(name="Female"))
+        db.session.add(Gender(name="Nonbinary"))
         db.session.commit()
     except Exception:
         db.session.rollback()

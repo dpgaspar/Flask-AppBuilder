@@ -825,6 +825,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                     # username = DN from search
                     username = user[0][0]
                 else:
+                    log.debug("LDAP bind failure: user not found")
                     return False
             log.debug("LDAP bind with: {0} {1}".format(username, "XXXXXX"))
             if self.auth_ldap_username_format:
@@ -835,6 +836,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.debug("LDAP bind OK: {0}".format(username))
             return True
         except ldap.INVALID_CREDENTIALS:
+            log.debug("LDAP bind failure: invalid credentials")
             return False
 
     @staticmethod
@@ -898,7 +900,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 if not self._bind_ldap(ldap, con, username, password):
                     if user:
                         self.update_user_auth_stat(user, False)
-                    log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
+                    log.warning(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
                     return None
                 # If user does not exist on the DB and not self user registration, go away
                 if not user and not self.auth_user_registration:
@@ -1183,6 +1185,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                     if self.auth_role_admin not in self.builtin_roles:
                         self.add_permission_role(role_admin, pv)
             for perm_view in perm_views:
+                if perm_view.permission is None:
+                    # Skip this perm_view, it has a null permission
+                    continue
                 if perm_view.permission.name not in base_permissions:
                     # perm to delete
                     roles = self.get_all_roles()

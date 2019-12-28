@@ -218,7 +218,7 @@ class FlaskTestCase(FABTestCase):
         """
             Test views creation and registration
         """
-        eq_(len(self.appbuilder.baseviews), 27)  # current minimal views are 26
+        eq_(len(self.appbuilder.baseviews), 26)  # current minimal views are 26
 
     def test_index(self):
         """

@@ -454,7 +454,7 @@ return an HTTP 401 not authorized code and message::
     < Content-Type: application/json
     ...
     {
-      "msg": "Missing Authorization Header"
+        "msg": "Missing Authorization Header"
     }
 
 So we need to first obtain our JSON Web token, for this, FAB registers a login endpoint.
@@ -492,7 +492,7 @@ Let's request our Token then::
       '{"username": "admin", "password": "password", "provider": "db"}' \
       -H "Content-Type: application/json"
     {
-      "access_token": "<SOME TOKEN>"
+        "access_token": "<SOME TOKEN>"
     }
     # It's nice to use the Token as an env var
     $ export TOKEN="<SOME TOKEN>"
@@ -501,7 +501,7 @@ Next we can use our token on protected endpoints::
 
     $ curl 'http://localhost:8080/api/v1/example/private' -H "Authorization: Bearer $TOKEN"
     {
-      "message": "This is private"
+        "message": "This is private"
     }
 
 As always FAB created a new **can_private** permission
@@ -625,7 +625,7 @@ like shown before we need to make a PUT request to the login API endpoint::
       '{"username": "admin", "password": "password", "provider": "db"}' \
       -H "Content-Type: application/json"
     {
-      "access_token": "<SOME TOKEN>"
+        "access_token": "<SOME TOKEN>"
     }
     # It's nice to use the Token as an env var
     $ export TOKEN="<SOME TOKEN>"
@@ -637,10 +637,10 @@ First let's create a Group::
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer $TOKEN"
     {
-      "id": 1,
-      "result": {
-        "name": "Friends"
-      }
+        "id": 1,
+        "result": {
+            "name": "Friends"
+        }
     }
 
 
@@ -652,18 +652,18 @@ Now let's query our newly created Group::
      -H "Authorization: Bearer $TOKEN"
 
     {
-      "description_columns": {},
-      "show_title": "Show Contact Group",
-      "show_columns": [
-        "name"
-      ],
-      "label_columns": {
-        "name": "Name"
-      },
-      "id": "1",
-      "result": {
-        "name": "Friends"
-      }
+        "description_columns": {},
+        "show_title": "Show Contact Group",
+        "show_columns": [
+            "name"
+        ],
+        "label_columns": {
+            "name": "Name"
+        },
+        "id": "1",
+        "result": {
+           "name": "Friends"
+        }
     }
 
 As you can see, the API returns the model data, and extra meta data so you can properly render
@@ -678,9 +678,9 @@ Next let's change our newly created model (HTTP PUT)::
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer $TOKEN"
     {
-      "result": {
-        "name": "Friends Changed"
-      }
+        "result": {
+            "name": "Friends Changed"
+        }
     }
 
 And finally test the delete method (HTTP DELETE)::
@@ -689,7 +689,7 @@ And finally test the delete method (HTTP DELETE)::
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer $TOKEN"
     {
-      "message": "OK"
+        "message": "OK"
     }
 
 Let's check if it exists (HTTP GET)::
@@ -698,7 +698,7 @@ Let's check if it exists (HTTP GET)::
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer $TOKEN"
     {
-      "message": "Not found"
+        "message": "Not found"
     }
 
 
@@ -798,12 +798,12 @@ So, back to our example::
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN"
     {
-      "permissions": [
-        "can_get",
-        "can_post",
-        "can_put",
-        "can_delete"
-      ]
+        "permissions": [
+            "can_get",
+            "can_post",
+            "can_put",
+            "can_delete"
+        ]
     }
 
 And to fetch the permissions and Add form fields info::
@@ -812,13 +812,13 @@ And to fetch the permissions and Add form fields info::
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN"
     {
-      "add_columns": [ ... ],
-      "permissions": [
-        "can_get",
-        "can_post",
-        "can_put",
-        "can_delete"
-      ]
+        "add_columns": [ ... ],
+        "permissions": [
+            "can_get",
+            "can_post",
+            "can_put",
+            "can_delete"
+        ]
     }
 
 To fetch meta data with internationalization use **_l_** URI key argument with i18n
@@ -828,13 +828,13 @@ country code as the value. This will work on any HTTP GET endpoint::
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN"
     {
-      "add_columns": [ ... ],
-      "permissions": [
-        "can_get",
-        "can_post",
-        "can_put",
-        "can_delete"
-      ]
+        "add_columns": [ ... ],
+        "permissions": [
+            "can_get",
+            "can_post",
+            "can_put",
+            "can_delete"
+        ]
     }
 
 Render meta data with *Portuguese*, labels, description, filters
@@ -845,23 +845,23 @@ values from related fields, using our *quickhowto* example::
     {
         "add_columns": [
             {
-              "description": "",
-              "label": "Gender",
-              "name": "gender",
-              "required": false,
-              "unique": false,
-              "type": "Related",
-              "count": 2,
-              "values": [
-                {
-                  "id": 1,
-                  "value": "Male"
-                },
-                {
-                  "id": 2,
-                  "value": "Female"
-                }
-              ]
+                "description": "",
+                "label": "Gender",
+                "name": "gender",
+                "required": false,
+                "unique": false,
+                "type": "Related",
+                "count": 2,
+                "values": [
+                    {
+                      "id": 1,
+                      "value": "Male"
+                    },
+                    {
+                      "id": 2,
+                      "value": "Female"
+                    }
+                ]
             },
             ...
         ]
@@ -1063,7 +1063,7 @@ The response data structure is::
         "list_columns": [ ... An ordered list of columns ...],
         "order_columns": [ ... List of columns that can be ordered ... ],
         "list_title": "",
-        "result": {}
+        "result": []
     }
 
 As before meta data can be chosen using *Rison* arguments::
@@ -1184,16 +1184,16 @@ First let's create a new contact::
      '{"name":"New Contact", "personal_celphone":"1234", "contact_group": 1, "gender":1}' \
      -H "Content-Type: application/json"
      {
-      "id": 4,
-      "result": {
-        "address": null,
-        "birthday": null,
-        "contact_group": 1,
-        "gender": 1,
-        "name": "New Contact",
-        "personal_celphone": "1234",
-        "personal_phone": null
-      }
+        "id": 4,
+        "result": {
+            "address": null,
+            "birthday": null,
+            "contact_group": 1,
+            "gender": 1,
+            "name": "New Contact",
+            "personal_celphone": "1234",
+            "personal_phone": null
+        }
      }
 
 So if you submit a change for ``personal_celphone``::
@@ -1203,32 +1203,32 @@ So if you submit a change for ``personal_celphone``::
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN"
     {
-      "result": {
-        "name": "Change name"
-      }
+        "result": {
+            "name": "Change name"
+        }
     }
 
 Let's confirm::
 
     curl -XGET 'http://localhost:8080/api/v1/contact/4' -H "Authorization: Bearer $TOKEN"
     {
-      ....
-      "id": "4",
-      "result": {
-        "address": null,
-        "birthday": null,
-        "contact_group": {
-          "id": 1,
-          "name": "Friends"
-        },
-        "gender": {
-          "id": 1,
-          "name": "Male"
+        ....
+        "id": "4",
+        "result": {
+            "address": null,
+            "birthday": null,
+            "contact_group": {
+                "id": 1,
+                "name": "Friends"
+            },
+            "gender": {
+                "id": 1,
+                "name": "Male"
+            }
+            "name": "Change name",
+            "personal_celphone": "1234",
+            "personal_phone": null
         }
-        "name": "Change name",
-        "personal_celphone": "1234",
-        "personal_phone": null
-      }
     }
 
 The PUT method may also work like a PATCH method, remove the ``edit_columns`` from the API class
@@ -1239,15 +1239,15 @@ and test a partial update::
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN"
     {
-      "result": {
-        "address": null,
-        "birthday": null,
-        "contact_group": 1
-        "gender": 1,
-        "name": "Change name",
-        "personal_celphone": "4321",
-        "personal_phone": null
-      }
+        "result": {
+            "address": null,
+            "birthday": null,
+            "contact_group": 1
+            "gender": 1,
+            "name": "Change name",
+            "personal_celphone": "4321",
+            "personal_phone": null
+        }
     }
 
 
@@ -1431,6 +1431,26 @@ on all HTTP methods. These methods are nice places to change data before submiss
         :members: pre_get, pre_get_list, pre_update, post_update, pre_add, post_add, pre_delete, post_delete
         :noindex:
 
+Excluding builtin generated routes
+----------------------------------
+
+There may be the case where you want to leverage some of the auto generated endpoints but want to disable others.
+For example you may want to just expose the GET endpoints for fetching a single record or records.
+You can declare which methods don't get registered on the Flask blueprint for the class (no permissions are created
+also, since it's like the methods do not exist)::
+
+
+    class ContactApi(ModelRestApi):
+        datamodel = SQLAInterface(Contact)
+        exclude_route_methods = ("put", "post", "delete", "info")
+
+    appbuilder.add_api(ContactApi)
+
+
+On the previous example only the ``get`` and ``get_list`` methods are registered
+
+Note that using by normal OOP, you can override any builtin methods or create new ones
+
 Enum Fields
 -----------
 
@@ -1438,8 +1458,8 @@ Enum Fields
 on a specific way::
 
     class GenderEnum(enum.Enum):
-    male = 'Male'
-    female = 'Female'
+        male = 'Male'
+        female = 'Female'
 
 
     class Contact(Model):
