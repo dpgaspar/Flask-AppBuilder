@@ -1,3 +1,5 @@
+from typing import List
+
 from flask import current_app, url_for
 
 from .api import BaseApi, expose
@@ -6,22 +8,12 @@ from .security.decorators import permission_name, protect
 
 
 class MenuItem(object):
-    name = ""
-    href = ""
-    icon = ""
-    label = ""
-    baseview = None
-    childs = []
-
     def __init__(self, name, href="", icon="", label="", childs=None, baseview=None):
         self.name = name
         self.href = href
         self.icon = icon
         self.label = label
-        if self.childs:
-            self.childs = childs
-        else:
-            self.childs = []
+        self.childs = childs or []
         self.baseview = baseview
 
     def get_url(self):
@@ -29,9 +21,7 @@ class MenuItem(object):
             if not self.baseview:
                 return ""
             else:
-                return url_for(
-                    "{}.{}".format(self.baseview.endpoint, self.baseview.default_view)
-                )
+                return url_for(f"{self.baseview.endpoint}.{self.baseview.default_view}")
         else:
             try:
                 return url_for(self.href)
@@ -43,8 +33,6 @@ class MenuItem(object):
 
 
 class Menu(object):
-    menu = None
-
     def __init__(self, reverse=True, extra_classes=""):
         self.menu = []
         if reverse:
@@ -58,14 +46,27 @@ class Menu(object):
     def get_list(self):
         return self.menu
 
+    def get_flat_name_list(self, menu: "Menu" = None, result: List = None) -> List:
+        menu = menu or self.menu
+        result = result or []
+        for item in menu:
+            result.append(item.name)
+            if item.childs:
+                result.extend(self.get_flat_name_list(menu=item.childs, result=result))
+        return result
+
     def get_data(self, menu=None):
         menu = menu or self.menu
         ret_list = []
 
+        allowed_menus = current_app.appbuilder.sm.get_user_menu_access(
+            self.get_flat_name_list()
+        )
+
         for i, item in enumerate(menu):
             if item.name == '-' and not i == len(menu) - 1:
                 ret_list.append('-')
-            elif not current_app.appbuilder.sm.has_access("menu_access", item.name):
+            elif item.name not in allowed_menus:
                 continue
             elif item.childs:
                 ret_list.append({
@@ -175,29 +176,20 @@ class MenuApi(BaseApi):
                       result:
                         type: array
                         items:
-                          oneOf:
-                            Seperator:
+                          type: object
+                          properties:
+                            name:
                               type: string
-                              enum:
-                              - '-'
-                            MenuObject:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                label:
-                                  type: string
-                                icon:
-                                  type: string
-                                url:
-                                  type: string
-                                childs:
-                                  $ref: \
-        '#/paths/menu/data/get/reponses/200/content/application/json/schema/properties/result'
-                              required:
-                                - name
-                                - url
-
+                            label:
+                              type: string
+                            icon:
+                              type: string
+                            url:
+                              type: string
+                            childs:
+                              type: array
+                              items:
+                                type: object
             401:
               $ref: '#/components/responses/401'
         """

@@ -238,7 +238,6 @@ class SecurityManager(BaseSecurityManager):
 
     def update_role(self, pk, name: str) -> Optional[Role]:
         role = self.get_session.query(self.role_model).get(pk)
-        print(f"Update role {role} {pk}")
         if not role:
             return
         try:
@@ -257,12 +256,15 @@ class SecurityManager(BaseSecurityManager):
     def get_all_roles(self):
         return self.get_session.query(self.role_model).all()
 
-    def get_public_permissions(self):
-        role = (
+    def get_public_role(self):
+        return (
             self.get_session.query(self.role_model)
             .filter_by(name=self.auth_role_public)
             .first()
         )
+
+    def get_public_permissions(self):
+        role = self.get_public_role()
         if role:
             return role.permissions
         return []
@@ -309,10 +311,28 @@ class SecurityManager(BaseSecurityManager):
             )
             .exists()
         )
-        # Special case for MSSQL (works on PG and MySQL > 8)
-        if self.appbuilder.get_session.bind.dialect.name == "mssql":
+        # Special case for MSSQL/Oracle (works on PG and MySQL > 8)
+        if self.appbuilder.get_session.bind.dialect.name in ("mssql", "oracle"):
             return self.appbuilder.get_session.query(literal(True)).filter(q).scalar()
         return self.appbuilder.get_session.query(q).scalar()
+
+    def find_roles_permission_view_menus(self, permission_name: str, role_ids: List[int]):
+        return (
+            self.appbuilder.get_session.query(self.permissionview_model)
+            .join(
+                assoc_permissionview_role,
+                and_(
+                    (self.permissionview_model.id ==
+                     assoc_permissionview_role.c.permission_view_id),
+                ),
+            )
+            .join(self.role_model)
+            .join(self.permission_model)
+            .join(self.viewmenu_model)
+            .filter(
+                self.permission_model.name == permission_name,
+                self.role_model.id.in_(role_ids))
+        ).all()
 
     def add_permission(self, name):
         """

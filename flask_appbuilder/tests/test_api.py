@@ -216,6 +216,12 @@ class APITestCase(FABTestCase):
 
         self.appbuilder.add_api(Model1ApiExcludeCols)
 
+        class Model1ApiExcludeRoutes(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            exclude_route_methods = ("info", "delete")
+
+        self.appbuilder.add_api(Model1ApiExcludeRoutes)
+
         class Model1ApiOrder(ModelRestApi):
             datamodel = SQLAInterface(Model1)
             base_order = ("field_integer", "desc")
@@ -464,14 +470,14 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 400)
         data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data, {"message": "Not a valid rison argument"})
+        self.assertEqual(data, {"message": "Not a valid rison/json argument"})
         uri = "api/v1/model1api/1?{}={}".format(
             API_URI_RIS_KEY, "(columns!(not_valid))"
         )
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 400)
         data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(data, {"message": "Not a valid rison argument"})
+        self.assertEqual(data, {"message": "Not a valid rison/json argument"})
 
     def test_base_rison_schema(self):
         """
@@ -515,6 +521,30 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 500)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(data, {"message": "Fatal error"})
+
+    def test_exclude_route_methods(self):
+        """
+            REST Api: Test exclude route methods
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        uri = "api/v1/model1apiexcluderoutes/_info"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 405)
+
+        uri = "api/v1/model1apiexcluderoutes/1"
+        rv = self.auth_client_delete(client, token, uri)
+        self.assertEqual(rv.status_code, 405)
+
+        # Check that permissions do not exist
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_info", "Model1ApiExcludeRoutes"
+        )
+        self.assertIsNone(pvm)
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_delete", "Model1ApiExcludeRoutes"
+        )
+        self.assertIsNone(pvm)
 
     def test_get_item(self):
         """
@@ -1038,19 +1068,78 @@ class APITestCase(FABTestCase):
         }
 
         uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
-
+        expected_result = {
+            "field_date": None,
+            "field_float": float(filter_value + 1),
+            "field_integer": filter_value + 1,
+            "field_string": "test{}".format(filter_value + 1),
+        }
         rv = self.auth_client_get(client, token, uri)
         data = json.loads(rv.data.decode("utf-8"))
-        self.assertEqual(
-            data[API_RESULT_RES_KEY][0],
-            {
-                "field_date": None,
-                "field_float": float(filter_value + 1),
-                "field_integer": filter_value + 1,
-                "field_string": "test{}".format(filter_value + 1),
-            },
-        )
+        self.assertEqual(data[API_RESULT_RES_KEY][0], expected_result)
         self.assertEqual(rv.status_code, 200)
+
+        # Test with JSON encode content
+        from urllib.parse import quote
+
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={quote(json.dumps(arguments))}"
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data[API_RESULT_RES_KEY][0], expected_result)
+        self.assertEqual(rv.status_code, 200)
+
+    def test_get_list_filters_wrong_col(self):
+        """
+            REST Api: Test get list with wrong columns
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        filter_value = "value"
+        arguments = {
+            API_FILTERS_RIS_KEY: [
+                {"col": "wrong_columns", "opr": "sw", "value": filter_value},
+                {"col": "field_string", "opr": "sw", "value": filter_value},
+            ]
+        }
+
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 400)
+
+    def test_get_list_filters_wrong_opr(self):
+        """
+            REST Api: Test get list with wrong operation
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        filter_value = 1
+        arguments = {
+            API_FILTERS_RIS_KEY: [
+                {"col": "field_integer", "opr": "sw", "value": filter_value}
+            ]
+        }
+
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 400)
+
+    def test_get_list_filters_wrong_order(self):
+        """
+            REST Api: Test get list with wrong order column
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        arguments = {"order_column": "wrong_column", "order_direction": "asc"}
+
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 400)
 
     def test_get_list_select_cols(self):
         """

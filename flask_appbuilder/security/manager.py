@@ -3,7 +3,7 @@ import datetime
 import json
 import logging
 import re
-from typing import Dict, List
+from typing import Dict, List, Set
 
 from flask import g, session, url_for
 from flask_babel import lazy_gettext as _
@@ -419,6 +419,13 @@ class BaseSecurityManager(AbstractSecurityManager):
     def oauth_providers(self):
         return self.appbuilder.get_app.config["OAUTH_PROVIDERS"]
 
+    @property
+    def current_user(self):
+        if current_user.is_authenticated:
+            return g.user
+        elif current_user_jwt:
+            return current_user_jwt
+
     def oauth_user_info_getter(self, f):
         """
             Decorator function to be the OAuth user info getter
@@ -818,6 +825,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                     # username = DN from search
                     username = user[0][0]
                 else:
+                    log.debug("LDAP bind failure: user not found")
                     return False
             log.debug("LDAP bind with: {0} {1}".format(username, "XXXXXX"))
             if self.auth_ldap_username_format:
@@ -828,6 +836,7 @@ class BaseSecurityManager(AbstractSecurityManager):
             log.debug("LDAP bind OK: {0}".format(username))
             return True
         except ldap.INVALID_CREDENTIALS:
+            log.debug("LDAP bind failure: invalid credentials")
             return False
 
     @staticmethod
@@ -891,7 +900,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                 if not self._bind_ldap(ldap, con, username, password):
                     if user:
                         self.update_user_auth_stat(user, False)
-                    log.info(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
+                    log.warning(LOGMSG_WAR_SEC_LOGIN_FAILED.format(username))
                     return None
                 # If user does not exist on the DB and not self user registration, go away
                 if not user and not self.auth_user_registration:
@@ -1085,6 +1094,45 @@ class BaseSecurityManager(AbstractSecurityManager):
             db_role_ids,
         )
 
+    def _get_user_permission_view_menus(
+        self,
+        user: object,
+        permission_name: str,
+        view_menus_name: List[str]
+    ) -> Set[str]:
+        """
+        Return a set of view menu names with a certain permission name
+        that a user has access to. Mainly used to fetch all menu permissions
+        on a single db call, will also check public permissions and builtin roles
+        """
+        db_role_ids = list()
+        if user is None:
+            # include public role
+            roles = [self.get_public_role()]
+        else:
+            roles = user.roles
+        # First check against builtin (statically configured) roles
+        # because no database query is needed
+        result = set()
+        for role in roles:
+            if role.name in self.builtin_roles:
+                for view_menu_name in view_menus_name:
+                    if self._has_access_builtin_roles(
+                            role,
+                            permission_name,
+                            view_menu_name
+                    ):
+                        result.add(view_menu_name)
+            else:
+                db_role_ids.append(role.id)
+        # Then check against database-stored roles
+        pvms_names = [
+            pvm.view_menu.name
+            for pvm in self.find_roles_permission_view_menus(permission_name, db_role_ids)
+        ]
+        result.update(pvms_names)
+        return result
+
     def has_access(self, permission_name, view_name):
         """
             Check if current user or public has access to view or menu
@@ -1095,6 +1143,17 @@ class BaseSecurityManager(AbstractSecurityManager):
             return self._has_view_access(current_user_jwt, permission_name, view_name)
         else:
             return self.is_item_public(permission_name, view_name)
+
+    def get_user_menu_access(self, menu_names: List[str] = None) -> Set[str]:
+        if current_user.is_authenticated:
+            return self._get_user_permission_view_menus(
+                g.user, "menu_access", view_menus_name=menu_names)
+        elif current_user_jwt:
+            return self._get_user_permission_view_menus(
+                current_user_jwt, "menu_access", view_menus_name=menu_names)
+        else:
+            return self._get_user_permission_view_menus(
+                None, "menu_access", view_menus_name=menu_names)
 
     def add_permissions_view(self, base_permissions, view_menu):
         """
@@ -1126,6 +1185,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                     if self.auth_role_admin not in self.builtin_roles:
                         self.add_permission_role(role_admin, pv)
             for perm_view in perm_views:
+                if perm_view.permission is None:
+                    # Skip this perm_view, it has a null permission
+                    continue
                 if perm_view.permission.name not in base_permissions:
                     # perm to delete
                     roles = self.get_all_roles()
@@ -1441,6 +1503,12 @@ class BaseSecurityManager(AbstractSecurityManager):
     ----------------------------
     """
 
+    def get_public_role(self):
+        """
+            returns all permissions from public role
+        """
+        raise NotImplementedError
+
     def get_public_permissions(self):
         """
             returns all permissions from public role
@@ -1451,6 +1519,13 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
             Finds and returns a Permission by name
         """
+        raise NotImplementedError
+
+    def find_roles_permission_view_menus(
+        self,
+        permission_name: str,
+        role_ids: List[int],
+    ):
         raise NotImplementedError
 
     def exist_permission_on_roles(

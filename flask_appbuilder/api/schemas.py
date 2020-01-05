@@ -110,5 +110,15 @@ get_info_schema = {
                 },
             },
         },
+        API_EDIT_COLUMNS_RIS_KEY: {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    API_PAGE_SIZE_RIS_KEY: {"type": "integer"},
+                    API_PAGE_INDEX_RIS_KEY: {"type": "integer"},
+                },
+            },
+        },
     },
 }

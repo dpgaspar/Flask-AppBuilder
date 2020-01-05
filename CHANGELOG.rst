@@ -1,6 +1,38 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.2.1
+-----------------------------------
+
+ - Fix, [api] OpenAPI method and config exclusions (#1211)
+ - Fix, [mvc] default page size out of sync with jinja macro (#1209)
+ - New, [api] Support for json encoded content on URI parameter (#1205)
+ - Fix, [api] Re-allow filtering by booleans (default generated list) (#1204)
+ - Fix, [api] [menu] openapi spec (#1203)
+ - New, [api] Exclude route methods from ModelRestApi (#1202)
+ - Fix, [api] Don't crash on invalid filters (#1200)
+ - Fix, authentication error when using oracle (#1193)
+ - Fix, [api] openapi spec for the info endpoint (#1197)
+ - Fix, New, Show widget template: Add some basic blocks (#1158)
+ - New, State reason for LDAP login failure (#1164)
+ - Fix, [docs] Get list result (#1196)
+ - Fix, [examples] Update views.py (#1165)
+ - Fix, create filters even when search_columns is empty (#1173)
+ - Fix, jwt refresh endpoint should return new access_token (#1187)
+
+Improvements and Bug fixes on 2.2.0
+-----------------------------------
+
+- Fix, #1157 Improve API get menu data performance
+- Fix, #1143 [mvc] pagination UI bug
+- Fix, #1147 [babel] crash with empty LANGUAGES config key
+- New, #1116 Expose menu data as serializable objects
+- Fix, #1127 MSSQL issue with pagination
+- Fix, #1132 Add autofocus for login screen (#1132)
+- Fix, #1125 Support absence of the public role (#1125)
+- New, #1124 hide tabs when only 'Detail' (no related_views)
+- Fix, #1119 ldap: safely retrieve error object when loggin exception
+
 Improvements and Bug fixes on 2.1.13
 ------------------------------------
 
@@ -94,6 +126,7 @@ Improvements and Bug fixes on 2.1.0
 Improvements and Bug fixes on 2.0.0
 -----------------------------------
 
+- BREAKING CHANGES, Python 3.6+ is now required 
 - Fix, #951 M-M fields are always required, now they default to not required with optional required flag on col info dict
 - Fix, #885 list view ordering problem of related model with dotted notation, fixes #884
 - Fix, #946 Factory app pattern
