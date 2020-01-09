@@ -6,7 +6,7 @@
 //------------------------------------------------------
 // AdminActions holds methods to handle UI for actions
 //------------------------------------------------------
-var AdminActions = function() {
+var AdminActions = function(viewname) {
 
     var chkAllFlag = true;
     var multiple = false;
@@ -15,6 +15,7 @@ var AdminActions = function() {
     var action_url = '';
     var action_confirmation = '';
     var row_checked_class = 'success';
+    var view_name = viewname.toLowerCase();
 
     this.execute_multiple = function(name, confirmation) {
         multiple = true;
@@ -50,13 +51,40 @@ var AdminActions = function() {
 
     function form_submit() {
         // Update hidden form and submit it
-            var form = $('#action_form');
-            $('#action', form).val(action_name);
+
+            var activeTabs = $('div.tab-pane.active');
+            var form = null;
+
+            if (activeTabs.length > 0)
+            {
+                // find action form
+                var forms = $('form', $(activeTabs[0]));
+
+                for(i=0; i < forms.length; i++)
+                {
+                    if (forms[i].parendNode.outerHTML.search(view_name) > 0)
+                    {
+                        form = forms[i];
+                        break;
+                    }
+                }
+
+                $('#action', $(form)).val(action_name);
+                $('input.action_check', $(form)).remove();
+                $('input.action_check:checked', $(activeTabs[0])).each(function() {
+                    $(form).append($(this).clone());
+                });
+                
+            }
+            else
+            {
+               form = $('#action_form');
+               $('#action', form).val(action_name);
             
-            $('input.action_check', form).remove();
-            $('input.action_check:checked').each(function() {   
-                form.append($(this).clone());
-            });
+               $('input.action_check', form).remove();
+               $('input.action_check:checked').each(function() {   
+                   form.append($(this).clone());
+               });
             
             form.submit();
 

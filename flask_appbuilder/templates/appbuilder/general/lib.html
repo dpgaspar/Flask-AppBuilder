@@ -14,7 +14,7 @@
 
         {% set url = url_for(modelview_name + '.action', name = action.name, pk = pk) %}
         <a href="javascript:void(0)" class="btn btn-sm btn-primary"
-           onclick="var a = new AdminActions(); return a.execute_single('{{url}}','{{action.confirmation}}');">
+           onclick="var a = new AdminActions('{{modelview_name}}'); return a.execute_single('{{url}}','{{action.confirmation}}');">
             <i class="fa {{action.icon}}"></i>
                 {{_(action.text)}}
             </a>
