@@ -334,6 +334,9 @@ with widgets.
 
 To create your own widgets follow the next recipe.
 
+Example 1: Custom list widget
+`````````````````````````````
+
 - Make your own widget template, we are going to create a very simple list widget.
   since version 1.4.1 list widgets extend **base_list.html** this will make your life
   simpler, this base template declares the following blocks you should use, when implementing
@@ -422,13 +425,53 @@ subfolder named *widgets*. So on our example we will keep our template on
          template = 'widgets/my_list.html'
 
 
-- Finnaly use your new widget on your views::
+- Finally use your new widget on your views::
 
 
     class MyModelView(ModelView):
         datamodel = SQLAInterface(MyModel)
         list_widget = MyListWidget
-        
+
+Example 2: Custom show widget
+`````````````````````````````
+
+By default, :doc:`actions` related buttins are located at the end of the detail
+page. If you now have a longer detail page, it can be cumbersome for your users
+to have to go to the bottom of the page to perform the actions. Let's just add
+a second set of buttons to the top of the page.
+
+To do this, do the following (similar to the steps above):
+
+- Create a template override file *<module>/templates/widgets/my_show.html*::
+
+    {% extends "appbuilder/general/widgets/show.html" %}
+    {% block columns %}
+        <div class="well well-sm">
+            {{ lib.render_action_links(actions, pk, modelview_name) }}
+            {{ lib.lnk_back() }}
+        </div>
+        {{ super() }}
+    {% endblock %}
+
+  Please note that we have just overridden the jinja block named ``columns``,
+  prepended our own HTML code and then called the original block (using ``super()``).
+
+- Create the custom ShowWidget class::
+
+    from flask_appbuilder.widgets import ShowWidget
+   
+    class MyShowWidget(ShowWidget):
+        template = 'widgets/show.html'
+
+- And finally refer to your widget in your view:
+
+    class MyModelView(ModelView):
+        datamodel = SQLAInterface(MyModel)
+        show_widget = MyShowWidget
+
+
+Other widget types
+``````````````````
 
 Flask-AppBuilder already has some widgets you can choose from, try them out:
 

@@ -22,7 +22,7 @@
                         <div class="controls">
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                                {{ form.username(size = 80, class = "form-control") }}
+                                {{ form.username(size = 80, class = "form-control", autofocus = true) }}
                             </div>
                             {% for error in form.errors.get('openid', []) %}
                             <span class="help-inline">[{{error}}]</span><br>

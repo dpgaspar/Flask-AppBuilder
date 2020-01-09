@@ -1,7 +1,9 @@
 import functools
+import json
 import logging
 import re
 import traceback
+import urllib.parse
 
 from apispec import yaml_utils
 from flask import Blueprint, current_app, jsonify, make_response, request
@@ -53,6 +55,7 @@ from ..const import (
     API_URI_RIS_KEY,
     PERMISSION_PREFIX,
 )
+from ..exceptions import FABException, InvalidOrderByColumnFABException
 from ..security.decorators import permission_name, protect
 
 log = logging.getLogger(__name__)
@@ -127,14 +130,25 @@ def rison(schema=None):
                 try:
                     kwargs["rison"] = prison.loads(value)
                 except prison.decoder.ParserException:
-                    return self.response_400(message="Not a valid rison argument")
+                    if current_app.config.get("FAB_API_ALLOW_JSON_QS", True):
+                        # Rison failed try json encoded content
+                        try:
+                            kwargs["rison"] = json.loads(
+                                urllib.parse.parse_qs(f"{API_URI_RIS_KEY}={value}").get(
+                                    API_URI_RIS_KEY
+                                )[0]
+                            )
+                        except Exception:
+                            return self.response_400(
+                                message="Not a valid rison/json argument"
+                            )
+                    else:
+                        return self.response_400(message="Not a valid rison argument")
             if schema:
                 try:
                     jsonschema.validate(instance=kwargs["rison"], schema=schema)
                 except jsonschema.ValidationError as e:
-                    return self.response_400(
-                        message="Not a valid rison schema {}".format(e)
-                    )
+                    return self.response_400(message=f"Not a valid rison schema {e}")
             return f(self, *args, **kwargs)
 
         return functools.update_wrapper(wraps, f)
@@ -338,6 +352,19 @@ class BaseApi(object):
         Override custom OpenApi responses
     """
 
+    exclude_route_methods = set()
+    """
+        Does not register routes for a set of builtin ModelRestApi functions.
+        example::
+
+            class ContactModelView(ModelRestApi):
+                datamodel = SQLAModel(Contact)
+                exclude_route_methods = ("info", "get_list", "get")
+
+
+        The previous examples will only register the `put`, `post` and `delete` routes
+    """
+
     def __init__(self):
         """
             Initialization of base permissions
@@ -371,6 +398,9 @@ class BaseApi(object):
             self.base_permissions = set()
             is_add_base_permissions = True
         for attr_name in dir(self):
+            # Don't create permission for excluded routes
+            if attr_name in self.exclude_route_methods:
+                continue
             if hasattr(getattr(self, attr_name), "_permission_name"):
                 if is_collect_previous:
                     self.previous_method_permission_name[attr_name] = getattr(
@@ -407,6 +437,9 @@ class BaseApi(object):
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
+                    if attr_name in self.exclude_route_methods:
+                        log.info(f"Not registering api spec for method {attr_name}")
+                        continue
                     operations = dict()
                     path = self.path_helper(path=url, operations=operations)
                     self.operation_helper(
@@ -427,7 +460,11 @@ class BaseApi(object):
                 _v = {
                     "in": "query",
                     "name": API_URI_RIS_KEY,
-                    "schema": {"$ref": "#/components/schemas/{}".format(k)},
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/{}".format(k)}
+                        }
+                    },
                 }
                 # Using private because parameter method does not behave correctly
                 api_spec.components._schemas[k] = v
@@ -435,6 +472,9 @@ class BaseApi(object):
 
     def _register_urls(self):
         for attr_name in dir(self):
+            if attr_name in self.exclude_route_methods:
+                log.info(f"Not registering route for method {attr_name}")
+                continue
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
@@ -1147,7 +1187,7 @@ class ModelRestApi(BaseModelApi):
         self.set_response_key_mappings(_response, self.info, _args, **_args)
         return self.response(200, **_response)
 
-    @expose("/<pk>", methods=["GET"])
+    @expose("/<int:pk>", methods=["GET"])
     @protect()
     @safe
     @permission_name("get")
@@ -1295,9 +1335,15 @@ class ModelRestApi(BaseModelApi):
         else:
             _list_model_schema = self.list_model_schema
         # handle filters
-        joined_filters = self._handle_filters_args(_args)
+        try:
+            joined_filters = self._handle_filters_args(_args)
+        except FABException as e:
+            return self.response_400(message=str(e))
         # handle base order
-        order_column, order_direction = self._handle_order_args(_args)
+        try:
+            order_column, order_direction = self._handle_order_args(_args)
+        except InvalidOrderByColumnFABException as e:
+            return self.response_400(message=str(e))
         # handle pagination
         page_index, page_size = self._handle_page_args(_args)
         # Make the query
@@ -1534,9 +1580,13 @@ class ModelRestApi(BaseModelApi):
         order_column = rison_args.get(API_ORDER_COLUMN_RIS_KEY, "")
         order_direction = rison_args.get(API_ORDER_DIRECTION_RIS_KEY, "")
         if not order_column and self.base_order:
-            order_column, order_direction = self.base_order
-        if order_column not in self.order_columns:
+            return self.base_order
+        if not order_column:
             return "", ""
+        elif order_column not in self.order_columns:
+            raise InvalidOrderByColumnFABException(
+                f"Invalid order by column: {order_column}"
+            )
         return order_column, order_direction
 
     def _handle_filters_args(self, rison_args):
@@ -1578,7 +1628,8 @@ class ModelRestApi(BaseModelApi):
             ret["validate"] = [str(field.validate)]
         ret["type"] = field.__class__.__name__
         ret["required"] = field.required
-        ret["unique"] = field.unique
+        # When using custom marshmallow schemas fields don't have unique property
+        ret["unique"] = getattr(field, 'unique', False)
         return ret
 
     def _get_fields_info(self, cols, model_schema, filter_rel_fields, **kwargs):
