@@ -85,7 +85,8 @@ var AdminActions = function(viewname) {
                $('input.action_check:checked').each(function() {   
                    form.append($(this).clone());
                });
-            
+            }
+
             form.submit();
 
             return false;
