@@ -97,8 +97,19 @@ var AdminActions = function(viewname) {
     // will check all checkboxes with class "action_check
     //----------------------------------------------------
     $('.action_check_all').click(function() {
-        $('.action_check').prop('checked', chkAllFlag).trigger("change");
-        chkAllFlag = !chkAllFlag;
+
+        var activeTabs = $('div.tab-pane.active');
+
+        if (activeTabs.length > 0)
+        {
+           $('.action_check', $(activeTabs[0])).prop('checked', chkAllFlag).trigger("change");
+           chkAllFlag = !chkAllFlag;
+        }
+        else
+        {
+           $('.action_check').prop('checked', chkAllFlag).trigger("change");
+           chkAllFlag = !chkAllFlag;
+        }
     });
 
     //----------------------------------------------------
