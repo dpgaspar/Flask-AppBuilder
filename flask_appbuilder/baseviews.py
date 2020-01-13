@@ -110,6 +110,18 @@ class BaseView(object):
         Use same structure as method_permission_name. If set security converge
         will replace all method permissions by the new ones
     """
+    exclude_route_methods = set()
+    """
+        Does not register routes for a set of builtin ModelRestApi functions.
+        example::
+
+            class ContactModelView(ModelRestApi):
+                datamodel = SQLAModel(Contact)
+                exclude_route_methods = ("info", "get_list", "get")
+
+
+        The previous examples will only register the `put`, `post` and `delete` routes
+    """
     default_view = "list"
     """ the default view for this BaseView, to be used with url_for (method name) """
     extra_args = None
@@ -206,6 +218,9 @@ class BaseView(object):
 
     def _register_urls(self):
         for attr_name in dir(self):
+            if attr_name in self.exclude_route_methods:
+                log.info(f"Not registering route for method {attr_name}")
+                continue
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
@@ -752,6 +767,9 @@ class BaseCRUDView(BaseModelView):
         # collect and setup actions
         self.actions = {}
         for attr_name in dir(self):
+            # Don't create permission for excluded routes
+            if attr_name in self.exclude_route_methods:
+                continue
             func = getattr(self, attr_name)
             if hasattr(func, "_action"):
                 action = ActionItem(*func._action, func=func)
