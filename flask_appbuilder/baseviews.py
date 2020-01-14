@@ -129,8 +129,8 @@ class BaseView(object):
             class ContactModelView(ModelRestApi):
                 datamodel = SQLAModel(Contact)
                 include_route_methods = ("list")
-        
-        
+
+
         The previous example will exclude all endpoints except the `list` endpoint
     """
     default_view = "list"
