@@ -314,6 +314,17 @@ class BaseApi(object):
                 }
             },
         },
+        "403": {
+            "description": "Forbidden",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {"message": {"type": "string"}},
+                    }
+                }
+            },
+        },
         "404": {
             "description": "Not found",
             "content": {
@@ -564,7 +575,7 @@ class BaseApi(object):
             Returns the permission name for a method
         """
         if self.method_permission_name:
-            return self.method_permission_name.get(method_name)
+            return self.method_permission_name.get(method_name, method_name)
         else:
             if hasattr(getattr(self, method_name), "_permission_name"):
                 return getattr(getattr(self, method_name), "_permission_name")
@@ -630,6 +641,15 @@ class BaseApi(object):
         :return: HTTP Json response
         """
         return self.response(401, **{"message": "Not authorized"})
+
+    def response_403(self):
+        """
+            Helper method for HTTP 403 response
+
+        :param message: Error message (str)
+        :return: HTTP Json response
+        """
+        return self.response(403, **{"message": "Forbidden"})
 
     def response_404(self):
         """
