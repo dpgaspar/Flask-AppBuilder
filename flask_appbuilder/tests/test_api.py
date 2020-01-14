@@ -563,7 +563,7 @@ class APITestCase(FABTestCase):
         self.assertEqual(rv.status_code, 404)
 
         uri = "api/v1/model1apiincluderoutes/1"
-        rv = self.auth_client_delete(client, token, uri)
+        rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 200)
 
         # Check that permissions do not exist
