@@ -322,6 +322,13 @@ class APITestCase(FABTestCase):
         self.model1permoverride = ModelWithPropertyApi
         self.appbuilder.add_api(ModelWithPropertyApi)
 
+        class Model1ApiIncludeRoutes(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            exclude_route_methods = ("get")
+
+        self.appbuilder.add_api(Model1ApiIncludeRoutes)
+
+
     def tearDown(self):
         self.appbuilder = None
         self.app = None
@@ -543,6 +550,38 @@ class APITestCase(FABTestCase):
         self.assertIsNone(pvm)
         pvm = self.appbuilder.sm.find_permission_view_menu(
             "can_delete", "Model1ApiExcludeRoutes"
+        )
+        self.assertIsNone(pvm)
+
+    def test_include_route_methods(self):
+        """
+            REST Api: Test include route methods
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        uri = "api/v1/model1apiincluderoutes/_info"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 404)
+
+        uri = "api/v1/model1apiincluderoutes/1"
+        rv = self.auth_client_delete(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+
+        # Check that permissions do not exist
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_info", "Model1ApiIncludeRoutes"
+        )
+        self.assertIsNone(pvm)
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_put", "Model1ApiIncludeRoutes"
+        )
+        self.assertIsNone(pvm)
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_post", "Model1ApiIncludeRoutes"
+        )
+        self.assertIsNone(pvm)
+        pvm = self.appbuilder.sm.find_permission_view_menu(
+            "can_delete", "Model1ApiIncludeRoutes"
         )
         self.assertIsNone(pvm)
 
