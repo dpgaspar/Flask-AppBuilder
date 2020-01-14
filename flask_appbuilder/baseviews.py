@@ -165,7 +165,10 @@ class BaseView(object):
         if self.base_permissions is None:
             self.base_permissions = set()
             is_add_base_permissions = True
+
         for attr_name in dir(self):
+            if self.include_route_methods and attr_name not in self.include_route_methods:
+                continue
             # Don't create permission for excluded routes
             if attr_name in self.exclude_route_methods:
                 continue
