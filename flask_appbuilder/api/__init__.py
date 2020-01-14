@@ -314,6 +314,17 @@ class BaseApi(object):
                 }
             },
         },
+        "403": {
+            "description": "Forbidden",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {"message": {"type": "string"}},
+                    }
+                }
+            },
+        },
         "404": {
             "description": "Not found",
             "content": {
@@ -630,6 +641,15 @@ class BaseApi(object):
         :return: HTTP Json response
         """
         return self.response(401, **{"message": "Not authorized"})
+
+    def response_403(self):
+        """
+            Helper method for HTTP 403 response
+
+        :param message: Error message (str)
+        :return: HTTP Json response
+        """
+        return self.response(403, **{"message": "Forbidden"})
 
     def response_404(self):
         """
