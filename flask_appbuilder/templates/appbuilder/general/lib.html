@@ -282,12 +282,15 @@
         {{ render_pagination(page, page_size, count, modelview_name) }}
         {{ render_set_page_size(page, page_size, count, modelview_name) }}
     	{% if can_add %}
-		    {% set path = url_for(modelview_name + '.add') %}
-			{% set path = path | set_link_filters(filters) %}
-			&nbsp;{{ lnk_add(path) }}
+            {% set endpoint = modelview_name + '.add' %}
+            {% set path = endpoint | safe_url_for %}
+            {% if path %}
+                {% set path = path | set_link_filters(filters) %}
+                {{ lnk_add(path) }}
+            {% endif %}
         {% endif %}
-        &nbsp;{{ render_actions(actions, modelview_name) }}
-        &nbsp;{{ lnk_back() }}
+        {{ render_actions(actions, modelview_name) }}
+        {{ lnk_back() }}
 		<div class="pull-right">
 			<strong>{{ _('Record Count') }}:</strong> {{ count }}
 		</div>
@@ -296,17 +299,27 @@
 {% macro btn_crud(can_show, can_edit, can_delete, pk, modelview_name, filters) %}
     <div class="btn-group btn-group-xs" style="display: flex;">
         {% if can_show %}
-            {% set path = url_for(modelview_name + '.show',pk=pk) %}
-            {% set path = path | set_link_filters(filters) %}
-            {{ lnk_show(path) }}
+            {% set endpoint = modelview_name + '.show' %}
+            {% set path = endpoint | safe_url_for(pk=pk) %}
+            {% if path %}
+                {% set path = path | set_link_filters(filters) %}
+                {{ lnk_show(path) }}
+            {% endif %}
         {% endif %}
         {% if can_edit %}
-            {% set path = url_for(modelview_name + '.edit',pk=pk) %}
-            {% set path = path | set_link_filters(filters) %}
-            {{ lnk_edit(path) }}
+            {% set endpoint = modelview_name + '.edit' %}
+            {% set path = endpoint | safe_url_for(pk=pk) %}
+            {% if path %}
+                {% set path = path | set_link_filters(filters) %}
+                {{ lnk_edit(path) }}
+            {% endif %}
         {% endif %}
         {% if can_delete %}
-            {{ lnk_delete(url_for(modelview_name + '.delete',pk=pk)) }}
+            {% set endpoint = modelview_name + '.delete' %}
+            {% set path = endpoint | safe_url_for(pk=pk) %}
+            {% if path %}
+                {{ lnk_delete(path) }}
+            {% endif %}
         {% endif %}
     </div>
 {% endmacro %}

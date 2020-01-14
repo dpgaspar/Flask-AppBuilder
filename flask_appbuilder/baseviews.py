@@ -112,15 +112,26 @@ class BaseView(object):
     """
     exclude_route_methods = set()
     """
-        Does not register routes for a set of builtin ModelRestApi functions.
+        Does not register routes for a set of builtin ModelView functions.
         example::
 
             class ContactModelView(ModelRestApi):
                 datamodel = SQLAModel(Contact)
-                exclude_route_methods = ("info", "get_list", "get")
+                exclude_route_methods = ("delete", "edit")
 
+    """
+    include_route_methods = set()
+    """
+        If defined will assume a white list setup, where all endpoints are excluded
+        except those define on this attribute
+        example::
 
-        The previous examples will only register the `put`, `post` and `delete` routes
+            class ContactModelView(ModelRestApi):
+                datamodel = SQLAModel(Contact)
+                include_route_methods = ("list")
+        
+        
+        The previous example will exclude all endpoints except the `list` endpoint
     """
     default_view = "list"
     """ the default view for this BaseView, to be used with url_for (method name) """
@@ -155,6 +166,9 @@ class BaseView(object):
             self.base_permissions = set()
             is_add_base_permissions = True
         for attr_name in dir(self):
+            # Don't create permission for excluded routes
+            if attr_name in self.exclude_route_methods:
+                continue
             if hasattr(getattr(self, attr_name), "_permission_name"):
                 if is_collect_previous:
                     self.previous_method_permission_name[attr_name] = getattr(
@@ -164,7 +178,6 @@ class BaseView(object):
                 if is_add_base_permissions:
                     self.base_permissions.add(PERMISSION_PREFIX + _permission_name)
         self.base_permissions = list(self.base_permissions)
-
         if not self.extra_args:
             self.extra_args = dict()
         self._apis = dict()
@@ -767,9 +780,6 @@ class BaseCRUDView(BaseModelView):
         # collect and setup actions
         self.actions = {}
         for attr_name in dir(self):
-            # Don't create permission for excluded routes
-            if attr_name in self.exclude_route_methods:
-                continue
             func = getattr(self, attr_name)
             if hasattr(func, "_action"):
                 action = ActionItem(*func._action, func=func)
