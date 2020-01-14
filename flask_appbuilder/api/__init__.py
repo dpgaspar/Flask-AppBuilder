@@ -564,7 +564,7 @@ class BaseApi(object):
             Returns the permission name for a method
         """
         if self.method_permission_name:
-            return self.method_permission_name.get(method_name)
+            return self.method_permission_name.get(method_name, method_name)
         else:
             if hasattr(getattr(self, method_name), "_permission_name"):
                 return getattr(getattr(self, method_name), "_permission_name")
