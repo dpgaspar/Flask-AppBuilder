@@ -412,7 +412,10 @@ class BaseApi(object):
             is_add_base_permissions = True
         for attr_name in dir(self):
             # If include_route_methods is not None white list
-            if self.include_route_methods is not None and attr_name not in self.include_route_methods:
+            if (
+                self.include_route_methods is not None
+                and attr_name not in self.include_route_methods
+            ):
                 continue
             # Don't create permission for excluded routes
             if attr_name in self.exclude_route_methods:
@@ -454,7 +457,10 @@ class BaseApi(object):
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
                     # If include_route_methods is not None white list
-                    if self.include_route_methods is not None and attr_name not in self.include_route_methods:
+                    if (
+                        self.include_route_methods is not None
+                        and attr_name not in self.include_route_methods
+                    ):
                         continue
                     if attr_name in self.exclude_route_methods:
                         log.info(f"Not registering api spec for method {attr_name}")
@@ -491,7 +497,10 @@ class BaseApi(object):
 
     def _register_urls(self):
         for attr_name in dir(self):
-            if self.include_route_methods is not None and attr_name not in self.include_route_methods:
+            if (
+                self.include_route_methods is not None
+                and attr_name not in self.include_route_methods
+            ):
                 continue
             if attr_name in self.exclude_route_methods:
                 log.info(f"Not registering route for method {attr_name}")
@@ -1650,7 +1659,7 @@ class ModelRestApi(BaseModelApi):
         ret["type"] = field.__class__.__name__
         ret["required"] = field.required
         # When using custom marshmallow schemas fields don't have unique property
-        ret["unique"] = getattr(field, 'unique', False)
+        ret["unique"] = getattr(field, "unique", False)
         return ret
 
     def _get_fields_info(self, cols, model_schema, filter_rel_fields, **kwargs):
