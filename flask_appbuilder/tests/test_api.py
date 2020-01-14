@@ -324,10 +324,9 @@ class APITestCase(FABTestCase):
 
         class Model1ApiIncludeRoutes(ModelRestApi):
             datamodel = SQLAInterface(Model1)
-            exclude_route_methods = ("get")
+            include_route_methods = "get"
 
         self.appbuilder.add_api(Model1ApiIncludeRoutes)
-
 
     def tearDown(self):
         self.appbuilder = None
