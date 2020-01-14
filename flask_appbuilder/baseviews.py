@@ -234,6 +234,8 @@ class BaseView(object):
 
     def _register_urls(self):
         for attr_name in dir(self):
+            if self.include_route_methods and attr_name not in self.include_route_methods:
+                continue
             if attr_name in self.exclude_route_methods:
                 log.info(f"Not registering route for method {attr_name}")
                 continue
