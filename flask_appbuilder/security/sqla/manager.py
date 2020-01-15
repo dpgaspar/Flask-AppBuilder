@@ -60,7 +60,8 @@ class SecurityManager(BaseSecurityManager):
         elif self.auth_type == c.AUTH_REMOTE_USER:
             self.userremoteusermodelview.datamodel = user_datamodel
 
-        self.userstatschartview.datamodel = user_datamodel
+        if self.userstatschartview:
+            self.userstatschartview.datamodel = user_datamodel
         if self.auth_user_registration:
             self.registerusermodelview.datamodel = SQLAInterface(
                 self.registeruser_model
