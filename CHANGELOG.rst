@@ -9,6 +9,7 @@ Improvements and Bug fixes on 2.2.2
 - Fix, [api] using default method name when unspecified in method_permission_name (#1235)
 - New, [api] New, http 403 forbidden on default responses (#1237)
 - New, [mvc] [api] exclude and include route methods (#1234)
+- New, [mvc] [security] make userstatschartview optional (#1239)
 
 Improvements and Bug fixes on 2.2.1
 -----------------------------------
