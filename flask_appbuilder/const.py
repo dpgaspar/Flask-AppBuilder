@@ -131,6 +131,9 @@ LOGMSG_WAR_DBI_EDIT_INTEGRITY = "Edit record integrity error: {0}"
 LOGMSG_WAR_DBI_DEL_INTEGRITY = "Delete record integrity error: {0}"
 """ Dabase integrity error, format with err message """
 
+LOGMSG_WAR_DBI_QUERY_ORDER = "Could not order results: {0}"
+""" Dabase query error, format with err message """
+
 LOGMSG_INF_FAB_ADD_VIEW = "Registering class {0} on menu {1}"
 """ Inform that view class was added, format with class name, name"""
 

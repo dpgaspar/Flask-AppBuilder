@@ -21,6 +21,7 @@ from ...const import (
     LOGMSG_WAR_DBI_ADD_INTEGRITY,
     LOGMSG_WAR_DBI_DEL_INTEGRITY,
     LOGMSG_WAR_DBI_EDIT_INTEGRITY,
+    LOGMSG_WAR_DBI_QUERY_ORDER,
 )
 from ...filemanager import FileManager, ImageManager
 
@@ -89,10 +90,14 @@ class SQLAInterface(BaseInterface):
             if hasattr(self.obj, order_column):
                 if hasattr(getattr(self.obj, order_column), "_col_name"):
                     order_column = getattr(self._get_attr(order_column), "_col_name")
-            if order_direction == "asc":
-                query = query.order_by(self._get_attr(order_column).asc())
-            else:
-                query = query.order_by(self._get_attr(order_column).desc())
+            try:
+                if order_direction == "asc":
+                    query = query.order_by(self._get_attr(order_column).asc())
+                else:
+                    query = query.order_by(self._get_attr(order_column).desc())
+            except NotImplementedError as e:
+                self.message = (as_unicode(self.read_order_error_message), "warning")
+                log.warning(LOGMSG_WAR_DBI_QUERY_ORDER.format(str(e)))
         return query
 
     def _query_join_dotted_column(self, query, column) -> (object, tuple):
