@@ -648,13 +648,14 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         role_view.related_views = [self.user_view.__class__]
 
-        self.appbuilder.add_view(
-            self.userstatschartview,
-            "User's Statistics",
-            icon="fa-bar-chart-o",
-            label=_("User's Statistics"),
-            category="Security",
-        )
+        if self.userstatschartview:
+            self.appbuilder.add_view(
+                self.userstatschartview,
+                "User's Statistics",
+                icon="fa-bar-chart-o",
+                label=_("User's Statistics"),
+                category="Security",
+            )
         if self.auth_user_registration:
             self.appbuilder.add_view(
                 self.registerusermodelview,
