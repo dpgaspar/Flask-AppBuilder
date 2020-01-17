@@ -1,5 +1,6 @@
 import json
 import logging
+from typing import Set
 
 from flask import (
     abort,
@@ -10,7 +11,7 @@ from flask import (
     request,
     send_file,
     session,
-    url_for
+    url_for,
 )
 
 from ._compat import as_unicode, string_types
@@ -153,6 +154,26 @@ class RestCRUDView(BaseCRUDView):
     """
         This class view exposes REST method for CRUD operations on you models
     """
+
+    disable_api_route_methods: bool = False
+    """ Flag to disable this class exposed methods, note that this class
+    will eventually get deprecated """
+
+    def __init__(self, **kwargs):
+        if self.disable_api_route_methods:
+            api_route_methods: Set = {
+                "api",
+                "api_read",
+                "api_get",
+                "api_create",
+                "api_update",
+                "api_delete",
+                "api_column_add",
+                "api_column_edit",
+                "api_readvalues",
+            }
+            self.exclude_route_methods = self.exclude_route_methods | api_route_methods
+        super().__init__(**kwargs)
 
     def _search_form_json(self):
         pass
