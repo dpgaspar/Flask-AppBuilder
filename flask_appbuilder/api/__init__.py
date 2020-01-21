@@ -314,6 +314,17 @@ class BaseApi(object):
                 }
             },
         },
+        "403": {
+            "description": "Forbidden",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {"message": {"type": "string"}},
+                    }
+                }
+            },
+        },
         "404": {
             "description": "Not found",
             "content": {
@@ -358,11 +369,24 @@ class BaseApi(object):
         example::
 
             class ContactModelView(ModelRestApi):
-                datamodel = SQLAModel(Contact)
-                exclude_route_methods = ("info", "get_list", "get")
+                datamodel = SQLAInterface(Contact)
+                exclude_route_methods = {"info", "get_list", "get"}
 
 
         The previous examples will only register the `put`, `post` and `delete` routes
+    """
+    include_route_methods = None
+    """
+        If defined will assume a white list setup, where all endpoints are excluded
+        except those define on this attribute
+        example::
+
+            class ContactModelView(ModelRestApi):
+                datamodel = SQLAInterface(Contact)
+                include_route_methods = {"list"}
+
+
+        The previous example will exclude all endpoints except the `list` endpoint
     """
 
     def __init__(self):
@@ -398,6 +422,12 @@ class BaseApi(object):
             self.base_permissions = set()
             is_add_base_permissions = True
         for attr_name in dir(self):
+            # If include_route_methods is not None white list
+            if (
+                self.include_route_methods is not None
+                and attr_name not in self.include_route_methods
+            ):
+                continue
             # Don't create permission for excluded routes
             if attr_name in self.exclude_route_methods:
                 continue
@@ -437,6 +467,15 @@ class BaseApi(object):
             attr = getattr(self, attr_name)
             if hasattr(attr, "_urls"):
                 for url, methods in attr._urls:
+                    # If include_route_methods is not None white list
+                    if (
+                        self.include_route_methods is not None
+                        and attr_name not in self.include_route_methods
+                    ):
+                        continue
+                    if attr_name in self.exclude_route_methods:
+                        log.info(f"Not registering api spec for method {attr_name}")
+                        continue
                     operations = dict()
                     path = self.path_helper(path=url, operations=operations)
                     self.operation_helper(
@@ -469,6 +508,11 @@ class BaseApi(object):
 
     def _register_urls(self):
         for attr_name in dir(self):
+            if (
+                self.include_route_methods is not None
+                and attr_name not in self.include_route_methods
+            ):
+                continue
             if attr_name in self.exclude_route_methods:
                 log.info(f"Not registering route for method {attr_name}")
                 continue
@@ -561,7 +605,7 @@ class BaseApi(object):
             Returns the permission name for a method
         """
         if self.method_permission_name:
-            return self.method_permission_name.get(method_name)
+            return self.method_permission_name.get(method_name, method_name)
         else:
             if hasattr(getattr(self, method_name), "_permission_name"):
                 return getattr(getattr(self, method_name), "_permission_name")
@@ -627,6 +671,15 @@ class BaseApi(object):
         :return: HTTP Json response
         """
         return self.response(401, **{"message": "Not authorized"})
+
+    def response_403(self):
+        """
+            Helper method for HTTP 403 response
+
+        :param message: Error message (str)
+        :return: HTTP Json response
+        """
+        return self.response(403, **{"message": "Forbidden"})
 
     def response_404(self):
         """
@@ -1625,7 +1678,8 @@ class ModelRestApi(BaseModelApi):
             ret["validate"] = [str(field.validate)]
         ret["type"] = field.__class__.__name__
         ret["required"] = field.required
-        ret["unique"] = field.unique
+        # When using custom marshmallow schemas fields don't have unique property
+        ret["unique"] = getattr(field, "unique", False)
         return ret
 
     def _get_fields_info(self, cols, model_schema, filter_rel_fields, **kwargs):

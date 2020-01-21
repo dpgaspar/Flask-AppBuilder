@@ -1,9 +1,10 @@
 import datetime
 import json
 import logging
+from typing import Set
 
-from flask import redirect, request, session
-from flask_appbuilder import SQLA
+from flask import Flask, redirect, request, session
+from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.charts.views import (
     ChartView,
     DirectByChartView,
@@ -16,7 +17,8 @@ from flask_appbuilder.models.generic import PSSession
 from flask_appbuilder.models.generic.interface import GenericInterface
 from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggregate_sum
 from flask_appbuilder.models.sqla.filters import FilterEqual, FilterStartsWith
-from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView, ModelView
 import jinja2
 
 from .base import FABTestCase
@@ -61,9 +63,6 @@ class AMVCBabelTestCase(FABTestCase):
         """
             MVC: Test babel empty languages
         """
-        from flask import Flask
-        from flask_appbuilder import AppBuilder
-
         app = Flask(__name__)
         app.config.from_object("flask_appbuilder.tests.config_api")
         app.config["LANGUAGES"] = {}
@@ -82,9 +81,6 @@ class AMVCBabelTestCase(FABTestCase):
         """
             MVC: Test babel languages
         """
-        from flask import Flask
-        from flask_appbuilder import AppBuilder
-
         app = Flask(__name__)
         app.config.from_object("flask_appbuilder.tests.config_api")
         app.config["LANGUAGES"] = {
@@ -106,13 +102,8 @@ class AMVCBabelTestCase(FABTestCase):
         self.assertEqual(rv.status_code, 302)
 
 
-class FlaskTestCase(FABTestCase):
+class BaseMVCTestCase(FABTestCase):
     def setUp(self):
-        from flask import Flask
-        from flask_appbuilder import AppBuilder
-        from flask_appbuilder.models.sqla.interface import SQLAInterface
-        from flask_appbuilder.views import ModelView
-
         self.app = Flask(__name__)
         self.app.jinja_env.undefined = jinja2.StrictUndefined
         self.app.config.from_object("flask_appbuilder.tests.config_api")
@@ -121,6 +112,177 @@ class FlaskTestCase(FABTestCase):
         self.db = SQLA(self.app)
         self.appbuilder = AppBuilder(self.app, self.db.session)
 
+    @property
+    def registered_endpoints(self) -> Set:
+        return {item.endpoint for item in self.app.url_map.iter_rules()}
+
+    def get_registered_view_endpoints(self, view_name) -> Set:
+        return {
+            item.endpoint
+            for item in self.app.url_map.iter_rules()
+            if item.endpoint.split(".")[0] == view_name
+        }
+
+
+class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
+    """
+    Specific to test ModelView's:
+        - include_route_methods
+        - exclude_route_methods
+        - disable_api_route_methods
+    """
+
+    def setUp(self):
+        super().setUp()
+
+        class Model2IncludeView(ModelView):
+            datamodel = SQLAInterface(Model2)
+            include_route_methods = {"list", "show"}
+
+        self.appbuilder.add_view(Model2IncludeView, "Model2IncludeView")
+
+        class Model2ExcludeView(ModelView):
+            datamodel = SQLAInterface(Model2)
+            exclude_route_methods: Set = {
+                "api",
+                "api_read",
+                "api_get",
+                "api_create",
+                "api_update",
+                "api_delete",
+                "api_column_add",
+                "api_column_edit",
+                "api_readvalues",
+            }
+
+        self.appbuilder.add_view(Model2ExcludeView, "Model2ExcludeView")
+
+        class Model2IncludeExcludeView(ModelView):
+            datamodel = SQLAInterface(Model2)
+            include_route_methods: Set = {
+                "api",
+                "api_read",
+                "api_get",
+                "api_create",
+                "api_update",
+                "api_delete",
+                "api_column_add",
+                "api_column_edit",
+                "api_readvalues",
+            }
+            exclude_route_methods: Set = {
+                "api_create",
+                "api_update",
+                "api_delete",
+                "api_column_add",
+                "api_column_edit",
+                "api_readvalues",
+            }
+
+        self.appbuilder.add_view_no_menu(
+            Model2IncludeExcludeView, "Model2IncludeExcludeView"
+        )
+
+        class Model2DisableMVCApiView(ModelView):
+            datamodel = SQLAInterface(Model2)
+            disable_api_route_methods = True
+
+        self.appbuilder.add_view(Model2DisableMVCApiView, "Model2DisableMVCApiView")
+
+    def test_include_route_methods(self):
+        """
+            MVC: Include route methods
+        """
+        expected_endpoints = {"Model2IncludeView.list", "Model2IncludeView.show"}
+        self.assertEqual(
+            expected_endpoints, self.get_registered_view_endpoints("Model2IncludeView")
+        )
+        # Check that permissions do not exist
+        unexpected_permissions = [
+            ("can_add", "Model2IncludeView"),
+            ("can_edit", "Model2IncludeView"),
+            ("can_delete", "Model2IncludeView"),
+            ("can_download", "Model2IncludeView"),
+        ]
+        for unexpected_permission in unexpected_permissions:
+            pvm = self.appbuilder.sm.find_permission_view_menu(*unexpected_permission)
+            self.assertIsNone(pvm)
+        # Login and list with admin, check that mutation links are not rendered
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        rv = client.get("/model2includeview/list/")
+        self.assertEqual(rv.status_code, 200)
+        data = rv.data.decode("utf-8")
+        self.assertNotIn("/model2includeview/add", data)
+        self.assertNotIn("/model2includeview/edit", data)
+        self.assertNotIn("/model2includeview/delete", data)
+
+    def test_exclude_route_methods(self):
+        """
+            MVC: Exclude route methods
+        """
+        expected_endpoints: Set = {
+            "Model2ExcludeView.list",
+            "Model2ExcludeView.show",
+            "Model2ExcludeView.edit",
+            "Model2ExcludeView.download",
+            "Model2ExcludeView.action",
+            "Model2ExcludeView.delete",
+            "Model2ExcludeView.add",
+            "Model2ExcludeView.action_post",
+        }
+        self.assertEqual(
+            expected_endpoints, self.get_registered_view_endpoints("Model2ExcludeView")
+        )
+
+    def test_include_exclude_route_methods(self):
+        """
+            MVC: Include and Exclude route methods
+        """
+
+        expected_endpoints: Set = {
+            "Model2IncludeExcludeView.api",
+            "Model2IncludeExcludeView.api_read",
+            "Model2IncludeExcludeView.api_get",
+        }
+        self.assertEqual(
+            expected_endpoints,
+            self.get_registered_view_endpoints("Model2IncludeExcludeView"),
+        )
+        # Check that permissions do not exist
+        unexpected_permissions = [
+            ("can_add", "Model2IncludeExcludeView"),
+            ("can_edit", "Model2IncludeExcludeView"),
+            ("can_delete", "Model2IncludeExcludeView"),
+            ("can_download", "Model2IncludeExcludeView"),
+        ]
+        for unexpected_permission in unexpected_permissions:
+            pvm = self.appbuilder.sm.find_permission_view_menu(*unexpected_permission)
+            self.assertIsNone(pvm)
+
+    def test_disable_mvc_api_methods(self):
+        """
+            MVC: Disable MVC API
+        """
+        expected_endpoints: Set = {
+            "Model2DisableMVCApiView.list",
+            "Model2DisableMVCApiView.show",
+            "Model2DisableMVCApiView.add",
+            "Model2DisableMVCApiView.edit",
+            "Model2DisableMVCApiView.delete",
+            "Model2DisableMVCApiView.action",
+            "Model2DisableMVCApiView.download",
+            "Model2DisableMVCApiView.action_post",
+        }
+        self.assertEqual(
+            expected_endpoints,
+            self.get_registered_view_endpoints("Model2DisableMVCApiView"),
+        )
+
+
+class MVCTestCase(BaseMVCTestCase):
+    def setUp(self):
+        super().setUp()
         sess = PSSession()
 
         class PSView(ModelView):

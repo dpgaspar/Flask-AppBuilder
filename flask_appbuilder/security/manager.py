@@ -648,13 +648,14 @@ class BaseSecurityManager(AbstractSecurityManager):
         )
         role_view.related_views = [self.user_view.__class__]
 
-        self.appbuilder.add_view(
-            self.userstatschartview,
-            "User's Statistics",
-            icon="fa-bar-chart-o",
-            label=_("User's Statistics"),
-            category="Security",
-        )
+        if self.userstatschartview:
+            self.appbuilder.add_view(
+                self.userstatschartview,
+                "User's Statistics",
+                icon="fa-bar-chart-o",
+                label=_("User's Statistics"),
+                category="Security",
+            )
         if self.auth_user_registration:
             self.appbuilder.add_view(
                 self.registerusermodelview,
@@ -1185,6 +1186,9 @@ class BaseSecurityManager(AbstractSecurityManager):
                     if self.auth_role_admin not in self.builtin_roles:
                         self.add_permission_role(role_admin, pv)
             for perm_view in perm_views:
+                if perm_view.permission is None:
+                    # Skip this perm_view, it has a null permission
+                    continue
                 if perm_view.permission.name not in base_permissions:
                     # perm to delete
                     roles = self.get_all_roles()
