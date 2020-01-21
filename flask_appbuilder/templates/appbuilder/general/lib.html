@@ -10,26 +10,31 @@
 {% macro render_action_links(actions, pk, modelview_name) %}
     {% set actions = actions | get_actions_on_show(modelview_name) %}
     {% for key in actions %}
-        {%  set action = actions.get(key) %}
-
-        {% set url = url_for(modelview_name + '.action', name = action.name, pk = pk) %}
-        <a href="javascript:void(0)" class="btn btn-sm btn-primary"
-           onclick="var a = new AdminActions(); return a.execute_single('{{url}}','{{action.confirmation}}');">
-            <i class="fa {{action.icon}}"></i>
-                {{_(action.text)}}
-            </a>
+        {% set action = actions.get(key) %}
+        {% set endpoint = modelview_name + '.action' %}
+        {% set path = endpoint | safe_url_for(name = action.name, pk = pk) %}
+        {% if path %}
+            <a href="javascript:void(0)" class="btn btn-sm btn-primary"
+               onclick="var a = new AdminActions(); return a.execute_single('{{path}}','{{action.confirmation}}');">
+                <i class="fa {{action.icon}}"></i>
+                    {{_(action.text)}}
+                </a>
+        {% endif %}
     {% endfor %}
 {% endmacro %}
 
 {% macro action_form(actions, modelview_name) %}
     {% if actions %}
-    {% set url = url_for(modelview_name + '.action_post') %}
-    <form id="action_form" action="{{ url }}" method="POST" style="display: none">
-        {% if csrf_token %}
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        {% set endpoint = modelview_name + '.action_post' %}
+        {% set path = endpoint | safe_url_for %}
+        {% if path %}
+            <form id="action_form" action="{{ path }}" method="POST" style="display: none">
+                {% if csrf_token %}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                {% endif %}
+                <input type="hidden" id="action" name="action" />
+            </form>
         {% endif %}
-        <input type="hidden" id="action" name="action" />
-    </form>
     {% endif %}
 {% endmacro %}
 
@@ -169,7 +174,7 @@
         </li>
         {% else %}
         <li>
-            <a href="{{ p | link_page(modelview_name) }}">{{ (p +1) }}</a>
+            <a href="{{ p | link_page(modelview_name) }}">{{ (p + 1) }}</a>
         </li>
         {% endif %}
     {% endfor %}
@@ -279,34 +284,47 @@
 {% endmacro %}
 
 {% macro render_list_header(can_add, page, page_size, count, filters, actions, modelview_name) %}
-        {{ render_pagination(page, page_size, count, modelview_name) }}
-        {{ render_set_page_size(page, page_size, count, modelview_name) }}
-    	{% if can_add %}
-		    {% set path = url_for(modelview_name + '.add') %}
-			{% set path = path | set_link_filters(filters) %}
-			&nbsp;{{ lnk_add(path) }}
+    {{ render_pagination(page, page_size, count, modelview_name) }}
+    {{ render_set_page_size(page, page_size, count, modelview_name) }}
+    {% if can_add %}
+        {% set endpoint = modelview_name + '.add' %}
+        {% set path = endpoint | safe_url_for %}
+        {% if path %}
+            {% set path = path | set_link_filters(filters) %}
+            {{ lnk_add(path) }}
         {% endif %}
-        &nbsp;{{ render_actions(actions, modelview_name) }}
-        &nbsp;{{ lnk_back() }}
-		<div class="pull-right">
-			<strong>{{ _('Record Count') }}:</strong> {{ count }}
-		</div>
+    {% endif %}
+    {{ render_actions(actions, modelview_name) }}
+    {{ lnk_back() }}
+    <div class="pull-right">
+        <strong>{{ _('Record Count') }}:</strong> {{ count }}
+    </div>
 {% endmacro %}
 
 {% macro btn_crud(can_show, can_edit, can_delete, pk, modelview_name, filters) %}
     <div class="btn-group btn-group-xs" style="display: flex;">
         {% if can_show %}
-            {% set path = url_for(modelview_name + '.show',pk=pk) %}
-            {% set path = path | set_link_filters(filters) %}
-            {{ lnk_show(path) }}
+            {% set endpoint = modelview_name + '.show' %}
+            {% set path = endpoint | safe_url_for(pk=pk) %}
+            {% if path %}
+                {% set path = path | set_link_filters(filters) %}
+                {{ lnk_show(path) }}
+            {% endif %}
         {% endif %}
         {% if can_edit %}
-            {% set path = url_for(modelview_name + '.edit',pk=pk) %}
-            {% set path = path | set_link_filters(filters) %}
-            {{ lnk_edit(path) }}
+            {% set endpoint = modelview_name + '.edit' %}
+            {% set path = endpoint | safe_url_for(pk=pk) %}
+            {% if path %}
+                {% set path = path | set_link_filters(filters) %}
+                {{ lnk_edit(path) }}
+            {% endif %}
         {% endif %}
         {% if can_delete %}
-            {{ lnk_delete(url_for(modelview_name + '.delete',pk=pk)) }}
+            {% set endpoint = modelview_name + '.delete' %}
+            {% set path = endpoint | safe_url_for(pk=pk) %}
+            {% if path %}
+                {{ lnk_delete(path) }}
+            {% endif %}
         {% endif %}
     </div>
 {% endmacro %}
