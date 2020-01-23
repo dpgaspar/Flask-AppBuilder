@@ -1,6 +1,18 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.2.2
+-----------------------------------
+
+- Fix, [mvc] List page's pagination start with 1 (#1216)
+- Fix, AttributeError in manager.py when a permission is null (#1217)
+- Fix, [api] using default method name when unspecified in method_permission_name (#1235)
+- New, [api] New, http 403 forbidden on default responses (#1237)
+- New, [mvc] [api] exclude and include route methods (#1234)
+- New, [mvc] [security] make userstatschartview optional (#1239)
+- New, [mvc] Disable old API flag and tests (#1244)
+- Fix, [mvc] jinja2 crashes with defined actions and removed action routes (#1245)
+
 Improvements and Bug fixes on 2.2.1
 -----------------------------------
 
