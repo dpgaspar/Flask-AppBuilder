@@ -42,6 +42,13 @@ class TemplateFilters(object):
                 res_actions[action_key] = action
         return res_actions
 
+    @app_template_filter("safe_url_for")
+    def safe_url_for(self, endpoint, **values):
+        try:
+            return url_for(endpoint, **values)
+        except Exception:
+            return None
+
     @app_template_filter("link_order")
     def link_order_filter(self, column, modelview_name):
         """
