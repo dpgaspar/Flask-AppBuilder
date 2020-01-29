@@ -58,8 +58,8 @@ var AdminActions = function(viewname) {
             if (activeTabs.length > 0)
             {
                 // find action form
-                var forms = $('form', $(activeTabs[0]));
-
+                var form = $('#action_form', $(activeTabs[0]));
+                /*
                 for(i=0; i < forms.length; i++)
                 {
                     if (forms[i].parendNode.outerHTML.search(view_name) > 0)
@@ -68,7 +68,7 @@ var AdminActions = function(viewname) {
                         break;
                     }
                 }
-
+                */
                 $('#action', $(form)).val(action_name);
                 $('input.action_check', $(form)).remove();
                 $('input.action_check:checked', $(activeTabs[0])).each(function() {
