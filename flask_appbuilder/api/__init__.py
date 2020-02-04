@@ -3,6 +3,7 @@ import json
 import logging
 import re
 import traceback
+from typing import Dict
 import urllib.parse
 
 from apispec import yaml_utils
@@ -388,6 +389,22 @@ class BaseApi(object):
 
         The previous example will exclude all endpoints except the `list` endpoint
     """
+    openapi_spec_methods: Dict = {}
+    """
+        Merge OpenAPI spec defined on the method's doc.
+        For example to merge/override `get_list`::
+
+
+            class GreetingApi(BaseApi):
+                resource_name = "greeting"
+                openapi_spec_methods = {
+                    "greeting": {
+                        "get": {
+                           "description": "Override description",
+                        }
+                    }
+                }
+    """
 
     def __init__(self):
         """
@@ -549,6 +566,11 @@ class BaseApi(object):
         :param list methods: A list of methods registered for this path
         """
         for method in methods:
+            try:
+                # Check if method openapi spec is overridden
+                override_method_spec = self.openapi_spec_methods[func.__name__]
+            except KeyError:
+                override_method_spec = {}
             yaml_doc_string = yaml_utils.load_operations_from_docstring(func.__doc__)
             yaml_doc_string = yaml.safe_load(
                 str(yaml_doc_string).replace(
@@ -557,6 +579,8 @@ class BaseApi(object):
             )
             if yaml_doc_string:
                 operation_spec = yaml_doc_string.get(method.lower(), {})
+                # Merge docs spec and override spec
+                operation_spec.update(override_method_spec.get(method.lower(), {}))
                 if self.get_method_permission(func.__name__):
                     operation_spec["security"] = [{"jwt": []}]
                 operations[method.lower()] = operation_spec
