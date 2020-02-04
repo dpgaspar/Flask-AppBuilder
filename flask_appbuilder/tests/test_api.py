@@ -47,7 +47,6 @@ from .const import (
 from .sqla.models import (
     insert_model1,
     insert_model2,
-    insert_model_mm_parent,
     Model1,
     Model2,
     Model4,
