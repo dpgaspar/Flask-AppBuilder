@@ -1,6 +1,13 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.2.3
+-----------------------------------
+
+Fix, [api] many to many filters (#1256)
+New, [api] override merge openapi docs specs (#1252)
+Fix, [security] Set JWT user on flask global (#1242)
+
 Improvements and Bug fixes on 2.2.2
 -----------------------------------
 
