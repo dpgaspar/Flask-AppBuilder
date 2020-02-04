@@ -47,7 +47,6 @@ from .const import (
 from .sqla.models import (
     insert_model1,
     insert_model2,
-    insert_model_mm_parent,
     Model1,
     Model2,
     Model4,
@@ -1126,6 +1125,64 @@ class APITestCase(FABTestCase):
         self.assertEqual(data[API_RESULT_RES_KEY][0], expected_result)
         self.assertEqual(rv.status_code, 200)
 
+    def test_get_list_filters_m_m(self):
+        """
+            REST Api: Test get list filter params with many to many
+        """
+        session = self.appbuilder.get_session
+
+        child = ModelMMChild()
+        child.field_string = "test_child_tmp"
+        children = [child]
+        session.add(child)
+        session.commit()
+        parent = ModelMMParent()
+        parent.field_string = "test_tmp"
+        parent.children = children
+        session.add(parent)
+        session.commit()
+
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        arguments = {
+            API_FILTERS_RIS_KEY: [{"col": "children", "opr": "rel_m_m", "value": [4]}]
+        }
+
+        uri = f"api/v1/modelmmapi/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data["count"], 1)
+        self.assertEqual(
+            data["result"][0]["children"][0]["field_string"], "test_child_tmp"
+        )
+
+        arguments = {
+            API_FILTERS_RIS_KEY: [
+                {"col": "children", "opr": "rel_m_m", "value": [1, 2]}
+            ]
+        }
+
+        uri = f"api/v1/modelmmapi/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+        rv = self.auth_client_get(client, token, uri)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data["count"], MODEL1_DATA_SIZE)
+
+        parent_ = (
+            session.query(ModelMMParent)
+            .filter_by(field_string="test_tmp")
+            .one_or_none()
+        )
+        child_ = (
+            session.query(ModelMMChild)
+            .filter_by(field_string="test_child_tmp")
+            .one_or_none()
+        )
+
+        session.delete(parent_)
+        session.commit()
+        session.delete(child_)
+        session.commit()
+
     def test_get_list_filters_wrong_col(self):
         """
             REST Api: Test get list with wrong columns
@@ -1655,41 +1712,42 @@ class APITestCase(FABTestCase):
         """
             REST Api: Test update m-m field
         """
+        session = self.appbuilder.get_session
         pk = 1
         # Fetching children so that we can revert the changes
-        original_model = (
-            self.appbuilder.get_session.query(ModelMMParent).filter_by(id=pk).first()
-        )
-        original_children_ids = [child.id for child in original_model.children]
+        original_model = session.query(ModelMMParent).filter_by(id=pk).one_or_none()
+        original_children = [child for child in original_model.children]
 
-        model = ModelMMChild()
-        model.field_string = "update_m,m"
-        self.appbuilder.get_session.add(model)
-        self.appbuilder.get_session.commit()
+        child = ModelMMChild()
+        child.field_string = "update_m,m"
+        session.add(child)
+        session.commit()
+
+        child_id = (
+            session.query(ModelMMChild)
+            .filter_by(field_string="update_m,m")
+            .one_or_none()
+            .id
+        )
+        item = dict(children=[child_id])
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
-        item = dict(children=[4])
         uri = "api/v1/modelmmapi/{}".format(pk)
         rv = self.auth_client_put(client, token, uri, item)
         self.assertEqual(rv.status_code, 200)
         data = json.loads(rv.data.decode("utf-8"))
         self.assertEqual(
-            data[API_RESULT_RES_KEY], {"children": [4], "field_string": "0"}
+            data[API_RESULT_RES_KEY], {"children": [child_id], "field_string": "0"}
         )
 
         # Revert data changes
-        original_children = list()
-        for child_id in original_children_ids:
-            original_children.append(
-                self.appbuilder.get_session.query(ModelMMChild)
-                .filter_by(id=child_id)
-                .first()
-            )
-        insert_model_mm_parent(
-            self.appbuilder.get_session, i=pk - 1, children=original_children
-        )
-        self.appbuilder.get_session.query(ModelMMChild).filter_by(id=4).delete()
-        self.appbuilder.get_session.commit()
+        original_model = session.query(ModelMMParent).filter_by(id=pk).one_or_none()
+        original_model.children = original_children
+        session.merge(original_model)
+        session.commit()
+        child = session.query(ModelMMChild).filter_by(id=child_id).one_or_none()
+        session.delete(child)
+        session.commit()
 
     def test_update_item_val_type(self):
         """
@@ -1995,6 +2053,21 @@ class APITestCase(FABTestCase):
         self.assertEqual(
             data, {"message": {"children": ["Missing data for required field."]}}
         )
+
+        # Rollback data changes
+        model1 = (
+            self.appbuilder.get_session.query(ModelMMParent)
+            .filter_by(field_string="new1")
+            .one_or_none()
+        )
+        model2 = (
+            self.appbuilder.get_session.query(ModelMMParent)
+            .filter_by(field_string="new2")
+            .one_or_none()
+        )
+        self.appbuilder.get_session.delete(model1)
+        self.appbuilder.get_session.delete(model2)
+        self.appbuilder.get_session.commit()
 
     def test_get_list_col_function(self):
         """
