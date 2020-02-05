@@ -133,6 +133,9 @@ class SecurityManager(BaseSecurityManager):
         elif email:
             return self.get_session.query(self.user_model).filter_by(email=email).first()
 
+    def find_user_status(self, username=None):
+        return self.get_session.query(self.user_model).filter(func.lower(self.user_model.username) == func.lower(username)).filter(self.user_model.status=='online').first()
+
     def get_all_users(self):
         return self.get_session.query(self.user_model).all()
 

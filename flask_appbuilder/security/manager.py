@@ -5,7 +5,7 @@ import redis
 import signal
 import threading
 import atexit
-from flask import url_for, g, session
+from flask import url_for, g, session, redirect, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, current_user
 from flask_openid import OpenID
@@ -14,6 +14,7 @@ from .views import AuthDBView, AuthOIDView, ResetMyPasswordView, AuthLDAPView, A
     ResetPasswordView, UserDBModelView, UserLDAPModelView, UserOIDModelView, UserOAuthModelView, UserRemoteUserModelView, \
     RoleModelView, PermissionViewModelView, ViewMenuModelView, PermissionModelView, UserStatsChartView, RegisterUserModelView, \
     UserInfoEditView
+from flask_login import logout_user
 from .registerviews import RegisterUserDBView, RegisterUserOIDView, RegisterUserOAuthView
 from ..basemanager import BaseManager
 from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
@@ -22,7 +23,8 @@ from ..const import AUTH_OID, AUTH_DB, AUTH_LDAP, \
                     LOGMSG_ERR_SEC_AUTH_LDAP_TLS, \
                     LOGMSG_WAR_SEC_NO_USER, \
                     LOGMSG_WAR_SEC_NOLDAP_OBJ, \
-                    LOGMSG_WAR_SEC_LOGIN_FAILED
+                    LOGMSG_WAR_SEC_LOGIN_FAILED, \
+                    FLAMSG_ERR_SEC_ACCESS_DENIED
 
 current_time = lambda: int(round(time.time() * 1000))
 log = logging.getLogger(__name__)
@@ -247,6 +249,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         def before_request():
             global isSetInterval
             g.user = current_user
+            if hasattr(g.user,'username'):
+                user = self.appbuilder.sm.find_user_status(username=g.user.username)
+                if not user:
+                    logout_user()
+                    flash((FLAMSG_ERR_SEC_ACCESS_DENIED), 'danger')
+                    return redirect(self.appbuilder.get_url_for_index)
             if not isSetInterval:
                 setInterval(check_online_user, int(app.config['CHACKING_ONLINE_USER_INTERVAL_SEC']), self)
                 isSetInterval = True
