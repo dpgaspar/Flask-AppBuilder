@@ -665,27 +665,32 @@ class BaseSecurityManager(AbstractSecurityManager):
                 category="Security",
             )
         self.appbuilder.menu.add_separator("Security")
-        self.appbuilder.add_view(
-            self.permissionmodelview,
-            "Base Permissions",
-            icon="fa-lock",
-            label=_("Base Permissions"),
-            category="Security",
-        )
-        self.appbuilder.add_view(
-            self.viewmenumodelview,
-            "Views/Menus",
-            icon="fa-list-alt",
-            label=_("Views/Menus"),
-            category="Security",
-        )
-        self.appbuilder.add_view(
-            self.permissionviewmodelview,
-            "Permission on Views/Menus",
-            icon="fa-link",
-            label=_("Permission on Views/Menus"),
-            category="Security",
-        )
+        if self.appbuilder.app.config.get(
+            "FAB_ADD_SECURITY_PERMISSION_VIEW", True
+        ):
+            self.appbuilder.add_view(
+                self.permissionmodelview,
+                "Base Permissions",
+                icon="fa-lock",
+                label=_("Base Permissions"),
+                category="Security",
+            )
+        if self.appbuilder.app.config.get("FAB_ADD_SECURITY_VIEW_MENU_VIEW", True):
+            self.appbuilder.add_view(
+                self.viewmenumodelview,
+                "Views/Menus",
+                icon="fa-list-alt",
+                label=_("Views/Menus"),
+                category="Security",
+            )
+        if self.appbuilder.app.config.get("FAB_ADD_SECURITY_PERMISSION_VIEWS_VIEW", True):
+            self.appbuilder.add_view(
+                self.permissionviewmodelview,
+                "Permission on Views/Menus",
+                icon="fa-link",
+                label=_("Permission on Views/Menus"),
+                category="Security",
+            )
 
     def create_db(self):
         """
