@@ -605,11 +605,11 @@ class AuthOIDView(AuthView):
         def after_login(resp):
             if resp.email is None or resp.email == "":
                 flash(as_unicode(self.invalid_login_message), "warning")
-                return redirect("login")
+                return redirect(self.appbuilder.get_url_for_login)
             user = self.appbuilder.sm.auth_user_oid(resp.email)
             if user is None:
                 flash(as_unicode(self.invalid_login_message), "warning")
-                return redirect("login")
+                return redirect(self.appbuilder.get_url_for_login)
             remember_me = False
             if "remember_me" in session:
                 remember_me = session["remember_me"]
@@ -677,7 +677,7 @@ class AuthOAuthView(AuthView):
         resp = self.appbuilder.sm.oauth_remotes[provider].authorized_response()
         if resp is None:
             flash(u"You denied the request to sign in.", "warning")
-            return redirect("login")
+            return redirect(self.appbuilder.get_url_for_login)
         log.debug("OAUTH Authorized resp: {0}".format(resp))
         # Retrieves specific user info from the provider
         try:
@@ -698,14 +698,14 @@ class AuthOAuthView(AuthView):
                         break
                 if not allow:
                     flash(u"You are not authorized.", "warning")
-                    return redirect("login")
+                    return redirect(self.appbuilder.get_url_for_login)
             else:
                 log.debug("No whitelist for OAuth provider")
             user = self.appbuilder.sm.auth_user_oauth(userinfo)
 
         if user is None:
             flash(as_unicode(self.invalid_login_message), "warning")
-            return redirect("login")
+            return redirect(self.appbuilder.get_url_for_login)
         else:
             login_user(user)
             try:
