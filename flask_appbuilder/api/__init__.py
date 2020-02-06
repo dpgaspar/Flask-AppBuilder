@@ -1216,6 +1216,15 @@ class ModelRestApi(BaseModelApi):
     def merge_show_title(self, response, **kwargs):
         response[API_SHOW_TITLE_RES_KEY] = self.show_title
 
+    def info_headless(self, **kwargs) -> Response:
+        """
+            response for CRUD REST meta data
+        """
+        _response = dict()
+        _args = kwargs.get("rison", {})
+        self.set_response_key_mappings(_response, self.info, _args, **_args)
+        return self.response(200, **_response)
+
     @expose("/_info", methods=["GET"])
     @protect()
     @safe
@@ -1262,10 +1271,7 @@ class ModelRestApi(BaseModelApi):
             500:
               $ref: '#/components/responses/500'
         """
-        _response = dict()
-        _args = kwargs.get("rison", {})
-        self.set_response_key_mappings(_response, self.info, _args, **_args)
-        return self.response(200, **_response)
+        return self.info_headless(**kwargs)
 
     def get_headless(self, pk, **kwargs) -> Response:
         """
