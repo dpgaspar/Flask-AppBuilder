@@ -4,6 +4,8 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 2.2.3
 -----------------------------------
 
+Fix, [api] make REST API easier to override (#1264)
+New, [auth] make CI optional (#1263)
 New, [auth] make CI optional (#1263)
 Fix, [api] many to many filters (#1256)
 New, [api] override merge openapi docs specs (#1252)
