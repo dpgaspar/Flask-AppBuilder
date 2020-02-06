@@ -63,13 +63,11 @@ def protect(allow_browser_login=False):
             class_permission_name = self.class_permission_name
             if permission_str not in self.base_permissions:
                 return self.response_401()
-            # Check if resource is public
             if current_app.appbuilder.sm.is_item_public(
                     permission_str,
                     class_permission_name
             ):
                 return f(self, *args, **kwargs)
-            # Normal JWT auth
             if not (self.allow_browser_login or allow_browser_login):
                 verify_jwt_in_request()
             if current_app.appbuilder.sm.has_access(
@@ -77,7 +75,6 @@ def protect(allow_browser_login=False):
                     class_permission_name
             ):
                 return f(self, *args, **kwargs)
-            # If APi accepts flask-login cookies
             elif self.allow_browser_login or allow_browser_login:
                 if not current_user.is_authenticated:
                     verify_jwt_in_request()
