@@ -4,6 +4,7 @@ import uuid
 
 from sqlalchemy import and_, func, literal
 from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy.orm.exc import MultipleResultsFound
 from werkzeug.security import generate_password_hash
 
 from .models import (
@@ -149,15 +150,34 @@ class SecurityManager(BaseSecurityManager):
             Finds user by username or email
         """
         if username:
-            return (
-                self.get_session.query(self.user_model)
-                .filter(func.lower(self.user_model.username) == func.lower(username))
-                .first()
-            )
+            try:
+                if self.auth_username_ci:
+                    return (
+                        self.get_session.query(self.user_model)
+                        .filter(
+                            func.lower(self.user_model.username) == func.lower(username)
+                        )
+                        .one_or_none()
+                    )
+                else:
+                    return (
+                        self.get_session.query(self.user_model)
+                        .filter(self.user_model.username == username)
+                        .one_or_none()
+                    )
+            except MultipleResultsFound:
+                log.error(f"Multiple results found for user {username}")
+                return None
         elif email:
-            return (
-                self.get_session.query(self.user_model).filter_by(email=email).first()
-            )
+            try:
+                return (
+                    self.get_session.query(self.user_model)
+                    .filter_by(email=email)
+                    .one_or_none()
+                )
+            except MultipleResultsFound:
+                log.error(f"Multiple results found for user with email {email}")
+                return None
 
     def get_all_users(self):
         return self.get_session.query(self.user_model).all()
