@@ -93,7 +93,7 @@ Using pip
 
     This will start a web development server
 
-    You now have a running development server on http://localhost:8080.
+    You now have a running development server on http://localhost:5000.
 
     The skeleton application is not actually needed for you to run AppBuilder, but it's a good way to start.
     This first application is SQLAlchemy based.
