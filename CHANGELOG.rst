@@ -4,6 +4,7 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 2.2.3
 -----------------------------------
 
+Fix, [api] set api jwt user on flask g (#1270)
 Fix, [api] make REST API easier to override (#1264)
 New, [auth] make CI optional (#1263)
 New, [auth] make CI optional (#1263)
