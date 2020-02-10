@@ -1659,10 +1659,10 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def load_user(self, pk):
         user = self.get_user_by_id(int(pk))
-        g.user = user
+        if user:
+            g.user = user
         return user
 
     @staticmethod
     def before_request():
-        print("BEFORE REQUEST")
         g.user = current_user
