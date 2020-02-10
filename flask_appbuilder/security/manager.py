@@ -1659,7 +1659,7 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     def load_user(self, pk):
         user = self.get_user_by_id(int(pk))
-        if user:
+        if not user.is_anonymous:
             g.user = user
         return user
 
