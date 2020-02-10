@@ -26,6 +26,9 @@ Use config.py to configure the following parameters. By default it will use SQLL
 | AUTH_USER_REGISTRATION =               | Set to True to enable user self            |   No      |
 | True|False                             | registration                               |           |
 +----------------------------------------+--------------------------------------------+-----------+
+| AUTH_USERNAME_CI =                     | Make auth login CI of not defaults to true |   No      |
+| True|False                             |                                            |           |
++----------------------------------------+--------------------------------------------+-----------+
 | AUTH_USER_REGISTRATION_ROLE            | Set role name, to be assign when a user    |   Cond.   |
 |                                        | registers himself. This role must already  |           |
 |                                        | exist. Mandatory when using user           |           |
