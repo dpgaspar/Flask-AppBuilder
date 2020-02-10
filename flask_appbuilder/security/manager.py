@@ -290,7 +290,7 @@ class BaseSecurityManager(AbstractSecurityManager):
         """
         jwt_manager = JWTManager()
         jwt_manager.init_app(app)
-        jwt_manager.user_loader_callback_loader(self.load_user)
+        jwt_manager.user_loader_callback_loader(self.load_user_jwt)
         return jwt_manager
 
     def create_builtin_roles(self):
@@ -1658,9 +1658,12 @@ class BaseSecurityManager(AbstractSecurityManager):
         raise NotImplementedError
 
     def load_user(self, pk):
-        user = self.get_user_by_id(int(pk))
-        if not user.is_anonymous:
-            g.user = user
+        return self.get_user_by_id(int(pk))
+
+    def load_user_jwt(self, pk):
+        user = self.load_user(pk)
+        # Set flask g.user to JWT user, we can't do it on before request
+        g.user = user
         return user
 
     @staticmethod
