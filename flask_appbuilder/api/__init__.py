@@ -1446,6 +1446,8 @@ class ModelRestApi(BaseModelApi):
                         type: array
                         items:
                           type: string
+                      count:
+                        type: number
                       order_columns:
                         type: array
                         items:
