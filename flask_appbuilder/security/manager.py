@@ -425,7 +425,6 @@ class BaseSecurityManager(AbstractSecurityManager):
 
     @property
     def current_user(self):
-        print("HERE")
         if current_user.is_authenticated:
             return g.user
         elif current_user_jwt:
