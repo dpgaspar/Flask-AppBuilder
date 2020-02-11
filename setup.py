@@ -50,7 +50,7 @@ setup(
         "click>=6.7, <8",
         "Flask>=0.12, <2",
         "Flask-Babel>=0.11.1, <1",
-        "Flask-Login>=0.3, <0.5",
+        "Flask-Login>=0.3, <=0.5",
         "Flask-OpenID>=1.2.5, <2",
         "Flask-SQLAlchemy>=2.4, <3",
         "Flask-WTF>=0.14.2, <1",
