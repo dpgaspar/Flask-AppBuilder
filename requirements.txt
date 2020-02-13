@@ -10,7 +10,7 @@ babel==2.6.0              # via flask-babel
 click==7.0
 colorama==0.4.1
 defusedxml==0.5.0         # via python3-openid
-flask-babel==0.12.2
+flask-babel==1.0.0
 flask-jwt-extended==3.18.0
 flask-login==0.4.1
 flask-openid==1.2.5
@@ -29,7 +29,7 @@ pyjwt==1.7.1
 pyrsistent==0.14.11       # via jsonschema
 python-dateutil==2.8.0
 python3-openid==3.1.0     # via flask-openid
-pytz==2018.9              # via babel
+pytz==2018.9              # via babel, flask-babel
 pyyaml==5.1               # via apispec
 six==1.12.0               # via flask-jwt-extended, jsonschema, prison, pyrsistent, python-dateutil, sqlalchemy-utils
 sqlalchemy-utils==0.33.9
