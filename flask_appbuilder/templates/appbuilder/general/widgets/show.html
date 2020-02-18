@@ -2,6 +2,12 @@
 {% include 'appbuilder/general/confirm.html' %}
 {% include 'appbuilder/general/alert.html' %}
 
+{%- macro render_column(item) -%}
+    {%- set formatter = formatters_columns.get(item) -%}
+    {%- set v = value_columns[include_columns.index(item)] -%}
+    {{ formatter(v) if formatter else v }}
+{%- endmacro -%}
+
 {% block columns %}
 
 {% if fieldsets %}
@@ -18,7 +24,7 @@
         {% for item in fieldset_item[1].get('fields') %}
             <tr>
             <th class="col-lg-2 col-md-2 col-sm-2">{{label_columns.get(item)}}</th>
-            <td><span style="white-space: pre-line">{{value_columns[include_columns.index(item)]}}</span></td>
+	    <td><span style="white-space: pre-line">{{render_column(item)}}</span></td>
             </tr>
         {% endfor %}
         </table></div>
@@ -33,9 +39,7 @@
         <tr>
             <th class="col-lg-2 col-md-2 col-sm-2">{{label_columns.get(item)}}</th>
             <td>
-                {% set formatter = formatters_columns.get(item) %}
-                {% set v = value_columns[loop.index-1]%}
-                <span style="white-space: pre-line">{{formatter(v) if formatter else v}}</span>
+                <span style="white-space: pre-line">{{render_column(item)}}</span>
             </td>
         </tr>
     {% endfor %}
