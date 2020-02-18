@@ -31,7 +31,7 @@ class FileManager(object):
         relative_path="",
         namegen=None,
         allowed_extensions=None,
-        permission=0o666,
+        permission=0o755,
         **kwargs
     ):
 
@@ -98,7 +98,7 @@ class ImageManager(FileManager):
         allowed_extensions=None,
         thumbgen=None,
         thumbnail_size=None,
-        permission=0o666,
+        permission=0o755,
         **kwargs
     ):
 
