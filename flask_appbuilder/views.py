@@ -1,5 +1,6 @@
 import json
 import logging
+import os.path as op
 from typing import Set
 
 from flask import (
@@ -626,7 +627,7 @@ class ModelView(RestCRUDView):
     @has_access
     def download(self, filename):
         return send_file(
-            self.appbuilder.app.config["UPLOAD_FOLDER"] + filename,
+            op.join(self.appbuilder.app.config["UPLOAD_FOLDER"], filename),
             attachment_filename=uuid_originalname(filename),
             as_attachment=True,
         )
