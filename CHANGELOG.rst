@@ -1,6 +1,18 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.2.4
+-----------------------------------
+
+- Fix, [docs] read the docs requirements (#1288)
+- New, [mvc] [security] toggle pvm, perm and vm mvc views config options (#1259)
+- Fix, [docs] Update actions.rst (#1277)
+- Fix, [docs] changelog formatting (#1286)
+- Fix, [mvc] Use os.path.join for downloads (#1281)
+- Fix, [filemanager] Fix, use a sane mode for directories (#1282)
+- Fix, [docs] add missing import (#1278)
+- Fix, [mvc] Use formatters_columns with show_fieldsets (#1280)
+
 Improvements and Bug fixes on 2.2.3
 -----------------------------------
 
