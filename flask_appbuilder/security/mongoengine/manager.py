@@ -194,10 +194,7 @@ class SecurityManager(BaseSecurityManager):
         return self.permission_model.objects(name=name).first()
 
     def exist_permission_on_roles(
-            self,
-            view_name: str,
-            permission_name: str,
-            role_ids: List[int],
+        self, view_name: str, permission_name: str, role_ids: List[int]
     ) -> bool:
         for role_id in role_ids:
             role = self.role_model.objects(id=role_id).first()
@@ -205,7 +202,7 @@ class SecurityManager(BaseSecurityManager):
             if permissions:
                 for permission in permissions:
                     if (view_name == permission.view_menu.name) and (
-                            permission_name == permission.permission.name
+                        permission_name == permission.permission.name
                     ):
                         return True
         return False
@@ -323,10 +320,7 @@ class SecurityManager(BaseSecurityManager):
         """
         if not (permission_name and view_menu_name):
             return None
-        pv = self.find_permission_view_menu(
-            permission_name,
-            view_menu_name
-        )
+        pv = self.find_permission_view_menu(permission_name, view_menu_name)
         if pv:
             return pv
         vm = self.add_view_menu(view_menu_name)

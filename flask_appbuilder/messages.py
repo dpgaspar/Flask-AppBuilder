@@ -11,5 +11,5 @@ auto_translations_import = [
     _("Save"),
     _("This field is required."),
     _("Not a valid date value"),
-    _("No records found")
+    _("No records found"),
 ]

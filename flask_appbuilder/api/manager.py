@@ -9,10 +9,10 @@ from flask_appbuilder.security.decorators import has_access
 
 
 class OpenApi(BaseApi):
-    route_base = '/api'
+    route_base = "/api"
     allow_browser_login = True
 
-    @expose('/<version>/_openapi')
+    @expose("/<version>/_openapi")
     @protect()
     @safe
     def get(self, version):
@@ -56,28 +56,28 @@ class OpenApi(BaseApi):
             openapi_version="3.0.2",
             info=dict(description=current_app.appbuilder.app_name),
             plugins=[MarshmallowPlugin()],
-            servers=[{'url': "/api/{}".format(version)}]
+            servers=[{"url": "/api/{}".format(version)}],
         )
 
 
 class SwaggerView(BaseView):
 
-    default_view = 'ui'
-    openapi_uri = '/api/{}/_openapi'
+    default_view = "ui"
+    openapi_uri = "/api/{}/_openapi"
 
-    @expose('/<version>')
+    @expose("/<version>")
     @has_access
     def show(self, version):
         return self.render_template(
-            'appbuilder/swagger/swagger.html',
-            openapi_uri=self.openapi_uri.format(version)
+            "appbuilder/swagger/swagger.html",
+            openapi_uri=self.openapi_uri.format(version),
         )
 
 
 class OpenApiManager(BaseManager):
     def register_views(self):
-        if not self.appbuilder.app.config.get('FAB_ADD_SECURITY_VIEWS', True):
+        if not self.appbuilder.app.config.get("FAB_ADD_SECURITY_VIEWS", True):
             return
-        if self.appbuilder.get_app.config.get('FAB_API_SWAGGER_UI', False):
+        if self.appbuilder.get_app.config.get("FAB_API_SWAGGER_UI", False):
             self.appbuilder.add_api(OpenApi)
             self.appbuilder.add_view_no_menu(SwaggerView)
