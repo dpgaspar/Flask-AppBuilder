@@ -65,3 +65,5 @@ APP_THEME = ""  # default
 # APP_THEME = "sandstone.css"
 # APP_THEME = "solar.css"
 # APP_THEME = "superhero.css"
+WTF_CSRF_ENABLED = True
+

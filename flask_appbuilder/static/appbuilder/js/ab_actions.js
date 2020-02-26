@@ -11,6 +11,7 @@ var AdminActions = function() {
     var chkAllFlag = true;
     var multiple = false;
     var single = false;
+    var single_delete = false;
     var action_name = '';
     var action_url = '';
     var action_confirmation = '';
@@ -48,6 +49,16 @@ var AdminActions = function() {
         }
     };
 
+    this.execute_single_delete = function(url, confirmation) {
+        single_delete = true;
+        action_url = url;
+        action_confirmation = confirmation;
+
+        if (!!confirmation) {
+            $('#modal-confirm').modal('show');
+        }
+    };
+
     function form_submit() {
         // Update hidden form and submit it
             var form = $('#action_form');
@@ -57,7 +68,7 @@ var AdminActions = function() {
             $('input.action_check:checked').each(function() {   
                 form.append($(this).clone());
             });
-            
+
             form.submit();
 
             return false;
@@ -92,6 +103,19 @@ var AdminActions = function() {
         }
         if (single) {
             window.location.href = action_url;
+        }
+        if (single_delete) {
+            alert("OHIEEE");
+            $.ajax({
+                url: action_url,
+                type: 'DELETE',
+                success: function (response) {
+                    alert(response);
+                },
+                failure: function (response) {
+                    alert("FAIL");
+                }
+            });
         }
     });
 

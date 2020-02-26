@@ -1,9 +1,11 @@
 import calendar
 
+from flask import redirect
 from flask_appbuilder import ModelView
 from flask_appbuilder.charts.views import GroupByChartView
 from flask_appbuilder.models.group import aggregate_count
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.actions import action
 
 from . import appbuilder, db
 from .models import Contact, ContactGroup, Gender
@@ -71,6 +73,15 @@ class ContactModelView(ModelView):
             },
         ),
     ]
+
+    @action("muldelete", "Delete", "Delete all Really?", "fa-rocket")
+    def muldelete(self, items):
+        if isinstance(items, list):
+            self.datamodel.delete_all(items)
+            self.update_redirect()
+        else:
+            self.datamodel.delete(items)
+        return redirect(self.get_redirect())
 
 
 class GroupModelView(ModelView):

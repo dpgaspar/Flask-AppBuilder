@@ -536,7 +536,7 @@ class ModelView(RestCRUDView):
     def post_delete_redirect(self):
         """Override this function to control the
         redirect after edit endpoint is called."""
-        return redirect(self.get_redirect())
+        return redirect(self.get_redirect(), code=303)
 
     """
     --------------------------------
@@ -616,7 +616,7 @@ class ModelView(RestCRUDView):
     ---------------------------
     """
 
-    @expose("/delete/<pk>")
+    @expose("/delete/<pk>", methods=["DELETE"])
     @has_access
     def delete(self, pk):
         pk = self._deserialize_pk_if_composite(pk)
