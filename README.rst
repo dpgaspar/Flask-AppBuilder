@@ -14,6 +14,9 @@ Flask App Builder
 .. image:: https://codecov.io/github/dpgaspar/Flask-AppBuilder/coverage.svg?branch=master
         :target: https://codecov.io/github/dpgaspar/Flask-AppBuilder
 
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+
 
 Simple and rapid application development framework, built on top of `Flask <http://flask.pocoo.org/>`_.
 includes detailed security, auto CRUD generation for your models, google charts and much more.
