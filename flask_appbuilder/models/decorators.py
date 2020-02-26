@@ -20,7 +20,7 @@ def renders(col_name):
     """
 
     def wrap(f):
-        if not hasattr(f, '_col_name'):
+        if not hasattr(f, "_col_name"):
             f._col_name = col_name
         return f
 
