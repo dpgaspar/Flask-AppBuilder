@@ -3,7 +3,11 @@ import os
 
 from click.testing import CliRunner
 from flask_appbuilder.cli import (
-    create_app, create_permissions, create_user, list_users, list_views,
+    create_app,
+    create_permissions,
+    create_user,
+    list_users,
+    list_views,
 )
 
 from .base import FABTestCase
@@ -60,8 +64,6 @@ class FlaskTestCase(FABTestCase):
         os.environ["FLASK_APP"] = "app:app"
         runner = CliRunner()
         with runner.isolated_filesystem():
-            result = runner.invoke(
-                list_views, []
-            )
+            result = runner.invoke(list_views, [])
             self.assertIn("List of registered views", result.output)
             self.assertIn(" Route:/api/v1/security", result.output)

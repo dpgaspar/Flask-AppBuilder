@@ -5,7 +5,7 @@ from mongoengine import (
     ImageField,
     IntField,
     ReferenceField,
-    StringField
+    StringField,
 )
 from mongoengine import Document
 
