@@ -194,6 +194,7 @@ def insert_model2(session, i=0, model1_collection=None):
     model.group = model1
 
     import random
+
     year = random.choice(range(1900, 2012))
     month = random.choice(range(1, 12))
     day = random.choice(range(1, 28))

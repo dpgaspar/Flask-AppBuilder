@@ -400,18 +400,18 @@ class UserStatsChartView(DirectByChartView):
 
 
 class RoleListWidget(ListWidget):
-    template = 'appbuilder/general/widgets/roles/list.html'
+    template = "appbuilder/general/widgets/roles/list.html"
 
     def __init__(self, **kwargs):
-        kwargs['appbuilder'] = current_app.appbuilder
+        kwargs["appbuilder"] = current_app.appbuilder
         super().__init__(**kwargs)
 
 
 class RoleShowWidget(ShowWidget):
-    template = 'appbuilder/general/widgets/roles/show.html'
+    template = "appbuilder/general/widgets/roles/show.html"
 
     def __init__(self, **kwargs):
-        kwargs['appbuilder'] = current_app.appbuilder
+        kwargs["appbuilder"] = current_app.appbuilder
         super().__init__(**kwargs)
 
 

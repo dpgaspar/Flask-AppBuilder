@@ -56,8 +56,8 @@ class FileManager(object):
         if not self.allowed_extensions:
             return True
         return (
-            "." in filename and
-            filename.rsplit(".", 1)[1].lower() in self.allowed_extensions
+            "." in filename
+            and filename.rsplit(".", 1)[1].lower() in self.allowed_extensions
         )
 
     def generate_name(self, obj, file_data):

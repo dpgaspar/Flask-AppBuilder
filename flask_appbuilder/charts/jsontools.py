@@ -19,24 +19,24 @@ def dict_to_json(xcol, ycols, labels, value_columns):  # pragma: no cover
     """
     json_data = dict()
 
-    json_data['cols'] = [{'id': xcol,
-                          'label': as_unicode(labels[xcol]),
-                          'type': 'string'}]
+    json_data["cols"] = [
+        {"id": xcol, "label": as_unicode(labels[xcol]), "type": "string"}
+    ]
     for ycol in ycols:
-        json_data['cols'].append({'id': ycol,
-                                  'label': as_unicode(labels[ycol]),
-                                  'type': 'number'})
-    json_data['rows'] = []
+        json_data["cols"].append(
+            {"id": ycol, "label": as_unicode(labels[ycol]), "type": "number"}
+        )
+    json_data["rows"] = []
     for value in value_columns:
-        row = {'c': []}
+        row = {"c": []}
         if isinstance(value[xcol], datetime.date):
-            row['c'].append({'v': (str(value[xcol]))})
+            row["c"].append({"v": (str(value[xcol]))})
         else:
-            row['c'].append({'v': (value[xcol])})
+            row["c"].append({"v": (value[xcol])})
         for ycol in ycols:
             if value[ycol]:
-                row['c'].append({'v': (value[ycol])})
+                row["c"].append({"v": (value[ycol])})
             else:
-                row['c'].append({'v': 0})
-        json_data['rows'].append(row)
+                row["c"].append({"v": 0})
+        json_data["rows"].append(row)
     return json_data

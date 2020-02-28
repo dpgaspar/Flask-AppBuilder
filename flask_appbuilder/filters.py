@@ -160,7 +160,7 @@ class TemplateFilters(object):
         if PERMISSION_PREFIX in permission:
             method = permission.split(PERMISSION_PREFIX)[1]
         else:
-            if hasattr(_view, 'actions') and _view.actions.get(permission):
+            if hasattr(_view, "actions") and _view.actions.get(permission):
                 permission_name = _view.get_action_permission_name(permission)
                 if permission_name not in _view.base_permissions:
                     return False

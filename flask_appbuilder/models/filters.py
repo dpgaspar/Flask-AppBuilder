@@ -176,9 +176,7 @@ class Filters(object):
                     raise InvalidColumnFilterFABException(
                         f"Filter column: {col} not allowed to filter"
                     )
-                elif not self._rest_check_valid_filter_operation(
-                    col, opr
-                ):
+                elif not self._rest_check_valid_filter_operation(col, opr):
                     raise InvalidOperationFilterFABException(
                         f"Filter operation: {opr} not allowed on column: {col}"
                     )
