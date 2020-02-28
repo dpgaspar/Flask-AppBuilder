@@ -536,7 +536,7 @@ class ModelView(RestCRUDView):
     def post_delete_redirect(self):
         """Override this function to control the
         redirect after edit endpoint is called."""
-        return redirect(self.get_redirect(), code=303)
+        return redirect(self.get_redirect())
 
     """
     --------------------------------
@@ -616,9 +616,15 @@ class ModelView(RestCRUDView):
     ---------------------------
     """
 
-    @expose("/delete/<pk>", methods=["DELETE"])
+    @expose("/delete/<pk>", methods=["GET", "POST"])
     @has_access
     def delete(self, pk):
+        # Maintains compatibility but refuses to delete on GET methods if CSRF is enabled
+        if request.method == "GET" and self.appbuilder.app.extensions.get("csrf"):
+            self.update_redirect()
+            log.warning("CSRF is enabled and a delete using GET was invoked")
+            flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
+            return self.post_delete_redirect()
         pk = self._deserialize_pk_if_composite(pk)
         self._delete(pk)
         return self.post_delete_redirect()

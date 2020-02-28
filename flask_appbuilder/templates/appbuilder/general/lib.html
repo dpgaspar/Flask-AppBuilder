@@ -35,6 +35,13 @@
                 <input type="hidden" id="action" name="action" />
             </form>
         {% endif %}
+    {% else %}
+        <form id="delete_form" action="" method="POST" style="display: none">
+            {% if csrf_token %}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            {% endif %}
+            <input type="hidden" id="delete" name="delete" />
+        </form>
     {% endif %}
 {% endmacro %}
 

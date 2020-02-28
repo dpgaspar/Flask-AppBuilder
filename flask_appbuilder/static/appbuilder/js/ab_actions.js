@@ -53,25 +53,22 @@ var AdminActions = function() {
         single_delete = true;
         action_url = url;
         action_confirmation = confirmation;
-
-        if (!!confirmation) {
-            $('#modal-confirm').modal('show');
-        }
+        $("#modal-confirm .modal-body").text(confirmation);
+        $('#modal-confirm').modal('show');
     };
 
     function form_submit() {
         // Update hidden form and submit it
-            var form = $('#action_form');
-            $('#action', form).val(action_name);
-            
-            $('input.action_check', form).remove();
-            $('input.action_check:checked').each(function() {   
-                form.append($(this).clone());
-            });
+        var form = $('#action_form');
+        $('#action', form).val(action_name);
 
-            form.submit();
+        $('input.action_check', form).remove();
+        $('input.action_check:checked').each(function() {
+            form.append($(this).clone());
+        });
 
-            return false;
+        form.submit();
+        return false;
     }
 
     //----------------------------------------------------
@@ -104,18 +101,18 @@ var AdminActions = function() {
         if (single) {
             window.location.href = action_url;
         }
+        // POST for delete endpoint necessary to send CSRF token from list view
         if (single_delete) {
-            alert("OHIEEE");
-            $.ajax({
-                url: action_url,
-                type: 'DELETE',
-                success: function (response) {
-                    alert(response);
-                },
-                failure: function (response) {
-                    alert("FAIL");
-                }
-            });
+            var form = undefined;
+            if ( $('#action_form').length ) {
+                form = $('#action_form');
+            }
+            else {
+                form = $('#delete_form');
+            }
+            $(form).attr('action', action_url);
+            form.submit();
+            return false;
         }
     });
 
