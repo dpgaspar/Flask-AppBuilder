@@ -29,7 +29,7 @@
         {% set path = endpoint | safe_url_for %}
         {% if path %}
             <form id="action_form" action="{{ path }}" method="POST" style="display: none">
-                {% if csrf_token %}
+                {% if csrf_token is defined and csrf_token %}
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 {% endif %}
                 <input type="hidden" id="action" name="action" />
@@ -37,7 +37,7 @@
         {% endif %}
     {% else %}
         <form id="delete_form" action="" method="POST" style="display: none">
-            {% if csrf_token %}
+            {% if csrf_token is defined and csrf_token %}
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             {% endif %}
             <input type="hidden" id="delete" name="delete" />
