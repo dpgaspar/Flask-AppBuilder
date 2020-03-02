@@ -36,16 +36,23 @@ var AdminActions = function() {
         }
     };
 
+    function single_form_submit() {
+        form = $('#action_form');
+        $(form).attr('action', action_url);
+        form.submit();
+        return false;
+    }
+
     this.execute_single = function(url, confirmation) {
         single = true;
         action_url = url;
         action_confirmation = confirmation;
 
         if (!!confirmation) {
-                $('#modal-confirm').modal('show');
+            $('#modal-confirm').modal('show');
         }
         else {
-            window.location.href = action_url;
+            single_form_submit();
         }
     };
 
@@ -99,7 +106,7 @@ var AdminActions = function() {
             form_submit();
         }
         if (single) {
-            window.location.href = action_url;
+            single_form_submit();
         }
         // POST for delete endpoint necessary to send CSRF token from list view
         if (single_delete) {

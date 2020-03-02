@@ -650,7 +650,7 @@ class ModelView(RestCRUDView):
         else:
             return name
 
-    @expose("/action/<string:name>/<pk>", methods=["GET"])
+    @expose("/action/<string:name>/<pk>", methods=["GET", "POST"])
     def action(self, name, pk):
         """
             Action method to handle actions from a show view
