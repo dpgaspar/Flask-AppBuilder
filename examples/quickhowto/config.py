@@ -2,7 +2,7 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-#CSRF_ENABLED = True
+CSRF_ENABLED = True
 SECRET_KEY = "\2\1thisismyscretkey\1\2\e\y\y\h"
 
 OPENID_PROVIDERS = [
@@ -65,16 +65,3 @@ APP_THEME = ""  # default
 # APP_THEME = "sandstone.css"
 # APP_THEME = "solar.css"
 # APP_THEME = "superhero.css"
-WTF_CSRF_ENABLED = True
-FAB_ROLES = {
-    "ReadOnly": [
-        [".*", "can_list"],
-        [".*", "can_show"],
-        [".*", "menu_access"],
-        [".*", "can_get"],
-        [".*", "can_info"]
-    ]
-}
-
-FAB_ALLOW_GET_UNSAFE_MUTATIONS = True
-
