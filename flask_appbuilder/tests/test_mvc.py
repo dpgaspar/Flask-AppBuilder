@@ -19,6 +19,7 @@ from flask_appbuilder.models.group import aggregate_avg, aggregate_count, aggreg
 from flask_appbuilder.models.sqla.filters import FilterEqual, FilterStartsWith
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import CompactCRUDMixin, MasterDetailView, ModelView
+from flask_wtf import CSRFProtect
 import jinja2
 
 from .base import FABTestCase
@@ -58,7 +59,7 @@ NOTNULL_VALIDATION_STRING = "This field is required"
 log = logging.getLogger(__name__)
 
 
-class AMVCBabelTestCase(FABTestCase):
+class MVCBabelTestCase(FABTestCase):
     def test_babel_empty_languages(self):
         """
             MVC: Test babel empty languages
@@ -122,6 +123,63 @@ class BaseMVCTestCase(FABTestCase):
             for item in self.app.url_map.iter_rules()
             if item.endpoint.split(".")[0] == view_name
         }
+
+
+class MVCCSRFTestCase(BaseMVCTestCase):
+    def setUp(self):
+
+        self.app = Flask(__name__)
+        self.app.config.from_object("flask_appbuilder.tests.config_api")
+        self.app.config["WTF_CSRF_ENABLED"] = True
+
+        self.csrf = CSRFProtect(self.app)
+        self.db = SQLA(self.app)
+        self.appbuilder = AppBuilder(self.app, self.db.session)
+
+        class Model2View(ModelView):
+            datamodel = SQLAInterface(Model1)
+
+        self.appbuilder.add_view(Model2View, "Model2", category="Model2")
+
+    def test_a_csrf_delete_not_allowed(self):
+        """
+            MVC: Test GET delete with CSRF is not allowed
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        model = (
+            self.appbuilder.get_session.query(Model2)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
+        pk = model.id
+        rv = client.get(f"/model2view/delete/{pk}")
+
+        self.assertEqual(rv.status_code, 302)
+        model = (
+            self.appbuilder.get_session.query(Model2)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
+        self.assertIsNotNone(model)
+
+    def test_a_csrf_delete_protected(self):
+        """
+            MVC: Test POST delete with CSRF
+        """
+        client = self.app.test_client()
+        self.browser_login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        model = (
+            self.appbuilder.get_session.query(Model1)
+            .filter_by(field_string="test0")
+            .one_or_none()
+        )
+        pk = model.id
+        rv = client.post(f"/model2view/delete/{pk}")
+        # Missing CSRF token
+        self.assertEqual(rv.status_code, 400)
 
 
 class MVCSwitchRouteMethodsTestCase(BaseMVCTestCase):
