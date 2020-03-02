@@ -616,9 +616,15 @@ class ModelView(RestCRUDView):
     ---------------------------
     """
 
-    @expose("/delete/<pk>")
+    @expose("/delete/<pk>", methods=["GET", "POST"])
     @has_access
     def delete(self, pk):
+        # Maintains compatibility but refuses to delete on GET methods if CSRF is enabled
+        if not self.is_get_mutation_allowed():
+            self.update_redirect()
+            log.warning("CSRF is enabled and a delete using GET was invoked")
+            flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
+            return self.post_delete_redirect()
         pk = self._deserialize_pk_if_composite(pk)
         self._delete(pk)
         return self.post_delete_redirect()
@@ -644,11 +650,18 @@ class ModelView(RestCRUDView):
         else:
             return name
 
-    @expose("/action/<string:name>/<pk>", methods=["GET"])
+    @expose("/action/<string:name>/<pk>", methods=["GET", "POST"])
     def action(self, name, pk):
         """
             Action method to handle actions from a show view
         """
+        # Maintains compatibility but refuses to proceed if CSRF is enabled
+        if not self.is_get_mutation_allowed():
+            self.update_redirect()
+            log.warning("CSRF is enabled and a action using GET was invoked")
+            flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
+            return redirect(self.get_redirect())
+
         pk = self._deserialize_pk_if_composite(pk)
         permission_name = self.get_action_permission_name(name)
         if self.appbuilder.sm.has_access(permission_name, self.class_permission_name):
@@ -878,9 +891,16 @@ class CompactCRUDMixin(BaseCRUDView):
             self.set_key("session_form_edit_pk", pk)
             return redirect(self.get_redirect())
 
-    @expose("/delete/<pk>")
+    @expose("/delete/<pk>", methods=["GET", "POST"])
     @has_access
     def delete(self, pk):
+        # Maintains compatibility but refuses to delete on GET methods if CSRF is enabled
+        if not self.is_get_mutation_allowed():
+            self.update_redirect()
+            log.warning("CSRF is enabled and a delete using GET was invoked")
+            flash(as_unicode(FLAMSG_ERR_SEC_ACCESS_DENIED), "danger")
+            return redirect(self.get_redirect())
+
         pk = self._deserialize_pk_if_composite(pk)
         self._delete(pk)
         edit_pk = self.get_key("session_form_edit_pk")

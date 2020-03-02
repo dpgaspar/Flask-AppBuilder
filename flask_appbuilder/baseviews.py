@@ -4,7 +4,16 @@ import json
 import logging
 import re
 
-from flask import abort, Blueprint, flash, render_template, request, session, url_for
+from flask import (
+    abort,
+    Blueprint,
+    current_app,
+    flash,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
 from ._compat import as_unicode
 from .actions import ActionItem
@@ -1302,6 +1311,17 @@ class BaseCRUDView(BaseModelView):
             if hasattr(form, filter_key):
                 field = getattr(form, filter_key)
                 field.data = rel_obj
+
+    def is_get_mutation_allowed(self) -> bool:
+        """
+            Check is mutations on HTTP GET methods are allowed.
+            Always called on a request
+        """
+        if current_app.config.get("FAB_ALLOW_GET_UNSAFE_MUTATIONS", False):
+            return True
+        return not (
+            request.method == "GET" and self.appbuilder.app.extensions.get("csrf")
+        )
 
     def prefill_form(self, form, pk):
         """

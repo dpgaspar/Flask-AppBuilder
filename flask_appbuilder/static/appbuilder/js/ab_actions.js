@@ -11,6 +11,7 @@ var AdminActions = function() {
     var chkAllFlag = true;
     var multiple = false;
     var single = false;
+    var single_delete = false;
     var action_name = '';
     var action_url = '';
     var action_confirmation = '';
@@ -35,32 +36,46 @@ var AdminActions = function() {
         }
     };
 
+    function single_form_submit() {
+        form = $('#action_form');
+        $(form).attr('action', action_url);
+        form.submit();
+        return false;
+    }
+
     this.execute_single = function(url, confirmation) {
         single = true;
         action_url = url;
         action_confirmation = confirmation;
 
         if (!!confirmation) {
-                $('#modal-confirm').modal('show');
+            $('#modal-confirm').modal('show');
         }
         else {
-            window.location.href = action_url;
+            single_form_submit();
         }
+    };
+
+    this.execute_single_delete = function(url, confirmation) {
+        single_delete = true;
+        action_url = url;
+        action_confirmation = confirmation;
+        $("#modal-confirm .modal-body").text(confirmation);
+        $('#modal-confirm').modal('show');
     };
 
     function form_submit() {
         // Update hidden form and submit it
-            var form = $('#action_form');
-            $('#action', form).val(action_name);
-            
-            $('input.action_check', form).remove();
-            $('input.action_check:checked').each(function() {   
-                form.append($(this).clone());
-            });
-            
-            form.submit();
+        var form = $('#action_form');
+        $('#action', form).val(action_name);
 
-            return false;
+        $('input.action_check', form).remove();
+        $('input.action_check:checked').each(function() {
+            form.append($(this).clone());
+        });
+
+        form.submit();
+        return false;
     }
 
     //----------------------------------------------------
@@ -91,7 +106,20 @@ var AdminActions = function() {
             form_submit();
         }
         if (single) {
-            window.location.href = action_url;
+            single_form_submit();
+        }
+        // POST for delete endpoint necessary to send CSRF token from list view
+        if (single_delete) {
+            var form = undefined;
+            if ( $('#action_form').length ) {
+                form = $('#action_form');
+            }
+            else {
+                form = $('#delete_form');
+            }
+            $(form).attr('action', action_url);
+            form.submit();
+            return false;
         }
     });
 
