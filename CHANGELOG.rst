@@ -1,6 +1,12 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.3.0
+-----------------------------------
+
+- Fix, [mvc] GET delete and action endpoints (#1294)
+- Fix, [style] impose black code style (#1292)
+
 Improvements and Bug fixes on 2.2.4
 -----------------------------------
 
