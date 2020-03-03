@@ -167,9 +167,13 @@ class Filters(object):
         :return:
         """
         for _filter in data:
-            opr = _filter["opr"]
-            col = _filter["col"]
-            value = _filter["value"]
+            try:
+                opr = _filter["opr"]
+                col = _filter["col"]
+                value = _filter["value"]
+            except KeyError:
+                log.warning("Invalid filter")
+                return
             filter_class = map_args_filter.get(opr, None)
             if filter_class:
                 if _filter["col"] not in self.search_columns:

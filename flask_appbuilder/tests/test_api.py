@@ -1125,6 +1125,19 @@ class APITestCase(FABTestCase):
         self.assertEqual(data[API_RESULT_RES_KEY][0], expected_result)
         self.assertEqual(rv.status_code, 200)
 
+    def test_get_list_invalid_filters(self):
+        """
+            REST Api: Test get list filter params
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        arguments = {API_FILTERS_RIS_KEY: [{"col": "field_integer", "opr": "gt"}]}
+
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 400)
+
     def test_get_list_filters_m_m(self):
         """
             REST Api: Test get list filter params with many to many
