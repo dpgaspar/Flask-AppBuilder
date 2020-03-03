@@ -58,6 +58,7 @@ get_list_schema = {
                         ]
                     },
                 },
+                "required": ["col", "opr", "value"],
             },
         },
     },
