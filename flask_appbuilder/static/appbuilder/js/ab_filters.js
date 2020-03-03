@@ -59,7 +59,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
                         .append($('<span class="close-icon">&times;</span>'))
                         .append('&nbsp;')
                         .append(label)
-                        .click(removeFilter)
+                        .on('click', removeFilter)
                     )
             );
 	}
@@ -86,7 +86,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
         );
         // avoids error
         if (i_option == -1) { $select.select2(); }
-        $select.change(function(e) {
+        $select.on('change', function(e) {
         	changeOperation(e, $el, name)
     	});
         
@@ -137,7 +137,7 @@ var AdminFilters = function(element, labels, form, filters, active_filters) {
     }
 
 
-    $('a.filter').click(function() {
+    $('a.filter').on('click', function() {
         var name = $(this).attr('name')
         addFilter(name);
     });
