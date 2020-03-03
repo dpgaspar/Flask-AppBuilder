@@ -14,12 +14,12 @@ $(function()
     //go to the latest tab, if it exists:
     var lastTab = localStorage.getItem('lastTab');
     if (lastTab) {
-        $('a[href=' + lastTab + ']').tab('show');
+        $('a[href="' + lastTab + '"]').tab('show');
     }
     else
     {
     // Set the first tab if cookie do not exist
-        $('a[data-toggle="tab"]:first').tab('show');
+        $('a[data-toggle="tab"]').first().tab('show');
     }
 
 //---------------------------------------
