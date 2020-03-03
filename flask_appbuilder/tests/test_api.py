@@ -1132,14 +1132,7 @@ class APITestCase(FABTestCase):
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
 
-        arguments = {
-            API_FILTERS_RIS_KEY: [
-                {
-                    "col": "field_integer",
-                    "opr": "gt",
-                }
-            ],
-        }
+        arguments = {API_FILTERS_RIS_KEY: [{"col": "field_integer", "opr": "gt"}]}
 
         uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
         rv = self.auth_client_get(client, token, uri)
