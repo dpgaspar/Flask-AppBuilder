@@ -547,10 +547,10 @@ class BaseSecurityManager(AbstractSecurityManager):
         # role_view = self.appbuilder.add_view_no_menu(self.rolemodelview)
         role_view.related_views = [self.user_view.__class__]
 
-        self.appbuilder.add_view(self.userstatschartview,
-                                 "User's Statistics", icon="fa-bar-chart-o",
-                                 label=_("User's Statistics"),
-                                 category="Security")
+        # self.appbuilder.add_view(self.userstatschartview,
+        #                          "User's Statistics", icon="fa-bar-chart-o",
+        #                          label=_("User's Statistics"),
+        #                          category="Security")
 
         if self.auth_user_registration:
             self.appbuilder.add_view(self.registerusermodelview,
@@ -558,7 +558,7 @@ class BaseSecurityManager(AbstractSecurityManager):
                                  label=_("User Registrations"),
                                  category="Security")
 
-        self.appbuilder.menu.add_separator("Security")
+        # self.appbuilder.menu.add_separator("Security")
         # self.appbuilder.add_view(self.permissionmodelview,
         #                          "Base Permissions", icon="fa-lock",
         #                          label=_("Base Permissions"), category="Security")
