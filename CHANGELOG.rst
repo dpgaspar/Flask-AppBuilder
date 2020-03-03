@@ -4,6 +4,9 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 2.3.0
 -----------------------------------
 
+- Fix, [mvc] Upgrade to Jquery 3 and select2 4
+- Fix, [api] List filters validation schema (#1303)
+- Fix, [api] Soften marshmallow version restriction (#1295)
 - Fix, [mvc] GET delete and action endpoints (#1294)
 - Fix, [style] impose black code style (#1292)
 
