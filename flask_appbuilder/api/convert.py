@@ -135,7 +135,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                 many = True
                 required = False
             else:
-                many = False
+                many = True
             field = fields.Nested(nested_schema, many=many, required=required)
             field.unique = datamodel.is_unique(column.data)
             return field
