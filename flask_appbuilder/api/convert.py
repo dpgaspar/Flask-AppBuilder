@@ -130,6 +130,8 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             elif datamodel.is_relation_many_to_many(column.data):
                 many = True
                 required = False
+            elif datamodel.is_relation_one_to_many(column.data):
+                many = True
             else:
                 many = False
             field = fields.Nested(nested_schema, many=many, required=required)
