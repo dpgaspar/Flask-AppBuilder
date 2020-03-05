@@ -53,6 +53,7 @@ from .sqla.models import (
     ModelMMChild,
     ModelMMParent,
     ModelMMParentRequired,
+    ModelOMParent,
     ModelWithEnums,
     ModelWithProperty,
     TmpEnum,
@@ -257,6 +258,11 @@ class APITestCase(FABTestCase):
             datamodel = SQLAInterface(ModelMMParent)
 
         self.appbuilder.add_api(ModelMMApi)
+
+        class ModelOMParentApi(ModelRestApi):
+            datamodel = SQLAInterface(ModelOMParent)
+
+        self.appbuilder.add_api(ModelOMParentApi)
 
         class ModelMMRequiredApi(ModelRestApi):
             datamodel = SQLAInterface(ModelMMParentRequired)
@@ -777,6 +783,25 @@ class APITestCase(FABTestCase):
             {"field_string": "1", "id": 1},
             {"field_string": "2", "id": 2},
             {"field_string": "3", "id": 3},
+        ]
+        self.assertEqual(data[API_RESULT_RES_KEY]["children"], expected_rel_field)
+
+    def test_get_item_om_field(self):
+        """
+            REST Api: Test get item with O-M related field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # We can't get a base filtered item
+        pk = 1
+        rv = self.auth_client_get(
+            client, token, "api/v1/modelomparentapi/{}".format(pk)
+        )
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+        expected_rel_field = [
+            {"field_string": f"text0.{i}", "id": i, "parent": 1} for i in range(1, 4)
         ]
         self.assertEqual(data[API_RESULT_RES_KEY]["children"], expected_rel_field)
 
