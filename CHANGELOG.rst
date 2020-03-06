@@ -4,6 +4,9 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 2.3.0
 -----------------------------------
 
+- New, [i18n] Add korean language (#1297)
+- New, [api] support one to many relations (#1307)
+- Fix, [mvc] reverts select2 to version 3.5.2 (#1308)
 - Fix, [mvc] Upgrade to Jquery 3 and select2 4
 - Fix, [api] List filters validation schema (#1303)
 - Fix, [api] Soften marshmallow version restriction (#1295)
