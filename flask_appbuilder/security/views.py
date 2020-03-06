@@ -414,7 +414,7 @@ class AuthLDAPView(AuthView):
         try:
             if form.validate_on_submit():
                 user = self.appbuilder.sm.find_user_status(username=form.username.data)
-                if user or online_users_count <= self.appbuilder.get_app.config['MAXIMUM_ONLINE_USER']:
+                if user or online_users_count < self.appbuilder.get_app.config['MAXIMUM_ONLINE_USER']:
                     user = self.appbuilder.sm.auth_user_ldap(form.username.data, form.password.data)
                     if not user:
                         flash(as_unicode(self.invalid_login_message), 'warning')
