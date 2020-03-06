@@ -50,7 +50,6 @@ $(function() {
     $('.appbuilder_datetime').datetimepicker({pickTime: false});
     $('.appbuilder_date').datetimepicker({
         pickTime: false });
-    $.fn.select2.defaults.set("theme", "bootstrap");
     $(".my_select2").select2({placeholder: "Select a State", allowClear: true});
     loadSelectData();
     loadSelectDataSlave();
