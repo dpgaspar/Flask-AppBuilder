@@ -3,7 +3,7 @@ from flask_appbuilder.api import BaseApi, expose
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
 from . import appbuilder, db
-from .models import Contact, ContactGroup, Gender
+from .models import Contact, ContactGroup, Gender, ModelOMChild, ModelOMParent
 
 
 def fill_gender():
@@ -76,3 +76,11 @@ class GroupModelApi(ModelRestApi):
 
 
 appbuilder.add_api(GroupModelApi)
+
+
+class ModelOMParentApi(ModelRestApi):
+    allow_browser_login = True
+    datamodel = SQLAInterface(ModelOMParent)
+
+
+appbuilder.add_api(ModelOMParentApi)
