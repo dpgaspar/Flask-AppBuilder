@@ -2130,8 +2130,6 @@ class APITestCase(FABTestCase):
             {"children": [child1.id, child2.id], "field_string": "new1"},
         )
         # Rollback data changes
-        self.appbuilder.get_session.delete(child1)
-        self.appbuilder.get_session.delete(child2)
         model1 = (
             self.appbuilder.get_session.query(ModelOMParent)
             .filter_by(field_string="new1")
