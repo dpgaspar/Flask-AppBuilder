@@ -2,7 +2,7 @@ import datetime
 
 from flask_appbuilder import Model
 from sqlalchemy import Column, Date, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 
 mindate = datetime.date(datetime.MINYEAR, 1, 1)
 
@@ -45,3 +45,20 @@ class Contact(Model):
     def year(self):
         date = self.birthday or mindate
         return datetime.datetime(date.year, 1, 1)
+
+
+class ModelOMParent(Model):
+    __tablename__ = "model_om_parent"
+    id = Column(Integer, primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+
+
+class ModelOMChild(Model):
+    id = Column(Integer, primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+    parent_id = Column(Integer, ForeignKey("model_om_parent.id"))
+    parent = relationship(
+        "ModelOMParent",
+        backref=backref("children", cascade="all, delete-orphan"),
+        foreign_keys=[parent_id],
+    )

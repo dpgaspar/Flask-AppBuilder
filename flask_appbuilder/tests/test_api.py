@@ -53,6 +53,8 @@ from .sqla.models import (
     ModelMMChild,
     ModelMMParent,
     ModelMMParentRequired,
+    ModelOMChild,
+    ModelOMParent,
     ModelWithEnums,
     ModelWithProperty,
     TmpEnum,
@@ -257,6 +259,11 @@ class APITestCase(FABTestCase):
             datamodel = SQLAInterface(ModelMMParent)
 
         self.appbuilder.add_api(ModelMMApi)
+
+        class ModelOMParentApi(ModelRestApi):
+            datamodel = SQLAInterface(ModelOMParent)
+
+        self.appbuilder.add_api(ModelOMParentApi)
 
         class ModelMMRequiredApi(ModelRestApi):
             datamodel = SQLAInterface(ModelMMParentRequired)
@@ -777,6 +784,25 @@ class APITestCase(FABTestCase):
             {"field_string": "1", "id": 1},
             {"field_string": "2", "id": 2},
             {"field_string": "3", "id": 3},
+        ]
+        self.assertEqual(data[API_RESULT_RES_KEY]["children"], expected_rel_field)
+
+    def test_get_item_om_field(self):
+        """
+            REST Api: Test get item with O-M related field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # We can't get a base filtered item
+        pk = 1
+        rv = self.auth_client_get(
+            client, token, "api/v1/modelomparentapi/{}".format(pk)
+        )
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+        expected_rel_field = [
+            {"field_string": f"text0.{i}", "id": i, "parent": 1} for i in range(1, 4)
         ]
         self.assertEqual(data[API_RESULT_RES_KEY]["children"], expected_rel_field)
 
@@ -2080,6 +2106,37 @@ class APITestCase(FABTestCase):
         )
         self.appbuilder.get_session.delete(model1)
         self.appbuilder.get_session.delete(model2)
+        self.appbuilder.get_session.commit()
+
+    def test_create_item_om_field(self):
+        """
+            REST Api: Test create with O-M field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        child1 = ModelOMChild(field_string="child1")
+        child2 = ModelOMChild(field_string="child2")
+        self.appbuilder.get_session.add(child1)
+        self.appbuilder.get_session.add(child2)
+        self.appbuilder.get_session.commit()
+
+        item = dict(field_string="new1", children=[child1.id, child2.id])
+        uri = "api/v1/modelomparentapi/"
+        rv = self.auth_client_post(client, token, uri, item)
+        self.assertEqual(rv.status_code, 201)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(
+            data[API_RESULT_RES_KEY],
+            {"children": [child1.id, child2.id], "field_string": "new1"},
+        )
+        # Rollback data changes
+        model1 = (
+            self.appbuilder.get_session.query(ModelOMParent)
+            .filter_by(field_string="new1")
+            .one_or_none()
+        )
+
+        self.appbuilder.get_session.delete(model1)
         self.appbuilder.get_session.commit()
 
     def test_get_list_col_function(self):
