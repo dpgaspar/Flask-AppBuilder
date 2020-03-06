@@ -49,7 +49,7 @@ setup(
         "colorama>=0.3.9, <1",
         "click>=6.7, <8",
         "Flask>=0.12, <2",
-        "Flask-Babel>=0.11.1, <1",
+        "Flask-Babel>=1, <2",
         "Flask-Login>=0.3, <=0.5",
         "Flask-OpenID>=1.2.5, <2",
         "Flask-SQLAlchemy>=2.4, <3",
