@@ -1,0 +1,546 @@
+# Italian translations for PROJECT.
+# Copyright (C) 2018 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2018-04-26 22:56+0100\n"
+"PO-Revision-Date: 2020-03-09 08:51+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: it\n"
+"Language-Team: it <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: build/lib/flask_appbuilder/const.py:111 flask_appbuilder/const.py:111
+msgid "Access is Denied"
+msgstr "Accesso Negato"
+
+#: build/lib/flask_appbuilder/fields.py:131
+#: build/lib/flask_appbuilder/fields.py:133
+#: build/lib/flask_appbuilder/fields.py:185
+#: build/lib/flask_appbuilder/fields.py:192
+#: build/lib/flask_appbuilder/fields.py:242 flask_appbuilder/fields.py:131
+#: flask_appbuilder/fields.py:133 flask_appbuilder/fields.py:185
+#: flask_appbuilder/fields.py:192 flask_appbuilder/fields.py:242
+msgid "Not a valid choice"
+msgstr "Selezione non valida"
+
+#: build/lib/flask_appbuilder/fieldwidgets.py:153
+#: build/lib/flask_appbuilder/fieldwidgets.py:172
+#: flask_appbuilder/fieldwidgets.py:153 flask_appbuilder/fieldwidgets.py:172
+msgid "Select Value"
+msgstr "Selezione un valore"
+
+#: build/lib/flask_appbuilder/messages.py:9
+#: build/lib/flask_appbuilder/templates/appbuilder/general/charts/chart.html:8
+#: build/lib/flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:10
+#: build/lib/flask_appbuilder/templates/appbuilder/general/charts/jsonchart.html:8
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:303
+#: build/lib/flask_appbuilder/templates/appbuilder/general/model/list.html:8
+#: flask_appbuilder/messages.py:9
+#: flask_appbuilder/templates/appbuilder/general/charts/chart.html:8
+#: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:10
+#: flask_appbuilder/templates/appbuilder/general/charts/jsonchart.html:8
+#: flask_appbuilder/templates/appbuilder/general/lib.html:303
+#: flask_appbuilder/templates/appbuilder/general/model/list.html:8
+msgid "Search"
+msgstr "Ricerca"
+
+#: build/lib/flask_appbuilder/messages.py:10
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:310
+#: examples/quickhowto2/app/templates/widgets/list_override.html:9
+#: flask_appbuilder/messages.py:10
+#: flask_appbuilder/templates/appbuilder/general/lib.html:310
+msgid "Back"
+msgstr "Indietro"
+
+#: build/lib/flask_appbuilder/messages.py:11
+#: build/lib/flask_appbuilder/templates/appbuilder/general/lib.html:263
+#: flask_appbuilder/messages.py:11
+#: flask_appbuilder/templates/appbuilder/general/lib.html:263
+msgid "Save"
+msgstr "Salva"
+
+#: build/lib/flask_appbuilder/messages.py:12 flask_appbuilder/messages.py:12
+msgid "This field is required."
+msgstr "Questo campo è obbligatorio"
+
+#: build/lib/flask_appbuilder/messages.py:13 flask_appbuilder/messages.py:13
+msgid "Not a valid date value"
+msgstr "La data inserita non è valida"
+
+#: build/lib/flask_appbuilder/messages.py:14
+#: build/lib/flask_appbuilder/templates/appbuilder/general/widgets/base_list.html:36
+#: build/lib/flask_appbuilder/templates/appbuilder/general/widgets/list_carousel.html:50
+#: build/lib/flask_appbuilder/templates/appbuilder/general/widgets/list_master.html:17
+#: examples/issue_169/app/templates/widgets/list.html:70
+#: examples/quickhowto2/app/templates/widgets/list.html:70
+#: flask_appbuilder/messages.py:14
+#: flask_appbuilder/templates/appbuilder/general/widgets/base_list.html:36
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_carousel.html:50
+#: flask_appbuilder/templates/appbuilder/general/widgets/list_master.html:17
+msgid "No records found"
+msgstr "Nessun dato trovato"
+
+#: build/lib/flask_appbuilder/upload.py:159
+#: build/lib/flask_appbuilder/upload.py:211 flask_appbuilder/upload.py:159
+#: flask_appbuilder/upload.py:211
+msgid "Invalid file extension"
+msgstr "Estensione file non valida"
+
+#: build/lib/flask_appbuilder/validators.py:31
+#: flask_appbuilder/validators.py:31
+msgid "Already exists."
+msgstr "Già esistente"
+
+ msgid "Group by"
+ msgstr "Raggruppa per"
+
+ msgid "Added Row"
+ msgstr "Riga Aggiunta"
+
+ msgid "Changed Row"
+ msgstr "Riga modificata"
+
+ msgid "Deleted Row"
+ msgstr "Riga Cancellata"
+
+ msgid "Associated data exists, please delete them first"
+ msgstr "Esistono dei dati associati, si prega di cancellarli"
+
+
+ msgid "Integrity error, probably unique constraint"
+ msgstr "Errore di integrità"
+
+ msgid "General Error"
+ msgstr "Errore Generale"
+
+ msgid "Count of"
+ msgstr "Numero di"
+
+ msgid "Sum of"
+ msgstr "Somma di"
+
+ msgid "Avg. of"
+ msgstr "Media di"
+
+ msgid "Contains"
+ msgstr "Contiene"
+
+ msgid "Contains (insensitive)"
+ msgstr "Contiene (case-insensitive)"
+
+ msgid "Not Contains"
+ msgstr "Non contiene"
+
+ msgid "Equal to"
+ msgstr "Uguale a"
+
+ msgid "Not Equal to"
+ msgstr "Non uguale a"
+
+ msgid "Greater than"
+ msgstr "Maggiore di"
+
+ msgid "Smaller than"
+ msgstr "Minore di"
+
+ msgid "Start with"
+ msgstr "Inizia Con"
+
+ msgid "Starts with"
+ msgstr "Inizia Con"
+
+ msgid "Not Starts with"
+ msgstr "Non inizia con"
+
+ msgid "Relation"
+ msgstr "Relazione"
+
+ msgid "Relation as Many"
+ msgstr "Relazione multipla"
+
+ msgid "Ends with"
+ msgstr "Finisce con"
+
+ msgid "Not Ends with"
+ msgstr "Non finisce con"
+
+ msgid "No Relation"
+ msgstr "Nessuna Relazione"
+
+ msgid "OpenID"
+ msgstr "OpenID"
+
+ msgid "User Name"
+ msgstr "Nome Utente"
+
+ msgid "Remember me"
+ msgstr "Ricordami"
+
+ msgid "Password"
+ msgstr "Password"
+
+ msgid "First Name"
+ msgstr "Nome"
+
+ msgid "Write the user first name or names"
+ msgstr "Inserisci il nome o nomi dell'utente"
+
+ msgid "Last Name"
+ msgstr "Cognome"
+
+ msgid "Write the user last name"
+ msgstr "Inserisci il cognome dell'utente"
+
+ msgid ""
+ "Please use a good password policy, "
+ "this application does not check this "
+ "for you"
+ msgstr "Per favore utilizzare un buon criterio di password, questa applicazione non lo verifica"
+
+
+ msgid "Confirm Password"
+ msgstr "Confermare la Password"
+
+ msgid "Please rewrite the password to confirm"
+ msgstr "Reinserire la password per confermarla"
+
+
+ msgid "Passwords must match"
+ msgstr "Le password devono essere uguali"
+
+ msgid "Email"
+ msgstr "Email"
+
+ msgid "List Users"
+ msgstr "Elenco Utenti"
+
+ msgid "Security"
+ msgstr "Sicurezza"
+
+ msgid "List Roles"
+ msgstr "Elenco Ruoli"
+
+ msgid "User's Statistics"
+ msgstr "Statistiche Utente"
+
+ msgid "User Registrations"
+ msgstr "Registrazioni Utente"
+
+ msgid "Base Permissions"
+ msgstr "Permessi di base"
+
+ msgid "Views/Menus"
+ msgstr "Viste/Menu"
+
+ msgid "Permission on Views/Menus"
+ msgstr "Permessi Viste/Menu"
+
+ msgid "Account activation"
+ msgstr "Attivazione account"
+
+ msgid "Registration sent to your email"
+ msgstr "Registrazione inviata per email"
+
+ msgid "Not possible to register you at the moment, try again later"
+ msgstr "Non è possibile registrarsi al momento, riprovare più tardi"
+ 
+
+ msgid "Registration not found"
+ msgstr "Registrazione non trovata"
+
+ msgid "Fill out the registration form"
+ msgstr "Riempire il modulo di registrazione"
+
+ msgid "List Base Permissions"
+ msgstr "Elenco dei permessi di base"
+
+ msgid "Show Base Permission"
+ msgstr "Visualizza Permesso di base"
+
+ msgid "Add Base Permission"
+ msgstr "Aggiungi permesso di base"
+
+ msgid "Edit Base Permission"
+ msgstr "Modifica permesso di base"
+
+ msgid "Name"
+ msgstr "Nome"
+
+ msgid "List View Menus"
+ msgstr "Elenco delle Viste/Menu"
+
+ msgid "Show View Menu"
+ msgstr "Visualizza Vista/Menu"
+
+ msgid "Add View Menu"
+ msgstr "Aggiungi Vista/Menu"
+
+ msgid "Edit View Menu"
+ msgstr "Modifica Vista/Menu"
+
+ msgid "List Permissions on Views/Menus"
+ msgstr "Elenco dei permessi su Viste/Menu"
+
+ msgid "Show Permission on Views/Menus"
+ msgstr "Visualizza permessi su Viste/Menu"
+
+ msgid "Add Permission on Views/Menus"
+ msgstr "Aggiungi permessi su Viste/Menu"
+
+ msgid "Edit Permission on Views/Menus"
+ msgstr "Modifica permessi su Viste/Menu"
+
+ msgid "Permission"
+ msgstr "Permessi"
+
+ msgid "View/Menu"
+ msgstr "Vista/Menu"
+
+ msgid "Reset Password Form"
+ msgstr "Modulo Reset Password"
+
+ msgid "Password Changed"
+ msgstr "Password Modificata"
+
+ msgid "Edit User Information"
+ msgstr "Modifica le informazioni Utente"
+
+ msgid "User information changed"
+ msgstr "Informazioni utente modificate"
+
+ msgid "Show User"
+ msgstr "Visualizza Utente"
+
+ msgid "Add User"
+ msgstr "Aggiungi Utente"
+
+ msgid "Edit User"
+ msgstr "Modifica Utente"
+
+ msgid "Full Name"
+ msgstr "Nome Completo"
+
+ msgid "Is Active?"
+ msgstr "E' attivo?"
+
+ msgid "Role"
+ msgstr "Ruolo"
+
+ msgid "Last login"
+ msgstr "Ultimo accesso"
+
+ msgid "Login count"
+ msgstr "Numero di accessi"
+
+ msgid "Failed login count"
+ msgstr "Numero di accessi falliti"
+
+ msgid "Created on"
+ msgstr "Creato il"
+
+ msgid "Created by"
+ msgstr "Creato da"
+
+ msgid "Changed on"
+ msgstr "Modificato il"
+
+ msgid "Changed by"
+ msgstr "Modificato da"
+
+ msgid "Username valid for authentication on DB or LDAP, unused for OID auth"
+ msgstr "Nome Utente valido per l'autenticazione DB o LDAP, inutilizzato per OID."
+
+
+ msgid "It's not a good policy to remove a user, just make it inactive"
+ msgstr "Non è consigliato cancellare un Utente, è preferibile disattivarlo"
+
+
+ msgid "The user's email, this will also be used for OID auth"
+ msgstr "L'email dell'Utente, questo sarà usato anche per l'autenticazione OID"
+
+ msgid ""
+ "The user role on the application, "
+ "this will associate with a list of"
+ " permissions"
+ msgstr "Il ruolo dell'Utente, questo sarà associato ad un elenco di permessi"
+
+ msgid "Please rewrite the user's password to confirm"
+ msgstr "Reinserire la password dell'Utente per confermare"
+
+ msgid "User info"
+ msgstr "Informazioni Utente"
+
+ msgid "Personal Info"
+ msgstr "Informazioni Personali"
+
+ msgid "Audit Info"
+ msgstr "Informazioni di Audit"
+
+ msgid "Your user information"
+ msgstr "Informazioni sul vostro Utente"
+
+ msgid "Reset my password"
+ msgstr "Reimposta la mia Password"
+
+ msgid "Reset Password"
+ msgstr "Reimposta Password"
+
+ msgid "User Statistics"
+ msgstr "Statistiche Utente"
+
+ msgid "Show Role"
+ msgstr "Visualizza Ruolo"
+
+ msgid "Add Role"
+ msgstr "Aggiungi Ruolo"
+
+ msgid "Edit Role"
+ msgstr "Modifica Ruolo"
+
+ msgid "Permissions"
+ msgstr "Permessi"
+
+ msgid "Copy Role"
+ msgstr "Copia Ruolo"
+
+ msgid "Copy the selected roles?"
+ msgstr "Copiare i ruoli selezionati?"
+
+ msgid "List of Registration Requests"
+ msgstr "Elenco richieste di registrazione"
+
+ msgid "Show Registration"
+ msgstr "Visualizza Registrazione"
+
+ msgid "Invalid login. Please try again."
+ msgstr "Autenticazione non valida, riprovare."
+
+ msgid "Sign In"
+ msgstr "Autenticazione"
+
+ msgid "Profile"
+ msgstr "Profilo"
+
+ msgid "Logout"
+ msgstr "Esci"
+
+ msgid "Login"
+ msgstr "Entra"
+
+ msgid "Welcome"
+ msgstr "Benvenuto"
+
+ msgid "User confirmation needed"
+ msgstr "Richiesta conferma Utente"
+
+ msgid "Actions"
+ msgstr "Azioni"
+
+ msgid "Page size"
+ msgstr "Dimensione pagina"
+
+ msgid "Order by"
+ msgstr "Ordina per"
+
+ msgid "Record Count"
+ msgstr "Numero di dati"
+
+ msgid "Add a new record"
+ msgstr "Aggiungi dato"
+
+ msgid "Edit record"
+ msgstr "Modifica dato"
+
+ msgid "Show record"
+ msgstr "Visualizza dato"
+
+ msgid "You sure you want to delete this item?"
+ msgstr "Sei sicuro di voler cancellare questo dato??"
+
+ msgid "Delete record"
+ msgstr "Cancella dato"
+
+ msgid "Group by fields"
+ msgstr "Raggruppa per campi"
+
+ msgid "Detail"
+ msgstr "Dettaglio"
+
+ msgid "Your user is activated you can now proceed to login"
+ msgstr "L'utenza è attivata, procedere con l'accesso"
+
+ msgid "Enter your login and password below"
+ msgstr "Inserire nome Utente e password"
+
+ msgid "Username"
+ msgstr "Nome Utente"
+
+ msgid "If you are not already a user, please register"
+ msgstr "Se non siete già utenti siete pregati di registrarvi"
+
+ msgid "Register"
+ msgstr "Registra"
+
+ msgid "Please choose one of the following providers:"
+ msgstr "Per favore selezionare uno dei seguenti provider:"
+
+ msgid "Click on your OpenID provider below"
+ msgstr "Clicca sul provider OpenID"
+
+ msgid "Or enter your OpenID here"
+ msgstr "o inserite la vostra OpenID"
+
+ msgid "Please choose a provider"
+ msgstr "Selezionare un provider"
+
+ msgid "Enter your OpenID Username"
+ msgstr "Inserire nome Utente OpenID"
+
+ msgid "Sign in using:"
+ msgstr "Accedi con"
+
+ msgid "Add Filter"
+ msgstr "Aggiungi Filtro"
+
+ msgid "Emp. Number"
+ msgstr "Imp. Numero"
+
+ msgid "Employee Number"
+ msgstr "Impiegato Numero"
+
+ msgid "Test Field One"
+ msgstr "Campo Prova Uno"
+
+ msgid "List Groups"
+ msgstr "Elenco Gruppi"
+
+ msgid "Manage Groups"
+ msgstr "Gestione Gruppi"
+
+ msgid "List Contacts"
+ msgstr "Elenco Contatti"
+
+ msgid "Contacts Chart"
+ msgstr "Grafico Contatti"
+
+ msgid "Contacts Birth Chart"
+ msgstr "Grafico Compleanno Contatti"
+
+ msgid "Tweet message"
+ msgstr "Messaggio Tweet"
+
+ msgid "My form View"
+ msgstr "La mia vista modulo"
+
+ msgid "Page not found"
+ msgstr "Pagina non trovata"
+
