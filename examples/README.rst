@@ -5,6 +5,8 @@ Examples of simple applications for Flask-AppBuilder
 
 :employees: Shows how to setup many to many relationships and a simple custom security class (creates an action to delete multiple users)
 
+:employees_with_masked_fields: Same as Employees, but with enhancements to support "masked" fields automatically localized
+
 :extendedsecurity: Simple contacts application where contacts are filtered by the user's company who has created them. The user only "sees" his/her companies contacts. It also extends the User Model adding a company relationship and employee number.
 
 :factoryapp: Simple example to show how to use a factory setup
