@@ -1,0 +1,105 @@
+# French translations for PROJECT.
+# Copyright (C) 2020 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2020-02-20 17:03-0300\n"
+"PO-Revision-Date: 2020-02-20 17:03-0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: app/myoverrides.py:61
+msgid "Not a valid decimal value"
+msgstr "Pas une valeur décimale valide"
+
+#: app/views.py:33
+msgid "Full Name"
+msgstr "Nom complet"
+
+#: app/views.py:33
+msgid "Address"
+msgstr "Adresse"
+
+#: app/views.py:34
+msgid "Fiscal Number"
+msgstr "Numéro fiscal"
+
+#: app/views.py:35
+msgid "Employee Number"
+msgstr "Numéro d'employé"
+
+#: app/views.py:36 app/views.py:72
+msgid "Salary"
+msgstr "Salaire"
+
+#: app/views.py:36 app/views.py:84
+msgid "Department"
+msgstr "Département"
+
+#: app/views.py:39
+msgid "Department Name"
+msgstr "Nom du département"
+
+#: app/views.py:37
+msgid "Function"
+msgstr "Fonction"
+
+#: app/views.py:37 app/views.py:157
+msgid "Benefits"
+msgstr "Avantages"
+
+#: app/views.py:38 app/views.py:92
+msgid "Begin Date"
+msgstr "Date de Début"
+
+#: app/views.py:38 app/views.py:103
+msgid "End Date"
+msgstr "Date de Fin"
+
+#: app/views.py:42
+msgid "Add Employee"
+msgstr "Ajouter un Employé"
+
+#: app/views.py:43
+msgid "Edit Employee"
+msgstr "Modifier l'employé"
+
+#: app/views.py:44
+msgid "List Employees"
+msgstr "Liste des employés"
+
+#: app/views.py:45
+msgid "Show Employee"
+msgstr "Afficher l'employé"
+
+#: app/views.py:144
+msgid "Employees"
+msgstr "Des Employés"
+
+#: app/views.py:147
+msgid "Company"
+msgstr "L'entreprise"
+
+#: app/views.py:150
+msgid "Departments"
+msgstr "Les Départements"
+
+#: app/views.py:154
+msgid "Functions"
+msgstr "Les Fonctions"
+
+
+#: app/myvalidators.py:13
+msgid "Out of allowed range"
+msgstr "Hors de la plage autorisée"
+

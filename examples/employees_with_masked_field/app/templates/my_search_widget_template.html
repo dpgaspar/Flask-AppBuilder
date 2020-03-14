@@ -1,0 +1,49 @@
+
+<!-- THIS IS AN ADJUSTED COPY OF: flask_appbuilder/templates/appbuilder/general/widgets/search.html
+     Here, the script block uses 'active_filters_localized', which is created by MySearchWidget python class.    
+     NOTICE - The function MyAdminFilters() used in the below script is located in MY_ab_filters.js and it is 
+     a redefinition of the old AdminFilters() function previously used, from ab_filters.js.
+              
+     -->
+
+{% import 'appbuilder/general/lib.html' as lib %}
+
+<form id="filter_form" class="form-search" method="get">
+
+    <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        {{_("Add Filter")}}
+      <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            {% for col in include_cols %}
+            <li><a href="javascript:void(0)" name={{col}} class="filter btn" onclick="return false;">
+                {{ label_columns[col] }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <table class="table table-responsive table-hover filters">
+       
+    </table>
+
+{{ lib.btn_search() }}
+</form>
+
+
+<!-- THIS IS AN ADJUSTED version of the script of the ORIGINAL template      -->
+<script>
+	(function($) {
+
+	var filter = new MyAdminFilters(    //<<-- - NOTICE - Now using MyAdminFilters - it's in the customized javascript MY_ab_filters.js 
+                    '#filter_form',     //       (this modified script is loaded at the head of app/templates/init.html)
+                    {{ label_columns | tojson }},
+                    {{ form_fields | tojson }},      // <-- original 'form_fields' - it only has html tags definitions for the fields
+                    {{ search_filters | tojson }},
+                    {{ active_filters_localized | tojson }}  //CHANGED to use active_filters_localized
+                );
+	})(jQuery);
+	
+</script>
+

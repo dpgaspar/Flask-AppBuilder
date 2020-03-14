@@ -1,0 +1,108 @@
+# Russian translations for PROJECT.
+# Copyright (C) 2020 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2020-02-20 17:03-0300\n"
+"PO-Revision-Date: 2020-02-20 17:03-0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: app/myoverrides.py:61
+msgid "Not a valid decimal value"
+msgstr "Недопустимое десятичное значение"
+
+#: app/views.py:33
+msgid "Full Name"
+msgstr "Полное имя"
+
+#: app/views.py:33
+msgid "Address"
+msgstr "Адрес"
+
+#: app/views.py:34
+msgid "Fiscal Number"
+msgstr "Фискальный номер"
+
+#: app/views.py:35
+msgid "Employee Number"
+msgstr "Сотрудник номер"
+
+#: app/views.py:36 app/views.py:72
+msgid "Salary"
+msgstr "Зарплата"
+
+#: app/views.py:36 app/views.py:84
+msgid "Department"
+msgstr "Отдел"
+
+#: app/views.py:39
+msgid "Department Name"
+msgstr "Название отдела"
+
+#: app/views.py:37
+msgid "Function"
+msgstr "Функция"
+
+#: app/views.py:37 app/views.py:157
+msgid "Benefits"
+msgstr "Выгоды"
+
+#: app/views.py:38 app/views.py:92
+msgid "Begin Date"
+msgstr "Дата начала"
+
+#: app/views.py:38 app/views.py:103
+msgid "End Date"
+msgstr "Дата окончания"
+
+#: app/views.py:42
+msgid "Add Employee"
+msgstr "Добавить сотрудника"
+
+#: app/views.py:43
+msgid "Edit Employee"
+msgstr "Редактировать сотрудника"
+
+#: app/views.py:44
+msgid "List Employees"
+msgstr "Список сотрудников"
+
+#: app/views.py:45
+msgid "Show Employee"
+msgstr "Показать сотрудника"
+
+#: app/views.py:144
+msgid "Employees"
+msgstr "Сотрудники"
+
+#: app/views.py:147
+msgid "Company"
+msgstr "Компания"
+
+#: app/views.py:150
+msgid "Departments"
+msgstr "Отделы"
+
+#: app/views.py:154
+msgid "Functions"
+msgstr "Функции"
+
+
+
+#: app/myvalidators.py:13
+msgid "Out of allowed range"
+msgstr "Вне допустимого диапазона"
+
+
