@@ -43,3 +43,18 @@ Run it::
 Tested with Flask Appbuilder version 2.2.4 
 (eventually, it will need changes in file 'overrides.py' to work with higher versions of F.A.B). 
 
+
+Below some screenshots taken from the demo app:
+
+screenshot1
+
+screenshot2
+
+screenshot3
+
+screenshot4
+
+screenshot5
+
+screenshot6
+
