@@ -43,18 +43,31 @@ Run it::
 Tested with Flask Appbuilder version 2.2.4 
 (eventually, it will need changes in file 'overrides.py' to work with higher versions of F.A.B). 
 
+| 
+Some screenshots taken from the demo app
+-------------------------------------
+|  
+Fields with masks/formats customized for brazilian portuguese language:
 
-Below some screenshots taken from the demo app:
+.. image:: https://github.com/tagwato/Flask-AppBuilder/blob/tagwato_branch/examples/employees_with_masked_fields/screenshot1.png
+    :width: 640px
 
-screenshot1
+.. image:: https://github.com/tagwato/Flask-AppBuilder/blob/tagwato_branch/examples/employees_with_masked_fields/screenshot2.png
+    :width: 640px
 
-screenshot2
+.. image:: https://github.com/tagwato/Flask-AppBuilder/blob/tagwato_branch/examples/employees_with_masked_fields/screenshot5.png
+    :width: 640px
+| 
+| 
+Fields with masks/formats customized for chinese language:
 
-screenshot3
+.. image:: https://github.com/tagwato/Flask-AppBuilder/blob/tagwato_branch/examples/employees_with_masked_fields/screenshot3.png
+    :width: 640px
 
-screenshot4
+.. image:: https://github.com/tagwato/Flask-AppBuilder/blob/tagwato_branch/examples/employees_with_masked_fields/screenshot4.png
+    :width: 640px
 
-screenshot5
+.. image:: https://github.com/tagwato/Flask-AppBuilder/blob/tagwato_branch/examples/employees_with_masked_fields/screenshot6.png
+    :width: 640px
 
-screenshot6
 
