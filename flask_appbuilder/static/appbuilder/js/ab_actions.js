@@ -74,7 +74,7 @@ var AdminActions = function() {
             form.append($(this).clone());
         });
 
-        form.trigger('trigger');
+        form.trigger('submit');
         return false;
     }
 
