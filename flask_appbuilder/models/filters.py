@@ -1,5 +1,6 @@
 import copy
 import logging
+from typing import Dict, List
 
 from .._compat import as_unicode
 from ..exceptions import (
@@ -114,14 +115,16 @@ class BaseFilterConverter(object):
 
 class Filters(object):
     filters = []
-    """ List of instanciated BaseFilter classes """
+    """ List of instantiated BaseFilter classes """
     values = []
     """ list of values to apply to filters """
     _search_filters = {}
     """ dict like {'col_name':[BaseFilter1, BaseFilter2, ...], ... } """
     _all_filters = {}
 
-    def __init__(self, filter_converter, datamodel, search_columns=None):
+    def __init__(
+        self, filter_converter, datamodel, search_columns=None, search_filters=None
+    ):
         """
 
             :param filter_converter: Accepts BaseFilterConverter class
@@ -137,7 +140,15 @@ class Filters(object):
             self._search_filters = self._get_filters(self.search_columns)
         self._all_filters = self._get_filters(datamodel.get_columns_list())
 
+        if search_filters:
+            for k, v in search_filters.items():
+                self._search_filters[k] += v
+
     def get_search_filters(self):
+        for k, v in self._search_filters.items():
+            for item in v:
+                print(k, type(item))
+
         return self._search_filters
 
     def _get_filters(self, cols):
@@ -159,7 +170,7 @@ class Filters(object):
     def add_filter_index(self, column_name, filter_instance_index, value):
         self._add_filter(self._all_filters[column_name][filter_instance_index], value)
 
-    def rest_add_filters(self, data):
+    def rest_add_filters(self, data: List[Dict]) -> None:
         """
             Adds list of dicts
 
@@ -176,7 +187,7 @@ class Filters(object):
                 return
             filter_class = map_args_filter.get(opr, None)
             if filter_class:
-                if _filter["col"] not in self.search_columns:
+                if col not in self.search_columns:
                     raise InvalidColumnFilterFABException(
                         f"Filter column: {col} not allowed to filter"
                     )
@@ -184,12 +195,17 @@ class Filters(object):
                     raise InvalidOperationFilterFABException(
                         f"Filter operation: {opr} not allowed on column: {col}"
                     )
-                else:
-                    self.add_filter(col, filter_class, value)
-            else:
-                raise InvalidOperationFilterFABException(
-                    f"Filter operation: {opr} not allowed on column: {col}"
-                )
+                self.add_filter(col, filter_class, value)
+                return
+            filters = self._search_filters.get(col)
+            if filters:
+                for filter in filters:
+                    if filter.arg_name == opr:
+                        self.add_filter(col, filter, value)
+                        return
+            raise InvalidOperationFilterFABException(
+                f"Filter operation: {opr} not allowed on column: {col}"
+            )
 
     def _rest_check_valid_filter_operation(self, col, opr):
         for filter_class in self._search_filters.get(col, []):
