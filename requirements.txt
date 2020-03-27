@@ -23,7 +23,7 @@ jsonschema==3.0.1
 markupsafe==1.1.1         # via jinja2
 marshmallow-enum==1.4.1
 marshmallow-sqlalchemy==0.16.2
-marshmallow==2.18.0
+marshmallow==3.5.1
 prison==0.1.2
 pyjwt==1.7.1
 pyrsistent==0.14.11       # via jsonschema

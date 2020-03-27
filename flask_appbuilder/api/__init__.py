@@ -1301,7 +1301,7 @@ class ModelRestApi(BaseModelApi):
             _show_model_schema = self.show_model_schema
 
         _response["id"] = pk
-        _response[API_RESULT_RES_KEY] = _show_model_schema.dump(item, many=False).data
+        _response[API_RESULT_RES_KEY] = _show_model_schema.dump(item, many=False)
         self.pre_get(_response)
         return self.response(200, **_response)
 
@@ -1402,7 +1402,7 @@ class ModelRestApi(BaseModelApi):
             select_columns=query_select_columns,
         )
         pks = self.datamodel.get_keys(lst)
-        _response[API_RESULT_RES_KEY] = _list_model_schema.dump(lst, many=True).data
+        _response[API_RESULT_RES_KEY] = _list_model_schema.dump(lst, many=True)
         _response["ids"] = pks
         _response["count"] = count
         self.pre_get_list(_response)
@@ -1490,7 +1490,7 @@ class ModelRestApi(BaseModelApi):
                 **{
                     API_RESULT_RES_KEY: self.add_model_schema.dump(
                         item.data, many=False
-                    ).data,
+                    ),
                     "id": self.datamodel.get_pk_value(item.data),
                 },
             )
@@ -1561,7 +1561,7 @@ class ModelRestApi(BaseModelApi):
                 **{
                     API_RESULT_RES_KEY: self.edit_model_schema.dump(
                         item.data, many=False
-                    ).data
+                    )
                 },
             )
         except IntegrityError as e:
@@ -1823,7 +1823,7 @@ class ModelRestApi(BaseModelApi):
         :param data: python data structure
         :return: python data structure
         """
-        data_item = self.edit_model_schema.dump(model_item, many=False).data
+        data_item = self.edit_model_schema.dump(model_item, many=False)
         for _col in self.edit_columns:
             if _col not in data.keys():
                 data[_col] = data_item[_col]
