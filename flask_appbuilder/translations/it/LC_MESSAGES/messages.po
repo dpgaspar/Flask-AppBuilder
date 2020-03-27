@@ -30,7 +30,7 @@ msgstr "Nome"
 #: examples/extendsecurity2/app/sec_forms.py:13
 #: flask_appbuilder/security/forms.py:26 flask_appbuilder/security/views.py:149
 msgid "Write the user first name or names"
-msgstr "Scrivi il nome o i nomi dell'utente"
+msgstr "Inserire il nome (o i nomi) dell'utente"
 
 #: examples/extendsecurity/app/sec_forms.py:16
 #: examples/extendsecurity2/app/sec_forms.py:16
@@ -44,7 +44,7 @@ msgstr "Cognome"
 #: examples/extendsecurity2/app/sec_forms.py:19
 #: flask_appbuilder/security/forms.py:32 flask_appbuilder/security/views.py:150
 msgid "Write the user last name"
-msgstr "Scrivi il cognome dell'utente"
+msgstr "Inserire il cognome dell'utente"
 
 #: examples/extendsecurity/app/sec_forms.py:22
 #: examples/extendsecurity2/app/sec_forms.py:22
@@ -88,7 +88,7 @@ msgstr "Informazioni personali"
 #: examples/quickhowto2/app/sec_views.py:22
 #: flask_appbuilder/security/views.py:181
 msgid "Audit Info"
-msgstr "Informazion di audit"
+msgstr "Informazioni di audit"
 
 #: examples/masterdetail/app/views.py:87 examples/quickhowto3/app/views.py:97
 msgid "List Groups"
@@ -151,7 +151,7 @@ msgstr "Cancella record"
 #: examples/quickhowto2/app/templates/list_angulajs.html:189
 #: flask_appbuilder/templates/appbuilder/general/lib.html:314
 msgid "Record Count"
-msgstr "Conteggio record"
+msgstr "Conteggia record"
 
 #: examples/quickhowto2/app/templates/list_angulajs.html:55
 #: examples/quickhowto2/app/templates/list_angulajs.html:105
@@ -212,7 +212,7 @@ msgstr "Scelta non valida"
 
 #: flask_appbuilder/fieldwidgets.py:153 flask_appbuilder/fieldwidgets.py:172
 msgid "Select Value"
-msgstr "Seleziona un valore"
+msgstr "Selezionare un valore"
 
 #: flask_appbuilder/messages.py:9
 #: flask_appbuilder/templates/appbuilder/general/charts/chart.html:8
@@ -389,7 +389,7 @@ msgstr "Password"
 msgid ""
 "Please use a good password policy, this application does not check this "
 "for you"
-msgstr "Per favore utilizza una buona policy per la password, l'applicazione non la controlla for te"
+msgstr "Per favore utilizzare una buona policy per la password, l'applicazione non la controlla"
 
 #: flask_appbuilder/security/forms.py:47 flask_appbuilder/security/forms.py:85
 #: flask_appbuilder/security/views.py:293
@@ -398,7 +398,7 @@ msgstr "Conferma password"
 
 #: flask_appbuilder/security/forms.py:48 flask_appbuilder/security/forms.py:86
 msgid "Please rewrite the password to confirm"
-msgstr "Per favore riscrivi la password da confermare"
+msgstr "Per favore riscrivere la password da confermare"
 
 #: flask_appbuilder/security/forms.py:49 flask_appbuilder/security/forms.py:87
 #: flask_appbuilder/security/views.py:296
@@ -454,7 +454,7 @@ msgstr Registrazione inviata via email"
 
 #: flask_appbuilder/security/registerviews.py:63
 msgid "Not possible to register you at the moment, try again later"
-msgstr "Non è stato possibile registrarti, riprova più tardi"
+msgstr "Non è stato possibile effettuare la registrazione, riprovare più tardi"
 
 #: flask_appbuilder/security/registerviews.py:67
 msgid "Registration not found"
@@ -462,7 +462,7 @@ msgstr "Registrazione non trovata"
 
 #: flask_appbuilder/security/registerviews.py:69
 msgid "Fill out the registration form"
-msgstr "Completa la form di registrazione"
+msgstr "Completa la registrazione"
 
 #: flask_appbuilder/security/views.py:30
 msgid "List Base Permissions"
@@ -598,11 +598,11 @@ msgstr "Modificato da"
 
 #: flask_appbuilder/security/views.py:151
 msgid "Username valid for authentication on DB or LDAP, unused for OID auth"
-msgstr "Utente valido per autenticazion con DB o LDAP, inutilizzato per autorizzazione OID"
+msgstr "Utente valido per autenticazione con DB o LDAP, inutilizzato per autorizzazione OID"
 
 #: flask_appbuilder/security/views.py:158
 msgid "It's not a good policy to remove a user, just make it inactive"
-msgstr "Non è una buona pratica rimuovere un utente, meglio renderlo inattivo"
+msgstr "Non è una buona pratica rimuovere un utente, è consigliato di disattivarlo"
 
 #: flask_appbuilder/security/views.py:161
 msgid "The user's email, this will also be used for OID auth"
@@ -677,7 +677,7 @@ msgstr "Login non valida, riprovare."
 #: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:57
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:118
 msgid "Sign In"
-msgstr "Entra"
+msgstr "Accedi"
 
 #: flask_appbuilder/templates/appbuilder/baselib.html:115
 #: flask_appbuilder/templates/appbuilder/navbar_right.html:37
@@ -703,7 +703,7 @@ msgstr "Ordina per"
 
 #: flask_appbuilder/templates/appbuilder/general/lib.html:383
 msgid "You sure you want to delete this item?"
-msgstr "Sei sicuro di voler cancellare questa voce?"
+msgstr "Si vuole confermare la cancellazione di questa voce?"
 
 #: flask_appbuilder/templates/appbuilder/general/charts/chart_time.html:17
 msgid "Group by fields"
@@ -716,12 +716,12 @@ msgstr "Dettaglio"
 
 #: flask_appbuilder/templates/appbuilder/general/security/activation.html:7
 msgid "Your user is activated you can now proceed to login"
-msgstr "Il tuo utente è attivato, puoi ora collegarti"
+msgstr "L'utente è stato attivato, si può procedere al login"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:18
 #: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:16
 msgid "Enter your login and password below"
-msgstr "Inserisci qua sotto login e password"
+msgstr "Inserire login e password"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_db.html:20
 #: flask_appbuilder/templates/appbuilder/general/security/login_ldap.html:18
@@ -738,7 +738,7 @@ msgstr "Se non sei già un utente, per favore registrati"
 #: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:61
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:122
 msgid "Register"
-msgstr "Registra"
+msgstr "Registrazione"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_oauth.html:45
 msgid "Please choose one of the following providers:"
@@ -746,21 +746,21 @@ msgstr "Selezionare uno dei seguenti provider:"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:89
 msgid "Click on your OpenID provider below"
-msgstr "Clicca su uno dei provider OpenID qua sotto"
+msgstr "Scegliere un provider OpenID"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:101
 msgid "Or enter your OpenID here"
-msgstr "O inserisci il tuo OpenID qua"
+msgstr "O inserire il proprio OpenID"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:105
 msgid "Please choose a provider"
-msgstr "Per favore scegli un provider"
+msgstr "Per favore scegliere un provider"
 
 #: flask_appbuilder/templates/appbuilder/general/security/login_oid.html:107
 msgid "Enter your OpenID Username"
-msgstr "Inserisci il tu username OpenID"
+msgstr "Inserire lo username OpenID"
 
 #: flask_appbuilder/templates/appbuilder/general/security/register_oauth.html:15
 msgid "Sign in using:"
-msgstr "Entra usando:"
+msgstr "Accedi con:"
 
