@@ -1,6 +1,6 @@
 import copy
 import logging
-from typing import Dict, List
+from typing import Any, Dict, List, Tuple
 
 from .._compat import as_unicode
 from ..exceptions import (
@@ -70,10 +70,14 @@ class FilterRelation(BaseFilter):
         Base class for all filters for relations
     """
 
-    pass
+    def apply(self, query, value):
+        """
+            Override this to implement your own new filters
+        """
+        raise NotImplementedError
 
 
-class BaseFilterConverter(object):
+class BaseFilterConverter:
     """
         Base Filter Converter, all classes responsible
         for the association of columns and possible filters
@@ -114,22 +118,27 @@ class BaseFilterConverter(object):
 
 
 class Filters(object):
-    filters = []
+    filters: List[BaseFilter] = []
     """ List of instantiated BaseFilter classes """
-    values = []
+    values: List[Any] = []
     """ list of values to apply to filters """
-    _search_filters = {}
+    _search_filters: Dict[str, List[BaseFilter]] = {}
     """ dict like {'col_name':[BaseFilter1, BaseFilter2, ...], ... } """
-    _all_filters = {}
+    _all_filters: Dict[str, List[BaseFilter]] = {}
 
     def __init__(
-        self, filter_converter, datamodel, search_columns=None, search_filters=None
+        self,
+        filter_converter: BaseFilterConverter,
+        datamodel,
+        search_columns: List[str] = None,
+        search_filters: Dict[str, List[BaseFilter]] = None,
     ):
         """
 
             :param filter_converter: Accepts BaseFilterConverter class
             :param search_columns: restricts possible columns,
                     accepts a list of column names
+            :param search_filters: Add custom defined filters to specific columns
             :param datamodel: Accepts BaseInterface class
         """
         self.search_columns = search_columns or []
@@ -145,13 +154,9 @@ class Filters(object):
                 self._search_filters[k] += v
 
     def get_search_filters(self):
-        for k, v in self._search_filters.items():
-            for item in v:
-                print(k, type(item))
-
         return self._search_filters
 
-    def _get_filters(self, cols):
+    def _get_filters(self, cols: List[str]):
         filters = {}
         for col in cols:
             _filters = self.filter_converter(self.datamodel).convert(col)
@@ -167,7 +172,9 @@ class Filters(object):
         self.filters.append(filter_instance)
         self.values.append(value)
 
-    def add_filter_index(self, column_name, filter_instance_index, value):
+    def add_filter_index(
+        self, column_name: str, filter_instance_index: int, value: Any
+    ):
         self._add_filter(self._all_filters[column_name][filter_instance_index], value)
 
     def rest_add_filters(self, data: List[Dict]) -> None:
@@ -231,10 +238,10 @@ class Filters(object):
         """
             Creates a new filters class with active filters joined
         """
-        retfilters = Filters(self.filter_converter, self.datamodel)
-        retfilters.filters = self.filters + filters.filters
-        retfilters.values = self.values + filters.values
-        return retfilters
+        ret_filters = Filters(self.filter_converter, self.datamodel)
+        ret_filters.filters = self.filters + filters.filters
+        ret_filters.values = self.values + filters.values
+        return ret_filters
 
     def copy(self):
         """
@@ -257,13 +264,13 @@ class Filters(object):
                 retlst.append(flt.column_name)
         return retlst
 
-    def get_filters_values(self):
+    def get_filters_values(self) -> List[Tuple[BaseFilter, Any]]:
         """
             Returns a list of tuples [(FILTER, value),(...,...),....]
         """
         return [(flt, value) for flt, value in zip(self.filters, self.values)]
 
-    def get_filter_value(self, column_name):
+    def get_filter_value(self, column_name: str) -> Any:
         """
             Returns the filtered value for a certain column
 
@@ -274,7 +281,7 @@ class Filters(object):
             if flt.column_name == column_name:
                 return value
 
-    def get_filters_values_tojson(self):
+    def get_filters_values_tojson(self) -> List[Tuple[str, str, Any]]:
         return [
             (flt.column_name, as_unicode(flt.name), value)
             for flt, value in zip(self.filters, self.values)
