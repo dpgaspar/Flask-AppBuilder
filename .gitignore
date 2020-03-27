@@ -15,3 +15,4 @@ venv
 *.sublime*
 .vscode/
 .tox
+.DS_Store
