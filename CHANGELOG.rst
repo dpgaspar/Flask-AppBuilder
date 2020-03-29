@@ -4,6 +4,11 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 2.3.0
 -----------------------------------
 
+[dependencies] Fix, marshmallow 3 breaks compat (#1333)
+
+Improvements and Bug fixes on 2.3.0
+-----------------------------------
+
 - New, [i18n] Add korean language (#1297)
 - New, [api] support one to many relations (#1307)
 - Fix, [mvc] reverts select2 to version 3.5.2 (#1308)
