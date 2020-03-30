@@ -1,9 +1,11 @@
 from flask_appbuilder import ModelRestApi
 from flask_appbuilder.api import BaseApi, expose
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.models.filters import BaseFilter
+from sqlalchemy import or_
 
 from . import appbuilder, db
-from .models import Contact, ContactGroup, Gender, ModelOMChild, ModelOMParent
+from .models import Contact, ContactGroup, Gender, ModelOMParent
 
 
 def fill_gender():
@@ -52,11 +54,25 @@ class GreetingApi(BaseApi):
 appbuilder.add_api(GreetingApi)
 
 
+class CustomFilter(BaseFilter):
+    name = "Custom Filter"
+    arg_name = "opr"
+
+    def apply(self, query, value):
+        return query.filter(
+            or_(
+                Contact.name.like(value + "%"),
+                Contact.address.like(value + "%"),
+            )
+        )
+
+
 class ContactModelApi(ModelRestApi):
     resource_name = "contact"
     datamodel = SQLAInterface(Contact)
     allow_browser_login = True
 
+    search_filters = {"name": [CustomFilter]}
     openapi_spec_methods = {
         "get_list": {
             "get": {

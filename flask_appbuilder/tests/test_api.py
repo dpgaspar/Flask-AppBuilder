@@ -1306,8 +1306,8 @@ class APITestCase(FABTestCase):
                 {"col": "field_integer", "opr": "lt", "value": 7},
             ]
         }
-
-        uri = f"api/v1/model1apisearchfilters/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+        rison_args = prison.dumps(arguments)
+        uri = f"api/v1/model1apisearchfilters/?{API_URI_RIS_KEY}={rison_args}"
 
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1323,8 +1323,8 @@ class APITestCase(FABTestCase):
                 {"col": "field_string", "opr": "sw", "value": "a"},
             ]
         }
-
-        uri = f"api/v1/model1apisearchfilters/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+        rison_args = prison.dumps(arguments)
+        uri = f"api/v1/model1apisearchfilters/?{API_URI_RIS_KEY}={rison_args}"
 
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 200)
@@ -1353,8 +1353,8 @@ class APITestCase(FABTestCase):
                 {"col": "field_string", "opr": "custom_filter", "value": filter_value}
             ]
         }
-
-        uri = f"api/v1/model1apisearchfilters/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+        rison_args = prison.dumps(arguments)
+        uri = f"api/v1/model1apisearchfilters/?{API_URI_RIS_KEY}={rison_args}"
 
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -1378,7 +1378,8 @@ class APITestCase(FABTestCase):
                 {"col": "field_integer", "opr": "eq", "value": 3},
             ]
         }
-        uri = f"api/v1/model1apisearchfilters/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+        rison_args = prison.dumps(arguments)
+        uri = f"api/v1/model1apisearchfilters/?{API_URI_RIS_KEY}={rison_args}"
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 200)
         data = json.loads(rv.data.decode("utf-8"))
@@ -1386,6 +1387,27 @@ class APITestCase(FABTestCase):
         session.delete(model1_1)
         session.delete(model1_2)
         session.commit()
+
+    def test_get_info_custom_search_filters(self):
+        """
+            REST Api: Test get info custom filters
+        """
+        arguments = {
+            "keys": ["filters"]
+        }
+        rison_args = prison.dumps(arguments)
+        uri = f"api/v1/model1apisearchfilters/_info?{API_URI_RIS_KEY}={rison_args}"
+
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        field_string_filters = data["filters"]["filter_string"]
+        self.assertIn({
+            "name": "Custom Filter",
+            "operator": "custom_filter"
+        }, field_string_filters)
 
     def test_get_list_select_cols(self):
         """
