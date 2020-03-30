@@ -1,6 +1,11 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.3.1
+-----------------------------------
+
+[dependencies] Fix, marshmallow 3 breaks compat (#1333)
+
 Improvements and Bug fixes on 2.3.0
 -----------------------------------
 
