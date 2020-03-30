@@ -192,6 +192,7 @@ class Filters(object):
             except KeyError:
                 log.warning("Invalid filter")
                 return
+            # Get filter class from defaults
             filter_class = map_args_filter.get(opr, None)
             if filter_class:
                 if col not in self.search_columns:
@@ -203,16 +204,18 @@ class Filters(object):
                         f"Filter operation: {opr} not allowed on column: {col}"
                     )
                 self.add_filter(col, filter_class, value)
-                return
+                continue
+            # Get filter class from custom defined filters
             filters = self._search_filters.get(col)
             if filters:
                 for filter in filters:
                     if filter.arg_name == opr:
                         self.add_filter(col, filter, value)
-                        return
-            raise InvalidOperationFilterFABException(
-                f"Filter operation: {opr} not allowed on column: {col}"
-            )
+                        break
+            else:
+                raise InvalidOperationFilterFABException(
+                    f"Filter operation: {opr} not allowed on column: {col}"
+                )
 
     def _rest_check_valid_filter_operation(self, col, opr):
         for filter_class in self._search_filters.get(col, []):
