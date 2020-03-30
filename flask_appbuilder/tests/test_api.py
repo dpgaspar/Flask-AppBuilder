@@ -1392,9 +1392,7 @@ class APITestCase(FABTestCase):
         """
             REST Api: Test get info custom filters
         """
-        arguments = {
-            "keys": ["filters"]
-        }
+        arguments = {"keys": ["filters"]}
         rison_args = prison.dumps(arguments)
         uri = f"api/v1/model1apisearchfilters/_info?{API_URI_RIS_KEY}={rison_args}"
 
@@ -1403,11 +1401,10 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 200)
         data = json.loads(rv.data.decode("utf-8"))
-        field_string_filters = data["filters"]["filter_string"]
-        self.assertIn({
-            "name": "Custom Filter",
-            "operator": "custom_filter"
-        }, field_string_filters)
+        field_string_filters = data["filters"]["field_string"]
+        self.assertIn(
+            {"name": "Custom Filter", "operator": "custom_filter"}, field_string_filters
+        )
 
     def test_get_list_select_cols(self):
         """
