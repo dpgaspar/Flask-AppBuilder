@@ -350,7 +350,7 @@ msgstr "Relazione di Many"
 
 #: flask_appbuilder/models/sqla/filters.py:97
 msgid "Ends with"
-msgstr ""
+msgstr "Termina con"
 
 #: flask_appbuilder/models/sqla/filters.py:106
 msgid "Not Ends with"
