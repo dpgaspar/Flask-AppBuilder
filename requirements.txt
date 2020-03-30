@@ -24,7 +24,7 @@ markupsafe==1.1.1         # via jinja2
 marshmallow-enum==1.4.1   # via Flask-AppBuilder (setup.py)
 marshmallow-sqlalchemy==0.16.2  # via Flask-AppBuilder (setup.py)
 marshmallow==2.18.0       # via Flask-AppBuilder (setup.py), marshmallow-enum, marshmallow-sqlalchemy
-prison==0.1.2             # via Flask-AppBuilder (setup.py)
+prison==0.1.3             # via Flask-AppBuilder (setup.py)
 pyjwt==1.7.1              # via Flask-AppBuilder (setup.py), flask-jwt-extended
 pyrsistent==0.14.11       # via jsonschema
 python-dateutil==2.8.0    # via Flask-AppBuilder (setup.py)
