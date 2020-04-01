@@ -4,6 +4,7 @@ Flask-AppBuilder ChangeLog
 Improvements and Bug fixes on 2.3.2
 -----------------------------------
 
+- New, [deploy] Add release script
 - New, [i18n] Add italian translation (#1324)
 - New, [api] Add custom filters to search (#1327)
 - Fix, [style] Better formatting on jinja template (#1321)
