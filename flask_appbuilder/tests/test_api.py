@@ -53,6 +53,8 @@ from .sqla.models import (
     ModelMMChild,
     ModelMMParent,
     ModelMMParentRequired,
+    ModelOMChild,
+    ModelOMParent,
     ModelWithEnums,
     ModelWithProperty,
     TmpEnum,
@@ -123,6 +125,7 @@ class APITestCase(FABTestCase):
     def setUp(self):
         from flask import Flask
         from flask_appbuilder import AppBuilder
+        from flask_appbuilder.models.filters import BaseFilter
         from flask_appbuilder.models.sqla.interface import SQLAInterface
         from flask_appbuilder.api import (
             BaseApi,
@@ -179,6 +182,21 @@ class APITestCase(FABTestCase):
 
         self.model1api = Model1Api
         self.appbuilder.add_api(Model1Api)
+
+        class CustomFilter(BaseFilter):
+            name = "Custom Filter"
+            arg_name = "custom_filter"
+
+            def apply(self, query, value):
+                return query.filter(
+                    ~Model1.field_string.like(value + "%"), Model1.field_integer == 1
+                )
+
+        class Model1ApiSearchFilters(ModelRestApi):
+            datamodel = SQLAInterface(Model1)
+            search_filters = {"field_string": [CustomFilter]}
+
+        self.appbuilder.add_api(Model1ApiSearchFilters)
 
         class Model1ApiFieldsInfo(Model1Api):
             datamodel = SQLAInterface(Model1)
@@ -257,6 +275,11 @@ class APITestCase(FABTestCase):
             datamodel = SQLAInterface(ModelMMParent)
 
         self.appbuilder.add_api(ModelMMApi)
+
+        class ModelOMParentApi(ModelRestApi):
+            datamodel = SQLAInterface(ModelOMParent)
+
+        self.appbuilder.add_api(ModelOMParentApi)
 
         class ModelMMRequiredApi(ModelRestApi):
             datamodel = SQLAInterface(ModelMMParentRequired)
@@ -780,6 +803,25 @@ class APITestCase(FABTestCase):
         ]
         self.assertEqual(data[API_RESULT_RES_KEY]["children"], expected_rel_field)
 
+    def test_get_item_om_field(self):
+        """
+            REST Api: Test get item with O-M related field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        # We can't get a base filtered item
+        pk = 1
+        rv = self.auth_client_get(
+            client, token, "api/v1/modelomparentapi/{}".format(pk)
+        )
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(rv.status_code, 200)
+        expected_rel_field = [
+            {"field_string": f"text0.{i}", "id": i, "parent": 1} for i in range(1, 4)
+        ]
+        self.assertEqual(data[API_RESULT_RES_KEY]["children"], expected_rel_field)
+
     def test_get_list(self):
         """
             REST Api: Test get list
@@ -1125,6 +1167,19 @@ class APITestCase(FABTestCase):
         self.assertEqual(data[API_RESULT_RES_KEY][0], expected_result)
         self.assertEqual(rv.status_code, 200)
 
+    def test_get_list_invalid_filters(self):
+        """
+            REST Api: Test get list filter params
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+
+        arguments = {API_FILTERS_RIS_KEY: [{"col": "field_integer", "opr": "gt"}]}
+
+        uri = f"api/v1/model1api/?{API_URI_RIS_KEY}={prison.dumps(arguments)}"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 400)
+
     def test_get_list_filters_m_m(self):
         """
             REST Api: Test get list filter params with many to many
@@ -1236,9 +1291,124 @@ class APITestCase(FABTestCase):
         rv = self.auth_client_get(client, token, uri)
         self.assertEqual(rv.status_code, 400)
 
+    def test_get_list_multiple_search_filters(self):
+        """
+            REST Api: Test get list multiple search filters
+        """
+        session = self.appbuilder.get_session
+        model1_1 = Model1(field_string="abc", field_integer=6)
+        session.add(model1_1)
+        session.commit()
+
+        arguments = {
+            API_FILTERS_RIS_KEY: [
+                {"col": "field_integer", "opr": "gt", "value": 5},
+                {"col": "field_integer", "opr": "lt", "value": 7},
+            ]
+        }
+        rison_args = prison.dumps(arguments)
+        uri = f"api/v1/model1apisearchfilters/?{API_URI_RIS_KEY}={rison_args}"
+
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data["count"], 2)
+
+        arguments = {
+            API_FILTERS_RIS_KEY: [
+                {"col": "field_integer", "opr": "gt", "value": 5},
+                {"col": "field_integer", "opr": "lt", "value": 7},
+                {"col": "field_string", "opr": "sw", "value": "a"},
+            ]
+        }
+        rison_args = prison.dumps(arguments)
+        uri = f"api/v1/model1apisearchfilters/?{API_URI_RIS_KEY}={rison_args}"
+
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data["count"], 1)
+        self.assertEqual(data["result"][0]["field_string"], "abc")
+
+        session.delete(model1_1)
+        session.commit()
+
+    def test_get_list_custom_search_filters(self):
+        """
+            REST Api: Test get list custom filters
+        """
+        session = self.appbuilder.get_session
+        model1_1 = Model1(field_string="abc", field_integer=2)
+        # Custom filter will get this next model (not like 'test' and field_integer=1)
+        model1_2 = Model1(field_string="abcd", field_integer=1)
+        session.add(model1_1)
+        session.add(model1_2)
+        session.commit()
+
+        filter_value = "test"
+        arguments = {
+            API_FILTERS_RIS_KEY: [
+                {"col": "field_string", "opr": "custom_filter", "value": filter_value}
+            ]
+        }
+        rison_args = prison.dumps(arguments)
+        uri = f"api/v1/model1apisearchfilters/?{API_URI_RIS_KEY}={rison_args}"
+
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data["count"], 1)
+        expected_result = [
+            {
+                "field_date": None,
+                "field_float": None,
+                "field_integer": 1,
+                "field_string": "abcd",
+            }
+        ]
+        self.assertEqual(data[API_RESULT_RES_KEY], expected_result)
+
+        arguments = {
+            API_FILTERS_RIS_KEY: [
+                {"col": "field_string", "opr": "custom_filter", "value": filter_value},
+                {"col": "field_integer", "opr": "eq", "value": 3},
+            ]
+        }
+        rison_args = prison.dumps(arguments)
+        uri = f"api/v1/model1apisearchfilters/?{API_URI_RIS_KEY}={rison_args}"
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(data["count"], 0)
+        session.delete(model1_1)
+        session.delete(model1_2)
+        session.commit()
+
+    def test_get_info_custom_search_filters(self):
+        """
+            REST Api: Test get info custom filters
+        """
+        arguments = {"keys": ["filters"]}
+        rison_args = prison.dumps(arguments)
+        uri = f"api/v1/model1apisearchfilters/_info?{API_URI_RIS_KEY}={rison_args}"
+
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        rv = self.auth_client_get(client, token, uri)
+        self.assertEqual(rv.status_code, 200)
+        data = json.loads(rv.data.decode("utf-8"))
+        field_string_filters = data["filters"]["field_string"]
+        self.assertIn(
+            {"name": "Custom Filter", "operator": "custom_filter"}, field_string_filters
+        )
+
     def test_get_list_select_cols(self):
         """
-            REST Api: Test get list with selected columns
+            REST Api: Test get list with select columns
         """
         client = self.app.test_client()
         token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
@@ -2067,6 +2237,37 @@ class APITestCase(FABTestCase):
         )
         self.appbuilder.get_session.delete(model1)
         self.appbuilder.get_session.delete(model2)
+        self.appbuilder.get_session.commit()
+
+    def test_create_item_om_field(self):
+        """
+            REST Api: Test create with O-M field
+        """
+        client = self.app.test_client()
+        token = self.login(client, USERNAME_ADMIN, PASSWORD_ADMIN)
+        child1 = ModelOMChild(field_string="child1")
+        child2 = ModelOMChild(field_string="child2")
+        self.appbuilder.get_session.add(child1)
+        self.appbuilder.get_session.add(child2)
+        self.appbuilder.get_session.commit()
+
+        item = dict(field_string="new1", children=[child1.id, child2.id])
+        uri = "api/v1/modelomparentapi/"
+        rv = self.auth_client_post(client, token, uri, item)
+        self.assertEqual(rv.status_code, 201)
+        data = json.loads(rv.data.decode("utf-8"))
+        self.assertEqual(
+            data[API_RESULT_RES_KEY],
+            {"children": [child1.id, child2.id], "field_string": "new1"},
+        )
+        # Rollback data changes
+        model1 = (
+            self.appbuilder.get_session.query(ModelOMParent)
+            .filter_by(field_string="new1")
+            .one_or_none()
+        )
+
+        self.appbuilder.get_session.delete(model1)
         self.appbuilder.get_session.commit()
 
     def test_get_list_col_function(self):

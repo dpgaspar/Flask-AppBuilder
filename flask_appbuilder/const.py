@@ -37,18 +37,10 @@ LOGMSG_ERR_SEC_DEL_PERMVIEW = "Remove Permission from View Error: {0}"
 LOGMSG_WAR_SEC_DEL_PERMVIEW = (
     "Refused to delete permission view, assoc with role exists {}.{} {}"
 )
-LOGMSG_WAR_SEC_DEL_PERMISSION = (
-    "Refused to delete, permission {} does not exist"
-)
-LOGMSG_WAR_SEC_DEL_VIEWMENU = (
-    "Refused to delete, view menu {} does not exist"
-)
-LOGMSG_WAR_SEC_DEL_PERM_PVM = (
-    "Refused to delete permission {}, PVM exists {}"
-)
-LOGMSG_WAR_SEC_DEL_VIEWMENU_PVM = (
-    "Refused to delete view menu {}, PVM exists {}"
-)
+LOGMSG_WAR_SEC_DEL_PERMISSION = "Refused to delete, permission {} does not exist"
+LOGMSG_WAR_SEC_DEL_VIEWMENU = "Refused to delete, view menu {} does not exist"
+LOGMSG_WAR_SEC_DEL_PERM_PVM = "Refused to delete permission {}, PVM exists {}"
+LOGMSG_WAR_SEC_DEL_VIEWMENU_PVM = "Refused to delete view menu {}, PVM exists {}"
 LOGMSG_ERR_SEC_ADD_PERMROLE = "Add Permission to Role Error: {0}"
 """ Error adding permission to role, format with err message """
 LOGMSG_ERR_SEC_DEL_PERMROLE = "Remove Permission to Role Error: {0}"

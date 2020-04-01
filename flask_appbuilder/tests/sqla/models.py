@@ -15,7 +15,7 @@ from sqlalchemy import (
     Table,
     UniqueConstraint,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 
 
 def validate_name(n):
@@ -161,6 +161,23 @@ class ModelMMChildRequired(Model):
     id = Column(Integer, primary_key=True)
     field_string = Column(String(50), unique=True, nullable=False)
 
+
+class ModelOMParent(Model):
+    __tablename__ = "model_om_parent"
+    id = Column(Integer, primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+
+
+class ModelOMChild(Model):
+    id = Column(Integer, primary_key=True)
+    field_string = Column(String(50), unique=True, nullable=False)
+    parent_id = Column(Integer, ForeignKey("model_om_parent.id"))
+    parent = relationship(
+        "ModelOMParent",
+        backref=backref("children", cascade="all, delete-orphan"),
+        foreign_keys=[parent_id],
+    )
+
     """ ---------------------------------
             TEST HELPER FUNCTIONS
         ---------------------------------
@@ -194,6 +211,7 @@ def insert_model2(session, i=0, model1_collection=None):
     model.group = model1
 
     import random
+
     year = random.choice(range(1900, 2012))
     month = random.choice(range(1, 12))
     day = random.choice(range(1, 28))
@@ -263,7 +281,7 @@ def insert_data(session, count):
     # Fill Model4
     for i in range(count):
         model = Model4()
-        model.field_string = "test{}".format(i)
+        model.field_string = f"test{i}"
         model.model1_1 = model1_collection[i]
         model.model1_2 = model1_collection[i]
         session.add(model)
@@ -298,3 +316,19 @@ def insert_data(session, count):
         model.field_string = str(i)
         session.add(model)
         session.commit()
+
+    model_oo_parents = list()
+    for i in range(count):
+        model = ModelOMParent()
+        model.field_string = f"text{i}"
+        session.add(model)
+        session.commit()
+        model_oo_parents.append(model)
+
+    for i in range(count):
+        for j in range(1, 4):
+            model = ModelOMChild()
+            model.field_string = f"text{i}.{j}"
+            model.parent = model_oo_parents[i]
+            session.add(model)
+            session.commit()
