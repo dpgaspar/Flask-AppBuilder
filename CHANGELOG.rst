@@ -1,6 +1,16 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.3.2
+-----------------------------------
+
+- New, [deploy] Add release script
+- New, [i18n] Add italian translation (#1324)
+- New, [api] Add custom filters to search (#1327)
+- Fix, [style] Better formatting on jinja template (#1321)
+- New, [examples] integrate Dash by Plotly in FAB (#1330)
+- Fix, [api] [mvc] Make like filters case insensitive (#1338)
+
 Improvements and Bug fixes on 2.3.1
 -----------------------------------
 
