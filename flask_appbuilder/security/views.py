@@ -323,6 +323,7 @@ class UserStatsChartView(DirectByChartView):
 
 
 class RoleModelView(ModelView):
+    from flask_appbuilder.models.sqla.filters import FilterInList
     route_base = '/roles'
 
     list_title = lazy_gettext('List Roles')
@@ -332,7 +333,10 @@ class RoleModelView(ModelView):
 
     label_columns = {'name': lazy_gettext('Name'), 'permissions': lazy_gettext('Permissions')}
     list_columns = ['name', 'permissions']
+    edit_columns = list_columns
+    add_columns = list_columns
     order_columns = ['name']
+    base_filters = [['name', FilterInList, ('Admin', 'Creator', 'Viewer')]]
 
     @action("Copy Role", lazy_gettext('Copy Role'), lazy_gettext('Copy the selected roles?'), icon='fa-copy', single=False)
     def copy_role(self, items):
