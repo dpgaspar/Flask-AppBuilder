@@ -1,6 +1,13 @@
 Flask-AppBuilder ChangeLog
 ==========================
 
+Improvements and Bug fixes on 2.3.3
+-----------------------------------
+
+- New, [cli] Fix, reset-password cli option (#1347)
+- New, Bump jQuery to 3.5 (#1351)
+- New, [menu] fix, add translation lookup in menu.get_data (#1352)
+
 Improvements and Bug fixes on 2.3.2
 -----------------------------------
 
