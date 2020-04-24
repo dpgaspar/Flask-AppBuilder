@@ -173,8 +173,8 @@ class UserModelView(ModelView):
 
     search_exclude_columns = ['password']
 
-    add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles']
-    edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles']
+    add_columns = ['first_name', 'last_name', 'username', 'active', 'email']
+    edit_columns = ['first_name', 'last_name', 'username', 'active', 'email']
     user_info_title = lazy_gettext("Your user information")
 
     @expose('/userinfo/')
