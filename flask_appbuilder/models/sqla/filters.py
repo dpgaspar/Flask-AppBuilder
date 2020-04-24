@@ -100,6 +100,11 @@ class FilterEqual(BaseFilter):
         value = set_value_to_type(self.datamodel, self.column_name, value)
         return query.filter(field == value)
 
+class FilterInList(BaseFilter):
+
+    def apply(self, query, value):
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        return query.filter(field.in_(value))
 
 class FilterNotEqual(BaseFilter):
     name = lazy_gettext('Not Equal to')
