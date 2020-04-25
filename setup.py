@@ -48,6 +48,7 @@ setup(
         "apispec[yaml]>=1.1.1, <2",
         "colorama>=0.3.9, <1",
         "click>=6.7, <8",
+        "email_validator>=1.0.5, <2",
         "Flask>=0.12, <2",
         "Flask-Babel>=1, <2",
         "Flask-Login>=0.3, <0.5",
