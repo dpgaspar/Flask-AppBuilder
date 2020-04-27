@@ -95,15 +95,28 @@ class SQLAInterface(BaseInterface):
                 query = query.order_by(self._get_attr(order_column).desc())
         return query
 
-    def _query_join_dotted_column(self, query, column) -> (object, tuple):
-        relation_tuple = tuple()
+    def _query_join_dotted_column(self, query, column: str) -> (object, list):
+        relations = list()
         if len(column.split(".")) >= 2:
             for join_relation in column.split(".")[:-1]:
-                relation_tuple = self.get_related_model_and_join(join_relation)
-                model_relation, relation_join = relation_tuple
-                if not self.is_model_already_joined(query, model_relation):
+
+                relations = self.get_related_model_and_join(join_relation)
+
+                for relation in relations:
+                    model_relation, relation_join = relation
+                    # STILL A HACK support multiple joins for the same table
+                    if self.is_model_already_joined(query, model_relation):
+                        from sqlalchemy.orm import aliased
+                        from sqlalchemy.sql.elements import BinaryExpression
+
+                        model_relation = aliased(model_relation)
+                        relation_join = BinaryExpression(
+                            relation_join.left,
+                            model_relation.id,
+                            relation_join.operator,
+                        )
                     query = query.join(model_relation, relation_join, isouter=True)
-        return query, relation_tuple
+        return query, relations
 
     def _query_select_options(self, query, select_columns=None):
         """
@@ -114,14 +127,21 @@ class SQLAInterface(BaseInterface):
         :param select_columns: (list) of columns
         :return: SQLAlchemy Query obj
         """
+        joined_models = list()
         if select_columns:
             _load_options = list()
             for column in select_columns:
-                query, relation_tuple = self._query_join_dotted_column(query, column)
-                model_relation, relation_join = relation_tuple or (None, None)
-                if model_relation:
+                relations = [(None, None)]
+                if len(column.split(".")) >= 2:
+                    if column.split(".")[0] not in joined_models:
+                        query, relations = self._query_join_dotted_column(query, column)
+                        joined_models.append(column.split(".")[0])
                     _load_options.append(
-                        Load(model_relation).load_only(column.split(".")[1])
+                        (
+                            Load(self.obj)
+                            .joinedload(column.split(".")[0])
+                            .load_only(column.split(".")[1])
+                        )
                     )
                 else:
                     # is a custom property method field?
@@ -526,7 +546,12 @@ class SQLAInterface(BaseInterface):
 
     def get_related_model_and_join(self, col_name):
         relation = self.list_properties[col_name]
-        return relation.mapper.class_, relation.primaryjoin
+        if relation.direction.name == "MANYTOMANY":
+            return [
+                (relation.secondary, relation.primaryjoin),
+                (relation.mapper.class_, relation.secondaryjoin),
+            ]
+        return [(relation.mapper.class_, relation.primaryjoin)]
 
     def query_model_relation(self, col_name):
         model = self.get_related_model(col_name)
