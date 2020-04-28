@@ -72,9 +72,14 @@ class ContactModelApi(ModelRestApi):
     datamodel = SQLAInterface(Contact)
     allow_browser_login = True
 
-    list_columns = ["name", "tags.id", "tags.name", "contact_group.id", "contact_group.name", "address"]
-
-    #list_columns = ["id", "name", "contact_group"]
+    list_columns = [
+        "name",
+        "tags.id",
+        "tags.name",
+        "contact_group.id",
+        "contact_group.name",
+        "address"
+    ]
 
     search_filters = {"name": [CustomFilter]}
     openapi_spec_methods = {

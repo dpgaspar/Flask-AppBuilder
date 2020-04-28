@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 import logging
 import sys
-from typing import Tuple, List
+from typing import List, Tuple
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Load, aliased
+from sqlalchemy.orm import aliased, Load
 from sqlalchemy.orm.descriptor_props import SynonymProperty
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy_utils.types.uuid import UUIDType
 
-from flask_appbuilder import Model
-from . import filters
+from . import filters, Model
 from ..base import BaseInterface
 from ..group import GroupByCol, GroupByDateMonth, GroupByDateYear
 from ..mixins import FileColumn, ImageColumn
